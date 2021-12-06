@@ -21,7 +21,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libyoga_abi43_0_0 glog_abi43_0_0 libfolly_json_abi43_0_0 libglog_init_abi43_0_0 libreact_render_core libreact_render_debug libreact_render_graphics libreact_render_components_view libreact_render_imagemanager
+LOCAL_SHARED_LIBRARIES := libyoga_abi44_0_0 glog_abi44_0_0 libfolly_json_abi44_0_0 libglog_init_abi44_0_0 libreact_render_core libreact_render_debug libreact_render_graphics libreact_render_components_view libreact_render_imagemanager
 
 include $(BUILD_SHARED_LIBRARY)
 

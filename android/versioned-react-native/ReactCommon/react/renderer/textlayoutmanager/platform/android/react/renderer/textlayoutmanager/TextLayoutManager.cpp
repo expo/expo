@@ -47,7 +47,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   auto attachmentPositions = env->NewFloatArray(0);
 
   static auto measure =
-      jni::findClassStatic("abi43_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi44_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jint,
               jstring,
@@ -112,7 +112,7 @@ LinesMeasurements TextLayoutManager::measureLines(
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
   static auto measureLines =
-      jni::findClassStatic("abi43_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi44_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<NativeArray::javaobject(
               ReadableMap::javaobject,
               ReadableMap::javaobject,
@@ -172,7 +172,7 @@ TextMeasurement TextLayoutManager::doMeasure(
   auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
 
   static auto measure =
-      jni::findClassStatic("abi43_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi44_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jint,
               jstring,

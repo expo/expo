@@ -10,7 +10,7 @@ LOCAL_MODULE := sampleturbomodule
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
-LOCAL_SHARED_LIBRARIES := libfbjni libreact_nativemodule_core_abi43_0_0
+LOCAL_SHARED_LIBRARIES := libfbjni libreact_nativemodule_core_abi44_0_0
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall

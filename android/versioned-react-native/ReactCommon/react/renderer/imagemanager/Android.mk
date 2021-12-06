@@ -11,7 +11,7 @@ LOCAL_MODULE := react_render_imagemanager
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/imagemanager/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libfolly_json_abi43_0_0 libyoga_abi43_0_0 libfolly_json_abi43_0_0 libreact_render_core libreact_render_debug libreact_render_graphics libreact_render_mounting
+LOCAL_SHARED_LIBRARIES := libfolly_json_abi44_0_0 libyoga_abi44_0_0 libfolly_json_abi44_0_0 libreact_render_core libreact_render_debug libreact_render_graphics libreact_render_mounting
 
 LOCAL_STATIC_LIBRARIES :=
 

@@ -14,11 +14,11 @@ namespace facebook {
 namespace react {
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityInfoSpecJSI_isReduceMotionEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "isReduceMotionEnabled", "(Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "isReduceMotionEnabled", "(Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityInfoSpecJSI_isTouchExplorationEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "isTouchExplorationEnabled", "(Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "isTouchExplorationEnabled", "(Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityInfoSpecJSI_setAccessibilityFocus(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -37,31 +37,31 @@ NativeAccessibilityInfoSpecJSI::NativeAccessibilityInfoSpecJSI(const JavaTurboMo
   methodMap_["announceForAccessibility"] = MethodMetadata {1, __hostFunction_NativeAccessibilityInfoSpecJSI_announceForAccessibility};
 }
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentBoldTextState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentBoldTextState", "(Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentBoldTextState", "(Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentGrayscaleState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentGrayscaleState", "(Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentGrayscaleState", "(Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentInvertColorsState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentInvertColorsState", "(Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentInvertColorsState", "(Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentReduceMotionState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentReduceMotionState", "(Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentReduceMotionState", "(Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentReduceTransparencyState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentReduceTransparencyState", "(Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentReduceTransparencyState", "(Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentVoiceOverState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentVoiceOverState", "(Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentVoiceOverState", "(Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityContentSizeMultipliers(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setAccessibilityContentSizeMultipliers", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setAccessibilityContentSizeMultipliers", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityFocus(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -87,11 +87,11 @@ NativeAccessibilityManagerSpecJSI::NativeAccessibilityManagerSpecJSI(const JavaT
 
 
 static facebook::jsi::Value __hostFunction_NativeActionSheetManagerSpecJSI_showActionSheetWithOptions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "showActionSheetWithOptions", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "showActionSheetWithOptions", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeActionSheetManagerSpecJSI_showShareActionSheetWithOptions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "showShareActionSheetWithOptions", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "showShareActionSheetWithOptions", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeActionSheetManagerSpecJSI::NativeActionSheetManagerSpecJSI(const JavaTurboModule::InitParams &params)
@@ -100,7 +100,7 @@ NativeActionSheetManagerSpecJSI::NativeActionSheetManagerSpecJSI(const JavaTurbo
   methodMap_["showShareActionSheetWithOptions"] = MethodMetadata {3, __hostFunction_NativeActionSheetManagerSpecJSI_showShareActionSheetWithOptions};
 }
 static facebook::jsi::Value __hostFunction_NativeAlertManagerSpecJSI_alertWithArgs(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "alertWithArgs", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "alertWithArgs", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeAlertManagerSpecJSI::NativeAlertManagerSpecJSI(const JavaTurboModule::InitParams &params)
@@ -116,11 +116,11 @@ static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_finishOpe
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLabi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLabi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getValue", "(DLabi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getValue", "(DLabi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -140,7 +140,7 @@ static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_disconnec
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startAnimatingNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "startAnimatingNode", "(DDLabi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "startAnimatingNode", "(DDLabi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_stopAnimation(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -180,7 +180,7 @@ static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_dropAnima
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_addAnimatedEventToView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "addAnimatedEventToView", "(DLjava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "addAnimatedEventToView", "(DLjava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_removeAnimatedEventFromView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -229,11 +229,11 @@ static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_fini
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_createAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLabi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLabi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getValue", "(DLabi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getValue", "(DLabi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -253,7 +253,7 @@ static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_disc
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_startAnimatingNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "startAnimatingNode", "(DDLabi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "startAnimatingNode", "(DDLabi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_stopAnimation(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -293,7 +293,7 @@ static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_drop
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_addAnimatedEventToView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "addAnimatedEventToView", "(DLjava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "addAnimatedEventToView", "(DLjava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeAnimatedEventFromView(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -351,7 +351,7 @@ static facebook::jsi::Value __hostFunction_NativeAppStateSpecJSI_getConstants(fa
 }
 
 static facebook::jsi::Value __hostFunction_NativeAppStateSpecJSI_getCurrentAppState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentAppState", "(Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getCurrentAppState", "(Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAppStateSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -390,27 +390,27 @@ NativeAppearanceSpecJSI::NativeAppearanceSpecJSI(const JavaTurboModule::InitPara
 
 
 static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiGet", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiGet", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiSet", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiSet", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiMerge", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiMerge", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiRemove", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiRemove", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "clear", "(Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "clear", "(Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncLocalStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getAllKeys", "(Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getAllKeys", "(Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeAsyncLocalStorageSpecJSI::NativeAsyncLocalStorageSpecJSI(const JavaTurboModule::InitParams &params)
@@ -425,27 +425,27 @@ NativeAsyncLocalStorageSpecJSI::NativeAsyncLocalStorageSpecJSI(const JavaTurboMo
 
 
 static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiGet", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiGet", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiSet", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiSet", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiMerge", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiMerge", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiRemove", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "multiRemove", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "clear", "(Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "clear", "(Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeAsyncSQLiteDBStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getAllKeys", "(Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getAllKeys", "(Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeAsyncSQLiteDBStorageSpecJSI::NativeAsyncSQLiteDBStorageSpecJSI(const JavaTurboModule::InitParams &params)
@@ -474,11 +474,11 @@ static facebook::jsi::Value __hostFunction_NativeBlobModuleSpecJSI_removeWebSock
 }
 
 static facebook::jsi::Value __hostFunction_NativeBlobModuleSpecJSI_sendOverSocket(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "sendOverSocket", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;D)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "sendOverSocket", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;D)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeBlobModuleSpecJSI_createFromParts(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "createFromParts", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Ljava/lang/String;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "createFromParts", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Ljava/lang/String;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeBlobModuleSpecJSI_release(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -500,7 +500,7 @@ static facebook::jsi::Value __hostFunction_NativeBugReportingSpecJSI_startReport
 }
 
 static facebook::jsi::Value __hostFunction_NativeBugReportingSpecJSI_setExtraData(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setExtraData", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setExtraData", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeBugReportingSpecJSI_setCategoryID(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -516,7 +516,7 @@ NativeBugReportingSpecJSI::NativeBugReportingSpecJSI(const JavaTurboModule::Init
 
 
 static facebook::jsi::Value __hostFunction_NativeClipboardSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getString", "(Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getString", "(Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeClipboardSpecJSI_setString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -529,7 +529,7 @@ NativeClipboardSpecJSI::NativeClipboardSpecJSI(const JavaTurboModule::InitParams
   methodMap_["setString"] = MethodMetadata {1, __hostFunction_NativeClipboardSpecJSI_setString};
 }
 static facebook::jsi::Value __hostFunction_NativeDatePickerAndroidSpecJSI_open(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "open", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "open", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativeDatePickerAndroidSpecJSI::NativeDatePickerAndroidSpecJSI(const JavaTurboModule::InitParams &params)
@@ -636,7 +636,7 @@ NativeDevSettingsSpecJSI::NativeDevSettingsSpecJSI(const JavaTurboModule::InitPa
   methodMap_["setIsShakeToShowDevMenuEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsShakeToShowDevMenuEnabled};
 }
 static facebook::jsi::Value __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "loadBundle", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "loadBundle", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativeDevSplitBundleLoaderSpecJSI::NativeDevSplitBundleLoaderSpecJSI(const JavaTurboModule::InitParams &params)
@@ -664,7 +664,7 @@ static facebook::jsi::Value __hostFunction_NativeDialogManagerAndroidSpecJSI_get
 }
 
 static facebook::jsi::Value __hostFunction_NativeDialogManagerAndroidSpecJSI_showAlert(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "showAlert", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "showAlert", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeDialogManagerAndroidSpecJSI::NativeDialogManagerAndroidSpecJSI(const JavaTurboModule::InitParams &params)
@@ -673,19 +673,19 @@ NativeDialogManagerAndroidSpecJSI::NativeDialogManagerAndroidSpecJSI(const JavaT
   methodMap_["showAlert"] = MethodMetadata {3, __hostFunction_NativeDialogManagerAndroidSpecJSI_showAlert};
 }
 static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportFatalException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "reportFatalException", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "reportFatalException", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportSoftException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "reportSoftException", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "reportSoftException", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "reportException", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "reportException", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_updateExceptionMessage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "updateExceptionMessage", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "updateExceptionMessage", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_dismissRedbox(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -701,11 +701,11 @@ NativeExceptionsManagerSpecJSI::NativeExceptionsManagerSpecJSI(const JavaTurboMo
   methodMap_["dismissRedbox"] = MethodMetadata {0, __hostFunction_NativeExceptionsManagerSpecJSI_dismissRedbox};
 }
 static facebook::jsi::Value __hostFunction_NativeFileReaderModuleSpecJSI_readAsDataURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "readAsDataURL", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "readAsDataURL", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeFileReaderModuleSpecJSI_readAsText(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "readAsText", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "readAsText", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativeFileReaderModuleSpecJSI::NativeFileReaderModuleSpecJSI(const JavaTurboModule::InitParams &params)
@@ -714,7 +714,7 @@ NativeFileReaderModuleSpecJSI::NativeFileReaderModuleSpecJSI(const JavaTurboModu
   methodMap_["readAsText"] = MethodMetadata {2, __hostFunction_NativeFileReaderModuleSpecJSI_readAsText};
 }
 static facebook::jsi::Value __hostFunction_NativeFrameRateLoggerSpecJSI_setGlobalOptions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setGlobalOptions", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setGlobalOptions", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeFrameRateLoggerSpecJSI_setContext(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -741,7 +741,7 @@ static facebook::jsi::Value __hostFunction_NativeHeadlessJsTaskSupportSpecJSI_no
 }
 
 static facebook::jsi::Value __hostFunction_NativeHeadlessJsTaskSupportSpecJSI_notifyTaskRetry(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "notifyTaskRetry", "(DLabi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "notifyTaskRetry", "(DLabi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativeHeadlessJsTaskSupportSpecJSI::NativeHeadlessJsTaskSupportSpecJSI(const JavaTurboModule::InitParams &params)
@@ -775,7 +775,7 @@ NativeI18nManagerSpecJSI::NativeI18nManagerSpecJSI(const JavaTurboModule::InitPa
 
 
 static facebook::jsi::Value __hostFunction_NativeImageEditorSpecJSI_cropImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "cropImage", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "cropImage", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeImageEditorSpecJSI::NativeImageEditorSpecJSI(const JavaTurboModule::InitParams &params)
@@ -789,19 +789,19 @@ static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_abort
 
 
 static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_getSize(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getSize", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getSize", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_getSizeWithHeaders(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getSizeWithHeaders", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getSizeWithHeaders", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_prefetchImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "prefetchImage", "(Ljava/lang/String;DLabi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "prefetchImage", "(Ljava/lang/String;DLabi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_queryCache(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "queryCache", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "queryCache", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativeImageLoaderAndroidSpecJSI::NativeImageLoaderAndroidSpecJSI(const JavaTurboModule::InitParams &params)
@@ -815,7 +815,7 @@ NativeImageLoaderAndroidSpecJSI::NativeImageLoaderAndroidSpecJSI(const JavaTurbo
 
 
 static facebook::jsi::Value __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getBase64ForTag", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Callback;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getBase64ForTag", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Callback;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeImageStoreAndroidSpecJSI::NativeImageStoreAndroidSpecJSI(const JavaTurboModule::InitParams &params)
@@ -823,23 +823,23 @@ NativeImageStoreAndroidSpecJSI::NativeImageStoreAndroidSpecJSI(const JavaTurboMo
   methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag};
 }
 static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeIntentAndroidSpecJSI_sendIntent(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "sendIntent", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "sendIntent", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativeIntentAndroidSpecJSI::NativeIntentAndroidSpecJSI(const JavaTurboModule::InitParams &params)
@@ -898,19 +898,19 @@ NativeKeyboardObserverSpecJSI::NativeKeyboardObserverSpecJSI(const JavaTurboModu
   methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeKeyboardObserverSpecJSI_removeListeners};
 }
 static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_getInitialURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getInitialURL", "(Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_canOpenURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "canOpenURL", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_openURL(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openURL", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_openSettings(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openSettings", "(Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeLinkingManagerSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -957,7 +957,7 @@ NativeModalManagerSpecJSI::NativeModalManagerSpecJSI(const JavaTurboModule::Init
   methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeModalManagerSpecJSI_removeListeners};
 }
 static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_sendRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "sendRequest", "(Ljava/lang/String;Ljava/lang/String;DLabi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "sendRequest", "(Ljava/lang/String;Ljava/lang/String;DLabi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_abortRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -965,7 +965,7 @@ static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_abortR
 }
 
 static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_clearCookies(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "clearCookies", "(Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "clearCookies", "(Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeNetworkingAndroidSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -985,19 +985,19 @@ NativeNetworkingAndroidSpecJSI::NativeNetworkingAndroidSpecJSI(const JavaTurboMo
   methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeNetworkingAndroidSpecJSI_removeListeners};
 }
 static facebook::jsi::Value __hostFunction_NativePermissionsAndroidSpecJSI_checkPermission(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "checkPermission", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "checkPermission", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativePermissionsAndroidSpecJSI_requestPermission(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "requestPermission", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "requestPermission", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativePermissionsAndroidSpecJSI_shouldShowRequestPermissionRationale(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "shouldShowRequestPermissionRationale", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "shouldShowRequestPermissionRationale", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativePermissionsAndroidSpecJSI_requestMultiplePermissions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "requestMultiplePermissions", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "requestMultiplePermissions", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativePermissionsAndroidSpecJSI::NativePermissionsAndroidSpecJSI(const JavaTurboModule::InitParams &params)
@@ -1021,7 +1021,7 @@ NativePlatformConstantsAndroidSpecJSI::NativePlatformConstantsAndroidSpecJSI(con
   methodMap_["getAndroidID"] = MethodMetadata {0, __hostFunction_NativePlatformConstantsAndroidSpecJSI_getAndroidID};
 }
 static facebook::jsi::Value __hostFunction_NativeRedBoxSpecJSI_setExtraData(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setExtraData", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setExtraData", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeRedBoxSpecJSI_dismiss(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -1034,11 +1034,11 @@ NativeRedBoxSpecJSI::NativeRedBoxSpecJSI(const JavaTurboModule::InitParams &para
   methodMap_["dismiss"] = MethodMetadata {0, __hostFunction_NativeRedBoxSpecJSI_dismiss};
 }
 static facebook::jsi::Value __hostFunction_NativeSegmentFetcherSpecJSI_fetchSegment(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "fetchSegment", "(DLabi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "fetchSegment", "(DLabi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeSegmentFetcherSpecJSI_getSegment(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getSegment", "(DLabi43_0_0/com/facebook/react/bridge/ReadableMap;Labi43_0_0/com/facebook/react/bridge/Callback;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "getSegment", "(DLabi44_0_0/com/facebook/react/bridge/ReadableMap;Labi44_0_0/com/facebook/react/bridge/Callback;)V", args, count);
 }
 
 NativeSegmentFetcherSpecJSI::NativeSegmentFetcherSpecJSI(const JavaTurboModule::InitParams &params)
@@ -1051,11 +1051,11 @@ static facebook::jsi::Value __hostFunction_NativeSettingsManagerSpecJSI_getConst
 }
 
 static facebook::jsi::Value __hostFunction_NativeSettingsManagerSpecJSI_setValues(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setValues", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "setValues", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeSettingsManagerSpecJSI_deleteValues(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "deleteValues", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "deleteValues", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;)V", args, count);
 }
 
 NativeSettingsManagerSpecJSI::NativeSettingsManagerSpecJSI(const JavaTurboModule::InitParams &params)
@@ -1067,7 +1067,7 @@ NativeSettingsManagerSpecJSI::NativeSettingsManagerSpecJSI(const JavaTurboModule
 
 
 static facebook::jsi::Value __hostFunction_NativeShareModuleSpecJSI_share(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "share", "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/Promise;)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "share", "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/Promise;)V", args, count);
 }
 
 NativeShareModuleSpecJSI::NativeShareModuleSpecJSI(const JavaTurboModule::InitParams &params)
@@ -1166,7 +1166,7 @@ static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_vibrate(facebo
 }
 
 static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_vibrateByPattern(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "vibrateByPattern", "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "vibrateByPattern", "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;D)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_cancel(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -1180,7 +1180,7 @@ NativeVibrationSpecJSI::NativeVibrationSpecJSI(const JavaTurboModule::InitParams
   methodMap_["cancel"] = MethodMetadata {0, __hostFunction_NativeVibrationSpecJSI_cancel};
 }
 static facebook::jsi::Value __hostFunction_NativeWebSocketModuleSpecJSI_connect(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "connect", "(Ljava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableArray;Labi43_0_0/com/facebook/react/bridge/ReadableMap;D)V", args, count);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "connect", "(Ljava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableArray;Labi44_0_0/com/facebook/react/bridge/ReadableMap;D)V", args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeWebSocketModuleSpecJSI_send(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

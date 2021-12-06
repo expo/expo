@@ -195,6 +195,9 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_44 -->
+    <activity android:name="abi44_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_44 -->
     <!-- BEGIN_SDK_43 -->
     <activity android:name="abi43_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_43 -->

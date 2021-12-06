@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := react_codegen_reactandroidspec_abi43_0_0
+LOCAL_MODULE := react_codegen_reactandroidspec_abi44_0_0
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
@@ -15,7 +15,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_SHARED_LIBRARIES := libreact_nativemodule_core_abi43_0_0
+LOCAL_SHARED_LIBRARIES := libreact_nativemodule_core_abi44_0_0
 
 LOCAL_STATIC_LIBRARIES := libjsi
 

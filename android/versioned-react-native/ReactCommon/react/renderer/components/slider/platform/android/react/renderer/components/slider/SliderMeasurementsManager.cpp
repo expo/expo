@@ -30,7 +30,7 @@ Size SliderMeasurementsManager::measure(
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure =
-      jni::findClassStatic("abi43_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi44_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jint,
               jstring,
