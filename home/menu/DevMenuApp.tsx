@@ -2,6 +2,7 @@ import { ThemeProvider } from '@react-navigation/native';
 import React from 'react';
 import { AppRegistry } from 'react-native';
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
@@ -44,13 +45,15 @@ class DevMenuRoot extends React.PureComponent<{ task: { [key: string]: any }; uu
 function DevMenuApp(props: { task: { [key: string]: any }; uuid: string }) {
   const theme = useAppColorScheme(props.uuid);
   return (
-    <AppearanceProvider>
-      <DevMenuBottomSheet uuid={props.uuid}>
-        <ThemeProvider value={Themes[theme]}>
-          <DevMenuView {...props} />
-        </ThemeProvider>
-      </DevMenuBottomSheet>
-    </AppearanceProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AppearanceProvider>
+        <DevMenuBottomSheet uuid={props.uuid}>
+          <ThemeProvider value={Themes[theme]}>
+            <DevMenuView {...props} />
+          </ThemeProvider>
+        </DevMenuBottomSheet>
+      </AppearanceProvider>
+    </GestureHandlerRootView>
   );
 }
 
