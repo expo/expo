@@ -20,6 +20,14 @@ Here are some **important rules** that apply to all authentication providers:
 - Be sure to disable the prompt until `request` is defined.
 - You can only invoke `promptAsync` in a user-interaction on web.
 
+## Obtaining access tokens
+
+The vast majority of providers described here implement the [OAuth 2](https://oauth.net/2/) standard for secure authentication/authorization.
+In the authorization code grant, the identity provider returns a one-time code which is then exchanged for the user's access token. Because
+[your application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to
+exchange the authorization code in a context (e.g., your server) where you can securely store and use a client secret to access the provider's
+token endpoint.
+
 ## Guides
 
 **AuthSession** can be used for any OAuth or OpenID Connect provider, we've assembled guides for using the most requested services!
