@@ -1800,6 +1800,610 @@ PODS:
   - ABI43_0_0UMTaskManagerInterface (7.0.0):
     - ABI43_0_0ExpoModulesCore
   - ABI43_0_0Yoga (1.14.0)
+  - ABI44_0_0EXAdsAdMob (12.0.0):
+    - ABI44_0_0ExpoModulesCore
+    - Google-Mobile-Ads-SDK (= 7.69.0)
+  - ABI44_0_0EXAdsFacebook (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - FBAudienceNetwork (= 6.5.0)
+  - ABI44_0_0EXAmplitude (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - Amplitude (~> 6.0.0)
+  - ABI44_0_0EXAppAuth (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - AppAuth (~> 1.2)
+  - ABI44_0_0EXAppleAuthentication (4.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXApplication (4.0.1):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXAV (10.2.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0ReactCommon/turbomodule/core
+  - ABI44_0_0EXBackgroundFetch (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0UMTaskManagerInterface
+  - ABI44_0_0EXBarCodeScanner (11.2.0):
+    - ABI44_0_0EXImageLoader
+    - ABI44_0_0ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
+  - ABI44_0_0EXBattery (6.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXBlur (11.0.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXBrightness (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXCalendar (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXCamera (12.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXClipboard (2.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXConstants (13.0.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXContacts (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXCrypto (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXDevice (4.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXDocumentPicker (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXErrorRecovery (3.0.4):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXFacebook (12.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - FacebookSDK/CoreKit (= 9.2.0)
+    - FacebookSDK/LoginKit (= 9.2.0)
+  - ABI44_0_0EXFaceDetector (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - GoogleMLKit/FaceDetection (= 2.1.0)
+    - MLKitCommon (= 2.1.0)
+    - MLKitFaceDetection (= 1.2.0)
+    - MLKitVision (= 1.2.0)
+  - ABI44_0_0EXFileSystem (13.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXFirebaseAnalytics (6.0.0):
+    - ABI44_0_0EXFirebaseCore
+    - ABI44_0_0ExpoModulesCore
+    - Firebase/Core (= 7.7.0)
+  - ABI44_0_0EXFirebaseCore (4.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - Firebase/Core (= 7.7.0)
+  - ABI44_0_0EXFont (10.0.4):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXGL (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - EXGL_CPP
+  - ABI44_0_0EXGoogleSignIn (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - GoogleSignIn (~> 5.0.2)
+  - ABI44_0_0EXImageLoader (3.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0React-Core
+  - ABI44_0_0EXImageManipulator (10.2.0):
+    - ABI44_0_0EXImageLoader
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXImagePicker (12.0.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXJSONUtils (0.2.0)
+  - ABI44_0_0EXKeepAwake (10.0.1):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXLocalAuthentication (12.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXLocation (14.0.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0UMTaskManagerInterface
+  - ABI44_0_0EXMailComposer (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXManifests (0.2.2):
+    - ABI44_0_0EXJSONUtils
+  - ABI44_0_0EXMediaLibrary (14.0.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0React-Core
+  - ABI44_0_0EXNetwork (4.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXNotifications (0.14.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXPermissions (13.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0Expo (44.0.0-beta.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0ExpoCellular (4.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0ExpoHaptics (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0ExpoKit/Expo (44.0.0):
+    - ABI44_0_0EXAdsAdMob
+    - ABI44_0_0EXAdsFacebook
+    - ABI44_0_0EXAmplitude
+    - ABI44_0_0EXAppAuth
+    - ABI44_0_0EXAppleAuthentication
+    - ABI44_0_0EXApplication
+    - ABI44_0_0EXAV
+    - ABI44_0_0EXBackgroundFetch
+    - ABI44_0_0EXBarCodeScanner
+    - ABI44_0_0EXBattery
+    - ABI44_0_0EXBlur
+    - ABI44_0_0EXBrightness
+    - ABI44_0_0EXCalendar
+    - ABI44_0_0EXCamera
+    - ABI44_0_0EXClipboard
+    - ABI44_0_0EXConstants
+    - ABI44_0_0EXContacts
+    - ABI44_0_0EXCrypto
+    - ABI44_0_0EXDevice
+    - ABI44_0_0EXDocumentPicker
+    - ABI44_0_0EXErrorRecovery
+    - ABI44_0_0EXFacebook
+    - ABI44_0_0EXFaceDetector
+    - ABI44_0_0EXFileSystem
+    - ABI44_0_0EXFirebaseAnalytics
+    - ABI44_0_0EXFirebaseCore
+    - ABI44_0_0EXFont
+    - ABI44_0_0EXGL
+    - ABI44_0_0EXGoogleSignIn
+    - ABI44_0_0EXImageLoader
+    - ABI44_0_0EXImageManipulator
+    - ABI44_0_0EXImagePicker
+    - ABI44_0_0EXJSONUtils
+    - ABI44_0_0EXKeepAwake
+    - ABI44_0_0EXLocalAuthentication
+    - ABI44_0_0EXLocation
+    - ABI44_0_0EXMailComposer
+    - ABI44_0_0EXManifests
+    - ABI44_0_0EXMediaLibrary
+    - ABI44_0_0EXNetwork
+    - ABI44_0_0EXNotifications
+    - ABI44_0_0EXPermissions
+    - ABI44_0_0Expo
+    - ABI44_0_0ExpoCellular
+    - ABI44_0_0ExpoHaptics
+    - ABI44_0_0ExpoLinearGradient
+    - ABI44_0_0ExpoLocalization
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0ExpoModulesProvider
+    - ABI44_0_0ExpoSystemUI
+    - ABI44_0_0EXPrint
+    - ABI44_0_0EXRandom
+    - ABI44_0_0EXScreenCapture
+    - ABI44_0_0EXScreenOrientation
+    - ABI44_0_0EXSecureStore
+    - ABI44_0_0EXSegment
+    - ABI44_0_0EXSensors
+    - ABI44_0_0EXSharing
+    - ABI44_0_0EXSMS
+    - ABI44_0_0EXSpeech
+    - ABI44_0_0EXSplashScreen
+    - ABI44_0_0EXSQLite
+    - ABI44_0_0EXStoreReview
+    - ABI44_0_0EXStructuredHeaders
+    - ABI44_0_0EXTaskManager
+    - ABI44_0_0EXTrackingTransparency
+    - ABI44_0_0EXUpdates
+    - ABI44_0_0EXUpdatesInterface
+    - ABI44_0_0EXVideoThumbnails
+    - ABI44_0_0EXWebBrowser
+    - ABI44_0_0React-Core
+    - ABI44_0_0React-Core/DevSupport
+    - ABI44_0_0ReactCommon
+    - ABI44_0_0UMAppLoader
+    - ABI44_0_0UMTaskManagerInterface
+    - Amplitude
+    - Analytics
+    - AppAuth
+    - Branch
+    - EXBranch
+    - EXGL_CPP
+    - FBAudienceNetwork
+    - FBSDKCoreKit
+    - Google-Maps-iOS-Utils
+    - Google-Mobile-Ads-SDK
+    - GoogleMaps
+    - GoogleSignIn
+    - JKBigInteger
+    - lottie-ios
+    - RCT-Folly
+  - ABI44_0_0ExpoKit/ExpoOptional (44.0.0):
+    - ABI44_0_0ExpoKit/Expo
+  - ABI44_0_0ExpoLinearGradient (11.0.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0ExpoLocalization (12.0.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0ExpoModulesCore (0.6.0):
+    - ABI44_0_0React-Core
+    - ABI44_0_0ReactCommon/turbomodule/core
+  - ABI44_0_0ExpoModulesProvider (44):
+    - ABI44_0_0EXClipboard
+    - ABI44_0_0ExpoCellular
+    - ABI44_0_0ExpoHaptics
+    - ABI44_0_0ExpoLinearGradient
+    - ABI44_0_0ExpoLocalization
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0ExpoSystemUI
+    - ABI44_0_0EXScreenOrientation
+    - ABI44_0_0EXTrackingTransparency
+    - ABI44_0_0EXUpdates
+  - ABI44_0_0ExpoSystemUI (1.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXPrint (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXRandom (12.1.0):
+    - ABI44_0_0React-Core
+  - ABI44_0_0EXScreenCapture (4.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXScreenOrientation (4.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0React-Core
+  - ABI44_0_0EXSecureStore (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXSegment (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - Analytics (= 4.0.4)
+  - ABI44_0_0EXSensors (11.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXSharing (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXSMS (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXSpeech (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXSplashScreen (0.14.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0React-Core
+  - ABI44_0_0EXSQLite (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXStoreReview (5.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXStructuredHeaders (2.1.0)
+  - ABI44_0_0EXTaskManager (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0UMAppLoader
+    - ABI44_0_0UMTaskManagerInterface
+  - ABI44_0_0EXTrackingTransparency (2.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXUpdates (0.11.0):
+    - ABI44_0_0EXManifests
+    - ABI44_0_0ExpoModulesCore
+    - ABI44_0_0EXStructuredHeaders
+    - ABI44_0_0EXUpdatesInterface
+    - ABI44_0_0React-Core
+  - ABI44_0_0EXUpdatesInterface (0.5.0)
+  - ABI44_0_0EXVideoThumbnails (6.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0EXWebBrowser (10.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0FBLazyVector (0.64.3)
+  - ABI44_0_0FBReactNativeSpec (0.64.3):
+    - ABI44_0_0RCTRequired (= 0.64.3)
+    - ABI44_0_0RCTTypeSafety (= 0.64.3)
+    - ABI44_0_0React-Core (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0lottie-react-native (5.0.1):
+    - ABI44_0_0React-Core
+    - lottie-ios (~> 3.2.3)
+  - ABI44_0_0RCTRequired (0.64.3)
+  - ABI44_0_0RCTTypeSafety (0.64.3):
+    - ABI44_0_0FBLazyVector (= 0.64.3)
+    - ABI44_0_0RCTRequired (= 0.64.3)
+    - ABI44_0_0React-Core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React (0.64.3):
+    - ABI44_0_0React-Core (= 0.64.3)
+    - ABI44_0_0React-Core/DevSupport (= 0.64.3)
+    - ABI44_0_0React-Core/RCTWebSocket (= 0.64.3)
+    - ABI44_0_0React-RCTActionSheet (= 0.64.3)
+    - ABI44_0_0React-RCTAnimation (= 0.64.3)
+    - ABI44_0_0React-RCTBlob (= 0.64.3)
+    - ABI44_0_0React-RCTImage (= 0.64.3)
+    - ABI44_0_0React-RCTLinking (= 0.64.3)
+    - ABI44_0_0React-RCTNetwork (= 0.64.3)
+    - ABI44_0_0React-RCTSettings (= 0.64.3)
+    - ABI44_0_0React-RCTText (= 0.64.3)
+    - ABI44_0_0React-RCTVibration (= 0.64.3)
+  - ABI44_0_0React-callinvoker (0.64.3)
+  - ABI44_0_0React-Core (0.64.3):
+    - ABI44_0_0React-Core/Default (= 0.64.3)
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/CoreModulesHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/Default (0.64.3):
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/DevSupport (0.64.3):
+    - ABI44_0_0React-Core/Default (= 0.64.3)
+    - ABI44_0_0React-Core/RCTWebSocket (= 0.64.3)
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-jsinspector (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTActionSheetHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTAnimationHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTBlobHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTImageHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTLinkingHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTNetworkHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTSettingsHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTTextHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTVibrationHeaders (0.64.3):
+    - ABI44_0_0React-Core/Default
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-Core/RCTWebSocket (0.64.3):
+    - ABI44_0_0React-Core/Default (= 0.64.3)
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsiexecutor (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0Yoga
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-CoreModules (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0RCTTypeSafety (= 0.64.3)
+    - ABI44_0_0React-Core/CoreModulesHeaders (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-RCTImage (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-cxxreact (0.64.3):
+    - ABI44_0_0React-callinvoker (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-jsinspector (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0React-runtimeexecutor (= 0.64.3)
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-jsi (0.64.3):
+    - ABI44_0_0React-jsi/Default (= 0.64.3)
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-jsi/Default (0.64.3):
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-jsiexecutor (0.64.3):
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-jsinspector (0.64.3)
+  - ABI44_0_0react-native-netinfo (7.1.3):
+    - ABI44_0_0React-Core
+  - ABI44_0_0react-native-pager-view (5.4.9):
+    - ABI44_0_0React-Core
+  - ABI44_0_0react-native-segmented-control (2.4.0):
+    - ABI44_0_0React-Core
+  - ABI44_0_0react-native-webview (11.15.0):
+    - ABI44_0_0React-Core
+  - ABI44_0_0React-perflogger (0.64.3)
+  - ABI44_0_0React-RCTActionSheet (0.64.3):
+    - ABI44_0_0React-Core/RCTActionSheetHeaders (= 0.64.3)
+  - ABI44_0_0React-RCTAnimation (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0RCTTypeSafety (= 0.64.3)
+    - ABI44_0_0React-Core/RCTAnimationHeaders (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-RCTBlob (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0React-Core/RCTBlobHeaders (= 0.64.3)
+    - ABI44_0_0React-Core/RCTWebSocket (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-RCTNetwork (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-RCTImage (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0RCTTypeSafety (= 0.64.3)
+    - ABI44_0_0React-Core/RCTImageHeaders (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-RCTNetwork (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-RCTLinking (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0React-Core/RCTLinkingHeaders (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+  - ABI44_0_0React-RCTNetwork (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0RCTTypeSafety (= 0.64.3)
+    - ABI44_0_0React-Core/RCTNetworkHeaders (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-RCTSettings (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0RCTTypeSafety (= 0.64.3)
+    - ABI44_0_0React-Core/RCTSettingsHeaders (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-RCTText (0.64.3):
+    - ABI44_0_0React-Core/RCTTextHeaders (= 0.64.3)
+  - ABI44_0_0React-RCTVibration (0.64.3):
+    - ABI44_0_0FBReactNativeSpec (= 0.64.3)
+    - ABI44_0_0React-Core/RCTVibrationHeaders (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0React-runtimeexecutor (0.64.3):
+    - ABI44_0_0React-jsi (= 0.64.3)
+  - ABI44_0_0ReactCommon (0.64.3):
+    - ABI44_0_0ReactCommon/turbomodule (= 0.64.3)
+  - ABI44_0_0ReactCommon/turbomodule (0.64.3):
+    - ABI44_0_0React-callinvoker (= 0.64.3)
+    - ABI44_0_0React-Core (= 0.64.3)
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/samples (= 0.64.3)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0ReactCommon/turbomodule/core (0.64.3):
+    - ABI44_0_0React-callinvoker (= 0.64.3)
+    - ABI44_0_0React-Core (= 0.64.3)
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0ReactCommon/turbomodule/samples (0.64.3):
+    - ABI44_0_0React-callinvoker (= 0.64.3)
+    - ABI44_0_0React-Core (= 0.64.3)
+    - ABI44_0_0React-cxxreact (= 0.64.3)
+    - ABI44_0_0React-jsi (= 0.64.3)
+    - ABI44_0_0React-perflogger (= 0.64.3)
+    - ABI44_0_0ReactCommon/turbomodule/core (= 0.64.3)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2020.01.13.00)
+  - ABI44_0_0RNGestureHandler (2.0.0):
+    - ABI44_0_0React-Core
+  - ABI44_0_0RNReanimated (2.2.0):
+    - ABI44_0_0RCTRequired
+    - ABI44_0_0RCTTypeSafety
+    - ABI44_0_0React
+    - ABI44_0_0React-callinvoker
+    - ABI44_0_0React-Core
+    - ABI44_0_0React-Core/DevSupport
+    - ABI44_0_0React-Core/RCTWebSocket
+    - ABI44_0_0React-CoreModules
+    - ABI44_0_0React-cxxreact
+    - ABI44_0_0React-jsi
+    - ABI44_0_0React-jsiexecutor
+    - ABI44_0_0React-jsinspector
+    - ABI44_0_0React-RCTActionSheet
+    - ABI44_0_0React-RCTAnimation
+    - ABI44_0_0React-RCTBlob
+    - ABI44_0_0React-RCTImage
+    - ABI44_0_0React-RCTLinking
+    - ABI44_0_0React-RCTNetwork
+    - ABI44_0_0React-RCTSettings
+    - ABI44_0_0React-RCTText
+    - ABI44_0_0React-RCTVibration
+    - ABI44_0_0ReactCommon/turbomodule/core
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - glog
+    - RCT-Folly
+    - Yoga
+  - ABI44_0_0RNScreens (3.8.0):
+    - ABI44_0_0React-Core
+    - ABI44_0_0React-RCTImage
+  - ABI44_0_0stripe-react-native (0.2.3):
+    - ABI44_0_0React-Core
+    - Stripe (~> 21.9.0)
+  - ABI44_0_0UMAppLoader (3.0.0)
+  - ABI44_0_0UMTaskManagerInterface (7.1.0):
+    - ABI44_0_0ExpoModulesCore
+  - ABI44_0_0Yoga (1.14.0)
   - Amplitude (6.0.0)
   - Analytics (4.0.4)
   - AppAuth (1.4.0):
@@ -2815,6 +3419,116 @@ DEPENDENCIES:
   - ABI43_0_0UMAppLoader (from `./versioned/sdk43/UMAppLoader`)
   - ABI43_0_0UMTaskManagerInterface (from `./versioned/sdk43/UMTaskManagerInterface`)
   - ABI43_0_0Yoga (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/yoga`)
+  - ABI44_0_0EXAdsAdMob (from `./versioned/sdk44/EXAdsAdMob`)
+  - ABI44_0_0EXAdsFacebook (from `./versioned/sdk44/EXAdsFacebook`)
+  - ABI44_0_0EXAmplitude (from `./versioned/sdk44/EXAmplitude`)
+  - ABI44_0_0EXAppAuth (from `./versioned/sdk44/EXAppAuth`)
+  - ABI44_0_0EXAppleAuthentication (from `./versioned/sdk44/EXAppleAuthentication`)
+  - ABI44_0_0EXApplication (from `./versioned/sdk44/EXApplication`)
+  - ABI44_0_0EXAV (from `./versioned/sdk44/EXAV`)
+  - ABI44_0_0EXBackgroundFetch (from `./versioned/sdk44/EXBackgroundFetch`)
+  - ABI44_0_0EXBarCodeScanner (from `./versioned/sdk44/EXBarCodeScanner`)
+  - ABI44_0_0EXBattery (from `./versioned/sdk44/EXBattery`)
+  - ABI44_0_0EXBlur (from `./versioned/sdk44/EXBlur`)
+  - ABI44_0_0EXBrightness (from `./versioned/sdk44/EXBrightness`)
+  - ABI44_0_0EXCalendar (from `./versioned/sdk44/EXCalendar`)
+  - ABI44_0_0EXCamera (from `./versioned/sdk44/EXCamera`)
+  - ABI44_0_0EXClipboard (from `./versioned/sdk44/EXClipboard`)
+  - ABI44_0_0EXConstants (from `./versioned/sdk44/EXConstants`)
+  - ABI44_0_0EXContacts (from `./versioned/sdk44/EXContacts`)
+  - ABI44_0_0EXCrypto (from `./versioned/sdk44/EXCrypto`)
+  - ABI44_0_0EXDevice (from `./versioned/sdk44/EXDevice`)
+  - ABI44_0_0EXDocumentPicker (from `./versioned/sdk44/EXDocumentPicker`)
+  - ABI44_0_0EXErrorRecovery (from `./versioned/sdk44/EXErrorRecovery`)
+  - ABI44_0_0EXFacebook (from `./versioned/sdk44/EXFacebook`)
+  - ABI44_0_0EXFaceDetector (from `./versioned/sdk44/EXFaceDetector`)
+  - ABI44_0_0EXFileSystem (from `./versioned/sdk44/EXFileSystem`)
+  - ABI44_0_0EXFirebaseAnalytics (from `./versioned/sdk44/EXFirebaseAnalytics`)
+  - ABI44_0_0EXFirebaseCore (from `./versioned/sdk44/EXFirebaseCore`)
+  - ABI44_0_0EXFont (from `./versioned/sdk44/EXFont`)
+  - ABI44_0_0EXGL (from `./versioned/sdk44/EXGL`)
+  - ABI44_0_0EXGoogleSignIn (from `./versioned/sdk44/EXGoogleSignIn`)
+  - ABI44_0_0EXImageLoader (from `./versioned/sdk44/EXImageLoader`)
+  - ABI44_0_0EXImageManipulator (from `./versioned/sdk44/EXImageManipulator`)
+  - ABI44_0_0EXImagePicker (from `./versioned/sdk44/EXImagePicker`)
+  - ABI44_0_0EXJSONUtils (from `./versioned/sdk44/EXJSONUtils`)
+  - ABI44_0_0EXKeepAwake (from `./versioned/sdk44/EXKeepAwake`)
+  - ABI44_0_0EXLocalAuthentication (from `./versioned/sdk44/EXLocalAuthentication`)
+  - ABI44_0_0EXLocation (from `./versioned/sdk44/EXLocation`)
+  - ABI44_0_0EXMailComposer (from `./versioned/sdk44/EXMailComposer`)
+  - ABI44_0_0EXManifests (from `./versioned/sdk44/EXManifests`)
+  - ABI44_0_0EXMediaLibrary (from `./versioned/sdk44/EXMediaLibrary`)
+  - ABI44_0_0EXNetwork (from `./versioned/sdk44/EXNetwork`)
+  - ABI44_0_0EXNotifications (from `./versioned/sdk44/EXNotifications`)
+  - ABI44_0_0EXPermissions (from `./versioned/sdk44/EXPermissions`)
+  - ABI44_0_0Expo (from `./versioned/sdk44/Expo`)
+  - ABI44_0_0ExpoCellular (from `./versioned/sdk44/ExpoCellular`)
+  - ABI44_0_0ExpoHaptics (from `./versioned/sdk44/ExpoHaptics`)
+  - ABI44_0_0ExpoKit/Expo (from `./versioned-react-native/ABI44_0_0/Expo/ExpoKit`)
+  - ABI44_0_0ExpoKit/ExpoOptional (from `./versioned-react-native/ABI44_0_0/Expo/ExpoKit`)
+  - ABI44_0_0ExpoLinearGradient (from `./versioned/sdk44/ExpoLinearGradient`)
+  - ABI44_0_0ExpoLocalization (from `./versioned/sdk44/ExpoLocalization`)
+  - ABI44_0_0ExpoModulesCore (from `./versioned/sdk44/ExpoModulesCore`)
+  - ABI44_0_0ExpoModulesProvider (from `./versioned/sdk44/ExpoModulesProvider`)
+  - ABI44_0_0ExpoSystemUI (from `./versioned/sdk44/ExpoSystemUI`)
+  - ABI44_0_0EXPrint (from `./versioned/sdk44/EXPrint`)
+  - ABI44_0_0EXRandom (from `./versioned/sdk44/EXRandom`)
+  - ABI44_0_0EXScreenCapture (from `./versioned/sdk44/EXScreenCapture`)
+  - ABI44_0_0EXScreenOrientation (from `./versioned/sdk44/EXScreenOrientation`)
+  - ABI44_0_0EXSecureStore (from `./versioned/sdk44/EXSecureStore`)
+  - ABI44_0_0EXSegment (from `./versioned/sdk44/EXSegment`)
+  - ABI44_0_0EXSensors (from `./versioned/sdk44/EXSensors`)
+  - ABI44_0_0EXSharing (from `./versioned/sdk44/EXSharing`)
+  - ABI44_0_0EXSMS (from `./versioned/sdk44/EXSMS`)
+  - ABI44_0_0EXSpeech (from `./versioned/sdk44/EXSpeech`)
+  - ABI44_0_0EXSplashScreen (from `./versioned/sdk44/EXSplashScreen`)
+  - ABI44_0_0EXSQLite (from `./versioned/sdk44/EXSQLite`)
+  - ABI44_0_0EXStoreReview (from `./versioned/sdk44/EXStoreReview`)
+  - ABI44_0_0EXStructuredHeaders (from `./versioned/sdk44/EXStructuredHeaders`)
+  - ABI44_0_0EXTaskManager (from `./versioned/sdk44/EXTaskManager`)
+  - ABI44_0_0EXTrackingTransparency (from `./versioned/sdk44/EXTrackingTransparency`)
+  - ABI44_0_0EXUpdates (from `./versioned/sdk44/EXUpdates`)
+  - ABI44_0_0EXUpdatesInterface (from `./versioned/sdk44/EXUpdatesInterface`)
+  - ABI44_0_0EXVideoThumbnails (from `./versioned/sdk44/EXVideoThumbnails`)
+  - ABI44_0_0EXWebBrowser (from `./versioned/sdk44/EXWebBrowser`)
+  - ABI44_0_0FBLazyVector (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/FBLazyVector`)
+  - ABI44_0_0FBReactNativeSpec (from `./versioned-react-native/ABI44_0_0/ReactNative/React/FBReactNativeSpec`)
+  - ABI44_0_0lottie-react-native (from `./vendored/sdk44/lottie-react-native`)
+  - ABI44_0_0RCTRequired (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/RCTRequired`)
+  - ABI44_0_0RCTTypeSafety (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/TypeSafety`)
+  - ABI44_0_0React (from `./versioned-react-native/ABI44_0_0/ReactNative/`)
+  - ABI44_0_0React-callinvoker (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/callinvoker`)
+  - ABI44_0_0React-Core (from `./versioned-react-native/ABI44_0_0/ReactNative/`)
+  - ABI44_0_0React-Core/DevSupport (from `./versioned-react-native/ABI44_0_0/ReactNative/`)
+  - ABI44_0_0React-Core/RCTWebSocket (from `./versioned-react-native/ABI44_0_0/ReactNative/`)
+  - ABI44_0_0React-CoreModules (from `./versioned-react-native/ABI44_0_0/ReactNative/React/CoreModules`)
+  - ABI44_0_0React-cxxreact (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/cxxreact`)
+  - ABI44_0_0React-jsi (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/jsi`)
+  - ABI44_0_0React-jsiexecutor (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/jsiexecutor`)
+  - ABI44_0_0React-jsinspector (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/jsinspector`)
+  - "ABI44_0_0react-native-netinfo (from `./vendored/sdk44/@react-native-community/netinfo`)"
+  - ABI44_0_0react-native-pager-view (from `./vendored/sdk44/react-native-pager-view`)
+  - "ABI44_0_0react-native-segmented-control (from `./vendored/sdk44/@react-native-segmented-control/segmented-control`)"
+  - ABI44_0_0react-native-webview (from `./vendored/sdk44/react-native-webview`)
+  - ABI44_0_0React-perflogger (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/reactperflogger`)
+  - ABI44_0_0React-RCTActionSheet (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/ActionSheetIOS`)
+  - ABI44_0_0React-RCTAnimation (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/NativeAnimation`)
+  - ABI44_0_0React-RCTBlob (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Blob`)
+  - ABI44_0_0React-RCTImage (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Image`)
+  - ABI44_0_0React-RCTLinking (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/LinkingIOS`)
+  - ABI44_0_0React-RCTNetwork (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Network`)
+  - ABI44_0_0React-RCTSettings (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Settings`)
+  - ABI44_0_0React-RCTText (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Text`)
+  - ABI44_0_0React-RCTVibration (from `./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Vibration`)
+  - ABI44_0_0React-runtimeexecutor (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/runtimeexecutor`)
+  - ABI44_0_0ReactCommon/turbomodule/core (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon`)
+  - ABI44_0_0RNGestureHandler (from `./vendored/sdk44/react-native-gesture-handler`)
+  - ABI44_0_0RNReanimated (from `./vendored/sdk44/react-native-reanimated`)
+  - ABI44_0_0RNScreens (from `./vendored/sdk44/react-native-screens`)
+  - "ABI44_0_0stripe-react-native (from `./vendored/sdk44/@stripe/stripe-react-native`)"
+  - ABI44_0_0UMAppLoader (from `./versioned/sdk44/UMAppLoader`)
+  - ABI44_0_0UMTaskManagerInterface (from `./versioned/sdk44/UMTaskManagerInterface`)
+  - ABI44_0_0Yoga (from `./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/yoga`)
   - Amplitude
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -3612,6 +4326,220 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk43/UMTaskManagerInterface"
   ABI43_0_0Yoga:
     :path: "./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/yoga"
+  ABI44_0_0EXAdsAdMob:
+    :path: "./versioned/sdk44/EXAdsAdMob"
+  ABI44_0_0EXAdsFacebook:
+    :path: "./versioned/sdk44/EXAdsFacebook"
+  ABI44_0_0EXAmplitude:
+    :path: "./versioned/sdk44/EXAmplitude"
+  ABI44_0_0EXAppAuth:
+    :path: "./versioned/sdk44/EXAppAuth"
+  ABI44_0_0EXAppleAuthentication:
+    :path: "./versioned/sdk44/EXAppleAuthentication"
+  ABI44_0_0EXApplication:
+    :path: "./versioned/sdk44/EXApplication"
+  ABI44_0_0EXAV:
+    :path: "./versioned/sdk44/EXAV"
+  ABI44_0_0EXBackgroundFetch:
+    :path: "./versioned/sdk44/EXBackgroundFetch"
+  ABI44_0_0EXBarCodeScanner:
+    :path: "./versioned/sdk44/EXBarCodeScanner"
+  ABI44_0_0EXBattery:
+    :path: "./versioned/sdk44/EXBattery"
+  ABI44_0_0EXBlur:
+    :path: "./versioned/sdk44/EXBlur"
+  ABI44_0_0EXBrightness:
+    :path: "./versioned/sdk44/EXBrightness"
+  ABI44_0_0EXCalendar:
+    :path: "./versioned/sdk44/EXCalendar"
+  ABI44_0_0EXCamera:
+    :path: "./versioned/sdk44/EXCamera"
+  ABI44_0_0EXClipboard:
+    :path: "./versioned/sdk44/EXClipboard"
+  ABI44_0_0EXConstants:
+    :path: "./versioned/sdk44/EXConstants"
+  ABI44_0_0EXContacts:
+    :path: "./versioned/sdk44/EXContacts"
+  ABI44_0_0EXCrypto:
+    :path: "./versioned/sdk44/EXCrypto"
+  ABI44_0_0EXDevice:
+    :path: "./versioned/sdk44/EXDevice"
+  ABI44_0_0EXDocumentPicker:
+    :path: "./versioned/sdk44/EXDocumentPicker"
+  ABI44_0_0EXErrorRecovery:
+    :path: "./versioned/sdk44/EXErrorRecovery"
+  ABI44_0_0EXFacebook:
+    :path: "./versioned/sdk44/EXFacebook"
+  ABI44_0_0EXFaceDetector:
+    :path: "./versioned/sdk44/EXFaceDetector"
+  ABI44_0_0EXFileSystem:
+    :path: "./versioned/sdk44/EXFileSystem"
+  ABI44_0_0EXFirebaseAnalytics:
+    :path: "./versioned/sdk44/EXFirebaseAnalytics"
+  ABI44_0_0EXFirebaseCore:
+    :path: "./versioned/sdk44/EXFirebaseCore"
+  ABI44_0_0EXFont:
+    :path: "./versioned/sdk44/EXFont"
+  ABI44_0_0EXGL:
+    :path: "./versioned/sdk44/EXGL"
+  ABI44_0_0EXGoogleSignIn:
+    :path: "./versioned/sdk44/EXGoogleSignIn"
+  ABI44_0_0EXImageLoader:
+    :path: "./versioned/sdk44/EXImageLoader"
+  ABI44_0_0EXImageManipulator:
+    :path: "./versioned/sdk44/EXImageManipulator"
+  ABI44_0_0EXImagePicker:
+    :path: "./versioned/sdk44/EXImagePicker"
+  ABI44_0_0EXJSONUtils:
+    :path: "./versioned/sdk44/EXJSONUtils"
+  ABI44_0_0EXKeepAwake:
+    :path: "./versioned/sdk44/EXKeepAwake"
+  ABI44_0_0EXLocalAuthentication:
+    :path: "./versioned/sdk44/EXLocalAuthentication"
+  ABI44_0_0EXLocation:
+    :path: "./versioned/sdk44/EXLocation"
+  ABI44_0_0EXMailComposer:
+    :path: "./versioned/sdk44/EXMailComposer"
+  ABI44_0_0EXManifests:
+    :path: "./versioned/sdk44/EXManifests"
+  ABI44_0_0EXMediaLibrary:
+    :path: "./versioned/sdk44/EXMediaLibrary"
+  ABI44_0_0EXNetwork:
+    :path: "./versioned/sdk44/EXNetwork"
+  ABI44_0_0EXNotifications:
+    :path: "./versioned/sdk44/EXNotifications"
+  ABI44_0_0EXPermissions:
+    :path: "./versioned/sdk44/EXPermissions"
+  ABI44_0_0Expo:
+    :path: "./versioned/sdk44/Expo"
+  ABI44_0_0ExpoCellular:
+    :path: "./versioned/sdk44/ExpoCellular"
+  ABI44_0_0ExpoHaptics:
+    :path: "./versioned/sdk44/ExpoHaptics"
+  ABI44_0_0ExpoKit:
+    :path: "./versioned-react-native/ABI44_0_0/Expo/ExpoKit"
+  ABI44_0_0ExpoLinearGradient:
+    :path: "./versioned/sdk44/ExpoLinearGradient"
+  ABI44_0_0ExpoLocalization:
+    :path: "./versioned/sdk44/ExpoLocalization"
+  ABI44_0_0ExpoModulesCore:
+    :path: "./versioned/sdk44/ExpoModulesCore"
+  ABI44_0_0ExpoModulesProvider:
+    :path: "./versioned/sdk44/ExpoModulesProvider"
+  ABI44_0_0ExpoSystemUI:
+    :path: "./versioned/sdk44/ExpoSystemUI"
+  ABI44_0_0EXPrint:
+    :path: "./versioned/sdk44/EXPrint"
+  ABI44_0_0EXRandom:
+    :path: "./versioned/sdk44/EXRandom"
+  ABI44_0_0EXScreenCapture:
+    :path: "./versioned/sdk44/EXScreenCapture"
+  ABI44_0_0EXScreenOrientation:
+    :path: "./versioned/sdk44/EXScreenOrientation"
+  ABI44_0_0EXSecureStore:
+    :path: "./versioned/sdk44/EXSecureStore"
+  ABI44_0_0EXSegment:
+    :path: "./versioned/sdk44/EXSegment"
+  ABI44_0_0EXSensors:
+    :path: "./versioned/sdk44/EXSensors"
+  ABI44_0_0EXSharing:
+    :path: "./versioned/sdk44/EXSharing"
+  ABI44_0_0EXSMS:
+    :path: "./versioned/sdk44/EXSMS"
+  ABI44_0_0EXSpeech:
+    :path: "./versioned/sdk44/EXSpeech"
+  ABI44_0_0EXSplashScreen:
+    :path: "./versioned/sdk44/EXSplashScreen"
+  ABI44_0_0EXSQLite:
+    :path: "./versioned/sdk44/EXSQLite"
+  ABI44_0_0EXStoreReview:
+    :path: "./versioned/sdk44/EXStoreReview"
+  ABI44_0_0EXStructuredHeaders:
+    :path: "./versioned/sdk44/EXStructuredHeaders"
+  ABI44_0_0EXTaskManager:
+    :path: "./versioned/sdk44/EXTaskManager"
+  ABI44_0_0EXTrackingTransparency:
+    :path: "./versioned/sdk44/EXTrackingTransparency"
+  ABI44_0_0EXUpdates:
+    :path: "./versioned/sdk44/EXUpdates"
+  ABI44_0_0EXUpdatesInterface:
+    :path: "./versioned/sdk44/EXUpdatesInterface"
+  ABI44_0_0EXVideoThumbnails:
+    :path: "./versioned/sdk44/EXVideoThumbnails"
+  ABI44_0_0EXWebBrowser:
+    :path: "./versioned/sdk44/EXWebBrowser"
+  ABI44_0_0FBLazyVector:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/FBLazyVector"
+  ABI44_0_0FBReactNativeSpec:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/React/FBReactNativeSpec"
+  ABI44_0_0lottie-react-native:
+    :path: "./vendored/sdk44/lottie-react-native"
+  ABI44_0_0RCTRequired:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/RCTRequired"
+  ABI44_0_0RCTTypeSafety:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/TypeSafety"
+  ABI44_0_0React:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/"
+  ABI44_0_0React-callinvoker:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/callinvoker"
+  ABI44_0_0React-Core:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/"
+  ABI44_0_0React-CoreModules:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/React/CoreModules"
+  ABI44_0_0React-cxxreact:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/cxxreact"
+  ABI44_0_0React-jsi:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/jsi"
+  ABI44_0_0React-jsiexecutor:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/jsiexecutor"
+  ABI44_0_0React-jsinspector:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/jsinspector"
+  ABI44_0_0react-native-netinfo:
+    :path: "./vendored/sdk44/@react-native-community/netinfo"
+  ABI44_0_0react-native-pager-view:
+    :path: "./vendored/sdk44/react-native-pager-view"
+  ABI44_0_0react-native-segmented-control:
+    :path: "./vendored/sdk44/@react-native-segmented-control/segmented-control"
+  ABI44_0_0react-native-webview:
+    :path: "./vendored/sdk44/react-native-webview"
+  ABI44_0_0React-perflogger:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/reactperflogger"
+  ABI44_0_0React-RCTActionSheet:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/ActionSheetIOS"
+  ABI44_0_0React-RCTAnimation:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/NativeAnimation"
+  ABI44_0_0React-RCTBlob:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Blob"
+  ABI44_0_0React-RCTImage:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Image"
+  ABI44_0_0React-RCTLinking:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/LinkingIOS"
+  ABI44_0_0React-RCTNetwork:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Network"
+  ABI44_0_0React-RCTSettings:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Settings"
+  ABI44_0_0React-RCTText:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Text"
+  ABI44_0_0React-RCTVibration:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/Libraries/Vibration"
+  ABI44_0_0React-runtimeexecutor:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/runtimeexecutor"
+  ABI44_0_0ReactCommon:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon"
+  ABI44_0_0RNGestureHandler:
+    :path: "./vendored/sdk44/react-native-gesture-handler"
+  ABI44_0_0RNReanimated:
+    :path: "./vendored/sdk44/react-native-reanimated"
+  ABI44_0_0RNScreens:
+    :path: "./vendored/sdk44/react-native-screens"
+  ABI44_0_0stripe-react-native:
+    :path: "./vendored/sdk44/@stripe/stripe-react-native"
+  ABI44_0_0UMAppLoader:
+    :path: "./versioned/sdk44/UMAppLoader"
+  ABI44_0_0UMTaskManagerInterface:
+    :path: "./versioned/sdk44/UMTaskManagerInterface"
+  ABI44_0_0Yoga:
+    :path: "./versioned-react-native/ABI44_0_0/ReactNative/ReactCommon/yoga"
   DoubleConversion:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAdsAdMob:
@@ -4153,6 +5081,113 @@ SPEC CHECKSUMS:
   ABI43_0_0UMAppLoader: ac4c403f59e691af683873f22b44a023155bac55
   ABI43_0_0UMTaskManagerInterface: af977f83f0ab2c68d8023174a7d542a8cf465351
   ABI43_0_0Yoga: b4a69fd97272b10eb433c11dd8bb2e571e311e36
+  ABI44_0_0EXAdsAdMob: ab9424885c5810408f054369c49fd9d495bfa1e2
+  ABI44_0_0EXAdsFacebook: 46b859638bd86cd89c52ac4012f845173b2d5d2c
+  ABI44_0_0EXAmplitude: 54a07b781b2ca42f1238cd4f0557ce8a8e4babc4
+  ABI44_0_0EXAppAuth: 4227232bac35ce5fb83ce7368b7193cbc328d853
+  ABI44_0_0EXAppleAuthentication: ac97f6712c6cf0307429a60b8cb5fbae924e0c94
+  ABI44_0_0EXApplication: 0cf35b6e74d4ed386669f980c2792469b0da7134
+  ABI44_0_0EXAV: 5cd9e75c8eb1d235cd3b68df54e540c1f3d28f2f
+  ABI44_0_0EXBackgroundFetch: e10e012d76f3bf60221baee205af280021756ac8
+  ABI44_0_0EXBarCodeScanner: 45d055d24ef28498eb650f68dcc42364ce66dd17
+  ABI44_0_0EXBattery: 026832d4fedc0e11ac1e244c627005200e52f25a
+  ABI44_0_0EXBlur: 95266725be6c818d0fc6d4ae6aac7923364f84af
+  ABI44_0_0EXBrightness: 46a7d81f5e1d0cad45d1f7f0fce53c1559883e43
+  ABI44_0_0EXCalendar: 09f278b44b43b1e99aa4b682d86652aa89525375
+  ABI44_0_0EXCamera: d0ef7090f45deb6cdb57b57ee412bf557d436258
+  ABI44_0_0EXClipboard: 69e52275a831e5e28697a1e4654aa45e928753f2
+  ABI44_0_0EXConstants: baf967f4fe1ce0b1211d4a0b8aa167bcb074fdc9
+  ABI44_0_0EXContacts: d6d5dbed0be64d4359fc0e773451c36092ada7ef
+  ABI44_0_0EXCrypto: 55fa1dde7b1a06c57f4f15b081480db80bc2e301
+  ABI44_0_0EXDevice: 820c25e48d5d5095ff2e933ccf5804d0b61b9805
+  ABI44_0_0EXDocumentPicker: 2f44c3f7471b1037d99f2351a38e52fe2823e48c
+  ABI44_0_0EXErrorRecovery: 5a9aebeb51094745ed76e5884403fa95843158a3
+  ABI44_0_0EXFacebook: 250a8861b5595dba89274430a2a79c55f4349c8c
+  ABI44_0_0EXFaceDetector: 758684c31b0f1d3fbabd8ef021275fa572831d57
+  ABI44_0_0EXFileSystem: 8851accf803de4620382a4792e063e13401fa096
+  ABI44_0_0EXFirebaseAnalytics: e1526e142288866933df56d1210e581401f47bdb
+  ABI44_0_0EXFirebaseCore: 71e7971c3efee849763872d5cc408d71ad98d6b6
+  ABI44_0_0EXFont: f15610e90a3268d2c36891027e0beb1d92dd35e1
+  ABI44_0_0EXGL: b15eda8a592f7b6cf1d4da5249944fbaa11d1224
+  ABI44_0_0EXGoogleSignIn: b76027abc85daeed8762205bfb178b83f4727cbe
+  ABI44_0_0EXImageLoader: 2306d505b86c36e37bb91e5320f637878fab7b85
+  ABI44_0_0EXImageManipulator: 9082df3f3e55d54aebc168f1678ceed50232e62c
+  ABI44_0_0EXImagePicker: a3df05cad8d1e662a1efdb2e4e0f552cdde7156c
+  ABI44_0_0EXJSONUtils: f0524eef24e68b3734ff152209556dbb16f0929f
+  ABI44_0_0EXKeepAwake: ce162e05c50f61db691d770cbdaaaeab5566263d
+  ABI44_0_0EXLocalAuthentication: 522a60d61341c8f64288096d2ec55283834c95f2
+  ABI44_0_0EXLocation: 632dd86d6aaf5be6765a6b2d993d288652df47bd
+  ABI44_0_0EXMailComposer: 0334888491f3a88a4ad55ae41e42b47995c223f1
+  ABI44_0_0EXManifests: b8ba13d60c4ad376f6bcf5091c6ade1ee0c8522f
+  ABI44_0_0EXMediaLibrary: 31a794fe8cce88ce30b4188eb598e6fd01fe45ff
+  ABI44_0_0EXNetwork: 02457d64b391cea09dd6d39b58481a4f26449d72
+  ABI44_0_0EXNotifications: c5c65a2a2c69063c0a3f15175afd4a2fc058d3e8
+  ABI44_0_0EXPermissions: 32a31e9d71031bacc415c228f59691e5fa8951b1
+  ABI44_0_0Expo: e45569be42bf2d520b942880591eeeabdcaa0053
+  ABI44_0_0ExpoCellular: 3e8fc3b142ae7f31ddb69e69edf199112faf0770
+  ABI44_0_0ExpoHaptics: 2f68632330f572a21bdb4e0019c55549ab0a6be2
+  ABI44_0_0ExpoKit: f45a116c8936e10db376b5379795f5fad74d38dc
+  ABI44_0_0ExpoLinearGradient: 936a89231f2b1ca7c96099ca9afc02213c86bdd0
+  ABI44_0_0ExpoLocalization: 4e89d45edff085969c2a682e92a20411563a507b
+  ABI44_0_0ExpoModulesCore: 950aefa03562dca8ad6f43aac2eaa5151daacf45
+  ABI44_0_0ExpoModulesProvider: d846fa12d0eb805c6936348ef37aec9badb6dfd5
+  ABI44_0_0ExpoSystemUI: 3204a1ceb312fa46e4416918c09efec144dcf170
+  ABI44_0_0EXPrint: 5fd704be99330f8b48fc46c77186a50d3f2ebef5
+  ABI44_0_0EXRandom: 794e26e2b508dfdbb99163cedb2b5055d78f997d
+  ABI44_0_0EXScreenCapture: 693a347666b68579f4a807fb9458694090e06c13
+  ABI44_0_0EXScreenOrientation: cd1efd869e5daed0f2f0ed50d9c30d1e5b42e9bd
+  ABI44_0_0EXSecureStore: da939eb0c7c62eab62f80abd33bcd6d764cc507e
+  ABI44_0_0EXSegment: 88759529653b51ed79700cba2eae6b240ec43d74
+  ABI44_0_0EXSensors: 01bd43de134f6ec06dca0ee31f8dde6eb976f686
+  ABI44_0_0EXSharing: 3512cfbde23fb1996eb253ca1153edade2a7b60f
+  ABI44_0_0EXSMS: ec90e0388aa8397ea34495d687672f323ced22f3
+  ABI44_0_0EXSpeech: b63711da4941b80c1f273c32c3d173664ceff13e
+  ABI44_0_0EXSplashScreen: a4b87ec6a1ccfcf1025ace8b45e70cdc41db882a
+  ABI44_0_0EXSQLite: 6ebae3d9d2b4c52080c5975bd7e13180cbdf1f9f
+  ABI44_0_0EXStoreReview: 142725f1ebdc599bc50aff52644cbf003a0086ec
+  ABI44_0_0EXStructuredHeaders: 722298dd39b6fbfdd4d0fb13dbb31177c321ba4d
+  ABI44_0_0EXTaskManager: cbebb7b881531a1e492e5ed39a8eac1adbd7fdc0
+  ABI44_0_0EXTrackingTransparency: b98c490c1a9f81b5d7587967fedc1c152a8b0724
+  ABI44_0_0EXUpdates: 883b06cfd9a844a7c67594e68bf7b3288df4c157
+  ABI44_0_0EXUpdatesInterface: 95784c144941ed282da4a21b1a5b8e9330de0364
+  ABI44_0_0EXVideoThumbnails: 002faa2841bf70244f766330630fd6cf3b2f1f76
+  ABI44_0_0EXWebBrowser: 5f4a34c63ea57bac9c4f2fabc0db4cda7f41203c
+  ABI44_0_0FBLazyVector: 4fc12a7db0b6f161e2882dcf0a0ca74a31a9558e
+  ABI44_0_0FBReactNativeSpec: ca24dad9fa568d8261116ca16071a496a8a64b54
+  ABI44_0_0lottie-react-native: 6d76733dbbb0d4dcde1c98d88a2b5ab91e5d835e
+  ABI44_0_0RCTRequired: 1a8fac6ea7a9bcc91d362a05037cfdd3c7b52b5c
+  ABI44_0_0RCTTypeSafety: 0a6636140c832ed98fcf20eb09d34a26f618b41f
+  ABI44_0_0React: 702a6f0378cec107db9655d2234bf19c0f4c36fd
+  ABI44_0_0React-callinvoker: 78093d78fd956e932c34bee9efba34e31c238c9a
+  ABI44_0_0React-Core: d4bef903c8ba37a511a56886aac35569eaa9d4fa
+  ABI44_0_0React-CoreModules: bceb581f8cae21dc5393ce874f86ba5b2e937a88
+  ABI44_0_0React-cxxreact: d91e3eab6c66928250b65f6b351d2577a1291f9e
+  ABI44_0_0React-jsi: dfe71fc71ee20db5a2c557f87d99ba7845cbd125
+  ABI44_0_0React-jsiexecutor: 8222779637f61d188d333d78ae09c546f74e47d7
+  ABI44_0_0React-jsinspector: 2145869a3fdeeb44dc632a563a3cba332dcf0c9c
+  ABI44_0_0react-native-netinfo: e40f6a99494a460814af6b2dd7ffd1be2effd0d2
+  ABI44_0_0react-native-pager-view: 285de72b6b60da4b73689c9901a519c961428298
+  ABI44_0_0react-native-segmented-control: 44f3c3633829edf17d4a559d6bef0698c922062f
+  ABI44_0_0react-native-webview: 45654397d942312456b5d07d331ee9b2f539ac98
+  ABI44_0_0React-perflogger: 2a951471d4c861218a24111a0f570d22b6cb4107
+  ABI44_0_0React-RCTActionSheet: f665f8468e98a71777705215309683580b0f7051
+  ABI44_0_0React-RCTAnimation: 15f26c0f1ca6fbe11f3daaa67216a0ee626951b4
+  ABI44_0_0React-RCTBlob: d98a805ce3a161fbbb8944bd7053cfbaf3f1a748
+  ABI44_0_0React-RCTImage: 8efbac6d7ee0c4a068f571da39918592630b80cd
+  ABI44_0_0React-RCTLinking: 5a6c295e33d2d45f7b2f84c30236655488401576
+  ABI44_0_0React-RCTNetwork: 54ff03766eed57e2e0baecbeacebf2c90b381f72
+  ABI44_0_0React-RCTSettings: f7b75c05c612da3ca94e82071eef2f479788afa7
+  ABI44_0_0React-RCTText: 94b27e12f3acc8ab377796135f763b493df3c566
+  ABI44_0_0React-RCTVibration: 244d005cb3b6b2cf2b42da84d3821d2e9f063b92
+  ABI44_0_0React-runtimeexecutor: e896ce310401b7a6c55c8e9ebd05d329425704f0
+  ABI44_0_0ReactCommon: 57cd9920705425d6d7979326c5f755a7134612d0
+  ABI44_0_0RNGestureHandler: 98d12054cfc7ce6a2d802f0dc2665743c938734c
+  ABI44_0_0RNReanimated: 213c8dca41a4b4acb2ee5de1c66dea578d88ea1a
+  ABI44_0_0RNScreens: 83671ebe06466fcd2be9572bdef6d22518c11cb5
+  ABI44_0_0stripe-react-native: a28782c19ddabd9a3c901d9b2eb964e8d8ab7d68
+  ABI44_0_0UMAppLoader: d00dfac0be21e65771e9c30abf4c2fefe0afa06f
+  ABI44_0_0UMTaskManagerInterface: 8f5418a6ec14ed0eecc7c296ded84e9da8571ed1
+  ABI44_0_0Yoga: 9fa3e0557a149f21b07fa12422fa051ed12f1437
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
