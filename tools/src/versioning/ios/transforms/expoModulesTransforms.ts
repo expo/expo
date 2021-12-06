@@ -69,13 +69,13 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
       {
         // Prefixes Objective-C name of the Swift modules provider.
-        paths: ['EXNativeModulesProxy.m'],
+        paths: ['EXNativeModulesProxy.mm'],
         find: 'NSClassFromString(@"ExpoModulesProvider")',
         replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`
       },
       {
         // Prefixes Objective-C name of the Swift modules provider.
-        paths: ['EXNativeModulesProxy.m'],
+        paths: ['EXNativeModulesProxy.mm'],
         find: '[NSString stringWithFormat:@"%@.ExpoModulesProvider"',
         replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`
       },
