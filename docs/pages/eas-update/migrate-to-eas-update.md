@@ -34,21 +34,18 @@ You'll need to make the following changes to your project:
    eas update:configure
    ```
 
-After this command, you should have a new field in your app config (**app.json**/**app.config.js**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
+   After this command, you should have a new field in your app config (**app.json**/**app.config.js**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
 
-3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**).
+3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**). Remove the `expo.sdkVersion` property, then add a `expo.runtimeVersion` property with the value `{ "policy": "sdkVersion" }`.
 
-- Remove the `expo.sdkVersion` property, then add a `expo.runtimeVersion` property with the value `{ "policy": "sdkVersion" }`.
-
-  ```jsx
-  {
-    "expo": {
-      ~~"sdkVersion": "44.0.0",~~
-      "runtimeVersion": {
-        "policy": "sdkVersion"
-      }
-  }
-  ```
+   ```jsx
+   {
+     "expo": {
+       "runtimeVersion": {
+         "policy": "sdkVersion"
+       }
+   }
+   ```
 
 4. To allow updates to apply to builds built with EAS, update your EAS config (**eas.json**) to have channel names. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"`.
 
