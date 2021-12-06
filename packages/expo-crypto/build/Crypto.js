@@ -31,7 +31,7 @@ function assertEncoding(encoding) {
  * You can specify the returned string format as one of `CryptoEncoding`. By default, the resolved value will be formatted as a `HEX` string.
  * On web, this method can only be called from a secure origin (https) otherwise an error will be thrown.
  *
- * @param algorithm Transforms a value into a fixed-size hash (usually shorter than the initial value).
+ * @param algorithm The cryptographic hash function to use to transform a block of data into a fixed-size output.
  * @param data The value that will be used to generate a digest.
  * @param options Format of the digest string. Defaults to: `CryptoDigestOptions.HEX`.
  * @return Return a Promise which fulfills with a value representing the hashed input.

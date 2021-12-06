@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
 import * as Crypto from 'expo-crypto';
 ```
 
-<ApiSection packageName="expo-crypto" apiName="Crypto" />
+<APISection packageName="expo-crypto" apiName="Crypto" />
 
 ## Error Codes
 
