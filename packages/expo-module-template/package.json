@@ -4,10 +4,7 @@
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "lint": "eslint ."
-  },
+  "scripts": {},
   "keywords": [
     "react-native",
     "expo",
