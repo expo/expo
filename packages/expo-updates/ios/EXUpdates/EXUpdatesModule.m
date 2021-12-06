@@ -28,14 +28,16 @@ EX_EXPORT_MODULE(ExpoUpdates);
   if (!_updatesService.isStarted) {
     return @{
       @"isEnabled": @(NO),
-      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion),
+      @"releaseChannel": _updatesService.config.releaseChannel
     };
   }
   EXUpdatesUpdate *launchedUpdate = _updatesService.launchedUpdate;
   if (!launchedUpdate) {
     return @{
       @"isEnabled": @(NO),
-      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion),
+      @"releaseChannel": _updatesService.config.releaseChannel
     };
   } else {
     return @{
