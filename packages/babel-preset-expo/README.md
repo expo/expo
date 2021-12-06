@@ -71,7 +71,7 @@ This option allows specifying a custom import source for importing functions.
   'babel-preset-expo',
   {
     jsxRuntime: 'automatic',
-    importSource: 'react',
+    jsxImportSource: 'react',
   },
 ];
 ```
