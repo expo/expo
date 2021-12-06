@@ -332,7 +332,7 @@ const formatPlatformName = (name: string) => {
     : capitalize(name);
 };
 
-export const getPlatformTags = (comment?: CommentData) => {
+export const getPlatformTags = (comment?: CommentData, breakLine: boolean = true) => {
   const platforms = getAllTagData('platform', comment);
   return platforms?.length ? (
     <>
@@ -341,7 +341,7 @@ export const getPlatformTags = (comment?: CommentData) => {
           {formatPlatformName(platform.text)} Only
         </div>
       ))}
-      <br />
+      {breakLine && <br />}
     </>
   ) : null;
 };
@@ -396,7 +396,7 @@ export const CommentTextBlock = ({
       {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {includePlatforms && getPlatformTags(comment)}
+      {includePlatforms && getPlatformTags(comment, !withDash)}
       {shortText}
       {text}
       {seeText}

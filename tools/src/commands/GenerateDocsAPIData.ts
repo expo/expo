@@ -41,6 +41,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-checkbox': ['Checkbox.ts'],
   'expo-clipboard': ['Clipboard.ts'],
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
+  'expo-crypto': ['Crypto.ts'],
   'expo-document-picker': ['index.ts'],
   'expo-error-recovery': ['ErrorRecovery.ts'],
   'expo-face-detector': ['FaceDetector.ts'],
