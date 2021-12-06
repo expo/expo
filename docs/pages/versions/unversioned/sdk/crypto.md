@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-crypto'
 packageName: 'expo-crypto'
 ---
 
-import ApiSection from '~/components/plugins/ApiSection';
+import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
