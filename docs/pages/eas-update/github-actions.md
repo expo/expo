@@ -13,15 +13,19 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
 
    ```yaml
    name: update
-   on:
-     push:
-       branches: [production]
+   on: push
 
    jobs:
      update:
        name: EAS Update
        runs-on: ubuntu-latest
        steps:
+         - name: Check for EXPO_TOKEN
+           run: |
+             if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+               echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+               exit 1
+             fi
          - uses: actions/checkout@v2
          - uses: actions/setup-node@v1
            with:
@@ -43,8 +47,10 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
              key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
              restore-keys: |
                ${{ runner.os }}-yarn-
-         - run: yarn install
-         - run: eas branch:publish $(echo ${{ github.ref }} | sed 's|refs/heads/||') --message "${{ github.event.head_commit.message }}"
+         - name: Install dependencies
+           run: yarn install
+         - name: Publish update
+           run: eas branch:publish $(echo ${{ github.ref }} | sed 's|refs/heads/||') --message "${{ github.event.head_commit.message }}"
    ```
 
    In the code above, we set the action to run every time code is pushed to the "production" branch. In the `update` job, we set up Node, in addition to Expo's GitHub Action: `expo-github-action`. We then add a couple steps to cache any dependencies installed from the last run to speed this script up on subsequent runs. At the end, we install dependencies (`yarn install`), then create a branch on EAS, then publish the branch. The EAS branch will be named after the GitHub branch, and the message for the update will match the commit's message.
