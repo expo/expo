@@ -10,6 +10,7 @@ import com.facebook.react.uimanager.ViewManager
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
+import expo.modules.kotlin.ModulesProvider
 import expo.modules.random.RandomModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
@@ -98,7 +99,7 @@ class ExponentPackage : ReactPackage {
       registryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules)
     }
     if (registryAdapter == null) {
-      registryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules)
+      registryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules, ExperiencePackagePicker)
     }
     return registryAdapter
   }
@@ -214,9 +215,10 @@ class ExponentPackage : ReactPackage {
 
   private fun createDefaultModuleRegistryAdapterForPackages(
     packages: List<Package>,
-    singletonModules: List<SingletonModule>?
+    singletonModules: List<SingletonModule>?,
+    modulesProvider: ModulesProvider? = null
   ): ExpoModuleRegistryAdapter {
-    return ExpoModuleRegistryAdapter(ReactModuleRegistryProvider(packages, singletonModules))
+    return ExpoModuleRegistryAdapter(ReactModuleRegistryProvider(packages, singletonModules), modulesProvider)
   }
 
   companion object {

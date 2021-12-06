@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.utils.ScopedContext
 import host.exp.exponent.kernel.ExperienceKey
@@ -15,8 +16,8 @@ import versioned.host.exp.exponent.modules.universal.notifications.*
 import versioned.host.exp.exponent.modules.universal.sensors.*
 import java.lang.RuntimeException
 
-open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider?) :
-  ModuleRegistryAdapter(moduleRegistryProvider), ScopedModuleRegistryAdapter {
+open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider?, modulesProvider: ModulesProvider? = null) :
+  ModuleRegistryAdapter(moduleRegistryProvider, modulesProvider), ScopedModuleRegistryAdapter {
   override fun createNativeModules(
     scopedContext: ScopedContext,
     experienceKey: ExperienceKey,
