@@ -1,0 +1,6 @@
+module ABI44_0_0React {
+  umbrella "../../Public/ABI44_0_0React-Core/ABI44_0_0React"
+
+  export *
+  module * { export * }
+}
