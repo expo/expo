@@ -20,15 +20,19 @@ const pkg = require('expo-dev-launcher/package.json');
 
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
 const DEV_LAUNCHER_UPDATES_ANDROID_IMPORT = 'expo.modules.updates.UpdatesDevLauncherController';
-const DEV_LAUNCHER_ON_NEW_INTENT = `
-  @Override
-  public void onNewIntent(Intent intent) {
-      if (DevLauncherController.tryToHandleIntent(this, intent)) {
-         return;
-      }
-      super.onNewIntent(intent);
-  }
-`;
+const DEV_LAUNCHER_ON_NEW_INTENT = [
+  '',
+  '  @Override',
+  '  public void onNewIntent(Intent intent) {',
+  '    super.onNewIntent(intent);',
+  '  }',
+  '',
+].join('\n');
+const DEV_LAUNCHER_HANDLE_INTENT = [
+  '    if (DevLauncherController.tryToHandleIntent(this, intent)) {',
+  '      return;',
+  '    }',
+].join('\n');
 const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactActivityDelegate(this, () -> $1);`;
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
 const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
@@ -153,31 +157,34 @@ const withDevLauncherApplication: ConfigPlugin = (config) => {
   ]);
 };
 
+export function modifyJavaMainActivity(content: string): string {
+  content = addJavaImports(content, [DEV_LAUNCHER_ANDROID_IMPORT, 'android.content.Intent']);
+
+  if (!content.includes('onNewIntent')) {
+    const lines = content.split('\n');
+    const onCreateIndex = lines.findIndex((line) => line.includes('public class MainActivity'));
+
+    lines.splice(onCreateIndex + 1, 0, DEV_LAUNCHER_ON_NEW_INTENT);
+
+    content = lines.join('\n');
+  }
+  if (!content.includes(DEV_LAUNCHER_HANDLE_INTENT)) {
+    content = addLines(content, /super\.onNewIntent\(intent\)/, 0, [DEV_LAUNCHER_HANDLE_INTENT]);
+  }
+
+  if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
+    content = content.replace(
+      /(new ReactActivityDelegate(Wrapper)?(.|\s)*\}\)?);$/mu,
+      DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE
+    );
+  }
+  return content;
+}
+
 const withDevLauncherActivity: ConfigPlugin = (config) => {
   return withMainActivity(config, (config) => {
     if (config.modResults.language === 'java') {
-      let content = addJavaImports(config.modResults.contents, [
-        DEV_LAUNCHER_ANDROID_IMPORT,
-        'android.content.Intent',
-      ]);
-
-      if (!content.includes(DEV_LAUNCHER_ON_NEW_INTENT)) {
-        const lines = content.split('\n');
-        const onCreateIndex = lines.findIndex((line) => line.includes('public class MainActivity'));
-
-        lines.splice(onCreateIndex + 1, 0, DEV_LAUNCHER_ON_NEW_INTENT);
-
-        content = lines.join('\n');
-      }
-
-      if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
-        content = content.replace(
-          /(new ReactActivityDelegate(Wrapper)?(.|\s)*\}\)?);$/mu,
-          DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE
-        );
-      }
-
-      config.modResults.contents = content;
+      config.modResults.contents = modifyJavaMainActivity(config.modResults.contents);
     } else {
       WarningAggregator.addWarningAndroid(
         'expo-dev-launcher',
