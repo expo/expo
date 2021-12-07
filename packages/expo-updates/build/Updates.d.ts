@@ -14,6 +14,15 @@ export declare const updateId: string | null;
  */
 export declare const releaseChannel: string;
 /**
+ * The name of the channel currently configured in this standalone or bare app. For use
+ * when pointed at EAS servers
+ */
+export declare const channel: string | null;
+/**
+ * The native codes's runtime version.
+ */
+export declare const runtimeVersion: string | null;
+/**
  * @hidden
  */
 export declare const localAssets: LocalAssets;

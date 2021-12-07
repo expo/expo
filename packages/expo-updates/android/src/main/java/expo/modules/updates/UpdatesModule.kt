@@ -65,6 +65,8 @@ class UpdatesModule(
         }
         constants["isEnabled"] = updatesServiceLocal.configuration.isEnabled
         constants["releaseChannel"] = updatesServiceLocal.configuration.releaseChannel
+        constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
+        constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
         constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
       }
     } catch (e: Exception) {

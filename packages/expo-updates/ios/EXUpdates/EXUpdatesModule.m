@@ -46,6 +46,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
       @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
       @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
       @"releaseChannel": _updatesService.config.releaseChannel,
+      @"runtimeVersion": _updatesService.config.runtimeVersion ?: @"",
+      @"channel": _updatesService.config.requestHeaders[@"expo-channel-name"] ?: @"",
       @"localAssets": _updatesService.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
       @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
