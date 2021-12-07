@@ -11,7 +11,7 @@
     "expo-module": "expo-module"
   },
   "bin": {
-    "create-expo-module": "./build/create-expo-module.js"
+    "create-expo-module": "./bin/create-expo-module"
   },
   "repository": {
     "type": "git",

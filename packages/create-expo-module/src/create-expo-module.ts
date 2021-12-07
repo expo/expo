@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import spawnAsync from '@expo/spawn-async';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
