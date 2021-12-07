@@ -29,7 +29,7 @@ export default [
       ' - `"versionCode"` (or `true`) - `expo.android.versionCode` is bumped (e.g. `3` -> `4`).',
       ' - `false` - versions won\'t be bumped automatically (default)',
       '',
-      'In the case of a bare project, it also updates versions in native code. `expo.version` corresponds to `versionName` and `expo.android.versionCode` to `versionCode` in the `build.gradle`. Google Play uses these values to identify the app build, `versionName` is the version visible to users, whereas `versionCode` defines the version number. The combination of those needs to be unique, so you can bump either of them.',
+      'In the case of a bare project, it also updates versions in native code. `expo.version` corresponds to `versionName` and `expo.android.versionCode` to `versionCode` in the `build.gradle`. Google Play uses these values to identify the app build. `versionName` is a string representation of your app version and has no other purpose than to be shown to user - it could be for example `beta` or `1.2.3`. `versionCode` however is an integer that is used to indicate whether one version is more recent than another. It needs to be incremented for each submit, otherwise Google Play Store will reject the submission',
       '',
       `This feature is not intended for use with dynamic configuration (app.config.js). EAS CLI will throw an error if you don't use app.json.`,
     ],
