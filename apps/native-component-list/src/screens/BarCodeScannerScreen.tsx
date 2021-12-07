@@ -176,9 +176,21 @@ function BarcodeScannerExample() {
       <View style={styles.toolbar}>
         <Button color={BUTTON_COLOR} title="Direction" onPress={toggleType} />
         <Button color={BUTTON_COLOR} title="Orientation" onPress={toggleScreenOrientationState} />
-        <Button color={BUTTON_COLOR} title="Bounding box" onPress={toggleBoundingBox} />
-        <Button color={BUTTON_COLOR} title="Text" onPress={toggleText} />
-        <Button color={BUTTON_COLOR} title="Alerting" onPress={toggleAlertingAboutResult} />
+        <Button
+          title="Bounding box"
+          onPress={toggleBoundingBox}
+          color={state.showBoundingBox ? undefined : BUTTON_COLOR}
+        />
+        <Button
+          title="Text"
+          onPress={toggleText}
+          color={state.showText ? undefined : BUTTON_COLOR}
+        />
+        <Button
+          title="Alerting"
+          onPress={toggleAlertingAboutResult}
+          color={state.alerting ? undefined : BUTTON_COLOR}
+        />
       </View>
     </View>
   );
