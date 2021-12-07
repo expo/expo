@@ -13,22 +13,22 @@ const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
 const packageJson = require('../package.json');
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
-const cwd = process.env.INIT_CWD || process.cwd();
+const CWD = process.env.INIT_CWD || process.cwd();
 // Ignore some paths. Especially `package.json` as it is rendered
 // from `$package.json` file instead of the original one.
-const ignoredPaths = ['.DS_Store', 'build', 'node_modules', 'package.json'];
+const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
 /**
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
  * @param command An object from `commander`.
  */
-async function main(target, options, command) {
-    const targetDir = target ? path_1.default.join(cwd, target) : cwd;
+async function main(target, options) {
+    const targetDir = target ? path_1.default.join(CWD, target) : CWD;
     options.target = targetDir;
     await fs_extra_1.default.ensureDir(targetDir);
     const packagePath = options.source
-        ? path_1.default.join(cwd, options.source)
+        ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir);
     const files = await getFilesAsync(packagePath);
     const data = await askForSubstitutionDataAsync(targetDir, options);
@@ -69,7 +69,7 @@ async function getFilesAsync(root, dir = null) {
     const baseDir = dir ? path_1.default.join(root, dir) : root;
     for (const file of await fs_extra_1.default.readdir(baseDir)) {
         const relativePath = dir ? path_1.default.join(dir, file) : file;
-        if (ignoredPaths.includes(relativePath) || ignoredPaths.includes(file)) {
+        if (IGNORES_PATHS.includes(relativePath) || IGNORES_PATHS.includes(file)) {
             continue;
         }
         const fullPath = path_1.default.join(baseDir, file);
