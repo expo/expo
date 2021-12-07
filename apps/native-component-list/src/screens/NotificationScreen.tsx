@@ -75,7 +75,7 @@ export default class NotificationScreen extends React.Component<
           },
         },
       ])
-        .then((_category) => { })
+        .then((_category) => {})
         .catch((error) => console.warn('Could not have set notification category', error));
     }
   }
