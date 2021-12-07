@@ -9,21 +9,21 @@ export async function test(t) {
 
     // Get the newly set value.
     const value = await getAsync();
-    t.expect(value).toBeDefined();
+    t.expect(value.toUpperCase()).toBeDefined();
     t.expect(value).toBe(values[0]);
 
     // Toggle value again and ensure it's different.
     const nextValue = value === values[0] ? values[1] : values[0];
     await setAsync(nextValue);
     const mutated = await getAsync();
-    t.expect(mutated).toBe(nextValue);
+    t.expect(mutated.toUpperCase()).toBe(nextValue);
   }
   t.describe(`SystemUI.setBackgroundColorAsync()`, () => {
     t.it(`flips a value`, async () => {
       await flipValueAsync({
         getAsync: SystemUI.getBackgroundColorAsync,
         setAsync: SystemUI.setBackgroundColorAsync,
-        values: ['#ff0000', '#ffffff'],
+        values: ['#FF0000', '#FFFFFF'],
       });
     });
   });
