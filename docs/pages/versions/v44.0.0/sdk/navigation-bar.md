@@ -11,6 +11,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Properties are named after style properties; visibility, position, backgroundColor, borderColor, etc.
 
+The APIs in this package have no impact when "Gesture Navigation" is enabled on the Android device. There is currently no native Android API to detect if "Gesture Navigation" is enabled or not.
 
 <PlatformsSection android emulator />
 
