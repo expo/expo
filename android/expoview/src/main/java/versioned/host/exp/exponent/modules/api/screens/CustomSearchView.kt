@@ -5,7 +5,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 
-class CustomSearchView(context: Context?, fragment: Fragment) : SearchView(context!!) {
+class CustomSearchView(context: Context, fragment: Fragment) : SearchView(context) {
     /*
         CustomSearchView uses some variables from SearchView. They are listed below with links to documentation
         isIconified - https://developer.android.com/reference/android/widget/SearchView#setIconified(boolean)
