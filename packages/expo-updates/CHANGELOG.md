@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add error recovery manager on Android. ([#15220](https://github.com/expo/expo/pull/15220) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
