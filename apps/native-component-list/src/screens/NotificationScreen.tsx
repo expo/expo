@@ -1,8 +1,9 @@
+import * as Device from 'expo-device';
 import { Subscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { Alert, Platform, ScrollView, View } from 'react-native';
+import { Alert, Text, Platform, ScrollView, View } from 'react-native';
 
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 import HeadingText from '../components/HeadingText';
@@ -17,6 +18,7 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, (_data) => {
   console.log(BACKGROUND_TASK_SUCCESSFUL);
 });
 
+const remotePushSupported = Device.isDevice;
 export default class NotificationScreen extends React.Component<
   // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -73,7 +75,7 @@ export default class NotificationScreen extends React.Component<
           },
         },
       ])
-        .then((_category) => {})
+        .then((_category) => { })
         .catch((error) => console.warn('Could not have set notification category', error));
     }
   }
@@ -109,6 +111,12 @@ export default class NotificationScreen extends React.Component<
         />
 
         <HeadingText>Push Notifications</HeadingText>
+        {!remotePushSupported && (
+          <Text>
+            ⚠️ Remote push notifications are not supported in the simulator, the following tests
+            should warn accordingly.
+          </Text>
+        )}
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
         <BackgroundNotificationHandlingSection />
         <HeadingText>Badge Number</HeadingText>
