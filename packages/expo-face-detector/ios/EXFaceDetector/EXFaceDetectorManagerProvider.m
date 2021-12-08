@@ -3,6 +3,7 @@
 #import <EXFaceDetector/EXFaceDetectorManagerProvider.h>
 #import <EXFaceDetector/EXFaceDetectorManager.h>
 #import <ExpoModulesCore/EXFaceDetectorManagerProviderInterface.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @implementation EXFaceDetectorManagerProvider
 

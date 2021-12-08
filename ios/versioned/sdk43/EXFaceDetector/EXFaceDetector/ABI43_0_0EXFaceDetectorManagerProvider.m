@@ -3,6 +3,7 @@
 #import <ABI43_0_0EXFaceDetector/ABI43_0_0EXFaceDetectorManagerProvider.h>
 #import <ABI43_0_0EXFaceDetector/ABI43_0_0EXFaceDetectorManager.h>
 #import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXFaceDetectorManagerProviderInterface.h>
+#import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXDefines.h>
 
 @implementation ABI43_0_0EXFaceDetectorManagerProvider
 
