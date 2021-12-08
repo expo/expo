@@ -37,7 +37,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-// #define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
+ #define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
@@ -510,7 +510,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 {
   NSString *appIcon = @"";
   NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
-NSString *resourcePath = [[NSBundle mainBundle] URLForResource:appIconName withExtension:@"png"];
+  NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+  NSString *appIconPath = [[resourcePath stringByAppendingString:appIconName] stringByAppendingString:@".png"];
+  appIcon = [@"file://" stringByAppendingString:appIconPath];
 
   return appIcon;
 }
