@@ -46,7 +46,7 @@ PODS:
     - ExpoModulesCore
   - EXContacts (10.1.0):
     - ExpoModulesCore
-  - EXCrypto (10.1.0):
+  - EXCrypto (10.1.1):
     - ExpoModulesCore
   - EXDevice (4.1.0):
     - ExpoModulesCore
@@ -58,7 +58,7 @@ PODS:
     - ExpoModulesCore
     - FacebookSDK/CoreKit (= 9.2.0)
     - FacebookSDK/LoginKit (= 9.2.0)
-  - EXFaceDetector (11.1.0):
+  - EXFaceDetector (11.1.1):
     - ExpoModulesCore
     - GoogleMLKit/FaceDetection (= 2.1.0)
     - MLKitCommon (= 2.1.0)
@@ -75,7 +75,7 @@ PODS:
     - Firebase/Core (= 7.7.0)
   - EXFont (10.0.4):
     - ExpoModulesCore
-  - EXGL (11.1.0):
+  - EXGL (11.1.1):
     - EXGL_CPP
     - ExpoModulesCore
   - EXGL_CPP (11.1.0):
@@ -120,7 +120,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.1.0):
     - ExpoModulesCore
-  - Expo (44.0.0-beta.0):
+  - Expo (44.0.0-beta.1):
     - ExpoModulesCore
   - expo-dev-client (0.7.1):
     - EXManifests
@@ -213,7 +213,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalization (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.6.0):
+  - ExpoModulesCore (0.6.1):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoSystemUI (1.1.0):
@@ -224,7 +224,7 @@ PODS:
     - React-Core
   - EXScreenCapture (4.1.0):
     - ExpoModulesCore
-  - EXScreenOrientation (4.1.0):
+  - EXScreenOrientation (4.1.1):
     - ExpoModulesCore
     - React-Core
   - EXSecureStore (11.1.0):
@@ -1272,17 +1272,17 @@ SPEC CHECKSUMS:
   EXClipboard: 4d6ee6f9572ef999fc323e4b99c8d180e041ad33
   EXConstants: 5d18484e38e8eacef7695a82214b6ac90133dedf
   EXContacts: 6c1bab5a594d591ab08a992e494e52b7e19cb647
-  EXCrypto: 3a816e996ed9096ea4cc97cc24f9c1ed0da68379
+  EXCrypto: e3c0853c2a9ef885928f6227b967b9598132f727
   EXDevice: 7de98d8f97088fad9c01e9a68abad07e501208b2
   EXDocumentPicker: 2989eda5975604203c86c66405a2c242053dcdc7
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFacebook: ab91b0eefa108009cbeebb9b947d2d29a10e123d
-  EXFaceDetector: fe10121248c1728a7ab7f55a534386d9a0d73a45
+  EXFaceDetector: 0307e979c5876f5c45e07edb2742268f7f35e007
   EXFileSystem: a099e3b7d0fee5e50a39b316aa90524ad8713c5a
   EXFirebaseAnalytics: 27dbc5cb83c244d8404b2927676299f3e172470e
   EXFirebaseCore: 16f39b0ea94ce985a8f2e16cc796bf79bdcfa297
   EXFont: 1fb13af43dc517c01c0ff21a6e32f9f9bf2ea602
-  EXGL: 2fc73ee0c298dd7d3af6b24122c00af51baeac6f
+  EXGL: 95631064ed19b9fc8dfbedcc71c205961ae3c954
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
   EXImage: ee032fea95d6a21800d6678eb14d1face73236d6
@@ -1300,7 +1300,7 @@ SPEC CHECKSUMS:
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
-  Expo: 34e7082eedd0b86815cf186b72dd5cbd235037f3
+  Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
   expo-dev-client: 8d496fb4f930c79f64574c1109a292d16933fb26
   expo-dev-launcher: ce48e68aedfbf3c1df30e7e75fa0e100d5b4a892
   expo-dev-menu: 3c37b25b7cb2bf8a179430583917ac2cfa7ecc49
@@ -1309,12 +1309,12 @@ SPEC CHECKSUMS:
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 5fc4867b1857779262333e2e0d8b108d4d7c9c61
+  ExpoModulesCore: 98f874d20b96d4497eb8ff9df686f14384913a30
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
   EXRandom: 9839c2a2a02d4b594a2c5af22b5faf53b316db05
   EXScreenCapture: 0146fdf6ca4c3402a1cf62b2ddb739a840e08c94
-  EXScreenOrientation: 8729a0a02e0253edb4236a4084f8c02f5c98b84f
+  EXScreenOrientation: 35776938aaa9b6460b4df72ff96f2b35e9a4e28b
   EXSecureStore: fa0fdde1c81ceee2a3cb0519e649feae42767969
   EXSegment: 832b73d9ad79740b462c5404a870f66212627214
   EXSensors: 2b2855da49909f01db90a39a62dd196c9f28f45d
