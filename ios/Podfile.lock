@@ -2394,7 +2394,7 @@ PODS:
     - glog
     - RCT-Folly
     - Yoga
-  - ABI44_0_0RNScreens (3.8.0):
+  - ABI44_0_0RNScreens (3.10.1):
     - ABI44_0_0React-Core
     - ABI44_0_0React-RCTImage
   - ABI44_0_0stripe-react-native (0.2.3):
@@ -5183,7 +5183,7 @@ SPEC CHECKSUMS:
   ABI44_0_0ReactCommon: 57cd9920705425d6d7979326c5f755a7134612d0
   ABI44_0_0RNGestureHandler: 98d12054cfc7ce6a2d802f0dc2665743c938734c
   ABI44_0_0RNReanimated: 213c8dca41a4b4acb2ee5de1c66dea578d88ea1a
-  ABI44_0_0RNScreens: 83671ebe06466fcd2be9572bdef6d22518c11cb5
+  ABI44_0_0RNScreens: 7a62e5f04bfaf607a3927152dbf4efd3fcf2dc8a
   ABI44_0_0stripe-react-native: a28782c19ddabd9a3c901d9b2eb964e8d8ab7d68
   ABI44_0_0UMAppLoader: d00dfac0be21e65771e9c30abf4c2fefe0afa06f
   ABI44_0_0UMTaskManagerInterface: 8f5418a6ec14ed0eecc7c296ded84e9da8571ed1
