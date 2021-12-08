@@ -2365,7 +2365,7 @@ PODS:
     - RCT-Folly (= 2020.01.13.00)
   - ABI44_0_0RNGestureHandler (2.0.0):
     - ABI44_0_0React-Core
-  - ABI44_0_0RNReanimated (2.2.0):
+  - ABI44_0_0RNReanimated (2.3.0):
     - ABI44_0_0RCTRequired
     - ABI44_0_0RCTTypeSafety
     - ABI44_0_0React
@@ -2386,7 +2386,6 @@ PODS:
     - ABI44_0_0React-RCTNetwork
     - ABI44_0_0React-RCTSettings
     - ABI44_0_0React-RCTText
-    - ABI44_0_0React-RCTVibration
     - ABI44_0_0ReactCommon/turbomodule/core
     - DoubleConversion
     - FBLazyVector

@@ -8,8 +8,8 @@
 
 @interface ABI44_0_0REAVisibilityTransition : ABI44_0_0REATransition
 @property (nonatomic) ABI44_0_0REATransitionAnimationType animationType;
-- (ABI44_0_0REATransitionAnimation *)appearView:(UIView*)view inParent:(UIView*)parent;
-- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView*)view fromParent:(UIView*)parent;
+- (ABI44_0_0REATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent;
+- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent;
 - (instancetype)initWithConfig:(NSDictionary *)config;
 @end
 

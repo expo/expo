@@ -2,27 +2,27 @@
 
 #import <ABI44_0_0React/ABI44_0_0RCTConvert.h>
 
+#import <ABI44_0_0React/ABI44_0_0RCTShadowView.h>
+#import "Nodes/ABI44_0_0REAAlwaysNode.h"
+#import "Nodes/ABI44_0_0REABezierNode.h"
+#import "Nodes/ABI44_0_0REABlockNode.h"
+#import "Nodes/ABI44_0_0REACallFuncNode.h"
+#import "Nodes/ABI44_0_0REAClockNodes.h"
+#import "Nodes/ABI44_0_0REAConcatNode.h"
+#import "Nodes/ABI44_0_0REACondNode.h"
+#import "Nodes/ABI44_0_0READebugNode.h"
+#import "Nodes/ABI44_0_0REAEventNode.h"
+#import "Nodes/ABI44_0_0REAFunctionNode.h"
+#import "Nodes/ABI44_0_0REAJSCallNode.h"
 #import "Nodes/ABI44_0_0REANode.h"
+#import "Nodes/ABI44_0_0REAOperatorNode.h"
+#import "Nodes/ABI44_0_0REAParamNode.h"
 #import "Nodes/ABI44_0_0REAPropsNode.h"
+#import "Nodes/ABI44_0_0REASetNode.h"
 #import "Nodes/ABI44_0_0REAStyleNode.h"
 #import "Nodes/ABI44_0_0REATransformNode.h"
 #import "Nodes/ABI44_0_0REAValueNode.h"
-#import "Nodes/ABI44_0_0REABlockNode.h"
-#import "Nodes/ABI44_0_0REACondNode.h"
-#import "Nodes/ABI44_0_0REAOperatorNode.h"
-#import "Nodes/ABI44_0_0REASetNode.h"
-#import "Nodes/ABI44_0_0READebugNode.h"
-#import "Nodes/ABI44_0_0REAClockNodes.h"
-#import "Nodes/ABI44_0_0REAJSCallNode.h"
-#import "Nodes/ABI44_0_0REABezierNode.h"
-#import "Nodes/ABI44_0_0REAEventNode.h"
 #import "ABI44_0_0REAModule.h"
-#import "Nodes/ABI44_0_0REAAlwaysNode.h"
-#import "Nodes/ABI44_0_0REAConcatNode.h"
-#import "Nodes/ABI44_0_0REAParamNode.h"
-#import "Nodes/ABI44_0_0REAFunctionNode.h"
-#import "Nodes/ABI44_0_0REACallFuncNode.h"
-#import <ABI44_0_0React/ABI44_0_0RCTShadowView.h>
 
 // Interface below has been added in order to use private methods of ABI44_0_0RCTUIManager,
 // ABI44_0_0RCTUIManager#UpdateView is a ABI44_0_0React Method which is exported to JS but in
@@ -32,9 +32,7 @@
 
 @interface ABI44_0_0RCTUIManager ()
 
-- (void)updateView:(nonnull NSNumber *)ABI44_0_0ReactTag
-          viewName:(NSString *)viewName
-             props:(NSDictionary *)props;
+- (void)updateView:(nonnull NSNumber *)ABI44_0_0ReactTag viewName:(NSString *)viewName props:(NSDictionary *)props;
 
 - (void)setNeedsLayout;
 
@@ -84,13 +82,11 @@
 
 @end
 
-@interface ABI44_0_0REANodesManager() <ABI44_0_0RCTUIManagerObserver>
+@interface ABI44_0_0REANodesManager () <ABI44_0_0RCTUIManagerObserver>
 
 @end
 
-
-@implementation ABI44_0_0REANodesManager
-{
+@implementation ABI44_0_0REANodesManager {
   NSMutableDictionary<ABI44_0_0REANodeID, ABI44_0_0REANode *> *_nodes;
   NSMapTable<NSString *, ABI44_0_0REANode *> *_eventMapping;
   NSMutableArray<id<ABI44_0_0RCTEvent>> *_eventQueue;
@@ -105,8 +101,7 @@
   volatile void (^_mounting)(void);
 }
 
-- (instancetype)initWithModule:(ABI44_0_0REAModule *)reanimatedModule
-                     uiManager:(ABI44_0_0RCTUIManager *)uiManager
+- (instancetype)initWithModule:(ABI44_0_0REAModule *)reanimatedModule uiManager:(ABI44_0_0RCTUIManager *)uiManager
 {
   if ((self = [super init])) {
     _reanimatedModule = reanimatedModule;
@@ -119,8 +114,9 @@
     _onAnimationCallbacks = [NSMutableArray new];
     _operationsInBatch = [NSMutableArray new];
   }
-    
+
   _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+  _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
   [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   [_displayLink setPaused:true];
   return self;
@@ -172,14 +168,14 @@
 
 - (void)startUpdatingOnAnimationFrame
 {
-    // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
-    // in operationsBatchDidComplete. If new node has been created and clock has not been started,
-    // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
-    // However, CADisplayLink is using CACurrentMediaTime so if there's need to perform one more
-    // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
-    // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
-    _currentAnimationTimestamp = CACurrentMediaTime();
-    [_displayLink setPaused:false];
+  // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
+  // in operationsBatchDidComplete. If new node has been created and clock has not been started,
+  // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
+  // However, CADisplayLink is using CACurrentMediaTime so if there's need to perform one more
+  // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
+  // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
+  _currentAnimationTimestamp = CACurrentMediaTime();
+  [_displayLink setPaused:false];
 }
 
 - (void)stopUpdatingOnAnimationFrame
@@ -217,7 +213,8 @@
   }
 }
 
-- (BOOL)uiManager:(ABI44_0_0RCTUIManager *)manager performMountingWithBlock:(ABI44_0_0RCTUIManagerMountingBlock)block {
+- (BOOL)uiManager:(ABI44_0_0RCTUIManager *)manager performMountingWithBlock:(ABI44_0_0RCTUIManagerMountingBlock)block
+{
   ABI44_0_0RCTAssert(_mounting == nil, @"Mouting block is expected to not be set");
   _mounting = block;
   return YES;
@@ -234,7 +231,7 @@
 
     BOOL trySynchronously = _tryRunBatchUpdatesSynchronously;
     _tryRunBatchUpdatesSynchronously = NO;
-    
+
     __weak typeof(self) weakSelf = self;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     ABI44_0_0RCTExecuteOnUIManagerQueue(^{
@@ -243,27 +240,27 @@
         return;
       }
       BOOL canUpdateSynchronously = trySynchronously && ![strongSelf.uiManager hasEnqueuedUICommands];
-      
+
       if (!canUpdateSynchronously) {
         dispatch_semaphore_signal(semaphore);
       }
-      
+
       for (int i = 0; i < copiedOperationsQueue.count; i++) {
         copiedOperationsQueue[i](strongSelf.uiManager);
       }
-      
+
       if (canUpdateSynchronously) {
         [strongSelf.uiManager runSyncUIUpdatesWithObserver:self];
         dispatch_semaphore_signal(semaphore);
       }
-      //In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event 
-      //to observers because some components (e.g. TextInput) update their UIViews only on that event.
+      // In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event
+      // to observers because some components (e.g. TextInput) update their UIViews only on that event.
       [strongSelf.uiManager setNeedsLayout];
     });
     if (trySynchronously) {
       dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
-    
+
     if (_mounting) {
       _mounting();
       _mounting = nil;
@@ -273,9 +270,10 @@
 }
 
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)ABI44_0_0ReactTag
-                               viewName:(NSString *) viewName
+                               viewName:(NSString *)viewName
                             nativeProps:(NSMutableDictionary *)nativeProps
-                       trySynchronously:(BOOL)trySync {
+                       trySynchronously:(BOOL)trySync
+{
   if (trySync) {
     _tryRunBatchUpdatesSynchronously = YES;
   }
@@ -284,49 +282,48 @@
   }];
 }
 
-- (void)getValue:(ABI44_0_0REANodeID)nodeID
-        callback:(ABI44_0_0RCTResponseSenderBlock)callback
+- (void)getValue:(ABI44_0_0REANodeID)nodeID callback:(ABI44_0_0RCTResponseSenderBlock)callback
 {
   id val = _nodes[nodeID].value;
   if (val) {
-    callback(@[val]);
+    callback(@[ val ]);
   } else {
     // NULL is not an object and it's not possible to pass it as callback's argument
-    callback(@[[NSNull null]]);
+    callback(@[ [NSNull null] ]);
   }
 }
 
-#pragma mark -- Graph
+#pragma mark-- Graph
 
-- (void)createNode:(ABI44_0_0REANodeID)nodeID
-            config:(NSDictionary<NSString *, id> *)config
+- (void)createNode:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   static NSDictionary *map;
   static dispatch_once_t mapToken;
   dispatch_once(&mapToken, ^{
-    map = @{@"props": [ABI44_0_0REAPropsNode class],
-            @"style": [ABI44_0_0REAStyleNode class],
-            @"transform": [ABI44_0_0REATransformNode class],
-            @"value": [ABI44_0_0REAValueNode class],
-            @"block": [ABI44_0_0REABlockNode class],
-            @"cond": [ABI44_0_0REACondNode class],
-            @"op": [ABI44_0_0REAOperatorNode class],
-            @"set": [ABI44_0_0REASetNode class],
-            @"debug": [ABI44_0_0READebugNode class],
-            @"clock": [ABI44_0_0REAClockNode class],
-            @"clockStart": [ABI44_0_0REAClockStartNode class],
-            @"clockStop": [ABI44_0_0REAClockStopNode class],
-            @"clockTest": [ABI44_0_0REAClockTestNode class],
-            @"call": [ABI44_0_0REAJSCallNode class],
-            @"bezier": [ABI44_0_0REABezierNode class],
-            @"event": [ABI44_0_0REAEventNode class],
-            @"always": [ABI44_0_0REAAlwaysNode class],
-            @"concat": [ABI44_0_0REAConcatNode class],
-            @"param": [ABI44_0_0REAParamNode class],
-            @"func": [ABI44_0_0REAFunctionNode class],
-            @"callfunc": [ABI44_0_0REACallFuncNode class]
-//            @"listener": nil,
-            };
+    map = @{
+      @"props" : [ABI44_0_0REAPropsNode class],
+      @"style" : [ABI44_0_0REAStyleNode class],
+      @"transform" : [ABI44_0_0REATransformNode class],
+      @"value" : [ABI44_0_0REAValueNode class],
+      @"block" : [ABI44_0_0REABlockNode class],
+      @"cond" : [ABI44_0_0REACondNode class],
+      @"op" : [ABI44_0_0REAOperatorNode class],
+      @"set" : [ABI44_0_0REASetNode class],
+      @"debug" : [ABI44_0_0READebugNode class],
+      @"clock" : [ABI44_0_0REAClockNode class],
+      @"clockStart" : [ABI44_0_0REAClockStartNode class],
+      @"clockStop" : [ABI44_0_0REAClockStopNode class],
+      @"clockTest" : [ABI44_0_0REAClockTestNode class],
+      @"call" : [ABI44_0_0REAJSCallNode class],
+      @"bezier" : [ABI44_0_0REABezierNode class],
+      @"event" : [ABI44_0_0REAEventNode class],
+      @"always" : [ABI44_0_0REAAlwaysNode class],
+      @"concat" : [ABI44_0_0REAConcatNode class],
+      @"param" : [ABI44_0_0REAParamNode class],
+      @"func" : [ABI44_0_0REAFunctionNode class],
+      @"callfunc" : [ABI44_0_0REACallFuncNode class]
+      //            @"listener": nil,
+    };
   });
 
   NSString *nodeType = [ABI44_0_0RCTConvert NSString:config[@"type"]];
@@ -378,9 +375,7 @@
   [parentNode removeChild:childNode];
 }
 
-- (void)connectNodeToView:(ABI44_0_0REANodeID)nodeID
-                  viewTag:(NSNumber *)viewTag
-                 viewName:(NSString *)viewName
+- (void)connectNodeToView:(ABI44_0_0REANodeID)nodeID viewTag:(NSNumber *)viewTag viewName:(NSString *)viewName
 {
   ABI44_0_0RCTAssertParam(nodeID);
   ABI44_0_0REANode *node = _nodes[nodeID];
@@ -391,8 +386,7 @@
   }
 }
 
-- (void)disconnectNodeFromView:(ABI44_0_0REANodeID)nodeID
-                       viewTag:(NSNumber *)viewTag
+- (void)disconnectNodeFromView:(ABI44_0_0REANodeID)nodeID viewTag:(NSNumber *)viewTag
 {
   ABI44_0_0RCTAssertParam(nodeID);
   ABI44_0_0REANode *node = _nodes[nodeID];
@@ -403,36 +397,26 @@
   }
 }
 
-- (void)attachEvent:(NSNumber *)viewTag
-          eventName:(NSString *)eventName
-        eventNodeID:(ABI44_0_0REANodeID)eventNodeID
+- (void)attachEvent:(NSNumber *)viewTag eventName:(NSString *)eventName eventNodeID:(ABI44_0_0REANodeID)eventNodeID
 {
   ABI44_0_0RCTAssertParam(eventNodeID);
   ABI44_0_0REANode *eventNode = _nodes[eventNodeID];
   ABI44_0_0RCTAssert([eventNode isKindOfClass:[ABI44_0_0REAEventNode class]], @"Event node is of an invalid type");
 
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   viewTag,
-                   ABI44_0_0RCTNormalizeInputEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, ABI44_0_0RCTNormalizeInputEventName(eventName)];
   ABI44_0_0RCTAssert([_eventMapping objectForKey:key] == nil, @"Event handler already set for the given view and event type");
   [_eventMapping setObject:eventNode forKey:key];
 }
 
-- (void)detachEvent:(NSNumber *)viewTag
-          eventName:(NSString *)eventName
-        eventNodeID:(ABI44_0_0REANodeID)eventNodeID
+- (void)detachEvent:(NSNumber *)viewTag eventName:(NSString *)eventName eventNodeID:(ABI44_0_0REANodeID)eventNodeID
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   viewTag,
-                   ABI44_0_0RCTNormalizeInputEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, ABI44_0_0RCTNormalizeInputEventName(eventName)];
   [_eventMapping removeObjectForKey:key];
 }
 
 - (void)processEvent:(id<ABI44_0_0RCTEvent>)event
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   event.viewTag,
-                   ABI44_0_0RCTNormalizeInputEventName(event.eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, ABI44_0_0RCTNormalizeInputEventName(event.eventName)];
   ABI44_0_0REAEventNode *eventNode = [_eventMapping objectForKey:key];
   [eventNode processEvent:event];
 }
@@ -465,18 +449,14 @@
 
 - (void)dispatchEvent:(id<ABI44_0_0RCTEvent>)event
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   event.viewTag,
-                   ABI44_0_0RCTNormalizeInputEventName(event.eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, ABI44_0_0RCTNormalizeInputEventName(event.eventName)];
 
-  NSString *eventHash = [NSString stringWithFormat:@"%@%@",
-  event.viewTag,
-  event.eventName];
+  NSString *eventHash = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
 
   if (_eventHandler != nil) {
     __weak ABI44_0_0REAEventHandler eventHandler = _eventHandler;
     __weak typeof(self) weakSelf = self;
-    ABI44_0_0RCTExecuteOnMainQueue(^void(){
+    ABI44_0_0RCTExecuteOnMainQueue(^void() {
       __typeof__(self) strongSelf = weakSelf;
       if (strongSelf == nil) {
         return;
@@ -506,8 +486,7 @@
   }
 }
 
-- (void)configureProps:(NSSet<NSString *> *)nativeProps
-               uiProps:(NSSet<NSString *> *)uiProps
+- (void)configureProps:(NSSet<NSString *> *)nativeProps uiProps:(NSSet<NSString *> *)uiProps
 {
   _uiProps = uiProps;
   _nativeProps = nativeProps;
@@ -532,7 +511,7 @@
   NSMutableDictionary *nativeProps = [NSMutableDictionary new];
   NSMutableDictionary *jsProps = [NSMutableDictionary new];
 
-  void (^addBlock)(NSString *key, id obj, BOOL * stop) = ^(NSString *key, id obj, BOOL * stop){
+  void (^addBlock)(NSString *key, id obj, BOOL *stop) = ^(NSString *key, id obj, BOOL *stop) {
     if ([self.uiProps containsObject:key]) {
       uiProps[key] = obj;
     } else if ([self.nativeProps containsObject:key]) {
@@ -545,36 +524,33 @@
   [props enumerateKeysAndObjectsUsingBlock:addBlock];
 
   if (uiProps.count > 0) {
-    [self.uiManager
-     synchronouslyUpdateViewOnUIThread:viewTag
-     viewName:viewName
-     props:uiProps];
-    }
-    if (nativeProps.count > 0) {
-      [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps trySynchronously:YES];
-    }
-    if (jsProps.count > 0) {
-      [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
-                                          body:@{@"viewTag": viewTag, @"props": jsProps }];
-    }
+    [self.uiManager synchronouslyUpdateViewOnUIThread:viewTag viewName:viewName props:uiProps];
+  }
+  if (nativeProps.count > 0) {
+    [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps trySynchronously:YES];
+  }
+  if (jsProps.count > 0) {
+    [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
+                                        body:@{@"viewTag" : viewTag, @"props" : jsProps}];
+  }
 }
 
-- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
-               propName:(nonnull NSString *)propName
+- (NSString *)obtainProp:(nonnull NSNumber *)viewTag propName:(nonnull NSString *)propName
 {
-    UIView* view = [self.uiManager viewForABI44_0_0ReactTag:viewTag];
-    
-    NSString* result = [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
-    
-    if ([propName isEqualToString:@"opacity"]) {
-        CGFloat alpha = view.alpha;
-        result = [@(alpha) stringValue];
-    } else if ([propName isEqualToString:@"zIndex"]) {
-        NSInteger zIndex = view.ABI44_0_0ReactZIndex;
-        result = [@(zIndex) stringValue];
-    }
-    
-    return result;
+  UIView *view = [self.uiManager viewForABI44_0_0ReactTag:viewTag];
+
+  NSString *result =
+      [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
+
+  if ([propName isEqualToString:@"opacity"]) {
+    CGFloat alpha = view.alpha;
+    result = [@(alpha) stringValue];
+  } else if ([propName isEqualToString:@"zIndex"]) {
+    NSInteger zIndex = view.ABI44_0_0ReactZIndex;
+    result = [@(zIndex) stringValue];
+  }
+
+  return result;
 }
 
 @end

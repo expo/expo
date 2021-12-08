@@ -2,12 +2,11 @@
 #import <ABI44_0_0React/ABI44_0_0RCTConvert.h>
 #import "ABI44_0_0REANodesManager.h"
 
-@implementation ABI44_0_0REATransformNode
-{
+@implementation ABI44_0_0REATransformNode {
   NSArray<id> *_transformConfigs;
 }
 
-- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _transformConfigs = config[@"transform"];
@@ -28,11 +27,10 @@
     } else {
       value = transformConfig[@"value"];
     }
-    [transform addObject:@{property: value}];
+    [transform addObject:@{property : value}];
   }
 
   return transform;
 }
 
 @end
-

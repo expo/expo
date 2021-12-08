@@ -1,6 +1,6 @@
-#import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <ABI44_0_0React/ABI44_0_0RCTView.h>
+#import <UIKit/UIKit.h>
 
 #import "ABI44_0_0REATransitionAnimation.h"
 #import "ABI44_0_0REATransitionValues.h"
@@ -53,12 +53,13 @@ typedef NS_ENUM(NSInteger, ABI44_0_0REATransitionPropagationType) {
 - (void)playInRoot:(UIView *)root;
 - (ABI44_0_0REATransitionValues *)findStartValuesForKey:(NSNumber *)key;
 - (ABI44_0_0REATransitionValues *)findEndValuesForKey:(NSNumber *)key;
-- (ABI44_0_0REATransitionAnimation *)animationForTransitioning:(ABI44_0_0REATransitionValues*)startValues
-                                               endValues:(ABI44_0_0REATransitionValues*)endValues
-                                                 forRoot:(UIView *)root;
-- (NSArray<ABI44_0_0REATransitionAnimation*> *)animationsForTransitioning:(NSMutableDictionary<NSNumber*, ABI44_0_0REATransitionValues*> *)startValues
-                                                          endValues:(NSMutableDictionary<NSNumber*, ABI44_0_0REATransitionValues*> *)endValues
-                                                            forRoot:(UIView *)root;
+- (ABI44_0_0REATransitionAnimation *)animationForTransitioning:(ABI44_0_0REATransitionValues *)startValues
+                                            endValues:(ABI44_0_0REATransitionValues *)endValues
+                                              forRoot:(UIView *)root;
+- (NSArray<ABI44_0_0REATransitionAnimation *> *)
+    animationsForTransitioning:(NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *)startValues
+                     endValues:(NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *)endValues
+                       forRoot:(UIView *)root;
 
 + (ABI44_0_0REATransition *)inflate:(NSDictionary *)config;
 @end
