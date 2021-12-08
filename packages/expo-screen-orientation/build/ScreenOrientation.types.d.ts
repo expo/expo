@@ -24,7 +24,7 @@ export declare enum Orientation {
  * An enum whose values can be passed to the [`lockAsync`](#screenorientationlockasyncorientationlock)
  * method.
  * > __Note:__ `OrientationLock.ALL` and `OrientationLock.PORTRAIT` are invalid on devices which
- * don't support `OrientationLock.PORTRAIT_DOWN`.
+ * > don't support `OrientationLock.PORTRAIT_DOWN`.
  */
 export declare enum OrientationLock {
     /**
@@ -81,7 +81,7 @@ export declare enum SizeClassIOS {
 /**
  * An enum representing the lock policies that can be applied on the web platform, modelled after
  * the [W3C specification](https://w3c.github.io/screen-orientation/#dom-orientationlocktype).
- * These values can be applied through the [`lockPlatformAsync`](#screenorientationlockplatformasyncplatforminfo)
+ * These values can be applied through the [`lockPlatformAsync`](#screenorientationlockplatformasyncoptions)
  * method.
  */
 export declare enum WebOrientationLock {
