@@ -18,7 +18,7 @@ export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 
 export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
 /**
  * The name of the channel currently configured in this standalone or bare app. For use
- * when pointed at EAS servers
+ * when pointed at EAS servers.
  */
 export const channel = ExpoUpdates.channel ?? null;
 /**

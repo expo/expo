@@ -36,7 +36,7 @@ export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 
 /**
  * The name of the channel currently configured in this standalone or bare app. For use
- * when pointed at EAS servers
+ * when pointed at EAS servers.
  */
 export const channel: string | null = ExpoUpdates.channel ?? null;
 
