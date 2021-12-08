@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`modifyJavaMainActivity modifies the MainActivity file for dev-launcher 1`] = `
+"import android.content.Intent;
+import expo.modules.devlauncher.DevLauncherController;
+import com.facebook.react.ReactActivity;
+
+public class MainActivity extends ReactActivity {
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (DevLauncherController.tryToHandleIntent(this, intent)) {
+      return;
+    }
+    super.onNewIntent(intent);
+  }
+
+  /**
+    * Returns the name of the main component registered from JavaScript. This is used to schedule
+    * rendering of the component.
+    */
+  @Override
+  protected String getMainComponentName() {
+    return \\"react-native-project\\";
+  }
+}
+"
+`;
+
+exports[`modifyJavaMainActivity modifies the MainActivity file for dev-launcher when onNewIntent exists 1`] = `
+"import android.content.Intent;
+import expo.modules.devlauncher.DevLauncherController;
+import com.facebook.react.ReactActivity;
+
+public class MainActivity extends ReactActivity {
+  /**
+    * Returns the name of the main component registered from JavaScript. This is used to schedule
+    * rendering of the component.
+    */
+  @Override
+  protected String getMainComponentName() {
+    return \\"react-native-project\\";
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    if (DevLauncherController.tryToHandleIntent(this, intent)) {
+      return;
+    }
+    super.onNewIntent(intent);
+    setIntent(intent);
+  }
+}
+"
+`;
