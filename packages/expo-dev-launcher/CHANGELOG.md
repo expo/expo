@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix plugin when MainActivity onNewIntent exists. ([#15459](https://github.com/expo/expo/pull/15459) by [@janicduplessis](https://github.com/janicduplessis))
+- Fix plugin when `MainActivity.onNewIntent` exists. ([#15459](https://github.com/expo/expo/pull/15459) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 💡 Others
 
