@@ -83,7 +83,7 @@ const SegmentedControlScreen = () => {
       </View>
 
       <View>
-        <Text style={styles.text}>Custom colors can be provided</Text>
+        <Text style={styles.text}>Selected value and index are available via callbacks</Text>
         <View style={styles.segmentContainer}>
           <SegmentedControl
             values={values}
