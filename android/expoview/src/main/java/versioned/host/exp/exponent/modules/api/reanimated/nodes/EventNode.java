@@ -6,10 +6,8 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 public class EventNode extends Node implements RCTEventEmitter {
@@ -73,7 +71,8 @@ public class EventNode extends Node implements RCTEventEmitter {
   }
 
   @Override
-  public void receiveTouches(String eventName, WritableArray touches, WritableArray changedIndices) {
+  public void receiveTouches(
+      String eventName, WritableArray touches, WritableArray changedIndices) {
     throw new RuntimeException("receiveTouches is not support by animated events");
   }
 

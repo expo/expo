@@ -6,10 +6,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 import versioned.host.exp.exponent.modules.api.reanimated.Utils;
-
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class StyleNode extends Node {
 

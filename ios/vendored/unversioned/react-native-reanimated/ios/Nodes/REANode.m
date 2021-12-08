@@ -6,7 +6,7 @@
 @interface REAUpdateContext ()
 
 @property (nonatomic, nonnull) NSMutableArray<REANode *> *updatedNodes;
-@property (nonatomic) NSNumber* loopID;
+@property (nonatomic) NSNumber *loopID;
 
 @end
 
@@ -24,18 +24,17 @@
 
 @end
 
-
 @interface REANode ()
 
-@property (nonatomic) NSMutableDictionary<REANodeID, NSNumber*>* lastLoopID;
-@property (nonatomic) NSMutableDictionary<REANodeID, id>* memoizedValue;
+@property (nonatomic) NSMutableDictionary<REANodeID, NSNumber *> *lastLoopID;
+@property (nonatomic) NSMutableDictionary<REANodeID, id> *memoizedValue;
 @property (nonatomic, nullable) NSMutableArray<REANode *> *childNodes;
 
 @end
 
 @implementation REANode
 
-- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super init])) {
     _nodeID = nodeID;
@@ -46,7 +45,7 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)dangerouslyRescheduleEvaluate
 {
@@ -67,7 +66,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (id)value
 {
-  if (![_lastLoopID objectForKey:_updateContext.callID] || [[_lastLoopID objectForKey:_updateContext.callID] longValue] < [_updateContext.loopID longValue]) {
+  if (![_lastLoopID objectForKey:_updateContext.callID] ||
+      [[_lastLoopID objectForKey:_updateContext.callID] longValue] < [_updateContext.loopID longValue]) {
     [_lastLoopID setObject:_updateContext.loopID forKey:_updateContext.callID];
     id val = [self evaluate];
     [_memoizedValue setObject:(val == nil ? [NSNull null] : val) forKey:_updateContext.callID];
@@ -133,9 +133,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSMutableSet<REANode *> *visitedNodes = [NSMutableSet new];
   NSMutableArray<id<REAFinalNode>> *finalNodes = [NSMutableArray new];
   for (NSUInteger i = 0; i < context.updatedNodes.count; i++) {
-    [self findAndUpdateNodes:context.updatedNodes[i]
-              withVisitedSet:visitedNodes
-              withFinalNodes:finalNodes];
+    [self findAndUpdateNodes:context.updatedNodes[i] withVisitedSet:visitedNodes withFinalNodes:finalNodes];
     if (i == context.updatedNodes.count - 1) {
       while (finalNodes.count > 0) {
         // NSMutableArray used for stack implementation
@@ -151,7 +149,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)onDrop
 {
-  //noop
+  // noop
 }
 
 @end

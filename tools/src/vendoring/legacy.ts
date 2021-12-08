@@ -140,10 +140,52 @@ const ReanimatedModifier: ModuleModifier = async function (
     await fs.remove(path.join(clonedProjectPath, 'ios', 'native'));
   };
 
+  const transformGestureHandlerImports = async () => {
+    const javaFiles = await glob(path.join(clonedProjectPath, 'android', '**', '*.java'));
+    await Promise.all(
+      javaFiles.map(async (file) => {
+        let content = await fs.readFile(file, 'utf8');
+        content = content.replace(
+          /^import com\.swmansion\.common\./gm,
+          'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
+        );
+        await fs.writeFile(file, content);
+      })
+    );
+  };
+
+  const applyRNVersionPatches = async () => {
+    const rnVersion = '0.64.3';
+    const patchVersion = rnVersion.split('.')[1];
+    const patchSourceDir = path.join(clonedProjectPath, 'android', 'rnVersionPatch', patchVersion);
+    const javaFiles = await glob('**/*.java', {
+      cwd: patchSourceDir,
+    });
+    await Promise.all(
+      javaFiles.map(async (file) => {
+        const srcPath = path.join(patchSourceDir, file);
+        const dstPath = path.join(
+          clonedProjectPath,
+          'android',
+          'src',
+          'main',
+          'java',
+          'com',
+          'swmansion',
+          'reanimated',
+          file
+        );
+        await fs.copy(srcPath, dstPath);
+      })
+    );
+  };
+
+  await applyRNVersionPatches();
   await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
   await prepareIOSNativeFiles();
+  await transformGestureHandlerImports();
 };
 
 const GestureHandlerModifier: ModuleModifier = async function (
