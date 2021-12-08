@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 
-#import "ABI44_0_0REANode.h"
 #import <ABI44_0_0React/ABI44_0_0RCTBridgeModule.h>
 #import <ABI44_0_0React/ABI44_0_0RCTUIManager.h>
+#import "ABI44_0_0REANode.h"
 
 @class ABI44_0_0REAModule;
 
@@ -19,10 +19,9 @@ typedef void (^ABI44_0_0REAEventHandler)(NSString *eventName, id<ABI44_0_0RCTEve
 @property (nonatomic, nullable) NSSet<NSString *> *uiProps;
 @property (nonatomic, nullable) NSSet<NSString *> *nativeProps;
 
-- (nonnull instancetype)initWithModule:(ABI44_0_0REAModule *)reanimatedModule
-                             uiManager:(nonnull ABI44_0_0RCTUIManager *)uiManager;
+- (nonnull instancetype)initWithModule:(ABI44_0_0REAModule *)reanimatedModule uiManager:(nonnull ABI44_0_0RCTUIManager *)uiManager;
 
-- (ABI44_0_0REANode* _Nullable)findNodeByID:(nonnull ABI44_0_0REANodeID)nodeID;
+- (ABI44_0_0REANode *_Nullable)findNodeByID:(nonnull ABI44_0_0REANodeID)nodeID;
 
 - (void)invalidate;
 
@@ -34,31 +33,26 @@ typedef void (^ABI44_0_0REAEventHandler)(NSString *eventName, id<ABI44_0_0RCTEve
 - (void)postRunUpdatesAfterAnimation;
 - (void)registerEventHandler:(ABI44_0_0REAEventHandler)eventHandler;
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)ABI44_0_0ReactTag
-                               viewName:(NSString *) viewName
+                               viewName:(NSString *)viewName
                             nativeProps:(NSMutableDictionary *)nativeProps
                        trySynchronously:(BOOL)trySync;
-- (void)getValue:(ABI44_0_0REANodeID)nodeID
-        callback:(ABI44_0_0RCTResponseSenderBlock)callback;
+- (void)getValue:(ABI44_0_0REANodeID)nodeID callback:(ABI44_0_0RCTResponseSenderBlock)callback;
 
 // graph
 
-- (void)createNode:(nonnull ABI44_0_0REANodeID)tag
-            config:(NSDictionary<NSString *, id> *__nonnull)config;
+- (void)createNode:(nonnull ABI44_0_0REANodeID)tag config:(NSDictionary<NSString *, id> *__nonnull)config;
 
 - (void)dropNode:(nonnull ABI44_0_0REANodeID)tag;
 
-- (void)connectNodes:(nonnull ABI44_0_0REANodeID)parentID
-             childID:(nonnull ABI44_0_0REANodeID)childID;
+- (void)connectNodes:(nonnull ABI44_0_0REANodeID)parentID childID:(nonnull ABI44_0_0REANodeID)childID;
 
-- (void)disconnectNodes:(nonnull ABI44_0_0REANodeID)parentID
-                childID:(nonnull ABI44_0_0REANodeID)childID;
+- (void)disconnectNodes:(nonnull ABI44_0_0REANodeID)parentID childID:(nonnull ABI44_0_0REANodeID)childID;
 
 - (void)connectNodeToView:(nonnull ABI44_0_0REANodeID)nodeID
                   viewTag:(nonnull NSNumber *)viewTag
                  viewName:(nonnull NSString *)viewName;
 
-- (void)disconnectNodeFromView:(nonnull ABI44_0_0REANodeID)nodeID
-                       viewTag:(nonnull NSNumber *)viewTag;
+- (void)disconnectNodeFromView:(nonnull ABI44_0_0REANodeID)nodeID viewTag:(nonnull NSNumber *)viewTag;
 
 - (void)attachEvent:(nonnull NSNumber *)viewTag
           eventName:(nonnull NSString *)eventName
@@ -70,15 +64,13 @@ typedef void (^ABI44_0_0REAEventHandler)(NSString *eventName, id<ABI44_0_0RCTEve
 
 // configuration
 
-- (void)configureProps:(nonnull NSSet<NSString *> *)nativeProps
-               uiProps:(nonnull NSSet<NSString *> *)uiProps;
+- (void)configureProps:(nonnull NSSet<NSString *> *)nativeProps uiProps:(nonnull NSSet<NSString *> *)uiProps;
 
 - (void)updateProps:(nonnull NSDictionary *)props
       ofViewWithTag:(nonnull NSNumber *)viewTag
            withName:(nonnull NSString *)viewName;
 
-- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
-          propName:(nonnull NSString *)propName;
+- (NSString *)obtainProp:(nonnull NSNumber *)viewTag propName:(nonnull NSString *)propName;
 
 // events
 

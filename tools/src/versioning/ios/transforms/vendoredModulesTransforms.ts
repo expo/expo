@@ -71,7 +71,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         },
         {
           paths: '*.h',
-          find: /ReactCommon\//g,
+          find: new RegExp(`ReactCommon/(?!${prefix})`, 'g'),
           replaceWith: `ReactCommon/${prefix}`,
         },
         {
@@ -80,13 +80,24 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           replaceWith: 'RCTConvert+REATransition.h',
         },
         {
-          find: /(_bridge_reanimated)/g,
+          paths: 'REAUIManager.{h,mm}',
+          find: /(blockSetter|_toBeRemovedRegister|_parentMapper|_animationsManager|_scheduler)/g,
           replaceWith: `${prefix}$1`,
         },
         {
           paths: 'REATransitionAnimation.m',
           find: /(SimAnimationDragCoefficient)\(/g,
           replaceWith: `${prefix}$1(`,
+        },
+        {
+          paths: 'REAAnimationsManager.m',
+          find: /^(#import <.*React)\/UIView\+(.+)\.h>/gm,
+          replaceWith: `$1/${prefix}UIView+$2.h>`,
+        },
+        {
+          paths: 'REAAnimationsManager.m',
+          find: `UIView+${prefix}React.h`,
+          replaceWith: `UIView+React.h`,
         },
       ],
     },

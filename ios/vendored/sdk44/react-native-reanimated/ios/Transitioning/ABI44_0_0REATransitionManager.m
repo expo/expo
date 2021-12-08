@@ -35,7 +35,7 @@
 
 - (void)uiManagerWillPerformMounting:(ABI44_0_0RCTUIManager *)manager
 {
-  [manager addUIBlock:^(ABI44_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+  [manager addUIBlock:^(ABI44_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     [_pendingTransition playInRoot:_pendingTransitionRoot];
     _pendingTransitionRoot = nil;
     _pendingTransition = nil;
@@ -45,7 +45,7 @@
 - (void)animateNextTransitionInRoot:(NSNumber *)ABI44_0_0ReactTag withConfig:(NSDictionary *)config
 {
   [_uiManager.observerCoordinator addObserver:self];
-  [_uiManager prependUIBlock:^(ABI44_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+  [_uiManager prependUIBlock:^(ABI44_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[ABI44_0_0ReactTag];
     NSArray *transitionConfigs = [ABI44_0_0RCTConvert NSArray:config[@"transitions"]];
     for (id transitionConfig in transitionConfigs) {
@@ -54,7 +54,7 @@
     }
   }];
   __weak id weakSelf = self;
-  [_uiManager addUIBlock:^(ABI44_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+  [_uiManager addUIBlock:^(ABI44_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     [uiManager.observerCoordinator removeObserver:weakSelf];
   }];
 }

@@ -2,13 +2,14 @@
 
 namespace ABI44_0_0reanimated {
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_installCoreFunctions(
+static jsi::Value
+__hostFunction_NativeReanimatedModuleSpec_installCoreFunctions(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
     size_t count) {
   static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-    ->installCoreFunctions(rt, std::move(args[0]));
+      ->installCoreFunctions(rt, std::move(args[0]));
   return jsi::Value::undefined();
 }
 
@@ -20,7 +21,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeShareable(
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-    ->makeShareable(rt, std::move(args[0]));
+      ->makeShareable(rt, std::move(args[0]));
 }
 
 static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeMutable(
@@ -29,7 +30,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeMutable(
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-    ->makeMutable(rt, std::move(args[0]));
+      ->makeMutable(rt, std::move(args[0]));
 }
 
 static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeRemote(
@@ -38,7 +39,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeRemote(
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-    ->makeRemote(rt, std::move(args[0]));
+      ->makeRemote(rt, std::move(args[0]));
 }
 
 static jsi::Value __hostFunction_NativeReanimatedModuleSpec_startMapper(
@@ -47,7 +48,13 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_startMapper(
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->startMapper(rt, std::move(args[0]), std::move(args[1]), std::move(args[2]));
+      ->startMapper(
+          rt,
+          std::move(args[0]),
+          std::move(args[1]),
+          std::move(args[2]),
+          std::move(args[3]),
+          std::move(args[4]));
 }
 
 static jsi::Value __hostFunction_NativeReanimatedModuleSpec_stopMapper(
@@ -60,7 +67,8 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_stopMapper(
   return jsi::Value::undefined();
 }
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_registerEventHandler(
+static jsi::Value
+__hostFunction_NativeReanimatedModuleSpec_registerEventHandler(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -69,7 +77,8 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_registerEventHandler
       ->registerEventHandler(rt, std::move(args[0]), std::move(args[1]));
 }
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_unregisterEventHandler(
+static jsi::Value
+__hostFunction_NativeReanimatedModuleSpec_unregisterEventHandler(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -85,37 +94,49 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_getViewProp(
     const jsi::Value *args,
     size_t count) {
   static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-        ->getViewProp(rt, std::move(args[0]), std::move(args[1]), std::move(args[2]));
-    return jsi::Value::undefined();
+      ->getViewProp(
+          rt, std::move(args[0]), std::move(args[1]), std::move(args[2]));
+  return jsi::Value::undefined();
 }
 
-NativeReanimatedModuleSpec::NativeReanimatedModuleSpec(std::shared_ptr<CallInvoker> jsInvoker)
+static jsi::Value
+__hostFunction_NativeReanimatedModuleSpec_enableLayoutAnimations(
+    jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const jsi::Value *args,
+    size_t count) {
+  static_cast<NativeReanimatedModuleSpec *>(&turboModule)
+      ->enableLayoutAnimations(rt, std::move(args[0]));
+  return jsi::Value::undefined();
+}
+
+NativeReanimatedModuleSpec::NativeReanimatedModuleSpec(
+    std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule("NativeReanimated", jsInvoker) {
   methodMap_["installCoreFunctions"] = MethodMetadata{
-    1, __hostFunction_NativeReanimatedModuleSpec_installCoreFunctions};
-
+      1, __hostFunction_NativeReanimatedModuleSpec_installCoreFunctions};
 
   methodMap_["makeShareable"] = MethodMetadata{
       1, __hostFunction_NativeReanimatedModuleSpec_makeShareable};
-  methodMap_["makeMutable"] = MethodMetadata{
-      1, __hostFunction_NativeReanimatedModuleSpec_makeMutable};
-  methodMap_["makeRemote"] = MethodMetadata{
-      1, __hostFunction_NativeReanimatedModuleSpec_makeRemote};
-      
+  methodMap_["makeMutable"] =
+      MethodMetadata{1, __hostFunction_NativeReanimatedModuleSpec_makeMutable};
+  methodMap_["makeRemote"] =
+      MethodMetadata{1, __hostFunction_NativeReanimatedModuleSpec_makeRemote};
 
-  methodMap_["startMapper"] = MethodMetadata{
-    3, __hostFunction_NativeReanimatedModuleSpec_startMapper};
-  methodMap_["stopMapper"] = MethodMetadata{
-    1, __hostFunction_NativeReanimatedModuleSpec_stopMapper};
+  methodMap_["startMapper"] =
+      MethodMetadata{5, __hostFunction_NativeReanimatedModuleSpec_startMapper};
+  methodMap_["stopMapper"] =
+      MethodMetadata{1, __hostFunction_NativeReanimatedModuleSpec_stopMapper};
 
   methodMap_["registerEventHandler"] = MethodMetadata{
-    2, __hostFunction_NativeReanimatedModuleSpec_registerEventHandler};
+      2, __hostFunction_NativeReanimatedModuleSpec_registerEventHandler};
   methodMap_["unregisterEventHandler"] = MethodMetadata{
-    1, __hostFunction_NativeReanimatedModuleSpec_unregisterEventHandler};
+      1, __hostFunction_NativeReanimatedModuleSpec_unregisterEventHandler};
 
-  methodMap_["getViewProp"] = MethodMetadata{
-    3, __hostFunction_NativeReanimatedModuleSpec_getViewProp};
+  methodMap_["getViewProp"] =
+      MethodMetadata{3, __hostFunction_NativeReanimatedModuleSpec_getViewProp};
+  methodMap_["enableLayoutAnimations"] = MethodMetadata{
+      2, __hostFunction_NativeReanimatedModuleSpec_enableLayoutAnimations};
 }
 
-}
-
+} // namespace reanimated

@@ -1,12 +1,12 @@
 #import "ABI44_0_0REAJSCallNode.h"
-#import "ABI44_0_0REANodesManager.h"
 #import "ABI44_0_0REAModule.h"
+#import "ABI44_0_0REANodesManager.h"
 
 @implementation ABI44_0_0REAJSCallNode {
   NSArray<NSNumber *> *_input;
 }
 
-- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _input = config[@"input"];
@@ -21,9 +21,8 @@
     args[i] = [[self.nodesManager findNodeByID:_input[i]] value];
   }
 
-  [self.nodesManager.reanimatedModule
-   sendEventWithName:@"onReanimatedCall"
-   body:@{@"id": self.nodeID, @"args": args }];
+  [self.nodesManager.reanimatedModule sendEventWithName:@"onReanimatedCall"
+                                                   body:@{@"id" : self.nodeID, @"args" : args}];
 
   return @(0);
 }

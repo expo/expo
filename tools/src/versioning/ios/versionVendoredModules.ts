@@ -129,7 +129,7 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
       {
         // Objective-C only, see the comment in the rule below.
         paths: '*.{h,m,mm}',
-        find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
+        find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex|eactLayoutDirection)/gi,
         replaceWith: `${prefix}R$1`,
       },
       {
@@ -155,6 +155,10 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `is${prefix}ReactRootView`,
       },
       {
+        find: /IsReactRootView/g,
+        replaceWith: `Is${prefix}ReactRootView`,
+      },
+      {
         // Prefix only unindented `@objc` (notice `^` and `m` flag in the pattern). Method names shouldn't get prefixed.
         paths: '*.swift',
         find: /^@objc\(([^)]+)\)/gm,
@@ -169,6 +173,10 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         paths: '*.podspec.json',
         find: new RegExp(`${prefix}React-Core\\/${prefix}RCT`, 'g'),
         replaceWith: `${prefix}React-Core/RCT`,
+      },
+      {
+        find: `${prefix}${prefix}`,
+        replaceWith: `${prefix}`,
       },
     ],
   };

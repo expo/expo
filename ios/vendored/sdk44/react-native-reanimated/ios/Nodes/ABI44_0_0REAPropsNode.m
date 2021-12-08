@@ -1,22 +1,20 @@
 #import "ABI44_0_0REAPropsNode.h"
 
+#import "ABI44_0_0REAModule.h"
 #import "ABI44_0_0REANodesManager.h"
 #import "ABI44_0_0REAStyleNode.h"
-#import "ABI44_0_0REAModule.h"
 
 #import <ABI44_0_0React/ABI44_0_0RCTLog.h>
 #import <ABI44_0_0React/ABI44_0_0RCTUIManager.h>
-#import "ABI44_0_0React/ABI44_0_0RCTComponentData.h"
+#import <ABI44_0_0React/ABI44_0_0RCTComponentData.h>
 
-@implementation ABI44_0_0REAPropsNode
-{
+@implementation ABI44_0_0REAPropsNode {
   NSNumber *_connectedViewTag;
   NSString *_connectedViewName;
   NSMutableDictionary<NSString *, ABI44_0_0REANodeID> *_propsConfig;
 }
 
-- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID
-                    config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if (self = [super initWithID:nodeID config:config]) {
     _propsConfig = config[@"props"];
@@ -24,8 +22,7 @@
   return self;
 }
 
-- (void)connectToView:(NSNumber *)viewTag
-             viewName:(NSString *)viewName
+- (void)connectToView:(NSNumber *)viewTag viewName:(NSString *)viewName
 {
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
@@ -43,8 +40,8 @@
   NSMutableDictionary *uiProps = [NSMutableDictionary new];
   NSMutableDictionary *nativeProps = [NSMutableDictionary new];
   NSMutableDictionary *jsProps = [NSMutableDictionary new];
-  
-  void (^addBlock)(NSString *key, id obj, BOOL * stop) = ^(NSString *key, id obj, BOOL * stop){
+
+  void (^addBlock)(NSString *key, id obj, BOOL *stop) = ^(NSString *key, id obj, BOOL *stop) {
     if ([self.nodesManager.uiProps containsObject:key]) {
       uiProps[key] = obj;
     } else if ([self.nodesManager.nativeProps containsObject:key]) {
@@ -53,34 +50,35 @@
       jsProps[key] = obj;
     }
   };
-  
+
   for (NSString *prop in _propsConfig) {
     ABI44_0_0REANode *propNode = [self.nodesManager findNodeByID:_propsConfig[prop]];
-    
+
     if ([propNode isKindOfClass:[ABI44_0_0REAStyleNode class]]) {
       [[propNode value] enumerateKeysAndObjectsUsingBlock:addBlock];
     } else {
       addBlock(prop, [propNode value], nil);
     }
   }
-  
+
   if (_connectedViewTag != nil) {
     if (uiProps.count > 0) {
-      [self.nodesManager.uiManager
-       synchronouslyUpdateViewOnUIThread:_connectedViewTag
-       viewName:_connectedViewName
-       props:uiProps];
+      [self.nodesManager.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                            viewName:_connectedViewName
+                                                               props:uiProps];
     }
     if (nativeProps.count > 0) {
-      [self.nodesManager enqueueUpdateViewOnNativeThread:_connectedViewTag viewName:_connectedViewName nativeProps:nativeProps trySynchronously:NO];
+      [self.nodesManager enqueueUpdateViewOnNativeThread:_connectedViewTag
+                                                viewName:_connectedViewName
+                                             nativeProps:nativeProps
+                                        trySynchronously:NO];
     }
     if (jsProps.count > 0) {
-      [self.nodesManager.reanimatedModule
-       sendEventWithName:@"onReanimatedPropsChange"
-       body:@{@"viewTag": _connectedViewTag, @"props": jsProps }];
+      [self.nodesManager.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
+                                                       body:@{@"viewTag" : _connectedViewTag, @"props" : jsProps}];
     }
   }
-  
+
   return @(0);
 }
 
@@ -98,4 +96,3 @@
 }
 
 @end
-

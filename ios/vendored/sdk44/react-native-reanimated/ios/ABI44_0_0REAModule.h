@@ -7,8 +7,6 @@
 
 #import "ABI44_0_0REAValueNode.h"
 
-extern ABI44_0_0RCTBridge *ABI44_0_0_bridge_reanimated;
-
 @interface ABI44_0_0REAModule : ABI44_0_0RCTEventEmitter <ABI44_0_0RCTBridgeModule, ABI44_0_0RCTEventDispatcherObserver, ABI44_0_0RCTUIManagerObserver>
 
 @property (nonatomic, readonly) ABI44_0_0REANodesManager *nodesManager;

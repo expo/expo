@@ -1,10 +1,11 @@
 #import "NativeMethods.h"
-#import <ABI44_0_0React/ABI44_0_0RCTScrollView.h>
 #import <ABI44_0_0React/ABI44_0_0RCTEventDispatcher.h>
+#import <ABI44_0_0React/ABI44_0_0RCTScrollView.h>
 
 namespace ABI44_0_0reanimated {
 
-std::vector<std::pair<std::string,double>> measure(int viewTag, ABI44_0_0RCTUIManager *uiManager) {
+std::vector<std::pair<std::string, double>> measure(int viewTag, ABI44_0_0RCTUIManager *uiManager)
+{
   UIView *view = [uiManager viewForABI44_0_0ReactTag:@(viewTag)];
 
   UIView *rootView = view;
@@ -17,7 +18,7 @@ std::vector<std::pair<std::string,double>> measure(int viewTag, ABI44_0_0RCTUIMa
     rootView = rootView.superview;
   }
 
-  if (rootView == nil || (![rootView isABI44_0_0ReactRootView])) {
+  if (rootView == nil) {
     return std::vector<std::pair<std::string, double>>(1, std::make_pair("x", -1234567.0));
   }
 
@@ -36,11 +37,18 @@ std::vector<std::pair<std::string,double>> measure(int viewTag, ABI44_0_0RCTUIMa
   return result;
 }
 
-
-void scrollTo(int scrollViewTag, ABI44_0_0RCTUIManager *uiManager, double x, double y, bool animated) {
+void scrollTo(int scrollViewTag, ABI44_0_0RCTUIManager *uiManager, double x, double y, bool animated)
+{
   UIView *view = [uiManager viewForABI44_0_0ReactTag:@(scrollViewTag)];
-  ABI44_0_0RCTScrollView *scrollView = (ABI44_0_0RCTScrollView *) view;
+  ABI44_0_0RCTScrollView *scrollView = (ABI44_0_0RCTScrollView *)view;
   [scrollView scrollToOffset:(CGPoint){(CGFloat)x, (CGFloat)y} animated:animated];
+}
+
+void setGestureState(id<ABI44_0_0RNGestureHandlerStateManager> gestureHandlerStateManager, int handlerTag, int newState)
+{
+  if (gestureHandlerStateManager != nil) {
+    [gestureHandlerStateManager setGestureState:newState forHandler:handlerTag];
+  }
 }
 
 }

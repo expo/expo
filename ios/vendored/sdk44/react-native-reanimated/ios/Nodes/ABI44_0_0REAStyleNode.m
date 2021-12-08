@@ -2,13 +2,11 @@
 
 #import "ABI44_0_0REANodesManager.h"
 
-@implementation ABI44_0_0REAStyleNode
-{
+@implementation ABI44_0_0REAStyleNode {
   NSMutableDictionary<NSString *, ABI44_0_0REANodeID> *_styleConfig;
 }
 
-- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID
-                    config:(NSDictionary<NSString *, id> *)config;
+- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config;
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _styleConfig = config[@"style"];
