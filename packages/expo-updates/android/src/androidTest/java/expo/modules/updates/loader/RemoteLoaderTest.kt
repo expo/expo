@@ -86,10 +86,10 @@ class RemoteLoaderTest {
     verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
     val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
+    Assert.assertEquals(2, assets.size)
   }
 
   @Test
@@ -107,15 +107,15 @@ class RemoteLoaderTest {
     verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.PENDING, updates[0].status)
     val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(0, assets.size.toLong())
+    Assert.assertEquals(0, assets.size)
   }
 
   @Test
   fun testRemoteLoader_AssetExists_BothDbAndDisk() {
-    // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
+    // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists on disk
     every { mockLoaderFiles.fileExists(any()) } answers {
       firstArg<File>().toString().contains("54da1e9816c77e30ebc5920e256736f2")
     }
@@ -132,19 +132,23 @@ class RemoteLoaderTest {
     verify(exactly = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
     val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
+    Assert.assertEquals(2, assets.size)
+
+    // ensure the asset in the DB was updated with the URL from the manifest
+    assets.forEach { Assert.assertNotNull(it.url) }
   }
 
   @Test
   fun testRemoteLoader_AssetExists_DbOnly() {
-    // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
+    // return false when asked if file 54da1e9816c77e30ebc5920e256736f2 exists on disk
     every { mockLoaderFiles.fileExists(any()) } returns false
 
     val existingAsset = AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png")
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
+    existingAsset.url = Uri.parse("http://example.com")
     db.assetDao()._insertAsset(existingAsset)
     loader.start(mockCallback)
 
@@ -155,10 +159,16 @@ class RemoteLoaderTest {
     verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
     val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
+    Assert.assertEquals(2, assets.size)
+
+    // ensure the asset in the DB was updated with the URL from the manifest
+    assets.forEach {
+      Assert.assertNotNull(it.url)
+      Assert.assertEquals(it.url!!.host, "d1wp6m56sqw74a.cloudfront.net")
+    }
   }
 
   @Test
@@ -178,7 +188,7 @@ class RemoteLoaderTest {
     verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
   }
 
@@ -201,10 +211,10 @@ class RemoteLoaderTest {
     verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
     val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
+    Assert.assertEquals(2, assets.size)
   }
 
   @Test
@@ -224,7 +234,7 @@ class RemoteLoaderTest {
     verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
     Assert.assertEquals(manifest.updateEntity!!.scopeKey, updates[0].scopeKey)
   }
@@ -249,7 +259,7 @@ class RemoteLoaderTest {
     verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.DEVELOPMENT, updates[0].status)
   }
 }

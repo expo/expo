@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.db.entity.AssetEntity
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -29,7 +30,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to true
     )
     val config = UpdatesConfiguration().loadValuesFromMap(configMap)
-    val actual = FileDownloader.setHeadersForManifestUrl(config, null, context)
+    val actual = FileDownloader.createRequestForManifest(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -41,7 +42,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to false
     )
     val config = UpdatesConfiguration().loadValuesFromMap(configMap)
-    val actual = FileDownloader.setHeadersForManifestUrl(config, null, context)
+    val actual = FileDownloader.createRequestForManifest(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -60,7 +61,7 @@ class FileDownloaderTest {
       put("expo-boolean", true)
     }
 
-    val actual = FileDownloader.setHeadersForManifestUrl(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -82,7 +83,31 @@ class FileDownloaderTest {
     // serverDefinedHeaders should not be able to override preset headers
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
-    val actual = FileDownloader.setHeadersForManifestUrl(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
+    Assert.assertEquals("android", actual.header("expo-platform"))
+    Assert.assertEquals("custom", actual.header("expo-updates-environment"))
+  }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testAssetExtraHeaders_OverrideOrder() {
+    // custom headers configured at build-time should be able to override preset headers
+    val headersMap = mapOf("expo-updates-environment" to "custom")
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0",
+      "requestHeaders" to headersMap
+    )
+
+    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+
+    val assetEntity = AssetEntity("test", "jpg").apply {
+      url = Uri.parse("https://example.com")
+      extraRequestHeaders = JSONObject().apply { put("expo-platform", "ios") }
+    }
+
+    // assetRequestHeaders should not be able to override preset headers
+    val actual = FileDownloader.createRequestForAsset(assetEntity, config)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }

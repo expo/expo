@@ -15,6 +15,9 @@ class AssetEntity(@field:ColumnInfo(name = "key") var key: String?, var type: St
 
   var headers: JSONObject? = null
 
+  @ColumnInfo(name = "extra_request_headers")
+  var extraRequestHeaders: JSONObject? = null
+
   var metadata: JSONObject? = null
 
   @ColumnInfo(name = "download_time")
