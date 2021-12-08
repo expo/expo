@@ -2500,7 +2500,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.0.3):
     - ExpoModulesCore
-  - Expo (43.0.3):
+  - Expo (43.0.4):
     - ExpoModulesCore
   - ExpoModulesCore (0.4.9):
     - React-Core
@@ -5168,7 +5168,7 @@ SPEC CHECKSUMS:
   EXNetwork: f287400b8244611ffa5588603a01bdd601e5ce1c
   EXNotifications: b03a992d3c103a888899a550353d78578338282a
   EXPermissions: 7696f4c16e89981f84c04d96327f7e1e592373c0
-  Expo: 5316c3ecdc34eb0cad340d01dc8beec97c7e879e
+  Expo: 363a3f3c60d5a1d4f8badb29a869005487f2d9e4
   ExpoModulesCore: e41ed0b72daeac74731816ad7997d639f0115a9d
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: 46a7f1b4cf2cbdbdc74542b7dc86832d4fc8037b

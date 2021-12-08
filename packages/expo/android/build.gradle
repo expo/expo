@@ -8,7 +8,7 @@ apply from: "../scripts/autolinking.gradle"
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '43.0.3'
+version = '43.0.4'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -62,7 +62,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 1
-    versionName "43.0.3"
+    versionName "43.0.4"
     consumerProguardFiles("proguard-rules.pro")
   }
   lintOptions {
