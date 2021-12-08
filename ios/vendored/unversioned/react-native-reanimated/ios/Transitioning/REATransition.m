@@ -1,11 +1,11 @@
-#import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <React/RCTConvert.h>
 #import <React/RCTViewManager.h>
+#import <UIKit/UIKit.h>
 
+#import "RCTConvert+REATransition.h"
 #import "REATransition.h"
 #import "REATransitionValues.h"
-#import "RCTConvert+REATransition.h"
 
 #define DEFAULT_PROPAGATION_SPEED 3
 
@@ -17,8 +17,8 @@
 
 @interface REAVisibilityTransition : REATransition
 @property (nonatomic) REATransitionAnimationType animationType;
-- (REATransitionAnimation *)appearView:(UIView*)view inParent:(UIView*)parent;
-- (REATransitionAnimation *)disappearView:(UIView*)view fromParent:(UIView*)parent;
+- (REATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent;
+- (REATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent;
 - (instancetype)initWithConfig:(NSDictionary *)config;
 @end
 
@@ -36,8 +36,8 @@
 
 @implementation REATransition {
   __weak UIView *_root;
-  NSMutableDictionary<NSNumber*, REATransitionValues*> *_startValues;
-  NSMutableDictionary<NSNumber*, REATransitionValues*> *_endValues;
+  NSMutableDictionary<NSNumber *, REATransitionValues *> *_startValues;
+  NSMutableDictionary<NSNumber *, REATransitionValues *> *_endValues;
 }
 
 + (REATransition *)inflate:(NSDictionary *)config
@@ -70,7 +70,9 @@
   return self;
 }
 
-- (void)captureRecursiveIn:(UIView *)view to:(NSMutableDictionary<NSNumber*, REATransitionValues*> *)map forRoot:(UIView *)root
+- (void)captureRecursiveIn:(UIView *)view
+                        to:(NSMutableDictionary<NSNumber *, REATransitionValues *> *)map
+                   forRoot:(UIView *)root
 {
   NSNumber *tag = view.reactTag;
   if (tag != nil) {
@@ -91,9 +93,7 @@
 {
   _endValues = [NSMutableDictionary new];
   [self captureRecursiveIn:root to:_endValues forRoot:root];
-  NSArray *animations = [self animationsForTransitioning:_startValues
-                                               endValues:_endValues
-                                                 forRoot:root];
+  NSArray *animations = [self animationsForTransitioning:_startValues endValues:_endValues forRoot:root];
   for (REATransitionAnimation *animation in animations) {
     [animation play];
   }
@@ -164,15 +164,16 @@
 }
 
 - (REATransitionAnimation *)animationForTransitioning:(REATransitionValues *)startValues
-                                               endValues:(REATransitionValues *)endValues
-                                                 forRoot:(UIView *)root
+                                            endValues:(REATransitionValues *)endValues
+                                              forRoot:(UIView *)root
 {
   return nil;
 }
 
-- (NSArray<REATransitionAnimation*> *)animationsForTransitioning:(NSMutableDictionary<NSNumber *,REATransitionValues *> *)startValues
-                                                          endValues:(NSMutableDictionary<NSNumber *,REATransitionValues *> *)endValues
-                                                            forRoot:(UIView *)root
+- (NSArray<REATransitionAnimation *> *)
+    animationsForTransitioning:(NSMutableDictionary<NSNumber *, REATransitionValues *> *)startValues
+                     endValues:(NSMutableDictionary<NSNumber *, REATransitionValues *> *)endValues
+                       forRoot:(UIView *)root
 {
   NSMutableArray *animations = [NSMutableArray new];
   [startValues enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, REATransitionValues *startValue, BOOL *stop) {
@@ -182,7 +183,9 @@
       animation.animation.timingFunction = self.mediaTiming;
       animation.animation.duration = self.duration;
       [animation delayBy:self.delay];
-      CFTimeInterval propagationDelay = [self propagationDelayForTransitioning:startValue endValues:endValue forRoot:root];
+      CFTimeInterval propagationDelay = [self propagationDelayForTransitioning:startValue
+                                                                     endValues:endValue
+                                                                       forRoot:root];
       [animation delayBy:propagationDelay];
       //      animation.animation.duration -= propagationDelay;
       [animations addObject:animation];
