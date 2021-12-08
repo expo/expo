@@ -711,7 +711,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.0.0):
     - React-Core
-  - RNReanimated (2.2.3):
+  - RNReanimated (2.3.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -737,7 +737,6 @@ PODS:
     - React-RCTNetwork
     - React-RCTSettings
     - React-RCTText
-    - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
   - RNScreens (3.10.1):
@@ -1397,7 +1396,7 @@ SPEC CHECKSUMS:
   RNCPicker: cb57c823d5ce8d2d0b5dfb45ad97b737260dc59e
   RNDateTimePicker: 2224ee77a86b7123377597a015502435e2e49957
   RNGestureHandler: 51c9f32f43720c3a1c7660690a843f33acbcf01f
-  RNReanimated: 64c38d47ffcc29c97fc1d8cfde9e8a73d7be7cc8
+  RNReanimated: eb7b06098f064677394249e9a5f797cac1f0004f
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   RNSharedElement: 381b5e33366513cc3f449f2dc3a42c5df0f54021
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
