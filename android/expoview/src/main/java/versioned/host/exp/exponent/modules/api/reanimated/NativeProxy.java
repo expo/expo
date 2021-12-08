@@ -11,7 +11,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.swmansion.common.GestureHandlerStateManager;
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerStateManager;
 import versioned.host.exp.exponent.modules.api.reanimated.layoutReanimation.AnimationsManager;
 import versioned.host.exp.exponent.modules.api.reanimated.layoutReanimation.LayoutAnimations;
 import versioned.host.exp.exponent.modules.api.reanimated.layoutReanimation.NativeMethodsHolder;

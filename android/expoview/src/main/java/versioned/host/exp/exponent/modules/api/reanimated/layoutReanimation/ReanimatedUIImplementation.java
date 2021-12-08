@@ -10,7 +10,7 @@ import java.util.List;
 public class ReanimatedUIImplementation extends UIImplementation {
   public ReanimatedUIImplementation(
       ReactApplicationContext reactContext,
-      ViewManagerResolver viewManagerResolver,
+      UIManagerModule.ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     this(
