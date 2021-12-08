@@ -41,7 +41,7 @@
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~8.5.1",
+    "babel-preset-expo": "~9.0.0",
     "expo-dev-client-components": "*",
     "expo-module-scripts": "^2.0.0",
     "graphql": "^16.0.1",
