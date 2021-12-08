@@ -114,11 +114,12 @@ async function findPackagesConfigPathsAsync(searchPath) {
 /**
  * Resolves package name and version for the given {@link packagePath} from its `package.json`.
  * if {@link options.fallbackToDirName} is true, it returns the dir name when `package.json` doesn't exist.
+ * @returns object with `name` and `version` properties. `version` falls back to `UNVERSIONED` if cannot be resolved.
  */
 function resolvePackageNameAndVersion(packagePath, options = {}) {
     try {
         const { name, version } = require(path_1.default.join(packagePath, 'package.json'));
-        return { name, version };
+        return { name, version: version || 'UNVERSIONED' };
     }
     catch (e) {
         if (options.fallbackToDirName) {
@@ -141,70 +142,69 @@ async function findModulesAsync(providedOptions) {
     var _a;
     const options = await mergeLinkingOptionsAsync(providedOptions);
     const results = new Map();
-    const nativeModuleResults = new Map();
-    if (options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)) {
-        const packageConfigPaths = await findPackagesConfigPathsAsync(options.nativeModulesDir);
-        for (const packageConfigPath of packageConfigPaths) {
-            const packagePath = await fs_extra_1.default.realpath(path_1.default.join(options.nativeModulesDir, path_1.default.dirname(packageConfigPath)));
-            const expoModuleConfig = (0, ExpoModuleConfig_1.requireAndResolveExpoModuleConfig)(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
-            if (!expoModuleConfig.supportsPlatform(options.platform)) {
-                continue;
-            }
-            const { name, version } = resolvePackageNameAndVersion(packagePath, {
-                fallbackToDirName: true,
-            });
-            const currentRevision = {
-                path: packagePath,
-                version,
-                config: expoModuleConfig,
-            };
-            addRevisionToResults(nativeModuleResults, name, currentRevision);
-        }
-    }
-    for (const searchPath of options.searchPaths) {
-        // nativeModulesDir was already processed, so we skip it
-        // in case someone specified it in the search paths.
-        if (options.nativeModulesDir === searchPath) {
-            continue;
-        }
+    const nativeModuleNames = new Set();
+    // custom native modules should be resolved first so that they can override other modules
+    const searchPaths = options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
+        ? [options.nativeModulesDir, ...options.searchPaths]
+        : options.searchPaths;
+    for (const searchPath of searchPaths) {
+        const isNativeModulesDir = searchPath === options.nativeModulesDir;
         const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
         for (const packageConfigPath of packageConfigPaths) {
             const packagePath = await fs_extra_1.default.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
             const expoModuleConfig = (0, ExpoModuleConfig_1.requireAndResolveExpoModuleConfig)(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
-            const { name, version } = resolvePackageNameAndVersion(packagePath);
-            if (((_a = options.exclude) === null || _a === void 0 ? void 0 : _a.includes(name)) || !expoModuleConfig.supportsPlatform(options.platform)) {
+            const { name, version } = resolvePackageNameAndVersion(packagePath, {
+                fallbackToDirName: isNativeModulesDir,
+            });
+            // we ignore the `exclude` option for custom native modules
+            if ((!isNativeModulesDir && ((_a = options.exclude) === null || _a === void 0 ? void 0 : _a.includes(name))) ||
+                !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
             }
+            // add the current revision to the results
             const currentRevision = {
                 path: packagePath,
                 version,
                 config: expoModuleConfig,
             };
             addRevisionToResults(results, name, currentRevision);
+            // if the module is a native module, we need to add it to the nativeModuleNames set
+            if (isNativeModulesDir && !nativeModuleNames.has(name)) {
+                nativeModuleNames.add(name);
+            }
         }
     }
+    const searchResults = Object.fromEntries(results.entries());
     // It doesn't make much sense to strip modules if there is only one search path.
+    // (excluding custom native modules path)
     // Workspace root usually doesn't specify all its dependencies (see Expo Go),
     // so in this case we should link everything.
-    const searchResults = Object.fromEntries(results.entries());
-    const filteredResults = options.searchPaths.length > 1
-        ? filterToProjectDependencies(searchResults, providedOptions)
-        : searchResults;
-    // Custom native modules are not filtered out
-    // when they're not specified in package.json dependencies.
-    // Moreover, they override the native modules from the dependencies.
-    return {
-        ...filteredResults,
-        ...Object.fromEntries(nativeModuleResults.entries()),
-    };
+    if (options.searchPaths.length <= 1) {
+        return searchResults;
+    }
+    return filterToProjectDependencies(searchResults, {
+        ...providedOptions,
+        // Custom native modules are not filtered out
+        // when they're not specified in package.json dependencies.
+        alwaysIncludedPackagesNames: nativeModuleNames,
+    });
 }
 exports.findModulesAsync = findModulesAsync;
 /**
  * Filters out packages that are not the dependencies of the project.
  */
 function filterToProjectDependencies(results, options = {}) {
+    var _a;
     const filteredResults = {};
     const visitedPackages = new Set();
+    // iterate through always included package names and add them to the visited packages
+    // if the results contains them
+    for (const name of (_a = options.alwaysIncludedPackagesNames) !== null && _a !== void 0 ? _a : []) {
+        if (results[name] && !visitedPackages.has(name)) {
+            filteredResults[name] = results[name];
+            visitedPackages.add(name);
+        }
+    }
     // Helper for traversing the dependency hierarchy.
     function visitPackage(packageJsonPath) {
         const packageJson = require(packageJsonPath);
@@ -261,8 +261,8 @@ async function mergeLinkingOptionsAsync(providedOptions) {
     finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, process.cwd());
     finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(finalOptions.nativeModulesDir, process.cwd());
     // TODO: (barthap): remove these console.logs when done ;)
-    console.log(finalOptions.searchPaths);
-    console.log(finalOptions.nativeModulesDir);
+    // console.log(finalOptions.searchPaths);
+    // console.log(finalOptions.nativeModulesDir);
     return finalOptions;
 }
 exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;
