@@ -76,6 +76,20 @@ const config: VendoringTargetConfig = {
           //   'RNVERSION=63'
           // );
         },
+        transforms: {
+          content: [
+            {
+              paths: 'REAUIManager.mm',
+              find: /^#import "RCT(.*).h"$/gm,
+              replaceWith: '#import <React/RCT$1.h>',
+            },
+            {
+              paths: 'REAPropsNode.m',
+              find: /^#import "React\/RCT(.*).h"$/gm,
+              replaceWith: '#import <React/RCT$1.h>',
+            },
+          ],
+        },
       },
     },
     'react-native-screens': {
