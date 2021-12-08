@@ -74,10 +74,10 @@ import com.android.build.OutputFile
  * ]
  */
 
+def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
 project.ext.react = [
-    // This value can be overwritten by using the ENTRY_FILE environment variable.
-    // The Node.js script adds support for platform extensions, monorepos, and respects the package.json main field.
-    entryFile: (["node", "--print", "require('expo/scripts/resolveAppEntry')(require('path').resolve('$projectDir', '../../'), {platform:'android',relative:true})"].execute(null, rootDir).text.trim()),
+    entryFile: ["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android"].execute(null, rootDir).text.trim(),
     enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",  // clean and rebuild if changing
 ]
 
