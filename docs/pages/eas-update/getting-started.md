@@ -54,22 +54,7 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
 
    > There is also a `fallbackToCacheTimeout` property under `expo.updates`. If you'd like your app to attempt to load new updates when a user opens the app, set this to something other than zero, like `3000` (3 seconds). A value of `3000` would mean that your app will attempt to download a new update for up to 3 seconds before loading the previous update it already has locally. If the app is able to download the update within 3 seconds, your users will see the changes in the newest update immediately.
 
-3. Next, set an `expo.runtimeVersion` property in the project's **app.json** file. Let's use `{ "policy": "sdkVersion" }` as the runtime version's value:
-
-   ```json
-   {
-     "expo": {
-       "runtimeVersion": {
-         "policy": "sdkVersion"
-       },
-       ...
-     }
-   }
-   ```
-
-   A runtime version identifies the state of the native code present in your project when creating builds and when creating updates. [Learn more](/distribution/runtime-versions).
-
-4. To set up the configuration file for builds, run:
+3. To set up the configuration file for builds, run:
 
    ```bash
    eas build:configure
@@ -79,7 +64,7 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
 
    This will create a file named **eas.json**.
 
-5. Inside the `production` profile in **eas.json**, add the `channel` property with a value of `production`:
+4. Inside the `production` build profile in **eas.json**, add the `channel` property with a value of `production`:
 
    ```bash
    {
@@ -92,7 +77,7 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
    }
    ```
 
-   This `channel` property will allow you to point updates at builds with this channel. Later, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will be published and made available to builds with the channel "production".
+   This `channel` property will allow you to point updates at builds. Later, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will publish an update that will be made available to builds with the channel "production".
 
 ## Create a build for the project
 
@@ -112,7 +97,7 @@ Now we're ready to publish an update to the builds created in the previous step.
 3. Then publish an update with the following command:
 
    ```bash
-   eas branch:publish production --message "Updating the app"
+   eas update --branch production --message "Updating the app"
    ```
 
 4. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app two times to download and view the update.
