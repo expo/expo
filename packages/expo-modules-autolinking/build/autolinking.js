@@ -50,18 +50,25 @@ async function findDefaultPathsAsync(cwd) {
     return paths;
 }
 exports.findDefaultPathsAsync = findDefaultPathsAsync;
-// TODO: (barthap): WIP, just a temporary solution, improve this
-// make it work the same way as findDefaultPathsAsync
-// @returns undefined if custom modules dir doesn't exist
+/**
+ * Finds the real path to custom native modules directory.
+ * @returns undefined if custom modules dir not found or doesn't exist
+ */
 async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
-    // const up = await findUp('package.json', { cwd });
-    // if (!up) {
-    //   return undefined;
-    // }
-    // const resolvedPath = path.join(up, '..', nativeModulesDir || 'modules');
-    // console.log(resolvedPath);
-    // return fs.existsSync(resolvedPath) ? resolvedPath : 'xdd';
-    return path_1.default.resolve(nativeModulesDir || 'modules');
+    // first try resolving the provided dir
+    if (nativeModulesDir) {
+        const nativeModulesDirPath = path_1.default.resolve(nativeModulesDir);
+        if (await fs_extra_1.default.pathExists(nativeModulesDirPath)) {
+            return nativeModulesDirPath;
+        }
+    }
+    // if not found, try to find it relative to the package.json
+    const up = await (0, find_up_1.default)('package.json', { cwd });
+    if (!up) {
+        return undefined;
+    }
+    const resolvedPath = path_1.default.join(up, '..', nativeModulesDir || 'modules');
+    return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : undefined;
 }
 exports.resolveNativeModulesDirAsync = resolveNativeModulesDirAsync;
 /**
@@ -136,7 +143,6 @@ function resolvePackageNameAndVersion(packagePath, options = {}) {
 }
 /**
  * Searches for modules to link based on given config.
- * TODO: (barthap): still duplicated code
  */
 async function findModulesAsync(providedOptions) {
     var _a;
@@ -260,9 +266,6 @@ async function mergeLinkingOptionsAsync(providedOptions) {
     // Makes provided paths absolute or falls back to default paths if none was provided.
     finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, process.cwd());
     finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(finalOptions.nativeModulesDir, process.cwd());
-    // TODO: (barthap): remove these console.logs when done ;)
-    // console.log(finalOptions.searchPaths);
-    // console.log(finalOptions.nativeModulesDir);
     return finalOptions;
 }
 exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;

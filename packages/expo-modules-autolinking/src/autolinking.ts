@@ -62,21 +62,29 @@ export async function findDefaultPathsAsync(cwd: string): Promise<string[]> {
   return paths;
 }
 
-// TODO: (barthap): WIP, just a temporary solution, improve this
-// make it work the same way as findDefaultPathsAsync
-// @returns undefined if custom modules dir doesn't exist
+/**
+ * Finds the real path to custom native modules directory.
+ * @returns undefined if custom modules dir not found or doesn't exist
+ */
 export async function resolveNativeModulesDirAsync(
   nativeModulesDir: string | undefined,
   cwd: string
 ): Promise<string | undefined> {
-  // const up = await findUp('package.json', { cwd });
-  // if (!up) {
-  //   return undefined;
-  // }
-  // const resolvedPath = path.join(up, '..', nativeModulesDir || 'modules');
-  // console.log(resolvedPath);
-  // return fs.existsSync(resolvedPath) ? resolvedPath : 'xdd';
-  return path.resolve(nativeModulesDir || 'modules');
+  // first try resolving the provided dir
+  if (nativeModulesDir) {
+    const nativeModulesDirPath = path.resolve(nativeModulesDir);
+    if (await fs.pathExists(nativeModulesDirPath)) {
+      return nativeModulesDirPath;
+    }
+  }
+
+  // if not found, try to find it relative to the package.json
+  const up = await findUp('package.json', { cwd });
+  if (!up) {
+    return undefined;
+  }
+  const resolvedPath = path.join(up, '..', nativeModulesDir || 'modules');
+  return fs.existsSync(resolvedPath) ? resolvedPath : undefined;
 }
 
 /**
@@ -163,7 +171,6 @@ function resolvePackageNameAndVersion(
 
 /**
  * Searches for modules to link based on given config.
- * TODO: (barthap): still duplicated code
  */
 export async function findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults> {
   const options = await mergeLinkingOptionsAsync(providedOptions);
@@ -326,10 +333,6 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
     finalOptions.nativeModulesDir,
     process.cwd()
   );
-
-  // TODO: (barthap): remove these console.logs when done ;)
-  // console.log(finalOptions.searchPaths);
-  // console.log(finalOptions.nativeModulesDir);
 
   return finalOptions;
 }

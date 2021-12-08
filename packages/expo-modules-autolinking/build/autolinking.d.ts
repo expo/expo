@@ -8,10 +8,13 @@ export declare function resolveSearchPathsAsync(searchPaths: string[] | null, cw
  * Looks up for workspace's `node_modules` paths.
  */
 export declare function findDefaultPathsAsync(cwd: string): Promise<string[]>;
+/**
+ * Finds the real path to custom native modules directory.
+ * @returns undefined if custom modules dir not found or doesn't exist
+ */
 export declare function resolveNativeModulesDirAsync(nativeModulesDir: string | undefined, cwd: string): Promise<string | undefined>;
 /**
  * Searches for modules to link based on given config.
- * TODO: (barthap): still duplicated code
  */
 export declare function findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults>;
 /**
