@@ -117,65 +117,60 @@ async function downloadPackageAsync(targetDir) {
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
 async function askForSubstitutionDataAsync(targetDir, options) {
-    var _a;
+    var _a, _b;
     const defaultPackageSlug = path_1.default.basename(targetDir);
     const defaultProjectName = defaultPackageSlug
         .replace(/^./, (match) => match.toUpperCase())
         .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-    const { slug } = options.target
-        ? { slug: defaultPackageSlug }
-        : await (0, prompts_1.default)({
+    const promptQueries = [
+        {
             type: 'text',
             name: 'slug',
             message: 'What is the package slug?',
             initial: defaultPackageSlug,
-        });
-    const { name } = options.name
-        ? options
-        : await (0, prompts_1.default)({
+            resolvedValue: options.target ? defaultPackageSlug : null,
+        },
+        {
             type: 'text',
             name: 'name',
             message: 'What is the project name?',
             initial: defaultProjectName,
-        });
-    const { description } = options.description
-        ? options
-        : await (0, prompts_1.default)({
+        },
+        {
             type: 'text',
             name: 'description',
             message: 'How would you describe the module?',
-        });
-    const { package: projectPackage } = options.package
-        ? options
-        : await (0, prompts_1.default)({
+        },
+        {
             type: 'text',
             name: 'package',
             message: 'What is the Android package name?',
             initial: `expo.modules.${defaultPackageSlug.replace(/\W/g, '').toLowerCase()}`,
-        });
-    const { author } = options.author
-        ? options
-        : await (0, prompts_1.default)({
+        },
+        {
             type: 'text',
             name: 'author',
             message: 'Who is the author?',
             initial: (_a = (await npmWhoamiAsync(targetDir))) !== null && _a !== void 0 ? _a : '',
-        });
-    const { license } = options.license
-        ? options
-        : await (0, prompts_1.default)({
+        },
+        {
             type: 'text',
             name: 'license',
             message: 'What is the license?',
             initial: 'MIT',
-        });
-    const { repo } = options.repo
-        ? options
-        : await (0, prompts_1.default)({
+        },
+        {
             type: 'text',
             name: 'repo',
             message: 'What is the repository URL?',
-        });
+        },
+    ];
+    const answers = {};
+    for (const query of promptQueries) {
+        const { name, resolvedValue } = query;
+        answers[name] = (_b = resolvedValue !== null && resolvedValue !== void 0 ? resolvedValue : options[name]) !== null && _b !== void 0 ? _b : (await (0, prompts_1.default)(query))[name];
+    }
+    const { slug, name, description, package: projectPackage, author, license, repo } = answers;
     return {
         project: {
             slug,
