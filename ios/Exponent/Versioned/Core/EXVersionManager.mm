@@ -47,6 +47,7 @@
 
 #import <RNReanimated/REAModule.h>
 #import <RNReanimated/REAEventDispatcher.h>
+#import <RNReanimated/REAUIManager.h>
 #import <RNReanimated/NativeProxy.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
@@ -524,11 +525,16 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (void *)versionedJsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
+  [bridge moduleForClass:[RCTUIManager class]];
+  REAUIManager *reaUiManager = [REAUIManager new];
+  [reaUiManager setBridge:bridge];
+  RCTUIManager *uiManager = reaUiManager;
+  [bridge updateModuleWithInstance:uiManager];
+
   [bridge moduleForClass:[RCTEventDispatcher class]];
   RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
   [eventDispatcher setBridge:bridge];
   [bridge updateModuleWithInstance:eventDispatcher];
-  _bridge_reanimated = bridge;
 
   EX_WEAKIFY(self);
   const auto executor = [EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
@@ -536,10 +542,16 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       return;
     }
     EX_ENSURE_STRONGIFY(self);
-    auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
-    runtime.global().setProperty(runtime,
-                                 jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-                                 jsi::Object::createFromHostObject(runtime, reanimatedModule));
+    auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
+    runtime.global().setProperty(
+        runtime,
+        "_WORKLET_RUNTIME",
+        static_cast<double>(reinterpret_cast<std::uintptr_t>(reanimatedModule->runtime.get())));
+
+    runtime.global().setProperty(
+         runtime,
+         jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
+         jsi::Object::createFromHostObject(runtime, reanimatedModule));
   };
   return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }

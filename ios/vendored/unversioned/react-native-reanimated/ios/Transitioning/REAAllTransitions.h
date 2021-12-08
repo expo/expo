@@ -8,8 +8,8 @@
 
 @interface REAVisibilityTransition : REATransition
 @property (nonatomic) REATransitionAnimationType animationType;
-- (REATransitionAnimation *)appearView:(UIView*)view inParent:(UIView*)parent;
-- (REATransitionAnimation *)disappearView:(UIView*)view fromParent:(UIView*)parent;
+- (REATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent;
+- (REATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent;
 - (instancetype)initWithConfig:(NSDictionary *)config;
 @end
 

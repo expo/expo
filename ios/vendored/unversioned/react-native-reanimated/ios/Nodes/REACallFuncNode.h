@@ -4,4 +4,3 @@
 @interface REACallFuncNode : REANode
 
 @end
-

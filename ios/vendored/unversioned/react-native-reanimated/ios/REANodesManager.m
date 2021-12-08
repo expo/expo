@@ -2,27 +2,27 @@
 
 #import <React/RCTConvert.h>
 
+#import <React/RCTShadowView.h>
+#import "Nodes/REAAlwaysNode.h"
+#import "Nodes/REABezierNode.h"
+#import "Nodes/REABlockNode.h"
+#import "Nodes/REACallFuncNode.h"
+#import "Nodes/REAClockNodes.h"
+#import "Nodes/REAConcatNode.h"
+#import "Nodes/REACondNode.h"
+#import "Nodes/READebugNode.h"
+#import "Nodes/REAEventNode.h"
+#import "Nodes/REAFunctionNode.h"
+#import "Nodes/REAJSCallNode.h"
 #import "Nodes/REANode.h"
+#import "Nodes/REAOperatorNode.h"
+#import "Nodes/REAParamNode.h"
 #import "Nodes/REAPropsNode.h"
+#import "Nodes/REASetNode.h"
 #import "Nodes/REAStyleNode.h"
 #import "Nodes/REATransformNode.h"
 #import "Nodes/REAValueNode.h"
-#import "Nodes/REABlockNode.h"
-#import "Nodes/REACondNode.h"
-#import "Nodes/REAOperatorNode.h"
-#import "Nodes/REASetNode.h"
-#import "Nodes/READebugNode.h"
-#import "Nodes/REAClockNodes.h"
-#import "Nodes/REAJSCallNode.h"
-#import "Nodes/REABezierNode.h"
-#import "Nodes/REAEventNode.h"
 #import "REAModule.h"
-#import "Nodes/REAAlwaysNode.h"
-#import "Nodes/REAConcatNode.h"
-#import "Nodes/REAParamNode.h"
-#import "Nodes/REAFunctionNode.h"
-#import "Nodes/REACallFuncNode.h"
-#import <React/RCTShadowView.h>
 
 // Interface below has been added in order to use private methods of RCTUIManager,
 // RCTUIManager#UpdateView is a React Method which is exported to JS but in
@@ -32,9 +32,7 @@
 
 @interface RCTUIManager ()
 
-- (void)updateView:(nonnull NSNumber *)reactTag
-          viewName:(NSString *)viewName
-             props:(NSDictionary *)props;
+- (void)updateView:(nonnull NSNumber *)reactTag viewName:(NSString *)viewName props:(NSDictionary *)props;
 
 - (void)setNeedsLayout;
 
@@ -84,13 +82,11 @@
 
 @end
 
-@interface REANodesManager() <RCTUIManagerObserver>
+@interface REANodesManager () <RCTUIManagerObserver>
 
 @end
 
-
-@implementation REANodesManager
-{
+@implementation REANodesManager {
   NSMutableDictionary<REANodeID, REANode *> *_nodes;
   NSMapTable<NSString *, REANode *> *_eventMapping;
   NSMutableArray<id<RCTEvent>> *_eventQueue;
@@ -105,8 +101,7 @@
   volatile void (^_mounting)(void);
 }
 
-- (instancetype)initWithModule:(REAModule *)reanimatedModule
-                     uiManager:(RCTUIManager *)uiManager
+- (instancetype)initWithModule:(REAModule *)reanimatedModule uiManager:(RCTUIManager *)uiManager
 {
   if ((self = [super init])) {
     _reanimatedModule = reanimatedModule;
@@ -119,8 +114,9 @@
     _onAnimationCallbacks = [NSMutableArray new];
     _operationsInBatch = [NSMutableArray new];
   }
-    
+
   _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+  _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
   [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   [_displayLink setPaused:true];
   return self;
@@ -172,14 +168,14 @@
 
 - (void)startUpdatingOnAnimationFrame
 {
-    // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
-    // in operationsBatchDidComplete. If new node has been created and clock has not been started,
-    // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
-    // However, CADisplayLink is using CACurrentMediaTime so if there's need to perform one more
-    // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
-    // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
-    _currentAnimationTimestamp = CACurrentMediaTime();
-    [_displayLink setPaused:false];
+  // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
+  // in operationsBatchDidComplete. If new node has been created and clock has not been started,
+  // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
+  // However, CADisplayLink is using CACurrentMediaTime so if there's need to perform one more
+  // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
+  // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
+  _currentAnimationTimestamp = CACurrentMediaTime();
+  [_displayLink setPaused:false];
 }
 
 - (void)stopUpdatingOnAnimationFrame
@@ -217,7 +213,8 @@
   }
 }
 
-- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block {
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+{
   RCTAssert(_mounting == nil, @"Mouting block is expected to not be set");
   _mounting = block;
   return YES;
@@ -234,7 +231,7 @@
 
     BOOL trySynchronously = _tryRunBatchUpdatesSynchronously;
     _tryRunBatchUpdatesSynchronously = NO;
-    
+
     __weak typeof(self) weakSelf = self;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     RCTExecuteOnUIManagerQueue(^{
@@ -243,27 +240,27 @@
         return;
       }
       BOOL canUpdateSynchronously = trySynchronously && ![strongSelf.uiManager hasEnqueuedUICommands];
-      
+
       if (!canUpdateSynchronously) {
         dispatch_semaphore_signal(semaphore);
       }
-      
+
       for (int i = 0; i < copiedOperationsQueue.count; i++) {
         copiedOperationsQueue[i](strongSelf.uiManager);
       }
-      
+
       if (canUpdateSynchronously) {
         [strongSelf.uiManager runSyncUIUpdatesWithObserver:self];
         dispatch_semaphore_signal(semaphore);
       }
-      //In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event 
-      //to observers because some components (e.g. TextInput) update their UIViews only on that event.
+      // In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event
+      // to observers because some components (e.g. TextInput) update their UIViews only on that event.
       [strongSelf.uiManager setNeedsLayout];
     });
     if (trySynchronously) {
       dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
-    
+
     if (_mounting) {
       _mounting();
       _mounting = nil;
@@ -273,9 +270,10 @@
 }
 
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
-                               viewName:(NSString *) viewName
+                               viewName:(NSString *)viewName
                             nativeProps:(NSMutableDictionary *)nativeProps
-                       trySynchronously:(BOOL)trySync {
+                       trySynchronously:(BOOL)trySync
+{
   if (trySync) {
     _tryRunBatchUpdatesSynchronously = YES;
   }
@@ -284,49 +282,48 @@
   }];
 }
 
-- (void)getValue:(REANodeID)nodeID
-        callback:(RCTResponseSenderBlock)callback
+- (void)getValue:(REANodeID)nodeID callback:(RCTResponseSenderBlock)callback
 {
   id val = _nodes[nodeID].value;
   if (val) {
-    callback(@[val]);
+    callback(@[ val ]);
   } else {
     // NULL is not an object and it's not possible to pass it as callback's argument
-    callback(@[[NSNull null]]);
+    callback(@[ [NSNull null] ]);
   }
 }
 
-#pragma mark -- Graph
+#pragma mark-- Graph
 
-- (void)createNode:(REANodeID)nodeID
-            config:(NSDictionary<NSString *, id> *)config
+- (void)createNode:(REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   static NSDictionary *map;
   static dispatch_once_t mapToken;
   dispatch_once(&mapToken, ^{
-    map = @{@"props": [REAPropsNode class],
-            @"style": [REAStyleNode class],
-            @"transform": [REATransformNode class],
-            @"value": [REAValueNode class],
-            @"block": [REABlockNode class],
-            @"cond": [REACondNode class],
-            @"op": [REAOperatorNode class],
-            @"set": [REASetNode class],
-            @"debug": [READebugNode class],
-            @"clock": [REAClockNode class],
-            @"clockStart": [REAClockStartNode class],
-            @"clockStop": [REAClockStopNode class],
-            @"clockTest": [REAClockTestNode class],
-            @"call": [REAJSCallNode class],
-            @"bezier": [REABezierNode class],
-            @"event": [REAEventNode class],
-            @"always": [REAAlwaysNode class],
-            @"concat": [REAConcatNode class],
-            @"param": [REAParamNode class],
-            @"func": [REAFunctionNode class],
-            @"callfunc": [REACallFuncNode class]
-//            @"listener": nil,
-            };
+    map = @{
+      @"props" : [REAPropsNode class],
+      @"style" : [REAStyleNode class],
+      @"transform" : [REATransformNode class],
+      @"value" : [REAValueNode class],
+      @"block" : [REABlockNode class],
+      @"cond" : [REACondNode class],
+      @"op" : [REAOperatorNode class],
+      @"set" : [REASetNode class],
+      @"debug" : [READebugNode class],
+      @"clock" : [REAClockNode class],
+      @"clockStart" : [REAClockStartNode class],
+      @"clockStop" : [REAClockStopNode class],
+      @"clockTest" : [REAClockTestNode class],
+      @"call" : [REAJSCallNode class],
+      @"bezier" : [REABezierNode class],
+      @"event" : [REAEventNode class],
+      @"always" : [REAAlwaysNode class],
+      @"concat" : [REAConcatNode class],
+      @"param" : [REAParamNode class],
+      @"func" : [REAFunctionNode class],
+      @"callfunc" : [REACallFuncNode class]
+      //            @"listener": nil,
+    };
   });
 
   NSString *nodeType = [RCTConvert NSString:config[@"type"]];
@@ -378,9 +375,7 @@
   [parentNode removeChild:childNode];
 }
 
-- (void)connectNodeToView:(REANodeID)nodeID
-                  viewTag:(NSNumber *)viewTag
-                 viewName:(NSString *)viewName
+- (void)connectNodeToView:(REANodeID)nodeID viewTag:(NSNumber *)viewTag viewName:(NSString *)viewName
 {
   RCTAssertParam(nodeID);
   REANode *node = _nodes[nodeID];
@@ -391,8 +386,7 @@
   }
 }
 
-- (void)disconnectNodeFromView:(REANodeID)nodeID
-                       viewTag:(NSNumber *)viewTag
+- (void)disconnectNodeFromView:(REANodeID)nodeID viewTag:(NSNumber *)viewTag
 {
   RCTAssertParam(nodeID);
   REANode *node = _nodes[nodeID];
@@ -403,36 +397,26 @@
   }
 }
 
-- (void)attachEvent:(NSNumber *)viewTag
-          eventName:(NSString *)eventName
-        eventNodeID:(REANodeID)eventNodeID
+- (void)attachEvent:(NSNumber *)viewTag eventName:(NSString *)eventName eventNodeID:(REANodeID)eventNodeID
 {
   RCTAssertParam(eventNodeID);
   REANode *eventNode = _nodes[eventNodeID];
   RCTAssert([eventNode isKindOfClass:[REAEventNode class]], @"Event node is of an invalid type");
 
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   viewTag,
-                   RCTNormalizeInputEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, RCTNormalizeInputEventName(eventName)];
   RCTAssert([_eventMapping objectForKey:key] == nil, @"Event handler already set for the given view and event type");
   [_eventMapping setObject:eventNode forKey:key];
 }
 
-- (void)detachEvent:(NSNumber *)viewTag
-          eventName:(NSString *)eventName
-        eventNodeID:(REANodeID)eventNodeID
+- (void)detachEvent:(NSNumber *)viewTag eventName:(NSString *)eventName eventNodeID:(REANodeID)eventNodeID
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   viewTag,
-                   RCTNormalizeInputEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, RCTNormalizeInputEventName(eventName)];
   [_eventMapping removeObjectForKey:key];
 }
 
 - (void)processEvent:(id<RCTEvent>)event
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   event.viewTag,
-                   RCTNormalizeInputEventName(event.eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, RCTNormalizeInputEventName(event.eventName)];
   REAEventNode *eventNode = [_eventMapping objectForKey:key];
   [eventNode processEvent:event];
 }
@@ -465,18 +449,14 @@
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   event.viewTag,
-                   RCTNormalizeInputEventName(event.eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, RCTNormalizeInputEventName(event.eventName)];
 
-  NSString *eventHash = [NSString stringWithFormat:@"%@%@",
-  event.viewTag,
-  event.eventName];
+  NSString *eventHash = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
 
   if (_eventHandler != nil) {
     __weak REAEventHandler eventHandler = _eventHandler;
     __weak typeof(self) weakSelf = self;
-    RCTExecuteOnMainQueue(^void(){
+    RCTExecuteOnMainQueue(^void() {
       __typeof__(self) strongSelf = weakSelf;
       if (strongSelf == nil) {
         return;
@@ -506,8 +486,7 @@
   }
 }
 
-- (void)configureProps:(NSSet<NSString *> *)nativeProps
-               uiProps:(NSSet<NSString *> *)uiProps
+- (void)configureProps:(NSSet<NSString *> *)nativeProps uiProps:(NSSet<NSString *> *)uiProps
 {
   _uiProps = uiProps;
   _nativeProps = nativeProps;
@@ -532,7 +511,7 @@
   NSMutableDictionary *nativeProps = [NSMutableDictionary new];
   NSMutableDictionary *jsProps = [NSMutableDictionary new];
 
-  void (^addBlock)(NSString *key, id obj, BOOL * stop) = ^(NSString *key, id obj, BOOL * stop){
+  void (^addBlock)(NSString *key, id obj, BOOL *stop) = ^(NSString *key, id obj, BOOL *stop) {
     if ([self.uiProps containsObject:key]) {
       uiProps[key] = obj;
     } else if ([self.nativeProps containsObject:key]) {
@@ -545,36 +524,33 @@
   [props enumerateKeysAndObjectsUsingBlock:addBlock];
 
   if (uiProps.count > 0) {
-    [self.uiManager
-     synchronouslyUpdateViewOnUIThread:viewTag
-     viewName:viewName
-     props:uiProps];
-    }
-    if (nativeProps.count > 0) {
-      [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps trySynchronously:YES];
-    }
-    if (jsProps.count > 0) {
-      [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
-                                          body:@{@"viewTag": viewTag, @"props": jsProps }];
-    }
+    [self.uiManager synchronouslyUpdateViewOnUIThread:viewTag viewName:viewName props:uiProps];
+  }
+  if (nativeProps.count > 0) {
+    [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps trySynchronously:YES];
+  }
+  if (jsProps.count > 0) {
+    [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
+                                        body:@{@"viewTag" : viewTag, @"props" : jsProps}];
+  }
 }
 
-- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
-               propName:(nonnull NSString *)propName
+- (NSString *)obtainProp:(nonnull NSNumber *)viewTag propName:(nonnull NSString *)propName
 {
-    UIView* view = [self.uiManager viewForReactTag:viewTag];
-    
-    NSString* result = [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
-    
-    if ([propName isEqualToString:@"opacity"]) {
-        CGFloat alpha = view.alpha;
-        result = [@(alpha) stringValue];
-    } else if ([propName isEqualToString:@"zIndex"]) {
-        NSInteger zIndex = view.reactZIndex;
-        result = [@(zIndex) stringValue];
-    }
-    
-    return result;
+  UIView *view = [self.uiManager viewForReactTag:viewTag];
+
+  NSString *result =
+      [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
+
+  if ([propName isEqualToString:@"opacity"]) {
+    CGFloat alpha = view.alpha;
+    result = [@(alpha) stringValue];
+  } else if ([propName isEqualToString:@"zIndex"]) {
+    NSInteger zIndex = view.reactZIndex;
+    result = [@(zIndex) stringValue];
+  }
+
+  return result;
 }
 
 @end

@@ -6,7 +6,7 @@
   NSArray *_argMapping;
 }
 
-- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _argMapping = config[@"argMapping"];

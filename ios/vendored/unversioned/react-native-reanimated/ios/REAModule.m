@@ -6,10 +6,7 @@
 
 typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
 
-RCTBridge *_bridge_reanimated = nil;
-
-@implementation REAModule
-{
+@implementation REAModule {
   NSMutableArray<AnimatedOperation> *_operations;
   REATransitionManager *_transitionManager;
 }
@@ -18,7 +15,6 @@ RCT_EXPORT_MODULE(ReanimatedModule);
 
 - (void)invalidate
 {
-  _bridge_reanimated = nil;
   _transitionManager = nil;
   [_nodesManager invalidate];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
@@ -36,8 +32,7 @@ RCT_EXPORT_MODULE(ReanimatedModule);
 {
   [super setBridge:bridge];
 
-  _nodesManager = [[REANodesManager alloc] initWithModule:self
-                                                uiManager:self.bridge.uiManager];
+  _nodesManager = [[REANodesManager alloc] initWithModule:self uiManager:self.bridge.uiManager];
   _operations = [NSMutableArray new];
 
   _transitionManager = [[REATransitionManager alloc] initWithUIManager:self.bridge.uiManager];
@@ -45,55 +40,51 @@ RCT_EXPORT_MODULE(ReanimatedModule);
   [bridge.uiManager.observerCoordinator addObserver:self];
 }
 
-#pragma mark -- Transitioning API
+#pragma mark-- Transitioning API
 
-RCT_EXPORT_METHOD(animateNextTransition:(nonnull NSNumber *)rootTag config:(NSDictionary *)config)
+RCT_EXPORT_METHOD(animateNextTransition : (nonnull NSNumber *)rootTag config : (NSDictionary *)config)
 {
   [_transitionManager animateNextTransitionInRoot:rootTag withConfig:config];
 }
 
-#pragma mark -- API
+#pragma mark-- API
 
-RCT_EXPORT_METHOD(createNode:(nonnull NSNumber *)nodeID
-                  config:(NSDictionary<NSString *, id> *)config)
+RCT_EXPORT_METHOD(createNode : (nonnull NSNumber *)nodeID config : (NSDictionary<NSString *, id> *)config)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager createNode:nodeID config:config];
   }];
 }
 
-RCT_EXPORT_METHOD(dropNode:(nonnull NSNumber *)nodeID)
+RCT_EXPORT_METHOD(dropNode : (nonnull NSNumber *)nodeID)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager dropNode:nodeID];
   }];
 }
 
-RCT_EXPORT_METHOD(getValue:(nonnull NSNumber *)nodeID
-                  callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(getValue : (nonnull NSNumber *)nodeID callback : (RCTResponseSenderBlock)callback)
+{
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager getValue:nodeID callback:(RCTResponseSenderBlock)callback];
   }];
 }
 
-RCT_EXPORT_METHOD(connectNodes:(nonnull NSNumber *)parentID
-                  childTag:(nonnull NSNumber *)childID)
+RCT_EXPORT_METHOD(connectNodes : (nonnull NSNumber *)parentID childTag : (nonnull NSNumber *)childID)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager connectNodes:parentID childID:childID];
   }];
 }
 
-RCT_EXPORT_METHOD(disconnectNodes:(nonnull NSNumber *)parentID
-                  childTag:(nonnull NSNumber *)childID)
+RCT_EXPORT_METHOD(disconnectNodes : (nonnull NSNumber *)parentID childTag : (nonnull NSNumber *)childID)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager disconnectNodes:parentID childID:childID];
   }];
 }
 
-RCT_EXPORT_METHOD(connectNodeToView:(nonnull NSNumber *)nodeID
-                  viewTag:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(connectNodeToView : (nonnull NSNumber *)nodeID viewTag : (nonnull NSNumber *)viewTag)
 {
   NSString *viewName = [self.bridge.uiManager viewNameForReactTag:viewTag];
   [self addOperationBlock:^(REANodesManager *nodesManager) {
@@ -101,43 +92,43 @@ RCT_EXPORT_METHOD(connectNodeToView:(nonnull NSNumber *)nodeID
   }];
 }
 
-RCT_EXPORT_METHOD(disconnectNodeFromView:(nonnull NSNumber *)nodeID
-                  viewTag:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(disconnectNodeFromView : (nonnull NSNumber *)nodeID viewTag : (nonnull NSNumber *)viewTag)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager disconnectNodeFromView:nodeID viewTag:viewTag];
   }];
 }
 
-RCT_EXPORT_METHOD(attachEvent:(nonnull NSNumber *)viewTag
-                  eventName:(nonnull NSString *)eventName
-                  eventNodeID:(nonnull NSNumber *)eventNodeID)
+RCT_EXPORT_METHOD(attachEvent
+                  : (nonnull NSNumber *)viewTag eventName
+                  : (nonnull NSString *)eventName eventNodeID
+                  : (nonnull NSNumber *)eventNodeID)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager attachEvent:viewTag eventName:eventName eventNodeID:eventNodeID];
   }];
 }
 
-RCT_EXPORT_METHOD(detachEvent:(nonnull NSNumber *)viewTag
-                  eventName:(nonnull NSString *)eventName
-                  eventNodeID:(nonnull NSNumber *)eventNodeID)
+RCT_EXPORT_METHOD(detachEvent
+                  : (nonnull NSNumber *)viewTag eventName
+                  : (nonnull NSString *)eventName eventNodeID
+                  : (nonnull NSNumber *)eventNodeID)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager detachEvent:viewTag eventName:eventName eventNodeID:eventNodeID];
   }];
 }
 
-RCT_EXPORT_METHOD(configureProps:(nonnull NSArray<NSString *> *)nativeProps
-                         uiProps:(nonnull NSArray<NSString *> *)uiProps)
+RCT_EXPORT_METHOD(configureProps
+                  : (nonnull NSArray<NSString *> *)nativeProps uiProps
+                  : (nonnull NSArray<NSString *> *)uiProps)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager configureProps:[NSSet setWithArray:nativeProps] uiProps:[NSSet setWithArray:uiProps]];
   }];
 }
 
-RCT_EXPORT_METHOD(setValue:(nonnull NSNumber *)nodeID
-                  newValue:(nonnull NSNumber *)newValue
-                  )
+RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)nodeID newValue : (nonnull NSNumber *)newValue)
 {
   [self addOperationBlock:^(REANodesManager *nodesManager) {
     [nodesManager setValueForNodeID:nodeID value:newValue];
@@ -151,7 +142,7 @@ RCT_EXPORT_METHOD(triggerRender)
   }];
 }
 
-#pragma mark -- Batch handling
+#pragma mark-- Batch handling
 
 - (void)addOperationBlock:(AnimatedOperation)operation
 {
@@ -179,11 +170,11 @@ RCT_EXPORT_METHOD(triggerRender)
   }];
 }
 
-#pragma mark -- Events
+#pragma mark-- Events
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"onReanimatedCall", @"onReanimatedPropsChange"];
+  return @[ @"onReanimatedCall", @"onReanimatedPropsChange" ];
 }
 
 - (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event

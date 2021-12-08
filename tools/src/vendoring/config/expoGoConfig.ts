@@ -1,3 +1,4 @@
+import fs from 'fs-extra';
 import { Podspec } from '../../CocoaPods';
 import { VendoringTargetConfig } from '../types';
 
@@ -56,18 +57,38 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',
       semverPrefix: '~',
       ios: {
+        async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
+          let content = await fs.readFile(podspecPath, 'utf-8');
+          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.64.3'");
+          content = content.replace(/(puts "\[RNReanimated\].*$)/gm, '# $1');
+          await fs.writeFile(podspecPath, content);
+          return podspecPath;
+        },
         mutatePodspec(podspec: Podspec) {
           // TODO: The podspec checks RN version from package.json.
           // however we don't have RN's package.json in the place where it looks for and the fallback
-          // is set to `0.64.0`. we should manually transform to the exact RN version.
-          // currently both expo go and reanimated latest RN version is `0.64` that we don't need to transform.
-          // keep the code here in case reanimated upgrade and fallback default RN version as `0.65.0`.
-          // Fix compiler flags
+          // is set to `0.66.0`.
+          // currently we change the version in `preReadPodspecHookAsync`, once reanimated removed the `puts` in error message.
+          // we should use the json based transformation here. that's why we keep the referenced code and comment out.
           // podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
           // podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
           //   'RNVERSION=64',
           //   'RNVERSION=63'
           // );
+        },
+        transforms: {
+          content: [
+            {
+              paths: 'REAUIManager.mm',
+              find: /^#import "RCT(.*).h"$/gm,
+              replaceWith: '#import <React/RCT$1.h>',
+            },
+            {
+              paths: 'REAPropsNode.m',
+              find: /^#import "React\/RCT(.*).h"$/gm,
+              replaceWith: '#import <React/RCT$1.h>',
+            },
+          ],
         },
       },
     },

@@ -9,7 +9,11 @@ project(":expo-dev-client").projectDir = new File("../../../packages/expo-dev-cl
 
 // Include Expo modules
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
-useExpoModules()
+useExpoModules([
+  exclude: [
+    'react-native-reanimated',
+  ]
+])
 
 rootProject.name = 'BareExpo'
 
