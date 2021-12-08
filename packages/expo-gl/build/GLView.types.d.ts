@@ -1,6 +1,5 @@
 import { Component, ComponentClass } from 'react';
 import { ViewProps } from 'react-native';
-import WebGL2RenderingContext from './WebGL2RenderingContext';
 export declare type SurfaceCreateEvent = {
     nativeEvent: {
         exglCtxId: number;
