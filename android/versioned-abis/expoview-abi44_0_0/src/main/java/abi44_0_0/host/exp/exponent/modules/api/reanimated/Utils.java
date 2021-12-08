@@ -3,7 +3,6 @@ package abi44_0_0.host.exp.exponent.modules.api.reanimated;
 import abi44_0_0.com.facebook.react.bridge.ReadableArray;
 import abi44_0_0.com.facebook.react.bridge.ReadableMap;
 import abi44_0_0.com.facebook.react.bridge.ReadableMapKeySetIterator;
-
 import java.util.HashMap;
 import java.util.Map;
 
