@@ -1,18 +1,13 @@
 package abi44_0_0.host.exp.exponent.modules.api.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Paint
-import android.os.Build
 import android.os.Parcelable
 import android.util.SparseArray
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
-import android.widget.TextView
 import abi44_0_0.com.facebook.react.bridge.GuardedRunnable
 import abi44_0_0.com.facebook.react.bridge.ReactContext
 import abi44_0_0.com.facebook.react.uimanager.UIManagerModule
@@ -84,28 +79,6 @@ class Screen constructor(context: ReactContext?) : ViewGroup(context) {
               ?.updateNodeSize(id, width, height)
           }
         })
-    }
-  }
-
-  override fun onAttachedToWindow() {
-    super.onAttachedToWindow()
-    // This method implements a workaround for RN's autoFocus functionality. Because of the way
-    // autoFocus is implemented it sometimes gets triggered before native text view is mounted. As
-    // a result Android ignores calls for opening soft keyboard and here we trigger it manually
-    // again after the screen is attached.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      var view = focusedChild
-      if (view != null) {
-        while (view is ViewGroup) {
-          view = view.focusedChild
-        }
-        if (view is TextView) {
-          val textView = view
-          if (textView.showSoftInputOnFocus) {
-            textView.addOnAttachStateChangeListener(sShowSoftKeyboardOnAttach)
-          }
-        }
-      }
     }
   }
 
@@ -183,6 +156,13 @@ class Screen constructor(context: ReactContext?) : ViewGroup(context) {
     fragment?.let { ScreenWindowTraits.setOrientation(this, it.tryGetActivity()) }
   }
 
+  // Accepts one of 4 accessibility flags
+  // developer.android.com/reference/android/view/View#attr_android:importantForAccessibility
+  fun changeAccessibilityMode(mode: Int) {
+    this.importantForAccessibility = mode
+    this.headerConfig?.toolbar?.importantForAccessibility = mode
+  }
+
   var statusBarStyle: String?
     get() = mStatusBarStyle
     set(statusBarStyle) {
@@ -253,19 +233,5 @@ class Screen constructor(context: ReactContext?) : ViewGroup(context) {
 
   enum class WindowTraits {
     ORIENTATION, COLOR, STYLE, TRANSLUCENT, HIDDEN, ANIMATED
-  }
-
-  companion object {
-    private val sShowSoftKeyboardOnAttach: OnAttachStateChangeListener =
-      object : OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(view: View) {
-          val inputMethodManager =
-            view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-          inputMethodManager.showSoftInput(view, 0)
-          view.removeOnAttachStateChangeListener(this)
-        }
-
-        override fun onViewDetachedFromWindow(view: View) {}
-      }
   }
 }

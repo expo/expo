@@ -11,6 +11,7 @@ import abi44_0_0.host.exp.exponent.modules.api.screens.events.StackFinishTransit
 import java.util.Collections
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+
 import host.exp.expoview.R
 
 class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(context) {
@@ -121,11 +122,11 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
         // if the previous top screen does not exist anymore and the new top was not on the stack
         // before, probably replace or reset was called, so we play the "close animation".
         // Otherwise it's open animation
-        shouldUseOpenAnimation = (
-          mScreenFragments.contains(mTopScreen) ||
-            newTop.screen.replaceAnimation !== Screen.ReplaceAnimation.POP
-          )
-        stackAnimation = newTop.screen.stackAnimation
+        val containsTopScreen = mTopScreen?.let { mScreenFragments.contains(it) } == true
+        val isPushReplace = newTop.screen.replaceAnimation === Screen.ReplaceAnimation.PUSH
+        shouldUseOpenAnimation = containsTopScreen || isPushReplace
+        // if the replace animation is `push`, the new top screen provides the animation, otherwise the previous one
+        stackAnimation = if (shouldUseOpenAnimation) newTop.screen.stackAnimation else mTopScreen?.screen?.stackAnimation
       } else if (mTopScreen == null && newTop != null) {
         // mTopScreen was not present before so newTop is the first screen added to a stack
         // and we don't want the animation when it is entering, but we want to send the
@@ -239,8 +240,33 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
       mTopScreen = newTop
       mStack.clear()
       mStack.addAll(mScreenFragments)
+
+      turnOffA11yUnderTransparentScreen(visibleBottom)
+
       it.commitNowAllowingStateLoss()
     }
+  }
+
+  // only top visible screen should be accessible
+  private fun turnOffA11yUnderTransparentScreen(visibleBottom: ScreenStackFragment?) {
+    if (mScreenFragments.size > 1 && visibleBottom != null) {
+      mTopScreen?.let {
+        if (isTransparent(it)) {
+          val screenFragmentsBeneathTop = mScreenFragments.slice(0 until mScreenFragments.size - 1).asReversed()
+          // go from the top of the stack excluding the top screen
+          for (screenFragment in screenFragmentsBeneathTop) {
+            screenFragment.screen.changeAccessibilityMode(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
+
+            // don't change a11y below non-transparent screens
+            if (screenFragment == visibleBottom) {
+              break
+            }
+          }
+        }
+      }
+    }
+
+    topScreen?.changeAccessibilityMode(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
   }
 
   override fun notifyContainerUpdate() {

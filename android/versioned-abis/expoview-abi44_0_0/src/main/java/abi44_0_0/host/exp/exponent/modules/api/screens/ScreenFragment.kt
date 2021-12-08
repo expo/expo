@@ -2,6 +2,7 @@ package abi44_0_0.host.exp.exponent.modules.api.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -61,7 +62,7 @@ open class ScreenFragment : Fragment {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    val wrapper = context?.let { FrameLayout(it) }
+    val wrapper = context?.let { ScreensFrameLayout(it) }
 
     val params = FrameLayout.LayoutParams(
       ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
@@ -69,6 +70,23 @@ open class ScreenFragment : Fragment {
     screen.layoutParams = params
     wrapper?.addView(recycleView(screen))
     return wrapper
+  }
+
+  private class ScreensFrameLayout(
+    context: Context,
+  ) : FrameLayout(context) {
+    /**
+     * This method implements a workaround for RN's autoFocus functionality. Because of the way
+     * autoFocus is implemented it dismisses soft keyboard in fragment transition
+     * due to change of visibility of the view at the start of the transition. Here we override the
+     * call to `clearFocus` when the visibility of view is `INVISIBLE` since `clearFocus` triggers the
+     * hiding of the keyboard in `ReactEditText.java`.
+     */
+    override fun clearFocus() {
+      if (visibility != INVISIBLE) {
+        super.clearFocus()
+      }
+    }
   }
 
   open fun onContainerUpdate() {
