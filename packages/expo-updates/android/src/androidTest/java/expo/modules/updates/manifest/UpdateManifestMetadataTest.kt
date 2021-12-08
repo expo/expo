@@ -7,8 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.manifests.core.NewManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
-import io.mockk.every
-import io.mockk.mockk
+import okhttp3.Headers
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.After
@@ -46,16 +45,12 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteAllFields() {
-    val response1 = mockk<ManifestResponse>(relaxed = true)
-    every { response1.header("expo-manifest-filters") } returns "branch-name=\"rollout-1\",test=\"value\""
-
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, response1, config)
+    val headers1 = Headers.of(mapOf("expo-manifest-filters" to "branch-name=\"rollout-1\",test=\"value\""))
+    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
 
-    val response2 = mockk<ManifestResponse>(relaxed = true)
-    every { response2.header("expo-manifest-filters") } returns "branch-name=\"rollout-2\""
-
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, response2, config)
+    val headers2 = Headers.of(mapOf("expo-manifest-filters" to "branch-name=\"rollout-2\""))
+    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
@@ -67,16 +62,12 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteEmpty() {
-    val response1 = mockk<ManifestResponse>(relaxed = true)
-    every { response1.header("expo-manifest-filters") } returns "branch-name=\"rollout-1\""
-
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, response1, config)
+    val headers1 = Headers.of(mapOf("expo-manifest-filters" to "branch-name=\"rollout-1\""))
+    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
 
-    val response2 = mockk<ManifestResponse>(relaxed = true)
-    every { response2.header("expo-manifest-filters") } returns ""
-
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, response2, config)
+    val headers2 = Headers.of(mapOf("expo-manifest-filters" to ""))
+    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
@@ -87,16 +78,12 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteNull() {
-    val response1 = mockk<ManifestResponse>(relaxed = true)
-    every { response1.header("expo-manifest-filters") } returns "branch-name=\"rollout-1\""
-
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, response1, config)
+    val headers1 = Headers.of(mapOf("expo-manifest-filters" to "branch-name=\"rollout-1\""))
+    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
 
-    val response2 = mockk<ManifestResponse>(relaxed = true)
-    every { response2.header("expo-manifest-filters") } returns null
-
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, response2, config)
+    val headers2 = Headers.of()
+    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
