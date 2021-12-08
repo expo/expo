@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@expo/websql": "^1.0.1",
-    "expo-modules-core": "~0.4.8",
+    "expo-modules-core": "~0.4.9",
     "lodash": "^4.17.15"
   },
   "devDependencies": {

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Improve external Android handlers or listeners backward compatibility by Java 8 interface default method. ([#15421](https://github.com/expo/expo/pull/15421) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.4.9 — 2021-12-08
+
+### 🎉 New features
+
+- Improve external Android handlers or listeners backward compatibility by Java 8 interface default method. ([#15421](https://github.com/expo/expo/pull/15421) by [@kudo](https://github.com/kudo))
 
 ## 0.4.8 — 2021-11-11
 
