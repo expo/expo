@@ -74,7 +74,10 @@ import com.android.build.OutputFile
  * ]
  */
 
+def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
 project.ext.react = [
+    entryFile: ["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android"].execute(null, rootDir).text.trim(),
     enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",  // clean and rebuild if changing
 ]
 
