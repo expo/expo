@@ -3,7 +3,7 @@
 
 @class ABI44_0_0REANodesManager;
 
-typedef NSNumber* ABI44_0_0REANodeID;
+typedef NSNumber *ABI44_0_0REANodeID;
 
 @protocol ABI44_0_0REAFinalNode
 
@@ -12,15 +12,14 @@ typedef NSNumber* ABI44_0_0REANodeID;
 @end
 
 @interface ABI44_0_0REAUpdateContext : NSObject
-@property (nonatomic) NSString* callID;
+@property (nonatomic) NSString *callID;
 @end
 
 @interface ABI44_0_0REANode : NSObject
 
 + (void)runPropUpdates:(nonnull ABI44_0_0REAUpdateContext *)context;
 
-- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID
-                    config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, weak, nullable) ABI44_0_0REANodesManager *nodesManager;
 @property (nonatomic, nullable) ABI44_0_0REAUpdateContext *updateContext;

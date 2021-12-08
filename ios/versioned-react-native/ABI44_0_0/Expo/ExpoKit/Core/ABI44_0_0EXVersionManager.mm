@@ -47,6 +47,7 @@
 
 #import <ABI44_0_0RNReanimated/ABI44_0_0REAModule.h>
 #import <ABI44_0_0RNReanimated/ABI44_0_0REAEventDispatcher.h>
+#import <ABI44_0_0RNReanimated/ABI44_0_0REAUIManager.h>
 #import <ABI44_0_0RNReanimated/NativeProxy.h>
 
 #import <ABI44_0_0React/ABI44_0_0RCTCxxBridgeDelegate.h>
@@ -524,11 +525,16 @@ ABI44_0_0RCT_EXTERN void ABI44_0_0EXRegisterScopedModule(Class, ...);
 
 - (void *)versionedJsExecutorFactoryForBridge:(ABI44_0_0RCTBridge *)bridge
 {
+  [bridge moduleForClass:[ABI44_0_0RCTUIManager class]];
+  ABI44_0_0REAUIManager *reaUiManager = [ABI44_0_0REAUIManager new];
+  [reaUiManager setBridge:bridge];
+  ABI44_0_0RCTUIManager *uiManager = reaUiManager;
+  [bridge updateModuleWithInstance:uiManager];
+
   [bridge moduleForClass:[ABI44_0_0RCTEventDispatcher class]];
   ABI44_0_0RCTEventDispatcher *eventDispatcher = [ABI44_0_0REAEventDispatcher new];
   [eventDispatcher setBridge:bridge];
   [bridge updateModuleWithInstance:eventDispatcher];
-  ABI44_0_0_bridge_reanimated = bridge;
 
   ABI44_0_0EX_WEAKIFY(self);
   const auto executor = [ABI44_0_0EXWeak_self, bridge](ABI44_0_0facebook::jsi::Runtime &runtime) {
@@ -536,10 +542,16 @@ ABI44_0_0RCT_EXTERN void ABI44_0_0EXRegisterScopedModule(Class, ...);
       return;
     }
     ABI44_0_0EX_ENSURE_STRONGIFY(self);
-    auto reanimatedModule = ABI44_0_0reanimated::createReanimatedModule(bridge.jsCallInvoker);
-    runtime.global().setProperty(runtime,
-                                 jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-                                 jsi::Object::createFromHostObject(runtime, reanimatedModule));
+    auto reanimatedModule = ABI44_0_0reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
+    runtime.global().setProperty(
+        runtime,
+        "_WORKLET_RUNTIME",
+        static_cast<double>(reinterpret_cast<std::uintptr_t>(reanimatedModule->runtime.get())));
+
+    runtime.global().setProperty(
+         runtime,
+         jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
+         jsi::Object::createFromHostObject(runtime, reanimatedModule));
   };
   return new ABI44_0_0facebook::ABI44_0_0React::JSCExecutorFactory(ABI44_0_0RCTJSIExecutorRuntimeInstaller(executor));
 }
