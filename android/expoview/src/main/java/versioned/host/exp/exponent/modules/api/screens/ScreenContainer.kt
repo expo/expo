@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.facebook.react.ReactRootView
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.ChoreographerCompat
 import com.facebook.react.modules.core.ReactChoreographer
 import versioned.host.exp.exponent.modules.api.screens.Screen.ActivityState
@@ -176,16 +177,12 @@ open class ScreenContainer<T : ScreenFragment>(context: Context?) : ViewGroup(co
     return transaction
   }
 
-  private fun attachScreen(screenFragment: ScreenFragment) {
-    createTransaction().add(id, screenFragment).commitNowAllowingStateLoss()
+  private fun attachScreen(transaction: FragmentTransaction, screenFragment: ScreenFragment) {
+    transaction.add(id, screenFragment)
   }
 
-  private fun moveToFront(screenFragment: ScreenFragment) {
-    createTransaction().remove(screenFragment).add(id, screenFragment).commitNowAllowingStateLoss()
-  }
-
-  private fun detachScreen(screenFragment: ScreenFragment) {
-    createTransaction().remove(screenFragment).commitNowAllowingStateLoss()
+  private fun detachScreen(transaction: FragmentTransaction, screenFragment: ScreenFragment) {
+    transaction.remove(screenFragment)
   }
 
   private fun getActivityState(screenFragment: ScreenFragment): ActivityState? {
@@ -276,10 +273,18 @@ open class ScreenContainer<T : ScreenFragment>(context: Context?) : ViewGroup(co
     // The exception to this rule is `updateImmediately` which is triggered by actions
     // not connected to React view hierarchy changes, but rather internal events
     mNeedUpdate = true
+    (context as? ReactContext)?.runOnUiQueueThread {
+      // We schedule the update here because LayoutAnimations of `react-native-reanimated`
+      // sometimes attach/detach screens after the layout block of `ScreensShadowNode` has
+      // already run, and we want to update the container then too. In the other cases,
+      // this code will do nothing since it will run after the UIBlock when `mNeedUpdate`
+      // will already be false.
+      performUpdates()
+    }
   }
 
   protected fun performUpdatesNow() {
-    // we want to update the immediately when the fragment manager is set or native back button
+    // we want to update immediately when the fragment manager is set or native back button
     // dismiss is dispatched or Screen's activityState changes since it is not connected to React
     // view hierarchy changes and will not trigger `onBeforeLayout` method of `ScreensShadowNode`
     mNeedUpdate = true
@@ -287,7 +292,7 @@ open class ScreenContainer<T : ScreenFragment>(context: Context?) : ViewGroup(co
   }
 
   fun performUpdates() {
-    if (!mNeedUpdate || !mIsAttached || mFragmentManager == null) {
+    if (!mNeedUpdate || !mIsAttached || mFragmentManager == null || mFragmentManager?.isDestroyed == true) {
       return
     }
     mNeedUpdate = false
@@ -296,43 +301,53 @@ open class ScreenContainer<T : ScreenFragment>(context: Context?) : ViewGroup(co
   }
 
   open fun onUpdate() {
-    // detach screens that are no longer active
-    val orphaned: MutableSet<Fragment> = HashSet(requireNotNull(mFragmentManager, { "mFragmentManager is null when performing update in ScreenContainer" }).fragments)
-    for (screenFragment in mScreenFragments) {
-      if (getActivityState(screenFragment) === ActivityState.INACTIVE &&
-        screenFragment.isAdded
-      ) {
-        detachScreen(screenFragment)
+    createTransaction().let {
+      // detach screens that are no longer active
+      val orphaned: MutableSet<Fragment> = HashSet(requireNotNull(mFragmentManager, { "mFragmentManager is null when performing update in ScreenContainer" }).fragments)
+      for (screenFragment in mScreenFragments) {
+        if (getActivityState(screenFragment) === ActivityState.INACTIVE &&
+          screenFragment.isAdded
+        ) {
+          detachScreen(it, screenFragment)
+        }
+        orphaned.remove(screenFragment)
       }
-      orphaned.remove(screenFragment)
-    }
-    if (orphaned.isNotEmpty()) {
-      val orphanedAry = orphaned.toTypedArray()
-      for (fragment in orphanedAry) {
-        if (fragment is ScreenFragment) {
-          if (fragment.screen.container == null) {
-            detachScreen(fragment)
+      if (orphaned.isNotEmpty()) {
+        val orphanedAry = orphaned.toTypedArray()
+        for (fragment in orphanedAry) {
+          if (fragment is ScreenFragment) {
+            if (fragment.screen.container == null) {
+              detachScreen(it, fragment)
+            }
           }
         }
       }
-    }
-    var transitioning = true
-    if (topScreen != null) {
-      // if there is an "onTop" screen it means the transition has ended
-      transitioning = false
-    }
 
-    // attach newly activated screens
-    var addedBefore = false
-    for (screenFragment in mScreenFragments) {
-      val activityState = getActivityState(screenFragment)
-      if (activityState !== ActivityState.INACTIVE && !screenFragment.isAdded) {
-        addedBefore = true
-        attachScreen(screenFragment)
-      } else if (activityState !== ActivityState.INACTIVE && addedBefore) {
-        moveToFront(screenFragment)
+      // if there is an "onTop" screen it means the transition has ended
+      val transitioning = topScreen == null
+
+      // attach newly activated screens
+      var addedBefore = false
+      val pendingFront: ArrayList<T> = ArrayList()
+
+      for (screenFragment in mScreenFragments) {
+        val activityState = getActivityState(screenFragment)
+        if (activityState !== ActivityState.INACTIVE && !screenFragment.isAdded) {
+          addedBefore = true
+          attachScreen(it, screenFragment)
+        } else if (activityState !== ActivityState.INACTIVE && addedBefore) {
+          // we detach the screen and then reattach it later to make it appear on front
+          detachScreen(it, screenFragment)
+          pendingFront.add(screenFragment)
+        }
+        screenFragment.screen.setTransitioning(transitioning)
       }
-      screenFragment.screen.setTransitioning(transitioning)
+
+      for (screenFragment in pendingFront) {
+        attachScreen(it, screenFragment)
+      }
+
+      it.commitNowAllowingStateLoss()
     }
   }
 

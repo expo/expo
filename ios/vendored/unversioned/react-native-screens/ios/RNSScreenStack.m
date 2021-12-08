@@ -425,12 +425,12 @@
   // controller is still there
   BOOL firstTimePush = ![lastTop isKindOfClass:[RNSScreen class]];
 
-  BOOL shouldAnimate = !firstTimePush && ((RNSScreenView *)lastTop.view).stackAnimation != RNSScreenStackAnimationNone;
-
   if (firstTimePush) {
     // nothing pushed yet
     [_controller setViewControllers:controllers animated:NO];
   } else if (top != lastTop) {
+    // we always provide `animated:YES` since, if the user does not want the animation, he will provide
+    // `stackAnimation: 'none'`, which will resolve in no animation anyways.
     if (![controllers containsObject:lastTop]) {
       // if the previous top screen does not exist anymore and the new top was not on the stack before, probably replace
       // was called, so we check the animation
@@ -445,7 +445,7 @@
         NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
         [newControllers addObject:lastTop];
         [_controller setViewControllers:newControllers animated:NO];
-        [_controller popViewControllerAnimated:shouldAnimate];
+        [_controller popViewControllerAnimated:YES];
       }
     } else if (![_controller.viewControllers containsObject:top]) {
       // new top controller is not on the stack
@@ -454,11 +454,11 @@
       NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
       [newControllers removeLastObject];
       [_controller setViewControllers:newControllers animated:NO];
-      [_controller pushViewController:top animated:shouldAnimate];
+      [_controller pushViewController:top animated:YES];
     } else {
       // don't really know what this case could be, but may need to handle it
       // somehow
-      [_controller setViewControllers:controllers animated:shouldAnimate];
+      [_controller setViewControllers:controllers animated:NO];
     }
   } else {
     // change wasn't on the top of the stack. We don't need animation.
@@ -487,6 +487,23 @@
 
   [self setPushViewControllers:pushControllers];
   [self setModalViewControllers:modalControllers];
+}
+
+// By default, the header buttons that are not inside the native hit area
+// cannot be clicked, so we check it by ourselves
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (CGRectContainsPoint(_controller.navigationBar.frame, point)) {
+    // headerConfig should be the first subview of the topmost screen
+    UIView *headerConfig = [[_reactSubviews.lastObject reactSubviews] firstObject];
+    if ([headerConfig isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+      UIView *headerHitTestResult = [headerConfig hitTest:point withEvent:event];
+      if (headerHitTestResult != nil) {
+        return headerHitTestResult;
+      }
+    }
+  }
+  return [super hitTest:point withEvent:event];
 }
 
 - (void)layoutSubviews
@@ -555,7 +572,8 @@
 {
   RNSScreenView *topScreen = (RNSScreenView *)_controller.viewControllers.lastObject.view;
 
-  if (!topScreen.gestureEnabled || _controller.viewControllers.count < 2) {
+  if (![topScreen isKindOfClass:[RNSScreenView class]] || !topScreen.gestureEnabled ||
+      _controller.viewControllers.count < 2) {
     return NO;
   }
 

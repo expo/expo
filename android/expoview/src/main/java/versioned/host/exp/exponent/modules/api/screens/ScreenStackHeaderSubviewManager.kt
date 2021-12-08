@@ -24,6 +24,7 @@ class ScreenStackHeaderSubviewManager : ReactViewManager() {
       "center" -> ScreenStackHeaderSubview.Type.CENTER
       "right" -> ScreenStackHeaderSubview.Type.RIGHT
       "back" -> ScreenStackHeaderSubview.Type.BACK
+      "searchBar" -> ScreenStackHeaderSubview.Type.SEARCH_BAR
       else -> throw JSApplicationIllegalArgumentException("Unknown type $type")
     }
   }

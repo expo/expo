@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.screens
 
 import android.view.View
 import com.facebook.react.bridge.JSApplicationCausedNativeException
+import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
@@ -127,6 +128,13 @@ class ScreenStackHeaderConfigViewManager : ViewGroupManager<ScreenStackHeaderCon
   @ReactProp(name = "direction")
   fun setDirection(config: ScreenStackHeaderConfig, direction: String?) {
     config.setDirection(direction)
+  }
+
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
+    return MapBuilder.builder<String, Any>()
+      .put("onAttached", MapBuilder.of("registrationName", "onAttached"))
+      .put("onDetached", MapBuilder.of("registrationName", "onDetached"))
+      .build()
   }
 
   companion object {
