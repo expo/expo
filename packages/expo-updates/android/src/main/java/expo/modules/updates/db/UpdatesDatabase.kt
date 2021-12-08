@@ -19,7 +19,7 @@ import java.util.*
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
   exportSchema = false,
-  version = 8
+  version = 9
 )
 @TypeConverters(Converters::class)
 abstract class UpdatesDatabase : RoomDatabase() {
@@ -41,6 +41,7 @@ abstract class UpdatesDatabase : RoomDatabase() {
           .addMigrations(MIGRATION_5_6)
           .addMigrations(MIGRATION_6_7)
           .addMigrations(MIGRATION_7_8)
+          .addMigrations(MIGRATION_8_9)
           .fallbackToDestructiveMigration()
           .allowMainThreadQueries()
           .build()
@@ -152,6 +153,24 @@ abstract class UpdatesDatabase : RoomDatabase() {
             database.execSQL("ALTER TABLE `new_updates` RENAME TO `updates`")
             database.execSQL("CREATE INDEX `index_updates_launch_asset_id` ON `updates` (`launch_asset_id`)")
             database.execSQL("CREATE UNIQUE INDEX `index_updates_scope_key_commit_time` ON `updates` (`scope_key`, `commit_time`)")
+            database.setTransactionSuccessful()
+          } finally {
+            database.endTransaction()
+          }
+        } finally {
+          database.execSQL("PRAGMA foreign_keys=ON")
+        }
+      }
+    }
+
+    val MIGRATION_8_9: Migration = object : Migration(8, 9) {
+      override fun migrate(database: SupportSQLiteDatabase) {
+        // https://www.sqlite.org/lang_altertable.html#otheralter
+        try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
+          try {
+            database.execSQL("ALTER TABLE `assets` ADD COLUMN `extra_request_headers` TEXT")
             database.setTransactionSuccessful()
           } finally {
             database.endTransaction()
