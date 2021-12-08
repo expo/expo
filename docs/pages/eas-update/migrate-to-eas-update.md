@@ -34,18 +34,9 @@ You'll need to make the following changes to your project:
    eas update:configure
    ```
 
-   After this command, you should have a new field in your app config (**app.json**/**app.config.js**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
+   After this command, you should have two a new fields in your app config (**app.json**/**app.config.js**) at `expo.updates.url` and `expo.runtimeVersion`.
 
-3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**). Remove the `expo.sdkVersion` property, then add a `expo.runtimeVersion` property with the value `{ "policy": "sdkVersion" }`.
-
-   ```jsx
-   {
-     "expo": {
-       "runtimeVersion": {
-         "policy": "sdkVersion"
-       }
-   }
-   ```
+3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**). Remove the `expo.sdkVersion` property from your app config.
 
 4. To allow updates to apply to builds built with EAS, update your EAS config (**eas.json**) to have channel names. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"`.
 
@@ -87,10 +78,10 @@ yarn start --force-manifest-type=expo-updates
 To publish an update, run:
 
 ```bash
-eas branch:publish [branch-name] --message [message]
+eas update --branch [branch-name] --message [message]
 
 # example
-eas branch:publish production --message "Fixes typo"
+eas update --branch production --message "Fixes typo"
 ```
 
 EAS Update adds a new type of object called a "branch". A branch is a list of updates, and it is linked to a channel. In the diagram below, builds with a channel of "production" are linked to a branch named "production". By default, channels and branches of the same name are linked until changed.
@@ -99,7 +90,7 @@ EAS Update adds a new type of object called a "branch". A branch is a list of up
 
 ## Additional possible migration steps
 
-- If you have any scripts that run `expo publish`, you can replace those with `eas branch:publish`. You can view all the options for publishing with `eas branch:publish --help`
+- If you have any scripts that run `expo publish`, you can replace those with `eas update`. You can view all the options for publishing with `eas update --help`
 - If you have any code that references `Updates.releaseChannel` from the expo-updates library, you'll have to remove those. Currently, EAS Update does not expose the `channel` of a build. Instead, you can use [environment variables](/build-reference/variables).
 - Remove any code that references `Constants.manifest`. That will now always return `null`.
 

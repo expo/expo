@@ -73,16 +73,16 @@ eas update:view dbfd479f-d981-44ce-8774-f2fbcc386aa
 ### Create a new update and publish it
 
 ```bash
-eas branch:publish [branch-name] --message "..."
+eas update --branch [branch-name] --message "..."
 
 # Example
-eas branch:publish version-1.0 --message "Fixes typo"
+eas update --branch version-1.0 --message "Fixes typo"
 ```
 
 If you're using Git, we can use the `--auto` flag to auto-fill the branch name and the message. This flag will use the current Git branch as the branch name and the latest Git commit message as the message.
 
 ```bash
-eas branch:publish --auto
+eas update --branch
 ```
 
 ### Delete a branch
@@ -112,8 +112,8 @@ We can make a previous update immediately available to all users. This command t
 > Republish is similar to a Git reversion, where the correct commit is placed on top of the Git history.
 
 ```bash
-eas branch:publish [branch-name] --republish --group [update-group-id]
+eas update:republish --branch [branch-name] --group [update-group-id]
 
 # Example
-eas branch:publish version-1.0 --republish --group dbfd479f-d981-44ce-8774-f2fbcc386aa
+eas update:republish --branch version-1.0 --group dbfd479f-d981-44ce-8774-f2fbcc386aa
 ```
