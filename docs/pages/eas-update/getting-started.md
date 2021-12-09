@@ -66,12 +66,17 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
 
    This will create a file named **eas.json**.
 
-4. Inside the `production` build profile in **eas.json**, add the `channel` property with a value of `production`:
+4. Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
 
    ```bash
    {
      "build": {
+        "preview": {
+          ...
+          "channel": "preview"
+        },
         "production": {
+          ...
           "channel": "production"
         },
        ...
@@ -79,7 +84,7 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
    }
    ```
 
-   This `channel` property will allow you to point updates at builds. Later, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will publish an update that will be made available to builds with the channel "production".
+   This `channel` property will allow you to point updates at builds. For example, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will publish an update that will be made available to builds with the channel "production".
 
 ## Create a build for the project
 
@@ -99,10 +104,13 @@ Now we're ready to publish an update to the builds created in the previous step.
 3. Then publish an update with the following command:
 
    ```bash
+   eas update --branch [branch] --message [message]
+
+   # Example
    eas update --branch production --message "Updating the app"
    ```
 
-4. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app two times to download and view the update.
+4. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
 
 ## Next
 
