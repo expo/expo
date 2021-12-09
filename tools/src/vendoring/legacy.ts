@@ -18,6 +18,9 @@ interface VendoredModuleUpdateStep {
   targetAndroidPackage?: string;
   recursive?: boolean;
   updatePbxproj?: boolean;
+
+  // a hook for a file did finished for vendoring
+  afterVendoredHookAsyncAndroid?: (file: string) => Promise<void>;
 }
 
 type ModuleModifier = (
@@ -282,6 +285,32 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/reanimated',
         sourceAndroidPackage: 'com.swmansion.reanimated',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.reanimated',
+        afterVendoredHookAsyncAndroid: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'ReanimatedUIManager.java') {
+            // reanimated tries to override react native `UIManager` implementation.
+            // this file are placed inside `com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java`
+            // but its package name is `package com.facebook.react.uimanager;`.
+            // we should put this into correct folder structure so that other files can
+            // `import com.facebook.react.uimanager.ReanimatedUIManager`
+            await fs.move(
+              file,
+              path.join(
+                ANDROID_DIR,
+                'expoview',
+                'src',
+                'main',
+                'java',
+                'com',
+                'facebook',
+                'react',
+                'uimanager',
+                fileName
+              ),
+              { overwrite: true }
+            );
+          }
+        },
       },
     ],
     warnings: [
@@ -833,6 +862,10 @@ export async function legacyVendorModuleAsync(
 
       for (const file of files) {
         await renamePackageAndroidAsync(file, step.sourceAndroidPackage, step.targetAndroidPackage);
+
+        if (step.afterVendoredHookAsyncAndroid) {
+          await step.afterVendoredHookAsyncAndroid(file);
+        }
       }
     }
   }

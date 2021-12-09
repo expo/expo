@@ -4,6 +4,9 @@ package versioned.host.exp.exponent
 import com.facebook.react.TurboReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactMarker
+import com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END
+import com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
 import com.facebook.react.module.model.ReactModuleInfo
@@ -11,25 +14,41 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.modules.intent.IntentModule
 import com.facebook.react.modules.storage.AsyncStorageModule
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
+import com.facebook.react.uimanager.ReanimatedUIManager
+import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.ViewManager
+import com.facebook.systrace.Systrace
 import expo.modules.manifests.core.Manifest
+import host.exp.exponent.di.NativeModuleDepsProvider
+import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConstants
+import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
+import javax.inject.Inject
 
 /** Package defining basic modules and view managers.  */
 @ReactModuleList(
   nativeModules = [
     // TODO(Bacon): Do we need to support unsigned storage module here?
     ExponentAsyncStorageModule::class,
-    ExponentIntentModule::class
+    ExponentIntentModule::class,
+    ReanimatedModule::class,
+    ReanimatedUIManager::class,
   ]
 )
 class ExpoTurboPackage(
   private val experienceProperties: Map<String, Any?>,
   private val manifest: Manifest
 ) : TurboReactPackage() {
+  @Inject
+  internal lateinit var kernel: Kernel
+
+  init {
+    NativeModuleDepsProvider.instance.inject(ExpoTurboPackage::class.java, this)
+  }
+
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
     return listOf()
   }
@@ -46,6 +65,8 @@ class ExpoTurboPackage(
         context,
         experienceProperties
       )
+      ReanimatedModule.NAME -> ReanimatedModule(context)
+      ReanimatedUIManager.NAME -> createReanimatedUIManager(context)
       else -> null
     }
   }
@@ -60,7 +81,9 @@ class ExpoTurboPackage(
       val moduleList: Array<Class<out NativeModule?>> = arrayOf(
         // TODO(Bacon): Do we need to support unsigned storage module here?
         ExponentAsyncStorageModule::class.java,
-        ExponentIntentModule::class.java
+        ExponentIntentModule::class.java,
+        ReanimatedModule::class.java,
+        ReanimatedUIManager::class.java,
       )
       val reactModuleInfoMap = mutableMapOf<String, ReactModuleInfo>()
       for (moduleClass in moduleList) {
@@ -69,7 +92,7 @@ class ExpoTurboPackage(
         reactModuleInfoMap[reactModule.name] = ReactModuleInfo(
           reactModule.name,
           moduleClass.name,
-          reactModule.canOverrideExistingModule,
+          if (reactModule.name == ReanimatedUIManager.NAME) true else reactModule.canOverrideExistingModule,
           reactModule.needsEagerInit,
           reactModule.hasConstants,
           reactModule.isCxxModule,
@@ -85,6 +108,22 @@ class ExpoTurboPackage(
       throw RuntimeException(
         "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider", e
       )
+    }
+  }
+
+  private fun createReanimatedUIManager(reactContext: ReactApplicationContext): UIManagerModule? {
+    ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START)
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule")
+    val reactInstanceManager = kernel.reactInstanceManager!!
+    val minTimeLeftInFrameForNonBatchedOperationMs = -1
+    return try {
+      ReanimatedUIManager(
+              reactContext,
+              reactInstanceManager.getOrCreateViewManagers(reactContext),
+              minTimeLeftInFrameForNonBatchedOperationMs)
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END)
     }
   }
 
