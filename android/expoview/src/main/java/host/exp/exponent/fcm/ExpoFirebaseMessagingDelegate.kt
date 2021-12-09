@@ -6,11 +6,9 @@ import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
 import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate
-import host.exp.exponent.ABIVersion
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.notifications.NotificationConstants
-import host.exp.exponent.notifications.PushNotificationHelper
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
 import host.exp.exponent.storage.ExponentDB
 import org.json.JSONException
@@ -48,36 +46,11 @@ class ExpoFirebaseMessagingDelegate(context: Context) : FirebaseMessagingDelegat
       return
     }
 
-    val sdkVersionString = exponentDBObject.manifest.getSDKVersion()
-    if (sdkVersionString == null) {
-      dispatchToNextNotificationModule(remoteMessage)
-      return
-    }
-
-    val sdkVersion = ABIVersion.toNumber(sdkVersionString) / 10000
-
-    // Remove the entire legacy notifications API after we drop SDK 40
-    if (sdkVersion <= 40 && !exponentDBObject.manifest.shouldUseNextNotificationsApi()) {
-      dispatchToLegacyNotificationModule(remoteMessage)
-    } else {
-      dispatchToNextNotificationModule(remoteMessage)
-    }
+    dispatchToNextNotificationModule(remoteMessage)
   }
 
   private fun dispatchToNextNotificationModule(remoteMessage: RemoteMessage) {
     super.onMessageReceived(remoteMessage)
-  }
-
-  private fun dispatchToLegacyNotificationModule(remoteMessage: RemoteMessage) {
-    PushNotificationHelper.instance.onMessageReceived(
-      context,
-      remoteMessage.data[NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY]!!,
-      remoteMessage.data["channelId"],
-      remoteMessage.data["message"],
-      remoteMessage.data["body"],
-      remoteMessage.data["title"],
-      remoteMessage.data["categoryId"]
-    )
   }
 
   override fun createNotificationRequest(
