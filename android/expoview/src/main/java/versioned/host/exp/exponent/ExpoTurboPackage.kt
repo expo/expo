@@ -118,9 +118,10 @@ class ExpoTurboPackage(
     val minTimeLeftInFrameForNonBatchedOperationMs = -1
     return try {
       ReanimatedUIManager(
-              reactContext,
-              reactInstanceManager.getOrCreateViewManagers(reactContext),
-              minTimeLeftInFrameForNonBatchedOperationMs)
+        reactContext,
+        reactInstanceManager.getOrCreateViewManagers(reactContext),
+        minTimeLeftInFrameForNonBatchedOperationMs
+      )
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END)
