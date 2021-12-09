@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
 import { Colors } from '../../constants';
+import ReanimatedLayoutAnimation from './ReanimatedLayoutAnimation';
 import ReanimatedLightbox from './ReanimatedLightbox';
 import ReanimatedProgress from './ReanimatedProgress';
 import ReanimatedSwipeable from './ReanimatedSwipeable';
@@ -27,6 +28,10 @@ export default class ReanimatedScreen extends React.PureComponent {
         <View style={styles.exampleContainer}>
           <HeadingText style={styles.header}>Swipeable</HeadingText>
           <ReanimatedSwipeable />
+        </View>
+        <View style={styles.exampleContainer}>
+          <HeadingText style={styles.header}>Layout Animation</HeadingText>
+          <ReanimatedLayoutAnimation />
         </View>
       </ScrollView>
     );
