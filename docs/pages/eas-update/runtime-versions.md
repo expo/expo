@@ -104,4 +104,4 @@ There are a few ways to avoid crashes like this:
 
 If this error does occur, then you can republish a previous known-good update, then ask users to delete the app and reinstall it.
 
-In the future, the expo-updates library will prevent many instances of this from crashing the app. If we can detect this particular issue, we'll automatically roll back to a previous update instead of loading the bad update.
+In the future, the `expo-updates` library will prevent many instances of this from crashing the app. If we can detect this particular issue, we'll automatically roll back to a previous update instead of loading the bad update.

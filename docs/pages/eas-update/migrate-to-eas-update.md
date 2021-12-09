@@ -4,15 +4,15 @@ title: Migrating from Classic Updates to EAS Update
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
-## Install EAS CLI
+## Install Expo CLI and EAS CLI
 
-1. Install EAS CLI with:
+1. Install EAS and Expo CLIs with:
 
    ```bash
-   npm install --global eas-cli
+   npm install --global eas-cli expo-cli
    ```
 
-   EAS Update requires EAS CLI >= 0.40.0
+   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0.
 
 2. Then, log in with your expo account:
 
@@ -93,7 +93,7 @@ EAS Update adds a new type of object called a "branch". A branch is a list of up
 ## Additional possible migration steps
 
 - If you have any scripts that run `expo publish`, you can replace those with `eas update`. You can view all the options for publishing with `eas update --help`
-- If you have any code that references `Updates.releaseChannel` from the expo-updates library, you'll have to remove those. Currently, EAS Update does not expose the `channel` of a build. Instead, you can use [environment variables](/build-reference/variables).
+- If you have any code that references `Updates.releaseChannel` from the `expo-updates` library, you'll have to remove those. Currently, EAS Update does not expose the `channel` of a build. Instead, you can use [environment variables](/build-reference/variables).
 - Remove any code that references `Constants.manifest`. That will now always return `null`.
 
 ## Known issues

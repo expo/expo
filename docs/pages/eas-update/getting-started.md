@@ -8,13 +8,13 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
 
 ## Install Expo CLI and EAS CLI
 
-1. Install `expo-cli` and `eas-cli` globally:
+1. Install EAS and Expo CLIs with:
 
    ```bash
    npm install --global eas-cli expo-cli
    ```
 
-   EAS Update requires EAS CLI >= 0.40.0
+   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0.
 
 ## Create an Expo account
 
