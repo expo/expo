@@ -12,6 +12,8 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
    npm install --global eas-cli
    ```
 
+   EAS Update requires EAS CLI >= 0.40.0
+
 2. Then, log in with your expo account:
 
    ```bash
@@ -38,7 +40,7 @@ You'll need to make the following changes to your project:
 
 3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**). Remove the `expo.sdkVersion` property from your app config.
 
-4. To allow updates to apply to builds built with EAS, update your EAS config (**eas.json**) to have channel names. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"`.
+4. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include channel names. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"`.
 
    ```json
    {

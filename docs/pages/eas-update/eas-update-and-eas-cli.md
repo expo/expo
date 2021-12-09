@@ -112,8 +112,8 @@ We can make a previous update immediately available to all users. This command t
 > Republish is similar to a Git reversion, where the correct commit is placed on top of the Git history.
 
 ```bash
-eas update:republish --branch [branch-name] --group [update-group-id]
+eas update --branch [branch-name] --republish --group [update-group-id]
 
 # Example
-eas update:republish --branch version-1.0 --group dbfd479f-d981-44ce-8774-f2fbcc386aa
+eas update --branch version-1.0 --republish --group dbfd479f-d981-44ce-8774-f2fbcc386aa
 ```

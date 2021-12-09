@@ -14,6 +14,8 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
    npm install --global eas-cli expo-cli
    ```
 
+   EAS Update requires EAS CLI >= 0.40.0
+
 ## Create an Expo account
 
 1. Create an account at [https://expo.dev/signup](https://expo.dev/signup)
