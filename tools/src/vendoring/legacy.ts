@@ -19,8 +19,11 @@ interface VendoredModuleUpdateStep {
   recursive?: boolean;
   updatePbxproj?: boolean;
 
-  // a hook for a file did finished for vendoring
-  afterVendoredHookAsyncAndroid?: (file: string) => Promise<void>;
+  /**
+   * Hook that is fired by the end of vendoring an Android file.
+   * You should use it to perform some specialistic operations that are not covered by the main flow.
+   */
+  onDidVendorAndroidFile?: (file: string) => Promise<void>;
 }
 
 type ModuleModifier = (
@@ -285,7 +288,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/reanimated',
         sourceAndroidPackage: 'com.swmansion.reanimated',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.reanimated',
-        afterVendoredHookAsyncAndroid: async (file: string) => {
+        onDidVendorAndroidFile: async (file: string) => {
           const fileName = path.basename(file);
           if (fileName === 'ReanimatedUIManager.java') {
             // reanimated tries to override react native `UIManager` implementation.
@@ -862,10 +865,7 @@ export async function legacyVendorModuleAsync(
 
       for (const file of files) {
         await renamePackageAndroidAsync(file, step.sourceAndroidPackage, step.targetAndroidPackage);
-
-        if (step.afterVendoredHookAsyncAndroid) {
-          await step.afterVendoredHookAsyncAndroid(file);
-        }
+        await step.onDidVendorAndroidFile?.(file);
       }
     }
   }
