@@ -99,6 +99,13 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: `UIView+${prefix}React.h`,
           replaceWith: `UIView+React.h`,
         },
+        {
+          paths: 'REAAnimationsManager.m',
+          // `dataComponenetsByName[@"ABI44_0_0RCTView"];` -> `dataComponenetsByName[@"RCTView"];`
+          // the RCTComponentData internal view name is not versioned
+          find: new RegExp(`(RCTComponentData .+)\\[@"${prefix}(RCT.+)"\\];`, 'g'),
+          replaceWith: '$1[@"$2"];'
+        }
       ],
     },
     'react-native-gesture-handler': {
