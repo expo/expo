@@ -2,7 +2,6 @@ package abi44_0_0.host.exp.exponent.modules.api.reanimated.nodes;
 
 import abi44_0_0.com.facebook.react.bridge.ReadableMap;
 import abi44_0_0.host.exp.exponent.modules.api.reanimated.NodesManager;
-
 import java.util.Stack;
 
 public class ParamNode extends ValueNode {
@@ -30,11 +29,9 @@ public class ParamNode extends ValueNode {
     mArgsStack.push(ref);
   }
 
-
   public void endContext() {
     mArgsStack.pop();
   }
-
 
   @Override
   protected Object evaluate() {
@@ -67,10 +64,8 @@ public class ParamNode extends ValueNode {
   public boolean isRunning() {
     Node node = mNodesManager.findNodeById(mArgsStack.peek(), Node.class);
     if (node instanceof ParamNode) {
-      return  ((ParamNode) node).isRunning();
+      return ((ParamNode) node).isRunning();
     }
     return ((ClockNode) node).isRunning;
   }
 }
-
-
