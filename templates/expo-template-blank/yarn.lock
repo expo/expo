@@ -1425,9 +1425,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/node@*":
-  version "16.11.11"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.11.tgz#6ea7342dfb379ea1210835bada87b3c512120234"
-  integrity sha512-KB0sixD67CeecHC33MYn+eYARkqTheIRNuu97y2XMjR7Wu3XibO1vaY6VBV6O/a89SPI81cEUIYT87UqUWlZNw==
+  version "16.11.12"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.12.tgz#ac7fb693ac587ee182c3780c26eb65546a1a3c10"
+  integrity sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw==
 
 "@types/yargs-parser@*":
   version "20.2.1"
@@ -1678,10 +1678,10 @@ babel-plugin-syntax-trailing-function-commas@^7.0.0-beta.0:
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-trailing-function-commas/-/babel-plugin-syntax-trailing-function-commas-7.0.0-beta.0.tgz#aa213c1435e2bffeb6fca842287ef534ad05d5cf"
   integrity sha512-Xj9XuRuz3nTSbaTXWv3itLOcxyF4oPD8douBBmj7U9BBC6nEBYfyOJYQMf/8PJAFotC62UY5dFfIGEPr7WswzQ==
 
-babel-preset-expo@~9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-expo/-/babel-preset-expo-9.0.0.tgz#114a7ec4375346f5cc00c24bfae57c3b471da17b"
-  integrity sha512-LxVQ1GwhvI1aLgEF0CQ2wg1WoYlE4rcx1F33HqadojuyqMYWyzzJkScAEUVo4k0wo7Ls6mW6Dk1pdTiYbpKyKQ==
+babel-preset-expo@~9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/babel-preset-expo/-/babel-preset-expo-9.0.1.tgz#e43ad6085ad962a413c45f63118cf8e313eb07f8"
+  integrity sha512-BYAJ7j+PuY8SF5SpvaiJhxPoMewD0QUkfJONQxamo2ceUOj6fJujmVwgSL6TQjrI9FnAyUP5tO2mT42r12jjkQ==
   dependencies:
     "@babel/plugin-proposal-decorators" "^7.12.9"
     "@babel/plugin-transform-react-jsx" "^7.12.17"
@@ -1900,9 +1900,9 @@ camelcase@^6.0.0:
   integrity sha512-tVI4q5jjFV5CavAU8DXfza/TJcZutVKo/5Foskmsqcm0MsL91moHvwiGNnqaa2o6PF/7yT5ikDRcVcl8Rj6LCA==
 
 caniuse-lite@^1.0.30001280:
-  version "1.0.30001284"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001284.tgz#d3653929ded898cd0c1f09a56fd8ca6952df4fca"
-  integrity sha512-t28SKa7g6kiIQi6NHeOcKrOrGMzCRrXvlasPwWC26TH2QNdglgzQIRUuJ0cR3NeQPH+5jpuveeeSFDLm2zbkEw==
+  version "1.0.30001285"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001285.tgz#fe1e52229187e11d6670590790d669b9e03315b7"
+  integrity sha512-KAOkuUtcQ901MtmvxfKD+ODHH9YVDYnBt+TGYSz2KIfnq22CiArbUxXPN9067gNbgMlnNYRSwho8OPXZPALB9Q==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -2116,9 +2116,9 @@ copy-descriptor@^0.1.0:
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
 core-js-compat@^3.18.0, core-js-compat@^3.19.1:
-  version "3.19.2"
-  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.19.2.tgz#18066a3404a302433cb0aa8be82dd3d75c76e5c4"
-  integrity sha512-ObBY1W5vx/LFFMaL1P5Udo4Npib6fu+cMokeziWkA8Tns4FcDemKF5j9JvaI5JhdkW8EQJQGJN1EcrzmEwuAqQ==
+  version "3.19.3"
+  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.19.3.tgz#de75e5821c5ce924a0a1e7b7d5c2cb973ff388aa"
+  integrity sha512-59tYzuWgEEVU9r+SRgceIGXSSUn47JknoiXW6Oq7RW8QHjXWz3/vp8pa7dbtuVu40sewz3OP3JmQEcDdztrLhA==
   dependencies:
     browserslist "^4.18.1"
     semver "7.0.0"
@@ -2268,9 +2268,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.896:
-  version "1.4.11"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.11.tgz#303c9deebbe90c68bf5c2c81a88a3bf4522c8810"
-  integrity sha512-2OhsaYgsWGhWjx2et8kaUcdktPbBGjKM2X0BReUCKcSCPttEY+hz2zie820JLbttU8jwL92+JJysWwkut3wZgA==
+  version "1.4.14"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.14.tgz#b0aa41fbfbf2eff8c2c6f7a871c03075250f8956"
+  integrity sha512-RsGkAN9JEAYMObS72kzUsPPcPGMqX1rBqGuXi9aa4TBKLzICoLf+DAAtd0fVFzrniJqYzpby47gthCUoObfs0Q==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -2449,10 +2449,10 @@ expo-modules-autolinking@0.5.0:
     find-up "^5.0.0"
     fs-extra "^9.1.0"
 
-expo-modules-core@0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.6.0.tgz#94261c96f73e66e9138bf161df3fee11a1c617d5"
-  integrity sha512-8kOYh7Kd6NqIqDjHbgmHPqf28dls95Z+HsU0lpUmJT3TCRway2FHlcPnS8tVPuOHo5TO40izSjuIC4Sksf+O0g==
+expo-modules-core@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.6.1.tgz#d27c94ae9504c0721cc701c21757a290a1023e83"
+  integrity sha512-oYb/DPYd6DRARrRHNodzpuFouMr5jnjaxoHM8xJk4RgA/53oOIxOAUmlCbQQSx1g3ox5asohwVvUjPWA2XriwA==
   dependencies:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
@@ -2462,15 +2462,15 @@ expo-status-bar@~1.2.0:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.2.0.tgz#16e73205da563f9536f562e439081e30e318a82e"
   integrity sha512-pVZZ/kDCXFK79E4dCtRecs3XLC8aiwlciutSd/fFmUPJSQZ1Txia6hlKajPt0GAYft8/YnT0V3URXzWZOBniYQ==
 
-expo@~44.0.0-beta.0:
-  version "44.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-44.0.0-beta.0.tgz#55e29fa7abdd6d9c782018b59ca359ec12324794"
-  integrity sha512-8D+MdNFv1xNP4Yy4CFw7vSZ2l5FUpyDn8CV2U10tP8VdWccP+zLOQHRKF/rdVZH7UpZGZy/mM+jLpEpPRnr67Q==
+expo@~44.0.0-beta.1:
+  version "44.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-44.0.0-beta.1.tgz#8f190bc30972056b68db264e56a4823a7095c7a7"
+  integrity sha512-tDyutx3gU8L8cPcuyuvD7YtLCGl3O+c2vCcbqjWK86Oe+8vxig25AdHtJXuwmI3w/ldX+dc6vOixoaI4SwOqBg==
   dependencies:
     "@babel/runtime" "^7.14.0"
     "@expo/metro-config" "~0.2.6"
     "@expo/vector-icons" "^12.0.4"
-    babel-preset-expo "~9.0.0"
+    babel-preset-expo "~9.0.1"
     cross-spawn "^6.0.5"
     expo-application "~4.0.1"
     expo-asset "~8.4.4"
@@ -2479,7 +2479,7 @@ expo@~44.0.0-beta.0:
     expo-font "~10.0.4"
     expo-keep-awake "~10.0.1"
     expo-modules-autolinking "0.5.0"
-    expo-modules-core "0.6.0"
+    expo-modules-core "0.6.1"
     fbemitter "^2.1.1"
     invariant "^2.2.4"
     md5-file "^3.2.3"
@@ -3959,11 +3959,6 @@ node-int64@^0.4.0:
   resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
   integrity sha1-h6kGXNs1XTGC2PlM4RGIuCXGijs=
 
-node-modules-regexp@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/node-modules-regexp/-/node-modules-regexp-1.0.0.tgz#8d9dbe28964a4ac5712e9131642107c71e90ec40"
-  integrity sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
-
 node-releases@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.1.tgz#3d1d395f204f1f2f29a54358b9fb678765ad2fc5"
@@ -4215,11 +4210,9 @@ pify@^4.0.1:
   integrity sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==
 
 pirates@^4.0.0, pirates@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/pirates/-/pirates-4.0.1.tgz#643a92caf894566f91b2b986d2c66950a8e2fb87"
-  integrity sha512-WuNqLTbMI3tmfef2TKxlQmAiLHKtFhlsCZnPIpuv2Ow0RDVO8lfy1Opf4NUzlMXLjPl+Men7AuVdX6TA+s+uGA==
-  dependencies:
-    node-modules-regexp "^1.0.0"
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/pirates/-/pirates-4.0.4.tgz#07df81e61028e402735cdd49db701e4885b4e6e6"
+  integrity sha512-ZIrVPH+A52Dw84R0L3/VS9Op04PuQ2SEoJL6bkshmiTic/HldyW9Tf7oH5mhJZBK7NmDx27vSMrYEXPXclpDKw==
 
 pkg-dir@^3.0.0:
   version "3.0.0"
