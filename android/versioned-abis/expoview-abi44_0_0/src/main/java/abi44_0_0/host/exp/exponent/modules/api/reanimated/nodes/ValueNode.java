@@ -3,7 +3,6 @@ package abi44_0_0.host.exp.exponent.modules.api.reanimated.nodes;
 import abi44_0_0.com.facebook.react.bridge.ReadableMap;
 import abi44_0_0.com.facebook.react.bridge.ReadableType;
 import abi44_0_0.host.exp.exponent.modules.api.reanimated.NodesManager;
-
 import javax.annotation.Nullable;
 
 public class ValueNode extends Node {
@@ -24,7 +23,8 @@ public class ValueNode extends Node {
     } else if (type == ReadableType.Null) {
       mValue = null;
     } else {
-      throw new IllegalStateException("Not supported value type. Must be boolean, number or string");
+      throw new IllegalStateException(
+          "Not supported value type. Must be boolean, number or string");
     }
   }
 

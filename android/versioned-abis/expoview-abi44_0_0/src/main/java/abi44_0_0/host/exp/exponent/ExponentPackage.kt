@@ -44,7 +44,6 @@ import abi44_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewModu
 import abi44_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import abi44_0_0.host.exp.exponent.modules.api.netinfo.NetInfoModule
 import abi44_0_0.host.exp.exponent.modules.api.notifications.NotificationsModule
-import abi44_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedModule
 import abi44_0_0.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
 import abi44_0_0.host.exp.exponent.modules.api.screens.RNScreensPackage
 import abi44_0_0.host.exp.exponent.modules.api.viewshot.RNViewShotModule
@@ -134,7 +133,6 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(ScreenOrientationModule(reactContext))
         nativeModules.add(RNGestureHandlerModule(reactContext))
         nativeModules.add(RNAWSCognitoModule(reactContext))
-        nativeModules.add(ReanimatedModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.add(RNSharedElementModule(reactContext))
