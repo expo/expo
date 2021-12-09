@@ -87,10 +87,10 @@ updates: [
 If "update 2" turned out to be a bad update, we can re-publish "update 1" with a command like this:
 
 ```bash
-eas update:republish --branch [branch-name] --group [update-group-id]
+eas update --branch [branch-name] --republish --group [update-group-id]
 
 # Example
-eas update:republish --branch production --group abc1
+eas update --branch production --republish --group abc1
 ```
 
 The example command above would result in a branch that now appears like this:
