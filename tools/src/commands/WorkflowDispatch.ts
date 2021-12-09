@@ -55,7 +55,6 @@ const CUSTOM_WORKFLOWS = {
     baseWorkflowSlug: 'shell-app-ios',
     inputs: {
       upload: 'upload',
-      versioned: 'true',
     },
   },
   'sdk-all': {
