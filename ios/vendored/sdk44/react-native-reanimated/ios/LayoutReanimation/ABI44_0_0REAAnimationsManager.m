@@ -186,7 +186,7 @@ typedef NS_ENUM(NSInteger, FrameConfigType) { EnteringFrame, ExitingFrame };
   }
 
   NSMutableDictionary *dataComponenetsByName = [_uiManager valueForKey:@"_componentDataByName"];
-  ABI44_0_0RCTComponentData *componentData = dataComponenetsByName[@"ABI44_0_0RCTView"];
+  ABI44_0_0RCTComponentData *componentData = dataComponenetsByName[@"RCTView"];
   [self setNewProps:[newStyle mutableCopy] forView:_viewForTag[tag] withComponentData:componentData];
 }
 
