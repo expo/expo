@@ -1,6 +1,8 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 package versioned.host.exp.exponent
 
+import com.facebook.react.CoreModulesPackage
+import com.facebook.react.ReactRootView
 import com.facebook.react.TurboReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -21,7 +23,9 @@ import com.facebook.systrace.Systrace
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.Kernel
+import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.KernelConstants
+import host.exp.expoview.Exponent
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule
@@ -66,7 +70,7 @@ class ExpoTurboPackage(
         experienceProperties
       )
       ReanimatedModule.NAME -> ReanimatedModule(context)
-      ReanimatedUIManager.NAME -> createReanimatedUIManager(context)
+      ReanimatedUIManager.NAME -> createReanimatedUIManager(context) ?: getDefaultUIManager(context)
       else -> null
     }
   }
@@ -112,9 +116,12 @@ class ExpoTurboPackage(
   }
 
   private fun createReanimatedUIManager(reactContext: ReactApplicationContext): UIManagerModule? {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return null
+    val reactInstanceManager = (currentActivity.rootView as? ReactRootView)?.reactInstanceManager
+      ?: return null
+
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START)
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule")
-    val reactInstanceManager = kernel.reactInstanceManager!!
     val minTimeLeftInFrameForNonBatchedOperationMs = -1
     return try {
       ReanimatedUIManager(
@@ -126,6 +133,17 @@ class ExpoTurboPackage(
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END)
     }
+  }
+
+  /**
+   * fallback path to get the react native default UIManagerModule
+   */
+  private fun getDefaultUIManager(context: ReactApplicationContext): UIManagerModule {
+    val reactInstanceManager = kernel.reactInstanceManager
+      ?: throw RuntimeException("Cannot get ReactInstanceManager from kernel")
+    val coreModulesPackage = reactInstanceManager.packages.first { it is CoreModulesPackage } as? CoreModulesPackage
+      ?: throw RuntimeException("Cannot get CoreModulesPackage")
+    return coreModulesPackage.getModule(UIManagerModule.NAME, context) as UIManagerModule
   }
 
   companion object {
