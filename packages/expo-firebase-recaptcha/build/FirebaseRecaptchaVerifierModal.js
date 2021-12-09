@@ -47,6 +47,8 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
             }
         });
     }
+    // see: https://github.com/expo/expo/issues/14780
+    _reset(...args) { }
     onVisibleLoad = () => {
         this.setState({
             visibleLoaded: true,

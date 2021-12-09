@@ -1,3 +1,4 @@
+import 'firebase/compat/auth';
 import * as React from 'react';
 import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 interface Props {
