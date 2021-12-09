@@ -21,7 +21,7 @@ interface VendoredModuleUpdateStep {
 
   /**
    * Hook that is fired by the end of vendoring an Android file.
-   * You should use it to perform some specialistic operations that are not covered by the main flow.
+   * You should use it to perform some extra operations that are not covered by the main flow.
    */
   onDidVendorAndroidFile?: (file: string) => Promise<void>;
 }
@@ -292,7 +292,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
           const fileName = path.basename(file);
           if (fileName === 'ReanimatedUIManager.java') {
             // reanimated tries to override react native `UIManager` implementation.
-            // this file are placed inside `com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java`
+            // this file is placed inside `com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java`
             // but its package name is `package com.facebook.react.uimanager;`.
             // we should put this into correct folder structure so that other files can
             // `import com.facebook.react.uimanager.ReanimatedUIManager`
