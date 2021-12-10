@@ -35,13 +35,12 @@ export const updateId: string | null =
 export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 
 /**
- * The name of the channel currently configured in this standalone or bare app. For use
- * when pointed at EAS servers.
+ * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
  */
 export const channel: string | null = ExpoUpdates.channel ?? null;
 
 /**
- * The native codes's runtime version.
+ * The runtime version of the current build.
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
 
