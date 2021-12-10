@@ -11,7 +11,7 @@ export async function generatePackageListAsync(
   options: GenerateOptions
 ) {
   try {
-    const platformLinking = require(`./platforms/${options.platform}`);
+    const platformLinking = require(`../platforms/${options.platform}`);
     await platformLinking.generatePackageListAsync(modules, options.target, options.namespace);
   } catch (e) {
     console.error(

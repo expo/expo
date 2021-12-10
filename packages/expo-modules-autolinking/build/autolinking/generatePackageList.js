@@ -11,7 +11,7 @@ const chalk_1 = __importDefault(require("chalk"));
  */
 async function generatePackageListAsync(modules, options) {
     try {
-        const platformLinking = require(`./platforms/${options.platform}`);
+        const platformLinking = require(`../platforms/${options.platform}`);
         await platformLinking.generatePackageListAsync(modules, options.target, options.namespace);
     }
     catch (e) {

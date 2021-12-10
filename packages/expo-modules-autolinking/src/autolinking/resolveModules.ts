@@ -7,7 +7,7 @@ export async function resolveModulesAsync(
   searchResults: SearchResults,
   options: ResolveOptions
 ): Promise<ModuleDescriptor[]> {
-  const platformLinking = require(`./platforms/${options.platform}`);
+  const platformLinking = require(`../platforms/${options.platform}`);
 
   return (
     await Promise.all(
