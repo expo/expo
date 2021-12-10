@@ -142,7 +142,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   } else {
     return [self parseManifestBodyData:data
                       headerDictionary:[httpResponse allHeaderFields]
-                            extensions:[NSDictionary new]
+                            extensions:@{}
                               database:database
                           successBlock:successBlock
                             errorBlock:errorBlock];
@@ -239,7 +239,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                           errorBlock:errorBlock];
 }
 
-- (void)parseManifestBodyData:(NSData *)data
+- (void)parseManifestBodyData:(NSData *)manifestBodyData
              headerDictionary:(NSDictionary *)headerDictionary
                    extensions:(NSDictionary *)extensions
                      database:(EXUpdatesDatabase *)database
@@ -248,13 +248,13 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   id headerSignature = headerDictionary[@"expo-manifest-signature"];
   
   NSError *err;
-  id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
+  id manifestBodyJson = [NSJSONSerialization JSONObjectWithData:manifestBodyData options:kNilOptions error:&err];
   if (err) {
     errorBlock(err);
     return;
   }
 
-  NSDictionary *updateResponseDictionary = [self _extractUpdateResponseDictionary:parsedJson error:&err];
+  NSDictionary *updateResponseDictionary = [self _extractUpdateResponseDictionary:manifestBodyJson error:&err];
   if (err) {
     errorBlock(err);
     return;
@@ -265,7 +265,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   BOOL isSignatureInBody = bodyManifestString != nil && bodySignature != nil;
 
   id signature = isSignatureInBody ? bodySignature : headerSignature;
-  id manifestString = isSignatureInBody ? bodyManifestString : [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  id manifestString = isSignatureInBody ? bodyManifestString : [[NSString alloc] initWithData:manifestBodyData encoding:NSUTF8StringEncoding];
     
   // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
   // We should treat these manifests as unsigned rather than signed with an invalid signature.

@@ -58,21 +58,21 @@
 - (void)testUpdateWithManifest_Legacy
 {
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest headers:[NSDictionary new] extensions:[NSDictionary new] config:_config database:_database error:&error];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest headers:@{} extensions:@{} config:_config database:_database error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_New
 {
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"0"} extensions:[NSDictionary new] config:_config database:_database error:&error];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"0"} extensions:@{} config:_config database:_database error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_UnsupportedProtocolVersion
 {
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"1"} extensions:[NSDictionary new] config:_config database:_database error:&error];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"1"} extensions:@{} config:_config database:_database error:&error];
   XCTAssert(error != nil);
   XCTAssert(update == nil);
 }

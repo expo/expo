@@ -165,7 +165,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   NSAssert(asset.filename, @"asset filename should be nonnull");
   NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"extra_request_headers\" = ?2, \"type\" = ?3, \"metadata\" = ?4, \"download_time\" = ?5, \"relative_path\" = ?6, \"hash\" = ?7, \"url\" = ?8 WHERE \"key\" = ?1;";
+  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"extra_request_headers\" = ?3, \"type\" = ?4, \"metadata\" = ?5, \"download_time\" = ?6, \"relative_path\" = ?7, \"hash\" = ?8, \"url\" = ?9 WHERE \"key\" = ?1;";
   [self _executeSql:assetUpdateSql
            withArgs:@[
                       asset.key ?: [NSNull null],

@@ -32,7 +32,7 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
   [fileDownloader downloadDataFromURL:[NSURL URLWithString:EXUpdatesCryptoPublicKeyUrl]
-                         extraHeaders:[NSDictionary new]
+                         extraHeaders:@{}
                          successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
                                         [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:^(BOOL isValid) {
                                           if (isValid) {
@@ -59,7 +59,7 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
   [fileDownloader downloadDataFromURL:[NSURL URLWithString:EXUpdatesCryptoPublicKeyUrl]
-                         extraHeaders:[NSDictionary new]
+                         extraHeaders:@{}
                          successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
                                         [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:successBlock];
                                       }

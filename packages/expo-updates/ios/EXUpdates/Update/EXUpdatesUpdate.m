@@ -63,13 +63,13 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                           headers:(NSDictionary *)headerDictionary
+                           headers:(NSDictionary *)headers
                         extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
                              error:(NSError ** _Nullable)error
 {
-  NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
+  NSString *expoProtocolVersion = headers[@"expo-protocol-version"];
 
   if (expoProtocolVersion == nil) {
     return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifest]
@@ -77,7 +77,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                                                   database:database];
   } else if (expoProtocolVersion.integerValue == 0) {
     return [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:manifest]
-                                             headers:headerDictionary
+                                             headers:headers
                                           extensions:extensions
                                               config:config
                                             database:database];

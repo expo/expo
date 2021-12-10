@@ -291,7 +291,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     [self.downloader downloadFileFromURL:asset.url
                                   toPath:[assetLocalUrl path]
-                            extraHeaders:asset.extraRequestHeaders ?: [NSDictionary new]
+                            extraHeaders:asset.extraRequestHeaders ?: @{}
                             successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {

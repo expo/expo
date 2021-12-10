@@ -99,7 +99,7 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
 
       [self->_downloader downloadFileFromURL:asset.url
                                       toPath:[urlOnDisk path]
-                                extraHeaders:asset.extraRequestHeaders ?: [NSDictionary new]
+                                extraHeaders:asset.extraRequestHeaders ?: @{}
                                 successBlock:^(NSData *data, NSURLResponse *response) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           [self handleAssetDownloadWithData:data response:response asset:asset];
