@@ -1,11 +1,17 @@
-import { lightTheme, darkTheme, shadows, borderRadius, iconSize } from '@expo/styleguide-native';
+import { lightTheme, darkTheme, shadows, iconSize } from '@expo/styleguide-native';
 import { View as RNView } from 'react-native';
 import { create } from 'react-native-primitives';
 
-import { scale, padding, margin } from './theme';
+import { scale, padding, margin, rounded, bg, bgDark } from './theme';
 
 export const View = create(RNView, {
   variants: {
+    overflow: {
+      hidden: {
+        overflow: 'hidden',
+      },
+    },
+
     flex: {
       '1': { flex: 1 },
       '0': { flex: 0 },
@@ -16,24 +22,13 @@ export const View = create(RNView, {
       '0': { flexShrink: 0 },
     },
 
-    bg: {
-      default: { backgroundColor: lightTheme.background.default },
-      secondary: { backgroundColor: lightTheme.background.secondary },
-      success: { backgroundColor: lightTheme.background.success },
-      warning: { backgroundColor: lightTheme.background.warning },
-      error: { backgroundColor: lightTheme.background.error },
-    },
+    bg,
 
     border: {
       default: { borderColor: lightTheme.border.default, borderWidth: 1 },
     },
 
-    rounded: {
-      small: { borderRadius: borderRadius.small },
-      medium: { borderRadius: borderRadius.medium },
-      large: { borderRadius: borderRadius.large },
-      full: { borderRadius: 99999 },
-    },
+    ...rounded,
 
     shadow: {
       micro: shadows.micro,
@@ -67,13 +62,7 @@ export const View = create(RNView, {
 
   selectors: {
     dark: {
-      bg: {
-        default: { backgroundColor: darkTheme.background.default },
-        secondary: { backgroundColor: darkTheme.background.secondary },
-        success: { backgroundColor: darkTheme.background.success },
-        warning: { backgroundColor: darkTheme.background.warning },
-        error: { backgroundColor: darkTheme.background.error },
-      },
+      bg: bgDark,
 
       border: {
         default: { borderColor: darkTheme.border.default, borderWidth: 1 },
@@ -92,6 +81,8 @@ export const Row = create(RNView, {
   },
 
   variants: {
+    bg,
+
     align: {
       center: { alignItems: 'center' },
       start: { alignItems: 'flex-start' },
@@ -100,6 +91,12 @@ export const Row = create(RNView, {
 
     ...padding,
     ...margin,
+  },
+
+  selectors: {
+    dark: {
+      bg: bgDark,
+    },
   },
 });
 
@@ -112,6 +109,7 @@ const Horizontal = create(RNView, {
       small: { width: scale.small },
       medium: { width: scale.medium },
       large: { width: scale.large },
+      xl: { width: scale.xl },
     },
   },
 });
@@ -125,6 +123,7 @@ const Vertical = create(RNView, {
       small: { height: scale.small },
       medium: { height: scale.medium },
       large: { height: scale.large },
+      xl: { height: scale.xl },
     },
   },
 });

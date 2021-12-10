@@ -11,9 +11,8 @@ import {
 import * as React from 'react';
 import { TextInput as NativeTextInput, Platform } from 'react-native';
 
-// TODO - url validation doesnt seem to work
-// import { validateUrl } from '../../functions/validateUrl';
-// import { useDebounce } from '../../hooks/useDebounce';
+import { validateUrl } from '../../functions/validateUrl';
+import { useThrottle } from '../../hooks/useDebounce';
 import { clientUrlScheme } from '../../native-modules/DevLauncherInternal';
 
 type UrlDropdownProps = {
@@ -36,21 +35,28 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
     ref.current.blur();
   };
 
-  // const isValidUrl = useDebounce(validateUrl(inputValue), 500);
-  const isValidUrl = true;
+  const onTogglePress = () => {
+    setOpen(!open);
+  };
+
+  const isValidUrl = useThrottle(validateUrl(inputValue), 500);
 
   return (
-    <View>
-      <Button padding="medium" onPress={() => setOpen(!open)}>
-        <Row align="center">
+    <View rounded="large">
+      <Button.ScaleOnPressContainer
+        onPress={onTogglePress}
+        bg="default"
+        roundedTop="none"
+        roundedBottom={open ? 'none' : 'large'}>
+        <Row align="center" padding="medium">
           <ChevronRightIcon style={arrowStyle} />
           <Spacer.Horizontal size="tiny" />
           <Text size="large">Enter URL manually</Text>
         </Row>
-      </Button>
+      </Button.ScaleOnPressContainer>
 
       {open && (
-        <View px="medium" py="medium">
+        <View px="medium" py="medium" bg="default" roundedBottom="large">
           <View
             border="default"
             rounded="medium"
@@ -59,6 +65,11 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
             shadow="micro">
             <TextInput
               autoFocus
+              clearButtonMode="while-editing"
+              keyboardType="url"
+              autoCapitalize="none"
+              autoCompleteType="off"
+              autoCorrect={false}
               placeholder={`${clientUrlScheme || 'myapp'}://expo-development-client/...`}
               placeholderTextColor={theme.text.secondary}
               ref={ref as any}
@@ -74,19 +85,20 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
             </View>
           </View>
 
-          <Spacer.Vertical size="large" />
+          <Spacer.Vertical size="xl" />
 
-          <Button
+          <Button.ScaleOnPressContainer
             bg={isValidUrl ? 'tertiary' : 'disabled'}
             shadow="button"
             rounded="medium"
-            py="small"
             disabled={!isValidUrl}
             onPress={onConnectPress}>
-            <Text align="center" weight="semibold" button="tertiary">
-              Connect
-            </Text>
-          </Button>
+            <View py="small">
+              <Button.Text align="center" weight="semibold" color="tertiary">
+                Connect
+              </Button.Text>
+            </View>
+          </Button.ScaleOnPressContainer>
         </View>
       )}
     </View>

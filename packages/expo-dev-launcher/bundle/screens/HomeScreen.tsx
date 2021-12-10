@@ -21,7 +21,7 @@ import { UrlDropdown } from '../components/redesign/UrlDropdown';
 import { Packager } from '../functions/getLocalPackagersAsync';
 import { useAppInfo } from '../hooks/useAppInfo';
 import { useLocalPackagers } from '../hooks/useLocalPackagers';
-import { loadApp } from '../native-modules/DevLauncherInternal';
+import { loadApp, getRecentlyOpenedApps } from '../native-modules/DevLauncherInternal';
 
 export type HomeScreenProps = {
   fetchOnMount?: boolean;
@@ -37,6 +37,13 @@ export function HomeScreen({
   navigation,
 }: HomeScreenProps) {
   const { data, pollAsync, isFetching } = useLocalPackagers();
+
+  React.useEffect(() => {
+    getRecentlyOpenedApps().then((response) => {
+      console.log({ response });
+    });
+  }, []);
+
   const appInfo = useAppInfo();
   const { appName, appIcon } = appInfo;
 
@@ -64,6 +71,10 @@ export function HomeScreen({
     navigation.navigate('User Profile');
   };
 
+  const onAppPress = async (url: string) => {
+    await loadApp(url);
+  };
+
   return (
     <ScrollView>
       <View bg="default">
@@ -88,12 +99,12 @@ export function HomeScreen({
         <Spacer.Vertical size="small" />
 
         <View px="medium">
-          <View bg="default" rounded="large">
+          <View>
             {data?.length > 0 ? (
               <LocalPackagersList packagers={data} onPackagerPress={onPackagerPress} />
             ) : (
               <>
-                <View padding="medium">
+                <View padding="medium" bg="default" roundedTop="large">
                   <Text size="medium">Start a local development server with:</Text>
                   <Spacer.Vertical size="small" />
 
@@ -115,6 +126,10 @@ export function HomeScreen({
             <UrlDropdown onSubmit={onUrlSubmit} />
           </View>
         </View>
+
+        <Spacer.Vertical size="medium" />
+
+        <RecentlyOpenedApps onAppPress={onAppPress} />
       </View>
     </ScrollView>
   );
@@ -130,17 +145,17 @@ function FetchLocalPackagersRow({ isFetching, onRefetchPress }: FetchLocalPackag
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button onPress={onRefetchPress} disabled={isFetching}>
+    <Button.ScaleOnPressContainer onPress={onRefetchPress} disabled={isFetching} bg="default">
       <Row align="center" padding="medium">
         <PulseIndicator isActive={isFetching} color={backgroundColor} />
         <Spacer.Horizontal size="small" />
-        <Text size="large">
+        <Button.Text size="large" color="default">
           {isFetching ? 'Searching for local servers...' : 'Refetch local servers'}
-        </Text>
+        </Button.Text>
         <Spacer.Horizontal size="flex" />
-        {!isFetching && <RefreshIcon size={16} />}
+        {!isFetching && <RefreshIcon />}
       </Row>
-    </Button>
+    </Button.ScaleOnPressContainer>
   );
 }
 
@@ -159,19 +174,81 @@ function LocalPackagersList({ packagers = [], onPackagerPress }: LocalPackagersL
       {packagers.map((packager) => {
         return (
           <View key={packager.description}>
-            <Button onPress={() => onPackagerPress(packager)}>
+            <Button.ScaleOnPressContainer
+              onPress={() => onPackagerPress(packager)}
+              roundedTop="large"
+              roundedBottom="none"
+              bg="default">
               <Row align="center" padding="medium">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
-                <Text>{packager.description}</Text>
+                <Button.Text color="default">{packager.description}</Button.Text>
                 <Spacer.Horizontal size="flex" />
                 <ChevronRightIcon />
               </Row>
-            </Button>
+            </Button.ScaleOnPressContainer>
             <Divider />
           </View>
         );
       })}
+    </View>
+  );
+}
+
+function RecentlyOpenedApps({ onAppPress }) {
+  const [apps, setApps] = React.useState([]);
+
+  React.useEffect(() => {
+    getRecentlyOpenedApps().then((apps) => {
+      const formattedApps = Object.entries(apps).map(([url, name]) => {
+        return {
+          url,
+          name,
+        };
+      });
+
+      setApps(formattedApps);
+    });
+  }, []);
+
+  if (apps.length === 0) {
+    return null;
+  }
+
+  return (
+    <View px="medium">
+      <View padding="medium">
+        <Heading size="small" color="secondary">
+          Recently opened
+        </Heading>
+      </View>
+
+      <View>
+        {apps.map((app, index, arr) => {
+          const isFirst = index === 0;
+          const isLast = index === arr.length - 1;
+          const label = app.name ?? app.url;
+
+          return (
+            <View key={label}>
+              <Button.ScaleOnPressContainer
+                onPress={() => onAppPress(app.url)}
+                roundedTop={isFirst ? 'large' : 'none'}
+                roundedBottom={isLast ? 'large' : 'none'}
+                bg="default">
+                <Row align="center" padding="medium">
+                  <StatusIndicator size="small" status="success" />
+                  <Spacer.Horizontal size="small" />
+                  <Button.Text color="default">{label}</Button.Text>
+                  <Spacer.Horizontal size="flex" />
+                  <ChevronRightIcon />
+                </Row>
+              </Button.ScaleOnPressContainer>
+              {!isLast && <Divider />}
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 }

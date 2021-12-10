@@ -37,6 +37,7 @@ export async function getBuildInfoAsync(): Promise<AppInfo> {
   return DevLauncher.getBuildInfo();
 }
 
+
 export async function copyToClipboardAsync(content: string): Promise<null> {
   return DevLauncher.copyToClipboard(content);
 }

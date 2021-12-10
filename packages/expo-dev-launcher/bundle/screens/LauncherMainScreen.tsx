@@ -68,6 +68,7 @@ class LauncherMainScreen extends React.Component<Props, State> {
     });
 
     DevLauncher.getRecentlyOpenedApps().then(openedProjects => {
+      console.log({ openedProjects })
       const newOpenedProjects = [];
       for (const [url, name] of Object.entries(openedProjects)) {
         newOpenedProjects.push({

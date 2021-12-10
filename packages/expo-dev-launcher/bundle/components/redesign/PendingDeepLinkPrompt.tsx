@@ -22,9 +22,7 @@ import {
   loadApp,
 } from '../../native-modules/DevLauncherInternal';
 
-type PendingDeepLinkPromptProps = object;
-
-export function PendingDeepLinkPrompt({}: PendingDeepLinkPromptProps) {
+export function PendingDeepLinkPrompt() {
   const [animating, setAnimating] = React.useState(false);
   const [isVisible, setIsVisible] = React.useState(false);
   const animatedValue = React.useRef(new Animated.Value(0));
@@ -100,7 +98,7 @@ export function PendingDeepLinkPrompt({}: PendingDeepLinkPromptProps) {
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents={pendingDeepLink ? 'auto' : 'none'}>
-      <Button style={StyleSheet.absoluteFill} onPress={onClosePress}>
+      <Button.Container style={StyleSheet.absoluteFill} onPress={onClosePress}>
         <Animated.View
           style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0, 0.8)', opacity }]}>
           <Animated.View
@@ -115,9 +113,9 @@ export function PendingDeepLinkPrompt({}: PendingDeepLinkPromptProps) {
                 <Row px="large">
                   <Heading size="small">Deep link received:</Heading>
                   <Spacer.Horizontal size="flex" />
-                  <Button onPress={onClosePress} accessibilityHint="Close modal">
+                  <Button.Container onPress={onClosePress} accessibilityHint="Close modal">
                     <XIcon />
-                  </Button>
+                  </Button.Container>
                 </Row>
 
                 <Spacer.Vertical size="small" />
@@ -137,7 +135,7 @@ export function PendingDeepLinkPrompt({}: PendingDeepLinkPromptProps) {
 
                       return (
                         <View key={packager.description} rounded="medium">
-                          <Button onPress={() => onPackagerPress(packager)}>
+                          <Button.Container onPress={() => onPackagerPress(packager)}>
                             <Row align="center" py="medium" px="small">
                               <StatusIndicator size="small" status="success" />
                               <Spacer.Horizontal size="small" />
@@ -145,7 +143,7 @@ export function PendingDeepLinkPrompt({}: PendingDeepLinkPromptProps) {
                               <Spacer.Horizontal size="flex" />
                               <ChevronRightIcon />
                             </Row>
-                          </Button>
+                          </Button.Container>
                           {!isLastItem && <Divider />}
                         </View>
                       );
@@ -154,22 +152,22 @@ export function PendingDeepLinkPrompt({}: PendingDeepLinkPromptProps) {
 
                   <Spacer.Vertical size="large" />
 
-                  <Button
+                  <Button.Container
                     bg="tertiary"
                     rounded="medium"
                     py="small"
                     px="medium"
                     onPress={onClosePress}>
-                    <Text size="large" align="center" weight="semibold" button="tertiary">
+                    <Button.Text size="large" align="center" weight="semibold" color="tertiary">
                       Open somewhere else
-                    </Text>
-                  </Button>
+                    </Button.Text>
+                  </Button.Container>
                 </View>
               </View>
             </View>
           </Animated.View>
         </Animated.View>
-      </Button>
+      </Button.Container>
     </View>
   );
 }

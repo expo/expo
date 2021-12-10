@@ -5,9 +5,12 @@ const config = createMetroConfiguration(__dirname);
 config.server = {
   enhanceMiddleware: (middleware) => {
     return (req, res, next) => {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const platform = url.searchParams.get('platform');
+
       // When an asset is imported outside the project root, it has wrong path on Android
       // So we fix the path to correct one
-      if (/\/assets\/.+\.png\?.+$/.test(req.url)) {
+      if (platform === 'android' && /\/assets\/.+\.png\?.+$/.test(req.url)) {
         req.url = `/assets/../${req.url}`;
       }
 

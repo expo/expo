@@ -100,8 +100,11 @@ export function SettingsScreen() {
           </Heading>
         </View>
 
-        <View bg="default" rounded="large">
-          <Button
+        <View>
+          <Button.ScaleOnPressContainer
+            bg="default"
+            roundedTop="large"
+            roundedBottom="none"
             onPress={() => setMotionGestureEnabled(!motionGestureEnabled)}
             accessibilityState={{ checked: motionGestureEnabled }}>
             <Row px="medium" py="small" align="center">
@@ -113,11 +116,14 @@ export function SettingsScreen() {
               <Spacer.Horizontal size="flex" />
               {motionGestureEnabled && <CheckIcon />}
             </Row>
-          </Button>
+          </Button.ScaleOnPressContainer>
 
           <Divider />
 
-          <Button
+          <Button.ScaleOnPressContainer
+            bg="default"
+            roundedBottom="large"
+            roundedTop="none"
             onPress={() => setTouchGestureEnabled(!touchGestureEnabled)}
             accessibilityState={{ checked: touchGestureEnabled }}>
             <Row px="medium" py="small">
@@ -129,7 +135,7 @@ export function SettingsScreen() {
               <Spacer.Horizontal size="flex" />
               {touchGestureEnabled && <CheckIcon />}
             </Row>
-          </Button>
+          </Button.ScaleOnPressContainer>
         </View>
 
         <View padding="small">
@@ -141,8 +147,8 @@ export function SettingsScreen() {
 
         <Spacer.Vertical size="medium" />
 
-        <View bg="default" rounded="large">
-          <Row px="medium" py="small" align="center">
+        <View rounded="large" overflow="hidden">
+          <Row px="medium" py="small" align="center" bg="default">
             <Text size="medium">Version</Text>
             <Spacer.Horizontal size="flex" />
             <Text>{appInfo?.appVersion}</Text>
@@ -151,7 +157,7 @@ export function SettingsScreen() {
           {Boolean(appInfo.runtimeVersion) && (
             <>
               <Divider />
-              <Row px="medium" py="small" align="center">
+              <Row px="medium" py="small" align="center" bg="default">
                 <Text size="medium">Runtime Version</Text>
                 <Spacer.Horizontal size="flex" />
                 <Text>{appInfo.runtimeVersion}</Text>
@@ -162,7 +168,7 @@ export function SettingsScreen() {
           {Boolean(appInfo.sdkVersion) && !appInfo.runtimeVersion && (
             <>
               <Divider />
-              <Row px="medium" py="small" align="center">
+              <Row px="medium" py="small" align="center" bg="default">
                 <Text size="medium">SDK Version</Text>
                 <Spacer.Horizontal size="flex" />
                 <Text>{appInfo.sdkVersion}</Text>
@@ -172,13 +178,18 @@ export function SettingsScreen() {
 
           <Divider />
 
-          <Button onPress={onCopyPress} disabled={hasCopiedContent}>
+          <Button.ScaleOnPressContainer
+            onPress={onCopyPress}
+            disabled={hasCopiedContent}
+            bg="default"
+            roundedTop="none"
+            roundedBottom="large">
             <Row px="medium" py="small" align="center">
               <Text color="primary" size="large">
                 {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
             </Row>
-          </Button>
+          </Button.ScaleOnPressContainer>
         </View>
       </View>
     </ScrollView>

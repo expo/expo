@@ -6,7 +6,7 @@ const iconWidth = 85;
 export function Splash() {
   return (
     <View flex="1" style={{ justifyContent: 'center', alignItems: 'center' }} bg="default">
-      <ExpoLogoIcon style={{ width: iconWidth }} resizeMode="contain" />
+      <ExpoLogoIcon style={{ width: iconWidth, resizeMode: 'contain' }} resizeMode="contain" />
     </View>
   );
 }

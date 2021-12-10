@@ -11,7 +11,7 @@ import {
   XIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
@@ -39,7 +39,18 @@ export function UserProfileScreen({ navigation }) {
   };
 
   const onLogoutPress = () => {
-    actions.logout();
+    Alert.alert('Log out', 'Are you sure you want to log out?', [
+      {
+        text: 'Log out',
+        onPress: () => actions.logout(),
+        style: 'cancel',
+      },
+      {
+        text: 'Nevermind',
+        onPress: () => {},
+        style: 'default',
+      },
+    ]);
   };
 
   const onClosePress = () => {
@@ -50,26 +61,28 @@ export function UserProfileScreen({ navigation }) {
 
   return (
     <SafeAreaView>
-      <View py="tiny">
-        <View padding="medium">
+      <View>
+        <View>
           <AccountScreenHeader onClosePress={onClosePress} />
 
           <Spacer.Vertical size="medium" />
 
-          {isAuthenticated ? (
-            <UserAccountSelector
-              userData={userData}
-              selectedAccount={selectedAccount}
-              onSelectAccount={onSelectAccount}
-              onLogoutPress={onLogoutPress}
-            />
-          ) : (
-            <LoginSignupCard
-              isLoading={isLoading}
-              onLoginPress={onLoginPress}
-              onSignupPress={onSignupPress}
-            />
-          )}
+          <View px="medium">
+            {isAuthenticated ? (
+              <UserAccountSelector
+                userData={userData}
+                selectedAccount={selectedAccount}
+                onSelectAccount={onSelectAccount}
+                onLogoutPress={onLogoutPress}
+              />
+            ) : (
+              <LoginSignupCard
+                isLoading={isLoading}
+                onLoginPress={onLoginPress}
+                onSignupPress={onSignupPress}
+              />
+            )}
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -78,13 +91,27 @@ export function UserProfileScreen({ navigation }) {
 
 function AccountScreenHeader({ onClosePress }) {
   return (
-    <Row>
-      <Heading size="medium">Account</Heading>
-      <Spacer.Horizontal size="flex" />
-      <Button onPress={onClosePress} accessibilityLabel="Go Back">
-        <XIcon />
-      </Button>
-    </Row>
+    <View>
+      <Spacer.Vertical size="small" />
+      <Row align="center">
+        <View px="medium">
+          <Heading size="medium">Account</Heading>
+        </View>
+
+        <Spacer.Horizontal size="flex" />
+
+        <Button.ScaleOnPressContainer
+          onPress={onClosePress}
+          accessibilityLabel="Go Back"
+          rounded="full"
+          bg="ghost"
+          minScale={0.9}>
+          <View padding="medium" rounded="full">
+            <XIcon />
+          </View>
+        </Button.ScaleOnPressContainer>
+      </Row>
+    </View>
   );
 }
 
@@ -97,31 +124,33 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
 
       <Spacer.Vertical size="medium" />
 
-      <Button
+      <Button.ScaleOnPressContainer
         bg="tertiary"
-        py="small"
         rounded="medium"
         onPress={onLoginPress}
         disabled={isLoading}
         accessibilityLabel="Log in">
-        <Text button="tertiary" weight="semibold" align="center">
-          Log In
-        </Text>
-      </Button>
+        <View py="small">
+          <Button.Text color="tertiary" weight="semibold" align="center">
+            Log In
+          </Button.Text>
+        </View>
+      </Button.ScaleOnPressContainer>
 
       <Spacer.Vertical size="small" />
 
-      <Button
+      <Button.ScaleOnPressContainer
         bg="secondary"
-        py="small"
         rounded="medium"
         onPress={onSignupPress}
         disabled={isLoading}
         accessibilityLabel="Sign up">
-        <Text button="secondary" weight="semibold" align="center">
-          Sign up
-        </Text>
-      </Button>
+        <View py="small">
+          <Button.Text color="secondary" weight="semibold" align="center">
+            Sign up
+          </Button.Text>
+        </View>
+      </Button.ScaleOnPressContainer>
 
       {isLoading && (
         <View
@@ -156,16 +185,21 @@ function UserAccountSelector({
 }: UserAccountSelectorProps) {
   return (
     <View>
-      <View bg="default" rounded="large">
+      <View>
         {userData.accounts.map((account, index, arr) => {
           const isLast = index === arr.length - 1;
+          const isFirst = index === 0;
           const isSelected = account.id === selectedAccount?.id;
 
           return (
-            <Button key={account.id} onPress={() => onSelectAccount(account)}>
+            <Button.ScaleOnPressContainer
+              key={account.id}
+              onPress={() => onSelectAccount(account)}
+              bg="default"
+              roundedBottom={isLast ? 'large' : 'none'}
+              roundedTop={isFirst ? 'large' : 'none'}>
               <Row align="center" py="small" px="medium">
                 <Image size="large" rounded="full" source={{ uri: account.owner.profilePhoto }} />
-
                 <Spacer.Horizontal size="small" />
 
                 <View>
@@ -176,18 +210,20 @@ function UserAccountSelector({
                 {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
               </Row>
               {!isLast && <Divider />}
-            </Button>
+            </Button.ScaleOnPressContainer>
           );
         })}
       </View>
 
       <Spacer.Vertical size="medium" />
 
-      <Button bg="tertiary" py="small" rounded="medium" onPress={onLogoutPress}>
-        <Text button="tertiary" weight="semibold" align="center">
-          Log Out
-        </Text>
-      </Button>
+      <Button.ScaleOnPressContainer bg="tertiary" rounded="medium" onPress={onLogoutPress}>
+        <View py="small" rounded="medium">
+          <Button.Text color="tertiary" weight="bold" align="center">
+            Log Out
+          </Button.Text>
+        </View>
+      </Button.ScaleOnPressContainer>
     </View>
   );
 }
