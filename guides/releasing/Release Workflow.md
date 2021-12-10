@@ -475,15 +475,15 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 **How:**
 
 - For each of the following packages, run `et update-versions -k 'relatedPackages.<package-name>' -v '^X.Y.Z'`
-  - `typescript`
-  - `@types/react`
-  - `@types/react-dom`
-  - `@types/react-native`
-  - `react-native-web`
-  - `babel-preset-expo`
   - `@babel/core`
   - `@expo/webpack-config`
-  - `react-native-unimodules`
+  - `@types/react-dom`
+  - `@types/react-native`
+  - `@types/react`
+  - `babel-preset-expo`
+  - `jest`
+  - `react-native-web`
+  - `typescript`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should have a carat (`^`) except for `react-native-unimodules`, which should have a tilde (`~`).
 
 ## 5.4. Re-publish project templates
