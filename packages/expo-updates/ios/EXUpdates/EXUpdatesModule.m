@@ -48,21 +48,20 @@ EX_EXPORT_MODULE(ExpoUpdates);
       @"runtimeVersion": runtimeVersion,
       @"channel": channel
     };
-  } else {
-    return @{
-      @"isEnabled": @(YES),
-      @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
-      @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
-      @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
-      @"localAssets": _updatesService.assetFilesMap ?: @{},
-      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
-      @"isMissingRuntimeVersion": isMissingRuntimeVersion,
-      @"releaseChannel": releaseChannel,
-      @"runtimeVersion": runtimeVersion,
-      @"channel": channel
-    };
   }
   
+  return @{
+    @"isEnabled": @(YES),
+    @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
+    @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
+    @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
+    @"localAssets": _updatesService.assetFilesMap ?: @{},
+    @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
+    @"isMissingRuntimeVersion": isMissingRuntimeVersion,
+    @"releaseChannel": releaseChannel,
+    @"runtimeVersion": runtimeVersion,
+    @"channel": channel
+  };
 }
 
 EX_EXPORT_METHOD_AS(reload,
