@@ -47,6 +47,12 @@ class UpdatesModule(
         constants["isEmergencyLaunch"] = updatesServiceLocal.isEmergencyLaunch
         constants["isMissingRuntimeVersion"] =
           updatesServiceLocal.configuration.isMissingRuntimeVersion
+        constants["isEnabled"] = updatesServiceLocal.configuration.isEnabled
+        constants["releaseChannel"] = updatesServiceLocal.configuration.releaseChannel
+        constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
+        constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
+        constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
+
         val launchedUpdate = updatesServiceLocal.launchedUpdate
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
@@ -63,11 +69,6 @@ class UpdatesModule(
           }
           constants["localAssets"] = localAssets
         }
-        constants["isEnabled"] = updatesServiceLocal.configuration.isEnabled
-        constants["releaseChannel"] = updatesServiceLocal.configuration.releaseChannel
-        constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
-        constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
-        constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
       }
     } catch (e: Exception) {
       // do nothing; this is expected in a development client
