@@ -102,6 +102,7 @@
       bytesSeen = content.length;
       NSInteger bytesRead = [_stream read:buffer maxLength:bufferLen];
       if (bytesRead <= 0 || _stream.streamError) {
+        [_stream close];
         return NO;
       }
       [content appendBytes:buffer length:bytesRead];
@@ -121,6 +122,7 @@
     }
 
     if (isCloseDelimiter) {
+      [_stream close];
       return YES;
     }
 
@@ -130,7 +132,6 @@
       delimiter = restDelimiter;
     }
   }
-  [_stream close];
 }
 
 @end
