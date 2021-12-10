@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 13.1.1 - 2021-12-09
+
+### 🐛 Bug fixes
+
+- Fixed simulator runtime crash on arm64 devices caused by CFRelease(NULL) ([#15496](https://github.com/expo/expo/pull/15496) by [@daxaxelrod](https://github.com/daxaxelrod))
+
 ## 13.1.0 — 2021-11-17
 
 ### 🐛 Bug fixes
