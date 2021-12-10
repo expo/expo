@@ -6,6 +6,7 @@
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesMultipartStreamReader.h>
 #import <EXUpdates/EXUpdatesParameterParser.h>
+#import <EXUpdates/EXUpdatesManifestHeaders.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -143,8 +144,14 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
                                    successBlock:successBlock
                                      errorBlock:errorBlock];
   } else {
+    NSDictionary *responseHeaders = [httpResponse allHeaderFields];
+    EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
+                                                                                     serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
+                                                                                          manifestFilters:responseHeaders[@"expo-manifest-filters"]
+                                                                                        manifestSignature:responseHeaders[@"expo-manifest-signature"]];
+    
     return [self parseManifestBodyData:data
-                      headerDictionary:[httpResponse allHeaderFields]
+                       manifestHeaders:manifestHeaders
                             extensions:@{}
                               database:database
                           successBlock:successBlock
@@ -161,8 +168,8 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   NSInputStream *inputStream = [[NSInputStream alloc] initWithData:data];
   EXUpdatesMultipartStreamReader *reader = [[EXUpdatesMultipartStreamReader alloc] initWithInputStream:inputStream boundary:boundary];
 
-  __block NSDictionary *manifestHeaders = nil;
-  __block NSData *manifestData = nil;
+  __block NSDictionary *manifestPartHeaders = nil;
+  __block NSData *manifestPartData = nil;
   __block NSData *extensionsData = nil;
 
   BOOL completed = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
@@ -183,8 +190,8 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
       NSString *contentDispositionNameFieldValue = contentDispositionParameters[@"name"];
       if (contentDispositionNameFieldValue != nil) {
         if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartManifestPartName]) {
-          manifestHeaders = headers;
-          manifestData = content;
+          manifestPartHeaders = headers;
+          manifestPartData = content;
         } else if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartExtensionsPartName]) {
           extensionsData = content;
         }
@@ -202,7 +209,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
     return;
   }
   
-  if (manifestHeaders == nil || manifestData == nil) {
+  if (manifestPartHeaders == nil || manifestPartData == nil) {
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                          code:1045
                                      userInfo:@{
@@ -233,9 +240,15 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
       return;
     }
   }
+  
+  NSDictionary *responseHeaders = [httpResponse allHeaderFields];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
+                                                                                   serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
+                                                                                        manifestFilters:responseHeaders[@"expo-manifest-filters"]
+                                                                                      manifestSignature:responseHeaders[@"expo-manifest-signature"]];
 
-  return [self parseManifestBodyData:manifestData
-                    headerDictionary:manifestHeaders
+  return [self parseManifestBodyData:manifestPartData
+                     manifestHeaders:manifestHeaders
                           extensions:extensions
                             database:database
                         successBlock:successBlock
@@ -243,12 +256,12 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
 }
 
 - (void)parseManifestBodyData:(NSData *)manifestBodyData
-             headerDictionary:(NSDictionary *)headerDictionary
+              manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
                    extensions:(NSDictionary *)extensions
                      database:(EXUpdatesDatabase *)database
                  successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                    errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock {
-  id headerSignature = headerDictionary[@"expo-manifest-signature"];
+  id headerSignature = manifestHeaders.manifestSignature;
   
   NSError *error;
   id manifestBodyJson = [NSJSONSerialization JSONObjectWithData:manifestBodyData options:kNilOptions error:&error];
@@ -311,7 +324,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
                                 successBlock:^(BOOL isValid) {
                                                 if (isValid) {
                                                   [self _createUpdateWithManifest:mutableManifest
-                                                                          headers:headerDictionary
+                                                                  manifestHeaders:manifestHeaders
                                                                        extensions:extensions
                                                                          database:database
                                                                        isVerified:YES
@@ -328,7 +341,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
     ];
   } else {
     [self _createUpdateWithManifest:mutableManifest
-                            headers:headerDictionary
+                    manifestHeaders:manifestHeaders
                          extensions:extensions
                            database:database
                          isVerified:NO
@@ -363,7 +376,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
 }
 
 - (void)_createUpdateWithManifest:(NSMutableDictionary *)mutableManifest
-                          headers:(NSDictionary *)headers
+                  manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
                        extensions:(NSDictionary *)extensions
                          database:(EXUpdatesDatabase *)database
                        isVerified:(BOOL)isVerified
@@ -379,7 +392,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   EXUpdatesUpdate *update;
   @try {
     update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
-                                         headers:headers
+                                 manifestHeaders:manifestHeaders
                                       extensions:extensions
                                           config:_config
                                         database:database
