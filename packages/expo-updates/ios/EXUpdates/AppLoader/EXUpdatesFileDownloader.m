@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
 NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 
+NSString * const EXUpdatesMultipartManifestPartName = @"manifest";
+NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
+
 @interface EXUpdatesFileDownloader () <NSURLSessionDataDelegate>
 
 @property (nonatomic, strong) NSURLSession *session;
@@ -120,7 +123,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
   
   if ([[contentType lowercaseString] hasPrefix:@"multipart/"]) {
-    NSDictionary<NSString *, NSString *> *contentTypeParameters = [[EXUpdatesParameterParser new] parseParameterString:contentType withDelimiter:@";"];
+    NSDictionary<NSString *, NSString *> *contentTypeParameters = [[EXUpdatesParameterParser new] parseParameterString:contentType withDelimiter:';'];
     NSString *boundaryParameterValue = contentTypeParameters[@"boundary"];
     
     if (boundaryParameterValue == nil) {
@@ -176,18 +179,18 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     }
     
     if (contentDisposition != nil) {
-      NSDictionary<NSString *, NSString *> *contentDispositionParameters = [[EXUpdatesParameterParser new] parseParameterString:contentDisposition withDelimiter:@";"];
+      NSDictionary<NSString *, NSString *> *contentDispositionParameters = [[EXUpdatesParameterParser new] parseParameterString:contentDisposition withDelimiter:';'];
       NSString *contentDispositionNameFieldValue = contentDispositionParameters[@"name"];
       if (contentDispositionNameFieldValue != nil) {
-        if ([contentDispositionNameFieldValue isEqualToString:@"manifest"]) {
+        if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartManifestPartName]) {
           manifestHeaders = headers;
           manifestData = content;
-        } else if ([contentDispositionNameFieldValue isEqualToString:@"extensions"]) {
+        } else if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartExtensionsPartName]) {
           extensionsData = content;
         }
       }
     }
-  } progressCallback:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {}];
+  }];
   
   if (!completed) {
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
@@ -247,16 +250,16 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                    errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock {
   id headerSignature = headerDictionary[@"expo-manifest-signature"];
   
-  NSError *err;
-  id manifestBodyJson = [NSJSONSerialization JSONObjectWithData:manifestBodyData options:kNilOptions error:&err];
-  if (err) {
-    errorBlock(err);
+  NSError *error;
+  id manifestBodyJson = [NSJSONSerialization JSONObjectWithData:manifestBodyData options:kNilOptions error:&error];
+  if (error) {
+    errorBlock(error);
     return;
   }
 
-  NSDictionary *updateResponseDictionary = [self _extractUpdateResponseDictionary:manifestBodyJson error:&err];
-  if (err) {
-    errorBlock(err);
+  NSDictionary *updateResponseDictionary = [self _extractUpdateResponseDictionary:manifestBodyJson error:&error];
+  if (error) {
+    errorBlock(error);
     return;
   }
 
@@ -280,8 +283,8 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                 ]);
     return;
   }
-  NSDictionary *manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-  if (err || !manifest || ![manifest isKindOfClass:[NSDictionary class]]) {
+  NSDictionary *manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+  if (error || !manifest || ![manifest isKindOfClass:[NSDictionary class]]) {
     errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                    code:1042
                                userInfo:@{

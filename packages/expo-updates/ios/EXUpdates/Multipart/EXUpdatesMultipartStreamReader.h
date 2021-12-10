@@ -12,8 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesMultipartStreamReader : NSObject
 
 - (instancetype)initWithInputStream:(NSInputStream *)stream boundary:(NSString *)boundary;
-- (BOOL)readAllPartsWithCompletionCallback:(RCTMultipartCallback)callback
-                          progressCallback:(RCTMultipartProgressCallback)progressCallback;
+- (BOOL)readAllPartsWithCompletionCallback:(RCTMultipartCallback)callback;
 
 @end
 

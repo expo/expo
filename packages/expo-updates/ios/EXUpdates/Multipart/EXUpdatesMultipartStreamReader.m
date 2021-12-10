@@ -55,7 +55,6 @@
 }
 
 - (BOOL)readAllPartsWithCompletionCallback:(RCTMultipartCallback)callback
-                          progressCallback:(RCTMultipartProgressCallback)progressCallback
 {
   NSInteger chunkStart = 0;
   NSInteger bytesSeen = 0;
@@ -131,6 +130,7 @@
       delimiter = restDelimiter;
     }
   }
+  [_stream close];
 }
 
 @end

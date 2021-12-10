@@ -2,18 +2,14 @@
 
 #import <EXUpdates/EXUpdatesParameterParser.h>
 
-@interface EXUpdatesParameterParser (Private)
-@end
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesParameterParser {
   // String to be parsed.
-  NSString *_chars;
+  NSString *_parameterString;
   
   // Current position in the string.
-  int _pos;
-  
-  // Maximum position in the string.
-  NSUInteger _len;
+  int _currentPosition;
   
   // Start of a token.
   int _i1;
@@ -29,27 +25,27 @@
  */
 - (nullable NSString *)getTokenWithQuoted:(BOOL)quoted {
   // Trim leading white spaces
-  while ((_i1 < _i2) && [[NSCharacterSet whitespaceCharacterSet] characterIsMember:[_chars characterAtIndex:_i1]]) {
+  while ((_i1 < _i2) && [[NSCharacterSet whitespaceCharacterSet] characterIsMember:[_parameterString characterAtIndex:_i1]]) {
     _i1++;
   }
   
   // Trim trailing white spaces
-  while ((_i2 > _i1) && [[NSCharacterSet whitespaceCharacterSet] characterIsMember:[_chars characterAtIndex:(_i2 - 1)]]) {
+  while ((_i2 > _i1) && [[NSCharacterSet whitespaceCharacterSet] characterIsMember:[_parameterString characterAtIndex:(_i2 - 1)]]) {
       _i2--;
   }
   
   // Strip away quotation marks if necessary
   if (quoted
       && ((_i2 - _i1) >= 2)
-      && ([_chars characterAtIndex:_i1] == '"')
-      && ([_chars characterAtIndex:(_i2 - 1)] == '"')) {
+      && ([_parameterString characterAtIndex:_i1] == '"')
+      && ([_parameterString characterAtIndex:(_i2 - 1)] == '"')) {
       _i1++;
       _i2--;
   }
   
   NSString *result = nil;
   if (_i2 > _i1) {
-    result = [_chars substringWithRange:NSMakeRange(_i1, _i2 - _i1)];
+    result = [_parameterString substringWithRange:NSMakeRange(_i1, _i2 - _i1)];
   }
   return result;
 }
@@ -60,15 +56,15 @@
  */
 - (NSString *)parseTokenWithTerminators:(NSCharacterSet *)terminators {
   unichar ch;
-  _i1 = _pos;
-  _i2 = _pos;
+  _i1 = _currentPosition;
+  _i2 = _currentPosition;
   while ([self hasChar]) {
-    ch = [_chars characterAtIndex:_pos];
+    ch = [_parameterString characterAtIndex:_currentPosition];
     if ([terminators characterIsMember:ch]) {
       break;
     }
     _i2++;
-    _pos++;
+    _currentPosition++;
   }
   return [self getTokenWithQuoted:false];
 }
@@ -79,13 +75,13 @@
  */
 - (NSString *)parseQuotedTokenWithTerminators:(NSCharacterSet *)terminators {
   unichar ch;
-  _i1 = _pos;
-  _i2 = _pos;
+  _i1 = _currentPosition;
+  _i2 = _currentPosition;
   BOOL quoted = false;
   BOOL charEscaped = false;
   
   while ([self hasChar]) {
-    ch = [_chars characterAtIndex:_pos];
+    ch = [_parameterString characterAtIndex:_currentPosition];
     if (!quoted && [terminators characterIsMember:ch]) {
       break;
     }
@@ -94,7 +90,7 @@
     }
     charEscaped = (!charEscaped && ch == '\\');
     _i2++;
-    _pos++;
+    _currentPosition++;
   }
   
   return [self getTokenWithQuoted:true];
@@ -104,32 +100,34 @@
  * Are there any characters left to parse?
  */
 - (BOOL)hasChar {
-  return _pos < _len;
+  return _currentPosition < _parameterString.length;
 }
 
 /**
  * Extracts a map of name/value pairs from the given string. Names are expected to be unique.
  */
-- (NSDictionary<NSString *, NSString *> *)parseParameterString:(NSString *)parameterString withDelimiter:(NSString *)delimiter {
-  _chars = parameterString;
-  _len = parameterString.length;
+- (NSDictionary<NSString *, NSString *> *)parseParameterString:(NSString *)parameterString withDelimiter:(unichar)delimiter {
+  _parameterString = parameterString;
   
   NSMutableDictionary *params = [NSMutableDictionary new];
   
   NSString *paramName;
   NSString *paramValue;
   
+  NSCharacterSet *charSetDelimiter = [NSCharacterSet characterSetWithCharactersInString:[NSString stringWithFormat:@"%C", delimiter]];
+  NSCharacterSet *charSetDelimiterAndEquals = [NSCharacterSet characterSetWithCharactersInString:[NSString stringWithFormat:@"%C=", delimiter]];
+  
   while ([self hasChar]) {
-    paramName = [self parseTokenWithTerminators:[NSCharacterSet characterSetWithCharactersInString:[NSString stringWithFormat:@"%@=", delimiter]]];
+    paramName = [self parseTokenWithTerminators:charSetDelimiterAndEquals];
     paramValue = nil;
     
-    if ([self hasChar] && [_chars characterAtIndex:_pos] == '=') {
-      _pos++; // skip '='
-      paramValue = [self parseQuotedTokenWithTerminators:[NSCharacterSet characterSetWithCharactersInString:delimiter]];
+    if ([self hasChar] && [_parameterString characterAtIndex:_currentPosition] == '=') {
+      _currentPosition++; // skip '='
+      paramValue = [self parseQuotedTokenWithTerminators:charSetDelimiter];
     }
     
-    if ([self hasChar] && ([_chars characterAtIndex:_pos] == [delimiter characterAtIndex:0])) {
-      _pos++; // skip separator
+    if ([self hasChar] && ([_parameterString characterAtIndex:_currentPosition] == delimiter)) {
+      _currentPosition++; // skip separator
     }
     
     if (paramName != nil && paramName.length > 0) {
@@ -141,3 +139,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -33,8 +33,7 @@
     XCTAssertEqualObjects(headers[@"Content-Type"], @"application/json; charset=utf-8");
     XCTAssertEqualObjects([[NSString alloc] initWithData:content encoding:NSUTF8StringEncoding], @"{}");
     count++;
-  }
-                                           progressCallback:nil];
+  }];
   XCTAssertTrue(success);
   XCTAssertEqual(count, 1);
 }
@@ -62,8 +61,7 @@
     NSString *expectedBody = [NSString stringWithFormat:@"%ld", (long)count];
     NSString *actualBody = [[NSString alloc] initWithData:content encoding:NSUTF8StringEncoding];
     XCTAssertEqualObjects(actualBody, expectedBody);
-  }
-                                           progressCallback:nil];
+  }];
   XCTAssertTrue(success);
   XCTAssertEqual(count, 3);
 }
@@ -90,8 +88,7 @@
     NSString *expectedBody = [NSString stringWithFormat:@"%ld", (long)count];
     NSString *actualBody = [[NSString alloc] initWithData:content encoding:NSUTF8StringEncoding];
     XCTAssertEqualObjects(actualBody, expectedBody);
-  }
-                                           progressCallback:nil];
+  }];
   XCTAssertTrue(success);
   XCTAssertEqual(count, 3);
 }
@@ -107,8 +104,7 @@
   BOOL success = [reader readAllPartsWithCompletionCallback:^(
                                                               __unused NSDictionary *headers, __unused NSData *content, __unused BOOL done) {
                                                                 count++;
-                                                              }
-                                           progressCallback:nil];
+                                                              }];
   XCTAssertFalse(success);
   XCTAssertEqual(count, 0);
 }
@@ -131,8 +127,7 @@
   BOOL success = [reader readAllPartsWithCompletionCallback:^(
                                                               __unused NSDictionary *headers, __unused NSData *content, __unused BOOL done) {
                                                                 count++;
-                                                              }
-                                           progressCallback:nil];
+                                                              }];
   XCTAssertFalse(success);
   XCTAssertEqual(count, 1);
 }
