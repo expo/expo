@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.manifests.core.NewManifest
-import okhttp3.Headers
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -21,7 +20,7 @@ class NewUpdateManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    Assert.assertNotNull(NewUpdateManifest.fromNewManifest(manifest, Headers.of(), null, createConfig()))
+    Assert.assertNotNull(NewUpdateManifest.fromNewManifest(manifest, ManifestHeaderData(null, null, null, null), null, createConfig()))
   }
 
   @Test(expected = JSONException::class)
@@ -30,7 +29,7 @@ class NewUpdateManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    NewUpdateManifest.fromNewManifest(manifest, Headers.of(), null, createConfig())
+    NewUpdateManifest.fromNewManifest(manifest, ManifestHeaderData(null, null, null, null), null, createConfig())
   }
 
   @Test(expected = JSONException::class)
@@ -39,7 +38,7 @@ class NewUpdateManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    NewUpdateManifest.fromNewManifest(manifest, Headers.of(), null, createConfig())
+    NewUpdateManifest.fromNewManifest(manifest, ManifestHeaderData(null, null, null, null), null, createConfig())
   }
 
   @Test(expected = JSONException::class)
@@ -48,7 +47,7 @@ class NewUpdateManifestTest {
     val manifestJson =
       "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    NewUpdateManifest.fromNewManifest(manifest, Headers.of(), null, createConfig())
+    NewUpdateManifest.fromNewManifest(manifest, ManifestHeaderData(null, null, null, null), null, createConfig())
   }
 
   @Test(expected = JSONException::class)
@@ -57,7 +56,7 @@ class NewUpdateManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    NewUpdateManifest.fromNewManifest(manifest, Headers.of(), null, createConfig())
+    NewUpdateManifest.fromNewManifest(manifest, ManifestHeaderData(null, null, null, null), null, createConfig())
   }
 
   private fun createConfig(): UpdatesConfiguration {

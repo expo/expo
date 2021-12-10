@@ -5,7 +5,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.manifest.ManifestFactory.getEmbeddedManifest
 import expo.modules.updates.manifest.ManifestFactory.getManifest
-import okhttp3.Headers
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -32,7 +31,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_Legacy() {
     val actual = getManifest(
       JSONObject(legacyManifestJson),
-      Headers.of(),
+      ManifestHeaderData(null, null, null, null),
       null,
       createConfig()
     )
@@ -44,7 +43,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_New() {
     val actual = getManifest(
       JSONObject(newManifestJson),
-      Headers.of(mapOf("expo-protocol-version" to "0")),
+      ManifestHeaderData("0", null, null, null),
       null,
       createConfig()
     )
@@ -56,7 +55,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_UnsupportedProtocolVersion() {
     getManifest(
       JSONObject(newManifestJson),
-      Headers.of(mapOf("expo-protocol-version" to "1")),
+      ManifestHeaderData("1", null, null, null),
       null,
       createConfig()
     )
