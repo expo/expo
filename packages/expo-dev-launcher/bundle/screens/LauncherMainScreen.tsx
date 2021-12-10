@@ -63,12 +63,10 @@ class LauncherMainScreen extends React.Component<Props, State> {
 
   componentDidMount() {
     DevLauncher.getPendingDeepLink().then(pendingDeepLink => {
-      console.log({ pendingDeepLink });
       this.setState({ pendingDeepLink });
     });
 
     DevLauncher.getRecentlyOpenedApps().then(openedProjects => {
-      console.log({ openedProjects })
       const newOpenedProjects = [];
       for (const [url, name] of Object.entries(openedProjects)) {
         newOpenedProjects.push({
