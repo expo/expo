@@ -25,7 +25,7 @@ export function addDeepLinkListener(callback: (string) => void): EventSubscripti
   return EventEmitter.addListener(ON_NEW_DEEP_LINK_EVENT, callback);
 }
 
-export type AppInfo = {
+export type BuildInfo = {
   appName?: string;
   appVersion?: string;
   appIcon?: string;
