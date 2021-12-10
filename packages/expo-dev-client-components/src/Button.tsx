@@ -136,6 +136,11 @@ const darkHighlightColorMap: Record<ContainerBackgroundColors, string> = {
   transparent: darkTheme.background.secondary,
 };
 
+const highlightColorMap = {
+  dark: darkHighlightColorMap,
+  light: lightHighlightColorMap,
+};
+
 function ScaleOnPressContainer({
   minScale = 0.975,
   ...props
@@ -168,15 +173,14 @@ function ScaleOnPressContainer({
 
   const scaleStyle = { transform: [{ scale }] };
 
-  let highlightColor = 'transparent';
+  let backgroundColor = 'transparent';
 
-  if (props.bg) {
-    const isDark = theme === 'dark';
-    highlightColor = isDark ? darkHighlightColorMap[props.bg] : lightHighlightColorMap[props.bg];
+  if (props.bg && isPressing && theme != null) {
+    backgroundColor = highlightColorMap[theme][props.bg];
   }
 
   const underlayStyle = {
-    backgroundColor: isPressing ? highlightColor : 'transparent',
+    backgroundColor,
   };
 
   return (
