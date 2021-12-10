@@ -14,7 +14,6 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.manifests.core.NewManifest
-import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -104,7 +103,7 @@ class NewUpdateManifest private constructor(
     @Throws(JSONException::class)
     fun fromNewManifest(
       manifest: NewManifest,
-      responseHeaders: Headers,
+      manifestHeaderData: ManifestHeaderData,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
     ): NewUpdateManifest {
@@ -118,8 +117,6 @@ class NewUpdateManifest private constructor(
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
       }
-      val serverDefinedHeaders = responseHeaders["expo-server-defined-headers"]
-      val manifestFilters = responseHeaders["expo-manifest-filters"]
       return NewUpdateManifest(
         manifest,
         id,
@@ -129,8 +126,8 @@ class NewUpdateManifest private constructor(
         launchAsset,
         assets,
         extensions,
-        serverDefinedHeaders,
-        manifestFilters
+        manifestHeaderData.serverDefinedHeaders,
+        manifestHeaderData.manifestFilters
       )
     }
 
