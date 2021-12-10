@@ -40,7 +40,7 @@ async function openBrowserAndWaitAndroidAsync(startUrl: string): Promise<any> {
 
   if (type === 'opened') {
     await appStateChangedToActive;
-    result = { type: 'dissmiss' };
+    result = { type: 'dismiss' };
   }
 
   AppState.removeEventListener('change', onAppStateChangeAndroid);

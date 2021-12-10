@@ -39,7 +39,7 @@ export async function restoreSessionAsync(): Promise<{
 
 export async function getAuthSchemeAsync(): Promise<string> {
   if (Platform.OS === 'android') {
-    return 'expo-dev-menu';
+    return 'expo-dev-launcher';
   }
 
   return await DevMenu.getAuthSchemeAsync();
