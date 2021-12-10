@@ -114,25 +114,24 @@ describe('<HomeScreen />', () => {
     expect(loadApp).toHaveBeenCalledWith('exp://tester');
   });
 
-  test.todo('unable to enter an invalid url');
-  // test('unable to enter an invalid url', async () => {
-  //   const { getByText, getByPlaceholderText, queryByPlaceholderText } = renderHomeScreen();
+  test('unable to enter an invalid url', async () => {
+    const { getByText, getByPlaceholderText, queryByPlaceholderText } = renderHomeScreen();
 
-  //   expect(queryByPlaceholderText(textInputPlaceholder)).toBe(null);
-  //   const toggleButton = getByText(textInputToggleRegex);
-  //   fireEvent.press(toggleButton);
+    expect(queryByPlaceholderText(textInputPlaceholder)).toBe(null);
+    const toggleButton = getByText(textInputToggleRegex);
+    fireEvent.press(toggleButton);
 
-  //   const input = await waitFor(() => getByPlaceholderText(textInputPlaceholder));
-  //   expect(loadApp).not.toHaveBeenCalled();
+    const input = await waitFor(() => getByPlaceholderText(textInputPlaceholder));
+    expect(loadApp).not.toHaveBeenCalled();
 
-  //   fireEvent.changeText(input, 'i am invalid');
-  //   fireEvent.press(getByText(/connect/i));
+    fireEvent.changeText(input, 'i am invalid');
+    fireEvent.press(getByText(/connect/i));
 
-  //   expect(loadApp).not.toHaveBeenCalled();
-  //   await waitFor(() => getByText(/invalid url/i));
-  // });
+    expect(loadApp).not.toHaveBeenCalled();
+    await waitFor(() => getByText(/invalid url/i));
+  });
 
-  test.todo('display for a valid url that is not found?');
+  test.todo('display for a valid url that is not found');
 
   test('select packager from packager list', async () => {
     const fakeLocalPackager: Packager = {
@@ -159,9 +158,11 @@ describe('<HomeScreen />', () => {
 
     const button = getByA11yLabel(/to user profile/i);
 
-    fireEvent.press(button);
-    expect(fakeNavigation.navigate).toHaveBeenCalled();
-    expect(fakeNavigation.navigate).toHaveBeenLastCalledWith('User Profile');
+    await act(async () => {
+      fireEvent.press(button);
+      expect(fakeNavigation.navigate).toHaveBeenCalled();
+      expect(fakeNavigation.navigate).toHaveBeenLastCalledWith('User Profile');
+    });
   });
 });
 

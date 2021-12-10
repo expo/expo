@@ -19,7 +19,7 @@ import { AppHeader } from '../components/redesign/AppHeader';
 import { PulseIndicator } from '../components/redesign/PulseIndicator';
 import { UrlDropdown } from '../components/redesign/UrlDropdown';
 import { Packager } from '../functions/getLocalPackagersAsync';
-import { useAppInfo } from '../hooks/useAppInfo';
+import { useBuildInfo } from '../hooks/useBuildInfo';
 import { useLocalPackagers } from '../hooks/useLocalPackagers';
 import { loadApp, getRecentlyOpenedApps } from '../native-modules/DevLauncherInternal';
 
@@ -38,14 +38,8 @@ export function HomeScreen({
 }: HomeScreenProps) {
   const { data, pollAsync, isFetching } = useLocalPackagers();
 
-  React.useEffect(() => {
-    getRecentlyOpenedApps().then((response) => {
-      console.log({ response });
-    });
-  }, []);
-
-  const appInfo = useAppInfo();
-  const { appName, appIcon } = appInfo;
+  const buildInfo = useBuildInfo();
+  const { appName, appIcon } = buildInfo;
 
   const initialPackagerData = React.useRef(data);
 

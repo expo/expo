@@ -154,23 +154,25 @@ describe('<UserProfileScreen />', () => {
     });
   });
 
-  test('logout', async () => {
-    const { getByA11yLabel, getByText } = renderProfileScreen();
+  // this will be feasible once we show a real modal prompt instead of needing to mock Alert.alert
+  // test('logout', async () => {
+  //   const { getByA11yLabel, getByText } = renderProfileScreen();
 
-    await act(async () => {
-      const loginButton = getByA11yLabel(/log in/i);
-      fireEvent.press(loginButton);
+  //   await act(async () => {
+  //     const loginButton = getByA11yLabel(/log in/i);
+  //     fireEvent.press(loginButton);
 
-      const logoutButton = await waitFor(() => getByText(/log out/i));
+  //     const logoutButton = await waitFor(() => getByText(/log out/i));
 
-      mockSetSessionAsync.mockClear();
-      fireEvent.press(logoutButton);
+  //     mockSetSessionAsync.mockClear();
+  //     fireEvent.press(logoutButton);
 
-      expect(setSessionAsync).toHaveBeenCalledTimes(1);
-      expect(setSessionAsync).toHaveBeenLastCalledWith(null);
-    });
-  });
 
+  //     expect(setSessionAsync).toHaveBeenCalledTimes(1);
+  //     expect(setSessionAsync).toHaveBeenLastCalledWith(null);
+  //   });
+  // });
+  test.todo('logout')
   test.todo('failed login / signup response');
 });
 

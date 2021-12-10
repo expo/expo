@@ -14,7 +14,7 @@ import {
 import * as React from 'react';
 import { ScrollView, Switch } from 'react-native';
 
-import { useAppInfo } from '../hooks/useAppInfo';
+import { useBuildInfo } from '../hooks/useBuildInfo';
 import { useDevMenuSettings } from '../hooks/useDevMenuSettings';
 import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
 
@@ -31,7 +31,7 @@ export function SettingsScreen() {
     setMotionGestureEnabled,
   } = useDevMenuSettings();
 
-  const appInfo = useAppInfo();
+  const buildInfo = useBuildInfo();
 
   const timerRef = React.useRef(null);
 
@@ -48,7 +48,7 @@ export function SettingsScreen() {
   }, [clipboardContent]);
 
   const onCopyPress = async () => {
-    const { runtimeVersion, sdkVersion, appName, appVersion } = appInfo;
+    const { runtimeVersion, sdkVersion, appName, appVersion } = buildInfo;
 
     const content = JSON.stringify(
       {
@@ -151,27 +151,27 @@ export function SettingsScreen() {
           <Row px="medium" py="small" align="center" bg="default">
             <Text size="medium">Version</Text>
             <Spacer.Horizontal size="flex" />
-            <Text>{appInfo?.appVersion}</Text>
+            <Text>{buildInfo?.appVersion}</Text>
           </Row>
 
-          {Boolean(appInfo.runtimeVersion) && (
+          {Boolean(buildInfo.runtimeVersion) && (
             <>
               <Divider />
               <Row px="medium" py="small" align="center" bg="default">
                 <Text size="medium">Runtime Version</Text>
                 <Spacer.Horizontal size="flex" />
-                <Text>{appInfo.runtimeVersion}</Text>
+                <Text>{buildInfo.runtimeVersion}</Text>
               </Row>
             </>
           )}
 
-          {Boolean(appInfo.sdkVersion) && !appInfo.runtimeVersion && (
+          {Boolean(buildInfo.sdkVersion) && !buildInfo.runtimeVersion && (
             <>
               <Divider />
               <Row px="medium" py="small" align="center" bg="default">
                 <Text size="medium">SDK Version</Text>
                 <Spacer.Horizontal size="flex" />
-                <Text>{appInfo.sdkVersion}</Text>
+                <Text>{buildInfo.sdkVersion}</Text>
               </Row>
             </>
           )}

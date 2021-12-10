@@ -33,7 +33,7 @@ export type BuildInfo = {
   runtimeVersion?: string;
 };
 
-export async function getBuildInfoAsync(): Promise<AppInfo> {
+export async function getBuildInfoAsync(): Promise<BuildInfo> {
   return DevLauncher.getBuildInfo();
 }
 

@@ -111,7 +111,7 @@ describe('<SettingsScreen />', () => {
 
     const { getByText, queryByText } = render(<SettingsScreen />, {
       initialAppProviderProps: {
-        initialAppInfo: {
+        initialBuildInfo: {
           runtimeVersion: fakeRTV,
           sdkVersion: fakeSDKVersion,
         },
@@ -128,7 +128,7 @@ describe('<SettingsScreen />', () => {
 
     const { getByText, queryByText } = render(<SettingsScreen />, {
       initialAppProviderProps: {
-        initialAppInfo: {
+        initialBuildInfo: {
           sdkVersion: fakeSDKVersion,
         },
       },
@@ -149,7 +149,7 @@ describe('<SettingsScreen />', () => {
 
     const { getByText } = render(<SettingsScreen />, {
       initialAppProviderProps: {
-        initialAppInfo: fakeAppInfo,
+        initialBuildInfo: fakeAppInfo,
       },
     });
 

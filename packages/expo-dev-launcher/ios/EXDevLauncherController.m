@@ -489,7 +489,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 -(NSDictionary *)getBuildInfo
 { 
-  NSMutableDictionary *appInfo = [NSMutableDictionary new];
+  NSMutableDictionary *buildInfo = [NSMutableDictionary new];
 
   NSString *appIcon = [self getAppIcon];
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
@@ -497,13 +497,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
-  [appInfo setObject:appName forKey:@"appName"];
-  [appInfo setObject:appIcon forKey:@"appIcon"];
-  [appInfo setObject:appVersion forKey:@"appVersion"];
-  [appInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
-  [appInfo setObject:sdkVersion forKey:@"sdkVersion"];
+  [buildInfo setObject:appName forKey:@"appName"];
+  [buildInfo setObject:appIcon forKey:@"appIcon"];
+  [buildInfo setObject:appVersion forKey:@"appVersion"];
+  [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
+  [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
 
-  return appInfo;
+  return buildInfo;
 }
 
 -(NSString *)getAppIcon 
