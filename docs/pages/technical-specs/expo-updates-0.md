@@ -128,14 +128,18 @@ type Asset = {
 
 ### Multipart Manifest Response
 
-A manifest response of this format is defined by the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1). Each part is defined as follows:
+A manifest response of this format is defined by the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
+
+Headers for this response format are the same as [manifest response headers](#manifest-response-headers), with the exception of `content-type`, which is specified as the `multipart/mixed` media type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
+
+Each part is defined as follows:
 1. REQUIRED `"manifest"` part:
-    - MUST have a `content-disposition` header with a name parameter equal to `manifest`. e.g. `content-disposition: inline; name="manifest"`.
-    - The [manifest headers](#manifest-response-headers) MUST be sent in the part headers.
+    - MUST have part header `content-disposition: inline; name="manifest"`.
+    - MUST have part header `content-type: application/json` or `application/expo+json`.
     - The [manifest body](#manifest-response-body) MUST be sent in the part body.
 2. OPTIONAL `"extensions"` part:
-    - MUST have `content-disposition` header with a name parameter equal to `extensions`. e.g. `content-disposition: inline; name="extensions"`.
-    - MUST have header `content-type: application/json`.
+    - MUST have part header `content-disposition: inline; name="extensions"`.
+    - MUST have part header `content-type: application/json`.
     - The [manifest extensions](#manifest-extensions) MUST be sent in the part body.
 
 ### Manifest Extensions
