@@ -31,7 +31,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_Legacy() {
     val actual = getManifest(
       JSONObject(legacyManifestJson),
-      ManifestHeaderData(null, null, null, null),
+      ManifestHeaderData(),
       null,
       createConfig()
     )
@@ -43,7 +43,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_New() {
     val actual = getManifest(
       JSONObject(newManifestJson),
-      ManifestHeaderData("0", null, null, null),
+      ManifestHeaderData(protocolVersion = "0"),
       null,
       createConfig()
     )
@@ -55,7 +55,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_UnsupportedProtocolVersion() {
     getManifest(
       JSONObject(newManifestJson),
-      ManifestHeaderData("1", null, null, null),
+      ManifestHeaderData(protocolVersion = "1"),
       null,
       createConfig()
     )

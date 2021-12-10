@@ -44,11 +44,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteAllFields() {
-    val headers1 = ManifestHeaderData(null, null, "branch-name=\"rollout-1\",test=\"value\"", null)
+    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\",test=\"value\"")
     val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
 
-    val headers2 = ManifestHeaderData(null, null, "branch-name=\"rollout-2\"", null)
+    val headers2 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-2\"")
     val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
 
@@ -61,11 +61,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteEmpty() {
-    val headers1 = ManifestHeaderData(null, null, "branch-name=\"rollout-1\"", null)
+    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\"")
     val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
 
-    val headers2 = ManifestHeaderData(null, null, "", null)
+    val headers2 = ManifestHeaderData(manifestFilters = "")
     val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
 
@@ -77,11 +77,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteNull() {
-    val headers1 = ManifestHeaderData(null, null, "branch-name=\"rollout-1\"", null)
+    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\"")
     val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
 
-    val headers2 = ManifestHeaderData(null, null, null, null)
+    val headers2 = ManifestHeaderData()
     val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
 
