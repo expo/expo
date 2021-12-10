@@ -104,7 +104,7 @@ class NewUpdateManifest private constructor(
     @Throws(JSONException::class)
     fun fromNewManifest(
       manifest: NewManifest,
-      responseHeaders: Headers,
+      allManifestResponseHeaders: Headers,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
     ): NewUpdateManifest {
@@ -118,8 +118,8 @@ class NewUpdateManifest private constructor(
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
       }
-      val serverDefinedHeaders = responseHeaders["expo-server-defined-headers"]
-      val manifestFilters = responseHeaders["expo-manifest-filters"]
+      val serverDefinedHeaders = allManifestResponseHeaders["expo-server-defined-headers"]
+      val manifestFilters = allManifestResponseHeaders["expo-manifest-filters"]
       return NewUpdateManifest(
         manifest,
         id,

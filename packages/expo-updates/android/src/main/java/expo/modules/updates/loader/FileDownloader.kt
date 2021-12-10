@@ -119,7 +119,7 @@ open class FileDownloader(context: Context) {
   }
 
   private fun parseMultipartManifestResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
-    var manifestBodyAndHeaders: Pair<String, Headers>? = null
+    var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
 
     val multipartStream = MultipartStream(response.body()!!.byteStream(), boundary.toByteArray())
@@ -139,7 +139,7 @@ open class FileDownloader(context: Context) {
           val contentDispositionName = contentDispositionParameterMap["name"]
           if (contentDispositionName != null) {
             when (contentDispositionName) {
-              "manifest" -> manifestBodyAndHeaders = Pair(output.toString(), headers)
+              "manifest" -> manifestPartBodyAndHeaders = Pair(output.toString(), headers)
               "extensions" -> extensionsBody = output.toString()
             }
           }
@@ -154,7 +154,7 @@ open class FileDownloader(context: Context) {
       return
     }
 
-    if (manifestBodyAndHeaders == null) {
+    if (manifestPartBodyAndHeaders == null) {
       callback.onFailure("Multipart manifest response missing manifest part", IOException("Malformed multipart manifest response"))
       return
     }
@@ -169,10 +169,13 @@ open class FileDownloader(context: Context) {
       return
     }
 
-    parseManifest(manifestBodyAndHeaders.first, manifestBodyAndHeaders.second, extensions, configuration, callback)
+    // part headers take precedence over main response headers
+    // for example, content-type should be that of the part (application/json), not multipart/*
+    val combinedHeaders = Headers.Builder().addAll(response.headers()).addAll(manifestPartBodyAndHeaders.second).build()
+    parseManifest(manifestPartBodyAndHeaders.first, combinedHeaders, extensions, configuration, callback)
   }
 
-  private fun parseManifest(manifestBody: String, manifestHeaders: Headers, extensions: JSONObject?, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  private fun parseManifest(manifestBody: String, allManifestResponseHeaders: Headers, extensions: JSONObject?, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
     try {
       val updateResponseJson = extractUpdateResponseJson(manifestBody, configuration)
       val isSignatureInBody =
@@ -180,7 +183,7 @@ open class FileDownloader(context: Context) {
       val signature = if (isSignatureInBody) {
         updateResponseJson.getNullable("signature")
       } else {
-        manifestHeaders["expo-manifest-signature"]
+        allManifestResponseHeaders["expo-manifest-signature"]
       }
 
       /**
@@ -211,7 +214,7 @@ open class FileDownloader(context: Context) {
             override fun onCompleted(isValid: Boolean) {
               if (isValid) {
                 try {
-                  createManifest(preManifest, manifestHeaders, extensions, true, configuration, callback)
+                  createManifest(preManifest, allManifestResponseHeaders, extensions, true, configuration, callback)
                 } catch (e: Exception) {
                   callback.onFailure("Failed to parse manifest data", e)
                 }
@@ -225,7 +228,7 @@ open class FileDownloader(context: Context) {
           }
         )
       } else {
-        createManifest(preManifest, manifestHeaders, extensions, false, configuration, callback)
+        createManifest(preManifest, allManifestResponseHeaders, extensions, false, configuration, callback)
       }
     } catch (e: Exception) {
       callback.onFailure(
@@ -345,7 +348,7 @@ open class FileDownloader(context: Context) {
     @Throws(Exception::class)
     private fun createManifest(
       preManifest: JSONObject,
-      headers: Headers,
+      allManifestResponseHeaders: Headers,
       extensions: JSONObject?,
       isVerified: Boolean,
       configuration: UpdatesConfiguration,
@@ -354,7 +357,7 @@ open class FileDownloader(context: Context) {
       if (configuration.expectsSignedManifest) {
         preManifest.put("isVerified", isVerified)
       }
-      val updateManifest = ManifestFactory.getManifest(preManifest, headers, extensions, configuration)
+      val updateManifest = ManifestFactory.getManifest(preManifest, allManifestResponseHeaders, extensions, configuration)
       if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, updateManifest.manifestFilters)) {
         val message =
           "Downloaded manifest is invalid; provides filters that do not match its content"
