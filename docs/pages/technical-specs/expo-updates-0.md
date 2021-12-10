@@ -130,7 +130,7 @@ type Asset = {
 
 A manifest response of this format is defined by the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
 
-Headers for this response format are the same as [manifest response headers](#manifest-response-headers), with the exception of `content-type`, which is specified in the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
+Headers for this response format are the same as [manifest response headers](#manifest-response-headers), with the exception of `content-type`, which is specified as the `multipart/mixed` media type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
 
 Each part is defined as follows:
 1. REQUIRED `"manifest"` part:
