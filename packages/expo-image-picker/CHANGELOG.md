@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix unresolved promise when picker was dismissed with a swipe-down on iOS.
+
 ### 💡 Others
 
 ## 12.0.0 — 2021-12-03
