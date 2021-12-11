@@ -213,6 +213,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
       self.picker.modalPresentationStyle = UIModalPresentationAutomatic;
     }
     self.picker.delegate = self;
+    self.picker.presentationController.delegate = self;
 
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
     id<EXUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
@@ -458,6 +459,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   [response setObject:exif forKey:@"exif"];
 }
 
+// called when user pressed cancel button
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -466,6 +468,12 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
       self.resolve(@{@"cancelled": @YES});
     }];
   });
+}
+
+// called when user dismissed modal with swipe-down
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
+  [self maybeRestoreStatusBarVisibility];
+  self.resolve(@{@"cancelled": @YES});
 }
 
 - (void)maybePreserveVisibilityAndHideStatusBar:(BOOL)editingEnabled
