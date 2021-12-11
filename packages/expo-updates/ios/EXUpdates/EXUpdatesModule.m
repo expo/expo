@@ -115,7 +115,7 @@ EX_EXPORT_METHOD_AS(checkForUpdateAsync,
         @"isAvailable": @(NO)
       });
     }
-  } errorBlock:^(NSError *error, NSURLResponse *response) {
+  } errorBlock:^(NSError *error) {
     reject(@"ERR_UPDATES_CHECK", error.localizedDescription, error);
   }];
 }
