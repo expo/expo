@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix unresolved promise when picker was dismissed with a swipe-down on iOS.
+- Fix unresolved promise when picker was dismissed with a swipe-down on iOS. ([#15511](https://github.com/expo/expo/pull/15511) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
