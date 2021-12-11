@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, strong) NSString *mainBundleDir; // used for embedded assets
 @property (nullable, nonatomic, strong) NSString *mainBundleFilename; // used for embedded assets
 @property (nonatomic, assign) BOOL isLaunchAsset;
+@property (nullable, nonatomic, strong) NSDictionary *extraRequestHeaders;
 
 /**
  * properties determined at runtime by updates implementation

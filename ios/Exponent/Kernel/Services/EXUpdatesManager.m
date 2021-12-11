@@ -147,7 +147,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
                              extraHeaders:nil
                              successBlock:^(EXUpdatesUpdate *update) {
     success(update.manifest);
-  } errorBlock:^(NSError *error, NSURLResponse *response) {
+  } errorBlock:^(NSError *error) {
     failure(error);
   }];
 }

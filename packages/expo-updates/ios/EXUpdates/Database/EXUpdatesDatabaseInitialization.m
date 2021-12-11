@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDatabaseInitializationErrorDomain = @"EXUpdatesDatabaseInitialization";
-static NSString * const EXUpdatesDatabaseLatestFilename = @"expo-v7.db";
+static NSString * const EXUpdatesDatabaseLatestFilename = @"expo-v8.db";
 
 static NSString * const EXUpdatesDatabaseInitializationLatestSchema = @"\
 CREATE TABLE \"updates\" (\
@@ -31,6 +31,7 @@ CREATE TABLE \"assets\" (\
 \"url\"  TEXT,\
 \"key\"  TEXT UNIQUE,\
 \"headers\"  TEXT,\
+\"extra_request_headers\"  TEXT,\
 \"type\"  TEXT NOT NULL,\
 \"metadata\"  TEXT,\
 \"download_time\"  INTEGER NOT NULL,\
