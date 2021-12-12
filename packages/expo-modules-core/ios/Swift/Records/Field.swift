@@ -8,6 +8,8 @@ public final class Field<Type>: AnyFieldInternal {
    */
   public var wrappedValue: Type
 
+  private let fieldType: AnyArgumentType = ArgumentType(Type.self)
+
   /**
    Field's key in the dictionary, which by default is a label of the wrapped property.
    Sadly, property wrappers don't receive properties' label, so we must wait until it's assigned by `Record`.
@@ -23,11 +25,13 @@ public final class Field<Type>: AnyFieldInternal {
 
   /**
    Whether the generic field type accepts `nil` values.
-   We can't check it directly with `Optional` because it has associated type,
-   but all optionals implement non-generic `ExpressibleByNilLiteral` protocol.
    */
   internal var isOptional: Bool {
-    return Type.self is ExpressibleByNilLiteral.Type
+    return fieldType is OptionalArgumentType
+  }
+
+  internal var isRequired: Bool {
+    options.contains(.required)
   }
 
   /**
@@ -71,14 +75,13 @@ public final class Field<Type>: AnyFieldInternal {
    Sets the wrapped value with a value of `Any` type.
    */
   internal func set(_ newValue: Any?) throws {
-    if newValue == nil && (!isOptional || options.contains(.required)) {
+    if newValue == nil && (!isOptional || isRequired) {
       throw FieldRequiredError(fieldKey: key!)
     }
-    if let value = newValue as? Type {
-      wrappedValue = value
-      return
+    guard let value = try? fieldType.cast(newValue) as? Type else {
+      throw FieldInvalidTypeError(fieldKey: key!, value: newValue, desiredType: Type.self)
     }
-    throw FieldInvalidTypeError(fieldKey: key!, value: newValue, desiredType: Type.self)
+    wrappedValue = value
   }
 }
 
