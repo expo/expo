@@ -12,7 +12,7 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
    npm install --global eas-cli expo-cli
    ```
 
-   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0.
+   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0. Your project must also be on Expo SDK 43 or above. To upgrade, run `expo upgrade`.
 
 2. Then, log in with your expo account:
 
