@@ -63,6 +63,6 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
    5. Click "New repository secret"
    6. Make the secret's name "EXPO_TOKEN", then paste the access token in as the value.
 
-Your GitHub Action should be set up now. Every time when someone merges code into the "production" branch, this action will build an update and publish it, making it available to all of our users with builds that have access to the "production" branch on EAS.
+Your GitHub Action should be set up now. Every time when someone merges code into the "production" branch, this action will build an update and publish it, making it available to all of our devices with builds that have access to the "production" branch on EAS.
 
 > Some repositories or organizations might need to explicitly enable GitHub Workflows and allow third-party Actions.
