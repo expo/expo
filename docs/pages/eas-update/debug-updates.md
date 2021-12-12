@@ -10,9 +10,9 @@ It's important to be able to tell the current state of our app at any given time
 
 We use the term _deployments_ to refer to the entire system of builds and their updates. The system includes builds, channels, branches, updates, runtime versions, and platforms. Let's inspect these attributes.
 
-### Viewing deployments
+<!-- ### Viewing deployments
 
-The EAS website has a page that shows the current state of our apps. We can view it at [https://expo.dev/accounts/[account]/projects/[project]/deployments](https://expo.dev/accounts/[account]/projects/[project]/deployments).
+The EAS website has a page that shows the current state of our apps. We can view it at [https://expo.dev/accounts/[account]/projects/[project]/deployments](https://expo.dev/accounts/[account]/projects/[project]/deployments). -->
 
 ### Inspecting builds
 
@@ -71,6 +71,18 @@ The output will display the message of the update, when it was created and by wh
 When we publish an update with EAS Update, it creates a **/dist** folder in the root of your project locally, which includes the assets that were uploaded as a part of the update.
 
 <ImageSpotlight alt="Dist directory" src="/static/images/eas-update/dist.png" />
+
+### Inspecting manifests
+
+When an update is published with EAS Update, we create a manifest that end-user app's request. The manifest has information like which assets and versions are needed for an update to load. We can inspect the manifest by going to a specific URL in a browser or by using `curl`.
+
+Inside our project's app config (**app.json**/**app.config.json**), the URL we can GET is under `updates.url`.
+
+This `url` is EAS' "https://u.expo.dev" domain, followed by the project's ID on EAS' servers. If we go to the URL directly, we'll see an error about missing a header. We can view a manifest by adding three query parameters to the URL: `runtime-version`, `channel-name`, and `platform`. If we published an update with a runtime version of `1.0.0`, a channel of `production` and a platform of `android`, the full URL you could visit would be similar to this:
+
+```
+https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production&platform=android
+```
 
 ## Undoing a bad publish
 

@@ -68,23 +68,24 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
 
 4. Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
 
-   ```bash
+   ```json
    {
      "build": {
         "preview": {
-          ...
           "channel": "preview"
+          ...
         },
         "production": {
-          ...
           "channel": "production"
-        },
-       ...
+          ...
+        }
      }
    }
    ```
 
    This `channel` property will allow you to point updates at builds. For example, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will publish an update that will be made available to builds with the channel "production".
+
+5. Optional: If your project is a bare React Native project, [read the doc](/eas-update/bare-react-native) on extra configuration you may need.
 
 ## Create a build for the project
 

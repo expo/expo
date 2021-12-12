@@ -40,28 +40,33 @@ You'll need to make the following changes to your project:
 
 3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**). Remove the `expo.sdkVersion` property from your app config.
 
-4. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include channel names. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"`.
+4. Next, set your project up with EAS Build by running:
 
-   ```json
-   {
-     "build": {
-       "development": {
-         "developmentClient": true,
-         "distribution": "internal",
-         "channel": "development"
-       },
-       "preview": {
-         "distribution": "internal",
-         "channel": "preview"
-       },
-       "production": {
-         "channel": "production"
-       }
-     }
-   }
+   ```bash
+   eas build:configure
    ```
 
-   > Tip: if you don't have an **eas.json** file, you can generate it with `eas build:configure`.
+5. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include channel properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
+
+```json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview"
+    },
+    "production": {
+      "channel": "production"
+    }
+  }
+}
+```
+
+6. Optional: If your project is a bare React Native project, [read the doc](/eas-update/bare-react-native) on extra configuration you may need.
 
 ## Create new builds
 
