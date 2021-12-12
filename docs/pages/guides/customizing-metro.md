@@ -51,7 +51,7 @@ By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to mini
 **metro.config.js**
 
 ```js
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig } = require('@expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
 
@@ -74,7 +74,7 @@ Now set terser with `transformer.minifierPath`, and pass in [`terser` options](h
 **metro.config.js**
 
 ```js
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig } = require('@expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
 
