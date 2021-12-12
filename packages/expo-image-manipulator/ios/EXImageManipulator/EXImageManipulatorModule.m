@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXImageManipulator/EXImageManipulatorModule.h>
+#import <ExpoImageManipulator/EXImageManipulatorModule.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <ExpoModulesCore/EXImageLoaderInterface.h>
 #import <Photos/Photos.h>
