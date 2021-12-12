@@ -51,20 +51,13 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
    eas update:configure
    ```
 
-   After this command, you should have a new field in your app config (**app.json**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
-   <br/><br/>
-
-   > There is also a `fallbackToCacheTimeout` property under `expo.updates`. If you'd like your app to attempt to load new updates when a user opens the app, set this to something other than zero, like `3000` (3 seconds). A value of `3000` would mean that your app will attempt to download a new update for up to 3 seconds before loading the previous update it already has locally. If the app is able to download the update within 3 seconds, your users will see the changes in the newest update immediately.
-
 3. To set up the configuration file for builds, run:
 
    ```bash
    eas build:configure
    ```
 
-   Then follow the prompts.
-
-   This will create a file named **eas.json**.
+   This command will create a file named **eas.json**.
 
 4. Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
 
@@ -89,29 +82,38 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
 
 ## Create a build for the project
 
-Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup). Once you have a build running on your device or in a simulator, we'll be ready to send it an update.
+Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup).
+
+We recommend creating a build with the `preview` build profile first. [Learn more](/build/internal-distribution) about setting up your devices for internal distribution.
+
+Once you have a build running on your device or in a simulator, we'll be ready to send it an update.
+
+## Make changes locally
+
+Once we've created a build, we're ready to iterate on our project.
+
+When we run our project locally, Expo CLI creates a manifest locally that Expo Go or a development build will run. To make sure our project starts with Expo's modern manifest protocol, start your local server with:
+
+```bash
+yarn start --force-manifest-type=expo-updates
+```
+
+Then, make any desired changes to your project's JavaScript, styling, or image assets.
 
 ## Publish an update
 
-Now we're ready to publish an update to the builds created in the previous step.
+Now we're ready to publish an update to the build created in the previous step.
 
-1. When we run our project locally, Expo CLI creates a manifest locally that Expo Go or a development build will run. To make sure our project starts with Expo's modern manifest protocol, start your local server with:
+Then publish an update with the following command:
 
-   ```bash
-   yarn start --force-manifest-type=expo-updates
-   ```
+```bash
+eas update --branch [branch] --message [message]
 
-2. Then, make any desired changes to your project's JavaScript, styling, or image assets.
-3. Then publish an update with the following command:
+# Example
+eas update --branch preview --message "Updating the app"
+```
 
-   ```bash
-   eas update --branch [branch] --message [message]
-
-   # Example
-   eas update --branch production --message "Updating the app"
-   ```
-
-4. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
+Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
 
 ## Next
 
