@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `Updates.channel` and `Updates.runtimeVersion` constant export. ([#15469](https://github.com/expo/expo/pull/15469) by [@jkhales](https://github.com/jkhales))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
