@@ -12,6 +12,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuManagerProviderInterface
+import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.replaceEXPScheme
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
@@ -64,6 +65,7 @@ class DevLauncherController private constructor()
   private val httpClient: OkHttpClient by inject()
   private val lifecycle: DevLauncherLifecycle by inject()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
+  private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
   var devMenuManager: DevMenuManagerInterface? = null
   override var updatesInterface: UpdatesInterface?
@@ -104,7 +106,7 @@ class DevLauncherController private constructor()
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
       val parsedUrl = replaceEXPScheme(url, "http")
-      val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl)
+      val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
       val appIntent = createAppIntent()
 
       internalUpdatesInterface?.reset()

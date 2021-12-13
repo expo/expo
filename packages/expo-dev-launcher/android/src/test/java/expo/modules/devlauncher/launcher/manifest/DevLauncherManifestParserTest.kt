@@ -31,8 +31,9 @@ internal class DevLauncherManifestParserTest {
   @Test
   fun `isManifestUrl assumes unsuccessful responses indicate manifest URLs`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
-        client,
-        Uri.parse(server.url("/").toString())
+      client,
+      Uri.parse(server.url("/").toString()),
+      null
     )
 
     server.enqueue(MockResponse().setResponseCode(200))
@@ -48,8 +49,9 @@ internal class DevLauncherManifestParserTest {
   @Test
   fun `isManifestUrl checks content-type header`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
-        client,
-        Uri.parse(server.url("/").toString())
+      client,
+      Uri.parse(server.url("/").toString()),
+      null
     )
 
     server.enqueue(MockResponse().setResponseCode(200)
@@ -78,7 +80,8 @@ internal class DevLauncherManifestParserTest {
   fun `isManifestUrl detects expo dev server`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
-      Uri.parse(server.url("/").toString())
+      Uri.parse(server.url("/").toString()),
+      null
     )
 
     server.enqueue(MockResponse().setResponseCode(200)
@@ -93,7 +96,8 @@ internal class DevLauncherManifestParserTest {
   fun `isManifestUrl includes expo-platform header`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
-      Uri.parse(server.url("/").toString())
+      Uri.parse(server.url("/").toString()),
+      null
     )
 
     server.enqueue(MockResponse().setResponseCode(200))
@@ -104,10 +108,27 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isManifestUrl includes installationID header`() = runBlocking {
+    val installationID = "test-installation-id"
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/").toString()),
+      installationID
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    manifestParser.isManifestUrl()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("expo-dev-client-id")).isEqualTo(installationID)
+  }
+
+  @Test
   fun `checks if parseManifest parses successful response`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
-      Uri.parse(server.url("/").toString())
+      Uri.parse(server.url("/").toString()),
+      null
     )
 
     server.enqueue(
@@ -131,7 +152,8 @@ internal class DevLauncherManifestParserTest {
   fun `checks if parseManifest fails on unsuccessful response`() {
     val manifestParser = DevLauncherManifestParser(
       client,
-      Uri.parse(server.url("/").toString())
+      Uri.parse(server.url("/").toString()),
+      null
     )
 
     server.enqueue(
