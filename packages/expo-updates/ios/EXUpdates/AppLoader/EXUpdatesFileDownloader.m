@@ -144,6 +144,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
                                    successBlock:successBlock
                                      errorBlock:errorBlock];
   } else {
+    // can use valueForHTTPHeaderField after dropping iOS 12 support
     NSDictionary *responseHeaders = [httpResponse allHeaderFields];
     EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
                                                                                      serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
