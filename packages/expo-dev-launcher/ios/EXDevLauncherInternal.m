@@ -64,7 +64,10 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null] };
+  return @{
+    @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null],
+    @"installationID": [EXDevLauncherController.sharedInstance.installationIDHelper getOrCreateInstallationID] ?: [NSNull null]
+  };
 }
 
 - (void)onNewPendingDeepLink:(NSURL *)deepLink
