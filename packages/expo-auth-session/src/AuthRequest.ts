@@ -263,7 +263,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   }
 
   private async ensureCodeIsSetupAsync(): Promise<void> {
-    if (this.codeVerifier) {
+    if (this.codeChallenge) {
       return;
     }
 
