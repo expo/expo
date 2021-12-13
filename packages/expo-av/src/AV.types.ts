@@ -182,6 +182,7 @@ export type AVPlaybackStatusSuccess = {
    * A boolean describing if the audio of this media is currently muted.
    */
   isMuted: boolean;
+  audioPan: number;
   /**
    * A boolean describing if the media is currently looping.
    */
@@ -245,6 +246,7 @@ export type AVPlaybackStatusToSet = {
    * > Note that this only affect the audio of this `playbackObject` and do NOT affect the system volume.
    */
   isMuted?: boolean;
+  audioPan?: number;
   /**
    * A boolean describing if the media is currently looping.
    */

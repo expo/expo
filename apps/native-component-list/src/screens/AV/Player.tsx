@@ -41,12 +41,13 @@ interface Props {
   setIsMutedAsync: (isMuted: boolean) => void;
   setPositionAsync: (position: number) => Promise<any>;
   setIsLoopingAsync: (isLooping: boolean) => void;
-  setVolume: (volume: number) => void;
+  setVolume: (volume: number, pan?: number) => void;
 
   // Status
   isLoaded: boolean;
   isLooping: boolean;
   volume: number;
+  pan: number;
   rate: number;
   positionMillis: number;
   durationMillis: number;
@@ -194,6 +195,15 @@ export default function Player(props: Props) {
           }}
         />
       </View>
+      <View style={styles.container}>
+        <PanSlider
+          pan={props.pan}
+          disabled={!props.isLoaded}
+          onValueChanged={(value) => {
+            props.setVolume(props.volume, value);
+          }}
+        />
+      </View>
 
       <View style={[styles.container, styles.buttonsContainer]}>
         {(props.extraButtons ?? []).map((button) => {
@@ -326,6 +336,51 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
         onValueChange={(value) => onValueChange(parseFloat(value))}
       />
       {renderIcon('speedometer')}
+    </View>
+  );
+}
+
+function PanSlider({
+  pan,
+  color = Colors.tintColor,
+  disabled,
+  onValueChanged,
+}: {
+  pan: number;
+  color?: string;
+  disabled: boolean;
+  onValueChanged: (value: number) => void;
+}) {
+  const [value, setValue] = React.useState(pan);
+
+  React.useEffect(() => {
+    if (value !== pan) {
+      onValueChanged(value);
+    }
+  }, [pan]);
+
+  const height = 36;
+  return (
+    <View
+      style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }, { flex: 1 }]}
+      pointerEvents={disabled ? 'none' : 'auto'}>
+      <View style={{ alignItems: 'center', width: height, height, justifyContent: 'center' }}>
+        <Ionicons name="barcode-outline" size={24} color={color} />
+      </View>
+      <Slider
+        value={value}
+        maximumValue={1}
+        minimumValue={-1}
+        style={{ height: height, flex: 1 }}
+        thumbTintColor={color}
+        minimumTrackTintColor={color}
+        onSlidingComplete={(value) => {
+          onValueChanged(value);
+        }}
+        onValueChange={(val) => {
+          setValue(val);
+        }}
+      />
     </View>
   );
 }

@@ -32,6 +32,7 @@ interface State {
   durationMillis: number;
   rate: number;
   volume: number;
+  pan: number;
   isMuted: boolean;
   shouldCorrectPitch: boolean;
   metadata: AVMetadata;
@@ -47,6 +48,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     durationMillis: 0,
     rate: 1,
     volume: 1,
+    pan: 0,
     shouldCorrectPitch: false,
     metadata: {},
   };
@@ -74,7 +76,10 @@ export default class AudioPlayer extends React.Component<Props, State> {
   _loadSoundAsync = async (source: PlaybackSource) => {
     const soundObject = new Audio.Sound();
     try {
-      await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 150 });
+      await soundObject.loadAsync(source, {
+        progressUpdateIntervalMillis: 150,
+        androidImplementation: 'MediaPlayer',
+      });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
       soundObject.setOnMetadataUpdate(this._updateMetadata);
       const status = await soundObject.getStatusAsync();
@@ -112,7 +117,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _setIsMutedAsync = async (isMuted: boolean) => this._sound!.setIsMutedAsync(isMuted);
 
-  _setVolumeAsync = async (volume: number) => this._sound!.setVolumeAsync(volume);
+  _setVolumeAsync = async (volume: number, pan?: number) => this._sound!.setVolumeAsync(volume, pan);
 
   _setRateAsync = async (
     rate: number,

@@ -50,6 +50,7 @@ export const _DEFAULT_INITIAL_PLAYBACK_STATUS: AVPlaybackStatusToSet = {
   rate: 1.0,
   shouldCorrectPitch: false,
   volume: 1.0,
+  pan: 0,
   isMuted: false,
   isLooping: false,
 };
@@ -133,6 +134,9 @@ export function assertStatusValuesInBounds(status: AVPlaybackStatusToSet): void 
   }
   if (typeof status.volume === 'number' && (status.volume < 0 || status.volume > 1)) {
     throw new RangeError('Volume value must be between 0.0 and 1.0');
+  }
+  if (typeof status.pan === 'number' && (status.pan < -1 || status.pan > 1)) {
+    throw new RangeError('Pan value must be between -1.0 and 1.0');
   }
 }
 
@@ -316,7 +320,7 @@ export interface Playback extends AV {
    * This is equivalent to `playbackObject.setStatusAsync({ volume })`.
    * @param volume A number between `0.0` (silence) and `1.0` (maximum volume).
    */
-  setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
+  setVolumeAsync(volume: number, audioPan?: number): Promise<AVPlaybackStatus>;
 
   /**
    * This is equivalent to `playbackObject.setStatusAsync({ isMuted })`.
@@ -391,8 +395,8 @@ export const PlaybackMixin = {
     });
   },
 
-  async setVolumeAsync(volume: number): Promise<AVPlaybackStatus> {
-    return (this as any as Playback).setStatusAsync({ volume });
+  async setVolumeAsync(volume: number, pan?: number): Promise<AVPlaybackStatus> {
+    return (this as any as Playback).setStatusAsync({ volume, pan });
   },
 
   async setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus> {
