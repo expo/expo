@@ -21,7 +21,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io",
+  "homepage": "https://docs.expo.dev",
   "peerDependencies": {
     "expo": "*"
   }
