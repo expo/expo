@@ -37,8 +37,16 @@ public extension Record {
   init(from dict: Dict) throws {
     self.init()
 
+    let dictKeys = dict.keys
+
     try fieldsOf(self).forEach { field in
-      try field.set(dict[field.key!])
+      guard let key = field.key else {
+        // This should never happen, but just in case skip fields without the key.
+        return
+      }
+      if dictKeys.contains(key) || field.isRequired {
+        try field.set(dict[key])
+      }
     }
   }
 
