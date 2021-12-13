@@ -1,14 +1,15 @@
 #pragma once
 
-#include <queue>
-#include <thread>
-#include <mutex>
+#include <ABI44_0_0ReactCommon/ABI44_0_0CallInvoker.h>
 #include <condition_variable>
 #include <functional>
-#include <ABI44_0_0ReactCommon/ABI44_0_0CallInvoker.h>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <utility>
 
-namespace ABI44_0_0reanimated
-{
+namespace ABI44_0_0reanimated {
 
 //
 // Copyright (c) 2013 Juan Palacios juan.palacios.puyana@gmail.com
@@ -16,15 +17,11 @@ namespace ABI44_0_0reanimated
 // - see < http://opensource.org/licenses/BSD-2-Clause>
 //
 template <typename T>
-class Queue
-{
+class Queue {
  public:
-
-  T pop()
-  {
+  T pop() {
     std::unique_lock<std::mutex> mlock(mutex_);
-    while (queue_.empty())
-    {
+    while (queue_.empty()) {
       cond_.wait(mlock);
     }
     auto item = queue_.front();
@@ -32,27 +29,23 @@ class Queue
     return item;
   }
 
-  void pop(T& item)
-  {
+  void pop(T &item) {
     std::unique_lock<std::mutex> mlock(mutex_);
-    while (queue_.empty())
-    {
+    while (queue_.empty()) {
       cond_.wait(mlock);
     }
     item = queue_.front();
     queue_.pop();
   }
 
-  void push(const T& item)
-  {
+  void push(const T &item) {
     std::unique_lock<std::mutex> mlock(mutex_);
     queue_.push(item);
     mlock.unlock();
     cond_.notify_one();
   }
 
-  void push(T&& item)
-  {
+  void push(T &&item) {
     std::unique_lock<std::mutex> mlock(mutex_);
     queue_.push(std::move(item));
     mlock.unlock();
@@ -76,17 +69,21 @@ class Queue
 class RuntimeManager;
 
 class Scheduler {
-  public:
-    void scheduleOnJS(std::function<void()> job);
-    void setJSCallInvoker(std::shared_ptr<ABI44_0_0facebook::ABI44_0_0React::CallInvoker> jsCallInvoker);
-    void setRuntimeManager(std::shared_ptr<RuntimeManager> runtimeManager);
-    virtual void scheduleOnUI(std::function<void()> job);
-    virtual void triggerUI();
-    virtual ~Scheduler();
-  protected:
-    Queue<std::function<void()>> uiJobs;
-    std::shared_ptr<ABI44_0_0facebook::ABI44_0_0React::CallInvoker> jsCallInvoker_;
-    std::weak_ptr<RuntimeManager> runtimeManager;
+ public:
+  Scheduler();
+  void scheduleOnJS(std::function<void()> job);
+  void setJSCallInvoker(
+      std::shared_ptr<ABI44_0_0facebook::ABI44_0_0React::CallInvoker> jsCallInvoker);
+  void setRuntimeManager(std::shared_ptr<RuntimeManager> runtimeManager);
+  virtual void scheduleOnUI(std::function<void()> job);
+  virtual void triggerUI();
+  virtual ~Scheduler();
+
+ protected:
+  std::atomic<bool> scheduledOnUI{};
+  Queue<std::function<void()>> uiJobs;
+  std::shared_ptr<ABI44_0_0facebook::ABI44_0_0React::CallInvoker> jsCallInvoker_;
+  std::weak_ptr<RuntimeManager> runtimeManager;
 };
 
-}
+} // namespace reanimated

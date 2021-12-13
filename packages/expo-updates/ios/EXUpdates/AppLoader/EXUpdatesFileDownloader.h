@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesFileDownloaderSuccessBlock)(NSData *data, NSURLResponse *response);
 typedef void (^EXUpdatesFileDownloaderManifestSuccessBlock)(EXUpdatesUpdate *update);
-typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse *response);
+typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error);
 
 @interface EXUpdatesFileDownloader : NSObject
 
@@ -16,11 +16,13 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
               URLSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration;
 
 - (void)downloadDataFromURL:(NSURL *)url
+               extraHeaders:(NSDictionary *)extraHeaders
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 - (void)downloadFileFromURL:(NSURL *)url
                      toPath:(NSString *)destinationPath
+               extraHeaders:(NSDictionary *)extraHeaders
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
@@ -36,6 +38,12 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
  * For test purposes; shouldn't be needed in application code
  */
 - (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders;
+- (NSURLRequest *)createGenericRequestWithURL:(NSURL *)url extraHeaders:(NSDictionary *)extraHeaders;
+- (void)parseManifestResponse:(NSHTTPURLResponse *)httpResponse
+                     withData:(NSData *)data
+                     database:(EXUpdatesDatabase *)database
+                 successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
+                   errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 @end
 

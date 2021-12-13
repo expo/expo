@@ -20,7 +20,8 @@ public class CallFuncNode extends Node {
 
   private void beginContext() {
     mPreviousCallID = mNodesManager.updateContext.callID;
-    mNodesManager.updateContext.callID = mNodesManager.updateContext.callID + '/' + String.valueOf(mNodeID);
+    mNodesManager.updateContext.callID =
+        mNodesManager.updateContext.callID + '/' + String.valueOf(mNodeID);
     for (int i = 0; i < mParams.length; i++) {
       int paramId = mParams[i];
       ParamNode paramNode = mNodesManager.findNodeById(paramId, ParamNode.class);

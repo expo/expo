@@ -103,7 +103,8 @@
         "expo-ads-facebook",
         "expo-branch",
         "expo-module-template",
-        "expo-web-browser"
+        "expo-web-browser",
+        "recat-native-reanimated"
       ]
     }
   },

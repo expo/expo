@@ -41,7 +41,8 @@
         "expo-ads-admob",
         "expo-apple-authentication",
         "expo-updates",
-        "expo-module-template"
+        "expo-module-template",
+        "react-native-reanimated"
       ],
       "ios": {
         "flags": {

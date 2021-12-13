@@ -1,15 +1,15 @@
 package abi44_0_0.host.exp.exponent.modules.api.reanimated.nodes;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import abi44_0_0.com.facebook.react.bridge.ReadableMap;
 import abi44_0_0.host.exp.exponent.modules.api.reanimated.NodesManager;
 import abi44_0_0.host.exp.exponent.modules.api.reanimated.Utils;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class ConcatNode extends Node {
   private final int[] mInputIDs;
-  private final static NumberFormat sFormatter = NumberFormat.getInstance(Locale.ENGLISH);
+  private static final NumberFormat sFormatter = NumberFormat.getInstance(Locale.ENGLISH);
+
   static {
     sFormatter.setMinimumFractionDigits(0);
     sFormatter.setGroupingUsed(false);

@@ -1,12 +1,12 @@
 #import "ABI44_0_0REAConcatNode.h"
-#import "ABI44_0_0REAValueNode.h"
 #import "ABI44_0_0REANodesManager.h"
+#import "ABI44_0_0REAValueNode.h"
 
 @implementation ABI44_0_0REAConcatNode {
   NSArray<NSNumber *> *_input;
 }
 
-- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(ABI44_0_0REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _input = config[@"input"];

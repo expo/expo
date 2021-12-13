@@ -5,8 +5,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.manifest.ManifestFactory.getEmbeddedManifest
 import expo.modules.updates.manifest.ManifestFactory.getManifest
-import io.mockk.every
-import io.mockk.mockk
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -24,19 +22,17 @@ class UpdateManifestFactoryTest {
     "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":1609975977832}"
 
   private fun createConfig(): UpdatesConfiguration {
-    val configMap = HashMap<String, Any>()
-    configMap["updateUrl"] = Uri.parse("https://exp.host/@esamelson/native-component-list")
+    val configMap = mapOf("updateUrl" to Uri.parse("https://exp.host/@esamelson/native-component-list"))
     return UpdatesConfiguration().loadValuesFromMap(configMap)
   }
 
   @Test
   @Throws(Exception::class)
   fun testGetManifest_Legacy() {
-    val response = mockk<ManifestResponse>(relaxed = true)
-    every { response.header("expo-protocol-version") } returns null
     val actual = getManifest(
       JSONObject(legacyManifestJson),
-      response,
+      ManifestHeaderData(),
+      null,
       createConfig()
     )
     Assert.assertTrue(actual is LegacyUpdateManifest)
@@ -45,11 +41,10 @@ class UpdateManifestFactoryTest {
   @Test
   @Throws(Exception::class)
   fun testGetManifest_New() {
-    val response = mockk<ManifestResponse>(relaxed = true)
-    every { response.header("expo-protocol-version") } returns "0"
     val actual = getManifest(
       JSONObject(newManifestJson),
-      response,
+      ManifestHeaderData(protocolVersion = "0"),
+      null,
       createConfig()
     )
     Assert.assertTrue(actual is NewUpdateManifest)
@@ -58,11 +53,10 @@ class UpdateManifestFactoryTest {
   @Test(expected = Exception::class)
   @Throws(Exception::class)
   fun testGetManifest_UnsupportedProtocolVersion() {
-    val response = mockk<ManifestResponse>(relaxed = true)
-    every { response.header("expo-protocol-version") } returns "1"
     getManifest(
       JSONObject(newManifestJson),
-      response,
+      ManifestHeaderData(protocolVersion = "1"),
+      null,
       createConfig()
     )
   }

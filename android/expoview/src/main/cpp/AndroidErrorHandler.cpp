@@ -1,10 +1,9 @@
 #include "AndroidErrorHandler.h"
-#include "Logger.h"
-#include <string>
 #include <fbjni/fbjni.h>
+#include <string>
+#include "Logger.h"
 
-namespace reanimated
-{
+namespace reanimated {
 
 using namespace facebook::jni;
 
@@ -30,7 +29,7 @@ std::shared_ptr<Scheduler> AndroidErrorHandler::getScheduler() {
 }
 
 std::shared_ptr<ErrorWrapper> AndroidErrorHandler::getError() {
-    return this->error;
+  return this->error;
 }
 
 void AndroidErrorHandler::setError(std::string message) {
@@ -40,4 +39,4 @@ void AndroidErrorHandler::setError(std::string message) {
   }
 }
 
-}
+} // namespace reanimated

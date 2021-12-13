@@ -7,12 +7,17 @@
 ### 🎉 New features
 
 - Added `Updates.channel` and `Updates.runtimeVersion` constant export. ([#15469](https://github.com/expo/expo/pull/15469) by [@jkhales](https://github.com/jkhales))
-- Add error recovery manager on Android. ([#15220](https://github.com/expo/expo/pull/15220) by [@esamelson](https://github.com/esamelson))
-- Hook up error recovery manager to rest of module on Android. ([#15222](https://github.com/expo/expo/pull/15222) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.11.1 — 2021-12-08
+
+### 🎉 New features
+
+- Add error recovery manager on Android. ([#15220](https://github.com/expo/expo/pull/15220) by [@esamelson](https://github.com/esamelson))
+- Hook up error recovery manager to rest of module on Android. ([#15222](https://github.com/expo/expo/pull/15222) by [@esamelson](https://github.com/esamelson))
 
 ## 0.11.0 — 2021-12-03
 
@@ -32,6 +37,8 @@
 - Small fixes for error recovery manager on iOS. ([#15223](https://github.com/expo/expo/pull/15223) by [@esamelson](https://github.com/esamelson))
 - Add native checkOnLaunch: ERROR_RECOVERY_ONLY setting on Android. ([#15219](https://github.com/expo/expo/pull/15219) by [@esamelson](https://github.com/esamelson))
 - Enhance node binary resolution for Xcode build phases scripts by the vendoring source-login-scripts.sh. ([#15336](https://github.com/expo/expo/pull/15336) by [@kudo](https://github.com/kudo))
+- Add android support for multipart manifest responses. ([#15401](https://github.com/expo/expo/pull/15401) by [@wschurman](https://github.com/wschurman))
+- Add iOS support for multipart manifest responses. ([#15426](https://github.com/expo/expo/pull/15426) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

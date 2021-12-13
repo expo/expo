@@ -1,11 +1,11 @@
-#import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <ABI44_0_0React/ABI44_0_0RCTConvert.h>
 #import <ABI44_0_0React/ABI44_0_0RCTViewManager.h>
+#import <UIKit/UIKit.h>
 
+#import "ABI44_0_0RCTConvert+REATransition.h"
 #import "ABI44_0_0REATransition.h"
 #import "ABI44_0_0REATransitionValues.h"
-#import "ABI44_0_0RCTConvert+REATransition.h"
 
 #define DEFAULT_PROPAGATION_SPEED 3
 
@@ -17,8 +17,8 @@
 
 @interface ABI44_0_0REAVisibilityTransition : ABI44_0_0REATransition
 @property (nonatomic) ABI44_0_0REATransitionAnimationType animationType;
-- (ABI44_0_0REATransitionAnimation *)appearView:(UIView*)view inParent:(UIView*)parent;
-- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView*)view fromParent:(UIView*)parent;
+- (ABI44_0_0REATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent;
+- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent;
 - (instancetype)initWithConfig:(NSDictionary *)config;
 @end
 
@@ -36,8 +36,8 @@
 
 @implementation ABI44_0_0REATransition {
   __weak UIView *_root;
-  NSMutableDictionary<NSNumber*, ABI44_0_0REATransitionValues*> *_startValues;
-  NSMutableDictionary<NSNumber*, ABI44_0_0REATransitionValues*> *_endValues;
+  NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *_startValues;
+  NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *_endValues;
 }
 
 + (ABI44_0_0REATransition *)inflate:(NSDictionary *)config
@@ -70,7 +70,9 @@
   return self;
 }
 
-- (void)captureRecursiveIn:(UIView *)view to:(NSMutableDictionary<NSNumber*, ABI44_0_0REATransitionValues*> *)map forRoot:(UIView *)root
+- (void)captureRecursiveIn:(UIView *)view
+                        to:(NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *)map
+                   forRoot:(UIView *)root
 {
   NSNumber *tag = view.ABI44_0_0ReactTag;
   if (tag != nil) {
@@ -91,9 +93,7 @@
 {
   _endValues = [NSMutableDictionary new];
   [self captureRecursiveIn:root to:_endValues forRoot:root];
-  NSArray *animations = [self animationsForTransitioning:_startValues
-                                               endValues:_endValues
-                                                 forRoot:root];
+  NSArray *animations = [self animationsForTransitioning:_startValues endValues:_endValues forRoot:root];
   for (ABI44_0_0REATransitionAnimation *animation in animations) {
     [animation play];
   }
@@ -164,15 +164,16 @@
 }
 
 - (ABI44_0_0REATransitionAnimation *)animationForTransitioning:(ABI44_0_0REATransitionValues *)startValues
-                                               endValues:(ABI44_0_0REATransitionValues *)endValues
-                                                 forRoot:(UIView *)root
+                                            endValues:(ABI44_0_0REATransitionValues *)endValues
+                                              forRoot:(UIView *)root
 {
   return nil;
 }
 
-- (NSArray<ABI44_0_0REATransitionAnimation*> *)animationsForTransitioning:(NSMutableDictionary<NSNumber *,ABI44_0_0REATransitionValues *> *)startValues
-                                                          endValues:(NSMutableDictionary<NSNumber *,ABI44_0_0REATransitionValues *> *)endValues
-                                                            forRoot:(UIView *)root
+- (NSArray<ABI44_0_0REATransitionAnimation *> *)
+    animationsForTransitioning:(NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *)startValues
+                     endValues:(NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *)endValues
+                       forRoot:(UIView *)root
 {
   NSMutableArray *animations = [NSMutableArray new];
   [startValues enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, ABI44_0_0REATransitionValues *startValue, BOOL *stop) {
@@ -182,7 +183,9 @@
       animation.animation.timingFunction = self.mediaTiming;
       animation.animation.duration = self.duration;
       [animation delayBy:self.delay];
-      CFTimeInterval propagationDelay = [self propagationDelayForTransitioning:startValue endValues:endValue forRoot:root];
+      CFTimeInterval propagationDelay = [self propagationDelayForTransitioning:startValue
+                                                                     endValues:endValue
+                                                                       forRoot:root];
       [animation delayBy:propagationDelay];
       //      animation.animation.duration -= propagationDelay;
       [animations addObject:animation];

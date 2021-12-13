@@ -26,7 +26,7 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io",
+  "homepage": "https://docs.expo.dev",
   "dependencies": {
     "@expo/config-plugins": "^4.0.2",
     "resolve-from": "^5.0.0",
@@ -37,5 +37,8 @@
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.1",
     "react-native": "0.64.3"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

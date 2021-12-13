@@ -79,9 +79,18 @@ static NSString * const scopeKey = @"test";
   _configReleaseChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestTwoDictionary
   ];
   
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil];
+  
   // start every test with an update
   dispatch_sync(_db.databaseQueue, ^{
-    EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_configChannelTest database:_db];
+    EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                        manifestHeaders:manifestHeaders
+                                                             extensions:@{}
+                                                                 config:_configChannelTest
+                                                               database:_db];
 
     NSError *updatesError;
     [_db addUpdate:update error:&updatesError];

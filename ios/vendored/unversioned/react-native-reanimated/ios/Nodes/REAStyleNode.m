@@ -2,13 +2,11 @@
 
 #import "REANodesManager.h"
 
-@implementation REAStyleNode
-{
+@implementation REAStyleNode {
   NSMutableDictionary<NSString *, REANodeID> *_styleConfig;
 }
 
-- (instancetype)initWithID:(REANodeID)nodeID
-                    config:(NSDictionary<NSString *, id> *)config;
+- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config;
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _styleConfig = config[@"style"];

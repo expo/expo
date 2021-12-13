@@ -36,7 +36,7 @@ This diagram is just an example of how you could create builds and name their ch
 
 After we've created builds, we can change the update layer of our project and publish it as an update, which will make our changes available to certain builds. For example, we could change some text inside **App.js**, and then we could publish that change as an update.
 
-To publish an update, we can run `eas branch:publish --auto`. This command will create a local update bundle inside the **dist/** folder in our project. Once it's created an update bundle, it will upload that bundle to EAS' servers, in a database object named a _branch_. A branch has a name, and contains a list of updates, where the most recent update is the active update on the branch.
+To publish an update, we can run `eas update --auto`. This command will create a local update bundle inside the **dist/** folder in our project. Once it's created an update bundle, it will upload that bundle to EAS' servers, in a database object named a _branch_. A branch has a name, and contains a list of updates, where the most recent update is the active update on the branch.
 
 <ImageSpotlight alt="Branches with its most recent update pointed out as the active one" src="/static/images/eas-update/branch.png" />
 

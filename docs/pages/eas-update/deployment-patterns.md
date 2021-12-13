@@ -46,7 +46,7 @@ Explanation of flow:
 
 1. Develop a project locally and test changes in Expo Go.
 2. Run `eas build` to create builds, then submit them to app stores. These builds are for public use, and should be submitted/reviewed, and released on the app stores.
-3. When we have updates we'd like to deliver, run `eas branch:publish production` to deliver updates to our users immediately.
+3. When we have updates we'd like to deliver, run `eas update --branch production` to deliver updates to our users immediately.
 
 Advantages of this flow:
 

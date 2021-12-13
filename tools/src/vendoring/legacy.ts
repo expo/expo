@@ -18,6 +18,12 @@ interface VendoredModuleUpdateStep {
   targetAndroidPackage?: string;
   recursive?: boolean;
   updatePbxproj?: boolean;
+
+  /**
+   * Hook that is fired by the end of vendoring an Android file.
+   * You should use it to perform some extra operations that are not covered by the main flow.
+   */
+  onDidVendorAndroidFile?: (file: string) => Promise<void>;
 }
 
 type ModuleModifier = (
@@ -140,10 +146,52 @@ const ReanimatedModifier: ModuleModifier = async function (
     await fs.remove(path.join(clonedProjectPath, 'ios', 'native'));
   };
 
+  const transformGestureHandlerImports = async () => {
+    const javaFiles = await glob(path.join(clonedProjectPath, 'android', '**', '*.java'));
+    await Promise.all(
+      javaFiles.map(async (file) => {
+        let content = await fs.readFile(file, 'utf8');
+        content = content.replace(
+          /^import com\.swmansion\.common\./gm,
+          'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
+        );
+        await fs.writeFile(file, content);
+      })
+    );
+  };
+
+  const applyRNVersionPatches = async () => {
+    const rnVersion = '0.64.3';
+    const patchVersion = rnVersion.split('.')[1];
+    const patchSourceDir = path.join(clonedProjectPath, 'android', 'rnVersionPatch', patchVersion);
+    const javaFiles = await glob('**/*.java', {
+      cwd: patchSourceDir,
+    });
+    await Promise.all(
+      javaFiles.map(async (file) => {
+        const srcPath = path.join(patchSourceDir, file);
+        const dstPath = path.join(
+          clonedProjectPath,
+          'android',
+          'src',
+          'main',
+          'java',
+          'com',
+          'swmansion',
+          'reanimated',
+          file
+        );
+        await fs.copy(srcPath, dstPath);
+      })
+    );
+  };
+
+  await applyRNVersionPatches();
   await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
   await prepareIOSNativeFiles();
+  await transformGestureHandlerImports();
 };
 
 const GestureHandlerModifier: ModuleModifier = async function (
@@ -240,6 +288,32 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/reanimated',
         sourceAndroidPackage: 'com.swmansion.reanimated',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.reanimated',
+        onDidVendorAndroidFile: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'ReanimatedUIManager.java') {
+            // reanimated tries to override react native `UIManager` implementation.
+            // this file is placed inside `com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java`
+            // but its package name is `package com.facebook.react.uimanager;`.
+            // we should put this into correct folder structure so that other files can
+            // `import com.facebook.react.uimanager.ReanimatedUIManager`
+            await fs.move(
+              file,
+              path.join(
+                ANDROID_DIR,
+                'expoview',
+                'src',
+                'main',
+                'java',
+                'com',
+                'facebook',
+                'react',
+                'uimanager',
+                fileName
+              ),
+              { overwrite: true }
+            );
+          }
+        },
       },
     ],
     warnings: [
@@ -791,6 +865,7 @@ export async function legacyVendorModuleAsync(
 
       for (const file of files) {
         await renamePackageAndroidAsync(file, step.sourceAndroidPackage, step.targetAndroidPackage);
+        await step.onDidVendorAndroidFile?.(file);
       }
     }
   }

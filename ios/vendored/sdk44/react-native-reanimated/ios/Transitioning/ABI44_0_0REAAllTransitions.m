@@ -1,7 +1,7 @@
 #import <ABI44_0_0React/ABI44_0_0RCTViewManager.h>
 
-#import "ABI44_0_0REAAllTransitions.h"
 #import "ABI44_0_0RCTConvert+REATransition.h"
+#import "ABI44_0_0REAAllTransitions.h"
 
 @interface ABI44_0_0REASnapshotRemover : NSObject <CAAnimationDelegate>
 @end
@@ -33,7 +33,7 @@
   if (self = [super initWithConfig:config]) {
     _sequence = [ABI44_0_0RCTConvert BOOL:config[@"sequence"]];
     NSArray *transitions = [ABI44_0_0RCTConvert NSArray:config[@"transitions"]];
-    NSMutableArray<ABI44_0_0REATransition*> *inflated = [NSMutableArray new];
+    NSMutableArray<ABI44_0_0REATransition *> *inflated = [NSMutableArray new];
     for (NSDictionary *transitionConfig in transitions) {
       [inflated addObject:[ABI44_0_0REATransition inflate:transitionConfig]];
       inflated.lastObject.parent = self;
@@ -51,9 +51,10 @@
   return self;
 }
 
-- (NSArray<ABI44_0_0REATransitionAnimation *> *)animationsForTransitioning:(NSMutableDictionary<NSNumber *,ABI44_0_0REATransitionValues *> *)startValues
-                                                           endValues:(NSMutableDictionary<NSNumber *,ABI44_0_0REATransitionValues *> *)endValues
-                                                             forRoot:(UIView *)root
+- (NSArray<ABI44_0_0REATransitionAnimation *> *)
+    animationsForTransitioning:(NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *)startValues
+                     endValues:(NSMutableDictionary<NSNumber *, ABI44_0_0REATransitionValues *> *)endValues
+                       forRoot:(UIView *)root
 {
   CFTimeInterval delay = self.delay;
   NSMutableArray *animations = [NSMutableArray new];
@@ -74,7 +75,6 @@
 
 @end
 
-
 @implementation ABI44_0_0REAVisibilityTransition
 
 - (instancetype)initWithConfig:(NSDictionary *)config
@@ -85,23 +85,19 @@
   return self;
 }
 
-- (ABI44_0_0REATransitionAnimation *)appearView:(UIView *)view
-                                 inParent:(UIView *)parent
-                                  forRoot:(UIView *)root
+- (ABI44_0_0REATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent forRoot:(UIView *)root
 {
   return nil;
 }
 
-- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView *)view
-                                  fromParent:(UIView *)parent
-                                     forRoot:(UIView *)root
+- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent forRoot:(UIView *)root
 {
   return nil;
 }
 
 - (ABI44_0_0REATransitionAnimation *)animationForTransitioning:(ABI44_0_0REATransitionValues *)startValues
-                                               endValues:(ABI44_0_0REATransitionValues *)endValues
-                                                 forRoot:(UIView *)root
+                                            endValues:(ABI44_0_0REATransitionValues *)endValues
+                                              forRoot:(UIView *)root
 {
   BOOL isViewAppearing = (startValues == nil);
   if (isViewAppearing && !IS_LAYOUT_ONLY(endValues.view)) {
@@ -123,7 +119,6 @@
 
 @end
 
-
 @implementation ABI44_0_0REAInTransition
 - (instancetype)initWithConfig:(NSDictionary *)config
 {
@@ -132,9 +127,7 @@
   return self;
 }
 
-- (ABI44_0_0REATransitionAnimation *)appearView:(UIView *)view
-                                 inParent:(UIView *)parent
-                                  forRoot:(UIView *)root
+- (ABI44_0_0REATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent forRoot:(UIView *)root
 {
   CABasicAnimation *animation;
   switch (self.animationType) {
@@ -186,7 +179,6 @@
 }
 @end
 
-
 @implementation ABI44_0_0REAOutTransition
 - (instancetype)initWithConfig:(NSDictionary *)config
 {
@@ -195,9 +187,7 @@
   return self;
 }
 
-- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView *)view
-                               fromParent:(UIView *)parent
-                                  forRoot:(UIView *)root
+- (ABI44_0_0REATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent forRoot:(UIView *)root
 {
   if (self.animationType == ABI44_0_0REATransitionAnimationTypeNone) {
     return nil;
@@ -262,12 +252,11 @@
 }
 @end
 
-
 @implementation ABI44_0_0REAChangeTransition
 
 - (ABI44_0_0REATransitionAnimation *)animationForTransitioning:(ABI44_0_0REATransitionValues *)startValues
-                                               endValues:(ABI44_0_0REATransitionValues *)endValues
-                                                 forRoot:(UIView *)root
+                                            endValues:(ABI44_0_0REATransitionValues *)endValues
+                                              forRoot:(UIView *)root
 {
   if (startValues == nil || endValues == nil || endValues.view.window == nil) {
     return nil;

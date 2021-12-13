@@ -2,7 +2,6 @@
 
 #import "ABI44_0_0REATransitionAnimation.h"
 
-
 #define DEFAULT_DURATION 0.25
 
 #if TARGET_IPHONE_SIMULATOR
@@ -31,7 +30,7 @@ CGFloat ABI44_0_0SimAnimationDragCoefficient()
 
 + (ABI44_0_0REATransitionAnimation *)transitionWithAnimation:(CAAnimation *)animation
                                               layer:(CALayer *)layer
-                                         andKeyPath:(NSString*)keyPath;
+                                         andKeyPath:(NSString *)keyPath;
 {
   ABI44_0_0REATransitionAnimation *anim = [ABI44_0_0REATransitionAnimation new];
   anim.animation = animation;
@@ -47,7 +46,7 @@ CGFloat ABI44_0_0SimAnimationDragCoefficient()
   it calls mach_absolute_time() which is based on the last time the device booted
   which might cause the delay
   */
-  if (_delay > 0){
+  if (_delay > 0) {
     _animation.beginTime = CACurrentMediaTime() + _delay * ABI44_0_0SimAnimationDragCoefficient();
   }
   _animation.duration = self.duration * ABI44_0_0SimAnimationDragCoefficient();

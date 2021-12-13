@@ -15,7 +15,7 @@ public class OperatorNode extends Node {
     double evaluate(Node[] input);
   }
 
-  private static abstract class ReduceOperator implements Operator {
+  private abstract static class ReduceOperator implements Operator {
     @Override
     public double evaluate(Node[] input) {
       double acc = input[0].doubleValue();
@@ -28,7 +28,7 @@ public class OperatorNode extends Node {
     public abstract double reduce(Double x, Double y);
   }
 
-  private static abstract class SingleOperator implements Operator {
+  private abstract static class SingleOperator implements Operator {
     @Override
     public double evaluate(Node[] input) {
       return eval((Double) input[0].value());
@@ -37,7 +37,7 @@ public class OperatorNode extends Node {
     public abstract double eval(Double x);
   }
 
-  private static abstract class CompOperator implements Operator {
+  private abstract static class CompOperator implements Operator {
     @Override
     public double evaluate(Node[] input) {
       return eval((Double) input[0].value(), (Double) input[1].value()) ? 1. : 0.;
@@ -47,217 +47,248 @@ public class OperatorNode extends Node {
   }
 
   // arithmetic
-  private static final Operator ADD = new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return x + y;
-    }
-  };
-  private static final Operator SUB = new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return x - y;
-    }
-  };
-  private static final Operator MULTIPLY= new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return x * y;
-    }
-  };
-  private static final Operator DIVIDE = new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return x / y;
-    }
-  };
-  private static final Operator POW = new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return Math.pow(x, y);
-    }
-  };
-  private static final Operator MODULO = new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return ((x % y) + y) % y;
-    }
-  };
-  private static final Operator SQRT = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.sqrt(x);
-    }
-  };
-  private static final Operator LOG = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.log(x);
-    }
-  };
-  private static final Operator SIN = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.sin(x);
-    }
-  };
-  private static final Operator COS = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.cos(x);
-    }
-  };
-  private static final Operator TAN = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.tan(x);
-    }
-  };
-  private static final Operator ACOS = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.acos(x);
-    }
-  };
-  private static final Operator ASIN = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.asin(x);
-    }
-  };
-  private static final Operator ATAN = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.atan(x);
-    }
-  };
-  private static final Operator EXP = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.exp(x);
-    }
-  };
-  private static final Operator ROUND = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.round(x);
-    }
-  };
-  private static final Operator ABS = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.abs(x);
-    }
-  };
-  private static final Operator FLOOR = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.floor(x);
-    }
-  };
-  private static final Operator CEIL = new SingleOperator() {
-    @Override
-    public double eval(Double x) {
-      return Math.ceil(x);
-    }
-  };
-  private static final Operator MIN = new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return Math.min(x, y);
-    }
-  };
-  private static final Operator MAX = new ReduceOperator() {
-    @Override
-    public double reduce(Double x, Double y) {
-      return Math.max(x, y);
-    }
-  };
+  private static final Operator ADD =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return x + y;
+        }
+      };
+  private static final Operator SUB =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return x - y;
+        }
+      };
+  private static final Operator MULTIPLY =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return x * y;
+        }
+      };
+  private static final Operator DIVIDE =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return x / y;
+        }
+      };
+  private static final Operator POW =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return Math.pow(x, y);
+        }
+      };
+  private static final Operator MODULO =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return ((x % y) + y) % y;
+        }
+      };
+  private static final Operator SQRT =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.sqrt(x);
+        }
+      };
+  private static final Operator LOG =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.log(x);
+        }
+      };
+  private static final Operator SIN =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.sin(x);
+        }
+      };
+  private static final Operator COS =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.cos(x);
+        }
+      };
+  private static final Operator TAN =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.tan(x);
+        }
+      };
+  private static final Operator ACOS =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.acos(x);
+        }
+      };
+  private static final Operator ASIN =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.asin(x);
+        }
+      };
+  private static final Operator ATAN =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.atan(x);
+        }
+      };
+  private static final Operator EXP =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.exp(x);
+        }
+      };
+  private static final Operator ROUND =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.round(x);
+        }
+      };
+  private static final Operator ABS =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.abs(x);
+        }
+      };
+  private static final Operator FLOOR =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.floor(x);
+        }
+      };
+  private static final Operator CEIL =
+      new SingleOperator() {
+        @Override
+        public double eval(Double x) {
+          return Math.ceil(x);
+        }
+      };
+  private static final Operator MIN =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return Math.min(x, y);
+        }
+      };
+  private static final Operator MAX =
+      new ReduceOperator() {
+        @Override
+        public double reduce(Double x, Double y) {
+          return Math.max(x, y);
+        }
+      };
 
   // logical
-  private static final Operator AND = new Operator() {
-    @Override
-    public double evaluate(Node[] input) {
-      boolean res = truthy(input[0].value());
-      for (int i = 1; i < input.length && res; i++) {
-        res = res && truthy(input[i].value());
-      }
-      return res ? 1. : 0.;
-    }
-  };
-  private static final Operator OR = new Operator() {
-    @Override
-    public double evaluate(Node[] input) {
-      boolean res = truthy(input[0].value());
-      for (int i = 1; i < input.length && !res; i++) {
-        res = res || truthy(input[i].value());
-      }
-      return res ? 1. : 0.;
-    }
-  };
-  private static final Operator NOT = new Operator() {
-    @Override
-    public double evaluate(Node[] input) {
-      return truthy(input[0].value()) ? 0. : 1.;
-    }
-  };
-  private static final Operator DEFINED = new Operator() {
-    @Override
-    public double evaluate(Node[] input) {
-      Object res = input[0].value();
-      return (res != null && !(res instanceof Double && ((Double) res).isNaN())) ? 1. : 0.;
-    }
-  };
+  private static final Operator AND =
+      new Operator() {
+        @Override
+        public double evaluate(Node[] input) {
+          boolean res = truthy(input[0].value());
+          for (int i = 1; i < input.length && res; i++) {
+            res = res && truthy(input[i].value());
+          }
+          return res ? 1. : 0.;
+        }
+      };
+  private static final Operator OR =
+      new Operator() {
+        @Override
+        public double evaluate(Node[] input) {
+          boolean res = truthy(input[0].value());
+          for (int i = 1; i < input.length && !res; i++) {
+            res = res || truthy(input[i].value());
+          }
+          return res ? 1. : 0.;
+        }
+      };
+  private static final Operator NOT =
+      new Operator() {
+        @Override
+        public double evaluate(Node[] input) {
+          return truthy(input[0].value()) ? 0. : 1.;
+        }
+      };
+  private static final Operator DEFINED =
+      new Operator() {
+        @Override
+        public double evaluate(Node[] input) {
+          Object res = input[0].value();
+          return (res != null && !(res instanceof Double && ((Double) res).isNaN())) ? 1. : 0.;
+        }
+      };
 
   // comparison
-  private static final Operator LESS_THAN = new CompOperator() {
-    @Override
-    public boolean eval(Double x, Double y) {
-      if (x == null || y == null) {
-        return false;
-      }
-      return x < y;
-    }
-  };
-  private static final Operator EQ = new CompOperator() {
-    @Override
-    public boolean eval(Double x, Double y) {
-      if (x == null || y == null) {
-        return x == y;
-      }
-      return x.doubleValue() == y.doubleValue();
-    }
-  };
-  private static final Operator GREATER_THAN = new CompOperator() {
-    @Override
-    public boolean eval(Double x, Double y) {
-      if (x == null || y == null) {
-        return false;
-      }
-      return x > y;
-    }
-  };
-  private static final Operator LESS_OR_EQ = new CompOperator() {
-    @Override
-    public boolean eval(Double x, Double y) {
-      return x <= y;
-    }
-  };
-  private static final Operator GREATER_OR_EQ = new CompOperator() {
-    @Override
-    public boolean eval(Double x, Double y) {
-      return x >= y;
-    }
-  };
-  private static final Operator NEQ = new CompOperator() {
-    @Override
-    public boolean eval(Double x, Double y) {
-      if (x == null || y == null) {
-        return x == y;
-      }
-      return x.doubleValue() != y.doubleValue();
-    }
-  };
+  private static final Operator LESS_THAN =
+      new CompOperator() {
+        @Override
+        public boolean eval(Double x, Double y) {
+          if (x == null || y == null) {
+            return false;
+          }
+          return x < y;
+        }
+      };
+  private static final Operator EQ =
+      new CompOperator() {
+        @Override
+        public boolean eval(Double x, Double y) {
+          if (x == null || y == null) {
+            return x == y;
+          }
+          return x.doubleValue() == y.doubleValue();
+        }
+      };
+  private static final Operator GREATER_THAN =
+      new CompOperator() {
+        @Override
+        public boolean eval(Double x, Double y) {
+          if (x == null || y == null) {
+            return false;
+          }
+          return x > y;
+        }
+      };
+  private static final Operator LESS_OR_EQ =
+      new CompOperator() {
+        @Override
+        public boolean eval(Double x, Double y) {
+          return x <= y;
+        }
+      };
+  private static final Operator GREATER_OR_EQ =
+      new CompOperator() {
+        @Override
+        public boolean eval(Double x, Double y) {
+          return x >= y;
+        }
+      };
+  private static final Operator NEQ =
+      new CompOperator() {
+        @Override
+        public boolean eval(Double x, Double y) {
+          if (x == null || y == null) {
+            return x == y;
+          }
+          return x.doubleValue() != y.doubleValue();
+        }
+      };
 
   private final int[] mInputIDs;
   private final Node[] mInputNodes;
@@ -323,13 +354,13 @@ public class OperatorNode extends Node {
       mOperator = NEQ;
     } else if ("abs".equals(op)) {
       mOperator = ABS;
-    }else if ("floor".equals(op)) {
+    } else if ("floor".equals(op)) {
       mOperator = FLOOR;
-    }else if ("ceil".equals(op)) {
+    } else if ("ceil".equals(op)) {
       mOperator = CEIL;
-    }else if ("max".equals(op)) {
+    } else if ("max".equals(op)) {
       mOperator = MAX;
-    }else if ("min".equals(op)) {
+    } else if ("min".equals(op)) {
       mOperator = MIN;
     } else {
       throw new JSApplicationIllegalArgumentException("Unrecognized operator " + op);

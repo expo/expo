@@ -92,6 +92,7 @@ repositories {
 }
 
 dependencies {
+  implementation project(":expo-modules-core")
   implementation project(":expo-dev-menu-interface")
   implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")

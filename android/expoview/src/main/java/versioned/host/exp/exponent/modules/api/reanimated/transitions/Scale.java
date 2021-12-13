@@ -3,12 +3,12 @@ package versioned.host.exp.exponent.modules.api.reanimated.transitions;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.view.View;
+import android.view.ViewGroup;
 import androidx.transition.Transition;
 import androidx.transition.TransitionListenerAdapter;
 import androidx.transition.TransitionValues;
 import androidx.transition.Visibility;
-import android.view.View;
-import android.view.ViewGroup;
 
 public class Scale extends Visibility {
 
@@ -29,8 +29,8 @@ public class Scale extends Visibility {
     return this;
   }
 
-
-  private Animator createAnimation(final View view, float startScale, float endScale, TransitionValues values) {
+  private Animator createAnimation(
+      final View view, float startScale, float endScale, TransitionValues values) {
     final float initialScaleX = view.getScaleX();
     final float initialScaleY = view.getScaleY();
     float startScaleX = initialScaleX * startScale;
@@ -58,26 +58,29 @@ public class Scale extends Visibility {
 
     AnimatorSet animator = new AnimatorSet();
     animator.playTogether(
-            ObjectAnimator.ofFloat(view, View.SCALE_X, startScaleX, endScaleX),
-            ObjectAnimator.ofFloat(view, View.SCALE_Y, startScaleY, endScaleY));
-    addListener(new TransitionListenerAdapter() {
-      @Override
-      public void onTransitionEnd(Transition transition) {
-        view.setScaleX(initialScaleX);
-        view.setScaleY(initialScaleY);
-        transition.removeListener(this);
-      }
-    });
+        ObjectAnimator.ofFloat(view, View.SCALE_X, startScaleX, endScaleX),
+        ObjectAnimator.ofFloat(view, View.SCALE_Y, startScaleY, endScaleY));
+    addListener(
+        new TransitionListenerAdapter() {
+          @Override
+          public void onTransitionEnd(Transition transition) {
+            view.setScaleX(initialScaleX);
+            view.setScaleY(initialScaleY);
+            transition.removeListener(this);
+          }
+        });
     return animator;
   }
 
   @Override
-  public Animator onAppear(ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues) {
+  public Animator onAppear(
+      ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues) {
     return createAnimation(view, 0f, 1f, startValues);
   }
 
   @Override
-  public Animator onDisappear(ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues) {
+  public Animator onDisappear(
+      ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues) {
     return createAnimation(view, 1f, 0f, startValues);
   }
 }

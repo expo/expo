@@ -14,10 +14,14 @@ require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
 abstract_target 'BareExpoMain' do
-  use_expo_modules!
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu/ios', :testspecs => ['Tests', 'UITests']
 
-  pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface', :testspecs => ['Tests']
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+  use_expo_modules!(
+    tests: [
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+    ],
+  )
 
   config = use_native_modules!
 
@@ -25,8 +29,6 @@ abstract_target 'BareExpoMain' do
     :path => config[:reactNativePath],
     :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
   )
-
-  pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :testspecs => ['Tests']
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|

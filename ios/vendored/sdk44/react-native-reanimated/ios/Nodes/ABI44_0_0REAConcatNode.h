@@ -3,4 +3,3 @@
 @interface ABI44_0_0REAConcatNode : ABI44_0_0REANode
 
 @end
-

@@ -15,7 +15,12 @@ apply from: new File(["node", "--print", "require.resolve('expo/package.json')"]
 useExpoModules([
     exclude: [
         'expo-module-template',
-        'expo-in-app-purchases'
+        'expo-in-app-purchases',
+        'react-native-reanimated',
+        'expo-dev-menu-interface',
+        'expo-dev-menu',
+        'expo-dev-launcher',
+        'expo-dev-client'
     ],
     searchPaths: [
       'enabled-modules'
@@ -57,6 +62,11 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 useExpoModules([
     exclude : [
         'expo-module-template',
+        'react-native-reanimated',
+        'expo-dev-menu-interface',
+        'expo-dev-menu',
+        'expo-dev-launcher',
+        'expo-dev-client'
     ]
 ])
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

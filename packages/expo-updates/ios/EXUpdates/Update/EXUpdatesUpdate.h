@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
+#import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXManifests/EXManifestsManifest.h>
 
 @class EXUpdatesDatabase;
@@ -76,7 +77,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
                     database:(EXUpdatesDatabase *)database;
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                          response:(nullable NSURLResponse *)response
+                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                        extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
                              error:(NSError **)error;

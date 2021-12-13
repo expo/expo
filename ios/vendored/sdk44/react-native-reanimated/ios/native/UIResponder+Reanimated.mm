@@ -1,21 +1,11 @@
+#import "ABI44_0_0REAInitializer.h"
+#import "ABI44_0_0REAUIManager.h"
 #import "UIResponder+Reanimated.h"
-#import <ABI44_0_0React/ABI44_0_0RCTCxxBridgeDelegate.h>
-#import <ABI44_0_0RNReanimated/NativeProxy.h>
-#import <ABI44_0_0RNReanimated/ABI44_0_0REAModule.h>
-#import <ABI44_0_0ReactCommon/ABI44_0_0RCTTurboModuleManager.h>
-#import <ABI44_0_0React/ABI44_0_0RCTBridge+Private.h>
-#import <ABI44_0_0React/ABI44_0_0RCTCxxBridgeDelegate.h>
-#import <ABI44_0_0RNReanimated/ABI44_0_0REAEventDispatcher.h>
 
-#if RNVERSION >= 64
-#import <ABI44_0_0React/ABI44_0_0RCTJSIExecutorRuntimeInstaller.h>
-#endif
-
-#if RNVERSION < 63
-#import <ABI44_0_0ReactCommon/BridgeJSCallInvoker.h>
-#endif
-
-#if __has_include(<ABI44_0_0React/ABI44_0_0HermesExecutorFactory.h>)
+#if __has_include(<reacthermes/ABI44_0_0HermesExecutorFactory.h>)
+#import <reacthermes/ABI44_0_0HermesExecutorFactory.h>
+typedef HermesExecutorFactory ExecutorFactory;
+#elif __has_include(<ABI44_0_0React/ABI44_0_0HermesExecutorFactory.h>)
 #import <ABI44_0_0React/ABI44_0_0HermesExecutorFactory.h>
 typedef HermesExecutorFactory ExecutorFactory;
 #else
@@ -25,45 +15,16 @@ typedef JSCExecutorFactory ExecutorFactory;
 
 #ifndef DONT_AUTOINSTALL_REANIMATED
 
-@interface ABI44_0_0RCTEventDispatcher(Reanimated)
-
-- (void)setBridge:(ABI44_0_0RCTBridge*)bridge;
-
-@end
-
 @implementation UIResponder (Reanimated)
 - (std::unique_ptr<ABI44_0_0facebook::ABI44_0_0React::JSExecutorFactory>)jsExecutorFactoryForBridge:(ABI44_0_0RCTBridge *)bridge
 {
-  [bridge moduleForClass:[ABI44_0_0RCTEventDispatcher class]];
-  ABI44_0_0RCTEventDispatcher *eventDispatcher = [ABI44_0_0REAEventDispatcher new];
-  [eventDispatcher setBridge:bridge];
-  [bridge updateModuleWithInstance:eventDispatcher];
-   ABI44_0_0_bridge_reanimated = bridge;
-  __weak __typeof(self) weakSelf = self;
-
-  const auto executor = [weakSelf, bridge](ABI44_0_0facebook::jsi::Runtime &runtime) {
-    if (!bridge) {
-      return;
-    }
-    __typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
-#if RNVERSION >= 63
-      auto reanimatedModule = ABI44_0_0reanimated::createReanimatedModule(bridge.jsCallInvoker);
-#else
-      auto callInvoker = std::make_shared<ABI44_0_0React::BridgeJSCallInvoker>(bridge.reactInstance);
-      auto reanimatedModule = ABI44_0_0reanimated::createReanimatedModule(callInvoker);
-#endif
-      runtime.global().setProperty(runtime,
-                                   jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-                                   jsi::Object::createFromHostObject(runtime, reanimatedModule));
-    }
-  };
+  const auto installer = ABI44_0_0reanimated::ABI44_0_0REAJSIExecutorRuntimeInstaller(bridge, NULL);
 
 #if RNVERSION >= 64
   // installs globals such as console, nativePerformanceNow, etc.
-  return std::make_unique<ExecutorFactory>(ABI44_0_0RCTJSIExecutorRuntimeInstaller(executor));
+  return std::make_unique<ExecutorFactory>(ABI44_0_0RCTJSIExecutorRuntimeInstaller(installer));
 #else
-  return std::make_unique<ExecutorFactory>(executor);
+  return std::make_unique<ExecutorFactory>(installer);
 #endif
 }
 
