@@ -27,12 +27,6 @@ class UpdatesPackage : Package {
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
       private var mShouldAutoSetup: Boolean? = null
-      override fun createReactInstanceManager(useDeveloperSupport: Boolean): ReactInstanceManager? {
-        if (shouldAutoSetup(context) && !useDeveloperSupport) {
-          UpdatesController.initialize(context)
-        }
-        return null
-      }
 
       override fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
         return if (shouldAutoSetup(context) && !useDeveloperSupport) UpdatesController.instance.launchAssetFile else null
@@ -42,17 +36,17 @@ class UpdatesPackage : Package {
         return if (shouldAutoSetup(context) && !useDeveloperSupport) UpdatesController.instance.bundleAssetName else null
       }
 
-//      override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
-//        if (shouldAutoSetup(context) && !useDeveloperSupport) {
-//          UpdatesController.initialize(context)
-//        }
-//      }
-//
-//      override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
-//        if (shouldAutoSetup(context) && !useDeveloperSupport) {
-//          UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
-//        }
-//      }
+      override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
+        if (shouldAutoSetup(context) && !useDeveloperSupport) {
+          UpdatesController.initialize(context)
+        }
+      }
+
+      override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
+        if (shouldAutoSetup(context) && !useDeveloperSupport) {
+          UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
+        }
+      }
 
       @UiThread
       private fun shouldAutoSetup(context: Context): Boolean {
