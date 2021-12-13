@@ -16,6 +16,15 @@ export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 
  * classic updates. When using Expo Updates, the value of this field is always `"default"`.
  */
 export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
+/**
+ * The name of the channel currently configured in this standalone or bare app. For use
+ * when pointed at EAS servers.
+ */
+export const channel = ExpoUpdates.channel ?? null;
+/**
+ * The native codes's runtime version.
+ */
+export const runtimeVersion = ExpoUpdates.runtimeVersion ?? null;
 // @docsMissing
 /**
  * @hidden
