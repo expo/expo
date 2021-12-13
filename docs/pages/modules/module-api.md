@@ -4,7 +4,7 @@ title: Module API
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-> Note: This API is still experimental and subject to change.
+> Note: This API is still experimental and subject to change. Some features that you need may not be implemented yet.
 
 Expo Module API is an abstraction layer of top of React Native modules that helps you build native modules in an easy to use and convenience way. As opposed to standard React Native modules, Expo Modules ecosystem is designed from the ground up to be used with only modern native languages — Swift and Kotlin. After many years of maintaining a bunch of various native modules as part of Expo SDK, we have found out that many issues were caused by not handling null values or using the wrong types. The lack of optional types and Objective-C being too dynamic, makes most bugs unable to get caught in the compile time — which would be caught in modern languages.
 
@@ -94,13 +94,13 @@ Sets constant properties on the module. Can take the dictionary or the closure t
 ```swift
 // Created from the dictionary
 constants([
-  "PI": 3.14159
+  "PI": Double.pi
 ])
 
 // or returned by the closure
 constants {
   return [
-    "PI": 3.14159
+    "PI": Double.pi
   ]
 }
 ```
@@ -108,7 +108,7 @@ constants {
 ```kotlin
 constants(
   mapOf(
-    "PI" to 3.14159
+    "PI" to kotlin.math.PI
   )
 )
 ```
@@ -387,3 +387,5 @@ For more examples you can take a look on GitHub at some of Expo modules that alr
 - `expo-cellular` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-cellular/ios/CellularModule.swift), [Kotlin](https://github.com/expo/expo/blob/master/packages/expo-cellular/android/src/main/java/expo/modules/cellular/CellularModule.kt))
 - `expo-linear-gradient` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-linear-gradient/ios/LinearGradientModule.swift))
 - `expo-haptics` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-haptics/ios/HapticsModule.swift))
+- `expo-clipboard` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-clipboard/ios/EXClipboard/ClipboardModule.swift))
+- `expo-localization` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-localization/ios/LocalizationModule.swift))
