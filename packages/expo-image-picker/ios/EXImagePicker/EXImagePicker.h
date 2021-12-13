@@ -7,6 +7,6 @@ typedef NS_ENUM(NSInteger, EXImagePickerTarget) {
   EXImagePickerTargetLibrarySingleImage,
 };
 
-@interface EXImagePicker : EXExportedModule <UINavigationControllerDelegate, UIImagePickerControllerDelegate, EXModuleRegistryConsumer>
+@interface EXImagePicker : EXExportedModule <UIAdaptivePresentationControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, EXModuleRegistryConsumer>
 
 @end
