@@ -18,8 +18,8 @@ export async function queryMyProjectsAsync(): Promise<any> {
   return await DevMenu.queryMyProjectsAsync();
 }
 
-export async function queryDevSessionsAsync(): Promise<any> {
-  return await DevMenu.queryDevSessionsAsync();
+export async function queryDevSessionsAsync(deviceID?: string): Promise<any> {
+  return await DevMenu.queryDevSessionsAsync(deviceID ?? null);
 }
 
 export async function isLoggedInAsync(): Promise<boolean> {

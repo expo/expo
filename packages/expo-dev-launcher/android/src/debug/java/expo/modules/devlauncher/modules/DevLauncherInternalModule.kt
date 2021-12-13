@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -51,8 +52,11 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
   override fun hasConstants(): Boolean = true
 
   override fun getConstants(): Map<String, Any> {
+    val isRunningOnGenymotion = Build.FINGERPRINT.contains("vbox")
+    val isRunningOnStockEmulator = Build.FINGERPRINT.contains("generic")
     return mapOf(
-      "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext)
+      "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
+      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator)
     )
   }
 
