@@ -514,7 +514,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
     }
   }
 
-  [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
+  [request setValue:@"multipart/mixed,application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
