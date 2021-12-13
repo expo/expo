@@ -9,6 +9,8 @@ import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
 import expo.modules.devlauncher.helpers.findPackagesWithDevMenuExtension
 import expo.modules.devlauncher.helpers.injectDebugServerHost
+import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import devmenu.com.swmansion.gesturehandler.react.RNGestureHandlerPackage
 
 class DevLauncherClientHost(
   application: Application,
@@ -36,7 +38,9 @@ class DevLauncherClientHost(
 
     return listOf(
       MainReactPackage(null),
-      DevLauncherPackage()
+      DevLauncherPackage(),
+      RNGestureHandlerPackage(),
+      SafeAreaContextPackage(),
     ) +
       devMenuRelatedPackages +
       additionalPackages

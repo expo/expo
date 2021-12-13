@@ -63,7 +63,6 @@ class LauncherMainScreen extends React.Component<Props, State> {
 
   componentDidMount() {
     DevLauncher.getPendingDeepLink().then(pendingDeepLink => {
-      console.log({ pendingDeepLink });
       this.setState({ pendingDeepLink });
     });
 
