@@ -71,7 +71,7 @@ class CryptoTest {
   fun test_verifyCodeSigning_Verifies() {
     val codeSigningConfiguration = Crypto.CodeSigningConfiguration(testCertificate, mapOf())
     val codesigningInfo = Crypto.parseSignatureHeader(testSignature)
-    val isValid = Crypto.verifyCodeSigning(codeSigningConfiguration, codesigningInfo, testBody.toByteArray())
+    val isValid = Crypto.isSignatureValid(codeSigningConfiguration, codesigningInfo, testBody.toByteArray())
     Assert.assertTrue(isValid)
   }
 
@@ -79,7 +79,20 @@ class CryptoTest {
   fun test_verifyCodeSigning_ReturnsFalseWhenSignatureIsInvalid() {
     val codeSigningConfiguration = Crypto.CodeSigningConfiguration(testCertificate, mapOf())
     val codesigningInfo = Crypto.parseSignatureHeader("sig=\"aGVsbG8=\"")
-    val isValid = Crypto.verifyCodeSigning(codeSigningConfiguration, codesigningInfo, testBody.toByteArray())
+    val isValid = Crypto.isSignatureValid(codeSigningConfiguration, codesigningInfo, testBody.toByteArray())
     Assert.assertFalse(isValid)
+  }
+
+  @Test(expected = Error::class)
+  @Throws(Error::class)
+  fun test_verifyCodeSigning_ThrowsWhenKeyDoesNotMatch() {
+    val codeSigningConfiguration = Crypto.CodeSigningConfiguration(
+      testCertificate,
+      mapOf(
+        Crypto.CODE_SIGNING_METADATA_KEY_ID_KEY to "test"
+      )
+    )
+    val codesigningInfo = Crypto.parseSignatureHeader("sig=\"aGVsbG8=\", keyid=\"other\"")
+    Crypto.isSignatureValid(codeSigningConfiguration, codesigningInfo, testBody.toByteArray())
   }
 }

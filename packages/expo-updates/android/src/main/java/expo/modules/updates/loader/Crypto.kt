@@ -3,6 +3,7 @@ package expo.modules.updates.loader
 import android.annotation.SuppressLint
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import expo.modules.structuredheaders.BooleanItem
 import expo.modules.structuredheaders.Dictionary
 import okhttp3.*
@@ -17,6 +18,8 @@ import expo.modules.structuredheaders.Parser
 import expo.modules.structuredheaders.StringItem
 
 object Crypto {
+  private val TAG = Crypto::class.java.simpleName
+
   const val CODE_SIGNING_METADATA_ALGORITHM_KEY = "alg"
   const val CODE_SIGNING_METADATA_KEY_ID_KEY = "keyid"
 
@@ -163,8 +166,6 @@ object Crypto {
     }
   }
 
-  data class CodeSigningInfo(val signature: String, val keyId: String?, val algorithm: CodeSigningAlgorithm?)
-
   fun createAcceptSignatureHeader(codeSigningConfiguration: CodeSigningConfiguration): String {
     return Dictionary.valueOf(
       mapOf(
@@ -175,12 +176,14 @@ object Crypto {
     ).serialize()
   }
 
-  fun parseSignatureHeader(signatureField: String?): CodeSigningInfo {
-    if (signatureField == null) {
+  data class SignatureHeaderInfo(val signature: String, val keyId: String, val algorithm: CodeSigningAlgorithm)
+
+  fun parseSignatureHeader(signatureHeader: String?): SignatureHeaderInfo {
+    if (signatureHeader == null) {
       throw Error("No expo-signature header specified")
     }
 
-    val signatureMap = Parser(signatureField).parseDictionary().get()
+    val signatureMap = Parser(signatureHeader).parseDictionary().get()
 
     val sigFieldValue = signatureMap[CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE]
     val keyIdFieldValue = signatureMap[CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_KEY_ID]
@@ -196,10 +199,22 @@ object Crypto {
       algFieldValue.get()
     } else null
 
-    return CodeSigningInfo(signature, keyId, CodeSigningAlgorithm.parseFromString(alg))
+    return SignatureHeaderInfo(signature, keyId, CodeSigningAlgorithm.parseFromString(alg))
   }
 
-  fun verifyCodeSigning(configuration: CodeSigningConfiguration, info: CodeSigningInfo, bytes: ByteArray): Boolean {
+  fun isSignatureValid(configuration: CodeSigningConfiguration, info: SignatureHeaderInfo, bytes: ByteArray): Boolean {
+    // check that the key used to sign the response is the same as the key embedded in the configuration
+    // TODO(wschurman): this may change for child certificates and development certificates
+    if (info.keyId != configuration.keyId) {
+      throw Error("Key with keyid=${info.keyId} from signature not found in client configuration")
+    }
+
+    // note that a mismatched algorithm doesn't fail early. it still tries to verify the signature with the
+    // algorithm specified in the configuration
+    if (info.algorithm != configuration.algorithm) {
+      Log.i(TAG, "Key with alg=${info.algorithm} from signature does not match client configuration algorithm, continuing")
+    }
+
     return Signature.getInstance(
       when (configuration.algorithm) {
         CodeSigningAlgorithm.RSA_SHA256 -> "SHA256withRSA"

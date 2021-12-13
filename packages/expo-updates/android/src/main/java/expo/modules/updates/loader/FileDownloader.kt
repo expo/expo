@@ -391,7 +391,7 @@ open class FileDownloader() {
     ) {
       try {
         configuration.codeSigningConfiguration?.let {
-          val isSignatureValid = Crypto.verifyCodeSigning(
+          val isSignatureValid = Crypto.isSignatureValid(
             it,
             Crypto.parseSignatureHeader(manifestHeaderData.signature),
             bodyString.toByteArray()
