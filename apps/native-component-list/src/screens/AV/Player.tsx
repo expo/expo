@@ -371,7 +371,7 @@ function PanSlider({
         value={value}
         maximumValue={1}
         minimumValue={-1}
-        style={{ height: height, flex: 1 }}
+        style={{ height, flex: 1 }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
         onSlidingComplete={(value) => {

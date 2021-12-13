@@ -117,7 +117,8 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _setIsMutedAsync = async (isMuted: boolean) => this._sound!.setIsMutedAsync(isMuted);
 
-  _setVolumeAsync = async (volume: number, pan?: number) => this._sound!.setVolumeAsync(volume, pan);
+  _setVolumeAsync = async (volume: number, pan?: number) =>
+    this._sound!.setVolumeAsync(volume, pan);
 
   _setRateAsync = async (
     rate: number,
