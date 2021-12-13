@@ -1,0 +1,4 @@
+{
+  "name": "expo-dev-launcher",
+  "platforms": ["ios", "android"]
+}

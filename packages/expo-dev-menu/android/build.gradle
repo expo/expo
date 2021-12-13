@@ -237,6 +237,8 @@ repositories {
 }
 
 dependencies {
+  implementation project(':expo-modules-core')
+
   implementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
 
   implementation project(":expo-dev-menu-interface")

@@ -813,14 +813,14 @@ DEPENDENCIES:
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - Expo (from `../../../packages/expo/ios`)
-  - expo-dev-client (from `../../../packages/expo-dev-client`)
-  - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
-  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
-  - expo-dev-menu (from `../../../packages/expo-dev-menu`)
-  - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
-  - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface`)
-  - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
-  - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
+  - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
+  - expo-dev-launcher (from `../../../packages/expo-dev-launcher/ios`)
+  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher/ios`)
+  - expo-dev-menu (from `../../../packages/expo-dev-menu/ios`)
+  - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
+  - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface/ios`)
+  - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu/ios`)
+  - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
@@ -1071,13 +1071,16 @@ EXTERNAL SOURCES:
     inhibit_warnings: false
     :path: "../../../packages/expo/ios"
   expo-dev-client:
-    :path: "../../../packages/expo-dev-client"
+    inhibit_warnings: false
+    :path: "../../../packages/expo-dev-client/ios"
   expo-dev-launcher:
-    :path: "../../../packages/expo-dev-launcher"
+    inhibit_warnings: false
+    :path: "../../../packages/expo-dev-launcher/ios"
   expo-dev-menu:
-    :path: "../../../packages/expo-dev-menu"
+    :path: "../../../packages/expo-dev-menu/ios"
   expo-dev-menu-interface:
-    :path: "../../../packages/expo-dev-menu-interface"
+    inhibit_warnings: false
+    :path: "../../../packages/expo-dev-menu-interface/ios"
   ExpoCellular:
     inhibit_warnings: false
     :path: "../../../packages/expo-cellular/ios"
@@ -1302,9 +1305,9 @@ SPEC CHECKSUMS:
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
   expo-dev-client: 8d496fb4f930c79f64574c1109a292d16933fb26
-  expo-dev-launcher: ce48e68aedfbf3c1df30e7e75fa0e100d5b4a892
-  expo-dev-menu: 3c37b25b7cb2bf8a179430583917ac2cfa7ecc49
-  expo-dev-menu-interface: 6ecfd64dc3eab1e7e772170f5e058468fdccaac9
+  expo-dev-launcher: b9fdeef7f20489ae7bd97fec60ff28a7073cc50c
+  expo-dev-menu: 84da3c6eb2c30e62fbf620713c59460c54b54e35
+  expo-dev-menu-interface: 522c399fc0f4f7402bfef945fb18486fa7a9e9dd
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
@@ -1410,6 +1413,6 @@ SPEC CHECKSUMS:
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7f44ef71f33a4dbb448f92a2a96507223b074498
+PODFILE CHECKSUM: 240a0368fa0da865b4891acb14ed590ee98b336a
 
 COCOAPODS: 1.11.2

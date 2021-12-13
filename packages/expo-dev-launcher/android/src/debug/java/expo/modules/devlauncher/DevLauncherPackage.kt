@@ -7,8 +7,9 @@ import com.facebook.react.uimanager.ViewManager
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtensions
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
+import expo.modules.core.interfaces.Package
 
-class DevLauncherPackage : ReactPackage {
+class DevLauncherPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
     listOf(
       DevLauncherModule(reactContext),
