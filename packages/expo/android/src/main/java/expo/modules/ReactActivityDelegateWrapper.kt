@@ -12,7 +12,9 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
+import com.facebook.react.common.LifecycleState
 import com.facebook.react.modules.core.PermissionListener
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 class ReactActivityDelegateWrapper(
@@ -88,7 +90,16 @@ class ReactActivityDelegateWrapper(
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
     }
-    return invokeDelegateMethod("onPause")
+    try {
+      return invokeDelegateMethod("onPause")
+    } catch (e: InvocationTargetException) {
+      if (e.cause is AssertionError && delegate.reactInstanceManager.lifecycleState != LifecycleState.RESUMED) {
+        // NOTE(kudo): workaround exception from `ReactInstanceManager.onHostPause()`,
+        // but i still don't know how to reproduce and how it happens.
+        return
+      }
+      throw e
+    }
   }
 
   override fun onDestroy() {
