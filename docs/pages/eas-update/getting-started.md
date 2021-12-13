@@ -88,12 +88,14 @@ Once you have a build running on your device or in a simulator, we'll be ready t
 
 ## Make changes locally
 
-Once we've created a build, we're ready to iterate on our project.
-
-When we run our project locally, Expo CLI creates a manifest locally that Expo Go or a development build will run. To make sure our project starts with Expo's modern manifest protocol, start your local server with:
+Once we've created a build, we're ready to iterate on our project. Start a local development server with:
 
 ```bash
-yarn start --force-manifest-type=expo-updates
+yarn start
+
+# or
+
+expo start
 ```
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.
