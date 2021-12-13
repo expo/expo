@@ -8,6 +8,7 @@
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
+#import <EXUpdates/EXUpdatesManifestHeaders.h>
 
 @interface EXUpdatesUpdateTests : XCTestCase
 
@@ -58,21 +59,48 @@
 - (void)testUpdateWithManifest_Legacy
 {
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest headers:@{} extensions:@{} config:_config database:_database error:&error];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest
+                                                manifestHeaders:manifestHeaders
+                                                     extensions:@{}
+                                                         config:_config
+                                                       database:_database
+                                                          error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_New
 {
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"0"} extensions:@{} config:_config database:_database error:&error];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"0"
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
+                                                manifestHeaders:manifestHeaders
+                                                     extensions:@{}
+                                                         config:_config
+                                                       database:_database
+                                                          error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_UnsupportedProtocolVersion
 {
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"1"} extensions:@{} config:_config database:_database error:&error];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"1"
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
+                                                manifestHeaders:manifestHeaders
+                                                     extensions:@{}
+                                                         config:_config
+                                                       database:_database
+                                                          error:&error];
   XCTAssert(error != nil);
   XCTAssert(update == nil);
 }

@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation EXUpdatesNewUpdate
 
 + (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewManifest *)manifest
-                                   headers:(NSDictionary *)headers
+                           manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
                                 extensions:(NSDictionary *)extensions
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
@@ -91,8 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
   update.manifestJSON = manifest.rawManifestJSON;
-  update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:headers[@"expo-server-defined-headers"]];
-  update.manifestFilters = [[self class] dictionaryWithStructuredHeader:headers[@"expo-manifest-filters"]];
+  update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:manifestHeaders.serverDefinedHeaders];
+  update.manifestFilters = [[self class] dictionaryWithStructuredHeader:manifestHeaders.manifestFilters];
   return update;
 }
 
