@@ -62,7 +62,7 @@ class NewUpdateManifestTest {
   private fun createConfig(): UpdatesConfiguration {
     val configMap = HashMap<String, Any>()
     configMap["updateUrl"] = Uri.parse("https://exp.host/@test/test")
-    return UpdatesConfiguration().loadValuesFromMap(configMap)
+    return UpdatesConfiguration(null, configMap)
   }
 
   @Test

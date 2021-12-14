@@ -433,7 +433,7 @@ class UpdatesController private constructor(
 
     @JvmStatic fun initializeWithoutStarting(context: Context) {
       if (singletonInstance == null) {
-        val updatesConfiguration = UpdatesConfiguration().loadValuesFromMetadata(context)
+        val updatesConfiguration = UpdatesConfiguration(context, null)
         singletonInstance = UpdatesController(context, updatesConfiguration)
       }
     }
@@ -456,9 +456,7 @@ class UpdatesController private constructor(
      */
     @JvmStatic fun initialize(context: Context, configuration: Map<String, Any>) {
       if (singletonInstance == null) {
-        val updatesConfiguration = UpdatesConfiguration()
-          .loadValuesFromMetadata(context)
-          .loadValuesFromMap(configuration)
+        val updatesConfiguration = UpdatesConfiguration(context, configuration)
         singletonInstance = UpdatesController(context, updatesConfiguration)
         singletonInstance!!.start(context)
       }

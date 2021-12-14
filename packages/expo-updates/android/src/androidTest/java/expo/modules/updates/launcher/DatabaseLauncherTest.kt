@@ -52,7 +52,7 @@ class DatabaseLauncherTest {
     db.assetDao().insertAssets(listOf(testAsset), testUpdate)
 
     val launcher = DatabaseLauncher(
-      UpdatesConfiguration(),
+      UpdatesConfiguration(null, null),
       File("test"),
       FileDownloader(context),
       SelectionPolicy(

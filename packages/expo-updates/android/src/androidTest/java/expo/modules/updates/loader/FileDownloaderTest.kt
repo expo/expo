@@ -34,7 +34,7 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0",
       "usesLegacyManifest" to true
     )
-    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+    val config = UpdatesConfiguration(null, configMap)
     val actual = FileDownloader.createRequestForManifest(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
@@ -46,7 +46,7 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0",
       "usesLegacyManifest" to false
     )
-    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+    val config = UpdatesConfiguration(null, configMap)
     val actual = FileDownloader.createRequestForManifest(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
@@ -59,7 +59,7 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0",
 
     )
-    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+    val config = UpdatesConfiguration(null, configMap)
     val extraHeaders = JSONObject().apply {
       put("expo-string", "test")
       put("expo-number", 47.5)
@@ -83,7 +83,7 @@ class FileDownloaderTest {
       "requestHeaders" to headersMap
     )
 
-    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+    val config = UpdatesConfiguration(null, configMap)
 
     // serverDefinedHeaders should not be able to override preset headers
     val extraHeaders = JSONObject()
@@ -105,7 +105,7 @@ class FileDownloaderTest {
       "requestHeaders" to headersMap
     )
 
-    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+    val config = UpdatesConfiguration(null, configMap)
 
     val assetEntity = AssetEntity("test", "jpg").apply {
       url = Uri.parse("https://example.com")
@@ -125,7 +125,7 @@ class FileDownloaderTest {
       UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0",
     )
 
-    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+    val config = UpdatesConfiguration(null, configMap)
 
     val assetEntity = AssetEntity(UUID.randomUUID().toString(), "jpg").apply {
       url = Uri.parse("https://example.com")

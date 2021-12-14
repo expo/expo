@@ -33,7 +33,8 @@ class FileDownloaderManifestParsingTest {
       every { body() } returns ResponseBody.create(MediaType.parse("application/json; charset=utf-8"), classicJSON)
     }
 
-    val configuration = UpdatesConfiguration().loadValuesFromMap(
+    val configuration = UpdatesConfiguration(
+      null,
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
       )
@@ -92,7 +93,8 @@ class FileDownloaderManifestParsingTest {
       every { body() } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
-    val configuration = UpdatesConfiguration().loadValuesFromMap(
+    val configuration = UpdatesConfiguration(
+      null,
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
       )
@@ -139,7 +141,8 @@ class FileDownloaderManifestParsingTest {
       every { body() } returns ResponseBody.create(MediaType.parse("application/json; charset=utf-8"), newJSON)
     }
 
-    val configuration = UpdatesConfiguration().loadValuesFromMap(
+    val configuration = UpdatesConfiguration(
+      null,
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to newJSONCertificate,
@@ -213,7 +216,8 @@ class FileDownloaderManifestParsingTest {
       every { body() } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
-    val configuration = UpdatesConfiguration().loadValuesFromMap(
+    val configuration = UpdatesConfiguration(
+      null,
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to newJSONCertificate,
@@ -260,7 +264,8 @@ class FileDownloaderManifestParsingTest {
       every { body() } returns ResponseBody.create(MediaType.parse("application/json; charset=utf-8"), newJSON)
     }
 
-    val configuration = UpdatesConfiguration().loadValuesFromMap(
+    val configuration = UpdatesConfiguration(
+      null,
       mapOf(
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to newJSONCertificate,

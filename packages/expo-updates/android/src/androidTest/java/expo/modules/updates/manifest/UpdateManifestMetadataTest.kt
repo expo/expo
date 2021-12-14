@@ -92,7 +92,8 @@ class UpdateManifestMetadataTest {
   }
 
   private fun createConfig(): UpdatesConfiguration {
-    return UpdatesConfiguration().loadValuesFromMap(
+    return UpdatesConfiguration(
+      null,
       mapOf(
         "updateUrl" to Uri.parse("https://exp.host/@test/test")
       )

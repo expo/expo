@@ -16,7 +16,7 @@ class UpdatesConfigurationTest {
     every { mockedUri.scheme } returns "https"
     every { mockedUri.host } returns "exp.host"
     every { mockedUri.port } returns -1
-    Assert.assertEquals("https://exp.host", UpdatesConfiguration.getNormalizedUrlOrigin(mockedUri))
+    Assert.assertEquals("https://exp.host", getNormalizedUrlOrigin(mockedUri))
   }
 
   @Test
@@ -25,7 +25,7 @@ class UpdatesConfigurationTest {
     every { mockedUri.scheme } returns "https"
     every { mockedUri.host } returns "exp.host"
     every { mockedUri.port } returns 443
-    Assert.assertEquals("https://exp.host", UpdatesConfiguration.getNormalizedUrlOrigin(mockedUri))
+    Assert.assertEquals("https://exp.host", getNormalizedUrlOrigin(mockedUri))
   }
 
   @Test
@@ -36,7 +36,7 @@ class UpdatesConfigurationTest {
     every { mockedUri.port } returns 47
     Assert.assertEquals(
       "https://exp.host:47",
-      UpdatesConfiguration.getNormalizedUrlOrigin(mockedUri)
+      getNormalizedUrlOrigin(mockedUri)
     )
   }
 }

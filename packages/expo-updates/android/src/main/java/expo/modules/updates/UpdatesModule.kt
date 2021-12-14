@@ -79,7 +79,7 @@ class UpdatesModule(
       // and warn the developer if not. This does not take into account any extra configuration
       // provided at runtime in MainApplication.java, because we don't have access to that in a
       // debug build.
-      val configuration = UpdatesConfiguration().loadValuesFromMetadata(context)
+      val configuration = UpdatesConfiguration(context, null)
       constants["isMissingRuntimeVersion"] = configuration.isMissingRuntimeVersion
     }
     return constants
