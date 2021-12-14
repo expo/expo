@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing @JvmStatic annotation to `UpdatesDevLauncherController.initialize`.
+
 ### 💡 Others
 
 ## 0.11.2-rc.0 — 2021-12-13
