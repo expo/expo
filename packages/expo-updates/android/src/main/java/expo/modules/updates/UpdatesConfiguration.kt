@@ -149,9 +149,9 @@ class UpdatesConfiguration {
       codeSigningCertificate = codeSigningCertificateFromMap
     }
 
-    val codeSigningMetadataFromMap = map.readValueCheckingType<Map<*, *>>(UPDATES_CONFIGURATION_CODE_SIGNING_METADATA)
+    val codeSigningMetadataFromMap = map.readValueCheckingType<Map<String, String>>(UPDATES_CONFIGURATION_CODE_SIGNING_METADATA)
     if (codeSigningMetadataFromMap != null) {
-      codeSigningMetadata = codeSigningMetadataFromMap as Map<String, String>?
+      codeSigningMetadata = codeSigningMetadataFromMap
     }
 
     return this
@@ -178,10 +178,11 @@ class UpdatesConfiguration {
     }
   }
 
-  val codeSigningConfiguration: Crypto.CodeSigningConfiguration?
-    get() = codeSigningCertificate?.let {
+  val codeSigningConfiguration: Crypto.CodeSigningConfiguration? by lazy {
+    codeSigningCertificate?.let {
       Crypto.CodeSigningConfiguration(it, codeSigningMetadata)
     }
+  }
 
   companion object {
     private val TAG = UpdatesConfiguration::class.java.simpleName

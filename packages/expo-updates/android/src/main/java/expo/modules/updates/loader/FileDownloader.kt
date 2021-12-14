@@ -26,16 +26,8 @@ import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 
-open class FileDownloader() {
-  private lateinit var client: OkHttpClient
-
-  constructor(context: Context) : this() {
-    client = OkHttpClient.Builder().cache(getCache(context)).build()
-  }
-
-  constructor(client: OkHttpClient) : this() {
-    this.client = client
-  }
+open class FileDownloader(private val client: OkHttpClient) {
+  constructor(context: Context) : this(OkHttpClient.Builder().cache(getCache(context)).build())
 
   interface FileDownloadCallback {
     fun onFailure(e: Exception)
@@ -50,15 +42,6 @@ open class FileDownloader() {
   interface AssetDownloadCallback {
     fun onFailure(e: Exception, assetEntity: AssetEntity)
     fun onSuccess(assetEntity: AssetEntity, isNew: Boolean)
-  }
-
-  private fun getCache(context: Context): Cache {
-    val cacheSize = 50 * 1024 * 1024 // 50 MiB
-    return Cache(getCacheDirectory(context), cacheSize.toLong())
-  }
-
-  private fun getCacheDirectory(context: Context): File {
-    return File(context.cacheDir, "okhttp")
   }
 
   private fun downloadFileToPath(request: Request, destination: File, callback: FileDownloadCallback) {
@@ -333,9 +316,10 @@ open class FileDownloader() {
             }
 
             override fun onSuccess(file: File, hash: ByteArray) {
-              val hashHexString = String(Hex.encodeHex(hash))
-              if (asset.expectedHash != null && !asset.expectedHash.equals(hashHexString)) {
-                callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: ${asset.expectedHash}; actualHash: $hashHexString"), asset)
+              val hashHexString = String(Hex.encodeHex(hash)).toLowerCase(Locale.ROOT)
+              val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
+              if (expectedAssetHash != null && expectedAssetHash != hashHexString) {
+                callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashHexString"), asset)
                 return
               }
 
@@ -397,7 +381,7 @@ open class FileDownloader() {
             bodyString.toByteArray()
           )
           if (!isSignatureValid) {
-            throw IOException("File download was successful, but signature was incorrect")
+            throw IOException("Manifest download was successful, but signature was incorrect")
           }
         }
       } catch (e: Exception) {
@@ -528,6 +512,15 @@ open class FileDownloader() {
           }
         }
         .build()
+    }
+
+    private fun getCache(context: Context): Cache {
+      val cacheSize = 50 * 1024 * 1024 // 50 MiB
+      return Cache(getCacheDirectory(context), cacheSize.toLong())
+    }
+
+    private fun getCacheDirectory(context: Context): File {
+      return File(context.cacheDir, "okhttp")
     }
   }
 }

@@ -92,7 +92,11 @@ The number of milliseconds `expo-updates` should delay the app launch and stay o
 | TBD                      | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
 | TBD                      | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
 
-If `codeSigningCertificate` present, enforce manifest code signing using the certificate.
+If `codeSigningCertificate` is present, `expo-updates` will enforce manifest code signing using the certificate and any metadata associated with it.
+- `codeSigningCertificate` must be a valid PEM formatted X.509 certificate with code signing extended key usage.
+- `codeSigningMetadata` (optional) must be a JSON object containing:
+    - `alg` - Algorithm used to generate manifest signature. Only `rsa-v1_5-sha256` is currently supported.
+    - `keyid` - Identifier for the key in `codeSigningCertificate`. Used to instruct signing mechanisms when signing or verifying signatures.
 
 ## Customizing automatic setup
 
