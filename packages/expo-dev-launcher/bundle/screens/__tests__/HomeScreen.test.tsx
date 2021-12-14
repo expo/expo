@@ -2,13 +2,16 @@ import * as React from 'react';
 
 import { getLocalPackagersAsync, Packager } from '../../functions/getLocalPackagersAsync';
 import { clientUrlScheme, loadApp } from '../../native-modules/DevLauncherInternal';
+import { queryDevSessionsAsync } from '../../native-modules/DevMenu';
 import { render, waitFor, fireEvent, act } from '../../test-utils';
 import { HomeScreen, HomeScreenProps } from '../HomeScreen';
 
 jest.mock('../../functions/getLocalPackagersAsync');
 jest.mock('../../hooks/useDebounce');
+jest.mock('../../native-modules/DevMenu');
 
 const mockGetLocalPackagersAsync = getLocalPackagersAsync as jest.Mock;
+const mockQueryDevSessionsAsync = queryDevSessionsAsync as jest.Mock;
 
 function mockGetPackagersResponse(response: Packager[]) {
   return mockGetLocalPackagersAsync.mockResolvedValueOnce(response);
@@ -79,21 +82,21 @@ describe('<HomeScreen />', () => {
       initialPackagers: [],
     });
 
-    mockGetLocalPackagersAsync.mockClear();
+    mockQueryDevSessionsAsync.mockClear();
 
     await act(async () => {
       await waitFor(() => getByText(refetchPackagersRegex));
       fireEvent.press(getByText(refetchPackagersRegex));
-      expect(getLocalPackagersAsync).toHaveBeenCalledTimes(1);
+      expect(queryDevSessionsAsync).toHaveBeenCalledTimes(1);
     });
 
     // ensure button is disabled when fetching
     await act(async () => {
       fireEvent.press(getByText(fetchingPackagersRegex));
       await waitFor(() => getByText(refetchPackagersRegex));
-      expect(getLocalPackagersAsync).toHaveBeenCalledTimes(testPollAmount);
+      expect(queryDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount);
       fireEvent.press(getByText(refetchPackagersRegex));
-      expect(getLocalPackagersAsync).toHaveBeenCalledTimes(testPollAmount + 1);
+      expect(queryDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount + 1);
     });
   });
 

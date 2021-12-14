@@ -3,6 +3,9 @@ import * as React from 'react';
 import { getLocalPackagersAsync, Packager } from '../functions/getLocalPackagersAsync';
 import { sleepAsync } from '../functions/sleepAsync';
 import { useIsMounted } from '../hooks/useIsMounted';
+import { useUser } from '../hooks/useUser';
+import * as DevLauncher from '../native-modules/DevLauncherInternal';
+import { queryDevSessionsAsync } from '../native-modules/DevMenu';
 
 type PollOptions = {
   pollAmount?: number;
@@ -36,10 +39,26 @@ export function useLocalPackagers() {
   const [isPolling, setIsPolling] = React.useState(false);
 
   const isMounted = useIsMounted();
+  const { userData } = useUser();
+  const isAuthenticated = userData != null;
 
   async function fetchPackagersAsync() {
     setIsFetching(true);
-    const packagers = await getLocalPackagersAsync();
+
+    let packagers = [];
+    if (isAuthenticated) {
+      const data = await queryDevSessionsAsync();
+      packagers = JSON.parse(data).data;
+    }
+    if (!packagers || !packagers.length) {
+      const deviceID = DevLauncher.installationID;
+      const data = await queryDevSessionsAsync(deviceID);
+      packagers = JSON.parse(data).data;
+    }
+    if ((!packagers || !packagers.length) && !DevLauncher.isDevice) {
+      packagers = await getLocalPackagersAsync();
+    }
+
     setPackagers(packagers);
     setIsFetching(false);
   }
