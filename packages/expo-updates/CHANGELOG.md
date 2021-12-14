@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing @JvmStatic annotation to `UpdatesDevLauncherController.initialize`.
+- Add missing @JvmStatic annotation to `UpdatesDevLauncherController.initialize`. ([#15561](https://github.com/expo/expo/pull/15561) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
