@@ -213,6 +213,7 @@ ABI44_0_0EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(N
       self.picker.modalPresentationStyle = UIModalPresentationAutomatic;
     }
     self.picker.delegate = self;
+    self.picker.presentationController.delegate = self;
 
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
     id<ABI44_0_0EXUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(ABI44_0_0EXUtilitiesInterface)];
@@ -466,6 +467,13 @@ ABI44_0_0EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(N
       self.resolve(@{@"cancelled": @YES});
     }];
   });
+}
+
+// called when user dismissed modal with swipe-down
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  [self maybeRestoreStatusBarVisibility];
+  self.resolve(@{@"cancelled": @YES});
 }
 
 - (void)maybePreserveVisibilityAndHideStatusBar:(BOOL)editingEnabled
