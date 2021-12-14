@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `onNewIntent` and `onBackPressed` support to `ReactActivityLifecycleListener`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
