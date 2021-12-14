@@ -45,7 +45,7 @@ module.exports = function (api, options = {}) {
       {
         // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
         runtime: (options && options.jsxRuntime) || 'automatic',
-        ...(options?.jsxRuntime !== 'classic' && {
+        ...(options && options.jsxRuntime && options.jsxRuntime !== 'classic' && {
           importSource: (options && options.jsxImportSource) || 'react',
         }),
       },
