@@ -70,7 +70,7 @@ public class VideoThumbnailsModule extends ExportedModule {
       try {
         if (URLUtil.isFileUrl(mSourceFilename)) {
           retriever.setDataSource(Uri.decode(mSourceFilename).replace("file://", ""));
-        } else if(URLUtil.isContentUrl(mSourceFilename)) {
+        } else if (URLUtil.isContentUrl(mSourceFilename)) {
           Uri fileUri = Uri.parse(mSourceFilename);
           FileDescriptor fileDescriptor = mContext.getContentResolver().openFileDescriptor(fileUri, "r").getFileDescriptor();
           FileInputStream inputStream = new FileInputStream(fileDescriptor);
