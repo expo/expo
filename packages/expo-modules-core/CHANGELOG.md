@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `onNewIntent` and `onBackPressed` support to `ReactActivityLifecycleListener`.
+- Add `onNewIntent` and `onBackPressed` support to `ReactActivityLifecycleListener`. ([#15550](https://github.com/expo/expo/pull/15550) by [@Kudo](https://github.com/Kudo))
 
 ### 🐛 Bug fixes
 
