@@ -12,7 +12,7 @@ export async function resolveModuleAsync(
   revision: PackageRevision,
   options: SearchOptions
 ): Promise<ModuleDescriptor | null> {
-  const [podspecFile] = await glob('*/*.podspec', {
+  const [podspecFile] = await glob('**/*.podspec', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
