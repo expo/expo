@@ -3,7 +3,13 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 export function resolveExpoUpdatesVersion(projectRoot: string): string | null {
-  const expoUpdatesBuildPath = resolveFrom(projectRoot, 'expo-updates');
+  let expoUpdatesBuildPath;
+  try {
+    expoUpdatesBuildPath = resolveFrom(projectRoot, 'expo-updates');
+  } catch (e) {
+    // this is expected in projects that don't have expo-updates installed
+    return null;
+  }
   if (!expoUpdatesBuildPath) {
     return null;
   }
