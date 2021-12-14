@@ -3,13 +3,11 @@ package expo.modules.updates
 import android.net.Uri
 import io.mockk.every
 import io.mockk.mockk
+import junit.framework.TestCase
 import org.junit.Assert
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.runners.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
-class UpdatesConfigurationTest {
+class UpdatesConfigurationTest : TestCase() {
   @Test
   fun testGetNormalizedUrlOrigin_NoPort() {
     val mockedUri = mockk<Uri>()
