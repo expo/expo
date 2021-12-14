@@ -8,7 +8,14 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 function resolveExpoUpdatesVersion(projectRoot) {
-    const expoUpdatesBuildPath = (0, resolve_from_1.default)(projectRoot, 'expo-updates');
+    let expoUpdatesBuildPath;
+    try {
+        expoUpdatesBuildPath = (0, resolve_from_1.default)(projectRoot, 'expo-updates');
+    }
+    catch (e) {
+        // this is expected in projects that don't have expo-updates installed
+        return null;
+    }
     if (!expoUpdatesBuildPath) {
         return null;
     }
