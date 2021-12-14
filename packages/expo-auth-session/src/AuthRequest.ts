@@ -55,6 +55,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     this.state = request.state ?? PKCE.generateRandom(10);
     this.extraParams = request.extraParams ?? {};
     this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
+    this.codeChallenge = request.codeChallenge;
     // PKCE defaults to true
     this.usePKCE = request.usePKCE ?? true;
 
