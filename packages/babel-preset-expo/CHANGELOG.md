@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix support for node12. ([#15545](https://github.com/expo/expo/pull/15545) by [@lapz](https://github.com/lapz))
+
 ### 💡 Others
 
 ## 9.0.1 — 2021-12-08
