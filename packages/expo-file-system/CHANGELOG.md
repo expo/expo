@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed simulator runtime crash on arm64 devices caused by `CFRelease(NULL)`. ([#15496](https://github.com/expo/expo/pull/15496) by [@daxaxelrod](https://github.com/daxaxelrod))
+
 ### 💡 Others
 
 ## 13.1.1 — 2022-01-20
