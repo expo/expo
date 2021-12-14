@@ -71,6 +71,9 @@ android {
   kotlinOptions {
     jvmTarget = '1.8'
   }
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
 
   sourceSets {
     main {
@@ -79,11 +82,23 @@ android {
       }
     }
   }
+
+  unitTestVariants.all {
+    it.mergedFlavor.manifestPlaceholders = [
+      // Fix expo-app-auth manifest merger issue for unit test
+      appAuthRedirectScheme: "test"
+    ]
+  }
 }
 
 dependencies { dependencyHandler ->
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
+
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation "com.google.truth:truth:1.1.2"
+  testImplementation 'io.mockk:mockk:1.12.0'
 
   // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
   // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
