@@ -137,7 +137,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
         return checkNotNull(singletonInstance) { "UpdatesDevLauncherController.instance was called before the module was initialized" }
       }
 
-    fun initialize(context: Context): UpdatesDevLauncherController {
+    @JvmStatic fun initialize(context: Context): UpdatesDevLauncherController {
       if (singletonInstance == null) {
         singletonInstance = UpdatesDevLauncherController()
       }
