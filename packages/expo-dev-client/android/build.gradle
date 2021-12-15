@@ -77,6 +77,7 @@ repositories {
 }
 
 dependencies {
+  androidTestImplementation project(':expo-modules-core')
   androidTestImplementation project(":expo-dev-menu-interface")
   androidTestImplementation project(":expo-updates-interface")
   androidTestImplementation project(":expo-dev-menu")
