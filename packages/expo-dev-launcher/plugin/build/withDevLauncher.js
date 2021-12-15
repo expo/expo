@@ -150,7 +150,7 @@ function modifyJavaMainActivity(content) {
         const activityDelegateMatches = Array.from(content.matchAll(/new ReactActivityDelegate(Wrapper)/g));
         if (activityDelegateMatches.length !== 1) {
             config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Failed to wrap 'ReactActivityDelegate'
-See the expo-dev-client installation instructions to modify your MainApplication.java manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your MainActivity.java manually: ${constants_1.InstallationPage}`);
             return content;
         }
         const activityDelegateMatch = activityDelegateMatches[0];
