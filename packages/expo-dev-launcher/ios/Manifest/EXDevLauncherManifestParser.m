@@ -91,6 +91,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.url];
   [request setHTTPMethod:method];
+  [request setValue:@"ios" forHTTPHeaderField:@"expo-platform"];
   NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       onError(error);

@@ -90,6 +90,20 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isManifestUrl includes expo-platform header`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/").toString())
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    manifestParser.isManifestUrl()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("expo-platform")).isEqualTo("android")
+  }
+
+  @Test
   fun `checks if parseManifest parses successful response`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
