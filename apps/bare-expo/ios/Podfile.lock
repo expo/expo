@@ -713,9 +713,9 @@ PODS:
     - React-Core
   - RNDateTimePicker (4.0.0):
     - React-Core
-  - RNGestureHandler (2.0.0):
+  - RNGestureHandler (2.1.0):
     - React-Core
-  - RNReanimated (2.2.4):
+  - RNReanimated (2.3.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -741,7 +741,6 @@ PODS:
     - React-RCTNetwork
     - React-RCTSettings
     - React-RCTText
-    - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
   - RNScreens (3.10.1):
@@ -817,13 +816,13 @@ DEPENDENCIES:
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - Expo (from `../../../packages/expo/ios`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
-  - expo-dev-launcher (from `../../../packages/expo-dev-launcher/ios`)
-  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher/ios`)
-  - expo-dev-menu (from `../../../packages/expo-dev-menu/ios`)
+  - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
+  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
+  - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface/ios`)
-  - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu/ios`)
-  - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu/ios`)
+  - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
+  - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
@@ -896,7 +895,7 @@ DEPENDENCIES:
   - "RNCPicker (from `../../../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/@react-native-community/datetimepicker`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
-  - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSharedElement (from `../../../node_modules/react-native-shared-element`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
@@ -1076,9 +1075,9 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-dev-client/ios"
   expo-dev-launcher:
     inhibit_warnings: false
-    :path: "../../../packages/expo-dev-launcher/ios"
+    :path: "../../../packages/expo-dev-launcher"
   expo-dev-menu:
-    :path: "../../../packages/expo-dev-menu/ios"
+    :path: "../../../packages/expo-dev-menu"
   expo-dev-menu-interface:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-menu-interface/ios"
@@ -1242,7 +1241,7 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../node_modules/react-native-reanimated"
+    :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/react-native-screens"
   RNSharedElement:
@@ -1308,8 +1307,8 @@ SPEC CHECKSUMS:
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
   expo-dev-client: b0a6b5deedba945162633b2d27f02a727e3eaa47
-  expo-dev-launcher: 95ecee9472af5ee79cf70df208684796ddbf7067
-  expo-dev-menu: 95edccfc58c807998bc04f36f8a50d2f44fcc8c0
+  expo-dev-launcher: a26b308b43e1eed6e17bf63a0d6f851d9c0435f4
+  expo-dev-menu: 09a9526e44cacd92c67b8c4b7495aa18081215a5
   expo-dev-menu-interface: 69982fe99b4b57dcfc30e4d520e17ad6b2ade898
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
@@ -1403,8 +1402,8 @@ SPEC CHECKSUMS:
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNCPicker: cb57c823d5ce8d2d0b5dfb45ad97b737260dc59e
   RNDateTimePicker: 2224ee77a86b7123377597a015502435e2e49957
-  RNGestureHandler: 51c9f32f43720c3a1c7660690a843f33acbcf01f
-  RNReanimated: 024eff8202342abf4b24e11575a16afc441dabfe
+  RNGestureHandler: e5c7cab5f214503dcefd6b2b0cefb050e1f51c4a
+  RNReanimated: 7f143675d94978c3555345d5bfa8ed6ae800c5d3
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   RNSharedElement: 381b5e33366513cc3f449f2dc3a42c5df0f54021
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
@@ -1417,6 +1416,6 @@ SPEC CHECKSUMS:
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 240a0368fa0da865b4891acb14ed590ee98b336a
+PODFILE CHECKSUM: 8747f8b79295489847da43d9d0b373dac4ce7f19
 
 COCOAPODS: 1.11.2

@@ -14,7 +14,7 @@ require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
 abstract_target 'BareExpoMain' do
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu/ios', :testspecs => ['Tests', 'UITests']
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
   use_expo_modules!(
     tests: [
