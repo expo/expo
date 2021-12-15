@@ -4,9 +4,9 @@
 #import "REANodesManager.h"
 #import "REAStyleNode.h"
 
+#import <React/RCTComponentData.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTComponentData.h>
 
 @implementation REAPropsNode {
   NSNumber *_connectedViewTag;

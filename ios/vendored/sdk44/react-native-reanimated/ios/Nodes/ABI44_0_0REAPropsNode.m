@@ -4,9 +4,9 @@
 #import "ABI44_0_0REANodesManager.h"
 #import "ABI44_0_0REAStyleNode.h"
 
+#import <ABI44_0_0React/ABI44_0_0RCTComponentData.h>
 #import <ABI44_0_0React/ABI44_0_0RCTLog.h>
 #import <ABI44_0_0React/ABI44_0_0RCTUIManager.h>
-#import <ABI44_0_0React/ABI44_0_0RCTComponentData.h>
 
 @implementation ABI44_0_0REAPropsNode {
   NSNumber *_connectedViewTag;

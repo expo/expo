@@ -1750,7 +1750,7 @@ PODS:
     - RCT-Folly (= 2020.01.13.00)
   - ABI44_0_0RNGestureHandler (2.1.0):
     - ABI44_0_0React-Core
-  - ABI44_0_0RNReanimated (2.3.0):
+  - ABI44_0_0RNReanimated (2.3.1):
     - ABI44_0_0RCTRequired
     - ABI44_0_0RCTTypeSafety
     - ABI44_0_0React
@@ -2425,7 +2425,7 @@ PODS:
     - React-perflogger (= 0.64.3)
   - RNGestureHandler (2.1.0):
     - React-Core
-  - RNReanimated (2.3.0):
+  - RNReanimated (2.3.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -4138,7 +4138,7 @@ SPEC CHECKSUMS:
   ABI44_0_0React-runtimeexecutor: e896ce310401b7a6c55c8e9ebd05d329425704f0
   ABI44_0_0ReactCommon: 57cd9920705425d6d7979326c5f755a7134612d0
   ABI44_0_0RNGestureHandler: 0ebf658b94a2583f265cd1fc02a50adf7db6f611
-  ABI44_0_0RNReanimated: a5713baac42d25465b994404d8b3fbbf2caeda69
+  ABI44_0_0RNReanimated: 5a9c79f77d68cc558867f38dbd78efe7c6e328ec
   ABI44_0_0RNScreens: 7a62e5f04bfaf607a3927152dbf4efd3fcf2dc8a
   ABI44_0_0stripe-react-native: a28782c19ddabd9a3c901d9b2eb964e8d8ab7d68
   ABI44_0_0UMAppLoader: d00dfac0be21e65771e9c30abf4c2fefe0afa06f
@@ -4288,7 +4288,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
   RNGestureHandler: e5c7cab5f214503dcefd6b2b0cefb050e1f51c4a
-  RNReanimated: eb7b06098f064677394249e9a5f797cac1f0004f
+  RNReanimated: 7f143675d94978c3555345d5bfa8ed6ae800c5d3
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   Stripe: 22c1b8da5ee20a1aaf40fd198160efa72e71644a
   stripe-react-native: a5fcf07b49f1208bdc939e31a07320b35a88209f
