@@ -4,6 +4,15 @@ title: Migrating from Classic Updates to EAS Update
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
+## Prerequisites
+
+EAS Update requires the following versions or greater:
+
+- Expo SDK 44
+- expo-updates 0.11.2-rc.0
+- Expo CLI 5.0.0
+- EAS CLI 0.41.0
+
 ## Install Expo CLI and EAS CLI
 
 1. Install EAS and Expo CLIs with:
@@ -11,8 +20,6 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
    ```bash
    npm install --global eas-cli expo-cli
    ```
-
-   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0. Your project must also be on Expo SDK 43 or above. To upgrade, run `expo upgrade`.
 
 2. Then, log in with your expo account:
 
@@ -27,7 +34,7 @@ You'll need to make the following changes to your project:
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   expo install expo-updates
+   yarn add expo-updates@0.11.2-rc.0
    ```
 
 2. Initialize your project with EAS Update:
