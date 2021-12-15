@@ -41,6 +41,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
   var needsPointerData = false
 
+
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
     private set
@@ -110,7 +111,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
 
   fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
-    if (view != null) {
+    // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
+    // handlers to be cancelled on re-render because that's the moment when the config is updated.
+    // If the enabled prop "changed" from true to true the handler would get cancelled.
+    if (view != null && isEnabled != enabled) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
       UiThreadUtil.runOnUiThread { cancel() }
@@ -119,15 +123,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.manualActivation = manualActivation }
+      applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
-    leftPad: Float,
-    topPad: Float,
-    rightPad: Float,
-    bottomPad: Float,
-    width: Float,
-    height: Float,
+    leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
+    width: Float, height: Float,
   ): ConcreteGestureHandlerT = applySelf {
     if (hitSlop == null) {
       hitSlop = FloatArray(6)
@@ -251,7 +251,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // introduced in 1.11.0, remove if crashes are not reported
-    if (pointerProps.isEmpty() || pointerCoords.isEmpty()) {
+    if(pointerProps.isEmpty()|| pointerCoords.isEmpty()){
       throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
     }
 
@@ -262,8 +262,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         event.eventTime,
         action,
         count,
-        pointerProps, /* props are copied and hence it is safe to use static array here */
-        pointerCoords, /* same applies to coords */
+        pointerProps,  /* props are copied and hence it is safe to use static array here */
+        pointerCoords,  /* same applies to coords */
         event.metaState,
         event.buttonState,
         event.xPrecision,
@@ -286,8 +286,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     handler: GestureHandler<*>,
     event: MotionEvent,
     e: IllegalArgumentException
-  ) : Exception(
-    """
+  ) : Exception("""
     handler: ${handler::class.simpleName}
     state: ${handler.state}
     view: ${handler.view}
@@ -298,17 +297,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointersCount: ${handler.trackedPointersCount}
     trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
     while handling event: $event
-    """.trimIndent(),
-    e
-  )
+  """.trimIndent(), e) {}
 
   fun handle(origEvent: MotionEvent) {
-    if (!isEnabled ||
-      state == STATE_CANCELLED ||
-      state == STATE_FAILED ||
-      state == STATE_END ||
-      trackedPointersIDsCount < 1
-    ) {
+    if (!isEnabled
+      || state == STATE_CANCELLED
+      || state == STATE_FAILED
+      || state == STATE_END
+      || trackedPointersIDsCount < 1) {
       return
     }
     val event = adaptEvent(origEvent)
@@ -342,11 +338,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-      pointerId,
-      event.getX(event.actionIndex),
-      event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX,
-      event.getY(event.actionIndex) + offsetY,
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX,
+        event.getY(event.actionIndex) + offsetY,
     )
     trackedPointersCount++
     addChangedPointer(trackedPointers[pointerId]!!)
@@ -364,11 +360,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-      pointerId,
-      event.getX(event.actionIndex),
-      event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX,
-      event.getY(event.actionIndex) + offsetY,
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX,
+        event.getY(event.actionIndex) + offsetY,
     )
     addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null
@@ -507,11 +503,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun wantEvents(): Boolean {
-    return isEnabled &&
-      state != STATE_FAILED &&
-      state != STATE_CANCELLED &&
-      state != STATE_END &&
-      trackedPointersIDsCount > 0
+    return isEnabled
+      && state != STATE_FAILED
+      && state != STATE_CANCELLED
+      && state != STATE_END
+      && trackedPointersIDsCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {

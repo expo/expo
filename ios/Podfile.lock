@@ -2423,7 +2423,7 @@ PODS:
     - React-cxxreact (= 0.64.3)
     - React-jsi (= 0.64.3)
     - React-perflogger (= 0.64.3)
-  - RNGestureHandler (2.0.0):
+  - RNGestureHandler (2.1.0):
     - React-Core
   - RNReanimated (2.3.0):
     - DoubleConversion
@@ -4287,7 +4287,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: c7f845861e79eae13dc1e8217a3cf47a3945b504
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
-  RNGestureHandler: 51c9f32f43720c3a1c7660690a843f33acbcf01f
+  RNGestureHandler: e5c7cab5f214503dcefd6b2b0cefb050e1f51c4a
   RNReanimated: eb7b06098f064677394249e9a5f797cac1f0004f
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   Stripe: 22c1b8da5ee20a1aaf40fd198160efa72e71644a
