@@ -176,6 +176,21 @@ const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION = (
 }
 `;
 
+const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_SDK_44 = `
+- (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
+{
+  RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  rootView.backgroundColor = [UIColor whiteColor];
+  UIViewController *rootViewController = [self.reactDelegate createRootViewController];
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];
+
+  return bridge;
+ }
+`;
+
 function addImports(appDelegate: string, shouldAddUpdatesIntegration: boolean): string {
   if (
     !appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT) &&
@@ -273,12 +288,17 @@ export function modifyAppDelegate(appDelegate: string, expoUpdatesVersion: strin
   const shouldAddUpdatesIntegration =
     expoUpdatesVersion != null && semver.gt(expoUpdatesVersion, '0.6.0');
 
-  if (!DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_REGEX.test(appDelegate)) {
+  if (
+    !DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_REGEX.test(appDelegate) &&
+    !appDelegate.includes(DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_SDK_44)
+  ) {
     let initToRemove;
+    let shouldAddSDK44Init = false;
     if (DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44.test(appDelegate)) {
       initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44;
+      shouldAddSDK44Init = true;
     } else if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
-      initToRemove = DEV_LAUNCHER_APP_DELEGATE_BRIDGE;
+      initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE;
     }
 
     if (initToRemove) {
@@ -289,9 +309,10 @@ export function modifyAppDelegate(appDelegate: string, expoUpdatesVersion: strin
         viewControllerInit = p1;
         return DEV_LAUNCHER_NEW_INIT;
       });
-      appDelegate = addLines(appDelegate, '@implementation AppDelegate', 1, [
-        DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION(viewControllerInit),
-      ]);
+      const initToAdd = shouldAddSDK44Init
+        ? DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_SDK_44
+        : DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION(viewControllerInit);
+      appDelegate = addLines(appDelegate, '@implementation AppDelegate', 1, [initToAdd]);
     } else {
       WarningAggregator.addWarningIOS(
         'expo-dev-launcher',
