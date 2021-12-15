@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'ReactCommon'
-  # 'React-runtimeexecutor' is added only for prebuilding purposes only as this process cannot resolve transitive headers' paths at the time of writing.
+  # 'React-runtimeexecutor' is added only for prebuilding purposes as this process cannot resolve transitive headers' paths at the time of writing.
   # This dependency is implicitly included via following chain: 'ReactCommon' -> 'ReactCommon/turbomodule' -> 'React-cxxreact' -> 'React-runtimeexecutor'.
   # TODO: remove once perbuilding starts supporting resolution of transitive dependencies
   s.dependency 'React-runtimeexecutor'
