@@ -105,6 +105,20 @@ const DEV_LAUNCHER_INIT_TO_REMOVE = new RegExp(
   'm'
 );
 
+const DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44 = new RegExp(
+  escapeRegExpCharacters(`RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  rootView.backgroundColor = [UIColor whiteColor];
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = `) +
+    `([^;]+)` +
+    escapeRegExpCharacters(`;
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];`),
+  'm'
+);
+
 const DEV_LAUNCHER_NEW_INIT = `self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 #if defined(EX_DEV_LAUNCHER_ENABLED)
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
@@ -260,11 +274,18 @@ export function modifyAppDelegate(appDelegate: string, expoUpdatesVersion: strin
     expoUpdatesVersion != null && semver.gt(expoUpdatesVersion, '0.6.0');
 
   if (!DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_REGEX.test(appDelegate)) {
-    if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
+    let initToRemove;
+    if (DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44.test(appDelegate)) {
+      initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44;
+    } else if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
+      initToRemove = DEV_LAUNCHER_APP_DELEGATE_BRIDGE;
+    }
+
+    if (initToRemove) {
       // UIViewController can be initialized differently depending on whether expo-screen-orientation is installed,
       // so we need to preserve whatever is there already.
       let viewControllerInit;
-      appDelegate = appDelegate.replace(DEV_LAUNCHER_INIT_TO_REMOVE, (match, p1) => {
+      appDelegate = appDelegate.replace(initToRemove, (match, p1) => {
         viewControllerInit = p1;
         return DEV_LAUNCHER_NEW_INIT;
       });
