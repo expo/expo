@@ -8,10 +8,10 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
 
 EAS Update requires the following versions or greater:
 
-- Expo SDK 44
-- expo-updates 0.11.2-rc.0
 - Expo CLI 5.0.0
 - EAS CLI 0.41.0
+- Expo SDK 44
+- expo-updates 0.11.2
 
 ## Install Expo CLI and EAS CLI
 
@@ -34,7 +34,7 @@ You'll need to make the following changes to your project:
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   yarn add expo-updates@0.11.2-rc.0
+   yarn add expo-updates@0.11.2
    ```
 
 2. Initialize your project with EAS Update:
