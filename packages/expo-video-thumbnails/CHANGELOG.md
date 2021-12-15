@@ -2,11 +2,11 @@
 
 ## Unpublished
 
-- Thumbnails can now be generated with `content://` paths on Android. ([#15553](https://github.com/expo/expo/pull/15553) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+
+- Thumbnails can now be generated with `content://` paths on Android. ([#15553](https://github.com/expo/expo/pull/15553) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
 
 ### 🐛 Bug fixes
 
