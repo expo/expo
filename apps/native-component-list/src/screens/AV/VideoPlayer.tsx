@@ -82,7 +82,7 @@ export default function VideoPlayer(props: {
       isPlaying={status.isLoaded ? status.isPlaying : false}
       isMuted={status.isLoaded ? status.isMuted : false}
       volume={status.isLoaded ? status.volume : 1}
-      pan={0}
+      audioPan={0}
       playAsync={playAsync}
       pauseAsync={pauseAsync}
       replayAsync={replayAsync}

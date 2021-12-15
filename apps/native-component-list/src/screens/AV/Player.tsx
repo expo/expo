@@ -41,13 +41,13 @@ interface Props {
   setIsMutedAsync: (isMuted: boolean) => void;
   setPositionAsync: (position: number) => Promise<any>;
   setIsLoopingAsync: (isLooping: boolean) => void;
-  setVolume: (volume: number, pan?: number) => void;
+  setVolume: (volume: number, audioPan?: number) => void;
 
   // Status
   isLoaded: boolean;
   isLooping: boolean;
   volume: number;
-  pan: number;
+  audioPan: number;
   rate: number;
   positionMillis: number;
   durationMillis: number;
@@ -197,7 +197,7 @@ export default function Player(props: Props) {
       </View>
       <View style={styles.container}>
         <PanSlider
-          pan={props.pan}
+          audioPan={props.audioPan}
           disabled={!props.isLoaded}
           onValueChanged={(value) => {
             props.setVolume(props.volume, value);
@@ -341,23 +341,23 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
 }
 
 function PanSlider({
-  pan,
+  audioPan,
   color = Colors.tintColor,
   disabled,
   onValueChanged,
 }: {
-  pan: number;
+  audioPan: number;
   color?: string;
   disabled: boolean;
   onValueChanged: (value: number) => void;
 }) {
-  const [value, setValue] = React.useState(pan);
+  const [value, setValue] = React.useState(audioPan);
 
   React.useEffect(() => {
-    if (value !== pan) {
+    if (value !== audioPan) {
       onValueChanged(value);
     }
-  }, [pan]);
+  }, [audioPan]);
 
   const height = 36;
   return (

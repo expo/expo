@@ -41,7 +41,7 @@ public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_RATE_KEY_PATH = "rate";
   static final String STATUS_SHOULD_CORRECT_PITCH_KEY_PATH = "shouldCorrectPitch";
   static final String STATUS_VOLUME_KEY_PATH = "volume";
-  static final String STATUS_VOLUME_PAN_KEY_PATH = "pan";
+  static final String STATUS_VOLUME_PAN_KEY_PATH = "audioPan";
   static final String STATUS_IS_MUTED_KEY_PATH = "isMuted";
   static final String STATUS_IS_LOOPING_KEY_PATH = "isLooping";
   static final String STATUS_DID_JUST_FINISH_KEY_PATH = "didJustFinish";

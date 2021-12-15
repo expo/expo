@@ -34,7 +34,7 @@ interface State {
   durationMillis: number;
   rate: number;
   volume: number;
-  pan: number;
+  audioPan: number;
   isMuted: boolean;
   shouldCorrectPitch: boolean;
   metadata: AVMetadata;
@@ -51,7 +51,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     durationMillis: 0,
     rate: 1,
     volume: 1,
-    pan: 0,
+    audioPan: 0,
     shouldCorrectPitch: false,
     metadata: {},
   };
@@ -120,8 +120,8 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _setIsMutedAsync = async (isMuted: boolean) => this._sound!.setIsMutedAsync(isMuted);
 
-  _setVolumeAsync = async (volume: number, pan?: number) =>
-    this._sound!.setVolumeAsync(volume, pan);
+  _setVolumeAsync = async (volume: number, audioPan?: number) =>
+    this._sound!.setVolumeAsync(volume, audioPan);
 
   _setRateAsync = async (
     rate: number,
