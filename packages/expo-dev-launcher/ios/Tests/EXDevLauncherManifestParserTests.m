@@ -117,6 +117,29 @@
   [self waitForExpectationsWithTimeout:5 handler:nil];
 }
 
+- (void)testIsManifestURL_RequestIncludesPlatformHeader
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/platform"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    XCTAssertEqualObjects(@"ios", request.allHTTPHeaderFields[@"expo-platform"]);
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:nil];
+  }];
+
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc] initWithURL:[NSURL URLWithString:@"http://ohhttpstubs/platform"] session:NSURLSession.sharedSession];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"request should include expo-platform header"];
+
+  [parser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
 - (void)testParseManifest
 {
   [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {

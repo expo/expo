@@ -4,6 +4,7 @@ import android.net.Uri
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -31,5 +32,5 @@ suspend inline fun Request.await(okHttpClient: OkHttpClient): Response {
   }
 }
 
-fun fetch(url: Uri, method: String) =
-  Request.Builder().method(method, null).url(url.toString()).build()
+fun fetch(url: Uri, method: String, headers: Headers) =
+  Request.Builder().method(method, null).url(url.toString()).headers(headers).build()
