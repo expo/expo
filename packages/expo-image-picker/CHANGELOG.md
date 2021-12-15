@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix unresolved promise when picker was dismissed with a swipe-down on iOS. ([#15511](https://github.com/expo/expo/pull/15511) by [@barthap](https://github.com/barthap))
-
 ### 💡 Others
+
+## 12.0.1 — 2021-12-15
+
+### 🐛 Bug fixes
+
+- Fix unresolved promise when picker was dismissed with a swipe-down on iOS. ([#15511](https://github.com/expo/expo/pull/15511) by [@barthap](https://github.com/barthap))
 
 ## 12.0.0 — 2021-12-03
 

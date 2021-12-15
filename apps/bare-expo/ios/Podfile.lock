@@ -95,7 +95,7 @@ PODS:
   - EXImageManipulator (10.2.0):
     - EXImageLoader
     - ExpoModulesCore
-  - EXImagePicker (12.0.0):
+  - EXImagePicker (12.0.1):
     - ExpoModulesCore
   - EXInAppPurchases (12.1.0):
     - ExpoModulesCore
@@ -104,7 +104,7 @@ PODS:
     - ExpoModulesCore
   - EXLocalAuthentication (12.1.0):
     - ExpoModulesCore
-  - EXLocation (14.0.0):
+  - EXLocation (14.0.1):
     - ExpoModulesCore
     - UMTaskManagerInterface
   - EXMailComposer (11.1.0):
@@ -120,7 +120,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.1.0):
     - ExpoModulesCore
-  - Expo (44.0.0-beta.1):
+  - Expo (44.0.0-beta.2):
     - ExpoModulesCore
   - expo-dev-client (0.7.2):
     - EXManifests
@@ -213,7 +213,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalization (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.6.1):
+  - ExpoModulesCore (0.6.2):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoSystemUI (1.1.0):
@@ -1287,19 +1287,19 @@ SPEC CHECKSUMS:
   EXImage: ee032fea95d6a21800d6678eb14d1face73236d6
   EXImageLoader: df83442d32bcfb57b7cfc5690096b6caf8203f8d
   EXImageManipulator: 810c7ea8d4cdcc52d07ad377a9b4ffeaee3d937f
-  EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
+  EXImagePicker: 91337b8d57a0a8f56800b9ac0f2b2f10aecf88ce
   EXInAppPurchases: 9c65b5ed6313e3aa32a5b75e4bcbce19868d66b4
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXKeepAwake: b571c2ad8323b2fced6e907766e2549f75119471
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
-  EXLocation: 1c6449f87b79f159e63d7ed9f881a77b53dba6f0
+  EXLocation: 0cf83c4cc0441fdcefc59f553ac6486a48d8b1d2
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
   EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
   EXMediaLibrary: 92ad88fa1904ad703b636ce4818cd6d5c5ba653b
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
-  Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
+  Expo: 106ee52b82b71f97690ab3e911124776448eabd3
   expo-dev-client: b0a6b5deedba945162633b2d27f02a727e3eaa47
   expo-dev-launcher: b76cf991b0a63a7df3a832909addcff1d5668675
   expo-dev-menu: 3c37b25b7cb2bf8a179430583917ac2cfa7ecc49
@@ -1308,7 +1308,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 98f874d20b96d4497eb8ff9df686f14384913a30
+  ExpoModulesCore: 2849cb26db3a7b2235f60fed91da77423e512a7b
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
   EXRandom: 9839c2a2a02d4b594a2c5af22b5faf53b316db05
