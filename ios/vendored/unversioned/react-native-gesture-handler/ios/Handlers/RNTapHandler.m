@@ -171,11 +171,11 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)reset
 {
-  [_gestureHandler.pointerTracker reset];
-  
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
+  [_gestureHandler.pointerTracker reset];
+
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
   _tapsSoFar = 0;
   _maxNumberOfTouches = 0;
