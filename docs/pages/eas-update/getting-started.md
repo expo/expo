@@ -4,7 +4,16 @@ title: Getting started
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
-EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps. Read through the [known issues](/eas-update/known-issues) to ensure EAS Update is ready for your project.
+EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps. While we do not intend to make end-user facing changes, we may require you to make new builds of your project before EAS Update is publicly available. Read through the [known issues](/eas-update/known-issues) to ensure EAS Update is ready for your project.
+
+## Prerequisites
+
+EAS Update requires the following versions or greater:
+
+- Expo SDK 44
+- expo-updates 0.11.2-rc.0
+- Expo CLI 5.0.0
+- EAS CLI 0.41.0
 
 ## Install Expo CLI and EAS CLI
 
@@ -13,8 +22,6 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
    ```bash
    npm install --global eas-cli expo-cli
    ```
-
-   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0. Your project must also be on Expo SDK 43 or above. To upgrade, run `expo upgrade`.
 
 ## Create an Expo account
 
@@ -40,7 +47,7 @@ expo init
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   expo install expo-updates
+   yarn add expo-updates@0.11.2-rc.0
    ```
 
 2. Initialize your project with EAS Update:

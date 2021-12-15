@@ -46,6 +46,7 @@ const sections = [
       'How to optimize assets for EAS Update',
       'Using expo-updates with a custom updates server',
       'Migrating from Classic Updates to EAS Update',
+      'Using EAS Update with a bare React Native project',
       'Runtime versions and updates',
       'Known issues',
       'FAQ',
