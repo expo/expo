@@ -54,13 +54,14 @@ export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: 
 
         <Button.ScaleOnPressContainer
           onPress={onUserProfilePress}
+          minScale={0.85}
           accessibilityLabel="Navigate to User Profile"
           bg="default"
           rounded="full">
           <View rounded="full" padding="medium">
             {isAuthenticated ? (
-              <View bg="secondary">
-                <Image size="large" rounded="full" source={{ uri: selectedUserImage }} />
+              <View bg="secondary" rounded="full">
+                <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
               </View>
             ) : (
               <UserIcon />

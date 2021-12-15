@@ -11,17 +11,21 @@ import {
   StatusIndicator,
   TerminalIcon,
   ChevronRightIcon,
+  XIcon,
+  InfoIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { Alert, ScrollView } from 'react-native';
 
 import { AppHeader } from '../components/redesign/AppHeader';
+import { useModalStack } from '../components/redesign/Modal';
 import { PulseIndicator } from '../components/redesign/PulseIndicator';
 import { UrlDropdown } from '../components/redesign/UrlDropdown';
-import { Packager } from '../functions/getLocalPackagersAsync';
 import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useLocalPackagers } from '../hooks/useLocalPackagers';
-import { loadApp, getRecentlyOpenedApps } from '../native-modules/DevLauncherInternal';
+import { useDevSessions } from '../hooks/useDevSessions';
+import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
+import { loadApp } from '../native-modules/DevLauncherInternal';
+import { DevSession } from '../types';
 
 export type HomeScreenProps = {
   fetchOnMount?: boolean;
@@ -36,25 +40,32 @@ export function HomeScreen({
   pollAmount = 5,
   navigation,
 }: HomeScreenProps) {
-  const { data, pollAsync, isFetching } = useLocalPackagers();
+  const modalStack = useModalStack();
+  const { data: devSessions, pollAsync, isFetching } = useDevSessions();
 
   const buildInfo = useBuildInfo();
   const { appName, appIcon } = buildInfo;
 
-  const initialPackagerData = React.useRef(data);
+  const initialDevSessionData = React.useRef(devSessions);
 
   React.useEffect(() => {
-    if (initialPackagerData.current.length === 0 && fetchOnMount) {
+    if (initialDevSessionData.current.length === 0 && fetchOnMount) {
       pollAsync({ pollAmount, pollInterval });
     }
   }, [fetchOnMount, pollInterval, pollAmount, pollAsync]);
 
-  const onPackagerPress = async (packager: Packager) => {
-    await loadApp(packager.url);
+  const onLoadUrl = (url: string) => {
+    loadApp(url).catch((error) => {
+      Alert.alert('Oops!', error.message);
+    });
+  };
+
+  const onDevSessionPress = async (devSession: DevSession) => {
+    onLoadUrl(devSession.url);
   };
 
   const onUrlSubmit = async (url: string) => {
-    await loadApp(url);
+    onLoadUrl(url);
   };
 
   const onRefetchPress = () => {
@@ -66,11 +77,15 @@ export function HomeScreen({
   };
 
   const onAppPress = async (url: string) => {
-    await loadApp(url);
+    onLoadUrl(url);
+  };
+
+  const onDevServerQuestionPress = () => {
+    modalStack.push({ element: <DevServerExplainerModal /> });
   };
 
   return (
-    <ScrollView>
+    <View>
       <View bg="default">
         <AppHeader
           title={appName}
@@ -79,62 +94,82 @@ export function HomeScreen({
           onUserProfilePress={onUserProfilePress}
         />
       </View>
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        <View py="large">
+          <Row px="medium" align="center">
+            <View px="small">
+              <TerminalIcon />
+            </View>
+            <Heading size="small" color="secondary">
+              Development servers
+            </Heading>
 
-      <View py="large">
-        <Row px="medium" align="center">
-          <View px="small">
-            <TerminalIcon />
-          </View>
-          <Heading size="small" color="secondary">
-            Development servers
-          </Heading>
-        </Row>
-
-        <Spacer.Vertical size="small" />
-
-        <View px="medium">
-          <View>
-            {data?.length > 0 ? (
-              <LocalPackagersList packagers={data} onPackagerPress={onPackagerPress} />
-            ) : (
-              <>
-                <View padding="medium" bg="default" roundedTop="large">
-                  <Text size="medium">Start a local development server with:</Text>
-                  <Spacer.Vertical size="small" />
-
-                  <View bg="secondary" border="default" rounded="medium" padding="medium">
-                    <Text type="mono">expo start</Text>
-                  </View>
-
-                  <Spacer.Vertical size="small" />
-                  <Text size="medium">Then, select the local server when it appears here.</Text>
+            <Spacer.Horizontal size="flex" />
+            {devSessions.length > 0 && (
+              <Button.ScaleOnPressContainer
+                bg="ghost"
+                rounded="full"
+                minScale={0.85}
+                onPress={onDevServerQuestionPress}>
+                <View rounded="full" padding="small">
+                  <InfoIcon />
                 </View>
-                <Divider />
-              </>
+              </Button.ScaleOnPressContainer>
             )}
+          </Row>
 
-            <FetchLocalPackagersRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
+          <Spacer.Vertical size="small" />
 
-            <Divider />
+          <View px="medium">
+            <View>
+              {devSessions.length === 0 && (
+                <>
+                  <View padding="medium" bg="default" roundedTop="large">
+                    <Text size="medium">Start a local development server with:</Text>
+                    <Spacer.Vertical size="small" />
 
-            <UrlDropdown onSubmit={onUrlSubmit} />
+                    <View bg="secondary" border="default" rounded="medium" padding="medium">
+                      <Text type="mono">expo start</Text>
+                    </View>
+
+                    <Spacer.Vertical size="small" />
+                    <Text>Then, select the local server when it appears here.</Text>
+                    <Spacer.Vertical size="small" />
+                    <Text>
+                      Alternatively, open the Camera app and scan the QR code that appears in your
+                      terminal
+                    </Text>
+                  </View>
+                  <Divider />
+                </>
+              )}
+
+              {devSessions?.length > 0 && (
+                <DevSessionList devSessions={devSessions} onDevSessionPress={onDevSessionPress} />
+              )}
+
+              <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
+              <Divider />
+
+              <UrlDropdown onSubmit={onUrlSubmit} />
+            </View>
           </View>
+
+          <Spacer.Vertical size="medium" />
+
+          <RecentlyOpenedApps onAppPress={onAppPress} />
         </View>
-
-        <Spacer.Vertical size="medium" />
-
-        <RecentlyOpenedApps onAppPress={onAppPress} />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
-type FetchLocalPackagersRowProps = {
+type FetchDevSessionsRowProps = {
   isFetching: boolean;
   onRefetchPress: () => void;
 };
 
-function FetchLocalPackagersRow({ isFetching, onRefetchPress }: FetchLocalPackagersRowProps) {
+function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRowProps) {
   const theme = useExpoTheme();
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
@@ -143,8 +178,8 @@ function FetchLocalPackagersRow({ isFetching, onRefetchPress }: FetchLocalPackag
       <Row align="center" padding="medium">
         <PulseIndicator isActive={isFetching} color={backgroundColor} />
         <Spacer.Horizontal size="small" />
-        <Button.Text size="large" color="default">
-          {isFetching ? 'Searching for local servers...' : 'Refetch local servers'}
+        <Button.Text color="default">
+          {isFetching ? 'Searching for development servers...' : 'Refetch development servers'}
         </Button.Text>
         <Spacer.Horizontal size="flex" />
         {!isFetching && <RefreshIcon />}
@@ -153,30 +188,32 @@ function FetchLocalPackagersRow({ isFetching, onRefetchPress }: FetchLocalPackag
   );
 }
 
-type LocalPackagersListProps = {
-  packagers?: Packager[];
-  onPackagerPress: (packager: Packager) => void;
+type DevSessionListProps = {
+  devSessions?: DevSession[];
+  onDevSessionPress: (devSession: DevSession) => void;
 };
 
-function LocalPackagersList({ packagers = [], onPackagerPress }: LocalPackagersListProps) {
-  if (packagers.length === 0) {
+function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListProps) {
+  if (devSessions.length === 0) {
     return null;
   }
 
   return (
     <View>
-      {packagers.map((packager) => {
+      {devSessions.map((devSession) => {
         return (
-          <View key={packager.description}>
+          <View key={devSession.url}>
             <Button.ScaleOnPressContainer
-              onPress={() => onPackagerPress(packager)}
+              onPress={() => onDevSessionPress(devSession)}
               roundedTop="large"
               roundedBottom="none"
               bg="default">
               <Row align="center" padding="medium">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
-                <Button.Text color="default">{packager.description}</Button.Text>
+                <Button.Text color="default" numberOfLines={1} style={{ flexShrink: 1 }}>
+                  {devSession.description}
+                </Button.Text>
                 <Spacer.Horizontal size="flex" />
                 <ChevronRightIcon />
               </Row>
@@ -190,20 +227,7 @@ function LocalPackagersList({ packagers = [], onPackagerPress }: LocalPackagersL
 }
 
 function RecentlyOpenedApps({ onAppPress }) {
-  const [apps, setApps] = React.useState([]);
-
-  React.useEffect(() => {
-    getRecentlyOpenedApps().then((apps) => {
-      const formattedApps = Object.entries(apps).map(([url, name]) => {
-        return {
-          url,
-          name,
-        };
-      });
-
-      setApps(formattedApps);
-    });
-  }, []);
+  const { data: apps } = useRecentlyOpenedApps();
 
   if (apps.length === 0) {
     return null;
@@ -224,7 +248,7 @@ function RecentlyOpenedApps({ onAppPress }) {
           const label = app.name ?? app.url;
 
           return (
-            <View key={label}>
+            <View key={app.url}>
               <Button.ScaleOnPressContainer
                 onPress={() => onAppPress(app.url)}
                 roundedTop={isFirst ? 'large' : 'none'}
@@ -242,6 +266,48 @@ function RecentlyOpenedApps({ onAppPress }) {
             </View>
           );
         })}
+      </View>
+    </View>
+  );
+}
+
+function DevServerExplainerModal() {
+  const modalStack = useModalStack();
+
+  const onClosePress = () => {
+    modalStack.pop();
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center' }} px="medium">
+      <View padding="medium" bg="default" rounded="large">
+        <Row align="center">
+          <Heading size="small">Development servers</Heading>
+          <Spacer.Horizontal size="flex" />
+          <Button.ScaleOnPressContainer
+            bg="default"
+            rounded="full"
+            onPress={onClosePress}
+            accessibilityHint="Close modal">
+            <View padding="tiny">
+              <XIcon />
+            </View>
+          </Button.ScaleOnPressContainer>
+        </Row>
+        <Spacer.Vertical size="small" />
+        <Text size="medium">Start a local development server with:</Text>
+        <Spacer.Vertical size="small" />
+
+        <View bg="secondary" border="default" rounded="medium" padding="medium">
+          <Text type="mono">expo start</Text>
+        </View>
+
+        <Spacer.Vertical size="large" />
+        <Text>Then, select the local server when it appears here.</Text>
+        <Spacer.Vertical size="small" />
+        <Text>
+          Alternatively, open the Camera app and scan the QR code that appears in your terminal.
+        </Text>
       </View>
     </View>
   );

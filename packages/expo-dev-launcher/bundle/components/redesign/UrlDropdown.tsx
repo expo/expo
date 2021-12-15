@@ -12,7 +12,6 @@ import * as React from 'react';
 import { TextInput as NativeTextInput, Platform } from 'react-native';
 
 import { validateUrl } from '../../functions/validateUrl';
-import { useThrottle } from '../../hooks/useDebounce';
 import { clientUrlScheme } from '../../native-modules/DevLauncherInternal';
 
 type UrlDropdownProps = {
@@ -23,6 +22,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
   const theme = useExpoTheme();
   const ref = React.useRef<NativeTextInput>();
   const [open, setOpen] = React.useState(false);
+  const [isValidUrl, setIsValidUrl] = React.useState(true);
   const [inputValue, setInputValue] = React.useState('');
 
   const rotate = open ? '90deg' : '0deg';
@@ -39,7 +39,23 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
     setOpen(!open);
   };
 
-  const isValidUrl = useThrottle(validateUrl(inputValue), 500);
+  const lastExecuted = React.useRef(Date.now());
+  const throttleValidationInterval = 500;
+
+  const onChangeText = (input: string) => {
+    if (!isValidUrl && input !== '') {
+      if (Date.now() >= lastExecuted.current + throttleValidationInterval) {
+        setIsValidUrl(validateUrl(input));
+        lastExecuted.current = Date.now();
+      }
+    }
+
+    setInputValue(input);
+  };
+
+  const onBlur = () => {
+    setIsValidUrl(validateUrl(inputValue));
+  };
 
   return (
     <View rounded="large">
@@ -74,7 +90,8 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
               placeholderTextColor={theme.text.secondary}
               ref={ref as any}
               value={inputValue}
-              onChangeText={setInputValue}
+              onChangeText={onChangeText}
+              onBlur={onBlur}
             />
             <View style={{ position: 'absolute', bottom: -20 }}>
               {!isValidUrl && inputValue !== '' && (

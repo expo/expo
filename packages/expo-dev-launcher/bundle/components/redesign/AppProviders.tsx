@@ -3,32 +3,36 @@ import { darkNavigationTheme, lightNavigationTheme } from 'expo-dev-client-compo
 import * as React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 
-import { Packager } from '../../functions/getLocalPackagersAsync';
+import { ModalProvider } from '../../components/redesign/Modal';
 import { UserData } from '../../functions/getUserProfileAsync';
 import { BuildInfoProvider } from '../../hooks/useBuildInfo';
 import { DevMenuSettingsProvider } from '../../hooks/useDevMenuSettings';
-import { LocalPackagersProvider } from '../../hooks/useLocalPackagers';
+import { DevSessionsProvider } from '../../hooks/useDevSessions';
 import { PendingDeepLinkProvider } from '../../hooks/usePendingDeepLink';
+import { RecentApp, RecentlyOpenedAppsProvider } from '../../hooks/useRecentlyOpenedApps';
 import { UserContextProvider } from '../../hooks/useUser';
 import { BuildInfo } from '../../native-modules/DevLauncherInternal';
 import { DevMenuSettingsType } from '../../native-modules/DevMenuInternal';
+import { DevSession } from '../../types';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
   initialUserData?: UserData;
   initialDevMenuSettings?: DevMenuSettingsType;
-  initialPackagers?: Packager[];
+  initialDevSessions?: DevSession[];
   initialBuildInfo?: BuildInfo;
   initialPendingDeepLink?: string;
+  initialRecentlyOpenedApps?: RecentApp[];
 };
 
 export function AppProviders({
   children,
   initialUserData,
   initialDevMenuSettings,
-  initialPackagers,
+  initialDevSessions,
   initialBuildInfo,
   initialPendingDeepLink,
+  initialRecentlyOpenedApps,
 }: AppProvidersProps) {
   const theme = useColorScheme();
   const isDark = theme === 'dark';
@@ -37,16 +41,20 @@ export function AppProviders({
   return (
     <UserContextProvider initialUserData={initialUserData}>
       <DevMenuSettingsProvider initialSettings={initialDevMenuSettings}>
-        <LocalPackagersProvider initialPackagers={initialPackagers}>
-          <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
-            <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
-              <NavigationContainer theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
-                <StatusBar barStyle={statusBarContent} />
-                {children}
-              </NavigationContainer>
-            </PendingDeepLinkProvider>
-          </BuildInfoProvider>
-        </LocalPackagersProvider>
+        <DevSessionsProvider initialDevSessions={initialDevSessions}>
+          <RecentlyOpenedAppsProvider initialApps={initialRecentlyOpenedApps}>
+            <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
+              <ModalProvider>
+                <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
+                  <NavigationContainer theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
+                    <StatusBar barStyle={statusBarContent} />
+                    {children}
+                  </NavigationContainer>
+                </PendingDeepLinkProvider>
+              </ModalProvider>
+            </BuildInfoProvider>
+          </RecentlyOpenedAppsProvider>
+        </DevSessionsProvider>
       </DevMenuSettingsProvider>
     </UserContextProvider>
   );

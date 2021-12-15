@@ -1,17 +1,19 @@
 import { AppProvidersProps } from '../components/redesign/AppProviders';
 import { getBuildInfoAsync } from '../native-modules/DevLauncherInternal';
 import { getSettingsAsync } from '../native-modules/DevMenuInternal';
-import { getLocalPackagersAsync } from './getLocalPackagersAsync';
+import { getDevSessionsAsync } from './getDevSessionsAsync';
 import { restoreUserAsync } from './restoreUserAsync';
 
 export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
-  const initialPackagers = await getLocalPackagersAsync();
   const initialUserData = await restoreUserAsync();
+  const isAuthenticated = initialUserData != null;
+
+  const initialDevSessions = await getDevSessionsAsync(isAuthenticated);
   const initialBuildInfo = await getBuildInfoAsync();
   const initialDevMenuSettings = await getSettingsAsync();
 
   return {
-    initialPackagers,
+    initialDevSessions,
     initialUserData,
     initialBuildInfo,
     initialDevMenuSettings,
