@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add missing @JvmStatic annotation to `UpdatesDevLauncherController.initialize`. ([#15561](https://github.com/expo/expo/pull/15561) by [@esamelson](https://github.com/esamelson))
-
 ### 💡 Others
+
+## 0.11.2 — 2021-12-15
+
+### 🐛 Bug fixes
+
+- Add missing @JvmStatic annotation to `UpdatesDevLauncherController.initialize`. ([#15561](https://github.com/expo/expo/pull/15561) by [@esamelson](https://github.com/esamelson))
 
 ## 0.11.2-rc.0 — 2021-12-13
 
