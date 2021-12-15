@@ -5,7 +5,6 @@ import android.view.ViewGroup;
 import abi44_0_0.com.facebook.react.uimanager.IllegalViewOperationException;
 import abi44_0_0.com.facebook.react.uimanager.NativeViewHierarchyManager;
 import abi44_0_0.com.facebook.react.uimanager.ViewManager;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -64,24 +63,24 @@ public class Snapshot {
     globalOriginX = location[0];
     globalOriginY = location[1];
 
-    targetKeysToTransform = new ArrayList<>(
-      Arrays.asList(
-        Snapshot.TARGET_WIDTH,
-        Snapshot.TARGET_HEIGHT,
-        Snapshot.TARGET_ORIGIN_X,
-        Snapshot.TARGET_ORIGIN_Y,
-        Snapshot.TARGET_GLOBAL_ORIGIN_X,
-        Snapshot.TARGET_GLOBAL_ORIGIN_Y)
-    );
-    currentKeysToTransform = new ArrayList<>(
-      Arrays.asList(
-        Snapshot.CURRENT_WIDTH,
-        Snapshot.CURRENT_HEIGHT,
-        Snapshot.CURRENT_ORIGIN_X,
-        Snapshot.CURRENT_ORIGIN_Y,
-        Snapshot.CURRENT_GLOBAL_ORIGIN_X,
-        Snapshot.CURRENT_GLOBAL_ORIGIN_Y)
-    );
+    targetKeysToTransform =
+        new ArrayList<>(
+            Arrays.asList(
+                Snapshot.TARGET_WIDTH,
+                Snapshot.TARGET_HEIGHT,
+                Snapshot.TARGET_ORIGIN_X,
+                Snapshot.TARGET_ORIGIN_Y,
+                Snapshot.TARGET_GLOBAL_ORIGIN_X,
+                Snapshot.TARGET_GLOBAL_ORIGIN_Y));
+    currentKeysToTransform =
+        new ArrayList<>(
+            Arrays.asList(
+                Snapshot.CURRENT_WIDTH,
+                Snapshot.CURRENT_HEIGHT,
+                Snapshot.CURRENT_ORIGIN_X,
+                Snapshot.CURRENT_ORIGIN_Y,
+                Snapshot.CURRENT_GLOBAL_ORIGIN_X,
+                Snapshot.CURRENT_GLOBAL_ORIGIN_Y));
   }
 
   private void addTargetConfig(HashMap<String, Object> data) {

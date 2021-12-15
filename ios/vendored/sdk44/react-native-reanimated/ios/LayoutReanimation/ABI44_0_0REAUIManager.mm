@@ -1,6 +1,9 @@
 #import "ABI44_0_0REAUIManager.h"
 #import <Foundation/Foundation.h>
 #include "FeaturesConfig.h"
+#import "ABI44_0_0REAIOSScheduler.h"
+#include "Scheduler.h"
+
 #import <ABI44_0_0React/ABI44_0_0RCTComponentData.h>
 #import <ABI44_0_0React/ABI44_0_0RCTLayoutAnimation.h>
 #import <ABI44_0_0React/ABI44_0_0RCTLayoutAnimationGroup.h>
@@ -8,8 +11,6 @@
 #import <ABI44_0_0React/ABI44_0_0RCTRootShadowView.h>
 #import <ABI44_0_0React/ABI44_0_0RCTRootViewInternal.h>
 #import <ABI44_0_0React/ABI44_0_0RCTUIManagerObserverCoordinator.h>
-#import "ABI44_0_0REAIOSScheduler.h"
-#include "Scheduler.h"
 
 #if __has_include(<ABI44_0_0RNScreens/ABI44_0_0RNSScreen.h>)
 #import <ABI44_0_0RNScreens/ABI44_0_0RNSScreen.h>

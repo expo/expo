@@ -711,7 +711,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.1.0):
     - React-Core
-  - RNReanimated (2.2.4):
+  - RNReanimated (2.3.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -737,7 +737,6 @@ PODS:
     - React-RCTNetwork
     - React-RCTSettings
     - React-RCTText
-    - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
   - RNScreens (3.10.1):
@@ -892,7 +891,7 @@ DEPENDENCIES:
   - "RNCPicker (from `../../../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/@react-native-community/datetimepicker`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
-  - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSharedElement (from `../../../node_modules/react-native-shared-element`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
@@ -1235,7 +1234,7 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../node_modules/react-native-reanimated"
+    :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/react-native-screens"
   RNSharedElement:
@@ -1397,7 +1396,7 @@ SPEC CHECKSUMS:
   RNCPicker: cb57c823d5ce8d2d0b5dfb45ad97b737260dc59e
   RNDateTimePicker: 2224ee77a86b7123377597a015502435e2e49957
   RNGestureHandler: e5c7cab5f214503dcefd6b2b0cefb050e1f51c4a
-  RNReanimated: 024eff8202342abf4b24e11575a16afc441dabfe
+  RNReanimated: 7f143675d94978c3555345d5bfa8ed6ae800c5d3
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   RNSharedElement: 381b5e33366513cc3f449f2dc3a42c5df0f54021
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
