@@ -66,7 +66,7 @@ export interface RawExpoModuleConfig {
     reactDelegateHandlers?: string[];
 
     /**
-     * An relative path to the podspec.
+     * Podspec relative path.
      */
     podspecPath?: string;
   };
