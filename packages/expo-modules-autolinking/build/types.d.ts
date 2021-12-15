@@ -50,6 +50,10 @@ export interface RawExpoModuleConfig {
          * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
          */
         reactDelegateHandlers?: string[];
+        /**
+         * An relative path to the podspec.
+         */
+        podspecPath?: string;
     };
     /**
      * Android-specific config.
