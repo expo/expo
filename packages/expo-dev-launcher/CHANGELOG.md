@@ -11,7 +11,7 @@
 - Fix plugin when `MainActivity.onNewIntent` exists. ([#15459](https://github.com/expo/expo/pull/15459) by [@janicduplessis](https://github.com/janicduplessis))
 - Fix plugin when `expo-updates` is not present. ([#15541](https://github.com/expo/expo/pull/15541) by [@esamelson](https://github.com/esamelson))
 - Include expo-platform header in manifest requests. ([#15563](https://github.com/expo/expo/pull/15563) by [@esamelson](https://github.com/esamelson))
-- Fix plugin compatibility with SDK 44. ([#15562](https://github.com/expo/expo/pull/15562) by [@lukmccall](https://github.com/lukmccall))
+- Fix plugin compatibility with SDK 44. ([#15562](https://github.com/expo/expo/pull/15562) & [#15570](https://github.com/expo/expo/pull/15570) by [@lukmccall](https://github.com/lukmccall) & [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
