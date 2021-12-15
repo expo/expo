@@ -1,3 +1,4 @@
+// Copyright 2021-present 650 Industries. All rights reserved.
 
 public struct Promise: AnyArgument {
   public typealias ResolveClosure = (Any?) -> Void
@@ -18,6 +19,10 @@ public struct Promise: AnyArgument {
 
   public func resolve(_ value: Any? = nil) -> Void {
     resolver(value)
+  }
+
+  public func reject(_ error: Error) {
+    rejecter(UnexpectedError(error))
   }
 
   public func reject(_ error: CodedError) {
