@@ -4,6 +4,19 @@ import path from 'path';
 
 import { ModuleDescriptor, PackageRevision, SearchOptions } from '../types';
 
+async function findPodspecFile(revision: PackageRevision): Promise<string | undefined> {
+  if (revision.config?.iosPodspecPath()) {
+    return revision.config.iosPodspecPath();
+  }
+
+  const [podspecFile] = await glob('*/*.podspec', {
+    cwd: revision.path,
+    ignore: ['**/node_modules/**'],
+  });
+
+  return podspecFile;
+}
+
 /**
  * Resolves module search result with additional details required for iOS platform.
  */
@@ -12,11 +25,7 @@ export async function resolveModuleAsync(
   revision: PackageRevision,
   options: SearchOptions
 ): Promise<ModuleDescriptor | null> {
-  const [podspecFile] = await glob('*/*.podspec', {
-    cwd: revision.path,
-    ignore: ['**/node_modules/**'],
-  });
-
+  const podspecFile = await findPodspecFile(revision);
   if (!podspecFile) {
     return null;
   }

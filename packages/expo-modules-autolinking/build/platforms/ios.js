@@ -7,15 +7,23 @@ exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = e
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+async function findPodspecFile(revision) {
+    var _a;
+    if ((_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPath()) {
+        return revision.config.iosPodspecPath();
+    }
+    const [podspecFile] = await (0, fast_glob_1.default)('*/*.podspec', {
+        cwd: revision.path,
+        ignore: ['**/node_modules/**'],
+    });
+    return podspecFile;
+}
 /**
  * Resolves module search result with additional details required for iOS platform.
  */
 async function resolveModuleAsync(packageName, revision, options) {
     var _a, _b, _c;
-    const [podspecFile] = await (0, fast_glob_1.default)('*/*.podspec', {
-        cwd: revision.path,
-        ignore: ['**/node_modules/**'],
-    });
+    const podspecFile = await findPodspecFile(revision);
     if (!podspecFile) {
         return null;
     }
