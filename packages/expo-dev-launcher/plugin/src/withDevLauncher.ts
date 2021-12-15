@@ -205,7 +205,7 @@ export function modifyJavaMainActivity(content: string): string {
       WarningAggregator.addWarningAndroid(
         'expo-dev-launcher',
         `Failed to wrap 'ReactActivityDelegate'
-See the expo-dev-client installation instructions to modify your MainApplication.java manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your MainActivity.java manually: ${InstallationPage}`
       );
       return content;
     }

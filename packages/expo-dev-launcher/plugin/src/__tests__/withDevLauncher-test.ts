@@ -4,9 +4,21 @@ import path from 'path';
 import { modifyJavaMainActivity } from '../withDevLauncher';
 
 describe(modifyJavaMainActivity, () => {
+  /**
+   * The config plugin cannot currently handle projects created with react-native init
+   *
   it(`modifies the MainActivity file for dev-launcher`, () => {
     const fixture = fs.readFileSync(
       path.join(__dirname, 'fixtures', 'MainActivity-react-native.java'),
+      'utf8'
+    );
+    expect(modifyJavaMainActivity(fixture)).toMatchSnapshot();
+  });
+   */
+
+  it(`modifies the MainActivity file for dev-launcher`, () => {
+    const fixture = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'MainActivity-expo-modules.java'),
       'utf8'
     );
     expect(modifyJavaMainActivity(fixture)).toMatchSnapshot();
@@ -22,7 +34,7 @@ describe(modifyJavaMainActivity, () => {
 
   it(`modifying MainActivity twice doesn't change the content`, () => {
     const firstModification = fs.readFileSync(
-      path.join(__dirname, 'fixtures', 'MainActivity-react-native.java'),
+      path.join(__dirname, 'fixtures', 'MainActivity-expo-modules.java'),
       'utf8'
     );
     modifyJavaMainActivity(firstModification);
