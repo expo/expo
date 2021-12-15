@@ -1,7 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 package abi44_0_0.host.exp.exponent
 
-import abi44_0_0.com.facebook.react.CoreModulesPackage
+import abi44_0_0.com.facebook.react.ReactInstanceManager
 import abi44_0_0.com.facebook.react.ReactRootView
 import abi44_0_0.com.facebook.react.TurboReactPackage
 import abi44_0_0.com.facebook.react.bridge.NativeModule
@@ -21,8 +21,6 @@ import abi44_0_0.com.facebook.react.uimanager.UIManagerModule
 import abi44_0_0.com.facebook.react.uimanager.ViewManager
 import abi44_0_0.com.facebook.systrace.Systrace
 import expo.modules.manifests.core.Manifest
-import host.exp.exponent.di.NativeModuleDepsProvider
-import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.expoview.Exponent
@@ -30,7 +28,6 @@ import abi44_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedModule
 import abi44_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import abi44_0_0.host.exp.exponent.modules.internal.ExponentIntentModule
 import abi44_0_0.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
-import javax.inject.Inject
 
 /** Package defining basic modules and view managers.  */
 @ReactModuleList(
@@ -46,12 +43,12 @@ class ExpoTurboPackage(
   private val experienceProperties: Map<String, Any?>,
   private val manifest: Manifest
 ) : TurboReactPackage() {
-  @Inject
-  internal lateinit var kernel: Kernel
-
-  init {
-    NativeModuleDepsProvider.instance.inject(ExpoTurboPackage::class.java, this)
-  }
+  // Get the hosted `ReactInstanceManager` by current Activity
+  private val reactInstanceManager: ReactInstanceManager?
+    get() {
+      val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return null
+      return (currentActivity.rootView as? ReactRootView)?.reactInstanceManager
+    }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
     return listOf()
@@ -70,7 +67,7 @@ class ExpoTurboPackage(
         experienceProperties
       )
       ReanimatedModule.NAME -> ReanimatedModule(context)
-      ReanimatedUIManager.NAME -> createReanimatedUIManager(context) ?: getDefaultUIManager(context)
+      ReanimatedUIManager.NAME -> createReanimatedUIManager(context) ?: throw RuntimeException("Cannot create reanimated uimanager")
       else -> null
     }
   }
@@ -92,11 +89,18 @@ class ExpoTurboPackage(
       val reactModuleInfoMap = mutableMapOf<String, ReactModuleInfo>()
       for (moduleClass in moduleList) {
         val reactModule = moduleClass.getAnnotation(ReactModule::class.java)!!
+        var canOverrideExistingModule = reactModule.canOverrideExistingModule
         val isTurbo = TurboModule::class.java.isAssignableFrom(moduleClass)
+        if (reactModule.name == ReanimatedUIManager.NAME) {
+          if (!shouldOverrideUIManagerForReanimated()) {
+            continue
+          }
+          canOverrideExistingModule = true
+        }
         reactModuleInfoMap[reactModule.name] = ReactModuleInfo(
           reactModule.name,
           moduleClass.name,
-          if (reactModule.name == ReanimatedUIManager.NAME) true else reactModule.canOverrideExistingModule,
+          canOverrideExistingModule,
           reactModule.needsEagerInit,
           reactModule.hasConstants,
           reactModule.isCxxModule,
@@ -116,10 +120,7 @@ class ExpoTurboPackage(
   }
 
   private fun createReanimatedUIManager(reactContext: ReactApplicationContext): UIManagerModule? {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return null
-    val reactInstanceManager = (currentActivity.rootView as? ReactRootView)?.reactInstanceManager
-      ?: return null
-
+    val reactInstanceManager = this.reactInstanceManager ?: return null
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START)
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule")
     val minTimeLeftInFrameForNonBatchedOperationMs = -1
@@ -135,15 +136,11 @@ class ExpoTurboPackage(
     }
   }
 
-  /**
-   * fallback path to get the react native default UIManagerModule
-   */
-  private fun getDefaultUIManager(context: ReactApplicationContext): UIManagerModule {
-    val reactInstanceManager = kernel.reactInstanceManager
-      ?: throw RuntimeException("Cannot get ReactInstanceManager from kernel")
-    val coreModulesPackage = reactInstanceManager.packages.first { it is CoreModulesPackage } as? CoreModulesPackage
-      ?: throw RuntimeException("Cannot get CoreModulesPackage")
-    return coreModulesPackage.getModule(UIManagerModule.NAME, context) as UIManagerModule
+  // Reanimated UIManager requires `ReactInstanceManager`,
+  // for headless mode we cannot get the hosted `ReactInstanceManager` from current Activity,
+  // in this case, we don't override UIManager for reanimated.
+  private fun shouldOverrideUIManagerForReanimated(): Boolean {
+    return this.reactInstanceManager != null
   }
 
   companion object {
