@@ -1,6 +1,6 @@
 {
   "name": "ABI44_0_0RNReanimated",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "summary": "More powerful alternative to Animated library for ABI44_0_0React Native.",
   "description": "ABI44_0_0RNReanimated",
   "homepage": "https://github.com/software-mansion/react-native-reanimated",
@@ -14,7 +14,7 @@
   },
   "source": {
     "git": "https://github.com/software-mansion/react-native-reanimated.git",
-    "tag": "2.3.0"
+    "tag": "2.3.1"
   },
   "source_files": [
     "ios/**/*.{mm,h,m}",
