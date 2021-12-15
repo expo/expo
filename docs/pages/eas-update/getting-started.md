@@ -10,10 +10,10 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
 
 EAS Update requires the following versions or greater:
 
-- Expo SDK 44
-- expo-updates 0.11.2-rc.0
 - Expo CLI 5.0.0
 - EAS CLI 0.41.0
+- Expo SDK 44
+- expo-updates 0.11.2
 
 ## Install Expo CLI and EAS CLI
 
@@ -47,7 +47,7 @@ expo init
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   yarn add expo-updates@0.11.2-rc.0
+   yarn add expo-updates@0.11.2
    ```
 
 2. Initialize your project with EAS Update:
