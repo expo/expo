@@ -241,7 +241,7 @@ The following are two possible alternative approaches, each with different trade
 
 <div style={{marginTop: -20, display: 'block'}} />
 
-> ⚠️  Secrets set on the Expo website or through the EAS CLI will override any secrets set within your eas.json or app.config.js files. 
+> ⚠️  Secrets set on the Expo website or through the EAS CLI will override any env variables with the same name set within your eas.json or app.config.js files. 
 
 ### How do environment variables work for my Expo Development Client builds?
 
