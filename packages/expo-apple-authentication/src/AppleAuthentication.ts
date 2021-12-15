@@ -99,7 +99,7 @@ export async function refreshAsync(
  *
  * It is not recommended to use this method to sign out the user as it works counterintuitively.
  * Instead of using this method it is recommended to simply clear all the user's data collected
- * while using [`signInAsync`](./#signinasync) or [`refreshAsync`](./#refreshasync) methods.
+ * from using [`signInAsync`](./#signinasync) or [`refreshAsync`](./#refreshasync) methods.
  *
  * @param options An [`AppleAuthenticationSignOutOptions`](#appleauthenticationsignoutoptions) object
  * @returns A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)

@@ -1850,7 +1850,7 @@ Calling this method will show the sign in modal before actually signing the user
     >
       It is not recommended to use this method to sign out the user as it works counterintuitively.
 Instead of using this method it is recommended to simply clear all the user's data collected
-while using 
+from using 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#signinasync"
