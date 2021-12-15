@@ -1,14 +1,12 @@
-import { Button } from 'expo-dev-client-components';
+import { Button, Heading, Row, Spacer, View, XIcon } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Animated, StyleSheet, useWindowDimensions } from 'react-native';
 
-import { createAsyncStack, StackItem, useStackItems } from '../../functions/createAsyncStack';
+import { createAsyncStack, StackItem, useStackItems } from '../functions/createAsyncStack';
 
 export type ModalProps = {
   element: React.ReactElement<any>;
-  modalProps?: {
-    backgroundColor?: string;
-  };
+  title: string;
 };
 
 const ModalContext = React.createContext(createAsyncStack<ModalProps>());
@@ -55,15 +53,19 @@ function ModalStackContainer() {
     <Animated.View
       style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
       pointerEvents={hasModal ? 'auto' : 'none'}>
-      {modals.map((item) => (
-        <ModalScreen
-          key={item.key}
-          {...item}
-          onClose={() => modalStack.pop()}
-          onPopEnd={() => modalStack.onPopEnd(item.key)}
-          onPushEnd={() => modalStack.onPushEnd(item.key)}
-        />
-      ))}
+      <Button.Container
+        style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' }}
+        onPress={() => modalStack.pop()}>
+        {modals.map((item) => (
+          <ModalScreen
+            key={item.key}
+            {...item}
+            onClose={() => modalStack.pop()}
+            onPopEnd={() => modalStack.onPopEnd(item.key)}
+            onPushEnd={() => modalStack.onPushEnd(item.key)}
+          />
+        ))}
+      </Button.Container>
     </Animated.View>
   );
 }
@@ -74,14 +76,7 @@ type ModalScreenProps = StackItem<ModalProps> & {
   onClose: () => void;
 };
 
-function ModalScreen({
-  status,
-  element,
-  onPopEnd,
-  onPushEnd,
-  onClose,
-  modalProps,
-}: ModalScreenProps) {
+function ModalScreen({ status, element, onPopEnd, onPushEnd, onClose, title }: ModalScreenProps) {
   const { height } = useWindowDimensions();
 
   const animatedValue = React.useRef(new Animated.Value(status === 'settled' ? 1 : 0));
@@ -118,10 +113,47 @@ function ModalScreen({
   return (
     <Animated.View
       pointerEvents={status === 'popping' ? 'none' : 'auto'}
-      style={[StyleSheet.absoluteFillObject, { transform: [{ translateY }] }]}>
-      <Button.Container style={StyleSheet.absoluteFill} onPress={() => onClose()}>
-        {element}
+      style={[
+        StyleSheet.absoluteFillObject,
+        { justifyContent: 'center', transform: [{ translateY }] },
+      ]}>
+      <Button.Container>
+        <View mx="medium" bg="default" rounded="large" overflow="hidden" shadow="medium">
+          <ModalHeader title={title} />
+          <View px="small">{element}</View>
+
+          <Spacer.Vertical size="medium" />
+        </View>
       </Button.Container>
     </Animated.View>
+  );
+}
+
+function ModalHeader({ title = '' }) {
+  const modalStack = useModalStack();
+
+  const onClosePress = () => {
+    modalStack.pop();
+  };
+
+  return (
+    <View padding="small">
+      <Row align="center" bg="default">
+        <View>
+          <Heading size="small">{title}</Heading>
+        </View>
+        <Spacer.Horizontal size="flex" />
+
+        <Button.ScaleOnPressContainer
+          bg="default"
+          rounded="full"
+          onPress={onClosePress}
+          minScale={0.85}>
+          <View padding="tiny" rounded="full">
+            <XIcon />
+          </View>
+        </Button.ScaleOnPressContainer>
+      </Row>
+    </View>
   );
 }

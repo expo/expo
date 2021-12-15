@@ -14,71 +14,65 @@ import * as React from 'react';
 import { ActivityIndicator, Alert, ScrollView } from 'react-native';
 
 import { useDevSessions } from '../../hooks/useDevSessions';
+import { useModalStack } from '../../hooks/useModalStack';
 import { useRecentlyOpenedApps } from '../../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../../native-modules/DevLauncherInternal';
+import { LoadAppErrorModal } from './LoadAppErrorModal';
 
 type DeepLinkModalProps = {
   pendingDeepLink: string;
-  onClosePress: () => void;
 };
 
-export function DeepLinkModal({ onClosePress, pendingDeepLink }: DeepLinkModalProps) {
+export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
+  const modalStack = useModalStack();
+
+  const onClosePress = () => {
+    modalStack.pop();
+  };
+
   return (
-    <View padding="large" style={{ flex: 1, justifyContent: 'center' }}>
-      <View py="medium" rounded="large" bg="default" shadow="small">
-        <Row px="medium" align="center">
-          <Heading size="small">Deep link received:</Heading>
-          <Spacer.Horizontal size="flex" />
-          <Button.ScaleOnPressContainer
-            bg="default"
-            rounded="full"
-            onPress={onClosePress}
-            accessibilityHint="Close modal">
-            <View padding="tiny">
-              <XIcon />
-            </View>
-          </Button.ScaleOnPressContainer>
-        </Row>
-
-        <Spacer.Vertical size="small" />
-        <View py="small" bg="secondary" rounded="medium" px="medium" mx="small">
-          <Text type="mono" numberOfLines={3}>
-            {pendingDeepLink}
-          </Text>
-        </View>
-
-        <Spacer.Vertical size="large" />
-
-        <PackagersList />
-
-        <Spacer.Vertical size="large" />
-
-        <View px="medium">
-          <Text>
-            <Text weight="bold">Note: </Text>
-            The next app you open will receive this link
-          </Text>
-
-          <Spacer.Vertical size="medium" />
-
-          <Button.ScaleOnPressContainer
-            bg="ghost"
-            rounded="medium"
-            border="ghost"
-            onPress={onClosePress}>
-            <View py="small" px="medium">
-              <Button.Text size="large" align="center" weight="semibold" color="ghost">
-                Go back
-              </Button.Text>
-            </View>
-          </Button.ScaleOnPressContainer>
-        </View>
+    <View>
+      <Spacer.Vertical size="small" />
+      <View py="small" bg="secondary" rounded="medium" px="medium">
+        <Text type="mono" numberOfLines={3}>
+          {pendingDeepLink}
+        </Text>
       </View>
+
+      <Spacer.Vertical size="large" />
+
+      <PackagersList />
+
+      <Spacer.Vertical size="large" />
+
+      <View>
+        <Text>
+          <Text weight="bold">Note: </Text>
+          The next app you open will receive this link
+        </Text>
+
+        <Spacer.Vertical size="medium" />
+
+        <Button.ScaleOnPressContainer
+          bg="ghost"
+          rounded="medium"
+          border="ghost"
+          onPress={onClosePress}>
+          <View py="small" px="medium">
+            <Button.Text size="large" align="center" weight="semibold" color="ghost">
+              Go back
+            </Button.Text>
+          </View>
+        </Button.ScaleOnPressContainer>
+      </View>
+
+      <Spacer.Vertical size="large" />
     </View>
   );
 }
 
 function PackagersList() {
+  const modalStack = useModalStack();
   const { data: devSessions = [], isFetching: isFetchingDevSessions } = useDevSessions();
   const { data: recentlyOpenedApps = [], isFetching: isFetchingApps } = useRecentlyOpenedApps();
 
@@ -86,7 +80,10 @@ function PackagersList() {
 
   const onPackagerPress = ({ url }: { url: string }) => {
     loadApp(url).catch((error) => {
-      Alert.alert('Oops', error.message);
+      modalStack.push({
+        title: 'Error loading app',
+        element: <LoadAppErrorModal message={error.message} />,
+      });
     });
   };
 
@@ -98,7 +95,7 @@ function PackagersList() {
 
   if (!hasPackagers) {
     return (
-      <View px="medium">
+      <View>
         <Text size="large" weight="medium">
           Unable to find any packagers
         </Text>
@@ -115,7 +112,7 @@ function PackagersList() {
   }
 
   return (
-    <View px="medium">
+    <View>
       <Text size="large">Select an app to open it:</Text>
       <ScrollView style={{ maxHeight: 300 }}>
         <Spacer.Vertical size="medium" />

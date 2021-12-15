@@ -4,7 +4,6 @@ import { getSettingsAsync } from '../../native-modules/DevMenuInternal';
 import { getInitialData } from '../getInitialData';
 import { restoreUserAsync } from '../restoreUserAsync';
 
-// jest.mock('../getDevSessionsAsync');
 jest.mock('../restoreUserAsync');
 
 const mockRestoreUserAsync = restoreUserAsync as jest.Mock;
@@ -20,6 +19,7 @@ describe('getInitialData()', () => {
     expect(getBuildInfoAsync).not.toHaveBeenCalled();
     expect(getSettingsAsync).not.toHaveBeenCalled();
     expect(restoreUserAsync).not.toHaveBeenCalled();
+    expect(queryDevSessionsAsync).not.toHaveBeenCalled();
 
     await getInitialData();
 
