@@ -235,7 +235,7 @@ function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
             shouldAddSDK44Init = true;
         }
         else if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
-            initToRemove = DEV_LAUNCHER_APP_DELEGATE_BRIDGE;
+            initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE;
         }
         if (initToRemove) {
             // UIViewController can be initialized differently depending on whether expo-screen-orientation is installed,
