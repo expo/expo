@@ -1247,8 +1247,30 @@ value depending on the state of the credential.
           </code>
           )
         </strong>
+         - 
+        <span>
+          An 
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="/#appleauthenticationrefreshoptions"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              AppleAuthenticationRefreshOptions
+            </code>
+          </a>
+           object
+        </span>
       </li>
     </ul>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      An operation that refreshes the logged-in user’s credentials.
+Calling this method will show the sign in modal before actually refreshing the user credentials.
+    </p>
     <div>
       <h4
         class="  css-1j2s5xo-h4-h4-STYLES_H4"
@@ -1332,6 +1354,31 @@ value depending on the state of the credential.
           </code>
         </li>
       </ul>
+      <p
+        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        A promise that fulfills with an 
+        <a
+          class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+          href="/#appleauthenticationcredential"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            AppleAuthenticationCredential
+          </code>
+        </a>
+        
+object after a successful authentication, and rejects with 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          ERR_CANCELED
+        </code>
+         if the user cancels the
+refresh operation.
+      </p>
     </div>
     <hr />
   </div>
@@ -1773,8 +1820,60 @@ sign-in operation.
           </code>
           )
         </strong>
+         - 
+        <span>
+          An 
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="/#appleauthenticationsignoutoptions"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              AppleAuthenticationSignOutOptions
+            </code>
+          </a>
+           object
+        </span>
       </li>
     </ul>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      An operation that ends the authenticated session.
+Calling this method will show the sign in modal before actually signing the user out.
+    </p>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      It is not recommended to use this method to sign out the user as it works counterintuitively.
+Instead of using this method it is recommended to simply clear all the user's data collected
+while using 
+      <a
+        class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+        href="/#signinasync"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          signInAsync
+        </code>
+      </a>
+       or 
+      <a
+        class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+        href="/#refreshasync"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          refreshAsync
+        </code>
+      </a>
+       methods.
+    </p>
     <div>
       <h4
         class="  css-1j2s5xo-h4-h4-STYLES_H4"
@@ -1858,6 +1957,31 @@ sign-in operation.
           </code>
         </li>
       </ul>
+      <p
+        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        A promise that fulfills with an 
+        <a
+          class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+          href="/#appleauthenticationcredential"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            AppleAuthenticationCredential
+          </code>
+        </a>
+        
+object after a successful authentication, and rejects with 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          ERR_CANCELED
+        </code>
+         if the user cancels the
+sign-out operation.
+      </p>
     </div>
   </div>
   <h2
