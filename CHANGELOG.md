@@ -29,7 +29,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@stripe/stripe-react-native` from `0.2.2` to `0.2.3`. ([#15396](https://github.com/expo/expo/pull/15396) by [@brentvatne](https://github.com/brentvatne) and [@kudo](https://github.com/kudo))
 - Updated `react-native-gesture-handler` from `1.10.3` to `2.1.0`. ([#15404](https://github.com/expo/expo/pull/15404) & [#15568](https://github.com/expo/expo/pull/15568) by [@kudo](https://github.com/kudo))
 - Updated `react-native-screens` from `3.8.0` to `3.10.1`. ([#15416](https://github.com/expo/expo/pull/15416) by [@bbarthec](https://github.com/bbarthec))
-- Updated `react-native-reanimated` from `2.2.3` to `2.3.0`. ([#15475](https://github.com/expo/expo/pull/15475) by [@Kudo](https://github.com/Kudo))
+- Updated `react-native-reanimated` from `2.2.3` to `2.3.1`. ([#15475](https://github.com/expo/expo/pull/15475) & [#15574](https://github.com/expo/expo/pull/15574) by [@Kudo](https://github.com/Kudo))
 
 ### 🛠 Breaking changes
 
