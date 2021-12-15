@@ -429,13 +429,7 @@ const sections = [
   },
   {
     name: 'Expo Modules',
-    reference: [
-      'Overview',
-      'Module API',
-      'Autolinking',
-      'AppDelegate Subscribers',
-      'Module Config',
-    ],
+    reference: ['Overview', 'Module API', 'AppDelegate Subscribers', 'Module Config'],
   },
 ];
 

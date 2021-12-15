@@ -41,11 +41,6 @@ class MyModule : Module() {
 }
 ```
 
-```
-// `import` from Kotlin seems to be breaking syntax highlighting in VSCode :O
-// Adding another code block solves the issue.
-```
-
 </CodeBlocksTable>
 
 ### 2. Set up module config
@@ -69,9 +64,11 @@ Make sure that your module class is included in `modulesClassNames` in the [modu
 
 ### 3. Ensure the module is linked
 
-On iOS you also need to run `pod install` to properly link the new class. On Android it will be linked automatically before building. Now you are ready to go and add some definition components in there!
+On iOS you also need to run `pod install` to properly link the new class. On Android it will be linked automatically before building. Now you are ready to go and add some functionality in there!
 
 ## Definition Components
+
+As you might have noticed in the snippets above, each module class must implement the `definition` function. The definition consists of components that describe the module's functionality and behavior.
 
 ### `name`
 
@@ -201,6 +198,8 @@ prop("background") { (view: UIView, color: UIColor) in
 ```
 
 </CodeBlocksTable>
+
+> Note: Props of function type (callbacks) are not supported yet.
 
 ### `viewManager`
 
@@ -389,3 +388,5 @@ For more examples you can take a look on GitHub at some of Expo modules that alr
 - `expo-haptics` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-haptics/ios/HapticsModule.swift))
 - `expo-clipboard` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-clipboard/ios/EXClipboard/ClipboardModule.swift))
 - `expo-localization` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-localization/ios/LocalizationModule.swift))
+- `expo-system-ui` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-system-ui/ios/ExpoSystemUI/ExpoSystemUIModule.swift))
+- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-image-manipulator/ios/ImageManipulatorModule.swift))
