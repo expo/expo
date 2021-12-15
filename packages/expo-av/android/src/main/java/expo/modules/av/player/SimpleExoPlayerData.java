@@ -357,7 +357,8 @@ class SimpleExoPlayerData extends PlayerData
   @Override
   public void onVideoSizeChanged(final int width, final int height, final int unAppliedRotationDegrees, final float pixelWidthHeightRatio) {
     // TODO other params?
-    mVideoWidthHeight = new Pair<>(width, height);
+    int videoWidth = Math.round(width * pixelWidthHeightRatio);
+    mVideoWidthHeight = new Pair<>(videoWidth, height);
     if (mFirstFrameRendered && mVideoSizeUpdateListener != null) {
       mVideoSizeUpdateListener.onVideoSizeUpdate(mVideoWidthHeight);
     }
