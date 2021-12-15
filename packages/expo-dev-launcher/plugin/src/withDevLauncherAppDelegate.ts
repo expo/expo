@@ -298,7 +298,7 @@ export function modifyAppDelegate(appDelegate: string, expoUpdatesVersion: strin
       initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44;
       shouldAddSDK44Init = true;
     } else if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
-      initToRemove = DEV_LAUNCHER_APP_DELEGATE_BRIDGE;
+      initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE;
     }
 
     if (initToRemove) {
