@@ -138,8 +138,8 @@
 
 - (void)reset
 {
-  [_gestureHandler.pointerTracker reset];
   [self triggerAction];
+  [_gestureHandler.pointerTracker reset];
   self.enabled = YES;
   [super reset];
 }
