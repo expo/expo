@@ -56,13 +56,13 @@ object VersionedUtils {
   }
 
   private fun reloadExpoApp() {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to reload the app because the current activity could not be found."
       )
     }
-    val devSupportManager = currentActivity.devSupportManager ?: return let {
+    val devSupportManager = currentActivity.devSupportManager ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to get the DevSupportManager from current activity."
@@ -73,13 +73,13 @@ object VersionedUtils {
   }
 
   private fun toggleElementInspector() {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to toggle the element inspector because the current activity could not be found."
       )
     }
-    val devSupportManager = currentActivity.devSupportManager ?: return let {
+    val devSupportManager = currentActivity.devSupportManager ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to get the DevSupportManager from current activity."
@@ -112,13 +112,13 @@ object VersionedUtils {
   }
 
   private fun togglePerformanceMonitor() {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to toggle the performance monitor because the current activity could not be found."
       )
     }
-    val devSupportManager = currentActivity.devSupportManager ?: return let {
+    val devSupportManager = currentActivity.devSupportManager ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to get the DevSupportManager from current activity."
@@ -137,13 +137,13 @@ object VersionedUtils {
   }
 
   private fun toggleRemoteJSDebugging() {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to toggle remote JS debugging because the current activity could not be found."
       )
     }
-    val devSupportManager = currentActivity.devSupportManager ?: return let {
+    val devSupportManager = currentActivity.devSupportManager ?: return run {
       FLog.e(
         ReactConstants.TAG,
         "Unable to get the DevSupportManager from current activity."
