@@ -2,7 +2,7 @@
 title: Introduction
 ---
 
-> ⚠️ EAS Update is currently in development and is not ready for use in production.
+> ⚠️ EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps. While we do not intend to make end-user facing changes, we may require you to make new builds of your project before EAS Update is publicly available. Read through the [known issues](/eas-update/known-issues) to ensure EAS Update is ready for your project.
 
 **EAS Update** is a hosted service that serves updates for projects using the `expo-updates` library.
 

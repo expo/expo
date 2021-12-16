@@ -4,8 +4,6 @@ const fm = require('front-matter');
 const fs = require('fs-extra');
 const path = require('path');
 
-const { isDevClientInFeaturePreview } = require('./FeatureFlags');
-
 // TODO(brentvatne): move this to navigation.js so it's all in one place!
 // Map directories in a version directory to a section name
 const DIR_MAPPING = {
@@ -141,14 +139,8 @@ const referenceDirectories = fs
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 
 const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
-let previewDirectories = ['preview', 'eas-update']; // a private preview section which isn't linked in the documentation
-let featurePreviewDirectories = ['feature-preview']; // a public preview section which is linked under `Feature Preview`
-
-if (isDevClientInFeaturePreview) {
-  featurePreviewDirectories = [...featurePreviewDirectories, 'development'];
-} else {
-  previewDirectories = [...previewDirectories, 'development'];
-}
+const previewDirectories = ['preview']; // a private preview section which isn't linked in the documentation
+const featurePreviewDirectories = ['feature-preview', 'development', 'eas-update']; // a public preview section which is linked under `Feature Preview`
 
 // Find any directories that aren't reference or starting directories. Also exclude the api
 // directory, which is just a shortcut.

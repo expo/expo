@@ -4,8 +4,6 @@ title: Getting started
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
-EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps. While we do not intend to make end-user facing changes, we may require you to make new builds of your project before EAS Update is publicly available. Read through the [known issues](/eas-update/known-issues) to ensure EAS Update is ready for your project.
-
 ## Prerequisites
 
 EAS Update requires the following versions or greater:

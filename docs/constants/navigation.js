@@ -19,12 +19,13 @@ const GROUPS = {
   'Expo SDK': ['Expo SDK'],
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
-  Preview: ['Preview', 'EAS Update'],
+  Preview: ['Preview'],
   EAS: ['EAS'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
   'Technical Specs': ['Technical Specs'],
   'Development Builds': ['Development Builds'],
+  'EAS Update': ['EAS Update'],
 };
 
 // This array provides the **ordering** for pages within each section
