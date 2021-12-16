@@ -259,7 +259,7 @@ abstract class ReactNativeActivity :
 
   // endregion
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    this.devSupportManager?.let { devSupportManager ->
+   devSupportManager?.let { devSupportManager ->
       if (!isCrashed && devSupportManager.call("getDevSupportEnabled") as Boolean) {
         val didDoubleTapR = Assertions.assertNotNull(doubleTapReloadRecognizer)
           .didDoubleTapR(keyCode, currentFocus)
