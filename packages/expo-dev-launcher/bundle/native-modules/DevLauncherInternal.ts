@@ -37,9 +37,10 @@ export async function getBuildInfoAsync(): Promise<BuildInfo> {
   return DevLauncher.getBuildInfo();
 }
 
-
 export async function copyToClipboardAsync(content: string): Promise<null> {
   return DevLauncher.copyToClipboard(content);
 }
 
 export const clientUrlScheme = DevLauncher.clientUrlScheme;
+export const installationID = DevLauncher.installationID;
+export const isDevice = !!DevLauncher.isDevice;

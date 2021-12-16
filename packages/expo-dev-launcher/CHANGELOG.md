@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add persisted installation ID and include in manifest requests. ([#15538](https://github.com/expo/expo/pull/15538) by [@esamelson](https://github.com/esamelson))
+- Improve dev session request logic and use device ID when available. ([#15542](https://github.com/expo/expo/pull/15542) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
