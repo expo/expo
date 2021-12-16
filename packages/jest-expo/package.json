@@ -35,7 +35,6 @@
     "@jest/create-cache-key-function": "^26.6.2",
     "babel-jest": "^26.6.3",
     "find-up": "^5.0.0",
-    "jest": "^26.6.3",
     "jest-watch-select-projects": "^2.0.0",
     "jest-watch-typeahead": "0.6.4",
     "json5": "^2.1.0",
