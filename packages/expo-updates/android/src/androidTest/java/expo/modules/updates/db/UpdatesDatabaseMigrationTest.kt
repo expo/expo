@@ -380,13 +380,46 @@ class UpdatesDatabaseMigrationTest {
 
     // schema changes automatically verified, we just need to verify data integrity
     val cursorAssets1 =
-      db.query("SELECT * FROM `assets` WHERE `id` = 2 AND `url` = 'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e' AND `key` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `headers` IS NULL AND `type` = 'image/png' AND `metadata` IS NULL AND `download_time` = 1614137309295 AND `relative_path` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0")
+      db.query("SELECT * FROM `assets` WHERE `id` = 2 AND `url` = 'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e' AND `key` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `headers` IS NULL AND `type` = 'image/png' AND `metadata` IS NULL AND `download_time` = 1614137309295 AND `relative_path` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL")
     Assert.assertEquals(1, cursorAssets1.count.toLong())
     val cursorAssets2 =
-      db.query("SELECT * FROM `assets` WHERE `id` = 3 AND `url` = 'https://url.to/bundle-1614137308871' AND `key` = 'bundle-1614137308871' AND `headers` IS NULL AND `type` = 'application/javascript' AND `metadata` IS NULL AND `download_time` = 1614137309513 AND `relative_path` = 'bundle-1614137308871' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0")
+      db.query("SELECT * FROM `assets` WHERE `id` = 3 AND `url` = 'https://url.to/bundle-1614137308871' AND `key` = 'bundle-1614137308871' AND `headers` IS NULL AND `type` = 'application/javascript' AND `metadata` IS NULL AND `download_time` = 1614137309513 AND `relative_path` = 'bundle-1614137308871' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL")
     Assert.assertEquals(1, cursorAssets2.count.toLong())
     val cursorAssets3 =
-      db.query("SELECT * FROM `assets` WHERE `id` = 4 AND `url` IS NULL AND `key` IS NULL AND `headers` IS NULL AND `type` = 'js' AND `metadata` IS NULL AND `download_time` = 1614137406588 AND `relative_path` = 'bundle-1614137401950' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0")
+      db.query("SELECT * FROM `assets` WHERE `id` = 4 AND `url` IS NULL AND `key` IS NULL AND `headers` IS NULL AND `type` = 'js' AND `metadata` IS NULL AND `download_time` = 1614137406588 AND `relative_path` = 'bundle-1614137401950' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL")
+    Assert.assertEquals(1, cursorAssets3.count.toLong())
+  }
+
+  @Test
+  @Throws(IOException::class)
+  fun testMigrate9To10() {
+    var db = helper.createDatabase(TEST_DB, 9)
+
+    // db has schema version 8. insert some data using SQL queries.
+    // cannot use DAO classes because they expect the latest schema.
+    db.execSQL(
+      """INSERT INTO "assets" ("id","url","key","headers","type","metadata","download_time","relative_path","hash","hash_type","marked_for_deletion","extra_request_headers") VALUES (2,'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e','b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,'image/png',NULL,1614137309295,'b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,0,0,NULL),
+ (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871',NULL,0,0,NULL),
+ (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950',NULL,0,0,NULL)"""
+    )
+
+    // Prepare for the next version.
+    db.close()
+
+    // Re-open the database with version 8 and provide
+    // MIGRATION_8_9 as the migration process.
+    db = helper.runMigrationsAndValidate(TEST_DB, 10, true, UpdatesDatabase.MIGRATION_9_10)
+    db.execSQL("PRAGMA foreign_keys=ON")
+
+    // schema changes automatically verified, we just need to verify data integrity
+    val cursorAssets1 =
+      db.query("SELECT * FROM `assets` WHERE `id` = 2 AND `url` = 'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e' AND `key` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `headers` IS NULL AND `type` = 'image/png' AND `metadata` IS NULL AND `download_time` = 1614137309295 AND `relative_path` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL AND `expected_hash` IS NULL")
+    Assert.assertEquals(1, cursorAssets1.count.toLong())
+    val cursorAssets2 =
+      db.query("SELECT * FROM `assets` WHERE `id` = 3 AND `url` = 'https://url.to/bundle-1614137308871' AND `key` = 'bundle-1614137308871' AND `headers` IS NULL AND `type` = 'application/javascript' AND `metadata` IS NULL AND `download_time` = 1614137309513 AND `relative_path` = 'bundle-1614137308871' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL AND `expected_hash` IS NULL")
+    Assert.assertEquals(1, cursorAssets2.count.toLong())
+    val cursorAssets3 =
+      db.query("SELECT * FROM `assets` WHERE `id` = 4 AND `url` IS NULL AND `key` IS NULL AND `headers` IS NULL AND `type` = 'js' AND `metadata` IS NULL AND `download_time` = 1614137406588 AND `relative_path` = 'bundle-1614137401950' AND `hash` IS NULL AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL AND `expected_hash` IS NULL")
     Assert.assertEquals(1, cursorAssets3.count.toLong())
   }
 

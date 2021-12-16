@@ -68,6 +68,7 @@ class NewUpdateManifest private constructor(
           extraRequestHeaders = assetHeaders[mLaunchAsset.getString("key")]
           isLaunchAsset = true
           embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
+          expectedHash = mLaunchAsset.getString("hash")
         }
       )
     } catch (e: JSONException) {
@@ -85,6 +86,7 @@ class NewUpdateManifest private constructor(
               url = Uri.parse(assetObject.getString("url"))
               extraRequestHeaders = assetHeaders[assetObject.getString("key")]
               embeddedAssetFilename = assetObject.getNullable("embeddedAssetFilename")
+              expectedHash = mLaunchAsset.getString("hash")
             }
           )
         } catch (e: JSONException) {
