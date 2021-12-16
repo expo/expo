@@ -50,22 +50,36 @@ public class VersionedUtils {
 
   private static void reloadExpoApp() {
     Activity currentActivity = Exponent.getInstance().getCurrentActivity();
-    if (currentActivity instanceof ReactNativeActivity) {
-      ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
-      reactNativeActivity.getDevSupportManager().callRecursive("reloadExpoApp");
-    } else {
+    if (!(currentActivity instanceof ReactNativeActivity)) {
       FLog.e(ReactConstants.TAG, "Unable to reload the app because the current activity could not be found.");
+      return;
     }
+
+    ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
+    RNObject devSupportManager = reactNativeActivity.getDevSupportManager();
+    if (devSupportManager == null) {
+      FLog.e(ReactConstants.TAG, "Unable to get the DevSupportManager from current activity.");
+      return;
+    }
+
+    devSupportManager.callRecursive("reloadExpoApp");
   }
 
   private static void toggleElementInspector() {
     Activity currentActivity = Exponent.getInstance().getCurrentActivity();
-    if (currentActivity instanceof ReactNativeActivity) {
-      ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
-      reactNativeActivity.getDevSupportManager().callRecursive("toggleElementInspector");
-    } else {
+    if (!(currentActivity instanceof ReactNativeActivity)) {
       FLog.e(ReactConstants.TAG, "Unable to toggle the element inspector because the current activity could not be found.");
+      return;
     }
+
+    ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
+    RNObject devSupportManager = reactNativeActivity.getDevSupportManager();
+    if (devSupportManager == null) {
+      FLog.e(ReactConstants.TAG, "Unable to get the DevSupportManager from current activity.");
+      return;
+    }
+
+    devSupportManager.callRecursive("toggleElementInspector");
   }
 
   private static void requestOverlayPermission(Context context) {
@@ -90,34 +104,47 @@ public class VersionedUtils {
 
   private static void togglePerformanceMonitor() {
     Activity currentActivity = Exponent.getInstance().getCurrentActivity();
-    if (currentActivity instanceof ReactNativeActivity) {
-      ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
-      RNObject devSettings = reactNativeActivity.getDevSupportManager().callRecursive("getDevSettings");
-
-      if (devSettings != null) {
-        boolean isFpsDebugEnabled = (boolean) devSettings.call("isFpsDebugEnabled");
-        if (!isFpsDebugEnabled) {
-          // Request overlay permission if needed when "Show Perf Monitor" option is selected
-          requestOverlayPermission(currentActivity);
-        }
-        devSettings.call("setFpsDebugEnabled", !isFpsDebugEnabled);
-      }
-    } else {
+    if (!(currentActivity instanceof ReactNativeActivity)) {
       FLog.e(ReactConstants.TAG, "Unable to toggle the performance monitor because the current activity could not be found.");
+      return;
+    }
+
+    ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
+    RNObject devSupportManager = reactNativeActivity.getDevSupportManager();
+    if (devSupportManager == null) {
+      FLog.e(ReactConstants.TAG, "Unable to get the DevSupportManager from current activity.");
+      return;
+    }
+
+    RNObject devSettings = devSupportManager.callRecursive("getDevSettings");
+    if (devSettings != null) {
+      boolean isFpsDebugEnabled = (boolean) devSettings.call("isFpsDebugEnabled");
+      if (!isFpsDebugEnabled) {
+        // Request overlay permission if needed when "Show Perf Monitor" option is selected
+        requestOverlayPermission(currentActivity);
+      }
+      devSettings.call("setFpsDebugEnabled", !isFpsDebugEnabled);
     }
   }
 
   private static void toggleRemoteJSDebugging() {
     Activity currentActivity = Exponent.getInstance().getCurrentActivity();
-    if (currentActivity instanceof ReactNativeActivity) {
-      ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
-      RNObject devSettings = reactNativeActivity.getDevSupportManager().callRecursive("getDevSettings");
-      if (devSettings != null) {
-        boolean isRemoteJSDebugEnabled = (boolean) devSettings.call("isRemoteJSDebugEnabled");
-        devSettings.call("setRemoteJSDebugEnabled", !isRemoteJSDebugEnabled);
-      }
-    } else {
+    if (!(currentActivity instanceof ReactNativeActivity)) {
       FLog.e(ReactConstants.TAG, "Unable to toggle remote JS debugging because the current activity could not be found.");
+      return;
+    }
+
+    ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
+    RNObject devSupportManager = reactNativeActivity.getDevSupportManager();
+    if (devSupportManager == null) {
+      FLog.e(ReactConstants.TAG, "Unable to get the DevSupportManager from current activity.");
+      return;
+    }
+
+    RNObject devSettings = devSupportManager.callRecursive("getDevSettings");
+    if (devSettings != null) {
+      boolean isRemoteJSDebugEnabled = (boolean) devSettings.call("isRemoteJSDebugEnabled");
+      devSettings.call("setRemoteJSDebugEnabled", !isRemoteJSDebugEnabled);
     }
   }
 
