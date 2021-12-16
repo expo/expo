@@ -21,8 +21,19 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    return subscribers.reduce(false) { result, subscriber in
-      return subscriber.application?(application, willFinishLaunchingWithOptions: launchOptions) ?? false || result
+    let parsedSubscribers = subscribers.filter {
+      $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
+    }
+    
+    // If we can't find a subscriber that implements `willFinishLaunchingWithOptions`, we will delegate the decision if we can handel the passed URL to
+    // the `didFinishLaunchingWithOptions` method by returning `true` here.
+    //  You can read more about how iOS handles deep links here: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application#discussion
+    if (parsedSubscribers.isEmpty) {
+      return true;
+    }
+    
+    return parsedSubscribers.reduce(false) { result, subscriber in
+      return subscriber.application!(application, willFinishLaunchingWithOptions: launchOptions) || result
     }
   }
 
