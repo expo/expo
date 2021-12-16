@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the deep link wasn't passed to the application if the application wasn't running when the deep link was sent.
+- Fixed the deep link wasn't passed to the application if the application wasn't running when the deep link was sent. ([#15593](https://github.com/expo/expo/pull/15593) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
