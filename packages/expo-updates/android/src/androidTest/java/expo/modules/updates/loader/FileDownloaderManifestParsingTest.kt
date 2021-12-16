@@ -240,4 +240,51 @@ class FileDownloaderManifestParsingTest {
     Assert.assertFalse(errorOccurred)
     Assert.assertNotNull(resultUpdateManifest)
   }
+
+  @Test
+  fun testManifestParsing_JSONBodySigned_UnsignedRequest() {
+    val contentType = "application/json"
+    val headersMap = mapOf(
+      "expo-protocol-version" to "0",
+      "expo-sfv-version" to "0",
+      "content-type" to contentType,
+    )
+
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    val response = mockk<Response>().apply {
+      headersMap.forEach {
+        every { header(it.key) } returns it.value
+      }
+      every { headers() } returns Headers.of(headersMap)
+      every { body() } returns ResponseBody.create(MediaType.parse("application/json; charset=utf-8"), newJSON)
+    }
+
+    val configuration = UpdatesConfiguration().loadValuesFromMap(
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE to newJSONCertificate,
+        UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA to mapOf<String, String>(),
+      )
+    )
+
+    var errorOccurred: Exception? = null
+    var resultUpdateManifest: UpdateManifest? = null
+
+    FileDownloader(context).parseManifestResponse(
+      response, configuration,
+      object : FileDownloader.ManifestDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = e
+        }
+
+        override fun onSuccess(updateManifest: UpdateManifest) {
+          resultUpdateManifest = updateManifest
+        }
+      }
+    )
+
+    Assert.assertEquals(errorOccurred!!.message, "No expo-signature header specified")
+    Assert.assertNull(resultUpdateManifest)
+  }
 }

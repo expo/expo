@@ -132,7 +132,7 @@ object Crypto {
         return when (str) {
           RSA_SHA256.algorithmName -> RSA_SHA256
           null -> RSA_SHA256
-          else -> throw Error("Invalid code signing algorithm name: $str")
+          else -> throw Exception("Invalid code signing algorithm name: $str")
         }
       }
     }
@@ -180,7 +180,7 @@ object Crypto {
 
   fun parseSignatureHeader(signatureHeader: String?): SignatureHeaderInfo {
     if (signatureHeader == null) {
-      throw Error("No expo-signature header specified")
+      throw Exception("No expo-signature header specified")
     }
 
     val signatureMap = Parser(signatureHeader).parseDictionary().get()
@@ -191,7 +191,7 @@ object Crypto {
 
     val signature = if (sigFieldValue is StringItem) {
       sigFieldValue.get()
-    } else throw Error("Structured field $CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE not found in expo-signature header")
+    } else throw Exception("Structured field $CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE not found in expo-signature header")
     val keyId = if (keyIdFieldValue is StringItem) {
       keyIdFieldValue.get()
     } else CODE_SIGNING_METADATA_DEFAULT_KEY_ID
@@ -206,7 +206,7 @@ object Crypto {
     // check that the key used to sign the response is the same as the key embedded in the configuration
     // TODO(wschurman): this may change for child certificates and development certificates
     if (info.keyId != configuration.keyId) {
-      throw Error("Key with keyid=${info.keyId} from signature not found in client configuration")
+      throw Exception("Key with keyid=${info.keyId} from signature not found in client configuration")
     }
 
     // note that a mismatched algorithm doesn't fail early. it still tries to verify the signature with the
