@@ -62,7 +62,7 @@ async function findDefaultPathsAsync(cwd) {
 async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     // first try resolving the provided dir
     if (nativeModulesDir) {
-        const nativeModulesDirPath = path_1.default.resolve(nativeModulesDir);
+        const nativeModulesDirPath = path_1.default.resolve(cwd, nativeModulesDir);
         if (await fs_extra_1.default.pathExists(nativeModulesDirPath)) {
             return nativeModulesDirPath;
         }
@@ -70,9 +70,9 @@ async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     // if not found, try to find it relative to the package.json
     const up = await (0, find_up_1.default)('package.json', { cwd });
     if (!up) {
-        return undefined;
+        return null;
     }
     const resolvedPath = path_1.default.join(up, '..', nativeModulesDir || 'modules');
-    return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : undefined;
+    return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : null;
 }
 //# sourceMappingURL=mergeLinkingOptions.js.map

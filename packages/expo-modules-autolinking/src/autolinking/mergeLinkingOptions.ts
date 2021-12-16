@@ -77,12 +77,12 @@ async function findDefaultPathsAsync(cwd: string): Promise<string[]> {
  * @returns undefined if custom modules dir not found or doesn't exist
  */
 async function resolveNativeModulesDirAsync(
-  nativeModulesDir: string | undefined,
+  nativeModulesDir: string | null | undefined,
   cwd: string
-): Promise<string | undefined> {
+): Promise<string | null> {
   // first try resolving the provided dir
   if (nativeModulesDir) {
-    const nativeModulesDirPath = path.resolve(nativeModulesDir);
+    const nativeModulesDirPath = path.resolve(cwd, nativeModulesDir);
     if (await fs.pathExists(nativeModulesDirPath)) {
       return nativeModulesDirPath;
     }
@@ -91,8 +91,8 @@ async function resolveNativeModulesDirAsync(
   // if not found, try to find it relative to the package.json
   const up = await findUp('package.json', { cwd });
   if (!up) {
-    return undefined;
+    return null;
   }
   const resolvedPath = path.join(up, '..', nativeModulesDir || 'modules');
-  return fs.existsSync(resolvedPath) ? resolvedPath : undefined;
+  return fs.existsSync(resolvedPath) ? resolvedPath : null;
 }

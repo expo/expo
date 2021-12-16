@@ -154,18 +154,18 @@ async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[
 
 /**
  * Resolves package name and version for the given {@link packagePath} from its `package.json`.
- * if {@link options.fallbackToDirName} is true, it returns the dir name when `package.json` doesn't exist.
+ * if {@link fallbackToDirName} is true, it returns the dir name when `package.json` doesn't exist.
  * @returns object with `name` and `version` properties. `version` falls back to `UNVERSIONED` if cannot be resolved.
  */
 function resolvePackageNameAndVersion(
   packagePath: string,
-  options: { fallbackToDirName?: boolean } = {}
+  { fallbackToDirName }: { fallbackToDirName?: boolean } = {}
 ): { name: string; version: string } {
   try {
     const { name, version } = require(path.join(packagePath, 'package.json'));
     return { name, version: version || 'UNVERSIONED' };
   } catch (e) {
-    if (options.fallbackToDirName) {
+    if (fallbackToDirName) {
       // we don't have the package.json name, so we'll use the directory name
       return {
         name: path.basename(packagePath),
