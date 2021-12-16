@@ -9,13 +9,18 @@ export declare function resolveSearchPathsAsync(searchPaths: string[] | null, cw
  */
 export declare function findDefaultPathsAsync(cwd: string): Promise<string[]>;
 /**
+ * Finds the real path to custom native modules directory.
+ * @returns undefined if custom modules dir not found or doesn't exist
+ */
+export declare function resolveNativeModulesDirAsync(nativeModulesDir: string | null | undefined, cwd: string): Promise<string | null>;
+/**
  * Searches for modules to link based on given config.
  */
 export declare function findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults>;
 /**
  * Merges autolinking options from different sources (the later the higher priority)
- * - options defined in package.json's `expoModules` field
- * - platform-specific options from the above (e.g. `expoModules.ios`)
+ * - options defined in package.json's `expo.autolinking` field
+ * - platform-specific options from the above (e.g. `expo.autolinking.ios`)
  * - options provided to the CLI command
  */
 export declare function mergeLinkingOptionsAsync<OptionsType extends SearchOptions>(providedOptions: OptionsType): Promise<OptionsType>;

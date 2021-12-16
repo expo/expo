@@ -63,71 +63,181 @@ export async function findDefaultPathsAsync(cwd: string): Promise<string[]> {
 }
 
 /**
+ * Finds the real path to custom native modules directory.
+ * @returns undefined if custom modules dir not found or doesn't exist
+ */
+export async function resolveNativeModulesDirAsync(
+  nativeModulesDir: string | null | undefined,
+  cwd: string
+): Promise<string | null> {
+  // first try resolving the provided dir
+  if (nativeModulesDir) {
+    const nativeModulesDirPath = path.resolve(cwd, nativeModulesDir);
+    if (await fs.pathExists(nativeModulesDirPath)) {
+      return nativeModulesDirPath;
+    }
+  }
+
+  // if not found, try to find it relative to the package.json
+  const up = await findUp('package.json', { cwd });
+  if (!up) {
+    return null;
+  }
+  const resolvedPath = path.join(up, '..', nativeModulesDir || 'modules');
+  return fs.existsSync(resolvedPath) ? resolvedPath : null;
+}
+
+/**
+ * Adds {@link revision} to the {@link results} map
+ * or to package duplicates if it already exists.
+ * @param results [mutable] yet resolved packages map
+ * @param name resolved package name
+ * @param revision resolved package revision
+ */
+function addRevisionToResults(
+  results: Map<string, PackageRevision>,
+  name: string,
+  revision: PackageRevision
+): void {
+  if (!results.has(name)) {
+    // The revision that was found first will be the main one.
+    // An array of duplicates and the config are needed only here.
+    results.set(name, {
+      ...revision,
+      duplicates: [],
+    });
+  } else if (
+    results.get(name)?.path !== revision.path &&
+    results.get(name)?.duplicates?.every(({ path }) => path !== revision.path)
+  ) {
+    const { config, duplicates, ...duplicateEntry } = revision;
+    results.get(name)?.duplicates?.push(duplicateEntry);
+  }
+}
+
+/**
+ * Returns paths to the highest priority config files, relative to the {@link searchPath}.
+ * @example
+ * ```
+ * // Given the following file exists: /foo/myapp/modules/mymodule/expo-module.config.json
+ * await findPackagesConfigPathsAsync('/foo/myapp/modules');
+ * // returns ['mymodule/expo-module.config.json']
+ * ```
+ */
+async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[]> {
+  const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
+  const paths = await glob([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
+    cwd: searchPath,
+  });
+
+  // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
+  // then we want to give `expo-module.config.json` the priority.
+  return Object.values(
+    paths.reduce<Record<string, string>>((acc, configPath) => {
+      const dirname = path.dirname(configPath);
+
+      if (!acc[dirname] || configPriority(configPath) > configPriority(acc[dirname])) {
+        acc[dirname] = configPath;
+      }
+      return acc;
+    }, {})
+  );
+}
+
+/**
+ * Resolves package name and version for the given {@link packagePath} from its `package.json`.
+ * if {@link options.fallbackToDirName} is true, it returns the dir name when `package.json` doesn't exist.
+ * @returns object with `name` and `version` properties. `version` falls back to `UNVERSIONED` if cannot be resolved.
+ */
+function resolvePackageNameAndVersion(
+  packagePath: string,
+  { fallbackToDirName }: { fallbackToDirName?: boolean } = {}
+): { name: string; version: string } {
+  try {
+    const { name, version } = require(path.join(packagePath, 'package.json'));
+    return { name, version: version || 'UNVERSIONED' };
+  } catch (e) {
+    if (fallbackToDirName) {
+      // we don't have the package.json name, so we'll use the directory name
+      return {
+        name: path.basename(packagePath),
+        version: 'UNVERSIONED',
+      };
+    } else {
+      throw e;
+    }
+  }
+}
+
+/**
  * Searches for modules to link based on given config.
  */
 export async function findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults> {
   const options = await mergeLinkingOptionsAsync(providedOptions);
-  const results: SearchResults = {};
+  const results: Map<string, PackageRevision> = new Map();
 
-  for (const searchPath of options.searchPaths) {
-    const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-    const paths = await glob([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
-      cwd: searchPath,
-    });
+  const nativeModuleNames = new Set<string>();
 
-    // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
-    // then we want to give `expo-module.config.json` the priority.
-    const uniqueConfigPaths: string[] = Object.values(
-      paths.reduce<Record<string, string>>((acc, configPath) => {
-        const dirname = path.dirname(configPath);
+  // custom native modules should be resolved first so that they can override other modules
+  const searchPaths =
+    options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
+      ? [options.nativeModulesDir, ...options.searchPaths]
+      : options.searchPaths;
 
-        if (!acc[dirname] || configPriority(configPath) > configPriority(acc[dirname])) {
-          acc[dirname] = configPath;
-        }
-        return acc;
-      }, {})
-    );
+  for (const searchPath of searchPaths) {
+    const isNativeModulesDir = searchPath === options.nativeModulesDir;
 
-    for (const packageConfigPath of uniqueConfigPaths) {
+    const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
+
+    for (const packageConfigPath of packageConfigPaths) {
       const packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
       const expoModuleConfig = requireAndResolveExpoModuleConfig(
         path.join(packagePath, path.basename(packageConfigPath))
       );
-      const { name, version } = require(path.join(packagePath, 'package.json'));
 
-      if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
+      const { name, version } = resolvePackageNameAndVersion(packagePath, {
+        fallbackToDirName: isNativeModulesDir,
+      });
+
+      // we ignore the `exclude` option for custom native modules
+      if (
+        (!isNativeModulesDir && options.exclude?.includes(name)) ||
+        !expoModuleConfig.supportsPlatform(options.platform)
+      ) {
         continue;
       }
 
+      // add the current revision to the results
       const currentRevision: PackageRevision = {
         path: packagePath,
         version,
+        config: expoModuleConfig,
       };
+      addRevisionToResults(results, name, currentRevision);
 
-      if (!results[name]) {
-        // The revision that was found first will be the main one.
-        // An array of duplicates and the config are needed only here.
-        results[name] = {
-          ...currentRevision,
-          config: expoModuleConfig,
-          duplicates: [],
-        };
-      } else if (
-        results[name].path !== packagePath &&
-        results[name].duplicates?.every(({ path }) => path !== packagePath)
-      ) {
-        results[name].duplicates?.push(currentRevision);
+      // if the module is a native module, we need to add it to the nativeModuleNames set
+      if (isNativeModulesDir && !nativeModuleNames.has(name)) {
+        nativeModuleNames.add(name);
       }
     }
   }
 
+  const searchResults: SearchResults = Object.fromEntries(results.entries());
+
   // It doesn't make much sense to strip modules if there is only one search path.
+  // (excluding custom native modules path)
   // Workspace root usually doesn't specify all its dependencies (see Expo Go),
   // so in this case we should link everything.
   if (options.searchPaths.length <= 1) {
-    return results;
+    return searchResults;
   }
-  return filterToProjectDependencies(results, providedOptions);
+
+  return filterToProjectDependencies(searchResults, {
+    ...providedOptions,
+    // Custom native modules are not filtered out
+    // when they're not specified in package.json dependencies.
+    alwaysIncludedPackagesNames: nativeModuleNames,
+  });
 }
 
 /**
@@ -135,10 +245,19 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
  */
 function filterToProjectDependencies(
   results: SearchResults,
-  options: Pick<SearchOptions, 'silent'> = {}
+  options: Pick<SearchOptions, 'silent'> & { alwaysIncludedPackagesNames?: Set<string> } = {}
 ) {
   const filteredResults: SearchResults = {};
   const visitedPackages = new Set<string>();
+
+  // iterate through always included package names and add them to the visited packages
+  // if the results contains them
+  for (const name of options.alwaysIncludedPackagesNames ?? []) {
+    if (results[name] && !visitedPackages.has(name)) {
+      filteredResults[name] = results[name];
+      visitedPackages.add(name);
+    }
+  }
 
   // Helper for traversing the dependency hierarchy.
   function visitPackage(packageJsonPath: string) {
@@ -190,8 +309,8 @@ function filterToProjectDependencies(
 
 /**
  * Merges autolinking options from different sources (the later the higher priority)
- * - options defined in package.json's `expoModules` field
- * - platform-specific options from the above (e.g. `expoModules.ios`)
+ * - options defined in package.json's `expo.autolinking` field
+ * - platform-specific options from the above (e.g. `expo.autolinking.ios`)
  * - options provided to the CLI command
  */
 export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions>(
@@ -209,6 +328,11 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
 
   // Makes provided paths absolute or falls back to default paths if none was provided.
   finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, process.cwd());
+
+  finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(
+    finalOptions.nativeModulesDir,
+    process.cwd()
+  );
 
   return finalOptions;
 }
