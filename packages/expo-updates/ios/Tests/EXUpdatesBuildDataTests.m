@@ -52,29 +52,29 @@ static NSString * const scopeKey = @"test";
   
   
   _configChannelTestDictionary = @{
-    @"EXUpdatesScopeKey": scopeKey,
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesRequestHeaders": @{@"expo-channel-name":@"test"}
+    EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"test"}
   };
   _configChannelTest = [EXUpdatesConfig configWithDictionary:_configChannelTestDictionary];
   _configChannelTestTwoDictionary = @{
-    @"EXUpdatesScopeKey": scopeKey,
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesRequestHeaders": @{@"expo-channel-name":@"testTwo"}
+    EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"testTwo"}
   };
   _configChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configChannelTestTwoDictionary
   ];
   
   _configReleaseChannelTestDictionary = @{
-    @"EXUpdatesScopeKey": scopeKey,
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesReleaseChannel": @"test",
+    EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigReleaseChannelKey: @"test",
   };
   _configReleaseChannelTest = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestDictionary];
   _configReleaseChannelTestTwoDictionary = @{
-    @"EXUpdatesScopeKey": scopeKey,
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesReleaseChannel": @"testTwo",
+    EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigReleaseChannelKey: @"testTwo",
   };
   _configReleaseChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestTwoDictionary
   ];

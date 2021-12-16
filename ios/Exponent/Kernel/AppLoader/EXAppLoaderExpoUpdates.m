@@ -345,16 +345,16 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   _config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": httpManifestUrl.absoluteString,
-    @"EXUpdatesSDKVersion": [self _sdkVersions],
-    @"EXUpdatesScopeKey": httpManifestUrl.absoluteString,
-    @"EXUpdatesReleaseChannel": releaseChannel,
-    @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
-    @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
-    @"EXUpdatesLaunchWaitMs": launchWaitMs,
-    @"EXUpdatesCheckOnLaunch": shouldCheckOnLaunch ? @"ALWAYS" : @"NEVER",
-    @"EXUpdatesExpectsSignedManifest": @YES,
-    @"EXUpdatesRequestHeaders": [self _requestHeaders]
+    EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
+    EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
+    EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
+    EXUpdatesConfigReleaseChannelKey: releaseChannel,
+    EXUpdatesConfigHasEmbeddedUpdateKey: @([EXEnvironment sharedEnvironment].isDetached),
+    EXUpdatesConfigEnabledKey: @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
+    EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
+    EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfigCheckOnLaunchValueNever,
+    EXUpdatesConfigExpectsSignedManifestKey: @YES,
+    EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   }];
 
   if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {

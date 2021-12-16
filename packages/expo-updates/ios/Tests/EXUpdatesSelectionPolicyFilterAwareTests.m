@@ -46,8 +46,8 @@
   NSString *runtimeVersion = @"1.0";
   NSString *scopeKey = @"dummyScope";
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesRuntimeVersion": runtimeVersion,
-    @"EXUpdatesScopeKey": scopeKey
+    EXUpdatesConfigRuntimeVersionKey: runtimeVersion,
+    EXUpdatesConfigScopeKeyKey: scopeKey
   }];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil

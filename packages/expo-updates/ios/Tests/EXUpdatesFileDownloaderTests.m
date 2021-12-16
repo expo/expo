@@ -14,9 +14,8 @@
 - (void)testCacheControl_LegacyManifest
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesRuntimeVersion": @"1.0",
-    @"EXUpdatesUsesLegacyManifest": @(YES)
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigRuntimeVersionKey: @"1.0",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
@@ -28,9 +27,8 @@
 - (void)testCacheControl_NewManifest
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    @"EXUpdatesRuntimeVersion": @"1.0",
-    @"EXUpdatesUsesLegacyManifest": @(NO)
+    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfigRuntimeVersionKey: @"1.0",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
@@ -42,8 +40,8 @@
 - (void)testExtraHeaders_ObjectTypes
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    @"EXUpdatesRuntimeVersion": @"1.0"
+    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfigRuntimeVersionKey: @"1.0"
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
@@ -62,9 +60,9 @@
 - (void)testExtraHeaders_OverrideOrder
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    @"EXUpdatesRuntimeVersion": @"1.0",
-    @"EXUpdatesRequestHeaders": @{
+    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfigRuntimeVersionKey: @"1.0",
+    EXUpdatesConfigRequestHeadersKey: @{
       // custom headers configured at build-time should be able to override preset headers
       @"expo-updates-environment": @"custom"
     }
@@ -84,9 +82,9 @@
 - (void)testAssetExtraHeaders_OverrideOrder
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    @"EXUpdatesRuntimeVersion": @"1.0",
-    @"EXUpdatesRequestHeaders": @{
+    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfigRuntimeVersionKey: @"1.0",
+    EXUpdatesConfigRequestHeadersKey: @{
       // custom headers configured at build-time should be able to override preset headers
       @"expo-updates-environment": @"custom"
     }
