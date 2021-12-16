@@ -57,7 +57,7 @@ async function findDefaultPathsAsync(cwd) {
 }
 /**
  * Finds the real path to custom native modules directory.
- * @returns undefined if custom modules dir not found or doesn't exist
+ * @returns resolved native modules directory or `null` if it is not found or doesn't exist.
  */
 async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     // first try resolving the provided dir
