@@ -2532,7 +2532,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.1.0):
     - ExpoModulesCore
-  - Expo (44.0.0-beta.2):
+  - Expo (44.0.0):
     - ExpoModulesCore
   - ExpoCellular (4.1.0):
     - ExpoModulesCore
@@ -5237,7 +5237,7 @@ SPEC CHECKSUMS:
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
-  Expo: 106ee52b82b71f97690ab3e911124776448eabd3
+  Expo: 6ca1d5ca8c8264a7131a608afcd01561f79f1e6e
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
