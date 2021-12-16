@@ -1,4 +1,7 @@
 {
   "name": "expo-dev-menu",
-  "platforms": ["ios", "android"]
+  "platforms": ["ios", "android"],
+  "ios": {
+    "podspecPath": "expo-dev-menu.podspec"
+  }
 }
