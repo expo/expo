@@ -4,7 +4,7 @@ A [Jest](https://facebook.github.io/jest/) preset to painlessly test your Expo /
 
 ### Installation
 
-- To install the compatible version of `jest-expo` for your project, run: `expo install jest-expo`
+- To install the compatible version of `jest-expo` and `jest` for your project, run: `expo install jest-expo jest`.
 - Add the following config to `package.json`:
 
   ```json
@@ -26,6 +26,8 @@ A [Jest](https://facebook.github.io/jest/) preset to painlessly test your Expo /
   ```
 
 - Run `npm test` and it should pass
+
+>  You can use a different version of `jest` than the one that is installed with `expo install`, but keep in mind that the SDK and `jest-expo` are built against that version.
 
 ## Platforms
 

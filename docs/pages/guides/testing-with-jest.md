@@ -8,7 +8,7 @@ title: Testing with Jest
 
 The first thing we'll want to do is install jest-expo, it's a Jest preset that mocks out the native side of the Expo SDK and handles some configuration for you.
 
-To install the compatible version of `jest-expo` for your project, run: `expo install jest-expo`
+To install the compatible version of `jest-expo` for your project, run: `expo install jest-expo jest`
 
 Then we need to add/update **package.json** to include:
 
