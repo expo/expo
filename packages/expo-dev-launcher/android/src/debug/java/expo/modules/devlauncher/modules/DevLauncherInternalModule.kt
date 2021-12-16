@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -13,6 +12,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
+import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
@@ -30,6 +30,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
   : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   private val intentRegistry: DevLauncherIntentRegistryInterface by inject()
+  private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
 
   override fun initialize() {
     super.initialize()
@@ -46,6 +47,14 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
   }
 
   override fun getName() = "EXDevLauncherInternal"
+
+  override fun hasConstants(): Boolean = true
+
+  override fun getConstants(): Map<String, Any> {
+    return mapOf(
+      "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext)
+    )
+  }
 
   @ReactMethod
   fun loadApp(url: String, promise: Promise) {

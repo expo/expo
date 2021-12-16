@@ -11,7 +11,8 @@ import java.io.Reader
 
 class DevLauncherManifestParser(
   private val httpClient: OkHttpClient,
-  private val url: Uri
+  private val url: Uri,
+  private val installationID: String?
 ) {
   suspend fun isManifestUrl(): Boolean {
     val response = fetch(url, "HEAD", getHeaders()).await(httpClient)
@@ -38,6 +39,10 @@ class DevLauncherManifestParser(
   }
 
   private fun getHeaders(): Headers {
-    return Headers.of(mapOf("expo-platform" to "android"))
+    val headersMap = mutableMapOf("expo-platform" to "android")
+    if (installationID != null) {
+      headersMap["expo-dev-client-id"] = installationID
+    }
+    return Headers.of(headersMap)
   }
 }

@@ -40,7 +40,13 @@ suspend fun UpdatesInterface.loadUpdate(
     })
   }
 
-fun createUpdatesConfigurationWithUrl(url: Uri): HashMap<String, Any> {
+fun createUpdatesConfigurationWithUrl(url: Uri, installationID: String?): HashMap<String, Any> {
+  val requestHeaders = hashMapOf(
+    "Expo-Updates-Environment" to "DEVELOPMENT"
+  )
+  if (installationID != null) {
+    requestHeaders["Expo-Dev-Client-ID"] = installationID
+  }
   return hashMapOf(
     "updateUrl" to url,
     "scopeKey" to url.toString(),
@@ -48,8 +54,6 @@ fun createUpdatesConfigurationWithUrl(url: Uri): HashMap<String, Any> {
     "launchWaitMs" to 60000,
     "checkOnLaunch" to "ALWAYS",
     "enabled" to true,
-    "requestHeaders" to hashMapOf(
-      "Expo-Updates-Environment" to "DEVELOPMENT"
-    )
+    "requestHeaders" to requestHeaders
   )
 }

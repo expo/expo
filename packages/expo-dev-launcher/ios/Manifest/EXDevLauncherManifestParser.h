@@ -10,7 +10,9 @@ typedef void (^OnManifestError)(NSError *error);
 
 @interface EXDevLauncherManifestParser : NSObject
 
-- (instancetype)initWithURL:(NSURL *)url session:(NSURLSession *)session;
+- (instancetype)initWithURL:(NSURL *)url
+             installationID:(NSString *)installationID
+                    session:(NSURLSession *)session;
 
 - (void)isManifestURLWithCompletion:(IsManifestURL)completion
                             onError:(OnManifestError)onError;
