@@ -57,7 +57,7 @@ exports.findDefaultPathsAsync = findDefaultPathsAsync;
 async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     // first try resolving the provided dir
     if (nativeModulesDir) {
-        const nativeModulesDirPath = path_1.default.resolve(nativeModulesDir);
+        const nativeModulesDirPath = path_1.default.resolve(cwd, nativeModulesDir);
         if (await fs_extra_1.default.pathExists(nativeModulesDirPath)) {
             return nativeModulesDirPath;
         }
@@ -65,10 +65,10 @@ async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     // if not found, try to find it relative to the package.json
     const up = await (0, find_up_1.default)('package.json', { cwd });
     if (!up) {
-        return undefined;
+        return null;
     }
     const resolvedPath = path_1.default.join(up, '..', nativeModulesDir || 'modules');
-    return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : undefined;
+    return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : null;
 }
 exports.resolveNativeModulesDirAsync = resolveNativeModulesDirAsync;
 /**
@@ -123,13 +123,13 @@ async function findPackagesConfigPathsAsync(searchPath) {
  * if {@link options.fallbackToDirName} is true, it returns the dir name when `package.json` doesn't exist.
  * @returns object with `name` and `version` properties. `version` falls back to `UNVERSIONED` if cannot be resolved.
  */
-function resolvePackageNameAndVersion(packagePath, options = {}) {
+function resolvePackageNameAndVersion(packagePath, { fallbackToDirName } = {}) {
     try {
         const { name, version } = require(path_1.default.join(packagePath, 'package.json'));
         return { name, version: version || 'UNVERSIONED' };
     }
     catch (e) {
-        if (options.fallbackToDirName) {
+        if (fallbackToDirName) {
             // we don't have the package.json name, so we'll use the directory name
             return {
                 name: path_1.default.basename(packagePath),

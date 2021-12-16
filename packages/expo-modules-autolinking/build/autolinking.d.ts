@@ -12,7 +12,7 @@ export declare function findDefaultPathsAsync(cwd: string): Promise<string[]>;
  * Finds the real path to custom native modules directory.
  * @returns undefined if custom modules dir not found or doesn't exist
  */
-export declare function resolveNativeModulesDirAsync(nativeModulesDir: string | undefined, cwd: string): Promise<string | undefined>;
+export declare function resolveNativeModulesDirAsync(nativeModulesDir: string | null | undefined, cwd: string): Promise<string | null>;
 /**
  * Searches for modules to link based on given config.
  */
