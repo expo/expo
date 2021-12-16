@@ -259,7 +259,7 @@ abstract class ReactNativeActivity :
 
   // endregion
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-   devSupportManager?.let { devSupportManager ->
+    devSupportManager?.let { devSupportManager ->
       if (!isCrashed && devSupportManager.call("getDevSupportEnabled") as Boolean) {
         val didDoubleTapR = Assertions.assertNotNull(doubleTapReloadRecognizer)
           .didDoubleTapR(keyCode, currentFocus)
@@ -612,7 +612,7 @@ abstract class ReactNativeActivity :
   }
 
   val devSupportManager: RNObject?
-    get() = if (reactInstanceManager.isNotNull) reactInstanceManager.callRecursive("getDevSupportManager") else null
+    get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getDevSupportManager")
 
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
