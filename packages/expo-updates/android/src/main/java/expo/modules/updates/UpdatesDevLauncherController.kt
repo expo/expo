@@ -32,9 +32,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
     callback: UpdatesInterface.UpdateCallback
   ) {
     val controller = UpdatesController.instance
-    val updatesConfiguration = UpdatesConfiguration()
-      .loadValuesFromMetadata(context)
-      .loadValuesFromMap(configuration)
+    val updatesConfiguration = UpdatesConfiguration(context, configuration)
     if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
       callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
       return

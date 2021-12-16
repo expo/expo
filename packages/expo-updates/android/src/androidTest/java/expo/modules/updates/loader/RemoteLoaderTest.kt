@@ -44,7 +44,7 @@ class RemoteLoaderTest {
       "updateUrl" to Uri.parse("https://exp.host/@test/test"),
       "runtimeVersion" to "1.0"
     )
-    configuration = UpdatesConfiguration().loadValuesFromMap(configMap)
+    configuration = UpdatesConfiguration(null, configMap)
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
     mockLoaderFiles = mockk()

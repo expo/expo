@@ -30,12 +30,8 @@ class BuildDataTest {
     "updateUrl" to Uri.parse("https://exp.host/@test/test"),
     "requestHeaders" to mapOf("expo-channel-name" to "testTwo")
   )
-  private val updatesConfigTestChannel = UpdatesConfiguration().loadValuesFromMap(
-    buildMapTestChannel
-  )
-  private val updatesConfigTestTwoChannel = UpdatesConfiguration().loadValuesFromMap(
-    buildMapTestTwoChannel
-  )
+  private val updatesConfigTestChannel = UpdatesConfiguration(null, buildMapTestChannel)
+  private val updatesConfigTestTwoChannel = UpdatesConfiguration(null, buildMapTestTwoChannel)
 
   private val buildMapTestReleaseChannel = mapOf(
     "scopeKey" to scopeKey,
@@ -47,12 +43,8 @@ class BuildDataTest {
     "updateUrl" to Uri.parse("https://exp.host/@test/test"),
     "releaseChannel" to "testTwo"
   )
-  private val updatesConfigTestReleaseChannel = UpdatesConfiguration().loadValuesFromMap(
-    buildMapTestReleaseChannel
-  )
-  private val updatesConfigTestTwoReleaseChannel = UpdatesConfiguration().loadValuesFromMap(
-    buildMapTestTwoReleaseChannel
-  )
+  private val updatesConfigTestReleaseChannel = UpdatesConfiguration(null, buildMapTestReleaseChannel)
+  private val updatesConfigTestTwoReleaseChannel = UpdatesConfiguration(null, buildMapTestTwoReleaseChannel)
 
   private val uuid: UUID = UUID.randomUUID()
   private lateinit var spyBuildData: BuildData

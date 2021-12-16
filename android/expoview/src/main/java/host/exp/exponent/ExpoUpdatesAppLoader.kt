@@ -139,7 +139,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST] = true
-    val configuration = UpdatesConfiguration().loadValuesFromMap(configMap)
+    val configuration = UpdatesConfiguration(null, configMap)
     val sdkVersionsList = mutableListOf<String>().apply {
       (Constants.SDK_VERSIONS_LIST + listOf(RNObject.UNVERSIONED)).forEach {
         add(it)
