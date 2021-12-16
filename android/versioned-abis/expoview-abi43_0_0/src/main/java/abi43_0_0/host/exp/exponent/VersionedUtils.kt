@@ -56,27 +56,37 @@ object VersionedUtils {
   }
 
   private fun reloadExpoApp() {
-    val currentActivity = Exponent.instance.currentActivity
-    if (currentActivity is ReactNativeActivity) {
-      currentActivity.devSupportManager.callRecursive("reloadExpoApp")
-    } else {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
       FLog.e(
         ReactConstants.TAG,
         "Unable to reload the app because the current activity could not be found."
       )
     }
+    val devSupportManager = currentActivity.devSupportManager ?: return let {
+      FLog.e(
+        ReactConstants.TAG,
+        "Unable to get the DevSupportManager from current activity."
+      )
+    }
+
+    devSupportManager.callRecursive("reloadExpoApp")
   }
 
   private fun toggleElementInspector() {
-    val currentActivity = Exponent.instance.currentActivity
-    if (currentActivity is ReactNativeActivity) {
-      currentActivity.devSupportManager.callRecursive("toggleElementInspector")
-    } else {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
       FLog.e(
         ReactConstants.TAG,
         "Unable to toggle the element inspector because the current activity could not be found."
       )
     }
+    val devSupportManager = currentActivity.devSupportManager ?: return let {
+      FLog.e(
+        ReactConstants.TAG,
+        "Unable to get the DevSupportManager from current activity."
+      )
+    }
+
+    devSupportManager.callRecursive("toggleElementInspector")
   }
 
   private fun requestOverlayPermission(context: Context) {
@@ -102,38 +112,48 @@ object VersionedUtils {
   }
 
   private fun togglePerformanceMonitor() {
-    val currentActivity = Exponent.instance.currentActivity
-    if (currentActivity is ReactNativeActivity) {
-      val devSettings = currentActivity.devSupportManager.callRecursive("getDevSettings")
-      if (devSettings != null) {
-        val isFpsDebugEnabled = devSettings.call("isFpsDebugEnabled") as Boolean
-        if (!isFpsDebugEnabled) {
-          // Request overlay permission if needed when "Show Perf Monitor" option is selected
-          requestOverlayPermission(currentActivity)
-        }
-        devSettings.call("setFpsDebugEnabled", !isFpsDebugEnabled)
-      }
-    } else {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
       FLog.e(
         ReactConstants.TAG,
         "Unable to toggle the performance monitor because the current activity could not be found."
       )
     }
+    val devSupportManager = currentActivity.devSupportManager ?: return let {
+      FLog.e(
+        ReactConstants.TAG,
+        "Unable to get the DevSupportManager from current activity."
+      )
+    }
+
+    val devSettings = devSupportManager.callRecursive("getDevSettings")
+    if (devSettings != null) {
+      val isFpsDebugEnabled = devSettings.call("isFpsDebugEnabled") as Boolean
+      if (!isFpsDebugEnabled) {
+        // Request overlay permission if needed when "Show Perf Monitor" option is selected
+        requestOverlayPermission(currentActivity)
+      }
+      devSettings.call("setFpsDebugEnabled", !isFpsDebugEnabled)
+    }
   }
 
   private fun toggleRemoteJSDebugging() {
-    val currentActivity = Exponent.instance.currentActivity
-    if (currentActivity is ReactNativeActivity) {
-      val devSettings = currentActivity.devSupportManager.callRecursive("getDevSettings")
-      if (devSettings != null) {
-        val isRemoteJSDebugEnabled = devSettings.call("isRemoteJSDebugEnabled") as Boolean
-        devSettings.call("setRemoteJSDebugEnabled", !isRemoteJSDebugEnabled)
-      }
-    } else {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return let {
       FLog.e(
         ReactConstants.TAG,
         "Unable to toggle remote JS debugging because the current activity could not be found."
       )
+    }
+    val devSupportManager = currentActivity.devSupportManager ?: return let {
+      FLog.e(
+        ReactConstants.TAG,
+        "Unable to get the DevSupportManager from current activity."
+      )
+    }
+
+    val devSettings = devSupportManager.callRecursive("getDevSettings")
+    if (devSettings != null) {
+      val isRemoteJSDebugEnabled = devSettings.call("isRemoteJSDebugEnabled") as Boolean
+      devSettings.call("setRemoteJSDebugEnabled", !isRemoteJSDebugEnabled)
     }
   }
 

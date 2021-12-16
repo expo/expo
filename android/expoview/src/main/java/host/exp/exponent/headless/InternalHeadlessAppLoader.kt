@@ -284,7 +284,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
     }
 
     val reactInstanceManager = builder.callRecursive("build")
-    val devSupportManager = this.reactInstanceManager!!.callRecursive("getDevSupportManager")
+    val devSupportManager = reactInstanceManager!!.callRecursive("getDevSupportManager")
     if (devSupportManager != null) {
       val devSettings = devSupportManager.callRecursive("getDevSettings")
       devSettings?.setField("exponentActivityId", activityId)
