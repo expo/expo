@@ -139,8 +139,13 @@ class ExpoTurboPackage(
   // Reanimated UIManager requires `ReactInstanceManager`,
   // for headless mode we cannot get the hosted `ReactInstanceManager` from current Activity,
   // in this case, we don't override UIManager for reanimated.
+  // besides, we should not override in remote debugging mode because reanimated does not support it.
   private fun shouldOverrideUIManagerForReanimated(): Boolean {
-    return this.reactInstanceManager != null
+    this.reactInstanceManager?.run {
+      return !(devSupportManager.devSettings?.isRemoteJSDebugEnabled ?: false)
+    }
+
+    return false
   }
 
   companion object {
