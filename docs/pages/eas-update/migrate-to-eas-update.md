@@ -9,7 +9,7 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
 EAS Update requires the following versions or greater:
 
 - Expo CLI 5.0.0
-- EAS CLI 0.41.0
+- EAS CLI 0.41.1
 - Expo SDK 44
 - expo-updates 0.11.2
 

@@ -9,7 +9,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 EAS Update requires the following versions or greater:
 
 - Expo CLI 5.0.0
-- EAS CLI 0.41.0
+- EAS CLI 0.41.1
 - Expo SDK 44
 - expo-updates 0.11.2
 
