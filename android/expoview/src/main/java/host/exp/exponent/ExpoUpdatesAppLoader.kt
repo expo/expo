@@ -19,6 +19,7 @@ import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.manifests.core.Manifest
+import expo.modules.updates.db.entity.manifest
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
@@ -201,7 +202,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         }
 
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-          val manifest = Manifest.fromManifestJson(update.manifest!!)
+          val manifest = update.manifest()!!
           setShouldShowAppLoaderStatus(manifest)
           if (manifest.isUsingDeveloperTool()) {
             return false
@@ -244,7 +245,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           this@ExpoUpdatesAppLoader.launcher = launcher
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
-            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest!!)
+            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifestJson!!)
             val manifest = Manifest.fromManifestJson(manifestJson)
             callback.onManifestCompleted(manifest)
 
@@ -280,7 +281,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
                   throw AssertionError("Background update with error status must have a nonnull update object")
                 }
                 jsonParams.put("type", UPDATE_AVAILABLE_EVENT)
-                jsonParams.put("manifestString", update.manifest.toString())
+                jsonParams.put("manifestString", update.manifestJson.toString())
               }
               BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {
                 jsonParams.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT)
@@ -374,30 +375,28 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   }
 
   // XDL expects the full "exponent-" header names
-  private val requestHeaders: Map<String, String?>
-    get() {
-      val headers = mutableMapOf<String, String>()
-      headers["Expo-Updates-Environment"] = clientEnvironment
-      headers["Expo-Client-Environment"] = clientEnvironment
-      val versionName = ExpoViewKernel.instance.versionName
-      if (versionName != null) {
-        headers["Exponent-Version"] = versionName
-      }
-      val sessionSecret = exponentSharedPreferences.sessionSecret
-      if (sessionSecret != null) {
-        headers["Expo-Session"] = sessionSecret
-      }
-
-      // XDL expects the full "exponent-" header names
-      headers["Exponent-Accept-Signature"] = "true"
-      headers["Exponent-Platform"] = "android"
-      if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
-        headers["Exponent-SDK-Version"] = "UNVERSIONED"
-      } else {
-        headers["Exponent-SDK-Version"] = Constants.SDK_VERSIONS
-      }
-      return headers
+  private val requestHeaders: Map<String, String?> = mutableMapOf(
+    "Expo-Updates-Environment" to clientEnvironment,
+    "Expo-Client-Environment" to clientEnvironment,
+    "Exponent-Accept-Signature" to "true",
+    "Exponent-Platform" to "android",
+    "Exponent-Accept-Signature" to "true",
+    "Exponent-SDK-Version" to if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
+      "UNVERSIONED"
+    } else {
+      Constants.SDK_VERSIONS
     }
+  ).apply {
+    val versionName = ExpoViewKernel.instance.versionName
+    if (versionName != null) {
+      this["Exponent-Version"] = versionName
+    }
+
+    val sessionSecret = exponentSharedPreferences.sessionSecret
+    if (sessionSecret != null) {
+      this["Expo-Session"] = sessionSecret
+    }
+  }
 
   private val clientEnvironment: String
     get() = if (Constants.isStandaloneApp()) {

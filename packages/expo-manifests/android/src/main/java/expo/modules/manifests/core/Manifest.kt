@@ -72,6 +72,8 @@ abstract class Manifest(protected val json: JSONObject) {
 
   abstract fun getAssets(): JSONArray?
 
+  fun getMetadata(): JSONObject? = json.getNullable("metadata")
+
   abstract fun getExpoGoConfigRootObject(): JSONObject?
   abstract fun getExpoClientConfigRootObject(): JSONObject?
 
@@ -171,7 +173,7 @@ abstract class Manifest(protected val json: JSONObject) {
     val sharedJsEngine = expoClientConfig.getNullable<String>("jsEngine")
     val androidJsEngine = expoClientConfig
       .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
-    return androidJsEngine ?: sharedJsEngine ?: null
+    return androidJsEngine ?: sharedJsEngine
   }
 
   fun getIconUrl(): String? {

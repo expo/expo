@@ -4,6 +4,7 @@ import android.content.Context
 import expo.modules.manifests.core.Manifest.Companion.fromManifestJson
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.db.entity.manifest
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.Loader
@@ -114,9 +115,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
           controller.setLauncher(launcher)
           callback.onSuccess(object : UpdatesInterface.Update {
             override fun getManifest(): JSONObject {
-              val manifest = fromManifestJson(
-                launcher.launchedUpdate!!.manifest!!
-              )
+              val manifest = launcher.launchedUpdate!!.manifest()!!
               return manifest.getRawJson()
             }
 

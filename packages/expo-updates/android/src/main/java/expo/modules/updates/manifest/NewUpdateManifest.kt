@@ -46,7 +46,7 @@ class NewUpdateManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@NewUpdateManifest.manifest.getRawJson()
+      manifestJson = this@NewUpdateManifest.manifest.getRawJson()
     }
   }
 

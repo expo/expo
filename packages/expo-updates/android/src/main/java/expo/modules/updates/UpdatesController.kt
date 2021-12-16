@@ -259,7 +259,7 @@ class UpdatesController private constructor(
               }
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
               val params = Arguments.createMap()
-              params.putString("manifestString", update.manifest.toString())
+              params.putString("manifestString", update.manifestJson.toString())
               UpdatesUtils.sendEventToReactNative(reactNativeHost, UPDATE_AVAILABLE_EVENT, params)
             }
             BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {

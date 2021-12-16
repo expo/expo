@@ -13,8 +13,6 @@ abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
 
   override fun getEASProjectID(): String? = json.getNullable("projectId")
 
-  fun getMetadata(): JSONObject? = json.getNullable("metadata")
-
   override fun getAssets(): JSONArray? = json.getNullable("assets")
 
   @Throws(JSONException::class)

@@ -51,7 +51,7 @@ class UpdatesModule(
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
           constants["manifestString"] =
-            if (launchedUpdate.manifest != null) launchedUpdate.manifest.toString() else "{}"
+            if (launchedUpdate.manifestJson != null) launchedUpdate.manifestJson.toString() else "{}"
         }
         val localAssetFiles = updatesServiceLocal.localAssetFiles
         if (localAssetFiles != null) {
@@ -223,7 +223,7 @@ class UpdatesModule(
                 } else {
                   updatesServiceLocal.resetSelectionPolicy()
                   updateInfo.putBoolean("isNew", true)
-                  updateInfo.putString("manifestString", update.manifest.toString())
+                  updateInfo.putString("manifestString", update.manifestJson.toString())
                 }
                 promise.resolve(updateInfo)
               }

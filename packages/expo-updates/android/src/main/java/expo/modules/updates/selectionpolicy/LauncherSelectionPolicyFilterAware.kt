@@ -9,8 +9,6 @@ import org.json.JSONObject
  * manifest filters are always taken into account before the commit time.
  */
 class LauncherSelectionPolicyFilterAware(private val runtimeVersions: List<String>) : LauncherSelectionPolicy {
-  constructor(runtimeVersion: String) : this(listOf<String>(runtimeVersion))
-
   override fun selectUpdateToLaunch(
     updates: List<UpdateEntity>,
     filters: JSONObject?

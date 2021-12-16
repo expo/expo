@@ -30,7 +30,7 @@ class UpdateEntity(
   var launchAssetId: Long? = null
 
   @ColumnInfo(name = "manifest")
-  var manifest: JSONObject? = null
+  var manifestJson: JSONObject? = null
 
   var status = UpdateStatus.PENDING
 
