@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the deep link wasn't passed to the application if the application wasn't running when the deep link was sent.
+
 ### 💡 Others
 
 ## 0.6.1 — 2021-12-08
