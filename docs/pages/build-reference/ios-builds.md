@@ -12,7 +12,7 @@ Let's take a closer look at the steps for building iOS projects with EAS Build. 
 
 The first phase happens on your computer. EAS CLI is in charge of completing the following steps:
 
-1. If `cli.requireCommit` is set to `true` in `eas.json`, check if the git index is clean - this means that there aren't any uncommitted changes. If it's not clean, EAS CLI will provide an option to commit local changes for you or abort the build process.
+1. If `cli.requireCommit` is set to `true` in **eas.json**, check if the git index is clean - this means that there aren't any uncommitted changes. If it's not clean, EAS CLI will provide an option to commit local changes for you or abort the build process.
 1. Prepare the credentials needed for the build.
 
    - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
