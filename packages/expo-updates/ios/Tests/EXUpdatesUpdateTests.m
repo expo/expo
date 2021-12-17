@@ -45,7 +45,7 @@
   };
 
   _config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 
   _database = [EXUpdatesDatabase new];

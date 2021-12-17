@@ -21,25 +21,26 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NSString * const EXUpdatesConfigPlistName = @"Expo";
+
 NSString * const EXUpdatesConfigEnableAutoSetupKey = @"EXUpdatesAutoSetup";
+NSString * const EXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
+NSString * const EXUpdatesConfigScopeKeyKey = @"EXUpdatesScopeKey";
+NSString * const EXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
+NSString * const EXUpdatesConfigRequestHeadersKey = @"EXUpdatesRequestHeaders";
+NSString * const EXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
+NSString * const EXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
+NSString * const EXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLaunch";
+NSString * const EXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
+NSString * const EXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
+NSString * const EXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbeddedUpdate";
+NSString * const EXUpdatesConfigExpectsSignedManifestKey = @"EXUpdatesExpectsSignedManifest";
 
-static NSString * const EXUpdatesDefaultReleaseChannelName = @"default";
+NSString * const EXUpdatesConfigReleaseChannelDefaultValue = @"default";
 
-static NSString * const EXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
-static NSString * const EXUpdatesConfigScopeKeyKey = @"EXUpdatesScopeKey";
-static NSString * const EXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
-static NSString * const EXUpdatesConfigRequestHeadersKey = @"EXUpdatesRequestHeaders";
-static NSString * const EXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
-static NSString * const EXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
-static NSString * const EXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLaunch";
-static NSString * const EXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
-static NSString * const EXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
-static NSString * const EXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbeddedUpdate";
-
-static NSString * const EXUpdatesConfigAlwaysString = @"ALWAYS";
-static NSString * const EXUpdatesConfigWifiOnlyString = @"WIFI_ONLY";
-static NSString * const EXUpdatesConfigErrorRecoveryOnlyString = @"ERROR_RECOVERY_ONLY";
-static NSString * const EXUpdatesConfigNeverString = @"NEVER";
+NSString * const EXUpdatesConfigCheckOnLaunchValueAlways = @"ALWAYS";
+NSString * const EXUpdatesConfigCheckOnLaunchValueWifiOnly = @"WIFI_ONLY";
+NSString * const EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = @"ERROR_RECOVERY_ONLY";
+NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
 
 @implementation EXUpdatesConfig
 
@@ -49,7 +50,7 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
     _isEnabled = YES;
     _expectsSignedManifest = NO;
     _requestHeaders = @{};
-    _releaseChannel = EXUpdatesDefaultReleaseChannelName;
+    _releaseChannel = EXUpdatesConfigReleaseChannelDefaultValue;
     _launchWaitMs = @(0);
     _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
     _hasEmbeddedUpdate = YES;
@@ -82,7 +83,7 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
     _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
   
-  id expectsSignedManifest = config[@"EXUpdatesExpectsSignedManifest"];
+  id expectsSignedManifest = config[EXUpdatesConfigExpectsSignedManifestKey];
   if (expectsSignedManifest && [expectsSignedManifest isKindOfClass:[NSNumber class]]) {
     _expectsSignedManifest = [(NSNumber *)expectsSignedManifest boolValue];
   }
@@ -139,13 +140,13 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
 
   id checkOnLaunch = config[EXUpdatesConfigCheckOnLaunchKey];
   if (checkOnLaunch && [checkOnLaunch isKindOfClass:[NSString class]]) {
-    if ([EXUpdatesConfigNeverString isEqualToString:(NSString *)checkOnLaunch]) {
+    if ([EXUpdatesConfigCheckOnLaunchValueNever isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigNever;
-    } else if ([EXUpdatesConfigErrorRecoveryOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigErrorRecoveryOnly;
-    } else if ([EXUpdatesConfigWifiOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([EXUpdatesConfigCheckOnLaunchValueWifiOnly isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigWifiOnly;
-    } else if ([EXUpdatesConfigAlwaysString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([EXUpdatesConfigCheckOnLaunchValueAlways isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
     }
   }

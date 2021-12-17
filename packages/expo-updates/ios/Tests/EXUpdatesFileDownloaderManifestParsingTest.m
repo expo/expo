@@ -41,7 +41,7 @@
   };
   
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -83,7 +83,7 @@
   };
   
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   

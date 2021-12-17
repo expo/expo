@@ -43,8 +43,7 @@
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
   _config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesUsesLegacyManifest": @(NO)
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 }
 
