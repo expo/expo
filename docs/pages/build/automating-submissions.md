@@ -14,12 +14,12 @@ By default, `--auto-submit` will try to use a submission profile with the same n
 
 ### Build profile environment variables and submissions
 
-When running `eas build --profile <profile-name> --auto-submit`, the project's `app.config.js` will be evaluated using any environment variables associated with the build profile `<profile-name>`. For example, suppose we ran `eas build -p ios --profile production --auto-submit` with the following configuration:
+When running `eas build --profile <profile-name> --auto-submit`, the project's **app.config.js** will be evaluated using any environment variables associated with the build profile `<profile-name>`. For example, suppose we ran `eas build -p ios --profile production --auto-submit` with the following configuration:
 
 ```json
 // eas.json
 {
-  "build" {
+  "build": {
     "production": {
       "env": {
         "APP_ENV": "production"
@@ -47,4 +47,4 @@ export default () => {
 }
 ```
 
-The `APP_ENV` variable from the `production` profile will be used when evaluating `app.config.js` for the submission, and therefore the name will be 'My App' and the bundle identifier will be 'com.my.app'.
+The `APP_ENV` variable from the `production` profile will be used when evaluating **app.config.js** for the submission, and therefore the name will be 'My App' and the bundle identifier will be 'com.my.app'.
