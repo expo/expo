@@ -139,6 +139,18 @@ function("asyncFunction") { (message: String, promise: Promise) in
 }
 ```
 
+```kotlin
+function("syncFunction") { message: String ->
+  return@function message
+}
+
+function("asyncFunction") { message: String, promise: Promise ->
+  launch(Dispatchers.Main) {
+    promise.resolve(message)
+  }
+}
+```
+
 </CodeBlocksTable>
 
 ### `events`
@@ -194,6 +206,12 @@ This component can only be used within the [`viewManager`](#viewmanager) compone
 ```swift
 prop("background") { (view: UIView, color: UIColor) in
   view.backgroundColor = color
+}
+```
+
+```kotlin
+prop("background") { view: View, @ColorInt color: Int ->
+  view.setBackgroundColor(color)
 }
 ```
 
@@ -328,6 +346,24 @@ function("readFile") { (path: String, options: FileReadOptions) -> String in
 }
 ```
 
+```kotlin
+class FileReadOptions : Record {
+  @Field
+  val encoding: String = "utf8"
+
+  @Field
+  val position: Int = 0
+
+  @Field
+  val length: Int?
+}
+
+// Now this record can be used as an argument of the functions or the view prop setters.
+function("readFile") { path: String, options: FileReadOptions ->
+  // Read the file using given `options`
+}
+```
+
 </CodeBlocksTable>
 
 ### Enums
@@ -345,6 +381,20 @@ enum FileEncoding: String, EnumArgument {
 struct FileReadOptions: Record {
   @Field
   var encoding: FileEncoding = .utf8
+  // ...
+}
+```
+
+```kotlin
+// Note: the constructor must have an argument called value.
+enum class FileEncoding(val value: String) {
+  utf8("utf8"),
+  base64("base64")
+}
+
+class FileReadOptions : Record {
+  @Field
+  val encoding: FileEncoding = FileEncoding.utf8
   // ...
 }
 ```
@@ -384,7 +434,7 @@ class MyModule : Module() {
 For more examples you can take a look on GitHub at some of Expo modules that already use this API:
 
 - `expo-cellular` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-cellular/ios/CellularModule.swift), [Kotlin](https://github.com/expo/expo/blob/master/packages/expo-cellular/android/src/main/java/expo/modules/cellular/CellularModule.kt))
-- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-linear-gradient/ios/LinearGradientModule.swift))
+- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-linear-gradient/ios/LinearGradientModule.swift)), [Kotlin](https://github.com/expo/expo/blob/master/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient/LinearGradientModule.kt)
 - `expo-haptics` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-haptics/ios/HapticsModule.swift))
 - `expo-clipboard` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-clipboard/ios/EXClipboard/ClipboardModule.swift))
 - `expo-localization` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-localization/ios/LocalizationModule.swift))
