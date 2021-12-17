@@ -26,8 +26,8 @@ open class DevMenuModule: NSObject {
   }
   
   @objc
-  func queryDevSessionsAsync(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-    DevMenuManager.shared.expoApiClient.queryDevSessionsAsync({ (data, response, error) in
+  func queryDevSessionsAsync(_ installationID: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    DevMenuManager.shared.expoApiClient.queryDevSessionsAsync(installationID, completionHandler: { (data, response, error) in
       guard error == nil else {
         reject("ERR_DEVMENU_CANNOT_GET_DEV_SESSIONS", error.debugDescription, error)
         return

@@ -10,11 +10,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
 NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 
 NSString * const EXUpdatesMultipartManifestPartName = @"manifest";
 NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
+
+NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
+const NSInteger EXUpdatesFileDownloaderErrorCodeFileWriteError = 1002;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestVerificationError = 1003;
+const NSInteger EXUpdatesFileDownloaderErrorCodeNoCompatibleUpdateError = 1009;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMismatchedManifestFiltersError = 1021;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestParseError = 1022;
+const NSInteger EXUpdatesFileDownloaderErrorCodeInvalidResponseError = 1040;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestStringError = 1041;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestJSONError = 1042;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestSignatureError = 1043;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMultipartParsingError = 1044;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMultipartMissingManifestError = 1045;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 1047;
 
 @interface EXUpdatesFileDownloader () <NSURLSessionDataDelegate>
 
@@ -72,7 +85,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
       successBlock(data, response);
     } else {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:1002
+                                     code:EXUpdatesFileDownloaderErrorCodeFileWriteError
                                  userInfo:@{
                                    NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Could not write to path %@: %@", destinationPath, error.localizedDescription],
                                    NSUnderlyingErrorKey: error
@@ -129,7 +142,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
     
     if (boundaryParameterValue == nil) {
       NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                           code:1047
+                                           code:EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError
                                        userInfo:@{
         NSLocalizedDescriptionKey: @"Missing boundary in multipart manifest content-type",
       }];
@@ -202,7 +215,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   
   if (!completed) {
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                         code:1044
+                                         code:EXUpdatesFileDownloaderErrorCodeMultipartParsingError
                                      userInfo:@{
       NSLocalizedDescriptionKey: @"Could not read multipart manifest response",
     }];
@@ -212,7 +225,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   
   if (manifestPartHeaders == nil || manifestPartData == nil) {
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                         code:1045
+                                         code:EXUpdatesFileDownloaderErrorCodeMultipartMissingManifestError
                                      userInfo:@{
       NSLocalizedDescriptionKey: @"Multipart manifest response missing manifest part",
     }];
@@ -233,7 +246,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
       extensions = parsedExtensions;
     } else {
       NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                           code:1046
+                                           code:EXUpdatesFileDownloaderErrorCodeMultipartParsingError
                                        userInfo:@{
         NSLocalizedDescriptionKey: @"Failed to parse multipart manifest extensions",
       }];
@@ -290,7 +303,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
 
   if (![manifestString isKindOfClass:[NSString class]]) {
     errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                   code:1041
+                                   code:EXUpdatesFileDownloaderErrorCodeManifestStringError
                                userInfo:@{
                                  NSLocalizedDescriptionKey: @"manifestString should be a string",
                                }
@@ -300,7 +313,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   NSDictionary *manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
   if (error || !manifest || ![manifest isKindOfClass:[NSDictionary class]]) {
     errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                   code:1042
+                                   code:EXUpdatesFileDownloaderErrorCodeManifestJSONError
                                userInfo:@{
                                  NSLocalizedDescriptionKey: @"manifest should be a valid JSON object",
                                }
@@ -312,7 +325,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   if (signature != nil && !isUnsignedFromXDL) {
     if (![signature isKindOfClass:[NSString class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:1043
+                                     code:EXUpdatesFileDownloaderErrorCodeManifestSignatureError
                                  userInfo:@{
                                    NSLocalizedDescriptionKey: @"signature should be a string",
                                  }
@@ -332,7 +345,9 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
                                                                      successBlock:successBlock
                                                                        errorBlock:errorBlock];
                                                 } else {
-                                                  NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
+                                                  NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                                                                       code:EXUpdatesFileDownloaderErrorCodeManifestVerificationError
+                                                                                   userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
                                                   errorBlock(error);
                                                 }
                                               }
@@ -361,7 +376,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:1040
+                                     code:EXUpdatesFileDownloaderErrorCodeInvalidResponseError
                                  userInfo:@{
                                    NSLocalizedDescriptionKey: @"response must be a NSHTTPURLResponse",
                                  }
@@ -404,7 +419,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
     // this will ensure invalid manifests can be easily debugged.
     // For example, this will catch nullish sdkVersion assertions.
     error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                code:1022
+                                code:EXUpdatesFileDownloaderErrorCodeManifestParseError
                             userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
   }
   
@@ -415,7 +430,7 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
 
   if (![EXUpdatesSelectionPolicies doesUpdate:update matchFilters:update.manifestFilters]) {
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                         code:1021
+                                         code:EXUpdatesFileDownloaderErrorCodeMismatchedManifestFiltersError
                                      userInfo:@{NSLocalizedDescriptionKey: @"Downloaded manifest is invalid; provides filters that do not match its content"}];
     errorBlock(error);
   } else {
@@ -473,7 +488,9 @@ NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
   }
 
   if (error) {
-    *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1009 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible update found at %@. Only %@ are supported.", _config.updateUrl.absoluteString, _config.sdkVersion]}];
+    *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                 code:EXUpdatesFileDownloaderErrorCodeNoCompatibleUpdateError
+                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible update found at %@. Only %@ are supported.", _config.updateUrl.absoluteString, _config.sdkVersion]}];
   }
   return nil;
 }

@@ -52,6 +52,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
+@property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 
 @end
 
@@ -75,6 +76,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     self.recentlyOpenedAppsRegistry = [EXDevLauncherRecentlyOpenedAppsRegistry new];
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
+    self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
@@ -277,9 +279,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
 
+  NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
   expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
-  NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl];
+  NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
+                                                                                      installationID:installationID];
 
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
@@ -309,7 +313,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [_updatesInterface reset];
   }
 
-  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl session:[NSURLSession sharedSession]];
+  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl installationID:installationID session:[NSURLSession sharedSession]];
   [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
     if (!isManifestURL) {
       // assume this is a direct URL to a bundle hosted by metro

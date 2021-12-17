@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.11.2 — 2021-12-15
+
+### 🐛 Bug fixes
+
+- Add missing @JvmStatic annotation to `UpdatesDevLauncherController.initialize`. ([#15561](https://github.com/expo/expo/pull/15561) by [@esamelson](https://github.com/esamelson))
+
 ## 0.11.2-rc.0 — 2021-12-13
 
 ### 🎉 New features
@@ -43,6 +49,7 @@
 - Enhance node binary resolution for Xcode build phases scripts by the vendoring source-login-scripts.sh. ([#15336](https://github.com/expo/expo/pull/15336) by [@kudo](https://github.com/kudo))
 - Add android support for multipart manifest responses. ([#15401](https://github.com/expo/expo/pull/15401) by [@wschurman](https://github.com/wschurman))
 - Add iOS support for multipart manifest responses. ([#15426](https://github.com/expo/expo/pull/15426) by [@wschurman](https://github.com/wschurman))
+- Add android support for code signing. ([#15514](https://github.com/expo/expo/pull/15514) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

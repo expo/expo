@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
+- Add persisted installation ID and include in manifest requests. ([#15538](https://github.com/expo/expo/pull/15538) by [@esamelson](https://github.com/esamelson))
+- Improve dev session request logic and use device ID when available. ([#15542](https://github.com/expo/expo/pull/15542) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.9.1 — 2021-12-15
+
 ### 🐛 Bug fixes
 
 - Fix plugin when `MainActivity.onNewIntent` exists. ([#15459](https://github.com/expo/expo/pull/15459) by [@janicduplessis](https://github.com/janicduplessis))
-
-### 💡 Others
+- Fix plugin when `expo-updates` is not present. ([#15541](https://github.com/expo/expo/pull/15541) by [@esamelson](https://github.com/esamelson))
+- Include expo-platform header in manifest requests. ([#15563](https://github.com/expo/expo/pull/15563) by [@esamelson](https://github.com/esamelson))
+- Fix plugin compatibility with SDK 44. ([#15562](https://github.com/expo/expo/pull/15562) & [#15570](https://github.com/expo/expo/pull/15570) by [@lukmccall](https://github.com/lukmccall) & [@esamelson](https://github.com/esamelson))
 
 ## 0.9.0 — 2021-12-03
 

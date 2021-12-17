@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
@@ -48,7 +48,7 @@
     "graphql-request": "^3.6.1",
     "react": "17.0.1",
     "react-native": "0.64.3",
-    "react-native-gesture-handler": "1.10.3",
+    "react-native-gesture-handler": "~2.1.0",
     "react-native-primitives": "^0.1.3",
     "react-native-safe-area-context": "^3.3.2"
   },

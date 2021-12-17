@@ -16,7 +16,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
   }
 }
 
@@ -81,8 +81,8 @@ android {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation 'androidx.annotation:annotation:1.2.0'
 
   // used only in `expo.modules.core.errors.ModuleDestroyedException` for API export

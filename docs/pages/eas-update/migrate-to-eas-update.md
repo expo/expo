@@ -4,6 +4,15 @@ title: Migrating from Classic Updates to EAS Update
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
+## Prerequisites
+
+EAS Update requires the following versions or greater:
+
+- Expo CLI 5.0.0
+- EAS CLI 0.41.1
+- Expo SDK 44
+- expo-updates 0.11.2
+
 ## Install Expo CLI and EAS CLI
 
 1. Install EAS and Expo CLIs with:
@@ -11,8 +20,6 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
    ```bash
    npm install --global eas-cli expo-cli
    ```
-
-   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0. Your project must also be on Expo SDK 43 or above. To upgrade, run `expo upgrade`.
 
 2. Then, log in with your expo account:
 
@@ -27,7 +34,7 @@ You'll need to make the following changes to your project:
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   expo install expo-updates
+   yarn add expo-updates@0.11.2
    ```
 
 2. Initialize your project with EAS Update:
@@ -74,10 +81,14 @@ The changes above affect the native code layer inside builds, which means we'll 
 
 ## Developing locally
 
-EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). When developing locally, Expo CLI can serve the modern manifest format to Expo Go or a development build. This will ensure that the code you develop locally will work as an update when published later. You can start a local development session with the modern manifest with:
+EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). When you have a EAS Update url in your app config at `updates.url`, Expo CLI will automatically serve the correct manifest format for your project. This will ensure that the code you develop locally will work as an update when published later. You can start a localy development session just like before, with:
 
 ```bash
-yarn start --force-manifest-type=expo-updates
+yarn start
+
+# or
+
+expo start
 ```
 
 ## Publishing an update

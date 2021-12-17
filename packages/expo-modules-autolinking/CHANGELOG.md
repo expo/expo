@@ -15,6 +15,7 @@
 ### 🎉 New features
 
 - Patch React podspecs on the fly to support Swift integration. ([#15299](https://github.com/expo/expo/pull/15299) by [@kudo](https://github.com/kudo))
+- Add `nativeModulesDir` option to specify app's custom native modules location. ([#15415](https://github.com/expo/expo/pull/15415) by [@barthap](https://github.com/barthap))
 
 ## 0.4.0 — 2021-11-17
 

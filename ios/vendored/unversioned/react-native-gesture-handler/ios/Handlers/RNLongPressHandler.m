@@ -93,11 +93,11 @@
 
 - (void)reset
 {
-  [_gestureHandler.pointerTracker reset];
-
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
+  
+  [_gestureHandler.pointerTracker reset];
   
   [super reset];
 }

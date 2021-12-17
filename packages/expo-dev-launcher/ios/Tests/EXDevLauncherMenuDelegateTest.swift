@@ -12,7 +12,7 @@ class EXDevLauncherMenuDelegateTest: QuickSpec {
     
     func setSessionSecret(_ sessionSecret: String?) {}
     
-    func queryDevSessionsAsync(_ completionHandler: @escaping HTTPCompletionHandler) {}
+    func queryDevSessionsAsync(_ installationID: String?, completionHandler: @escaping HTTPCompletionHandler) {}
     
     func queryUpdateChannels(appId: String, completionHandler: @escaping ([DevMenuEASUpdates.Channel]?, URLResponse?, Error?) -> Void, options: DevMenuGraphQLOptions) {}
     

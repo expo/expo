@@ -475,15 +475,15 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 **How:**
 
 - For each of the following packages, run `et update-versions -k 'relatedPackages.<package-name>' -v '^X.Y.Z'`
-  - `typescript`
-  - `@types/react`
-  - `@types/react-dom`
-  - `@types/react-native`
-  - `react-native-web`
-  - `babel-preset-expo`
   - `@babel/core`
   - `@expo/webpack-config`
-  - `react-native-unimodules`
+  - `@types/react-dom`
+  - `@types/react-native`
+  - `@types/react`
+  - `babel-preset-expo`
+  - `jest`
+  - `react-native-web`
+  - `typescript`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should have a carat (`^`) except for `react-native-unimodules`, which should have a tilde (`~`).
 
 ## 5.4. Re-publish project templates
@@ -580,17 +580,7 @@ Publish a blog post that includes the following information:
   - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
   - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be **downloadable** via Play Store.
 
-## 6.2. Make adhoc client shell app for iOS
-
-**Why:** The client shell app is the base app for the custom client workflow on iOS (also known as the Adhoc build workflow). We only support one version of the custom client at any given time, and there isn't much value in testing it in the beta release period because we are already testing simulator and app store versions of Expo Go.
-
-**How:**
-
-- Follow the same workflow as [4.2. Make shell app build](#42-make-shell-app-build), but instead run `et dispatch ad-hoc-client-shell-app-ios-upload`.
-- Copy the URL to the `shellTarballs/ios/client` file in `expo/turtle` and update the CHANGELOG.
-- Deploy to staging, test, and deploy to production.
-
-## 6.3. Promote packages to latest on NPM registry
+## 6.2. Promote packages to latest on NPM registry
 
 **Why:** Previously we've published packages and now that we have gone through beta testing and everything is good to go, we can promote those packages to `latest` on NPM.
 
@@ -599,7 +589,7 @@ Publish a blog post that includes the following information:
 - Use the `et promote-packages` script.
 - Select the packages that should be promoted and continue.
 
-## 6.4. Remove beta tag from new SDK on versions endpoint
+## 6.3. Remove beta tag from new SDK on versions endpoint
 
 **Why:** Make the new SDK the default for everything that depends on the versions endpoint, eg: `expo upgrade`.
 
@@ -609,13 +599,13 @@ Publish a blog post that includes the following information:
 - `et promote-versions-to-prod`
 - Double check every change before pressing `y`!
 
-## 6.5. Remove beta tag from new SDK on Snack
+## 6.4. Remove beta tag from new SDK on Snack
 
 **Why:** Once the new SDK is available publicly, we should switch to using it by default on Snack.
 
 **How:** Reach out to Hein (@ijzerenhein)
 
-## 6.6. Deploy final docs
+## 6.5. Deploy final docs
 
 **Why:** Show the new docs by default now that the SDK is being released!
 
@@ -624,7 +614,7 @@ Publish a blog post that includes the following information:
 - Update the `version` field docs/package.json to match the new SDK version, delete the `betaVersion` field, and push to master.
 - Ensure that the new SDK version is visible in the API reference and is marked as latest.
 
-## 6.7. Publish final project templates
+## 6.6. Publish final project templates
 
 **Why:** We need to make sure the templates point to the latest versions of our packages and update the tags on npm so they will be used by default with `expo init`.
 
@@ -635,7 +625,7 @@ Publish a blog post that includes the following information:
 - Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `latest` and `sdk-xx` where `xx` is the major version for the SDK being released.
 - If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
 
-## 6.8. Press release
+## 6.7. Press release
 
 | Prerequisites          |
 | ---------------------- |

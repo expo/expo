@@ -94,6 +94,10 @@ You will need to remove `expo-branch` from your app to build it with EAS Build. 
 
 In projects built with `expo build` the native primitives required by AWS Amplify are included in every app. This is not the case in EAS Build, and so you must install `amazon-cognito-identity-js` in order to link the native module depended on by AWS Amplify libraries.
 
+### Animated WebP is not supported by default
+
+Most apps do not use this format and support for it adds ~3.4 MB to the final app size, so it is omitted by default. You can enable it by switching `expo.webp.animated=false` to `expo.webp.animated=true` in `android/gradle.properties`. [This forums post](https://forums.expo.dev/t/animated-webp-expected-to-work-with-eas-builds/58960/5?u=notbrent) provides an example of a config plugin for making this change.
+
 ### **metro.config.js** must export the entire default config from `expo/metro-config`
 
 > `expo/metro-config` is a versioned re-export of `@expo/metro-config`.

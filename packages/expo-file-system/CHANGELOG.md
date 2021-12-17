@@ -10,6 +10,7 @@
 
 - Runtime crash due to `.toUpperCase` not being invoked as a function, it was missing `()` ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
 - `totalByteSent` in upload progress callback was incorrectly sending `bytesSent` on iOS ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+- Fixed simulator runtime crash on arm64 devices caused by `CFRelease(NULL)`. ([#15496](https://github.com/expo/expo/pull/15496) by [@daxaxelrod](https://github.com/daxaxelrod))
 
 ### 💡 Others
 

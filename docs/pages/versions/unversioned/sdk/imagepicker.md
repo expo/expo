@@ -85,18 +85,8 @@ import * as ImagePicker from 'expo-image-picker';
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!');
-        }
-      }
-    })();
-  }, []);
-
   const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,

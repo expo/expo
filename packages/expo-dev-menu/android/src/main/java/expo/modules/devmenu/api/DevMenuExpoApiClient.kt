@@ -9,6 +9,7 @@ import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.expoapi.DevMenuGraphQLOptions
 import expo.interfaces.devmenu.expoapi.Response
 import expo.modules.devmenu.constants.AuthHeader
+import expo.modules.devmenu.constants.DeviceIDQuery
 import expo.modules.devmenu.constants.GraphQLEndpoint
 import expo.modules.devmenu.constants.RESTEndpoint
 import expo.modules.devmenu.helpers.await
@@ -26,15 +27,18 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     sessionSecret = newSessionSecret
   }
 
-  override suspend fun queryDevSessions(): okhttp3.Response {
-    val secret = ensureUserIsSignIn()
+  override suspend fun queryDevSessions(deviceID: String?): okhttp3.Response {
+    val builder = RESTEndpoint
+      .buildUpon()
+      .appendPath("development-sessions")
+
+    if (deviceID != null) {
+      builder.appendQueryParameter(DeviceIDQuery, deviceID)
+    }
 
     return fetch(
-      RESTEndpoint
-        .buildUpon()
-        .appendPath("development-sessions")
-        .build(),
-      AuthHeader to secret
+      builder.build(),
+      if (sessionSecret != null) AuthHeader to sessionSecret!! else null
     ).await(httpClient)
   }
 

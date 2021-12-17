@@ -19,8 +19,7 @@
 - (void)setUp
 {
   _config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesUsesLegacyManifest": @(YES)
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 
   _database = [EXUpdatesDatabase new];

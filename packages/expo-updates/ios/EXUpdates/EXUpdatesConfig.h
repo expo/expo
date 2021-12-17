@@ -12,7 +12,24 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 };
 
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigPlistName;
+
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigEnableAutoSetupKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigEnabledKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigScopeKeyKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigUpdateUrlKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigRequestHeadersKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigReleaseChannelKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigLaunchWaitMsKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigSDKVersionKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigRuntimeVersionKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigHasEmbeddedUpdateKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigExpectsSignedManifestKey;
+
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueAlways;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueWifiOnly;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueNever;
 
 
 @interface EXUpdatesConfig : NSObject

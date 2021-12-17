@@ -6,6 +6,7 @@ export interface SearchOptions {
     exclude?: string[] | null;
     platform: SupportedPlatform;
     silent?: boolean;
+    nativeModulesDir?: string | null;
     flags?: Record<string, any>;
 }
 export interface ResolveOptions extends SearchOptions {
@@ -50,6 +51,10 @@ export interface RawExpoModuleConfig {
          * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
          */
         reactDelegateHandlers?: string[];
+        /**
+         * Podspec relative path.
+         */
+        podspecPath?: string;
     };
     /**
      * Android-specific config.

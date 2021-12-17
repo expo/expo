@@ -73,7 +73,7 @@ e.g.
 ```
 {
  "scripts": {
-    "eas-build-pre-install": "bash -c \"[ ! -z \\\"EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\""
+    "eas-build-pre-install": "bash -c \"[ ! -z \\\"$EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\" || true"
   }
 }
 ```
@@ -82,7 +82,7 @@ e.g.
 
 If you are using the default VCS workflow, the content of your working directory will be uploaded to EAS Build as it is, including the content of Git submodules. If you are building on CI you will need to initialize them, otherwise, empty directories will be uploaded.
 
-If you have `cli.requireCommit` set to `true` in `eas.json` you will need to initialize your submodules on EAS Build worker.
+If you have `cli.requireCommit` set to `true` in **eas.json** you will need to initialize your submodules on EAS Build worker.
 First, create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private SSH key that has permission to access submodule repositories. Next, add an `eas-build-pre-install` npm hook to check out those submodules, for example:
 
 ```bash

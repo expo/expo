@@ -15032,7 +15032,7 @@ react-freeze@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-freeze/-/react-freeze-1.0.0.tgz#b21c65fe1783743007c8c9a2952b1c8879a77354"
   integrity sha512-yQaiOqDmoKqks56LN9MTgY06O0qQHgV4FUrikH357DydArSZHQhl0BJFqGKIZoTqi8JizF9Dxhuk1FIZD6qCaw==
 
-react-is@^16.12.0, react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1:
+react-is@^16.12.0, react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
@@ -15094,21 +15094,10 @@ react-native-fade-in-image@^1.6.1:
     react-mixin "^3.0.5"
     react-timer-mixin "^0.13.3"
 
-react-native-gesture-handler@1.10.3:
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.10.3.tgz#942bbf2963bbf49fa79593600ee9d7b5dab3cfc0"
-  integrity sha512-cBGMi1IEsIVMgoox4RvMx7V2r6bNKw0uR1Mu1o7NbuHS6BRSVLq0dP34l2ecnPlC+jpWd3le6Yg1nrdCjby2Mw==
-  dependencies:
-    "@egjs/hammerjs" "^2.0.17"
-    fbjs "^3.0.0"
-    hoist-non-react-statics "^3.3.0"
-    invariant "^2.2.4"
-    prop-types "^15.7.2"
-
-react-native-gesture-handler@~2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.0.0.tgz#066016e2b87922511605a23b2ee00358a3216e32"
-  integrity sha512-QJxUXrWcHUyita4j+FPlAokR8i9fmD5n88uE6W5rtxNi17U1jAjnkbtplFWYutFP7naat+f77sZSmjil2+/4RA==
+react-native-gesture-handler@~2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.1.0.tgz#be7a83a7bd340a2316551a4d30d7abf06b46c1da"
+  integrity sha512-vF4yEUrV5GMBioTkvf5Le1l3N/52dSLBnNMFC+kZ4hssnRoXB0hEQ0ReUkZckRB5L3nbHBhAyjySEtFPx4nyEA==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -15156,20 +15145,10 @@ react-native-primitives@^0.1.3:
   resolved "https://registry.yarnpkg.com/react-native-primitives/-/react-native-primitives-0.1.3.tgz#ff9548adfcaacb2f2b6a34a078d2643903e17e3d"
   integrity sha512-slhBFw6vKsq76f4G4N4cXL/g3UPq22Fgl2atmSxgGJZs5JK5SPTNbP4AvIcnt72Selj0k9/5fAMFvpUq8qsVbQ==
 
-react-native-reanimated@~2.2.0:
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.2.4.tgz#36c5d15028b0bd7d479fba5199117ac870c7a532"
-  integrity sha512-Nn648MfEEnTCEiWsl1YmfkojiLyV0NMY0EiRdDRbZNfJVfxBuyqhCxI/4Jd7aBi162qpgf8XK2mByYgvF4zLrQ==
-  dependencies:
-    "@babel/plugin-transform-object-assign" "^7.10.4"
-    fbjs "^3.0.0"
-    mockdate "^3.0.2"
-    string-hash-64 "^1.0.3"
-
-react-native-reanimated@~2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.3.0.tgz#5d3bbcd140ab8ad47ac30d873635c7f1c3d06d4f"
-  integrity sha512-MSW2Uzj+Chd6qGS1gqNeF/U2l+xk44cD0PnNbU3v1paDI2/HAlzPhMtEy2WWtz83RZ4FtDuI/0o935SjJ7iSYg==
+react-native-reanimated@~2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.3.1.tgz#c7abad48f9e6c84610b0d5e270088ecd61750382"
+  integrity sha512-nzjVqwkB8eeyPKT2KoiA9EEz17ZMFSGMoOTC17Z9b5nE2Z4ZHjHM5EKhY0TlwzXFUuJAE9PhOfxF0wIO/maZSA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     "@types/invariant" "^2.2.35"

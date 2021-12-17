@@ -27,9 +27,9 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-maps` from `0.28.1` to `0.29.4`. ([#15397](https://github.com/expo/expo/pull/15397) by [@bbarthec](https://github.com/bbarthec))
 - Updated `react-native-pager-view` from `5.4.6` to `5.4.9`. ([#15348](https://github.com/expo/expo/pull/15348) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@stripe/stripe-react-native` from `0.2.2` to `0.2.3`. ([#15396](https://github.com/expo/expo/pull/15396) by [@brentvatne](https://github.com/brentvatne) and [@kudo](https://github.com/kudo))
-- Updated `react-native-gesture-handler` from `1.10.3` to `2.0.0`. ([#15404](https://github.com/expo/expo/pull/15404) by [@kudo](https://github.com/kudo))
+- Updated `react-native-gesture-handler` from `1.10.3` to `2.1.0`. ([#15404](https://github.com/expo/expo/pull/15404) & [#15568](https://github.com/expo/expo/pull/15568) by [@kudo](https://github.com/kudo))
 - Updated `react-native-screens` from `3.8.0` to `3.10.1`. ([#15416](https://github.com/expo/expo/pull/15416) by [@bbarthec](https://github.com/bbarthec))
-- Updated `react-native-reanimated` from `2.2.3` to `2.3.0`. ([#15475](https://github.com/expo/expo/pull/15475) by [@Kudo](https://github.com/Kudo))
+- Updated `react-native-reanimated` from `2.2.3` to `2.3.1`. ([#15475](https://github.com/expo/expo/pull/15475) & [#15574](https://github.com/expo/expo/pull/15574) by [@Kudo](https://github.com/Kudo))
 
 ### 🛠 Breaking changes
 
@@ -46,7 +46,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-device`**
   - Changed naming format of `modelName` to be more consistent ([#14670](https://github.com/expo/expo/pull/14670) by [@EvanBacon](https://github.com/EvanBacon))
 - **`expo-firebase-analytics`**
-  - Deprecates `setCurrentScreen` and removes the native API calls to support the latest Firebase SDKs. ([#4366](https://github.com/expo/expo/pull/4366) by [@IjzerenHein](https://github.com/IjzerenHein))
+  - Deprecates `setCurrentScreen` and removes the native API calls to support the latest Firebase SDKs. ([#14366](https://github.com/expo/expo/pull/14366) by [@IjzerenHein](https://github.com/IjzerenHein))
 - **`expo-image-picker`**
   - Remove typo workaround for `getMediaLibaryPermissionsAsync` method. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
 - **`expo-linking`**

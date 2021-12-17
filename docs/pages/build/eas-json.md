@@ -52,13 +52,15 @@ You may alternatively prefer for your development build to [run in an iOS simula
 
 ```json
 {
-  // ...
-  "development": {
-    "developmentClient": true,
-    "distribution": "internal",
-    "ios": {
-      "simulator": true
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
     }
+    // ...
   }
   // ...
 }
@@ -74,9 +76,11 @@ A minimal `preview` profile looks like this:
 
 ```json
 {
-  // ...
-  "preview": {
-    "distribution": "internal"
+  "build": {
+    "preview": {
+      "distribution": "internal"
+    }
+    // ...
   }
   // ...
 }
@@ -94,8 +98,10 @@ A minimal `production` profile looks like this:
 
 ```json
 {
-  // ...
-  "production": {}
+  "build": {
+    "production": {}
+    // ...
+  }
   // ...
 }
 ```
@@ -114,9 +120,11 @@ Versions for the most common build tools can be set on build profiles with field
 
 ```json
 {
-  // ...
-  "production": {
-    "node": "16.13.0"
+  "build": {
+    "production": {
+      "node": "16.13.0"
+    }
+    // ...
   }
   // ...
 }
@@ -126,18 +134,20 @@ It's common to want to share build tool configuration between profiles, and we c
 
 ```json
 {
-  // ...
-  "production": {
-    "node": "16.13.0"
-  },
-  "preview": {
-    "extends": "production",
-    "distribution": "internal"
-  },
-  "development": {
-    "extends": "production",
-    "developmentClient": "true",
-    "distribution": "internal"
+  "build": {
+    "production": {
+      "node": "16.13.0"
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal"
+    },
+    "development": {
+      "extends": "production",
+      "developmentClient": "true",
+      "distribution": "internal"
+    }
+    // ...
   }
   // ...
 }
@@ -151,24 +161,26 @@ If you are using the Expo managed workflow, EAS Build will pick the appropriate 
 
 ## Environment variables
 
-You can configure environment variables on your build profiles using the `"env"` field. These environment variable those will be used to evaluate `app.config.js` locally when you run `eas build`, and they will also be set on the EAS Build worker.
+You can configure environment variables on your build profiles using the `"env"` field. These environment variable those will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
 
 ```json
 {
-  // ...
-  "production": {
-    "node": "16.13.0",
-    "env": {
-      "API_URL": "https://company.com/api"
+  "build": {
+    "production": {
+      "node": "16.13.0",
+      "env": {
+        "API_URL": "https://company.com/api"
+      }
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal",
+      "env": {
+        "API_URL": "https://staging.company.com/api"
+      }
     }
-  },
-  "preview": {
-    "extends": "production",
-    "distribution": "internal",
-    "env": {
-      "API_URL": "https://staging.company.com/api"
-    }
-  },
+    // ...
+  }
   // ...
 }
 ```

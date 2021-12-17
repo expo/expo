@@ -110,7 +110,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
 
   fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
-    if (view != null) {
+    // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
+    // handlers to be cancelled on re-render because that's the moment when the config is updated.
+    // If the enabled prop "changed" from true to true the handler would get cancelled.
+    if (view != null && isEnabled != enabled) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
       UiThreadUtil.runOnUiThread { cancel() }

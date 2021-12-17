@@ -58,9 +58,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
   @Override
   public void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback) {
     UpdatesController controller = UpdatesController.getInstance();
-    UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration()
-            .loadValuesFromMetadata(context)
-            .loadValuesFromMap(configuration);
+    UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration(context, configuration);
     if (updatesConfiguration.getUpdateUrl() == null || updatesConfiguration.getScopeKey() == null) {
       callback.onFailure(new Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"));
       return;

@@ -9,13 +9,13 @@ import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 ### Setting up EAS
 
-You can set up your project to use EAS by running 
-<TerminalBlock cmd={[`eas build:configure`]} /> 
+You can set up your project to use EAS by running
+<TerminalBlock cmd={[`eas build:configure`]} />
 
 If you have not installed EAS CLI yet, you can do so by running `npm install -g eas-cli`.
 
-This command will create an [`eas.json`](/build/eas-json.md) file.
-If you have an existing `eas.json` file that does not have a "development" profile already, edit the file to add one:
+This command will create an [**eas.json**](/build/eas-json.md) file.
+If you have an existing **eas.json** file that does not have a "development" profile already, edit the file to add one:
 
 ```json
 {
@@ -34,7 +34,6 @@ This profile has two options set:
 - Setting `distribution` to "internal" will make a build ready for [internal distribution](/build/internal-distribution).
 
 ### Running a build
-
 
 <Tabs tabs={["For Android", "For iOS"]}>
 
@@ -63,7 +62,6 @@ Note: If you register any new iOS devices, you'll need create a new development 
 
 </Tab>
 </Tabs>
-
 
 ## Locally with Xcode and Android Studio
 

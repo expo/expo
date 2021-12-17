@@ -18,8 +18,8 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
-    "react-native-gesture-handler": "~2.0.0",
-    "react-native-reanimated": "~2.2.0",
+    "react-native-gesture-handler": "~2.1.0",
+    "react-native-reanimated": "~2.3.1",
     "react-native-screens": "~3.10.1",
     "react-native-web": "~0.17.1"
   },
@@ -103,8 +103,7 @@
         "expo-ads-facebook",
         "expo-branch",
         "expo-module-template",
-        "expo-web-browser",
-        "recat-native-reanimated"
+        "expo-web-browser"
       ]
     }
   },

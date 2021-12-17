@@ -23,7 +23,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 1
-    versionName "0.7.1"
+    versionName "0.7.2"
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -77,6 +77,7 @@ repositories {
 }
 
 dependencies {
+  androidTestImplementation project(':expo-modules-core')
   androidTestImplementation project(":expo-dev-menu-interface")
   androidTestImplementation project(":expo-updates-interface")
   androidTestImplementation project(":expo-dev-menu")

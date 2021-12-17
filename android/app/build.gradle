@@ -10,7 +10,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
   }
 }
 apply plugin: 'com.android.application'
@@ -123,7 +123,7 @@ dependencies {
 
   implementation 'androidx.multidex:multidex:2.0.0'
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 
   // Our dependencies
   implementation 'androidx.appcompat:appcompat:1.2.0'

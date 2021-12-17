@@ -91,7 +91,7 @@ public class UpdatesModule extends ExportedModule {
       // and warn the developer if not. This does not take into account any extra configuration
       // provided at runtime in MainApplication.java, because we don't have access to that in a
       // debug build.
-      UpdatesConfiguration configuration = new UpdatesConfiguration().loadValuesFromMetadata(getContext());
+      UpdatesConfiguration configuration = new UpdatesConfiguration(getContext(), null);
       constants.put("isMissingRuntimeVersion", configuration.isMissingRuntimeVersion());
     }
 

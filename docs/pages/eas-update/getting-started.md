@@ -4,7 +4,14 @@ title: Getting started
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
-EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps. Read through the [known issues](/eas-update/known-issues) to ensure EAS Update is ready for your project.
+## Prerequisites
+
+EAS Update requires the following versions or greater:
+
+- Expo CLI 5.0.0
+- EAS CLI 0.41.1
+- Expo SDK 44
+- expo-updates 0.11.2
 
 ## Install Expo CLI and EAS CLI
 
@@ -13,8 +20,6 @@ EAS Update is in "preview", meaning that we may still make breaking developer-fa
    ```bash
    npm install --global eas-cli expo-cli
    ```
-
-   EAS Update requires EAS CLI >= 0.40.0 and Expo CLI >= 4.13.0. Your project must also be on Expo SDK 43 or above. To upgrade, run `expo upgrade`.
 
 ## Create an Expo account
 
@@ -40,7 +45,7 @@ expo init
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   expo install expo-updates
+   yarn add expo-updates@0.11.2
    ```
 
 2. Initialize your project with EAS Update:
@@ -88,12 +93,14 @@ Once you have a build running on your device or in a simulator, we'll be ready t
 
 ## Make changes locally
 
-Once we've created a build, we're ready to iterate on our project.
-
-When we run our project locally, Expo CLI creates a manifest locally that Expo Go or a development build will run. To make sure our project starts with Expo's modern manifest protocol, start your local server with:
+Once we've created a build, we're ready to iterate on our project. Start a local development server with:
 
 ```bash
-yarn start --force-manifest-type=expo-updates
+yarn start
+
+# or
+
+expo start
 ```
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.

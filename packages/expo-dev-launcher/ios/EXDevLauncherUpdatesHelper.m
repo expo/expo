@@ -7,7 +7,13 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation EXDevLauncherUpdatesHelper
 
 + (NSDictionary *)createUpdatesConfigurationWithURL:(NSURL *)url
+                                     installationID:(NSString *)installationID
 {
+  NSMutableDictionary *requestHeaders = @{@"Expo-Updates-Environment": @"DEVELOPMENT"}.mutableCopy;
+  if (installationID) {
+    requestHeaders[@"Expo-Dev-Client-ID"] = installationID;
+  }
+
   NSString *urlString = url.absoluteString;
   return @{
     @"EXUpdatesURL": urlString,
@@ -16,9 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesCheckOnLaunch": @"ALWAYS",
     @"EXUpdatesHasEmbeddedUpdate": @(NO),
     @"EXUpdatesEnabled": @(YES),
-    @"EXUpdatesRequestHeaders": @{
-      @"Expo-Updates-Environment": @"DEVELOPMENT"
-    }
+    @"EXUpdatesRequestHeaders": requestHeaders
   };
 }
 

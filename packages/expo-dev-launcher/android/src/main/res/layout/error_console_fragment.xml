@@ -26,7 +26,7 @@
       android:layout_weight="1"
       android:background="@android:color/transparent"
       android:src="@drawable/dev_laucher_ic_home_white_36dp"
-      android:textColor="@color/colorPrimaryDark"
+      android:textColor="@color/dev_launcher_colorPrimaryDark"
       android:textSize="15sp" />
 
     <ImageButton
@@ -36,7 +36,7 @@
       android:layout_weight="1"
       android:background="@android:color/transparent"
       android:src="@drawable/dev_launcher_ic_refresh_white_36dp"
-      android:textColor="@color/colorPrimaryDark"
+      android:textColor="@color/dev_launcher_colorPrimaryDark"
       android:textSize="15sp" />
   </LinearLayout>
 
@@ -44,7 +44,7 @@
     android:id="@+id/list_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/dev_launcher_white"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingBottom="10dp" />

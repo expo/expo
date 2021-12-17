@@ -23,7 +23,7 @@ class UpdateManifestFactoryTest {
 
   private fun createConfig(): UpdatesConfiguration {
     val configMap = mapOf("updateUrl" to Uri.parse("https://exp.host/@esamelson/native-component-list"))
-    return UpdatesConfiguration().loadValuesFromMap(configMap)
+    return UpdatesConfiguration(null, configMap)
   }
 
   @Test

@@ -33,7 +33,8 @@ const DEV_LAUNCHER_HANDLE_INTENT = [
   '      return;',
   '    }',
 ].join('\n');
-const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactActivityDelegate(this, () -> $1);`;
+const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = (activityDelegateDeclaration: string) =>
+  `DevLauncherController.wrapReactActivityDelegate(this, () -> ${activityDelegateDeclaration})`;
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
 const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
       DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
@@ -51,6 +52,29 @@ async function readFileAsync(path: string): Promise<string> {
 async function saveFileAsync(path: string, content: string): Promise<void> {
   return fs.promises.writeFile(path, content, 'utf8');
 }
+
+function findClosingBracketMatchIndex(str: string, pos: number) {
+  if (str[pos] !== '(') {
+    throw new Error("No '(' at index " + pos);
+  }
+  let depth = 1;
+  for (let i = pos + 1; i < str.length; i++) {
+    switch (str[i]) {
+      case '(':
+        depth++;
+        break;
+      case ')':
+        if (--depth === 0) {
+          return i;
+        }
+        break;
+    }
+  }
+  return -1; // No matching closing parenthesis
+}
+
+const replaceBetween = (origin: string, startIndex: number, endIndex: number, insertion: string) =>
+  `${origin.substring(0, startIndex)}${insertion}${origin.substring(endIndex)}`;
 
 function addJavaImports(javaSource: string, javaImports: string[]): string {
   const lines = javaSource.split('\n');
@@ -173,9 +197,31 @@ export function modifyJavaMainActivity(content: string): string {
   }
 
   if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
-    content = content.replace(
-      /(new ReactActivityDelegate(Wrapper)?(.|\s)*\}\)?);$/mu,
-      DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE
+    const activityDelegateMatches = Array.from(
+      content.matchAll(/new ReactActivityDelegate(Wrapper)/g)
+    );
+
+    if (activityDelegateMatches.length !== 1) {
+      WarningAggregator.addWarningAndroid(
+        'expo-dev-launcher',
+        `Failed to wrap 'ReactActivityDelegate'
+See the expo-dev-client installation instructions to modify your MainActivity.java manually: ${InstallationPage}`
+      );
+      return content;
+    }
+
+    const activityDelegateMatch = activityDelegateMatches[0];
+    const matchIndex = activityDelegateMatch.index!;
+    const openingBracketIndex = matchIndex + activityDelegateMatch[0].length; // next character after `new ReactActivityDelegateWrapper`
+
+    const closingBracketIndex = findClosingBracketMatchIndex(content, openingBracketIndex);
+    const reactActivityDelegateDeclaration = content.substring(matchIndex, closingBracketIndex + 1);
+
+    content = replaceBetween(
+      content,
+      matchIndex,
+      closingBracketIndex + 1,
+      DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE(reactActivityDelegateDeclaration)
     );
   }
   return content;

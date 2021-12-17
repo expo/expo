@@ -3,7 +3,7 @@ import UIKit
 /**
  The definition of the view manager. It's part of the module definition to scope only view-related definitions.
  */
-public struct ViewManagerDefinition: AnyDefinition {
+public final class ViewManagerDefinition: ObjectDefinition {
   /**
    The view factory that lets us create views.
    */
@@ -14,13 +14,18 @@ public struct ViewManagerDefinition: AnyDefinition {
    */
   let props: [AnyViewProp]
 
-  init(definitions: [AnyDefinition]) {
+  /**
+   Default initializer receiving children definitions from the result builder.
+   */
+  override init(definitions: [AnyDefinition]) {
     self.factory = definitions
       .compactMap { $0 as? ViewFactory }
       .last
 
     self.props = definitions
       .compactMap { $0 as? AnyViewProp }
+
+    super.init(definitions: definitions)
   }
 
   /**

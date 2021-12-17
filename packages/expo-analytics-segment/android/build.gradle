@@ -16,7 +16,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
   }
 }
 
@@ -70,5 +70,5 @@ dependencies {
   api 'com.segment.analytics.android:analytics:4.9.4'
   api 'com.segment.analytics.android.integrations:firebase:2.+@aar'
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 }

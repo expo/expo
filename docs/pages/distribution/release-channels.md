@@ -21,7 +21,7 @@ with the Expo CLI. Your users can see this release in the Expo Go app with a par
 
 ## Build with Channels
 
-[Set your release channel](/build/updates.md) in the build profile in `eas.json`:
+[Set your release channel](/build/updates.md) in the build profile in **eas.json**:
 
 ```json
 {
@@ -60,7 +60,7 @@ Consider a situation where you have a Staging stack for testing on Expo Go, and 
 
 On the staging stack, run `expo publish --release-channel staging`. Your test users can see the staging version of your app by specifying the channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo Go app. Alternatively, they can open that URL directly on their mobile device.
 
-On the production stack, release v1 of your app by running `expo publish --release-channel prod-v1`. You can build this version of your app into a standalone ipa by running `eas build --platform ios --profile prod` with `releaseChannel` set to `prod-v1` in the `prod` build profile in `eas.json`:
+On the production stack, release v1 of your app by running `expo publish --release-channel prod-v1`. You can build this version of your app into a standalone ipa by running `eas build --platform ios --profile prod` with `releaseChannel` set to `prod-v1` in the `prod` build profile in **eas.json**:
 
 ```json
 {

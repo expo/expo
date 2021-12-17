@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
+import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
@@ -30,6 +31,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
   : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   private val intentRegistry: DevLauncherIntentRegistryInterface by inject()
+  private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
 
   override fun initialize() {
     super.initialize()
@@ -46,6 +48,17 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
   }
 
   override fun getName() = "EXDevLauncherInternal"
+
+  override fun hasConstants(): Boolean = true
+
+  override fun getConstants(): Map<String, Any> {
+    val isRunningOnGenymotion = Build.FINGERPRINT.contains("vbox")
+    val isRunningOnStockEmulator = Build.FINGERPRINT.contains("generic")
+    return mapOf(
+      "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
+      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator)
+    )
+  }
 
   @ReactMethod
   fun loadApp(url: String, promise: Promise) {
