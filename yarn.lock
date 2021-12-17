@@ -1211,7 +1211,7 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/config-plugins@4.0.14", "@expo/config-plugins@^4.0.14", "@expo/config-plugins@~4.0.14":
+"@expo/config-plugins@4.0.14", "@expo/config-plugins@^4.0.14":
   version "4.0.14"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.0.14.tgz#39353be207fe499f4e28703a6cbe7a577bc1b3bb"
   integrity sha512-3UMo9STaIAQRAvtlXXIX83mrxWAh0prQYgVG+n2JRBwI9CWiRdj35W+jyXkTChtPYXGvW1JQF2xatjB8ituSvg==
