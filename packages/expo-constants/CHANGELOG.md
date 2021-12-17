@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/config` from `6.0.6` to `6.0.14`
+
 ## 13.0.0 — 2021-12-03
 
 ### 🛠 Breaking changes
