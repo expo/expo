@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@expo/config": "^6.0.14",
-    "@expo/config-plugins": "~4.0.14",
+    "@expo/config-plugins": "^4.0.14",
     "@expo/metro-config": "~0.3.7",
     "expo-manifests": "~0.2.2",
     "expo-structured-headers": "~2.1.0",
