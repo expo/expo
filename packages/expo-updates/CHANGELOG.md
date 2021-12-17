@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add iOS support for code signing. ([#15682](https://github.com/expo/expo/pull/15682) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -1795,6 +1795,7 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.4.0)
   - AppAuth/Core (1.4.0)
   - AppAuth/ExternalUserAgent (1.4.0)
+  - ASN1Decoder (1.8.0)
   - boost-for-react-native (1.63.0)
   - Branch (0.35.0)
   - CocoaLumberjack (3.5.3):
@@ -1975,12 +1976,14 @@ PODS:
   - EXTrackingTransparency (2.1.0):
     - ExpoModulesCore
   - EXUpdates (0.11.2):
+    - ASN1Decoder (~> 1.8)
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
   - EXUpdates/Tests (0.11.2):
+    - ASN1Decoder (~> 1.8)
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -2934,6 +2937,7 @@ SPEC REPOS:
     - Amplitude
     - Analytics
     - AppAuth
+    - ASN1Decoder
     - boost-for-react-native
     - Branch
     - CocoaLumberjack
@@ -4147,6 +4151,7 @@ SPEC CHECKSUMS:
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
+  ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
@@ -4218,7 +4223,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 31387a5533a33e5b5195c9b90d57eff11c264b18
   EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
-  EXUpdates: afdd80b4c2811d54bd3cf04e2e4f15239d7cfbce
+  EXUpdates: be270fbdfcd531a8086504c7edecd1e9e7e29f0d
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: 847d648d6f4bc0c1afad05caa56a487dc543445e
   EXWebBrowser: 37388663fa51cbfc883de2244931a5182d948e5f
