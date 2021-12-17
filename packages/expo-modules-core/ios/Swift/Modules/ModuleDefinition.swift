@@ -9,7 +9,7 @@ public protocol AnyDefinition {}
  of the module and what it exports to the JavaScript world.
  See `ModuleDefinitionBuilder` for more details on how to create it.
  */
-public final class ModuleDefinition: AnyDefinition {
+public final class ModuleDefinition: ObjectDefinition {
   /**
    The module's type associated with the definition. It's used to create the module instance.
    */
@@ -20,8 +20,6 @@ public final class ModuleDefinition: AnyDefinition {
    */
   var name: String
 
-  let functions: [String : AnyFunction]
-  let constants: [ConstantsDefinition]
   let eventListeners: [EventListener]
   let viewManager: ViewManagerDefinition?
 
@@ -33,19 +31,11 @@ public final class ModuleDefinition: AnyDefinition {
   /**
    Initializer that is called by the `ModuleDefinitionBuilder` results builder.
    */
-  init(definitions: [AnyDefinition]) {
+  override init(definitions: [AnyDefinition]) {
     self.name = definitions
       .compactMap { $0 as? ModuleNameDefinition }
       .last?
       .name ?? ""
-
-    self.functions = definitions
-      .compactMap { $0 as? AnyFunction }
-      .reduce(into: [String : AnyFunction]()) { dict, function in
-        dict[function.name] = function
-      }
-
-    self.constants = definitions.compactMap { $0 as? ConstantsDefinition }
 
     self.eventListeners = definitions.compactMap { $0 as? EventListener }
 
@@ -58,6 +48,8 @@ public final class ModuleDefinition: AnyDefinition {
         .compactMap { ($0 as? EventsDefinition)?.names }
         .joined()
     )
+
+    super.init(definitions: definitions)
   }
 
   /**
