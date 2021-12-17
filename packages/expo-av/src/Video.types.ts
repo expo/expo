@@ -215,6 +215,7 @@ export type VideoProps = {
    * See the [AV documentation](./av) for more information.
    */
   isMuted?: boolean;
+  audioPan?: number;
   /**
    * A boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
    * See the [AV documentation](./av) for more information.
