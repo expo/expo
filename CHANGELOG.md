@@ -46,7 +46,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-device`**
   - Changed naming format of `modelName` to be more consistent ([#14670](https://github.com/expo/expo/pull/14670) by [@EvanBacon](https://github.com/EvanBacon))
 - **`expo-firebase-analytics`**
-  - Deprecates `setCurrentScreen` and removes the native API calls to support the latest Firebase SDKs. ([#4366](https://github.com/expo/expo/pull/4366) by [@IjzerenHein](https://github.com/IjzerenHein))
+  - Deprecates `setCurrentScreen` and removes the native API calls to support the latest Firebase SDKs. ([#14366](https://github.com/expo/expo/pull/14366) by [@IjzerenHein](https://github.com/IjzerenHein))
 - **`expo-image-picker`**
   - Remove typo workaround for `getMediaLibaryPermissionsAsync` method. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
 - **`expo-linking`**
