@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { isDevice } from '../native-modules/DevLauncherInternal';
+import { installationID, isDevice } from '../native-modules/DevLauncherInternal';
 import { queryDevSessionsAsync } from '../native-modules/DevMenu';
 import { DevSession } from '../types';
 
@@ -16,9 +16,13 @@ const portsToCheck = [8081, 8082, 19000, 19001, 19002, 19003, 19004, 19005];
 export async function getDevSessionsAsync(isAuthenticated = false): Promise<DevSession[]> {
   let devSessions: DevSession[] = [];
 
-
   if (isAuthenticated) {
     const sessions = await queryDevSessionsAsync();
+    devSessions = devSessions.concat(sessions);
+  }
+
+  if (!devSessions.length && installationID) {
+    const sessions = await queryDevSessionsAsync(installationID);
     devSessions = devSessions.concat(sessions);
   }
 
