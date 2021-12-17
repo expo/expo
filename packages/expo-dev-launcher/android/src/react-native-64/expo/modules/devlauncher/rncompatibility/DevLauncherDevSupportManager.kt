@@ -47,7 +47,7 @@ class DevLauncherDevSupportManager(
     }
 
     controller.onAppLoadedWithError()
-    DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
+    DevLauncherErrorActivity.showErrorIfNotVisible(activity, DevLauncherAppError(message, e))
   }
 
   companion object {
