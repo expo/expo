@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Runtime crash due to `.toUpperCase` not being invoked as a function, it was missing `()` ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+- `totalByteSent` in upload progress callback was incorrectly sending `bytesSent` on iOS ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+
 ### 💡 Others
 
 ## 13.1.0 — 2021-11-17
