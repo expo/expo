@@ -87,10 +87,10 @@ The condition under which `expo-updates` should automatically check for (and dow
 
 The number of milliseconds `expo-updates` should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
 
-| iOS plist/dictionary key | Android Map key          | Android meta-data name                             | Default | Required? |
-| ------------------------ | ------------------------ | -------------------------------------------------- | ------- | --------- |
-| TBD                      | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
-| TBD                      | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
+| iOS plist/dictionary key          | Android Map key          | Android meta-data name                             | Default | Required? |
+| --------------------------------- | ------------------------ | -------------------------------------------------- | ------- | --------- |
+| `EXUpdatesCodeSigningCertificate` | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
+| `EXUpdatesCodeSigningMetadata`    | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
 
 If `codeSigningCertificate` is present, `expo-updates` will enforce manifest code signing using the certificate and any metadata associated with it.
 - `codeSigningCertificate` must be a valid PEM formatted X.509 certificate with code signing extended key usage.

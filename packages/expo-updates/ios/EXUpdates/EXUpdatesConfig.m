@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
 @property (nonatomic, readwrite, assign) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
+@property (nonatomic, readwrite, strong, nullable) NSString *codeSigningCertificate;
+@property (nonatomic, readwrite, strong, nullable) NSDictionary<NSString *, NSString *> *codeSigningMetadata;
 
 @property (nullable, nonatomic, readwrite, strong) NSString *sdkVersion;
 @property (nullable, nonatomic, readwrite, strong) NSString *runtimeVersion;
@@ -34,6 +36,8 @@ NSString * const EXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
 NSString * const EXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
 NSString * const EXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbeddedUpdate";
 NSString * const EXUpdatesConfigExpectsSignedManifestKey = @"EXUpdatesExpectsSignedManifest";
+NSString * const EXUpdatesConfigCodeSigningCertificateKey = @"EXUpdatesCodeSigningCertificate";
+NSString * const EXUpdatesConfigCodeSigningMetadataKey = @"EXUpdatesCodeSigningMetadata";
 
 NSString * const EXUpdatesConfigReleaseChannelDefaultValue = @"default";
 
@@ -165,11 +169,41 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
   if (hasEmbeddedUpdate && [hasEmbeddedUpdate isKindOfClass:[NSNumber class]]) {
     _hasEmbeddedUpdate = [(NSNumber *)hasEmbeddedUpdate boolValue];
   }
+  
+  id codeSigningCertificate = config[EXUpdatesConfigCodeSigningCertificateKey];
+  if (codeSigningCertificate && [codeSigningCertificate isKindOfClass:[NSString class]]) {
+    _codeSigningCertificate = (NSString *)codeSigningCertificate;
+  }
+  
+  id codeSigningMetadata = config[EXUpdatesConfigCodeSigningMetadataKey];
+  if (codeSigningMetadata) {
+    if(![codeSigningMetadata isKindOfClass:[NSDictionary class]]){
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", EXUpdatesConfigCodeSigningMetadataKey]
+                                   userInfo:@{}];
+    }
+    _codeSigningMetadata = (NSDictionary *)codeSigningMetadata;
+    for (id key in _codeSigningMetadata){
+      if (![_codeSigningMetadata[key] isKindOfClass:[NSString class]]){
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", EXUpdatesConfigCodeSigningMetadataKey]
+                                     userInfo:@{}];
+      }
+    }
+  }
 }
 
 - (BOOL)isMissingRuntimeVersion
 {
   return (!_runtimeVersion || !_runtimeVersion.length) && (!_sdkVersion || !_sdkVersion.length);
+}
+
+- (EXUpdatesCodeSigningConfiguration *)codeSigningConfiguration {
+  if (!_codeSigningCertificate) {
+    return nil;
+  }
+  
+  return [[EXUpdatesCodeSigningConfiguration alloc] initWithCertificateString:_codeSigningCertificate metadata:_codeSigningMetadata];
 }
 
 + (NSString *)normalizedURLOrigin:(NSURL *)url

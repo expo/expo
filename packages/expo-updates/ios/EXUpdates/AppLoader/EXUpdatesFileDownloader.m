@@ -162,7 +162,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
     EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
                                                                                      serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
                                                                                           manifestFilters:responseHeaders[@"expo-manifest-filters"]
-                                                                                        manifestSignature:responseHeaders[@"expo-manifest-signature"]];
+                                                                                        manifestSignature:responseHeaders[@"expo-manifest-signature"]
+                                                                                                signature:responseHeaders[@"expo-signature"]];
     
     return [self parseManifestBodyData:data
                        manifestHeaders:manifestHeaders
@@ -259,7 +260,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
                                                                                    serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
                                                                                         manifestFilters:responseHeaders[@"expo-manifest-filters"]
-                                                                                      manifestSignature:responseHeaders[@"expo-manifest-signature"]];
+                                                                                      manifestSignature:responseHeaders[@"expo-manifest-signature"]
+                                                                                              signature:manifestPartHeaders[@"expo-signature"]];
 
   return [self parseManifestBodyData:manifestPartData
                      manifestHeaders:manifestHeaders
@@ -399,6 +401,28 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
                      successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
+//  try {
+//          configuration.codeSigningConfiguration?.let {
+//            val isSignatureValid = Crypto.isSignatureValid(
+//              it,
+//              Crypto.parseSignatureHeader(manifestHeaderData.signature),
+//              bodyString.toByteArray()
+//            )
+//            if (!isSignatureValid) {
+//              throw IOException("Manifest download was successful, but signature was incorrect")
+//            }
+//          }
+//        } catch (e: Exception) {
+//          callback.onFailure("Downloaded manifest signature is invalid", e)
+//          return
+//        }
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  if (codeSigningConfiguration) {
+    BOOL isSignatureValid = [EXUpdatesCrypto isValidSignatureHeaderInfo:[EXUpdatesSignatureHeaderInfo parseSignatureHeader:manifestHeaders.signature]
+                                            forCodeSigningConfiguration:codeSigningConfiguration
+                                                               bodyData:wat];
+  }
+  
   if (_config.expectsSignedManifest) {
     // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
     mutableManifest[@"isVerified"] = @(isVerified);

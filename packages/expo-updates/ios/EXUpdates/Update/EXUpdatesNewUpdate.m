@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
   jsBundleAsset.extraRequestHeaders = [assetHeaders nullableDictionaryForKey:bundleKey];
+  jsBundleAsset.expectedHash = launchAsset[@"hash"];
   [processedAssets addObject:jsBundleAsset];
 
   if (assets) {
@@ -58,14 +59,17 @@ NS_ASSUME_NONNULL_BEGIN
       id fileExtension = assetDict[@"fileExtension"];
       id metadata = assetDict[@"metadata"];
       id mainBundleFilename = assetDict[@"mainBundleFilename"];
+      id expectedHash = assetDict[@"hash"];
       NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
       NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
       NSAssert(fileExtension && [fileExtension isKindOfClass:[NSString class]], @"asset fileExtension should be a nonnull string");
+      NSAssert(!expectedHash || [expectedHash isKindOfClass:[NSString class]], @"asset hash should be a string");
       NSURL *url = [NSURL URLWithString:(NSString *)urlString];
       NSAssert(url, @"asset url should be a valid URL");
 
       EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)fileExtension];
       asset.url = url;
+      asset.expectedHash = expectedHash;
 
       if (metadata) {
         NSAssert([metadata isKindOfClass:[NSDictionary class]], @"asset metadata should be an object");

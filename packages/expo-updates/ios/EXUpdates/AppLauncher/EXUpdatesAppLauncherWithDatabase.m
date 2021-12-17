@@ -294,10 +294,20 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
                             extraHeaders:asset.extraRequestHeaders ?: @{}
                             successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
+        NSString *hashHexString = [EXUpdatesUtils sha256WithData:data];
+        if (asset.expectedHash && ![asset.expectedHash.lowercaseString isEqualToString:hashHexString.lowercaseString]) {
+          completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain
+                                         code:1016
+                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash.lowercaseString, hashHexString.lowercaseString]}],
+                     asset,
+                     assetLocalUrl);
+          return;
+        }
+        
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
         }
-        asset.contentHash = [EXUpdatesUtils sha256WithData:data];
+        asset.contentHash = hashHexString;
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });

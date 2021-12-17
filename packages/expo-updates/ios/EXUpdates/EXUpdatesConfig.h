@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import <EXUpdates/EXUpdatesCodeSigningConfiguration.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +26,8 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigSDKVersionKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigRuntimeVersionKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigHasEmbeddedUpdateKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigExpectsSignedManifestKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningCertificateKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningMetadataKey;
 
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueAlways;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueWifiOnly;
@@ -52,6 +55,8 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueNever;
 + (instancetype)configWithExpoPlist;
 + (instancetype)configWithDictionary:(NSDictionary *)config;
 - (void)loadConfigFromDictionary:(NSDictionary *)config;
+
+- (nullable EXUpdatesCodeSigningConfiguration *)codeSigningConfiguration;
 
 + (NSString *)normalizedURLOrigin:(NSURL *)url;
 

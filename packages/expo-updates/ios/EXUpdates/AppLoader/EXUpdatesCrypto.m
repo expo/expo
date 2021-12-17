@@ -208,6 +208,12 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
   return status == errSecSuccess;
 }
 
++ (BOOL)isValidSignatureHeaderInfo:(EXUpdatesSignatureHeaderInfo *)signatureHeaderInfo
+       forCodeSigningConfiguration:(EXUpdatesCodeSigningConfiguration *)codeSigningConfiguration
+                          bodyData:(NSData *)bodyData {
+  return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
