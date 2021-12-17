@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Updated `@expo/metro-config` from `4.2.6` to `0.3.7`
+- Updated `@expo/webpack-config` from `0.16.6` to `0.16.14`
+
 ## 1.7.0 — 2021-12-03
 
 ### 💡 Others

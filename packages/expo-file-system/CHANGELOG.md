@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14`
+
 ## 13.1.0 — 2021-11-17
 
 ### 🐛 Bug fixes

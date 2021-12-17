@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added `@expo/config-plugins` dependency
+
 ### 💡 Others
 
 ## 10.1.0 — 2021-12-03

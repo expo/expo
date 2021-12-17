@@ -14,6 +14,7 @@
 
 ### 💡 Others
 
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14`
 - Update `nullthrows` dependency. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
 
 ## 11.0.1 — 2021-10-01

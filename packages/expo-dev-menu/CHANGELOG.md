@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14`
+
 ## 0.8.6 — 2021-12-03
 
 _This version does not introduce any user-facing changes._
