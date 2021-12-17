@@ -233,7 +233,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
           return;
         }
         
-        [self.errorManager showErrorWithMessage:error.description stack:nil];
+        EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
+        [self.errorManager showError:appError];
       });
     }];
     return true;

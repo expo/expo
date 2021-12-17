@@ -147,7 +147,8 @@
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    [[EXDevLauncherController sharedInstance].errorManager showErrorWithMessage:[self stripAnsi:message] stack:stack];
+    EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:[self stripAnsi:message] stack:stack];
+    [[EXDevLauncherController sharedInstance].errorManager showError:appError];
   });
 }
 
