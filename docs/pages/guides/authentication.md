@@ -1237,7 +1237,7 @@ export default function App() {
       /* @info Create a Google credential with the <code>id_token</code> */
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
-      const credential = provider.credential(id_token);
+      const credential = GoogleAuthProvider.credential(id_token);
       /* @end */
       signInWithCredential(auth, credential);
     }
