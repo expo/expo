@@ -613,7 +613,7 @@ EX_EXPORT_METHOD_AS(uploadTaskStartAsync,
                        body:@{
                              @"uuid": uuid,
                              @"data": @{
-                                 @"totalByteSent": @(bytesSent),
+                                 @"totalByteSent": @(totalBytesSent),
                                  @"totalBytesExpectedToSend": @(totalBytesExpectedToSend),
                              },
                            }];
