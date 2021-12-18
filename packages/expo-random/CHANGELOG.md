@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS project build break on SDK 44. ([#15626](https://github.com/expo/expo/pull/15626) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 12.1.0 — 2021-12-03
