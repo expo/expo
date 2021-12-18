@@ -29,6 +29,7 @@ import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
+import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
@@ -192,7 +193,11 @@ class DevLauncherController private constructor()
         }
 
         coroutineScope.launch {
-          loadApp(appUrl, activityToBeInvalidated)
+          try {
+            loadApp(appUrl, activityToBeInvalidated)
+          } catch (e: Throwable) {
+            DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
+          }
         }
         return true
       }
