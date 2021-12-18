@@ -80,8 +80,9 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
     let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = UIApplication.shared.delegate!.window!!
-    window.rootViewController = reactDelegate.createRootViewController()
-    window.rootViewController!.view = rootView
+    let rootViewController = reactDelegate.createRootViewController()
+    rootViewController.view = rootView
+    window.rootViewController = rootViewController
     window.makeKeyAndVisible()
 
     self.cleanup()

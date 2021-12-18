@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the view does not update from screen rotation on iOS devices. ([#15608](https://github.com/expo/expo/pull/15608) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.2 — 2021-12-15
