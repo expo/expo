@@ -234,6 +234,8 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       // extras param name is appId for legacy reasons
       extras.putString("appId", mTask.getAppScopeKey());
       extras.putString("taskName", mTask.getName());
+      extras.putString("killService", serviceOptions.getString("killServiceOnDestroy"));
+
       serviceIntent.putExtras(extras);
 
       context.startForegroundService(serviceIntent);
