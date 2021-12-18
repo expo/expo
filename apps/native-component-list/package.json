@@ -134,7 +134,7 @@
     "expo-three": "6.0.1",
     "expo-tracking-transparency": "~2.1.0",
     "expo-updates": "0.11.2",
-    "expo-video-thumbnails": "~6.1.0",
+    "expo-video-thumbnails": "~6.2.0",
     "expo-web-browser": "~10.1.0",
     "fbemitter": "^2.1.1",
     "fuse.js": "^6.4.6",

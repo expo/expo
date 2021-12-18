@@ -259,7 +259,7 @@ PODS:
   - EXTrackingTransparency (2.1.0):
     - ExpoModulesCore
   - EXUpdatesInterface (0.5.0)
-  - EXVideoThumbnails (6.1.0):
+  - EXVideoThumbnails (6.2.0):
     - ExpoModulesCore
   - EXWebBrowser (10.1.0):
     - ExpoModulesCore
@@ -1334,7 +1334,7 @@ SPEC CHECKSUMS:
   EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
-  EXVideoThumbnails: 6c08e978ed7a5542c5dca04a1757363fd29cb2a1
+  EXVideoThumbnails: 847d648d6f4bc0c1afad05caa56a487dc543445e
   EXWebBrowser: 37388663fa51cbfc883de2244931a5182d948e5f
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
