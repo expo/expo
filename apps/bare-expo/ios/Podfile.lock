@@ -220,7 +220,7 @@ PODS:
     - ExpoModulesCore
   - EXPrint (11.1.0):
     - ExpoModulesCore
-  - EXRandom (12.1.0):
+  - EXRandom (12.1.1):
     - React-Core
   - EXScreenCapture (4.1.0):
     - ExpoModulesCore
@@ -1311,7 +1311,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: d04e519b3e8e21523b195bb21a40144e30f1e163
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
-  EXRandom: 9839c2a2a02d4b594a2c5af22b5faf53b316db05
+  EXRandom: 06978dcf45075f3c9e17ae5e726b887316ee9877
   EXScreenCapture: 0146fdf6ca4c3402a1cf62b2ddb739a840e08c94
   EXScreenOrientation: 35776938aaa9b6460b4df72ff96f2b35e9a4e28b
   EXSecureStore: fa0fdde1c81ceee2a3cb0519e649feae42767969
