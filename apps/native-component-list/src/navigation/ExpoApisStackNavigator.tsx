@@ -465,6 +465,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/UpdatesScreen'));
+    },
+    name: 'Updates',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ViewShotScreen'));
     },
     name: 'ViewShot',
