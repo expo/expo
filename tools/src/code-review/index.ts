@@ -5,6 +5,7 @@ import * as GitHub from '../GitHub';
 import logger from '../Logger';
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
+import lintSwiftFiles from './reviewers/lintSwiftFiles';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
 import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
 import {
@@ -31,6 +32,10 @@ const REVIEWERS: Reviewer[] = [
   {
     id: 'file-checks',
     action: reviewForbiddenFiles,
+  },
+  {
+    id: 'swiftlint',
+    action: lintSwiftFiles,
   },
 ];
 
