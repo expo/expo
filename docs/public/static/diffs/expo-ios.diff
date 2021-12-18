@@ -13,10 +13,26 @@ index ef1de86..d3d75b0 100644
  @property (nonatomic, strong) UIWindow *window;
  
 diff --git a/ios/MyApp/AppDelegate.m b/ios/MyApp/AppDelegate.m
-index 785ed86..9ea037f 100644
+index da9f60a..0164063 100644
 --- a/ios/MyApp/AppDelegate.m
 +++ b/ios/MyApp/AppDelegate.m
-@@ -47,6 +47,7 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+@@ -31,8 +31,8 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+   InitializeFlipper(application);
+ #endif
+ 
+-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
++  RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
++  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
+                                                    moduleName:@"MyApp"
+                                             initialProperties:nil];
+ 
+@@ -43,10 +43,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+   }
+ 
+   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+-  UIViewController *rootViewController = [UIViewController new];
++  UIViewController *rootViewController = [self.reactDelegate createRootViewController];
    rootViewController.view = rootView;
    self.window.rootViewController = rootViewController;
    [self.window makeKeyAndVisible];
