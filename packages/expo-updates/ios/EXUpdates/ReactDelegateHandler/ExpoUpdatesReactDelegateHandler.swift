@@ -4,13 +4,13 @@ import ExpoModulesCore
 
 public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdatesAppControllerDelegate, RCTBridgeDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
-  private var bridgeDelegate: RCTBridgeDelegate?
-  private var launchOptions: [AnyHashable : Any]?
+  private weak var bridgeDelegate: RCTBridgeDelegate?
+  private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?
-  private var rootViewInitialProperties: [AnyHashable : Any]?
+  private var rootViewInitialProperties: [AnyHashable: Any]?
   private lazy var shouldEnableAutoSetup: Bool = {
-    if (EXAppDefines.APP_DEBUG) {
+    if EXAppDefines.APP_DEBUG {
       return false
     }
     // if Expo.plist not found or its content is invalid, disable the auto setup
@@ -29,15 +29,15 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
 
     // Backward compatible if main AppDelegate already has expo-updates setup,
     // we just skip in this case.
-    if (EXUpdatesAppController.sharedInstance().isStarted) {
+    if EXUpdatesAppController.sharedInstance().isStarted {
       return false
     }
 
     return true
   }()
 
-  public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
-    if (!shouldEnableAutoSetup) {
+  public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge? {
+    if !shouldEnableAutoSetup {
       return nil
     }
 
@@ -56,8 +56,8 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
     return EXDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: self.launchOptions)
   }
 
-  public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
-    if (!shouldEnableAutoSetup) {
+  public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> RCTRootView? {
+    if !shouldEnableAutoSetup {
       return nil
     }
 

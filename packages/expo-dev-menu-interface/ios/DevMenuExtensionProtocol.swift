@@ -17,7 +17,7 @@ public protocol DevMenuExtensionProtocol {
    This function is optional because otherwise we end up with linker warning:
    `method '+moduleName' in category from /.../expo-dev-menu/libexpo-dev-menu.a(DevMenuExtensions-....o)
    overrides method from class in /.../expo-dev-menu/libexpo-dev-menu.a(DevMenuExtensions-....o`
-   
+
    So we assume that this method will be implemented by `RCTBridgeModule`.
    In theory we can remove it. However, we leave it  to get easy access to the module name.
    */
@@ -30,11 +30,10 @@ public protocol DevMenuExtensionProtocol {
    */
   @objc
   optional func devMenuItems(_ settings: DevMenuExtensionSettingsProtocol) -> DevMenuItemsContainerProtocol?
-  
+
   @objc
   optional func devMenuScreens(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuScreen]?
-  
+
   @objc
   optional func devMenuDataSources(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuDataSourceProtocol]?
 }
- 

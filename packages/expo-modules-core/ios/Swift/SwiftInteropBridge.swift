@@ -1,4 +1,3 @@
-
 import Foundation
 
 @objc
@@ -53,11 +52,11 @@ public final class SwiftInteropBridge: NSObject {
     var constants = [String: [[String: Any]]]()
 
     for holder in registry {
-      constants[holder.name] = holder.definition.functions.map({ (functionName, function) in
+      constants[holder.name] = holder.definition.functions.map({ functionName, function in
         return [
           "name": functionName,
           "argumentsCount": function.argumentsCount,
-          "key": functionName,
+          "key": functionName
         ]
       })
     }

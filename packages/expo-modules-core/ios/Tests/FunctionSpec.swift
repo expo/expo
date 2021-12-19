@@ -15,7 +15,7 @@ class FunctionSpec: QuickSpec {
             return returnValue
           }
         }
-        .call(function: functionName, args: []) { value, error in
+        .call(function: functionName, args: []) { value, _ in
           expect(value).notTo(beNil())
           expect(value).to(beAKindOf(T.self))
           expect(value as? T).to(equal(returnValue))
@@ -42,7 +42,7 @@ class FunctionSpec: QuickSpec {
     }
 
     it("returns int values") {
-      testFunctionReturning(value: 1234)
+      testFunctionReturning(value: 1_234)
       testFunctionReturning(value: [2, 1, 3, 7])
     }
 
@@ -81,7 +81,7 @@ class FunctionSpec: QuickSpec {
     describe("converting dicts to records") {
       struct TestRecord: Record {
         @Field var property: String = "expo"
-        @Field var optionalProperty: Int? = nil
+        @Field var optionalProperty: Int?
         @Field("propertyWithCustomKey") var customKeyProperty: String = "expo"
       }
       let dict = [
@@ -96,7 +96,7 @@ class FunctionSpec: QuickSpec {
               return a.property
             }
           }
-          .call(function: functionName, args: [dict]) { value, error in
+          .call(function: functionName, args: [dict]) { value, _ in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["property"]))
@@ -112,7 +112,7 @@ class FunctionSpec: QuickSpec {
               return a.customKeyProperty
             }
           }
-          .call(function: functionName, args: [dict]) { value, error in
+          .call(function: functionName, args: [dict]) { value, _ in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["propertyWithCustomKey"]))
@@ -128,7 +128,7 @@ class FunctionSpec: QuickSpec {
               return a.toDictionary()
             }
           }
-          .call(function: functionName, args: [dict]) { value, error in
+          .call(function: functionName, args: [dict]) { value, _ in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(Record.Dict.self))
 
@@ -145,12 +145,12 @@ class FunctionSpec: QuickSpec {
     it("throws when called with more arguments than expected") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) { (a: Int) in
+          function(functionName) { (_: Int) in
             return "something"
           }
         }
         // Function expects one argument, let's give it more.
-        .call(function: functionName, args: [1, 2]) { value, error in
+        .call(function: functionName, args: [1, 2]) { _, error in
           expect(error).notTo(beNil())
           expect(error).to(beAKindOf(InvalidArgsNumberError.self))
           expect(error?.code).to(equal("ERR_INVALID_ARGS_NUMBER"))
@@ -163,7 +163,7 @@ class FunctionSpec: QuickSpec {
     it("throws when called with arguments of incompatible types") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) { (a: String) in
+          function(functionName) { (_: String) in
             return "something"
           }
         }

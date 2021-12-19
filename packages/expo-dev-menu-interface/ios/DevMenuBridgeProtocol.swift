@@ -11,5 +11,5 @@ public protocol DevMenuBridgeProtocol {
   optional func modulesConforming(toProtocol: Protocol) -> [AnyObject]
 
   @objc
-  optional func requestReload() -> Void
+  optional func requestReload()
 }

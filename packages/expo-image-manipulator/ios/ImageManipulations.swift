@@ -190,7 +190,7 @@ internal func fixImageOrientation(_ image: UIImage) throws -> UIImage {
  Helper function for drawing the image in graphics context.
  Throws appropriate errors when the context is missing or the image couldn't be rendered.
  */
-fileprivate func drawInNewContext(size: CGSize, drawing: (CGContext) -> ()) throws -> UIImage {
+private func drawInNewContext(size: CGSize, drawing: (CGContext) -> Void) throws -> UIImage {
   UIGraphicsBeginImageContext(size)
 
   guard let context = UIGraphicsGetCurrentContext() else {
@@ -208,4 +208,3 @@ fileprivate func drawInNewContext(size: CGSize, drawing: (CGContext) -> ()) thro
   UIGraphicsEndImageContext()
   return newImage
 }
-

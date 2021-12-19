@@ -67,8 +67,8 @@ public class CellularModule: Module {
       return .cellular4G
     default:
       if #available(iOS 14.1, *) {
-        if (radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
-            radioAccessTechnology == CTRadioAccessTechnologyNR) {
+        if radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
+            radioAccessTechnology == CTRadioAccessTechnologyNR {
           return .cellular5G
         }
       }
@@ -76,7 +76,7 @@ public class CellularModule: Module {
     }
   }
 
-  static func getCurrentCellularInfo() -> [String : Any?] {
+  static func getCurrentCellularInfo() -> [String: Any?] {
     let carrier = Self.currentCarrier()
     let generation = Self.currentCellularGeneration()
 
@@ -86,7 +86,7 @@ public class CellularModule: Module {
       "isoCountryCode": carrier?.isoCountryCode,
       "mobileCountryCode": carrier?.mobileCountryCode,
       "mobileNetworkCode": carrier?.mobileNetworkCode,
-      "generation": generation.rawValue,
+      "generation": generation.rawValue
     ]
   }
 

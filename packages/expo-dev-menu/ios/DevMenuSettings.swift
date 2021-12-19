@@ -8,7 +8,6 @@ let isOnboardingFinishedKey = "EXDevMenuIsOnboardingFinished"
 
 @objc
 public class DevMenuSettings: NSObject {
-
   /**
    Initializes dev menu settings by registering user defaults
    and applying some settings to static classes like interceptors.
@@ -19,14 +18,14 @@ public class DevMenuSettings: NSObject {
       touchGestureEnabledKey: true,
       keyCommandsEnabledKey: true,
       showsAtLaunchKey: false,
-      isOnboardingFinishedKey: false,
+      isOnboardingFinishedKey: false
     ])
 
     /**
      We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
      So we added `isEnabled` to disable it, but not uninstall.
      */
-    DevMenuMotionInterceptor.isInstalled = true;
+    DevMenuMotionInterceptor.isInstalled = true
     DevMenuMotionInterceptor.isEnabled = DevMenuSettings.motionGestureEnabled
     DevMenuTouchInterceptor.isInstalled = DevMenuSettings.touchGestureEnabled
     DevMenuKeyCommandsInterceptor.isInstalled = DevMenuSettings.keyCommandsEnabled
@@ -104,7 +103,7 @@ public class DevMenuSettings: NSObject {
       "touchGestureEnabled": DevMenuSettings.touchGestureEnabled,
       "keyCommandsEnabled": DevMenuSettings.keyCommandsEnabled,
       "showsAtLaunch": DevMenuSettings.showsAtLaunch,
-      "isOnboardingFinished": DevMenuSettings.isOnboardingFinished,
+      "isOnboardingFinished": DevMenuSettings.isOnboardingFinished
     ]
   }
 }

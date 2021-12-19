@@ -157,13 +157,13 @@ public func events(_ names: String...) -> AnyDefinition {
 /**
  Function that is invoked when the first event listener is added.
  */
-public func onStartObserving(_ body: @escaping () -> ()) -> AnyFunction {
+public func onStartObserving(_ body: @escaping () -> Void) -> AnyFunction {
   return ConcreteFunction("startObserving", argTypes: [], body)
 }
 
 /**
  Function that is invoked when all event listeners are removed.
  */
-public func onStopObserving(_ body: @escaping () -> ()) -> AnyFunction {
+public func onStopObserving(_ body: @escaping () -> Void) -> AnyFunction {
   return ConcreteFunction("stopObserving", argTypes: [], body)
 }

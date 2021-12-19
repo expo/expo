@@ -10,7 +10,7 @@ public class EXDevLauncherBundleURLProviderInterceptor: NSObject {
       }
     }
   }
-  
+
   static private func swizzle() {
     EXDevLauncherUtils.swizzle(
       selector: #selector(RCTBundleURLProvider.guessPackagerHost),
@@ -25,6 +25,6 @@ extension RCTBundleURLProvider {
   func EXDevLauncher_guessPackagerHost() -> String? {
     // We set the packager host by hand.
     // So we don't want to guess the packager host, cause it can take a lot of time.
-    return nil;
+    return nil
   }
 }

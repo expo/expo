@@ -16,28 +16,28 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open var window: UIWindow?
 
   @objc
-  public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
+  public weak var reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
   // MARK: - Initializing the App
 
-  open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+  open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     let parsedSubscribers = subscribers.filter {
       $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
     }
-    
+
     // If we can't find a subscriber that implements `willFinishLaunchingWithOptions`, we will delegate the decision if we can handel the passed URL to
     // the `didFinishLaunchingWithOptions` method by returning `true` here.
     //  You can read more about how iOS handles deep links here: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623112-application#discussion
-    if (parsedSubscribers.isEmpty) {
-      return true;
+    if parsedSubscribers.isEmpty {
+      return true
     }
-    
+
     return parsedSubscribers.reduce(false) { result, subscriber in
       return subscriber.application!(application, willFinishLaunchingWithOptions: launchOptions) || result
     }
   }
 
-  open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+  open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     return subscribers.reduce(false) { result, subscriber in
       return subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions) ?? false || result
     }
@@ -107,7 +107,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     subscribers.forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
   }
 
-  open func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+  open func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
@@ -238,7 +238,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   // MARK: - Opening a URL-Specified Resource
 
-  open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+  open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     return subscribers.contains { subscriber in
       return subscriber.application?(app, open: url, options: options) ?? false
     }
@@ -283,7 +283,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       fatalError("Expo modules provider must implement `ModulesProviderProtocol`.")
     }
     provider.getReactDelegateHandlers()
-      .sorted { (tuple1, tuple2) -> Bool in
+      .sorted { tuple1, tuple2 -> Bool in
         return ModulePriorities.get(tuple1.packageName) > ModulePriorities.get(tuple2.packageName)
       }
       .forEach { handlerTuple in
