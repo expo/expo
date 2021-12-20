@@ -1,5 +1,6 @@
 import commander from 'commander';
 
+import { patchReactImportsAsync } from './ReactImportsPatcher';
 import {
   findModulesAsync,
   resolveModulesAsync,
@@ -14,7 +15,6 @@ import {
   SearchResults,
   PatchReactImportsOptions,
 } from './types';
-import { patchReactImportsAsync } from './ReactImportsPatcher';
 
 /**
  * Registers a command that only searches for available expo modules.
