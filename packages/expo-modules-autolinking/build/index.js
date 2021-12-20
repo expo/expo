@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
 const autolinking_1 = require("./autolinking");
+const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
 /**
  * Registers a command that only searches for available expo modules.
  */
@@ -29,6 +30,16 @@ function registerSearchCommand(commandName, fn) {
  */
 function registerResolveCommand(commandName, fn) {
     return registerSearchCommand(commandName, fn);
+}
+// Register for `patch-react-imports` command
+function registerPatchReactImportsCommand() {
+    return commander_1.default
+        .command('patch-react-imports [paths...]')
+        .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
+        .option('--dry-run', 'Only log files but not writing changes to file system')
+        .action(async (moduleDirs, options) => {
+        (0, ReactImportsPatcher_1.patchReactImportsAsync)(moduleDirs, options);
+    });
 }
 module.exports = async function (args) {
     // Searches for available expo modules.
@@ -65,6 +76,7 @@ module.exports = async function (args) {
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('-n, --namespace <namespace>', 'Java package name under which the package list should be placed.')
         .option('--empty', 'Whether to only generate an empty list. Might be used when the user opts-out of autolinking.', false);
+    registerPatchReactImportsCommand();
     await commander_1.default
         .version(require('expo-modules-autolinking/package.json').version)
         .description('CLI command that searches for Expo modules to autolink them.')

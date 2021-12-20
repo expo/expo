@@ -25,6 +25,11 @@ export interface GenerateOptions extends ResolveOptions {
   empty?: boolean;
 }
 
+export interface PatchReactImportsOptions {
+  podsRoot: string;
+  dryRun: boolean;
+}
+
 export type PackageRevision = {
   path: string;
   version: string;
