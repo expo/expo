@@ -198,14 +198,6 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
   return (!_runtimeVersion || !_runtimeVersion.length) && (!_sdkVersion || !_sdkVersion.length);
 }
 
-- (EXUpdatesCodeSigningConfiguration *)codeSigningConfiguration {
-  if (!_codeSigningCertificate) {
-    return nil;
-  }
-  
-  return [[EXUpdatesCodeSigningConfiguration alloc] initWithCertificateString:_codeSigningCertificate metadata:_codeSigningMetadata];
-}
-
 + (NSString *)normalizedURLOrigin:(NSURL *)url
 {
   NSString *scheme = url.scheme;

@@ -1,7 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXUpdates/EXUpdatesCodeSigningConfiguration.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,6 +44,8 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueNever;
 @property (nonatomic, readonly) NSString *releaseChannel;
 @property (nonatomic, readonly) NSNumber *launchWaitMs;
 @property (nonatomic, readonly) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
+@property (nonatomic, readonly, strong, nullable) NSString *codeSigningCertificate;
+@property (nonatomic, readonly, strong, nullable) NSDictionary<NSString *, NSString *> *codeSigningMetadata;
 
 @property (nullable, nonatomic, readonly) NSString *sdkVersion;
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;
@@ -55,8 +56,6 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueNever;
 + (instancetype)configWithExpoPlist;
 + (instancetype)configWithDictionary:(NSDictionary *)config;
 - (void)loadConfigFromDictionary:(NSDictionary *)config;
-
-- (nullable EXUpdatesCodeSigningConfiguration *)codeSigningConfiguration;
 
 + (NSString *)normalizedURLOrigin:(NSURL *)url;
 

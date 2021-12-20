@@ -62,7 +62,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest
                                                 manifestHeaders:manifestHeaders
                                                      extensions:@{}
@@ -78,7 +79,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"0"
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
                                                 manifestHeaders:manifestHeaders
                                                      extensions:@{}
@@ -94,7 +96,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"1"
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
                                                 manifestHeaders:manifestHeaders
                                                      extensions:@{}

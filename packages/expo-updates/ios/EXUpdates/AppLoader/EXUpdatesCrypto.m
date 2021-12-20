@@ -4,6 +4,12 @@
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 
+#if __has_include(<EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>)
+#import <EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesCryptoPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
@@ -206,12 +212,6 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
                                     [signatureData length]);
 
   return status == errSecSuccess;
-}
-
-+ (BOOL)isValidSignatureHeaderInfo:(EXUpdatesSignatureHeaderInfo *)signatureHeaderInfo
-       forCodeSigningConfiguration:(EXUpdatesCodeSigningConfiguration *)codeSigningConfiguration
-                          bodyData:(NSData *)bodyData {
-  return NO;
 }
 
 @end

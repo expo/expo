@@ -63,7 +63,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
                                                       manifestHeaders:manifestHeaders
                                                            extensions:@{}
@@ -89,7 +90,8 @@
   EXUpdatesManifestHeaders *manifestHeaders1 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:@"branch-name=\"rollout-1\",test=\"value\""
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
                                                        manifestHeaders:manifestHeaders1
                                                             extensions:@{}
@@ -104,7 +106,8 @@
   EXUpdatesManifestHeaders *manifestHeaders2 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:@"branch-name=\"rollout-2\""
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
                                                        manifestHeaders:manifestHeaders2
                                                             extensions:@{}
@@ -132,7 +135,8 @@
   EXUpdatesManifestHeaders *manifestHeaders1 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:@"branch-name=\"rollout-1\""
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
                                                        manifestHeaders:manifestHeaders1
                                                             extensions:@{}
@@ -147,7 +151,8 @@
   EXUpdatesManifestHeaders *manifestHeaders2 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:@""
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
                                                        manifestHeaders:manifestHeaders2
                                                             extensions:@{}
@@ -175,7 +180,8 @@
   EXUpdatesManifestHeaders *manifestHeaders1 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:@"branch-name=\"rollout-1\""
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
                                                        manifestHeaders:manifestHeaders1
                                                             extensions:@{}
@@ -190,7 +196,8 @@
   EXUpdatesManifestHeaders *manifestHeaders2 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
                                                        manifestHeaders:manifestHeaders2
                                                             extensions:@{}
@@ -240,7 +247,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:manifest1
                                                        manifestHeaders:manifestHeaders
                                                             extensions:@{}
