@@ -16,12 +16,11 @@ If you're just starting your project, you can create a new project from our temp
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
 
-
 If you created your project with `expo init`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules**.
 
 If you created your project with `expo init` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
 
-If you created your project with `npx react-native init` and do not have any other Expo packages installed, use the tabs marked **Without Expo Modules**.
+If you created your project with `npx react-native init` and do not have any other Expo packages installed, we are **no longer support such projects starting from version `0.8.0`**.
 
 > **Note**: if you are using _SDK 43 or above_, you'll need to install `expo-dev-client@0.6.0` or above.
 
@@ -35,30 +34,9 @@ Add the `expo-dev-client` library to your package.json.
 
 Add the following lines to your **Podfile**:
 
-<Tabs tabs={["With Expo modules/unimodules", "Without Expo modules"]}>
-
-<Tab >
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
-</Tab>
 
-<Tab >
-<ConfigurationDiff source="/static/diffs/client/podfile-no-unimodules.diff" />
-
-Add an empty Swift file to your project from inside of Xcode by choosing File > New > File > Swift File.
-
-<img src="/static/images/client/xcode_bridging_header_alert.png" style={{ maxWidth: "60%" }}/>
-
-When the above prompt comes up, choose "Create Bridging Header".
-
-</Tab>
-
-</Tabs>
-
-Add configuration in `react-native.config.js` to allow React Native autolinking to find the dependencies of `expo-dev-client`:
-
-<ConfigurationDiff source="/static/diffs/client/react-native.config.js.diff" />
-
-Then you can run the following command to install native code for the Dev Launcher via CocoaPods.
+Run the following command to install native code for the Dev Launcher via CocoaPods.
 
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
@@ -69,27 +47,7 @@ To do that, open Xcode and go to General > Deployment Info, and select an iOS ve
 
 ### 🤖 Android
 
-<Tabs tabs={["With Expo modules/unimodules", "Without Expo modules"]}>
-
-<Tab >
-
-If your project is set up with Expo modules, no additional changes are needed to install the package on Android. 🎉
-
-</Tab>
-
-<Tab >
-
-Add the following lines to your **settings.gradle**:
-
-<ConfigurationDiff source="/static/diffs/client/settings-gradle-no-unimodules.diff" />
-
-Additionally, ensure your project's `minSdkVersion` and Gradle version are at least the following:
-
-<ConfigurationDiff source="/static/diffs/client/gradle-no-unimodules.diff" />
-
-</Tab>
-
-</Tabs>
+No additional changes are needed to install the package on Android. 🎉
 
 ## 2. Basic configuration
 
@@ -103,7 +61,7 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-<Tabs tabs={["With Expo modules", "With unimodules", "Without Expo modules"]}>
+<Tabs tabs={["With Expo modules", "With unimodules"]}>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/app-delegate-expo-modules.diff" />
@@ -113,21 +71,13 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 <ConfigurationDiff source="/static/diffs/client/app-delegate.diff" />
 </Tab>
 
-<Tab >
-
-> ⚠️ Make sure to replace `MyApp` on line 75 in the following diff with your app's actual module name (found on the removed line 36).
-
-<ConfigurationDiff source="/static/diffs/client/app-delegate-no-unimodules.diff" />
-
-</Tab>
-
 </Tabs>
 
 ### 🤖 Android
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-<Tabs tabs={["With Expo modules", "With unimodules", "Without Expo modules"]}>
+<Tabs tabs={["With Expo modules", "With unimodules"]}>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
@@ -135,10 +85,6 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
-</Tab>
-
-<Tab >
-<ConfigurationDiff source="/static/diffs/client/main-activity-and-application-no-unimodules.diff" />
 </Tab>
 
 </Tabs>
