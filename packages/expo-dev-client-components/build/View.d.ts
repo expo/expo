@@ -15,6 +15,7 @@ export declare const View: import("react").ForwardRefExoticComponent<import("rea
     roundedTop?: "none" | "small" | "medium" | "large" | "full" | undefined;
     roundedBottom?: "none" | "small" | "medium" | "large" | "full" | undefined;
     overflow?: "hidden" | undefined;
+    align?: "centered" | undefined;
     flex?: "0" | "1" | undefined;
     shrink?: "0" | "1" | undefined;
     bg?: "none" | "secondary" | "default" | "error" | "warning" | "success" | undefined;
