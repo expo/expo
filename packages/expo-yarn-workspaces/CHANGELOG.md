@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Updated `@expo/metro-config` from `4.2.6` to `0.3.7` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated `@expo/webpack-config` from `0.16.6` to `0.16.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 1.7.0 — 2021-12-03
 
 ### 💡 Others

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 12.1.0 — 2021-12-03
 
 ### 🐛 Bug fixes

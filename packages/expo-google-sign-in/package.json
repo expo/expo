@@ -41,6 +41,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
+    "@expo/config-plugins": "^4.0.14",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
