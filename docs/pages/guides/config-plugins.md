@@ -4,7 +4,7 @@ title: Config Plugins
 
 > This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
 
-When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
+When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
 
 Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things like generate app icons, set the app name, and configure the **Info.plist**, **AndroidManifest.xml**, etc.
 
@@ -201,13 +201,13 @@ export default {
 
 ## What are mods
 
-A modifier (mod for short) is an async function which accepts a config and a data object, then manipulates and returns both as an object.
+A modifier (mod for short) is an async function that accepts a config and a data object, then manipulates and returns both as an object.
 
 Mods are added to the `mods` object of the Expo config. The `mods` object is different to the rest of the Expo config because it doesn't get serialized after the initial reading, this means you can use it to perform actions _during_ code generation. If possible, you should attempt to use basic plugins instead of mods as they're simpler to work with.
 
 - `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
 - `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
-- `mods` are platform specific and should always be added to a platform specific object:
+- `mods` are platform-specific and should always be added to a platform-specific object:
 
 **app.config.js**
 
@@ -230,7 +230,7 @@ module.exports = {
 - The config is read using [`getPrebuildConfig`](https://github.com/expo/expo-cli/blob/43a6162edd646b550c1b7eae6039daf1aaec4fb0/packages/prebuild-config/src/getPrebuildConfig.ts#L12) from `@expo/prebuild-config`.
 - All of the core functionality supported by Expo is added via plugins in `withIosExpoPlugins`. This is stuff like name, version, icons, locales, etc.
 - The config is passed to the compiler `compileModsAsync`
-- The compiler adds base mods which are responsible for reading data (like **Info.plist**), executing a named mod (like `mods.ios.infoPlist`), then writing the results to the file system.
+- The compiler adds base mods that are responsible for reading data (like **Info.plist**), executing a named mod (like `mods.ios.infoPlist`), then writing the results to the file system.
 - The compiler iterates over all of the mods and asynchronously evaluates them, providing some base props like the `projectRoot`.
   - After each mod, error handling asserts if the mod chain was corrupted by an invalid mod.
 
@@ -349,7 +349,7 @@ export const withIcons: ConfigPlugin = config => {
 
 Be careful using `withDangerousMod` as it is subject to change in the future.
 The order with which it gets executed is not reliable either.
-Currently dangerous mods run first before all other modifiers, this is because we use dangerous mods internally for large file system refactoring like when the package name changes.
+Currently, dangerous mods run first before all other modifiers, this is because we use dangerous mods internally for large file system refactoring like when the package name changes.
 
 ## Plugin module resolution
 
@@ -585,7 +585,7 @@ export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
 
 The iOS Podfile is the config file for CocoaPods, the dependency manager on iOS. Think of Podfile like package.json but for iOS. The Podfile is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins, and should opt towards another approach, like Expo Autolinking hooks (citation needed).
 
-Currently, we do have configuration that interacts with the CocoaPods file though.
+Currently, we do have a configuration that interacts with the CocoaPods file though.
 
 Podfile configuration is often done with environment variables:
 
@@ -812,7 +812,7 @@ As you can see from the example, we rely heavily on application code (expo-modul
 ## Debugging
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors.
-By default some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (i.e. legacy package doesn't have a config plugin yet).
+By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (i.e. legacy package doesn't have a config plugin yet).
 
 Running `expo prebuild --clean` with remove the generated native folders before compiling.
 
@@ -921,7 +921,7 @@ Generally, you should only interact with the Gradle file via Expo [Autolinking][
 
 ### iOS App Delegate
 
-Some modules may need to add delegate methods to the project AppDelegate, this can done dangerously via the `withAppDelegate` mod, or it can be done safely by adding support for unimodules AppDelegate proxy to the native module. The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way. If the language of the project AppDelegate changes from Objective-C to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
+Some modules may need to add delegate methods to the project AppDelegate, this can done be dangerously via the `withAppDelegate` mod, or it can be done safely by adding support for unimodules AppDelegate proxy to the native module. The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way. If the language of the project AppDelegate changes from Objective-C to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
 
 Here are some examples of the AppDelegate proxy in action:
 
@@ -1063,7 +1063,7 @@ Node modules with config plugins can be added to the project's Expo config autom
 
 This makes setup a bit easier and helps prevent users from forgetting to add a plugin.
 
-This does come with a couple caveats:
+This does come with a couple of caveats:
 
 1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
