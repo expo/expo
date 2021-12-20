@@ -1,1 +1,1 @@
-export const queryDevSessionsAsync = jest.fn().mockResolvedValue('{"data":[]}');
+export const queryDevSessionsAsync = jest.fn().mockResolvedValue([]);
