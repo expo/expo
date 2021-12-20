@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Introduce `ReactImportsPatcher` to transform double-quoted react imports into angle-brackets and fix incompatible build errors from third-party libraries on SDK 44. ([#15655](https://github.com/expo/expo/pull/15655) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.5.0 — 2021-12-03
