@@ -6,6 +6,13 @@ The `expo-dev-client` library is only compatible with specific versions of certa
 
 You do not need to use any of these packages in your project in order to use `expo-dev-client`, but if you do, you must use a compatible version.
 
+## react-native
+
+| expo-dev-client | react-native        |
+| --------------- | ------------------- |
+| `0.7.X`         | `0.62.X` - `0.64.X` |
+| `0.6.X`         | `0.62.X` - `0.63.X` |
+
 ## expo-splash-screen
 
 | expo-dev-client | expo-splash-screen           |
