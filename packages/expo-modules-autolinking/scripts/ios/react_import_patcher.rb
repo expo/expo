@@ -26,9 +26,12 @@ module Expo
       @module_dirs.each do |dir|
         args.append(Shellwords.escape(File.expand_path(dir)))
       end
-
       Pod::UI.message "Executing ReactImportsPatcher node command: #{args.join(' ')}"
+
+      time_begin = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       system(*args)
+      elapsed_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - time_begin
+      Pod::UI.info "ReactImportsPatcher takes #{elapsed_time.round(4)} seconds to transform files."
     end
 
     private def get_module_dirs(installer)
