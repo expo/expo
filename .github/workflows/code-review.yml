@@ -26,6 +26,17 @@ jobs:
         uses: ./.github/actions/expo-caches
         with:
           yarn-tools: 'true'
+      # - name: 👷 Build and install SwiftLint
+      #   run: |
+      #     git clone https://github.com/realm/SwiftLint.git
+      #     cd SwiftLint
+      #     make build
+      #     cp .build/x86_64-unknown-linux-gnu/release/swiftlint /usr/local/bin/
+      # - name: Make an artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: swiftlint
+      #     path: SwiftLint/.build
       - name: 🔬 Reviewing a pull request
         run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
         env:
