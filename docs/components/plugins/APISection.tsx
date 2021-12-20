@@ -43,7 +43,7 @@ const isListener = ({ name }: GeneratedData) =>
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
-  type?.name === 'React.FC' ||
+  (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) ||
   (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false) ||
   (signatures && signatures[0]
     ? signatures[0].type.name === 'Element' ||
@@ -51,7 +51,8 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
     : false);
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  name !== 'default' && name !== 'Constants' && type?.name !== 'React.FC';
+  !['default', 'Constants'].includes(name) &&
+  !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const renderAPI = (
   packageName: string,
