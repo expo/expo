@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
-const autolinking_1 = require("./autolinking");
 const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
+const autolinking_1 = require("./autolinking");
 /**
  * Registers a command that only searches for available expo modules.
  */

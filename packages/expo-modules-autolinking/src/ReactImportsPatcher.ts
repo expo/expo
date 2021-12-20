@@ -36,7 +36,7 @@ async function generateReactHeaderSetAsync(reactHeaderDir: string): Promise<Set<
  * @param file target patch file
  * @param dryRun true if not writing changes to file
  */
-async function patchFileAsync(headerSet: Set<string>, file: string, dryRun: boolean) {
+export async function patchFileAsync(headerSet: Set<string>, file: string, dryRun: boolean) {
   let changed = false;
   const content = await fs.readFile(file, 'utf-8');
   const transformContent = content.replace(

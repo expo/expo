@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchReactImportsAsync = void 0;
+exports.patchFileAsync = exports.patchReactImportsAsync = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -62,6 +62,7 @@ async function patchFileAsync(headerSet, file, dryRun) {
         await fs_extra_1.default.writeFile(file, transformContent);
     }
 }
+exports.patchFileAsync = patchFileAsync;
 /**
  * Patch imports from a directory
  * @param headerSet prebuilt React-Core header set
