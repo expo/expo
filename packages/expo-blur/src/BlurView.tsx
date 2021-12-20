@@ -4,7 +4,11 @@ import { View, StyleSheet, findNodeHandle } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
 
-class BlurView extends React.Component<BlurViewProps> {
+type BlurViewForwardedRefProp = {
+  forwardedRef: React.ForwardedRef<View>;
+};
+
+class BlurView extends React.Component<BlurViewProps & BlurViewForwardedRefProp> {
   private blurViewRef = React.createRef<View>();
 
   /**
