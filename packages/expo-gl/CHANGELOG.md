@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix segfault in iOS draw loop. ([#15653](https://github.com/expo/expo/pull/15653) by [@wkozyra95](https://github.com/wkozyra95))
+
 ### 💡 Others
 
 ## 11.1.1 — 2021-12-08

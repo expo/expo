@@ -246,7 +246,7 @@
     // This happens exactly at `gl.endFrameEXP()` in the queue
     if (_viewColorbuffer != 0 && !_renderbufferPresented) {
       // bind renderbuffer and present it on the layer
-      [_glContext runInEAGLContext:_uiEaglCtx callback:^{
+      [_glContext runAsync:^{
         glBindRenderbuffer(GL_RENDERBUFFER, self->_viewColorbuffer);
         [self->_uiEaglCtx presentRenderbuffer:GL_RENDERBUFFER];
       }];
