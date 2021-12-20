@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS build with Expo SDK 44. [#15661](https://github.com/expo/expo/pull/15661)
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-12-03

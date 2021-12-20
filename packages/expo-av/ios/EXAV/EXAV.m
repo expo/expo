@@ -63,7 +63,7 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *expoModuleRegistry;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
 @end
@@ -106,7 +106,7 @@ EX_EXPORT_MODULE(ExponentAV);
 
 - (void)installJsiBindings
 {
-  id<EXJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
+  id<EXJavaScriptContextProvider> jsContextProvider = [_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
   void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
   if (jsRuntimePtr) {
     [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
@@ -131,16 +131,16 @@ EX_EXPORT_MODULE(ExponentAV);
 
 #pragma mark - Expo experience lifecycle
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)expoModuleRegistry
 {
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
-  _moduleRegistry = moduleRegistry;
-  _kernelAudioSessionManagerDelegate = [_moduleRegistry getSingletonModuleForName:@"AudioSessionManager"];
+  [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
+  _expoModuleRegistry = expoModuleRegistry;
+  _kernelAudioSessionManagerDelegate = [_expoModuleRegistry getSingletonModuleForName:@"AudioSessionManager"];
   if (!_isBackgrounded) {
     [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   }
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
-  _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
+  _permissionsManager = [_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
@@ -478,7 +478,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 {
   // TODO check that the bridge is still valid after the dispatch
   // TODO check if the queues are ok
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] executeUIBlock:^(id view) {
+  [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block(view);
     } else {
@@ -566,7 +566,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     return EXErrorWithMessage(@"Recorder is already prepared.");
   }
   
-  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   
   if (!fileSystem) {
     return EXErrorWithMessage(@"No FileSystem module.");
@@ -726,7 +726,7 @@ EX_EXPORT_METHOD_AS(loadForSound,
 
 - (void)sendEventWithName:(NSString *)eventName body:(NSDictionary *)body
 {
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)] sendEventWithName:eventName body:body];
+  [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)] sendEventWithName:eventName body:body];
 }
 
 EX_EXPORT_METHOD_AS(unloadForSound,
@@ -984,7 +984,7 @@ EX_EXPORT_METHOD_AS(unloadAudioRecorder,
 - (void)dealloc
 {
   [_kernelAudioSessionManagerDelegate moduleWillDeallocate:self];
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
+  [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   // This will clear all @properties and deactivate the audio session:
