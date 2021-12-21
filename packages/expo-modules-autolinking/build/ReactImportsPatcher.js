@@ -22,12 +22,8 @@ exports.patchReactImportsAsync = patchReactImportsAsync;
  * Generate `React-Core` public header names as a set, will transform necessary headers based on this set.
  */
 async function generateReactHeaderSetAsync(reactHeaderDir) {
-    const result = new Set();
     const files = await (0, fast_glob_1.default)('*.h', { cwd: reactHeaderDir });
-    for (const file of files) {
-        result.add(file);
-    }
-    return result;
+    return new Set(files);
 }
 /**
  * Patch imports from a file
@@ -38,7 +34,7 @@ async function generateReactHeaderSetAsync(reactHeaderDir) {
 async function patchFileAsync(headerSet, file, dryRun) {
     let changed = false;
     const content = await fs_extra_1.default.readFile(file, 'utf-8');
-    const transformContent = content.replace(/^#import\s+?"(.+)"$/gm, (match, headerName) => {
+    const transformContent = content.replace(/^#import\s+"(.+)"$/gm, (match, headerName) => {
         // `#import "RCTBridge.h"` -> `#import <React/RCTBridge.h>`
         if (headerSet.has(headerName)) {
             changed = true;

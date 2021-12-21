@@ -36,7 +36,7 @@ function registerPatchReactImportsCommand() {
     return commander_1.default
         .command('patch-react-imports [paths...]')
         .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
-        .option('--dry-run', 'Only log files but not writing changes to file system')
+        .option('--dry-run', 'Only list files without writing changes to the file system')
         .action(async (moduleDirs, options) => {
         (0, ReactImportsPatcher_1.patchReactImportsAsync)(moduleDirs, options);
     });
