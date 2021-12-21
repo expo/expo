@@ -7,7 +7,7 @@ import { DevSession } from '../types';
 // TODO -- move this into context / make it settable via JS
 const baseAddress = Platform.select({
   ios: 'http://localhost',
-  android: 'http://10.0.0.2',
+  android: 'http://10.0.2.2',
 });
 
 const statusPage = 'status';

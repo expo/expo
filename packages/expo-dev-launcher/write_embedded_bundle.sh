@@ -8,16 +8,19 @@ fi
 
 # iOS
 
-npx react-native bundle \
+EXPO_BUNDLE_APP=1 npx react-native bundle \
     --platform ios \
     --dev false \
     --entry-file index.js \
     --bundle-output ios/main.jsbundle \
     --assets-dest ios
 
+rm ios/assets/__react-native-lab/react-native/package.json
+rm ios/assets/__node_modules/css-tree/package.json
+
 # Android
 
-npx react-native bundle \
+EXPO_BUNDLE_APP=1 npx react-native bundle \
     --platform android \
     --dev false \
     --entry-file index.js \
