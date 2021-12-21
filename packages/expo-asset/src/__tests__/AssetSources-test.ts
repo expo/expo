@@ -56,6 +56,9 @@ describe('selectAssetSource', () => {
       __unsafeNoWarnManifest2: {
         extra: {
           expoGo: {
+            developer: {
+              tool: 'expo-cli',
+            },
             debuggerHost: '127.0.0.1:19000',
           },
         },
