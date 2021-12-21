@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Re-enable passing custom action string to `startActivityAsync`.
+
 ### 💡 Others
 
 ## 10.1.0 — 2021-12-03
