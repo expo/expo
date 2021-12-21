@@ -37,9 +37,7 @@ function registerPatchReactImportsCommand() {
         .command('patch-react-imports [paths...]')
         .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
         .option('--dry-run', 'Only list files without writing changes to the file system')
-        .action(async (moduleDirs, options) => {
-        (0, ReactImportsPatcher_1.patchReactImportsAsync)(moduleDirs, options);
-    });
+        .action(ReactImportsPatcher_1.patchReactImportsAsync);
 }
 module.exports = async function (args) {
     // Searches for available expo modules.

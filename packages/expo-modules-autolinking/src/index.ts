@@ -8,13 +8,7 @@ import {
   generatePackageListAsync,
   mergeLinkingOptionsAsync,
 } from './autolinking';
-import {
-  GenerateOptions,
-  ResolveOptions,
-  SearchOptions,
-  SearchResults,
-  PatchReactImportsOptions,
-} from './types';
+import { GenerateOptions, ResolveOptions, SearchOptions, SearchResults } from './types';
 
 /**
  * Registers a command that only searches for available expo modules.
@@ -62,14 +56,12 @@ function registerResolveCommand<OptionsType extends ResolveOptions>(
 }
 
 // Register for `patch-react-imports` command
-function registerPatchReactImportsCommand<OptionsType extends PatchReactImportsOptions>() {
+function registerPatchReactImportsCommand() {
   return commander
     .command('patch-react-imports [paths...]')
     .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
     .option('--dry-run', 'Only list files without writing changes to the file system')
-    .action(async (moduleDirs: string[], options: OptionsType) => {
-      patchReactImportsAsync(moduleDirs, options);
-    });
+    .action(patchReactImportsAsync);
 }
 
 module.exports = async function (args: string[]) {
