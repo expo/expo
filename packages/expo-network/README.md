@@ -11,7 +11,7 @@ See [<ModuleName> docs](https://docs.expo.dev/versions/latest/sdk/<module-docs-n
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/network/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/network/).
 
 # Installation in bare React Native projects
 
