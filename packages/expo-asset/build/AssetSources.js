@@ -44,7 +44,7 @@ export function selectAssetSource(meta) {
     }
     // For assets during development using manifest2, we use the development server's URL origin
     const manifest2 = getManifest2();
-    if (manifest2?.extra?.expoGo) {
+    if (manifest2?.extra?.expoGo?.developer) {
         const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
         baseUrl.set('pathname', meta.httpServerLocation + suffix);
         return {
