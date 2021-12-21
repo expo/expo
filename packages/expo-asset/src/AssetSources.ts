@@ -74,6 +74,13 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     return { uri, hash };
   }
 
+  // For assets during development using manifest2, we use the development server's URL origin
+  if (getManifest().extra.expoGo) {
+    const baseUrl = new URL(`http://${getManifest().extra.expoGo.debuggerHost}`);
+    baseUrl.set('pathname', meta.httpServerLocation + suffix);
+    return { uri: baseUrl.href, hash };
+  }
+
   // For assets during development, we use the development server's URL origin
   if (getManifest().developer) {
     const baseUrl = new URL(getManifest().bundleUrl);

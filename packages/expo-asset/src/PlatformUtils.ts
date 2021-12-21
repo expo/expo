@@ -30,7 +30,7 @@ export function getLocalAssets() {
 }
 
 export function getManifest(): { [key: string]: any } {
-  return Constants.__unsafeNoWarnManifest ?? {};
+  return Constants.__unsafeNoWarnManifest ?? Constants.__unsafeNoWarnManifest2 ?? {};
 }
 
 // Compute manifest base URL if available

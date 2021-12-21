@@ -22,7 +22,7 @@ export function getLocalAssets() {
     return NativeModulesProxy.ExpoUpdates?.localAssets ?? {};
 }
 export function getManifest() {
-    return Constants.__unsafeNoWarnManifest ?? {};
+    return Constants.__unsafeNoWarnManifest ?? Constants.__unsafeNoWarnManifest2 ?? {};
 }
 // Compute manifest base URL if available
 export const manifestBaseUrl = Constants.experienceUrl
