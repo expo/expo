@@ -20,7 +20,7 @@ If you created your project with `expo init`, or you already have `expo` and/or 
 
 If you created your project with `expo init` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
 
-If you created your project with `npx react-native init` and do not have any other Expo packages installed, we are **no longer support such projects starting from version `0.8.0`**.
+If you created your project with `npx react-native init` and do not have any other Expo packages installed, **starting from version `0.8.0` you'll need to [install Expo modules](../bare/installing-expo-modules)** in order to use `expo-dev-client`.
 
 > **Note**: if you are using _SDK 43 or above_, you'll need to install `expo-dev-client@0.6.0` or above.
 
