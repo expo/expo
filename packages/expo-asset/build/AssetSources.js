@@ -3,7 +3,7 @@ import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
-import { manifestBaseUrl, getManifest } from './PlatformUtils';
+import { manifestBaseUrl, getManifest, getManifest2 } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest
 const assetMapOverride = getManifest().assetMapOverride;
 /**
@@ -43,10 +43,14 @@ export function selectAssetSource(meta) {
         return { uri, hash };
     }
     // For assets during development using manifest2, we use the development server's URL origin
-    if (getManifest().extra.expoGo) {
-        const baseUrl = new URL(`http://${getManifest().extra.expoGo.debuggerHost}`);
+    const manifest2 = getManifest2();
+    if (manifest2?.extra?.expoGo) {
+        const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
         baseUrl.set('pathname', meta.httpServerLocation + suffix);
-        return { uri: baseUrl.href, hash };
+        return {
+            uri: baseUrl.href,
+            hash,
+        };
     }
     // For assets during development, we use the development server's URL origin
     if (getManifest().developer) {
