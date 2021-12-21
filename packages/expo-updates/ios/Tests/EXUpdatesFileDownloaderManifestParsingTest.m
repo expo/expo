@@ -24,12 +24,17 @@
   _modernJSONSignature = @"sig=\"VpuLfRlB0DizR+hRWmedPGHdx/nzNJ8OomMZNGHwqx64zrx1XezriBoItup/icOlXFrqs6FHaul4g5m41JfEWCUbhXC4x+iNk//bxozEYJHmjbcAtC6xhWbMMYQQaUjuYk7rEL987AbOWyUI2lMhrhK7LNzBaT8RGqBcpEyAqIOMuEKcK0faySnWJylc7IzxHmO8jlx5ufzio8301wej8mNW5dZd7PFOX8Dz015tIpF00VGi29ShDNFbpnalch7f92NFs08Z0g9LXndmrGjNL84Wqd4kq5awRGQObrCuDHU4uFdZjtr4ew0JaNlVuyUrrjyDloBdq0aR804vuDXacQ==\"";
 }
 
-- (NSData *)multipartDataFromManifest:(NSString *)manifest withBoundary:(NSString *)boundary {
+- (NSData *)multipartDataFromManifest:(NSString *)manifest
+                         withBoundary:(NSString *)boundary
+                 andManifestSignature:(nullable NSString *)signature {
   NSData *manifestData = [manifest dataUsingEncoding:NSUTF8StringEncoding];
   
   NSMutableData *body = [NSMutableData data];
   [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
   [body appendData:[@"Content-Type: application/json\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+  if (signature) {
+    [body appendData:[[NSString stringWithFormat:@"expo-signature: %@\r\n", signature] dataUsingEncoding:NSUTF8StringEncoding]];
+  }
   [body appendData:[[NSString stringWithFormat:@"Content-Disposition: inline; name=\"%@\"\r\n\r\n", @"manifest"] dataUsingEncoding:NSUTF8StringEncoding]];
   
   [body appendData:manifestData];
@@ -88,7 +93,7 @@
     @"content-type": contentType
   }];
   
-  NSData *bodyData = [self multipartDataFromManifest:_classicJSON withBoundary:boundary];
+  NSData *bodyData = [self multipartDataFromManifest:_classicJSON withBoundary:boundary andManifestSignature:nil];
   
   __block BOOL errorOccurred;
   __block EXUpdatesUpdate *resultUpdateManifest;
@@ -123,7 +128,7 @@
     @"expo-signature": _modernJSONSignature,
   }];
   
-  NSData *bodyData = [_classicJSON dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *bodyData = [_modernJSON dataUsingEncoding:NSUTF8StringEncoding];
   
   __block BOOL errorOccurred;
   __block EXUpdatesUpdate *resultUpdateManifest;
@@ -136,6 +141,76 @@
   
   XCTAssertFalse(errorOccurred);
   XCTAssertNotNil(resultUpdateManifest);
+}
+
+- (void)testManifestParsing_MultipartBodySigned
+{
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
+    EXUpdatesConfigCodeSigningMetadataKey: @{},
+  }];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  
+  NSString *boundary = @"blah";
+  NSString *contentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];
+  
+  NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"]
+                                                            statusCode:200
+                                                           HTTPVersion:@"HTTP/1.1"
+                                                          headerFields:@{
+    @"expo-protocol-version": @"0",
+    @"expo-sfv-version": @"0",
+    @"content-type": contentType
+  }];
+  
+  NSData *bodyData = [self multipartDataFromManifest:_modernJSON withBoundary:boundary andManifestSignature:_modernJSONSignature];
+  
+  __block BOOL errorOccurred;
+  __block EXUpdatesUpdate *resultUpdateManifest;
+  
+  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
+    resultUpdateManifest = update;
+  } errorBlock:^(NSError * _Nonnull error) {
+    errorOccurred = true;
+  }];
+  
+  XCTAssertFalse(errorOccurred);
+  XCTAssertNotNil(resultUpdateManifest);
+}
+
+- (void)testManifestParsing_JSONBodySigned_UnsignedRequest {
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
+    EXUpdatesConfigCodeSigningMetadataKey: @{},
+  }];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  
+  NSString *contentType = @"application/json";
+  
+  NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"]
+                                                            statusCode:200
+                                                           HTTPVersion:@"HTTP/1.1"
+                                                          headerFields:@{
+    @"expo-protocol-version": @"0",
+    @"expo-sfv-version": @"0",
+    @"content-type": contentType,
+  }];
+  
+  NSData *bodyData = [_modernJSON dataUsingEncoding:NSUTF8StringEncoding];
+  
+  __block NSError *errorOccurred;
+  __block EXUpdatesUpdate *resultUpdateManifest;
+  
+  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
+    resultUpdateManifest = update;
+  } errorBlock:^(NSError * _Nonnull error) {
+    errorOccurred = error;
+  }];
+  
+  XCTAssertTrue([errorOccurred.localizedDescription isEqualToString:@"Downloaded manifest signature is invalid: No expo-signature header specified"]);
+  XCTAssertNil(resultUpdateManifest);
 }
 
 @end
