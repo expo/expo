@@ -51,6 +51,29 @@ describe('selectAssetSource', () => {
     expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
   });
 
+  it(`returns a manifest2 URI based on the bundle's URL in development`, () => {
+    _mockConstants({
+      __unsafeNoWarnManifest2: {
+        extra: {
+          expoGo: {
+            developer: {
+              tool: 'expo-cli',
+            },
+            debuggerHost: '127.0.0.1:19000',
+          },
+        },
+      },
+    });
+
+    const AssetSources = require('../AssetSources');
+    const source = AssetSources.selectAssetSource(mockFontMetadata);
+
+    expect(source.uri).toBe(
+      `http://127.0.0.1:19000/assets/test.ttf?platform=ios&hash=cafecafecafecafecafecafecafecafe`
+    );
+    expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+  });
+
   it(`returns a file URI from the asset metadata if specified`, () => {
     const AssetSources = require('../AssetSources');
 

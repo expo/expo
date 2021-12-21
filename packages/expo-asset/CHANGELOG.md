@@ -8,13 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fix an issue preventing the loading of assets using expo-updates manifests during local development. ([#15667](https://github.com/expo/expo/pull/15667)) by [@jonsamp](https://github.com/jonsamp)
+
 ### 💡 Others
 
 ## 8.4.4 — 2021-11-17
 
 ### 🐛 Bug fixes
 
-- Fix `fromModule` on restrictive (Snack) web environments.  ([#14435](https://github.com/expo/expo/pull/14435) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Fix `fromModule` on restrictive (Snack) web environments. ([#14435](https://github.com/expo/expo/pull/14435) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ## 8.4.1 — 2021-10-01
 
@@ -26,13 +28,13 @@
 
 ### 🎉 New features
 
-- Reapply [#12624](https://github.com/expo/expo/pull/12624)  ([#13789](https://github.com/expo/expo/pull/13789) by [@jkhales](https://github.com/jkhales))
+- Reapply [#12624](https://github.com/expo/expo/pull/12624) ([#13789](https://github.com/expo/expo/pull/13789) by [@jkhales](https://github.com/jkhales))
 
 ## 8.3.2 — 2021-04-21
 
 ### 🎉 New features
 
-- Find local assets without extensions.  ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
+- Find local assets without extensions. ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
 
 ## 8.3.1 — 2021-03-23
 
@@ -66,11 +68,11 @@ _This version does not introduce any user-facing changes._
 
 ## 8.1.7 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.1.6 — 2020-05-27
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.1.5
 
