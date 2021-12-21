@@ -921,7 +921,7 @@ Generally, you should only interact with the Gradle file via Expo [Autolinking][
 
 ### iOS App Delegate
 
-Some modules may need to add delegate methods to the project AppDelegate, this can done be dangerously via the `withAppDelegate` mod, or it can be done safely by adding support for unimodules AppDelegate proxy to the native module. The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way. If the language of the project AppDelegate changes from Objective-C to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
+Some modules may need to add delegate methods to the project AppDelegate, this can be done dangerously via the `withAppDelegate` mod, or it can be done safely by adding support for unimodules AppDelegate proxy to the native module. The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way. If the language of the project AppDelegate changes from Objective-C to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
 
 Here are some examples of the AppDelegate proxy in action:
 
