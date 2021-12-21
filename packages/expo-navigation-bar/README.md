@@ -11,7 +11,7 @@ Properties are named after style properties; visibility, position, backgroundCol
 
 ## Installation in managed Expo projects
 
-For managed [managed][docs-workflows] Expo projects, please follow the installation instructions in the [API documentation for the latest stable release][docs-stable].
+For [managed][docs-workflows] Expo projects, please follow the installation instructions in the [API documentation for the latest stable release][docs-stable].
 
 
 ## Installation in bare React Native projects
