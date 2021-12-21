@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Introduce `ReactImportsPatcher` to transform double-quoted react imports into angle-brackets and fix incompatible build errors from third-party libraries on SDK 44. ([#15655](https://github.com/expo/expo/pull/15655) by [@kudo](https://github.com/kudo))
+- Introduce `expo_patch_react_imports!` to transform double-quoted React imports into angle-brackets in order to fix third-party libraries incompatibility with SDK 44. ([#15655](https://github.com/expo/expo/pull/15655) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
