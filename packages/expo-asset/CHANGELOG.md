@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix an issue preventing the loading of assets using expo-updates manifests during local development. ([#15667](https://github.com/expo/expo/pull/15667)) by [@jonsamp](https://github.com/jonsamp)
-
 ### 💡 Others
+
+## 8.4.5 — 2021-12-21
+
+### 🐛 Bug fixes
+
+- Fix an issue preventing the loading of assets using expo-updates manifests during local development. ([#15667](https://github.com/expo/expo/pull/15667)) by [@jonsamp](https://github.com/jonsamp)
 
 ## 8.4.4 — 2021-11-17
 
