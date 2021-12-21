@@ -46,11 +46,10 @@
   },
   "devDependencies": {
     "@apollo/client": "^3.4.10",
+    "@babel/preset-typescript": "^7.7.4",
     "@react-navigation/core": "5.15.1",
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
-    "apollo-boost": "^0.4.4",
-    "apollo-cache-inmemory": "^1.6.3",
     "babel-plugin-module-resolver": "^4.1.0",
     "expo-module-scripts": "^2.0.0",
     "fuse.js": "^6.4.6",
