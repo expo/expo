@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix an issue preventing the loading of expo-updates manifests during local development. ([#15667](https://github.com/expo/expo/pull/15667)) by [@jonsamp](https://github.com/jonsamp)
+- Fix an issue preventing the loading of assets using expo-updates manifests during local development. ([#15667](https://github.com/expo/expo/pull/15667)) by [@jonsamp](https://github.com/jonsamp)
 
 ### 💡 Others
 
