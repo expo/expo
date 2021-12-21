@@ -31,7 +31,7 @@ module Expo
       time_begin = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       system(*args)
       elapsed_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - time_begin
-      Pod::UI.info "ReactImportsPatcher takes #{elapsed_time.round(4)} seconds to transform files."
+      Pod::UI.info "ReactImportsPatcher took #{elapsed_time.round(4)} seconds to transform files."
     end
 
     private def get_module_dirs(installer)
@@ -48,13 +48,13 @@ module Expo
           groups = project.groups.select { |group| !(['Dependencies', 'Frameworks', 'Products'].include? group.name) }
           groups.each do |group|
             unless group.path.start_with? '../'
-              raise 'CocoaPods does not put pod subprojects inside nested directory'
+              raise 'CocoaPods does not put pod subprojects inside nested directories'
             end
             result.append(group.path[3..])
           end
         else
           unless pod.path.start_with? '../'
-            raise 'CocoaPods does not put pod subgroups inside nested directory'
+            raise 'CocoaPods does not put pod subgroups inside nested directories'
           end
           result.append(pod.path[3..])
         end

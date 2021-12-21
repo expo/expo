@@ -66,7 +66,7 @@ function registerPatchReactImportsCommand<OptionsType extends PatchReactImportsO
   return commander
     .command('patch-react-imports [paths...]')
     .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
-    .option('--dry-run', 'Only log files but not writing changes to file system')
+    .option('--dry-run', 'Only list files without writing changes to the file system')
     .action(async (moduleDirs: string[], options: OptionsType) => {
       patchReactImportsAsync(moduleDirs, options);
     });

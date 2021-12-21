@@ -9,7 +9,7 @@ describe(patchFileAsync, () => {
   let mockFsWriteFile;
 
   beforeAll(() => {
-    // supress logging
+    // suppress logging
     global.console.log = jest.fn();
   });
 
@@ -33,7 +33,7 @@ describe(patchFileAsync, () => {
 #import <React/RCTBridge.h>`);
   });
 
-  it('should not transform React-Core headers', async () => {
+  it('should not transform non-React-Core headers', async () => {
     const headerSet = new Set(['UIView+React.h']);
     mockFsReadFile.mockResolvedValue(`\
 #import "UIView+React.h"
