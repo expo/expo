@@ -4,7 +4,7 @@ import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
 
 import AssetSourceResolver from './AssetSourceResolver';
-import { manifestBaseUrl, getManifest } from './PlatformUtils';
+import { manifestBaseUrl, getManifest, getManifest2 } from './PlatformUtils';
 
 // @docsMissing
 export type AssetMetadata = {
@@ -72,6 +72,19 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   if (/^https?:\/\//.test(meta.httpServerLocation)) {
     const uri = meta.httpServerLocation + suffix;
     return { uri, hash };
+  }
+
+  // For assets during development using manifest2, we use the development server's URL origin
+  const manifest2 = getManifest2();
+
+  if (manifest2?.extra?.expoGo?.developer) {
+    const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
+    baseUrl.set('pathname', meta.httpServerLocation + suffix);
+
+    return {
+      uri: baseUrl.href,
+      hash,
+    };
   }
 
   // For assets during development, we use the development server's URL origin
