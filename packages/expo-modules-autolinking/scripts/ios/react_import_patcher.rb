@@ -31,7 +31,7 @@ module Expo
       time_begin = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       system(*args)
       elapsed_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) - time_begin
-      Pod::UI.info "ReactImportsPatcher took #{elapsed_time.round(4)} seconds to transform files."
+      Pod::UI.info "expo_patch_react_imports! took #{elapsed_time.round(4)} seconds to transform files."
     end
 
     private def get_module_dirs(installer)
