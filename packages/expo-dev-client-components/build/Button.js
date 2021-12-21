@@ -118,6 +118,10 @@ function ScaleOnPressContainer({ minScale = 0.975, ...props }) {
         setIsPressing(true);
         Animated.spring(animatedValue.current, {
             toValue: 1,
+            stiffness: 1000,
+            damping: 500,
+            mass: 3,
+            overshootClamping: true,
             useNativeDriver: true,
         }).start();
     }, []);
@@ -125,6 +129,10 @@ function ScaleOnPressContainer({ minScale = 0.975, ...props }) {
         setIsPressing(false);
         Animated.spring(animatedValue.current, {
             toValue: 0,
+            stiffness: 1000,
+            damping: 500,
+            mass: 3,
+            overshootClamping: true,
             useNativeDriver: true,
         }).start();
     }, []);

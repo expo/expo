@@ -8,6 +8,10 @@ export const Image = create(RNImage, {
     },
     variants: {
         size: {
+            tiny: {
+                height: scale.small,
+                width: scale.small,
+            },
             small: {
                 height: iconSize.small,
                 width: iconSize.small,
