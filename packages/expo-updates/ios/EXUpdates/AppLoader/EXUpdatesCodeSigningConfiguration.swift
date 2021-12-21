@@ -60,6 +60,11 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
   }
   
   @objc
+  func createAcceptSignatureHeader() -> String {
+    return "sig, keyid=\"\(keyId)\", alg=\"\(algorithm.rawValue)\""
+  }
+  
+  @objc
   public func verifySignatureHeaderInfo(signatureHeaderInfo: EXUpdatesSignatureHeaderInfo, signedData: Data) throws -> NSNumber {
     // check that the key used to sign the response is the same as the key embedded in the configuration
     // TODO(wschurman): this may change for child certificates and development certificates
