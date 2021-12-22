@@ -402,6 +402,33 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   } errorBlock:errorBlock];
 }
 
+- (nullable EXUpdatesCodeSigningConfiguration *)codeSigningConfiguration {
+  if (!_config.codeSigningCertificate) {
+    return nil;
+  }
+
+  NSError *error;
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = [[EXUpdatesCodeSigningConfiguration alloc] initWithCertificate:_config.codeSigningCertificate
+                                                                                                                      metadata:_config.codeSigningMetadata
+                                                                                                                         error:&error];
+  if (error) {
+    NSString *message;
+    if (error.code == EXUpdatesCodeSigningConfigurationErrorCertificateParseError) {
+      message = @"Could not parse code signing certificate";
+    } else if (error.code == EXUpdatesCodeSigningConfigurationErrorCertificateValidityError) {
+      message = @"Certificate not valid";
+    } else if (error.code == EXUpdatesCodeSigningConfigurationErrorCertificateDigitalSignatureNotPresentError) {
+      message = @"Certificate digital signature not present";
+    } else if (error.code == EXUpdatesCodeSigningConfigurationErrorCertificateMissingCodeSigningError) {
+      message = @"Certificate missing code signing extended key usage";
+    }
+    
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
+  }
+  
+  return codeSigningConfiguration;
+}
+
 - (void)_createUpdateWithManifest:(NSDictionary *)manifest
                  manifestBodyData:(NSData *)manifestBodyData
                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
@@ -412,17 +439,9 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
   @try {
-    if (_config.codeSigningCertificate) {
+    EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = self.codeSigningConfiguration;
+    if (codeSigningConfiguration) {
       NSError *error;
-      EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = [[EXUpdatesCodeSigningConfiguration alloc] initWithCertificate:_config.codeSigningCertificate
-                                                                                                                          metadata:_config.codeSigningMetadata
-                                                                                                                             error:&error];
-      if (error) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"Could not parse code signing certificate"
-                                     userInfo:nil];
-      }
-      
       EXUpdatesSignatureHeaderInfo *signatureHeaderInfo = [[EXUpdatesSignatureHeaderInfo alloc] initWithSignatureHeader:manifestHeaders.signature
                                                                                                                   error:&error];
       if (error) {
@@ -627,6 +646,16 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
 
   for (NSString *key in _config.requestHeaders) {
     [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
+  }
+  
+  @try {
+    EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = self.codeSigningConfiguration;
+    if (codeSigningConfiguration) {
+      [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expects-signature"];
+    }
+  }
+  @catch (NSException *exception) {
+    NSLog(@"Code signing configuration is invalid: %@", exception.reason);
   }
 }
 

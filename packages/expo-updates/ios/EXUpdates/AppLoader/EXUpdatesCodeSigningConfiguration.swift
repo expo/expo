@@ -60,7 +60,7 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
   }
   
   @objc
-  func createAcceptSignatureHeader() -> String {
+  public func createAcceptSignatureHeader() -> String {
     return "sig, keyid=\"\(keyId)\", alg=\"\(algorithm.rawValue)\""
   }
   
