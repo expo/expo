@@ -17,10 +17,11 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
 
   // Iterate over diffs of Swift files
   for (const fileDiff of swiftFiles) {
-    // Lint file's content at the PR head commit
-    const violations = await lintStringAsync(
-      await Git.readFileAsync(fileDiff.to!, pullRequest.head.sha)
-    );
+    // Read file's content at the PR head commit
+    const newFileContent = await Git.readFileAsync(fileDiff.to!, pullRequest.head.sha);
+
+    // Lint the new content
+    const violations = await lintStringAsync(newFileContent);
 
     // Count the position for review comments
     let position = 0;
@@ -48,6 +49,8 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
           });
         }
       }
+      // Position needs to be incremented after each chunk too.
+      position++;
     }
   }
 
@@ -86,5 +89,6 @@ function severityToEmoji(severity: LintViolation['severity']): string {
  */
 function commentBodyForViolation(violation: LintViolation): string {
   const emoji = severityToEmoji(violation.severity);
-  return `### ${emoji} SwiftLint Violation: ${violation.type}\n\n_${violation.reason}_`;
+  return `#### ${emoji} SwiftLint: [${violation.type} Violation](https://realm.github.io/SwiftLint/${violation.ruleId}.html)
+${violation.reason}`;
 }

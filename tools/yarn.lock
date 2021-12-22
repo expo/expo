@@ -1369,6 +1369,13 @@
   dependencies:
     cross-spawn "^7.0.3"
 
+"@expo/swiftlint@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@expo/swiftlint/-/swiftlint-0.1.1.tgz#9dd8062879111718eb804e288f3aa5d67f722ed7"
+  integrity sha512-tCoNwDm2TyTePMdpe0pIRs6Dg+ZhoLGpZZ0JYEPuPQh4R4Wqq5RQhsz88fCK0H19US3mgpgvibq/vto8vWbMuA==
+  dependencies:
+    "@expo/spawn-async" "^1.5.0"
+
 "@expo/webpack-config@0.12.60":
   version "0.12.60"
   resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.12.60.tgz#382a12b6a256a6cd8528f9969672c5d308ca370e"

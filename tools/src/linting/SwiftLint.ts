@@ -1,8 +1,9 @@
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import { SpawnResult } from '@expo/spawn-async';
+import swiftlint from '@expo/swiftlint';
 import { ChildProcess } from 'child_process';
+import { EOL } from 'os';
 
 import { EXPO_DIR } from '../Constants';
-import { spawnAsync } from '../Utils';
 
 /**
  * Represents a single linter violation.
@@ -42,10 +43,9 @@ export type LintViolation = {
 /**
  * Spawns swiftlint process.
  */
-function runAsync(args: string[], options: SpawnOptions = {}): Promise<SpawnResult> {
-  return spawnAsync('swiftlint', args, {
+function runAsync(args: string[]): Promise<SpawnResult> {
+  return swiftlint(args, {
     cwd: EXPO_DIR,
-    ...options,
   });
 }
 
@@ -53,17 +53,22 @@ function runAsync(args: string[], options: SpawnOptions = {}): Promise<SpawnResu
  * Parses JSON reported by `swiftlint` to the array of violations.
  */
 function parseLintResultsFromJSONString(jsonString: string): LintViolation[] {
-  const json = JSON.parse(jsonString);
+  try {
+    const json = JSON.parse(jsonString);
 
-  return json.map(({ file, line, character, reason, severity, type, rule_id }) => ({
-    file,
-    line,
-    column: character ?? 0,
-    reason,
-    severity: severity.toLowerCase(),
-    type,
-    ruleId: rule_id,
-  }));
+    return json.map(({ file, line, character, reason, severity, type, rule_id }) => ({
+      file,
+      line,
+      column: character ?? 0,
+      reason,
+      severity: severity.toLowerCase(),
+      type,
+      ruleId: rule_id,
+    }));
+  } catch (e) {
+    console.error('Unable to parse as JSON:', jsonString);
+    throw e;
+  }
 }
 
 /**
@@ -86,9 +91,8 @@ export async function lintStringAsync(str: string): Promise<LintViolation[]> {
 
   // @ts-ignore
   const child = promise.child as ChildProcess;
-  child.stdin.setDefaultEncoding('utf-8');
   child.stdin.write(str);
-  child.stdin.end();
+  child.stdin.end(EOL);
 
   let stdout: string;
   try {
