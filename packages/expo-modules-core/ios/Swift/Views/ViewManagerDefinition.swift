@@ -13,6 +13,11 @@ public final class ViewManagerDefinition: ObjectDefinition {
    An array of view props definitions.
    */
   let props: [AnyViewProp]
+  
+  /**
+   Name of the defined view manager. Falls back to the module name if not provided in the definition.
+   */
+  let name: String
 
   /**
    Default initializer receiving children definitions from the result builder.
@@ -24,6 +29,12 @@ public final class ViewManagerDefinition: ObjectDefinition {
 
     self.props = definitions
       .compactMap { $0 as? AnyViewProp }
+    
+    // TODO: Throw upon multiple view managers definitions with the same name
+    self.name = definitions
+      .compactMap { $0 as? ViewManageerNameDefinition }
+      .last?
+      .name ?? ""
 
     super.init(definitions: definitions)
   }
@@ -43,4 +54,11 @@ public final class ViewManagerDefinition: ObjectDefinition {
       acc[prop.name] = prop
     }
   }
+}
+
+/**
+ View manager's name definition. Returned by `name()` in view manager's definition.
+ */
+internal struct ViewManageerNameDefinition: AnyDefinition {
+  let name: String
 }

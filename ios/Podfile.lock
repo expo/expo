@@ -1813,8 +1813,6 @@ PODS:
   - EXAppAuth (11.1.0):
     - AppAuth (~> 1.2)
     - ExpoModulesCore
-  - EXAppleAuthentication (4.1.0):
-    - ExpoModulesCore
   - EXApplication (4.0.1):
     - ExpoModulesCore
   - EXAV (10.2.0):
@@ -1915,6 +1913,8 @@ PODS:
   - EXPermissions (13.1.0):
     - ExpoModulesCore
   - Expo (44.0.0-beta.1):
+    - ExpoModulesCore
+  - ExpoAppleAuthentication (4.1.0):
     - ExpoModulesCore
   - ExpoCellular (4.1.0):
     - ExpoModulesCore
@@ -2810,7 +2810,6 @@ DEPENDENCIES:
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
-  - EXAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../packages/expo-application/ios`)
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
@@ -2852,6 +2851,7 @@ DEPENDENCIES:
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo/ios`)
+  - ExpoAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
@@ -3612,8 +3612,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-analytics-amplitude/ios"
   EXAppAuth:
     :path: "../packages/expo-app-auth/ios"
-  EXAppleAuthentication:
-    :path: "../packages/expo-apple-authentication/ios"
   EXApplication:
     :path: "../packages/expo-application/ios"
   EXAV:
@@ -3692,6 +3690,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-permissions/ios"
   Expo:
     :path: "../packages/expo/ios"
+  ExpoAppleAuthentication:
+    :path: "../packages/expo-apple-authentication/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
   ExpoHaptics:
@@ -4155,7 +4155,6 @@ SPEC CHECKSUMS:
   EXAdsFacebook: 9697b91f55d254ebe4c3a1ddba9c76dfa8302775
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
   EXAppAuth: 628fbc475121581364241f9f12fc082f23d0b567
-  EXAppleAuthentication: 27a4f7dc44a1b510f5af945b58643165ee486d89
   EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
   EXAV: e501565d5aff495b7b5e9249d489f5ef94db03b2
   EXBackgroundFetch: 12e8a8c522a2d2c5be07168d74af76567841f023
@@ -4195,6 +4194,7 @@ SPEC CHECKSUMS:
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
+  ExpoAppleAuthentication: 3d37e50840afa7c0a507b7db58f10d3f56df68e1
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3

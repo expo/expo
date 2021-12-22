@@ -28,7 +28,7 @@
 @end
 
 // below commented code serves as template for above macro
-
+//
 //@interface EXAppleAuthenticationButtonSignInWhiteViewManager : EXViewManager @end
 //
 //@implementation EXAppleAuthenticationButtonSignInWhiteViewManager

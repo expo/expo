@@ -21,7 +21,7 @@ public final class ModuleDefinition: ObjectDefinition {
   var name: String
 
   let eventListeners: [EventListener]
-  let viewManager: ViewManagerDefinition?
+  let viewManagers: [ViewManagerDefinition]?
 
   /**
    Names of the events that the module can send to JavaScript.
@@ -39,9 +39,7 @@ public final class ModuleDefinition: ObjectDefinition {
 
     self.eventListeners = definitions.compactMap { $0 as? EventListener }
 
-    self.viewManager = definitions
-      .compactMap { $0 as? ViewManagerDefinition }
-      .last
+    self.viewManagers = definitions.compactMap { $0 as? ViewManagerDefinition }
 
     self.eventNames = Array(
       definitions

@@ -74,7 +74,7 @@ public final class SwiftInteropBridge: NSObject {
   @objc
   public func exportedViewManagersNames() -> [String] {
     return registry.compactMap { holder in
-      return holder.definition.viewManager != nil ? holder.name : nil
+      return holder.definition.viewManagers != nil ? holder.name : nil
     }
   }
 
@@ -84,7 +84,7 @@ public final class SwiftInteropBridge: NSObject {
   @objc
   public func getViewManagers() -> [ViewModuleWrapper] {
     return registry.compactMap { holder in
-      if holder.definition.viewManager != nil {
+      if holder.definition.viewManagers != nil {
         return ViewModuleWrapper(holder)
       } else {
         return nil

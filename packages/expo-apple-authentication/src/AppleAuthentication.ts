@@ -48,11 +48,7 @@ export async function signInAsync(
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'signInAsync');
   }
-  const requestOptions = {
-    ...options,
-    requestedOperation: AppleAuthenticationOperation.LOGIN,
-  };
-  const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
+  const credential = await ExpoAppleAuthentication.singInAsync(options);
   if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
     throw new CodedError(
       'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
@@ -78,11 +74,7 @@ export async function refreshAsync(
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'refreshAsync');
   }
-  const requestOptions = {
-    ...options,
-    requestedOperation: AppleAuthenticationOperation.REFRESH,
-  };
-  const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
+  const credential = await ExpoAppleAuthentication.refreshAsync(options);
   if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
     throw new CodedError(
       'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
@@ -112,11 +104,7 @@ export async function signOutAsync(
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'signOutAsync');
   }
-  const requestOptions = {
-    ...options,
-    requestedOperation: AppleAuthenticationOperation.LOGOUT,
-  };
-  return ExpoAppleAuthentication.requestAsync(requestOptions);
+  return ExpoAppleAuthentication.signOutAsync(options);
 }
 
 // @needsAudit
