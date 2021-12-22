@@ -169,7 +169,7 @@ export enum ResultCode {
  * @return A promise which fulfils with `IntentLauncherResult` object.
  */
 export async function startActivityAsync(
-  activityAction: ActivityAction,
+  activityAction: ActivityAction | string,
   params: IntentLauncherParams = {}
 ): Promise<IntentLauncherResult> {
   if (!ExpoIntentLauncher.startActivity) {
