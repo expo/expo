@@ -62,7 +62,7 @@
     "expo-application": "~4.0.1",
     "expo-asset": "~8.4.5",
     "expo-constants": "~13.0.0",
-    "expo-file-system": "~13.1.0",
+    "expo-file-system": "~13.2.0",
     "expo-font": "~10.0.4",
     "expo-keep-awake": "~10.0.1",
     "expo-modules-autolinking": "0.5.0",
