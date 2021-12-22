@@ -186,33 +186,35 @@ function UserAccountSelector({
   return (
     <View>
       <View>
-        {userData.accounts.map((account, index, arr) => {
-          const isLast = index === arr.length - 1;
-          const isFirst = index === 0;
-          const isSelected = account.id === selectedAccount?.id;
+        {userData.accounts
+          .filter((account) => account && account.owner)
+          .map((account, index, arr) => {
+            const isLast = index === arr.length - 1;
+            const isFirst = index === 0;
+            const isSelected = account.id === selectedAccount?.id;
 
-          return (
-            <Button.ScaleOnPressContainer
-              key={account.id}
-              onPress={() => onSelectAccount(account)}
-              bg="default"
-              roundedBottom={isLast ? 'large' : 'none'}
-              roundedTop={isFirst ? 'large' : 'none'}>
-              <Row align="center" py="small" px="medium">
-                <Image size="large" rounded="full" source={{ uri: account.owner.profilePhoto }} />
-                <Spacer.Horizontal size="small" />
+            return (
+              <Button.ScaleOnPressContainer
+                key={account.id}
+                onPress={() => onSelectAccount(account)}
+                bg="default"
+                roundedBottom={isLast ? 'large' : 'none'}
+                roundedTop={isFirst ? 'large' : 'none'}>
+                <Row align="center" py="small" px="medium">
+                  <Image size="large" rounded="full" source={{ uri: account.owner.profilePhoto }} />
+                  <Spacer.Horizontal size="small" />
 
-                <View>
-                  <Heading size="small">{account.owner.username}</Heading>
-                </View>
+                  <View>
+                    <Heading size="small">{account.owner.username}</Heading>
+                  </View>
 
-                <Spacer.Vertical size="flex" />
-                {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
-              </Row>
-              {!isLast && <Divider />}
-            </Button.ScaleOnPressContainer>
-          );
-        })}
+                  <Spacer.Vertical size="flex" />
+                  {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
+                </Row>
+                {!isLast && <Divider />}
+              </Button.ScaleOnPressContainer>
+            );
+          })}
       </View>
 
       <Spacer.Vertical size="medium" />

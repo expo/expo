@@ -26,7 +26,7 @@ export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: 
   const { userData, selectedAccount } = useUser();
 
   const isAuthenticated = userData != null;
-  const selectedUserImage = selectedAccount?.owner.profilePhoto;
+  const selectedUserImage = selectedAccount?.owner?.profilePhoto;
 
   return (
     <View>
