@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Re-enable passing custom action string to `startActivityAsync`. ([#15671](https://github.com/expo/expo/pull/15671) by [@Simek](https://github.com/Simek))
+
 ### 💡 Others
 
 ## 10.1.0 — 2021-12-03
