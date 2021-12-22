@@ -100,6 +100,10 @@ dependencies {
   implementation "androidx.room:room-runtime:$room_version"
   kapt "androidx.room:room-compiler:$room_version"
 
+  // force upgrade sqlite-jdbc to support building on aarch64 jdk of macos m1.
+  // https://issuetracker.google.com/issues/174695268
+  kapt "org.xerial:sqlite-jdbc:3.36.0"
+
   implementation("com.squareup.okhttp3:okhttp:3.12.1")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
   implementation("com.squareup.okio:okio:1.15.0")

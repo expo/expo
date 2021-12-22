@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix the view does not update from screen rotation on iOS devices. ([#15608](https://github.com/expo/expo/pull/15608) by [@kudo](https://github.com/kudo))
+- Fix building error on AArch64 JDK. ([#15669](https://github.com/expo/expo/pull/15669) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
