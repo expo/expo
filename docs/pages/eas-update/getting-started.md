@@ -10,7 +10,7 @@ EAS Update requires the following versions or greater:
 
 - Expo CLI 5.0.0
 - EAS CLI 0.41.1
-- Expo SDK 44
+- Expo SDK 44.0.1
 - expo-updates 0.11.2
 
 ## Install Expo CLI and EAS CLI
