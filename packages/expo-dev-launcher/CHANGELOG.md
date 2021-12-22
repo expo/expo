@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.0 — 2021-12-22
+
+### 🎉 New features
+
 - Add persisted installation ID and include in manifest requests. ([#15538](https://github.com/expo/expo/pull/15538) by [@esamelson](https://github.com/esamelson))
 - Improve dev session request logic and use device ID when available. ([#15542](https://github.com/expo/expo/pull/15542) by [@esamelson](https://github.com/esamelson))
 - Improve error handling when opening the app from a deep link on Android. ([#15637](https://github.com/expo/expo/pull/15637) by [@lukmccall](https://github.com/lukmccall))
 - Implement redesigned native error screen. ([#15618](https://github.com/expo/expo/pull/15618) & [#15531](https://github.com/expo/expo/pull/15531) by [@lukmccall](https://github.com/lukmccall))
 - Redesign the home screen. ([#15343](https://github.com/expo/expo/pull/15343) by [#ajsmth](https://github.com/ajsmth))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 
