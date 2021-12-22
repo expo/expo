@@ -339,18 +339,21 @@ export function getPackageByName(packageName: string): Package | null {
 /**
  * Resolves to an array of Package instances that represent Expo packages inside given directory.
  */
-export async function getListOfPackagesAsync(): Promise<Package[]> {
+export async function getListOfPackagesAsync(ignoreDevClient: boolean = true): Promise<Package[]> {
   if (!cachedPackages) {
-    const paths = await glob('**/package.json', {
-      cwd: PACKAGES_DIR,
-      ignore: [
-        '**/example/**',
+    let ignore = ['**/example/**', '**/node_modules/**'];
+    if (ignoreDevClient) {
+      ignore = [
+        ...ignore,
         '**/expo-dev-client/**',
         '**/expo-dev-launcher/**',
         '**/expo-dev-menu/**',
         '**/expo-dev-menu-interface/**',
-        '**/node_modules/**',
-      ],
+      ];
+    }
+    const paths = await glob('**/package.json', {
+      cwd: PACKAGES_DIR,
+      ignore,
     });
     cachedPackages = paths.map((packageJsonPath) => {
       const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
