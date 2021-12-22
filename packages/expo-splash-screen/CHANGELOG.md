@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Remove duplicated `expo-modules-autolinking` package coming from `expo-splash-screen` dependencies. ([#15685](https://github.com/expo/expo/pull/15685) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.14.1 — 2021-12-22
+
+### 🐛 Bug fixes
+
+- Remove duplicated `expo-modules-autolinking` package coming from `expo-splash-screen` dependencies. ([#15685](https://github.com/expo/expo/pull/15685) by [@kudo](https://github.com/kudo))
 
 ## 0.14.0 — 2021-12-03
 
