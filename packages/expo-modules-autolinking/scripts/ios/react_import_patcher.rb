@@ -36,7 +36,7 @@ module Expo
 
     private def get_module_dirs(installer)
       unless installer.pods_project
-        Pod::UI.message '`pods_project` not found. This happens possibly from `incremental_installation`'
+        Pod::UI.message '`pods_project` not found. This is expected when `:incremental_installation` is enabled in your project\'s Podfile.'
         return []
       end
 
