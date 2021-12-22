@@ -293,7 +293,7 @@ export class UploadTask extends FileSystemCancellableNetworkTask<UploadProgressD
   ) {
     super();
 
-    const httpMethod = (options?.httpMethod?.toUpperCase ||
+    const httpMethod = (options?.httpMethod?.toUpperCase() ||
       'POST') as FileSystemAcceptedUploadHttpMethod;
 
     this.options = {
