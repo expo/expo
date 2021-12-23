@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import semver from 'semver';
 import inquirer from 'inquirer';
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 
 import {
   Platform,
@@ -93,7 +93,7 @@ export default (program: Command) => {
     .description('Removes SDK version.')
     .usage(
       `
-    
+
 To remove versioned code for the oldest supported SDK on iOS, run:
 ${chalk.gray('>')} ${chalk.italic.cyan('et remove-sdk-version --platform ios')}`
     )
@@ -107,5 +107,5 @@ ${chalk.gray('>')} ${chalk.italic.cyan('et remove-sdk-version --platform ios')}`
       '-s, --sdkVersion [string]',
       'SDK version to remove. Can be a full version name, major number, `latest` or `oldest` tag. Defaults to `oldest` on the CI.'
     )
-    .asyncAction(action);
+    .action(action);
 };

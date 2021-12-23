@@ -93,11 +93,9 @@ export async function androidNativeUnitTests({
     return [trues, falses];
   };
 
-  const [
-    androidPackagesTestedUsingBareProject,
-    androidPackagesTestedUsingExpoProject,
-  ] = partition(androidPackages, (element) =>
-    packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
+  const [androidPackagesTestedUsingBareProject, androidPackagesTestedUsingExpoProject] = partition(
+    androidPackages,
+    (element) => packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
   );
 
   await runGradlew(androidPackagesTestedUsingExpoProject, testCommand, ANDROID_DIR);
@@ -137,5 +135,5 @@ export default (program: any) => {
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
     )
     .description('Runs Android native unit tests for each package that provides them.')
-    .asyncAction(androidNativeUnitTests);
+    .action(androidNativeUnitTests);
 };

@@ -134,5 +134,5 @@ export default (program) => {
     .option('--sdk <string>', 'SDK version of docs to generate.')
     .option('--update-react-native-docs', 'Whether to update React Native docs.')
     .description(`Copies unversioned docs and static examples to SDK-specific folder.`)
-    .asyncAction(action);
+    .action(action);
 };

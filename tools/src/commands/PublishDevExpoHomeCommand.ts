@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -226,5 +226,5 @@ export default (program: Command) => {
       'Whether to skip `expo publish` command. Despite this, some files might be changed after running this script.',
       false
     )
-    .asyncAction(action);
+    .action(action);
 };

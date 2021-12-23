@@ -1,10 +1,9 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 
 import { TaskRunner, Task } from '../TasksRunner';
-import { CommandOptions, TaskArgs } from '../promote-packages/types';
-
-import { promotePackages } from '../promote-packages/tasks/promotePackages';
 import { listPackagesToPromote } from '../promote-packages/tasks/listPackagesToPromote';
+import { promotePackages } from '../promote-packages/tasks/promotePackages';
+import { CommandOptions, TaskArgs } from '../promote-packages/types';
 
 export default (program: Command) => {
   program
@@ -46,7 +45,7 @@ export default (program: Command) => {
     .option('-D, --dry', 'Whether to skip `npm dist-tag add` command.', false)
 
     .description('Promotes local versions of monorepo packages to given tag on NPM repository.')
-    .asyncAction(async (packageNames: string[], options: CommandOptions) => {
+    .action(async (packageNames: string[], options: CommandOptions) => {
       // Commander doesn't put arguments to options object, let's add it for convenience. In fact, this is an option.
       options.packageNames = packageNames;
 

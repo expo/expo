@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 import path from 'path';
 
 import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMacros';
@@ -53,5 +53,5 @@ export default (program: Command) => {
       []
     )
     .description('Generates dynamic macros for iOS client.')
-    .asyncAction(generateAction);
+    .action(generateAction);
 };

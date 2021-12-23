@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 
 import logger from '../Logger';
 import { reviewPullRequestAsync } from '../code-review';
@@ -28,5 +28,5 @@ export default (program: Command) => {
     .alias('review')
     .description('Reviews the pull request.')
     .option('-p, --pr <string>', 'ID of the pull request to review.')
-    .asyncAction(action);
+    .action(action);
 };

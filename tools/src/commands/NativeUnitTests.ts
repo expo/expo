@@ -55,5 +55,5 @@ export default (program: any) => {
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
     )
     .description('Runs native unit tests for each unimodules that provides them.')
-    .asyncAction(thisAction);
+    .action(thisAction);
 };

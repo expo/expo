@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 
 import logger from '../Logger';
-import getPackagesToCheckAsync from '../check-packages/getPackagesToCheckAsync';
 import checkPackageAsync from '../check-packages/checkPackageAsync';
+import getPackagesToCheckAsync from '../check-packages/getPackagesToCheckAsync';
 import { ActionOptions } from '../check-packages/types';
 
 const { green, magenta, yellow } = chalk;
@@ -28,7 +28,7 @@ export default (program: Command) => {
       false
     )
     .description('Checks if packages build successfully and their tests pass.')
-    .asyncAction(main);
+    .action(main);
 };
 
 async function main(packageNames: string[], options: ActionOptions): Promise<void> {

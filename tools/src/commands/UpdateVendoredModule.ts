@@ -1,5 +1,5 @@
-import { Command } from '@expo/commander';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import os from 'os';
@@ -66,7 +66,7 @@ export default (program: Command) => {
       'Whether to update workspace dependencies and bundled native modules.',
       true
     )
-    .asyncAction(action);
+    .action(action);
 };
 
 async function action(options: ActionOptions) {

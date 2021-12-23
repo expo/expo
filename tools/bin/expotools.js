@@ -129,7 +129,7 @@ function loadCommand(program, commandFile) {
 }
 
 async function loadAllCommandsAsync(callback) {
-  const program = require('@expo/commander');
+  const program = require('commander');
   const glob = require('glob-promise');
 
   const commandFiles = await glob('build/commands/*.js', {
@@ -215,7 +215,7 @@ function canRequire(packageName) {
 
 async function run(schema) {
   const semver = require('semver');
-  const program = require('@expo/commander');
+  const program = require('commander');
   const nodeVersion = process.versions.node.split('-')[0]; // explode and truncate tag from version
 
   // Validate that used Node version is supported

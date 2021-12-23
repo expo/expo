@@ -1,6 +1,7 @@
 import { AndroidShellApp } from '@expo/xdl';
 import fs from 'fs-extra';
 import path from 'path';
+
 import * as Directories from '../Directories';
 import * as ProjectVersions from '../ProjectVersions';
 
@@ -69,5 +70,5 @@ export default (program: any) => {
       '--privateConfigFile [string]',
       'Path to privateConfig file (aka exp.android.config in app.json) (optional)'
     )
-    .asyncAction(action);
+    .action(action);
 };

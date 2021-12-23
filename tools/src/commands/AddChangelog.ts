@@ -1,13 +1,13 @@
-import { Command } from '@expo/commander';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 
 import * as Changelogs from '../Changelogs';
 import * as Directories from '../Directories';
-import logger from '../Logger';
 import { formatChangelogEntry } from '../Formatter';
+import logger from '../Logger';
 
 type ActionOptions = {
   package: string;
@@ -208,5 +208,5 @@ export default (program: Command) => {
       Changelogs.UNPUBLISHED_VERSION_NAME
     )
 
-    .asyncAction(action);
+    .action(action);
 };

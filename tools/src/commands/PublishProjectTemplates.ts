@@ -167,5 +167,5 @@ export default (program) => {
     .option('-p, --project [string]', 'Name of the template project to publish. (optional)')
     .option('-d, --dry', 'Run the script in the dry mode, that is without publishing.')
     .description('Publishes project templates under `templates` directory.')
-    .asyncAction(action);
+    .action(action);
 };

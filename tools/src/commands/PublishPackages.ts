@@ -1,22 +1,21 @@
-import { Command } from '@expo/commander';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import * as jsondiffpatch from 'jsondiffpatch';
 import path from 'path';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
 import logger from '../Logger';
+import { getListOfPackagesAsync } from '../Packages';
 import { TaskRunner, Task, TasksRunnerBackup } from '../TasksRunner';
 import { BACKUP_PATH, BACKUP_EXPIRATION_TIME } from '../publish-packages/constants';
 import { pickBackupableOptions, shouldUseBackupAsync } from '../publish-packages/helpers';
-import { CommandOptions, Parcel, TaskArgs, PublishBackupData } from '../publish-packages/types';
-import { getListOfPackagesAsync } from '../Packages';
-
 import { checkPackagesIntegrity } from '../publish-packages/tasks/checkPackagesIntegrity';
 import { grantTeamAccessToPackages } from '../publish-packages/tasks/grantTeamAccessToPackages';
 import { listUnpublished } from '../publish-packages/tasks/listUnpublished';
 import { prepareParcels, createParcelAsync } from '../publish-packages/tasks/prepareParcels';
 import { publishPackagesPipeline } from '../publish-packages/tasks/publishPackagesPipeline';
+import { CommandOptions, Parcel, TaskArgs, PublishBackupData } from '../publish-packages/types';
 
 export default (program: Command) => {
   program
@@ -101,7 +100,7 @@ ${chalk.gray('>')} ${chalk.italic.cyan('et publish')}
 To publish just specific packages and their dependencies:
 ${chalk.gray('>')} ${chalk.italic.cyan('et publish expo-gl expo-auth-session')}`
     )
-    .asyncAction(main);
+    .action(main);
 };
 
 /**

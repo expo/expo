@@ -1,7 +1,7 @@
-import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -151,5 +151,5 @@ export default (program: Command) => {
       '-s, --sdkVersion [string]',
       'SDK version for which the project templates should be updated. Defaults to the newest SDK version.'
     )
-    .asyncAction(action);
+    .action(action);
 };

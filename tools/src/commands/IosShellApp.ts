@@ -90,5 +90,5 @@ export default (program: any) => {
       '--packagesToInstallWhenEjecting [string]',
       'Overridden packages to install when ejecting, in JSON object as string, e.g. \'{"react-native":"^0.64.2"}\''
     )
-    .asyncAction(action);
+    .action(action);
 };

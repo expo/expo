@@ -1,8 +1,9 @@
-import { Command } from '@expo/commander';
-import os from 'os';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import inquirer from 'inquirer';
+import os from 'os';
 import path from 'path';
+
 import {
   Clone,
   CopyFiles,
@@ -241,7 +242,7 @@ function getSafeAreaPipe() {
         find: '^RCT_EXPORT_MODULE\\((.*)\\)',
         replace: '+ (NSString *)moduleName { return @"RNCSafeAreaView"; }',
       }),
-      
+
       new TransformFilesContent({
         filePattern: 'ios/**/DevMenuRNCSafeAreaProviderManager.@(m|h)',
         find: 'constantsToExport',
@@ -259,7 +260,7 @@ function getSafeAreaPipe() {
         - (NSDictionary *)constantsToExport
  {
    __block NSDictionary *constants;
-  
+
    dispatch_sync(dispatch_get_main_queue(), ^{
      UIWindow* window = [[UIApplication sharedApplication] keyWindow];
      if (@available(iOS 11.0, *)) {
@@ -298,14 +299,14 @@ function getSafeAreaPipe() {
        } ;
      }
    });
-  
+
   return constants;
 }
 
 @end
 `
       }),
-      
+
       new CopyFiles({
         filePattern: 'ios/**/*.@(m|h)',
         to: destination,
@@ -363,5 +364,5 @@ export default (program: Command) => {
       []
     )
 
-    .asyncAction(action);
+    .action(action);
 };

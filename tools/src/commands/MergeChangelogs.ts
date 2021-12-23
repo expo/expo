@@ -1,6 +1,6 @@
-import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import inquirer from 'inquirer';
 import nullthrows from 'nullthrows';
 import path from 'path';
@@ -38,7 +38,7 @@ export default (program: Command) => {
       '-c, --cut-off',
       'Whether to cut off SDK changelog after merging. Works only without --sdk flag.'
     )
-    .asyncAction(async (options: CommandOptions) => {
+    .action(async (options: CommandOptions) => {
       const mainChangelog = new Changelog(MAIN_CHANGELOG_PATH);
       const changesMap: ChangesMap = new Map();
       const versions = await JsonFile.readAsync<ChangelogVersions>(VERSIONS_FILE_PATH);
