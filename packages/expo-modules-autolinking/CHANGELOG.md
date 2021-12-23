@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo_patch_react_imports!` error when there are pods with absolute path. ([#15699](https://github.com/expo/expo/pull/15699) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.5.2 — 2021-12-22
