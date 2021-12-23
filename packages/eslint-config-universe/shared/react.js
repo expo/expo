@@ -33,7 +33,6 @@ module.exports = {
     'react/no-this-in-sfc': 'warn',
     'react/no-unknown-property': 'warn',
     'react/no-will-update-set-state': 'warn',
-    'react/react-in-jsx-scope': 'error',
     'react/require-render-return': 'warn',
     'react/self-closing-comp': 'warn',
 
