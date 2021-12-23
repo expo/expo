@@ -133,6 +133,7 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
       Manifest.permission.WRITE_CONTACTS -> R.string.perm_contacts_write
       Manifest.permission.READ_EXTERNAL_STORAGE -> R.string.perm_camera_roll_read
       Manifest.permission.WRITE_EXTERNAL_STORAGE -> R.string.perm_camera_roll_write
+      Manifest.permission.ACCESS_MEDIA_LOCATION -> R.string.perm_access_media_location
       Manifest.permission.RECORD_AUDIO -> R.string.perm_audio_recording
       Settings.ACTION_MANAGE_WRITE_SETTINGS -> R.string.perm_system_brightness
       Manifest.permission.READ_CALENDAR -> R.string.perm_calendar_read
