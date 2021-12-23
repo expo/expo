@@ -47,16 +47,10 @@ module Expo
           project = Xcodeproj::Project.open(File.join(installer.sandbox.root, pod.path))
           groups = project.groups.select { |group| !(['Dependencies', 'Frameworks', 'Products'].include? group.name) }
           groups.each do |group|
-            unless group.path.start_with? '../'
-              raise 'CocoaPods does not put pod subprojects inside nested directories'
-            end
-            result.append(group.path[3..])
+            result.append(group.real_path.to_s)
           end
         else
-          unless pod.path.start_with? '../'
-            raise 'CocoaPods does not put pod subgroups inside nested directories'
-          end
-          result.append(pod.path[3..])
+          result.append(pod.real_path.to_s)
         end
       end
 
