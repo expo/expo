@@ -409,7 +409,7 @@ export default (program: any) => {
       '-p, --packages [string]',
       '[optional] packages to build. May be `all`, `suggested`, or a comma-separate list of package names.'
     )
-    .asyncAction(async (options: Partial<ActionOptions>) => {
+    .action(async (options: Partial<ActionOptions>) => {
       const sdkVersion =
         options.sdkVersion ?? (await ProjectVersions.getNewestSDKVersionAsync('android'));
 

@@ -161,5 +161,5 @@ export default (program: any) => {
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
     )
     .description('Runs iOS native unit tests for each package that provides them.')
-    .asyncAction(iosNativeUnitTests);
+    .action(iosNativeUnitTests);
 };

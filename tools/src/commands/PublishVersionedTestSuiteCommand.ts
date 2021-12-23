@@ -12,5 +12,5 @@ export default (program) => {
   program
     .command('publish-versioned-test-suite [sdkVersion]')
     .description('Publishes Test Suite for a specific SDK version')
-    .asyncAction(action);
+    .action(action);
 };

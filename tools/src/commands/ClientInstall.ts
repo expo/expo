@@ -1,12 +1,12 @@
-import chalk from 'chalk';
-import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import { Android, Config, Simulator, Versions } from '@expo/xdl';
+import chalk from 'chalk';
+import { Command } from 'commander';
 
 import { STAGING_API_HOST } from '../Constants';
+import { Platform, getNewestSDKVersionAsync } from '../ProjectVersions';
 import askForPlatformAsync from '../utils/askForPlatformAsync';
 import askForSDKVersionAsync from '../utils/askForSDKVersionAsync';
-import { Platform, getNewestSDKVersionAsync } from '../ProjectVersions';
 
 type ActionOptions = {
   platform?: Platform;
@@ -140,5 +140,5 @@ export default (program: Command) => {
     )
     .option('-p, --platform [string]', 'Platform for which the client will be installed.')
     .option('-s, --sdkVersion [string]', 'SDK version of the client to install.')
-    .asyncAction(action);
+    .action(action);
 };

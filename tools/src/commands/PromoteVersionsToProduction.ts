@@ -1,8 +1,8 @@
-import chalk from 'chalk';
-import inquirer from 'inquirer';
 import { Config, Versions } from '@expo/xdl';
+import chalk from 'chalk';
+import { Command } from 'commander';
+import inquirer from 'inquirer';
 import * as jsondiffpatch from 'jsondiffpatch';
-import { Command } from '@expo/commander';
 
 import { STAGING_API_HOST, PRODUCTION_API_HOST } from '../Constants';
 
@@ -54,5 +54,5 @@ export default (program: Command) => {
     .command('promote-versions-to-production')
     .alias('promote-versions-to-prod', 'promote-versions')
     .description('Promotes the latest versions config from staging to production.')
-    .asyncAction(action);
+    .action(action);
 };

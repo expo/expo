@@ -1,11 +1,11 @@
-import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import * as path from 'path';
 
 import { PACKAGES_DIR, EXPO_DIR } from '../Constants';
-import generateModuleAsync from '../generate-module/generateModuleAsync';
 import { spawnAsync } from '../Utils';
+import generateModuleAsync from '../generate-module/generateModuleAsync';
 
 type ActionOptions = {
   name: string;
@@ -85,5 +85,5 @@ export default (program: Command) => {
       '-t, --template <string>',
       'Local directory or npm package containing template for unimodule'
     )
-    .asyncAction(action);
+    .action(action);
 };

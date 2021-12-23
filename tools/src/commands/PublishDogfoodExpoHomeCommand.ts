@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import path from 'path';
@@ -56,5 +56,5 @@ export default (program: Command) => {
     .description(
       `Automatically publishes @expo-dogfooding/home using access token stored in EXPO_DOGFOOD_HOME_ACCESS_TOKEN environment variable.`
     )
-    .asyncAction(action);
+    .action(action);
 };

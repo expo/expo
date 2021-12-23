@@ -18,5 +18,5 @@ export default (program: any) => {
       'Hash the directory and include versions of Yarn and Node in the input.'
     )
     .description('Returns a hash of the current directory')
-    .asyncAction(action);
+    .action(action);
 };

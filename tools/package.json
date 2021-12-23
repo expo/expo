@@ -23,7 +23,6 @@
   "author": "support@expo.io",
   "license": "MIT",
   "dependencies": {
-    "@expo/commander": "2.21.1",
     "@expo/json-file": "^8.2.6",
     "@expo/spawn-async": "^1.5.0",
     "@expo/xcodegen": "2.18.0-patch.1",
@@ -34,6 +33,7 @@
     "body-parser": "^1.18.2",
     "chalk": "^2.1.0",
     "cli-table3": "^0.6.0",
+    "commander": "8.3.0",
     "concat-stream": "^1.6.0",
     "connect": "^3.6.3",
     "cwait": "^1.1.2",

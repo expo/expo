@@ -1,6 +1,6 @@
-import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import path from 'path';
@@ -235,5 +235,5 @@ export default (program: Command) => {
     )
     .alias('sbnm')
     .option('-e, --env <local|staging|production>', 'www environment', 'staging')
-    .asyncAction(main);
+    .action(main);
 };

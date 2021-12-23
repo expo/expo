@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import { link } from '../Formatter';
 
@@ -29,7 +29,7 @@ export default (program: Command) => {
         `--payload "[{\\"issue\\": 1234, \\"body\\": \\"Hello!\\"}]"`
       )}`
     )
-    .asyncAction(main);
+    .action(main);
 };
 
 async function main(options: ActionOptions) {

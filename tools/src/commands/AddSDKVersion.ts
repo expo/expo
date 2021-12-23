@@ -1,5 +1,5 @@
-import { Command } from '@expo/commander';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import inquirer from 'inquirer';
 import semver from 'semver';
 
@@ -131,5 +131,5 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
       'Whether to force not reinstalling pods after generating a new version. iOS only.'
     )
     .option('-x, --packages <string...>', 'Name of the expo package to version.')
-    .asyncAction(action);
+    .action(action);
 };

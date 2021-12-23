@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import open from 'open';
@@ -84,7 +84,7 @@ export default (program: Command) => {
         'GITHUB_TOKEN'
       )} env variable to be set.`
     )
-    .asyncAction(main);
+    .action(main);
 };
 
 /**

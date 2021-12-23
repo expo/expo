@@ -1,6 +1,6 @@
-import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -124,5 +124,5 @@ export default (program: Command) => {
       '-s, --sdkVersion [string]',
       'SDK version for which the forked React Native will be used. Defaults to the newest SDK version increased by a major update.'
     )
-    .asyncAction(action);
+    .action(action);
 };

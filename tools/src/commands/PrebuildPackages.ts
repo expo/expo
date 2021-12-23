@@ -1,10 +1,9 @@
 import chalk from 'chalk';
+import { Command } from 'commander';
 import { performance } from 'perf_hooks';
-import { Command } from '@expo/commander';
 
 import logger from '../Logger';
 import { Package, getPackageByName } from '../Packages';
-import XcodeProject from '../prebuilds/XcodeProject';
 import {
   buildFrameworksForProjectAsync,
   cleanTemporaryFilesAsync,
@@ -12,6 +11,7 @@ import {
   generateXcodeProjectSpecAsync,
   PACKAGES_TO_PREBUILD,
 } from '../prebuilds/Prebuilder';
+import XcodeProject from '../prebuilds/XcodeProject';
 
 type ActionOptions = {
   removeArtifacts: boolean;
@@ -64,5 +64,5 @@ export default (program: Command) => {
     .option('-r, --remove-artifacts', 'Removes `.xcframework` artifacts for given packages.', false)
     .option('-c, --clean-cache', 'Cleans the shared derived data folder before prebuilding.', false)
     .option('-g, --generate-specs', 'Only generates project specs', false)
-    .asyncAction(main);
+    .action(main);
 };

@@ -1,5 +1,5 @@
-import { Command } from '@expo/commander';
 import chalk from 'chalk';
+import { Command } from 'commander';
 import { hashElement } from 'folder-hash';
 import path from 'path';
 import process from 'process';
@@ -65,5 +65,5 @@ export default (program: Command) => {
     .description('Installs pods in the directories where they are not in-sync')
     .option('-f, --force', 'Whether to force installing pods in all projects.', false)
     .option('-v, --verbose', 'Whether to inherit logs from `pod install` command.', false)
-    .asyncAction(action);
+    .action(action);
 };

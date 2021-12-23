@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
@@ -17,10 +17,7 @@ type ActionOptions = {
 
 type EntryPoint = string | string[];
 
-type CommandAdditionalParams = [
-  entryPoint: EntryPoint,
-  packageName?: string
-];
+type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 
 const MINIFY_JSON = true;
 
@@ -105,11 +102,9 @@ const executeCommand = async (
   const tsConfigPath = path.join(basePath, 'tsconfig.json');
   const jsonOutputPath = path.join(dataPath, `${jsonFileName}.json`);
 
-  const entryPoints = Array.isArray(entryPoint) ? (
-    entryPoint.map(entry => path.join(entriesPath, entry))
-  ) : (
-    [path.join(entriesPath, entryPoint)]
-  );
+  const entryPoints = Array.isArray(entryPoint)
+    ? entryPoint.map((entry) => path.join(entriesPath, entry))
+    : [path.join(entriesPath, entryPoint)];
 
   app.bootstrap({
     entryPoints,
@@ -128,18 +123,19 @@ const executeCommand = async (
     output.name = jsonFileName;
 
     if (Array.isArray(entryPoint)) {
-      const filterEntries = entryPoint.map(entry => entry.substring(0, entry.lastIndexOf('.')));
+      const filterEntries = entryPoint.map((entry) => entry.substring(0, entry.lastIndexOf('.')));
       output.children = output.children
-        .filter(entry => filterEntries.includes(entry.name))
-        .map(entry => entry.children)
+        .filter((entry) => filterEntries.includes(entry.name))
+        .map((entry) => entry.children)
         .flat()
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(output, ({key, node}) =>
-        ['id', 'groups', 'target'].includes(key) ||
-        (key === 'flags' && !Object.keys(node).length)
+      const minifiedJson = recursiveOmitBy(
+        output,
+        ({ key, node }) =>
+          ['id', 'groups', 'target'].includes(key) || (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
@@ -160,15 +156,20 @@ async function action({ packageName, version = 'unversioned' }: ActionOptions) {
         .map(([key, value]) => taskQueue.add(() => executeCommand(key, version, ...value)));
       if (packagesEntries.length) {
         await Promise.all(packagesEntries);
-        logger.log(chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`));
+        logger.log(
+          chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`)
+        );
       } else {
         logger.warn(`🚨 Package '${packageName}' API data generation is not supported yet!`);
       }
     } else {
-      const packagesEntries = Object.entries(PACKAGES_MAPPING)
-        .map(([key, value]) => taskQueue.add(() => executeCommand(key, version, ...value)));
+      const packagesEntries = Object.entries(PACKAGES_MAPPING).map(([key, value]) =>
+        taskQueue.add(() => executeCommand(key, version, ...value))
+      );
       await Promise.all(packagesEntries);
-      logger.log(chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`));
+      logger.log(
+        chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`)
+      );
     }
   } catch (error) {
     logger.error(error);
@@ -181,6 +182,10 @@ export default (program: Command) => {
     .alias('gdad')
     .description(`Extract API data JSON files for docs using TypeDoc.`)
     .option('-p, --packageName <packageName>', 'Extract API data only for the specific package.')
-    .option('-v, --version <version>', 'Set the data output path to the specific version.', 'unversioned')
-    .asyncAction(action);
+    .option(
+      '-v, --version <version>',
+      'Set the data output path to the specific version.',
+      'unversioned'
+    )
+    .action(action);
 };

@@ -1211,13 +1211,6 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/commander@2.21.1":
-  version "2.21.1"
-  resolved "https://registry.yarnpkg.com/@expo/commander/-/commander-2.21.1.tgz#17dd83850a182f4745bf60f55cba0c2d6aa638a7"
-  integrity sha512-1m0+eqh8y3Wv4BeKutSD3F3l9WQ7rS/52ERW6zempzsXPvrKWTT5cPIrB0AVnMbnPzX0WjXgpABL7v9wNiLNgA==
-  dependencies:
-    chalk "^2.4.2"
-
 "@expo/config-plugins@1.0.20":
   version "1.0.20"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-1.0.20.tgz#b1964daf063d7ce07c3f135aa92ccf1c60cd6e46"
@@ -5154,6 +5147,11 @@ commander@2.x.x, commander@^2.19.0, commander@^2.20.0, commander@^2.7.1:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
+
+commander@8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
+  integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
 
 commander@^4.0.0, commander@^4.0.1, commander@^4.1.1:
   version "4.1.1"

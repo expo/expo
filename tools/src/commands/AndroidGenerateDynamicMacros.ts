@@ -1,4 +1,4 @@
-import { Command } from '@expo/commander';
+import { Command } from 'commander';
 import path from 'path';
 
 import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMacros';
@@ -37,5 +37,5 @@ export default (program: Command) => {
     )
     .option('--bare', 'Generate macros only for the bare-expo project.')
     .description('Generates dynamic macros for Android client.')
-    .asyncAction(generateAction);
+    .action(generateAction);
 };
