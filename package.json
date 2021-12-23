@@ -22,7 +22,8 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.64.3"
+    "react-native": "0.64.3",
+    "**/util": "~0.12.4"
   },
   "dependencies": {
     "@expo/config-types": "^43.0.1",
