@@ -49,6 +49,9 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
           body: generateSuggestion(pullRequest, change),
         });
       });
+
+      // GitHub documentation is not clear about this, but position needs to be incremented after each chunk.
+      position++;
     }
   }
   if (comments.length > 0) {
