@@ -6,13 +6,21 @@
 
 ### 🎉 New features
 
-- Add `onNewIntent` and `onBackPressed` support to `ReactActivityLifecycleListener`. ([#15550](https://github.com/expo/expo/pull/15550) by [@Kudo](https://github.com/Kudo))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.6.3 — 2021-12-16
 
 ### 🐛 Bug fixes
 
 - Fixed the deep link wasn't passed to the application if the application wasn't running when the deep link was sent. ([#15593](https://github.com/expo/expo/pull/15593) by [@lukmccall](https://github.com/lukmccall))
 
-### 💡 Others
+## 0.6.2 — 2021-12-15
+
+### 🎉 New features
+
+- Add `onNewIntent` and `onBackPressed` support to `ReactActivityLifecycleListener`. ([#15550](https://github.com/expo/expo/pull/15550) by [@Kudo](https://github.com/Kudo))
 
 ## 0.6.1 — 2021-12-08
 
