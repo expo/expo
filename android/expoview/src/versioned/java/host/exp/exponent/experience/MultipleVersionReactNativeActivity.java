@@ -7,10 +7,6 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
     // The 4-space indentation is used by android-build-aar.sh.
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-    // BEGIN_SDK_41
-    abi41_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
-    abi41_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
-    // END_SDK_41
     // BEGIN_SDK_42
     abi42_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
     abi42_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
@@ -30,12 +26,6 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
 
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-    // BEGIN_SDK_41
-    @Override
-    public void requestPermissions(String[] strings, int i, abi41_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
-      super.requestPermissions(strings, i, permissionListener::onRequestPermissionsResult);
-    }
-    // END_SDK_41
     // BEGIN_SDK_42
     @Override
     public void requestPermissions(String[] strings, int i, abi42_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {

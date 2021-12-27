@@ -204,9 +204,6 @@
     <!-- BEGIN_SDK_42 -->
     <activity android:name="abi42_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_42 -->
-    <!-- BEGIN_SDK_41 -->
-    <activity android:name="abi41_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_41 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
