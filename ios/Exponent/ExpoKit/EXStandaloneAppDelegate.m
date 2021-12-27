@@ -8,7 +8,7 @@
 
 @interface EXStandaloneAppDelegate ()
 
-@property (nonatomic, strong) EXStandaloneViewController *rootViewController;
+@property (nonatomic, strong) EXViewController *rootViewController;
 
 @end
 
