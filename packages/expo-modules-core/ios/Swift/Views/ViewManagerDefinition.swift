@@ -44,3 +44,8 @@ public final class ViewManagerDefinition: ObjectDefinition {
     }
   }
 }
+
+/**
+ The protocol for definition components that can only be handled by the view manager builder.
+ */
+public protocol ViewManagerDefinitionComponent: AnyDefinition {}

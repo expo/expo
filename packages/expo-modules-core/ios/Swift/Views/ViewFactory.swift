@@ -3,7 +3,7 @@ import UIKit
 /**
  A definition of the view factory that creates views.
  */
-internal struct ViewFactory: AnyDefinition {
+internal struct ViewFactory: ViewManagerDefinitionComponent {
   typealias FactoryClosureType = () -> UIView
 
   let factory: FactoryClosureType
