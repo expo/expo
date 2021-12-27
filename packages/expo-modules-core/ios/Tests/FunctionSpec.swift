@@ -11,7 +11,7 @@ class FunctionSpec: QuickSpec {
     func testFunctionReturning<T: Equatable>(value returnValue: T) {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.function(functionName) {
+          function(functionName) {
             return returnValue
           }
         }
@@ -27,7 +27,7 @@ class FunctionSpec: QuickSpec {
     it("is called") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.function(functionName) {
+          function(functionName) {
             done()
           }
         }
@@ -60,7 +60,7 @@ class FunctionSpec: QuickSpec {
       let str: String? = nil
 
       mockModuleHolder(appContext) {
-        $0.function(functionName) { (a: String?) in
+        function(functionName) { (a: String?) in
           expect(a == nil) == true
         }
       }
@@ -71,7 +71,7 @@ class FunctionSpec: QuickSpec {
       let array: [[String]] = [["expo"]]
 
       mockModuleHolder(appContext) {
-        $0.function(functionName) { (a: [[String]]) in
+        function(functionName) { (a: [[String]]) in
           expect(a.first!.first) == array.first!.first
         }
       }
@@ -92,7 +92,7 @@ class FunctionSpec: QuickSpec {
       it("converts to simple record when passed as an argument") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.function(functionName) { (a: TestRecord) in
+            function(functionName) { (a: TestRecord) in
               return a.property
             }
           }
@@ -108,7 +108,7 @@ class FunctionSpec: QuickSpec {
       it("converts to record with custom key") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.function(functionName) { (a: TestRecord) in
+            function(functionName) { (a: TestRecord) in
               return a.customKeyProperty
             }
           }
@@ -124,7 +124,7 @@ class FunctionSpec: QuickSpec {
       it("returns the record back") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.function(functionName) { (a: TestRecord) in
+            function(functionName) { (a: TestRecord) in
               return a.toDictionary()
             }
           }
@@ -145,7 +145,7 @@ class FunctionSpec: QuickSpec {
     it("throws when called with more arguments than expected") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.function(functionName) { (a: Int) in
+          function(functionName) { (a: Int) in
             return "something"
           }
         }
@@ -163,7 +163,7 @@ class FunctionSpec: QuickSpec {
     it("throws when called with arguments of incompatible types") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.function(functionName) { (a: String) in
+          function(functionName) { (a: String) in
             return "something"
           }
         }

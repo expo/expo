@@ -9,7 +9,7 @@ class ConstantsSpec: QuickSpec {
 
     it("takes closure resolving to dictionary") {
       let holder = mockModuleHolder(appContext) {
-        $0.constants {
+        constants {
           return ["test": 123]
         }
       }
@@ -18,15 +18,15 @@ class ConstantsSpec: QuickSpec {
 
     it("takes the dictionary") {
       let holder = mockModuleHolder(appContext) {
-        $0.constants(["test": 123])
+        constants(["test": 123])
       }
       expect(holder.getConstants()["test"] as? Int) == 123
     }
 
     it("merges multiple constants definitions") {
       let holder = mockModuleHolder(appContext) {
-        $0.constants(["test": 456, "test2": 789])
-        $0.constants(["test": 123])
+        constants(["test": 456, "test2": 789])
+        constants(["test": 123])
       }
       let consts = holder.getConstants()
       expect(consts["test"] as? Int) == 123
