@@ -1892,8 +1892,6 @@ PODS:
     - ExpoModulesCore
   - EXJSONUtils (0.2.0)
   - EXJSONUtils/Tests (0.2.0)
-  - EXKeepAwake (10.0.1):
-    - ExpoModulesCore
   - EXLocalAuthentication (12.1.0):
     - ExpoModulesCore
   - EXLocation (14.0.0):
@@ -1922,6 +1920,8 @@ PODS:
     - ExpoModulesCore
   - ExpoImageManipulator (10.2.0):
     - EXImageLoader
+    - ExpoModulesCore
+  - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
   - ExpoLinearGradient (11.0.0):
     - ExpoModulesCore
@@ -2841,7 +2841,6 @@ DEPENDENCIES:
   - EXImagePicker (from `../packages/expo-image-picker/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../packages/expo-json-utils/ios`)
-  - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
   - EXLocation (from `../packages/expo-location/ios`)
   - EXMailComposer (from `../packages/expo-mail-composer/ios`)
@@ -2855,6 +2854,7 @@ DEPENDENCIES:
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
+  - ExpoKeepAwake (from `../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - ExpoLocalization (from `../packages/expo-localization/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
@@ -3672,8 +3672,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-image-picker/ios"
   EXJSONUtils:
     :path: "../packages/expo-json-utils/ios"
-  EXKeepAwake:
-    :path: "../packages/expo-keep-awake/ios"
   EXLocalAuthentication:
     :path: "../packages/expo-local-authentication/ios"
   EXLocation:
@@ -3698,6 +3696,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-haptics/ios"
   ExpoImageManipulator:
     :path: "../packages/expo-image-manipulator/ios"
+  ExpoKeepAwake:
+    :path: "../packages/expo-keep-awake/ios"
   ExpoLinearGradient:
     :path: "../packages/expo-linear-gradient/ios"
   ExpoLocalization:
@@ -4185,7 +4185,6 @@ SPEC CHECKSUMS:
   EXImageLoader: 9539bfc5ad0fc36abf78c82c096f701b43e994d7
   EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
-  EXKeepAwake: b571c2ad8323b2fced6e907766e2549f75119471
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
   EXLocation: 1c6449f87b79f159e63d7ed9f881a77b53dba6f0
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
@@ -4198,6 +4197,7 @@ SPEC CHECKSUMS:
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
+  ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
   ExpoModulesCore: 98f874d20b96d4497eb8ff9df686f14384913a30
