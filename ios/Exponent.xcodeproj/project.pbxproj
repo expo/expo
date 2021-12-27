@@ -176,6 +176,8 @@
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */; };
+		8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
+		8353B821277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
 		8764788E270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
@@ -1005,6 +1007,8 @@
 		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionItem.m; sourceTree = "<group>"; };
 		7F6CB974983B435DB3C2F7BE /* RNSVGForeignObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObject.h; sourceTree = "<group>"; };
 		80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNodeManager.m; sourceTree = "<group>"; };
+		8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneViewController.m; sourceTree = "<group>"; };
+		8353B81F277A17FC00AFCBDA /* EXStandaloneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXStandaloneViewController.h; sourceTree = "<group>"; };
 		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXAppLoadingProgressWindowViewController.swift; sourceTree = "<group>"; };
 		8767F5B624D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenConfigurationBuilder.h; sourceTree = "<group>"; };
@@ -1884,6 +1888,8 @@
 				B526B5051E6A543500606CAB /* ExpoKit.m */,
 				0CC6F95C225F5B1B00322635 /* EXStandaloneAppDelegate.h */,
 				0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */,
+				8353B81F277A17FC00AFCBDA /* EXStandaloneViewController.h */,
+				8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */,
 				0CC6F95F225F5C7700322635 /* ExpoKitAppDelegate.h */,
 				0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */,
 				B5D0D65A204F152D00DDFC99 /* EXViewController.h */,
@@ -3278,6 +3284,7 @@
 				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
+				8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
 				2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */,
 				C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */,
@@ -3412,6 +3419,7 @@
 				F142184A262CB68600BB97E6 /* EXFileDownloader.m in Sources */,
 				F142184B262CB68600BB97E6 /* RNSVGPath.m in Sources */,
 				F142184C262CB68600BB97E6 /* EXScopedPermissions.m in Sources */,
+				8353B821277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */,
 				F142184D262CB68600BB97E6 /* RNSharedElementContent.m in Sources */,
 				F1421850262CB68600BB97E6 /* EXConstantsBinding.m in Sources */,
 				F1421851262CB68600BB97E6 /* ExpoKit.m in Sources */,
