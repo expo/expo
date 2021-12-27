@@ -20,7 +20,7 @@
 /packages/expo-camera                           @bbarthec @lukmccall
 /packages/expo-cellular                         @ide @tsapeta
 /packages/expo-checkbox                         @bycedric
-/packages/expo-clipboard                        @cruzach
+/packages/expo-clipboard                        @tsapeta
 /packages/expo-constants                        @bbarthec
 /packages/expo-contacts                         @EvanBacon
 /packages/expo-crypto                           @EvanBacon
@@ -61,12 +61,12 @@
 /packages/expo-modules-core                     @tsapeta
 /packages/expo-navigation-bar                   @EvanBacon
 /packages/expo-network                          @ide
-/packages/expo-notifications                    @cruzach
+/packages/expo-notifications                    @tsapeta
 /packages/expo-permissions                      @bbarthec @lukmccall
 /packages/expo-print                            @lukmccall
 /packages/expo-processing                       @EvanBacon
 /packages/expo-random                           @EvanBacon
-/packages/expo-screen-capture                   @cruzach
+/packages/expo-screen-capture                   @tsapeta
 /packages/expo-screen-orientation               @lukmccall
 /packages/expo-secure-store                     @bbarthec
 /packages/expo-sensors                          @bbarthec
@@ -82,7 +82,7 @@
 /packages/expo-structured-headers               @esamelson
 /packages/expo-system-ui                        @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
-/packages/expo-tracking-transparency            @cruzan
+/packages/expo-tracking-transparency            @tsapeta
 /packages/expo-updates                          @esamelson
 /packages/expo-updates-interface                @esamelson
 /packages/expo-video-thumbnails                 @tsapeta
