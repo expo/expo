@@ -105,10 +105,6 @@ android {
   packagingOptions {
     // libfbjni.so is prebuilt library shared between all ABIs
     pickFirst "lib/**/libfbjni.so"
-
-    // TODO: Remove when we drop support for SDK 41
-    pickFirst "lib/**/libhermes-inspector.so"
-    pickFirst "lib/**/libfolly_futures.so"
   }
 }
 
