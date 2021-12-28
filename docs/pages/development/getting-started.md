@@ -18,7 +18,7 @@ Of course, there are always tradeoffs, and that flexibility means there's not ju
 
 If you have used Expo before, especially with the Managed workflow, [config plugins](/guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
 
-<TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]}  />
+<TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "expo install expo-dev-client"]}  />
 
 > You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
 
