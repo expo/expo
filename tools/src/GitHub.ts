@@ -4,6 +4,7 @@ import path from 'path';
 
 import { EXPO_DIR } from './Constants';
 import { GitFileDiff } from './Git';
+import { cacheData, readCache } from './utils/fileCache';
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -175,6 +176,57 @@ export async function getIssueAsync(issue_number: number) {
     issue_number,
   });
   return data;
+}
+
+/**
+ * Internally GitHub threats pull requests as issues, therefore this endpoints returns both open issues and open PRs.
+ * To determine whether and issue is a PR, use check for `pull_request` property existence.
+ */
+async function fetchOpenIssuesAsync() {
+  type Issues = Awaited<ReturnType<typeof octokit.issues.list>>['data'];
+  const cacheKey = 'github.open_issues_and_prs';
+  const cachedData = await readCache<Issues>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  const fetchData = (i: number) =>
+    octokit.issues.listForRepo({
+      owner,
+      repo,
+      state: 'open',
+      per_page: 100,
+      page: i,
+    });
+
+  let i = 1;
+  const result: Issues = [];
+  let { data } = await fetchData(i);
+  while (data.length) {
+    result.push(...data);
+    const response = await fetchData(++i);
+    data = response.data;
+  }
+
+  await cacheData(cacheKey, result);
+
+  return result;
+}
+
+/**
+ * Returns a list of all open issues.
+ */
+export async function listOpenIssuesAsync() {
+  const issues = await fetchOpenIssuesAsync();
+  return issues.filter((issue) => !issue.pull_request);
+}
+
+/**
+ * Returns a list of all open pull requests.
+ */
+export async function listOpenPRsAsync() {
+  const issues = await fetchOpenIssuesAsync();
+  return issues.filter((issue) => issue.pull_request);
 }
 
 /**
