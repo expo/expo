@@ -38,14 +38,12 @@ target 'HelloWorld' do
     end
   end
 
-  # Optional: exprimental feature
-  #
-  # post_integrate do |installer|
-  #   begin
-  #     expo_patch_react_imports!(installer)
-  #   rescue => e
-  #     Pod::UI.warn e
-  #   end
-  # end
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
 
 end
