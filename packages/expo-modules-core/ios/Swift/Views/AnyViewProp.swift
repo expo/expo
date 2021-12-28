@@ -3,7 +3,7 @@ import UIKit
 /**
  Type-erased protocol for view props classes.
  */
-public protocol AnyViewProp: AnyDefinition {
+public protocol AnyViewProp: ViewManagerDefinitionComponent {
   /**
    Name of the view prop that JavaScript refers to.
    */
