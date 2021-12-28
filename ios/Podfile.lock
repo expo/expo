@@ -2532,7 +2532,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.1.0):
     - ExpoModulesCore
-  - Expo (44.0.0):
+  - Expo (44.0.1):
     - ExpoModulesCore
   - ExpoCellular (4.1.0):
     - ExpoModulesCore
@@ -2574,7 +2574,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.1.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.14.0):
+  - EXSplashScreen (0.14.1):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.1.0):
@@ -2589,13 +2589,13 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (2.1.0):
     - ExpoModulesCore
-  - EXUpdates (0.11.2):
+  - EXUpdates (0.11.3):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.11.2):
+  - EXUpdates/Tests (0.11.3):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -5237,7 +5237,7 @@ SPEC CHECKSUMS:
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
-  Expo: 6ca1d5ca8c8264a7131a608afcd01561f79f1e6e
+  Expo: f8cd8811d9aee5bc651a3285e1101358db610e0d
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
@@ -5254,13 +5254,13 @@ SPEC CHECKSUMS:
   EXSharing: 2e26cf64fb2a89484b4f6ff8da12d6d752f83962
   EXSMS: 969cee9c677d50abed927266603cc81b2436e1d8
   EXSpeech: 3a4d7188f61195a8546678e2c7ea7b3c96e14e25
-  EXSplashScreen: 011f3d0dd2e9331a518b086d36a13909e7d5aeb7
+  EXSplashScreen: 6a0e5ef46ab3bfc06d4eeccad785126fff6d4bbd
   EXSQLite: 5b16cc6b280d3c024b0b1d76829dd2161a26acbe
   EXStoreReview: 6143555fc912a4a194300992cd297c3e5b521a8a
   EXStructuredHeaders: 31387a5533a33e5b5195c9b90d57eff11c264b18
   EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
-  EXUpdates: afdd80b4c2811d54bd3cf04e2e4f15239d7cfbce
+  EXUpdates: aceff82c0fe370c6de0694f60885be72bc7e9a7e
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: 6c08e978ed7a5542c5dca04a1757363fd29cb2a1
   EXWebBrowser: 37388663fa51cbfc883de2244931a5182d948e5f
