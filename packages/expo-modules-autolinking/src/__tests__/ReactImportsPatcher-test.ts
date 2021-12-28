@@ -22,27 +22,49 @@ describe(patchFileAsync, () => {
   it('should transform double-quoted import', async () => {
     const headerSet = new Set(['RCTBridge.h']);
     mockFsReadFile.mockResolvedValue(`\
+#if __has_include("RCTBridge.h")
 #import "RCTBridge.h"
+#elif __has_include("React/RCTBridge.h")
 #import "React/RCTBridge.h"
-#import <React/RCTBridge.h>`);
+#else
+#import <React/RCTBridge.h>
+#endif
+`);
 
     await patchFileAsync(headerSet, 'someFile.h', /* dryRun */ false);
     expect(mockFsWriteFile.mock.calls[0][1]).toBe(`\
+#if __has_include(<React/RCTBridge.h>)
 #import <React/RCTBridge.h>
+#elif __has_include(<React/RCTBridge.h>)
 #import <React/RCTBridge.h>
-#import <React/RCTBridge.h>`);
+#else
+#import <React/RCTBridge.h>
+#endif
+`);
   });
 
   it('should not transform non-React-Core headers', async () => {
     const headerSet = new Set(['UIView+React.h']);
     mockFsReadFile.mockResolvedValue(`\
+#if __has_include("UIView+React.h")
 #import "UIView+React.h"
-#import "UIView+ThirdPartyCategory.h"`);
+#endif
+
+#if __has_include("UIView+ThirdPartyCategory.h")
+#import "UIView+ThirdPartyCategory.h"
+#endif
+`);
 
     await patchFileAsync(headerSet, 'someFile.h', /* dryRun */ false);
     expect(mockFsWriteFile.mock.calls[0][1]).toBe(`\
+#if __has_include(<React/UIView+React.h>)
 #import <React/UIView+React.h>
-#import "UIView+ThirdPartyCategory.h"`);
+#endif
+
+#if __has_include("UIView+ThirdPartyCategory.h")
+#import "UIView+ThirdPartyCategory.h"
+#endif
+`);
   });
 
   it('should not write changes when `dryRun` is true', async () => {
