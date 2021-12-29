@@ -15,6 +15,11 @@ public final class ViewManagerDefinition: ObjectDefinition {
   let props: [AnyViewProp]
 
   /**
+   Names of the events that the view can send to JavaScript.
+   */
+  let eventNames: [String]
+
+  /**
    Default initializer receiving children definitions from the result builder.
    */
   override init(definitions: [AnyDefinition]) {
@@ -24,6 +29,12 @@ public final class ViewManagerDefinition: ObjectDefinition {
 
     self.props = definitions
       .compactMap { $0 as? AnyViewProp }
+
+    self.eventNames = Array(
+      definitions
+        .compactMap { ($0 as? EventsDefinition)?.names }
+        .joined()
+    )
 
     super.init(definitions: definitions)
   }

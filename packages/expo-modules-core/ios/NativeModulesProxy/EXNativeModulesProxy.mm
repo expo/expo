@@ -150,7 +150,9 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 - (void)setBridge:(RCTBridge *)bridge
 {
   if (!_bridge) {
-    [self registerExpoModulesInBridge:bridge];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self registerExpoModulesInBridge:bridge];
+    });
   }
   _bridge = bridge;
 }
@@ -233,45 +235,49 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
 - (void)registerExpoModulesInBridge:(RCTBridge *)bridge
 {
-  // Registering expo modules in bridge is needed only when the proxy module owns the registry
-  // (was autoinitialized by React Native). Otherwise they're registered by the registry adapter.
-  if (!_ownsModuleRegistry || [bridge moduleIsInitialized:[EXReactNativeEventEmitter class]]) {
-    return;
-  }
+  // Registering expo modules (excluding Swifty view managers!) in bridge is needed only when the proxy module owns
+  // the registry (was autoinitialized by React Native). Otherwise they're registered by the registry adapter.
+  BOOL ownsModuleRegistry = _ownsModuleRegistry && ![bridge moduleIsInitialized:[EXReactNativeEventEmitter class]];
 
   // An array of `RCTBridgeModule` classes to register.
   NSMutableArray<Class<RCTBridgeModule>> *additionalModuleClasses = [NSMutableArray new];
   NSMutableSet *visitedSweetModules = [NSMutableSet new];
 
-  // Event emitter is a bridge module, however it's also needed by expo modules,
-  // so later we'll register an instance created by React Native as expo module.
-  [additionalModuleClasses addObject:[EXReactNativeEventEmitter class]];
-
   // Add dynamic wrappers for view modules written in Sweet API.
   for (ViewModuleWrapper *swiftViewModule in [_swiftInteropBridge getViewManagers]) {
-    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:swiftViewModule];
+    Class wrappedViewModuleClass = [self registerComponentData:swiftViewModule inBridge:bridge];
     [additionalModuleClasses addObject:wrappedViewModuleClass];
     [visitedSweetModules addObject:swiftViewModule.name];
   }
 
-  // Add dynamic wrappers for the classic view managers.
-  for (EXViewManager *viewManager in [_exModuleRegistry getAllViewManagers]) {
-    if (![visitedSweetModules containsObject:viewManager.viewName]) {
-      Class viewManagerWrapperClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
-      [additionalModuleClasses addObject:viewManagerWrapperClass];
-    }
-  }
-
-  // View manager wrappers don't have their own prop configs, so we must register
-  // their base view managers that provides common props such as `proxiedProperties`.
-  // Otherwise, React Native may treat these props as invalid in subclassing views.
-  [additionalModuleClasses addObject:[EXViewManagerAdapter class]];
   [additionalModuleClasses addObject:[ViewModuleWrapper class]];
+  [self registerLegacyComponentData:[ViewModuleWrapper class] inBridge:bridge];
 
-  // Some modules might need access to the bridge.
-  for (id module in [_exModuleRegistry getAllInternalModules]) {
-    if ([module conformsToProtocol:@protocol(RCTBridgeModule)]) {
-      [module setValue:bridge forKey:@"bridge"];
+  // Add modules from legacy module registry only when the NativeModulesProxy owns the registry.
+  if (ownsModuleRegistry) {
+    // Event emitter is a bridge module, however it's also needed by expo modules,
+    // so later we'll register an instance created by React Native as expo module.
+    [additionalModuleClasses addObject:[EXReactNativeEventEmitter class]];
+
+    // Add dynamic wrappers for the classic view managers.
+    for (EXViewManager *viewManager in [_exModuleRegistry getAllViewManagers]) {
+      if (![visitedSweetModules containsObject:viewManager.viewName]) {
+        Class viewManagerWrapperClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
+        [additionalModuleClasses addObject:viewManagerWrapperClass];
+        [self registerLegacyComponentData:viewManagerWrapperClass inBridge:bridge];
+      }
+    }
+
+    // View manager wrappers don't have their own prop configs, so we must register
+    // their base view managers that provides common props such as `proxiedProperties`.
+    // Otherwise, React Native may treat these props as invalid in subclassing views.
+    [additionalModuleClasses addObject:[EXViewManagerAdapter class]];
+
+    // Some modules might need access to the bridge.
+    for (id module in [_exModuleRegistry getAllInternalModules]) {
+      if ([module conformsToProtocol:@protocol(RCTBridgeModule)]) {
+        [module setValue:bridge forKey:@"bridge"];
+      }
     }
   }
 
@@ -283,19 +289,19 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // Register the view managers as additional modules.
   [self registerAdditionalModuleClasses:additionalModuleClasses inBridge:bridge];
 
-  // Bridge's `registerAdditionalModuleClasses:` method doesn't register
-  // components in UIManager — we need to register them on our own.
-  [self registerComponentDataForModuleClasses:additionalModuleClasses inBridge:bridge];
+  // As the last step, when the registry is owned,
+  // register the event emitter and initialize the registry.
+  if (ownsModuleRegistry) {
+    // Get the newly created instance of `EXReactEventEmitter` bridge module,
+    // pass event names supported by Swift modules and register it in legacy modules registry.
+    EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
+    [eventEmitter setSwiftInteropBridge:_swiftInteropBridge];
+    [_exModuleRegistry registerInternalModule:eventEmitter];
 
-  // Get the newly created instance of `EXReactEventEmitter` bridge module,
-  // pass event names supported by Swift modules and register it in legacy modules registry.
-  EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
-  [eventEmitter setSwiftInteropBridge:_swiftInteropBridge];
-  [_exModuleRegistry registerInternalModule:eventEmitter];
-
-  // Let the modules consume the registry :)
-  // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
-  [_exModuleRegistry initialize];
+    // Let the modules consume the registry :)
+    // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
+    [_exModuleRegistry initialize];
+  }
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
@@ -324,27 +330,45 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   [bridge registerAdditionalModuleClasses:moduleClasses];
 }
 
-- (void)registerComponentDataForModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
+- (Class)registerComponentData:(ViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge
 {
   // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
+  Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule];
+  NSString *className = NSStringFromClass(wrappedViewModuleClass);
 
-  // Register missing components data for all view managers.
-  for (Class moduleClass in moduleClasses) {
-    NSString *className = NSStringFromClass(moduleClass);
+  if (componentDataByName[className]) {
+    // Just in case the component was already registered, let's leave a log that we're overriding it.
+    NSLog(@"Overriding ComponentData for view %@", className);
+  }
 
-    if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-      RCTComponentData *componentData = [RCTComponentData alloc];
-      if ([componentData respondsToSelector:@selector(initWithManagerClass:bridge:eventDispatcher:)]) {
-        // Init method was changed in RN 0.65
-        [componentData initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
-      } else {
-        // fallback for older RNs
-        [componentData initWithManagerClass:moduleClass bridge:bridge];
-      }
-      
-      componentDataByName[className] = componentData;
+  EXComponentData *componentData = [[EXComponentData alloc] initWithViewModule:viewModule
+                                                                  managerClass:wrappedViewModuleClass
+                                                                        bridge:bridge];
+  componentDataByName[className] = componentData;
+  return wrappedViewModuleClass;
+}
+
+/**
+ Bridge's `registerAdditionalModuleClasses:` method doesn't register
+ components in UIManager — we need to register them on our own.
+ */
+- (void)registerLegacyComponentData:(Class)moduleClass inBridge:(RCTBridge *)bridge
+{
+  // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
+  NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
+  NSString *className = NSStringFromClass(moduleClass);
+
+  if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
+    RCTComponentData *componentData;
+    if ([componentData respondsToSelector:@selector(initWithManagerClass:bridge:eventDispatcher:)]) {
+      // Init method was changed in RN 0.65
+      componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
+    } else {
+      // fallback for older RNs
+      componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge];
     }
+    componentDataByName[className] = componentData;
   }
 }
 

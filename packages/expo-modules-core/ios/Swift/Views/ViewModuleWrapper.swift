@@ -126,7 +126,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     let prefixedViewName = "ViewManagerAdapter_\(module.name())"
 
     return prefixedViewName.withCString { viewNamePtr in
-      // Create a new meta class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,
+      // Create a new class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,
       // so we also have to override `moduleName` class method.
       let wrapperClass: AnyClass? = objc_allocateClassPair(ViewModuleWrapper.self, viewNamePtr, 0)
 
@@ -141,3 +141,6 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     }
   }
 }
+
+// The direct event implementation can be cached and lazy-loaded (global and static variables are lazy by default in Swift).
+let directEventBlockImplementation = imp_implementationWithBlock({ ["RCTDirectEventBlock"] } as @convention(block) () -> [String])

@@ -27,6 +27,13 @@ public final class ModuleHolder {
   }
 
   /**
+   Shortcut to get the underlying view manager definition.
+   */
+  var viewManager: ViewManagerDefinition? {
+    return definition.viewManager
+  }
+
+  /**
    Number of JavaScript listeners attached to the module.
    */
   var listenersCount: Int = 0
