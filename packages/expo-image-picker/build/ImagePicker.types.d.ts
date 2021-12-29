@@ -1,13 +1,12 @@
 import { PermissionResponse } from 'expo-modules-core';
 /**
- * Alias for `PermissionResponse` type exported by `unimodules-permission-interface`.
+ * Alias for `PermissionResponse` type exported by `expo-modules-core`.
  */
 export declare type CameraPermissionResponse = PermissionResponse;
 /**
- * Extends [PermissionResponse](permissions.md#permissionresponse) type exported by
- * `unimodules-permission-interface` and contains additional iOS-specific field.
+ * Extends `PermissionResponse` type exported by `expo-modules-core` and contains additional iOS-specific field.
  */
-export declare type MediaLibraryPermissionResponse = CameraPermissionResponse & {
+export declare type MediaLibraryPermissionResponse = PermissionResponse & {
     /**
      * @platform ios
      */
@@ -15,7 +14,7 @@ export declare type MediaLibraryPermissionResponse = CameraPermissionResponse & 
 };
 /**
  * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse`
+ * @deprecated Deprecated. Use `ImagePicker.MediaLibraryPermissionResponse` instead.
  */
 export declare type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 export declare enum MediaTypeOptions {
@@ -246,12 +245,13 @@ export declare type ImagePickerOptions = {
      * Specify preset which will be used to compress selected video.
      * @default ImagePicker.VideoExportPreset.Passthrough
      * @platform ios 11+
-     * @deprecated Deprecate: see [iOS videoExportPreset](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+     * @deprecated Deprecated. See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+     * in Apple documentation.
      */
     videoExportPreset?: VideoExportPreset;
     /**
-     * Specify the quality of recorded videos. Defaults to `ImagePicker.UIImagePickerControllerQualityType.High`,
-     * which is the highest available for the device.
+     * Specify the quality of recorded videos. Defaults to the highest quality available for the device.
+     * @default ImagePicker.UIImagePickerControllerQualityType.High
      * @platform ios
      */
     videoQuality?: UIImagePickerControllerQualityType;

@@ -1,34 +1,34 @@
-import { PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
 import { CameraPermissionResponse, CameraRollPermissionResponse, MediaLibraryPermissionResponse, ImagePickerResult, ImagePickerErrorResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset, ExpandImagePickerResult, ImageInfo, ImagePickerMultipleResult, ImagePickerCancelledResult, OpenFileBrowserOptions, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle } from './ImagePicker.types';
 /**
  * Checks user's permissions for accessing camera.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerarollpermissionresponse).
  */
 export declare function getCameraPermissionsAsync(): Promise<CameraPermissionResponse>;
 /**
- * @deprecated Use `getMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Deprecated. Use `getMediaLibraryPermissionsAsync()` instead.
  */
 export declare function getCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse>;
 /**
  * Checks user's permissions for accessing photos.
  * @param writeOnly Whether to request write or read and write permissions. Defaults to `false`
- * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#medialibrarypermissionresponse).
  */
 export declare function getMediaLibraryPermissionsAsync(writeOnly?: boolean): Promise<MediaLibraryPermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing camera. This does nothing on web because the
  * browser camera is not used.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerarollpermissionresponse).
  */
 export declare function requestCameraPermissionsAsync(): Promise<CameraPermissionResponse>;
 /**
- * @deprecated Use `requestMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Deprecated. Use `requestMediaLibraryPermissionsAsync()` instead.
  */
 export declare function requestCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing user's photo. This method does nothing on web.
  * @param writeOnly Whether to request write or read and write permissions. Defaults to `false`
- * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#medialibrarypermissionresponse).
  */
 export declare function requestMediaLibraryPermissionsAsync(writeOnly?: boolean): Promise<MediaLibraryPermissionResponse>;
 /**
@@ -52,7 +52,7 @@ export declare const useMediaLibraryPermissions: (options?: PermissionHookOption
  * const [status, requestPermission] = ImagePicker.useCameraPermissions();
  * ```
  */
-export declare const useCameraPermissions: (options?: PermissionHookOptions<object> | undefined) => [import("expo-modules-core").PermissionResponse | null, () => Promise<import("expo-modules-core").PermissionResponse>, () => Promise<import("expo-modules-core").PermissionResponse>];
+export declare const useCameraPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this
  * happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost
@@ -102,4 +102,4 @@ export declare function launchCameraAsync(options?: ImagePickerOptions): Promise
  * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
  */
 export declare function launchImageLibraryAsync<T extends ImagePickerOptions>(options?: T): Promise<ExpandImagePickerResult<T>>;
-export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, VideoExportPreset, CameraPermissionResponse, CameraRollPermissionResponse, MediaLibraryPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, ImageInfo, ImagePickerMultipleResult, ImagePickerCancelledResult, OpenFileBrowserOptions, ExpandImagePickerResult, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, VideoExportPreset, CameraPermissionResponse, CameraRollPermissionResponse, MediaLibraryPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse, ImageInfo, ImagePickerMultipleResult, ImagePickerCancelledResult, OpenFileBrowserOptions, ExpandImagePickerResult, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };

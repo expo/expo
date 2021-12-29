@@ -20,13 +20,13 @@ function validateOptions(options) {
 // @needsAudit
 /**
  * Checks user's permissions for accessing camera.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerarollpermissionresponse).
  */
 export async function getCameraPermissionsAsync() {
     return ExponentImagePicker.getCameraPermissionsAsync();
 }
 /**
- * @deprecated Use `getMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Deprecated. Use `getMediaLibraryPermissionsAsync()` instead.
  */
 export async function getCameraRollPermissionsAsync() {
     console.warn('ImagePicker.getCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.getMediaLibraryPermissionsAsync()');
@@ -36,23 +36,22 @@ export async function getCameraRollPermissionsAsync() {
 /**
  * Checks user's permissions for accessing photos.
  * @param writeOnly Whether to request write or read and write permissions. Defaults to `false`
- * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#medialibrarypermissionresponse).
  */
 export async function getMediaLibraryPermissionsAsync(writeOnly = false) {
-    const imagePickerMethod = ExponentImagePicker.getMediaLibraryPermissionsAsync;
-    return imagePickerMethod(writeOnly);
+    return ExponentImagePicker.getMediaLibraryPermissionsAsync(writeOnly);
 }
 // @needsAudit
 /**
  * Asks the user to grant permissions for accessing camera. This does nothing on web because the
  * browser camera is not used.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerarollpermissionresponse).
  */
 export async function requestCameraPermissionsAsync() {
     return ExponentImagePicker.requestCameraPermissionsAsync();
 }
 /**
- * @deprecated Use `requestMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Deprecated. Use `requestMediaLibraryPermissionsAsync()` instead.
  */
 export async function requestCameraRollPermissionsAsync() {
     console.warn('ImagePicker.requestCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.requestMediaLibraryPermissionsAsync()');
@@ -62,7 +61,7 @@ export async function requestCameraRollPermissionsAsync() {
 /**
  * Asks the user to grant permissions for accessing user's photo. This method does nothing on web.
  * @param writeOnly Whether to request write or read and write permissions. Defaults to `false`
- * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#medialibrarypermissionresponse).
  */
 export async function requestMediaLibraryPermissionsAsync(writeOnly = false) {
     const imagePickerMethod = ExponentImagePicker.requestMediaLibraryPermissionsAsync;
