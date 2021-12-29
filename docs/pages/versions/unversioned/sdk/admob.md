@@ -129,12 +129,12 @@ await AdMobRewarded.showAdAsync();
 - Ensure you **never** load a real production ad in an Android Emulator or iOS Simulator. Failure to do this can result in a ban from the AdMob program.
 
 ```tsx
-import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 
 const testID = 'google-test-id';
 const productionID = 'my-id';
 // Is a real device and running in production.
-const adUnitID = Constants.isDevice && !__DEV__ ? productionID : testID;
+const adUnitID = Device.isDevice && !__DEV__ ? productionID : testID;
 ```
 
 ## Methods
