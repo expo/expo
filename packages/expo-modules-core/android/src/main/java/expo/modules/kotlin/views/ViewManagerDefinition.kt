@@ -11,7 +11,9 @@ import expo.modules.kotlin.recycle
 class ViewManagerDefinition(
   private val viewFactory: (Context) -> View,
   private val viewType: Class<out View>,
-  private val props: Map<String, AnyViewProp>
+  private val props: Map<String, AnyViewProp>,
+  val onDestroy: ((View) -> Unit)? = null
+  val callbacksDefinition: CallbacksDefinition? = null
 ) {
 
   fun createView(context: Context): View = viewFactory(context)
