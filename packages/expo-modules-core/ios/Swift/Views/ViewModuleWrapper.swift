@@ -126,9 +126,19 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     let prefixedViewName = "ViewManagerAdapter_\(module.name())"
 
     return prefixedViewName.withCString { viewNamePtr in
-      // Create a new meta class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,
+      // Create a new class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,
       // so we also have to override `moduleName` class method.
       let wrapperClass: AnyClass? = objc_allocateClassPair(ViewModuleWrapper.self, viewNamePtr, 0)
+
+      if let eventNames = module.wrappedModuleHolder.viewManager?.eventNames {
+        // Get its meta class to add some class methods with prop configs.
+        let metaWrapperClass: AnyClass? = object_getClass(wrapperClass)
+
+        // Dynamically add prop config for each event.
+        for eventName in eventNames {
+          class_addMethod(metaWrapperClass, Selector("propConfig_\(eventName)"), directEventBlockImplementation, "@@:")
+        }
+      }
 
       // Dynamically add instance method returning wrapped module to the dynamic wrapper class.
       // React Native initializes modules with `init` without params,
@@ -141,3 +151,6 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     }
   }
 }
+
+// The direct event implementation can be cached and lazy-loaded (global and static variables are lazy by default in Swift).
+let directEventBlockImplementation = imp_implementationWithBlock({ ["RCTDirectEventBlock"] } as @convention(block) () -> [String])

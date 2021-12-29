@@ -55,18 +55,9 @@
   EXReactNativeEventEmitter *eventEmitter = [EXReactNativeEventEmitter new];
   [moduleRegistry registerInternalModule:eventEmitter];
 
-  NSMutableSet *exportedSwiftViewModuleNames = [NSMutableSet new];
-
-  for (ViewModuleWrapper *swiftViewModule in [nativeModulesProxy.swiftInteropBridge getViewManagers]) {
-    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:swiftViewModule];
-    [extraModules addObject:[[wrappedViewModuleClass alloc] init]];
-    [exportedSwiftViewModuleNames addObject:swiftViewModule.name];
-  }
   for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
-    if (![exportedSwiftViewModuleNames containsObject:viewManager.viewName]) {
-      Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
-      [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
-    }
+    Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
+    [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
   }
 
   // Silence React Native warning `Base module "%s" does not exist`
@@ -75,7 +66,6 @@
   // subclass EXViewManagerAdapter, so RN expects to find EXViewManagerAdapter
   // exported.
   [extraModules addObject:[[EXViewManagerAdapter alloc] init]];
-  [extraModules addObject:[[ViewModuleWrapper alloc] initWithDummy:nil]];
 
   // It is possible that among internal modules there are some RCTBridgeModules --
   // let's add them to extraModules here.
