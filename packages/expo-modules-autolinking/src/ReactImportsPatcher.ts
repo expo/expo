@@ -35,7 +35,7 @@ async function generateReactHeaderSetAsync(reactHeaderDir: string): Promise<Set<
 export async function patchFileAsync(headerSet: Set<string>, file: string, dryRun: boolean) {
   let changed = false;
   const content = await fs.readFile(file, 'utf-8');
-  const transformContent = content.replace(
+  let transformContent = content.replace(
     /^#import\s+"(.+)"$/gm,
     (match: string, headerName: string): string => {
       // `#import "RCTBridge.h"` -> `#import <React/RCTBridge.h>`
@@ -50,6 +50,29 @@ export async function patchFileAsync(headerSet: Set<string>, file: string, dryRu
         if (headerSet.has(name)) {
           changed = true;
           return `#import <React/${name}>`;
+        }
+      }
+
+      // Otherwise, return original import
+      return match;
+    }
+  );
+
+  transformContent = transformContent.replace(
+    /^#(if|elif)\s+__has_include\("(.+)"\)$/gm,
+    (match: string, ifPrefix: string, headerName: string): string => {
+      // `#if __has_include("RCTBridge.h")` -> `#if __has_include(<React/RCTBridge.h>)`
+      if (headerSet.has(headerName)) {
+        changed = true;
+        return `#${ifPrefix} __has_include(<React/${headerName}>)`;
+      }
+
+      // `#if __has_include("React/RCTBridge.h")` -> `#if __has_include(<React/RCTBridge.h>)`
+      if (headerName.startsWith('React/')) {
+        const name = headerName.substring(6);
+        if (headerSet.has(name)) {
+          changed = true;
+          return `#${ifPrefix} __has_include(<React/${name}>)`;
         }
       }
 
