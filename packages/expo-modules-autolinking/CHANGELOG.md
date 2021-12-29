@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `expo_patch_react_imports!` support for React-Native 0.66. ([#15724](https://github.com/expo/expo/pull/15724) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.5.3 — 2021-12-28
