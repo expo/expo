@@ -109,7 +109,7 @@ class AppContext(
   val activityProvider: ActivityProvider?
     get() = legacyModule()
 
-  /*
+  /**
    * Provides access to the react application context
    */
   val reactContext: Context?
