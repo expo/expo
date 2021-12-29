@@ -19,12 +19,15 @@ class ViewManagerDefinitionBuilder {
   @PublishedApi
   internal var onViewDestroys: ((View) -> Unit)? = null
 
+  private var callbacksDefinition: CallbacksDefinition? = null
+
   fun build(): ViewManagerDefinition =
     ViewManagerDefinition(
       requireNotNull(viewFactory),
       requireNotNull(viewType),
       props,
-      onViewDestroys
+      onViewDestroys,
+      callbacksDefinition
     )
 
   /**
@@ -54,5 +57,12 @@ class ViewManagerDefinitionBuilder {
       typeOf<PropType>().toAnyType(),
       body
     )
+  }
+
+  /**
+   * Defines prop names that should be treated as callbacks.
+   */
+  fun callbacks(vararg callbacks: String) {
+    callbacksDefinition = CallbacksDefinition(callbacks)
   }
 }

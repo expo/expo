@@ -24,4 +24,13 @@ class GroupViewManagerWrapper(
     super.onDropViewInstance(view)
     viewWrapperDelegate.onDestroy(view)
   }
+
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
+    viewWrapperDelegate.getExportedCustomDirectEventTypeConstants()?.let {
+      val directEvents = super.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
+      return directEvents + it
+    }
+
+    return super.getExportedCustomDirectEventTypeConstants()
+  }
 }
