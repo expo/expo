@@ -31,6 +31,7 @@ import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 import kotlin.reflect.typeOf
 
+@DefinitionMarker
 class ModuleDefinitionBuilder(private val module: Module? = null) {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
