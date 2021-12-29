@@ -21,7 +21,7 @@ This is the source code for the Expo Go app used to view projects published to t
 
 To build Expo Go, follow the instructions in the [Setup](#configuring-your-environment) section below. Use the [Expo CLI](https://docs.expo.dev/workflow/expo-cli) to use Expo's infrastructure to build your app.
 
-Please ask us on the [forums](https://forums.expo.dev/) if you get stuck.
+Please ask us on the [forums](https://forums.expo.dev) if you get stuck.
 
 ## External Contributions
 
@@ -37,8 +37,8 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 > Note: We support building Expo Go only on macOS.
 
-- Install [direnv](http://direnv.net/)
-- Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`)
+- Install [direnv](http://direnv.net/).
+- Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`).
 - Run `yarn` in the root directory.
 - Run `yarn setup:native` in the root directory.
 - Run `yarn build` in the `packages/expo` directory.
@@ -51,8 +51,8 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 ### Android
 
-- Make sure you have Android Studio 3 installed
-- See "Running on a Device"
+- Make sure you have Android Studio 3 or newer installed.
+- See ["Running on a Device"](#running-on-a-device).
 
 ## Running on a Device
 
@@ -127,4 +127,4 @@ For native XCTest unit tests:
 - Press Command+U in XCode to build and test the `Tests` unit test target.
 - Alternatively, run `fastlane ios test` from the parent directory of `ios`.
 
-For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the URL to load some version of Expo's [test-suite](apps/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
+For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the URL to load some version of Expo's [test-suite](../apps/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
