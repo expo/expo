@@ -56,10 +56,16 @@ class ModuleDefinitionBuilder {
     )
   }
 
+  /**
+   * Sets the name of the module that is exported to the JavaScript world.
+   */
   fun name(name: String) {
     this.name = name
   }
 
+  /**
+   * Definition function setting the module's constants to export.
+   */
   fun constants(constantsProvider: () -> Map<String, Any?>) {
     this.constantsProvider = constantsProvider
   }
@@ -167,6 +173,9 @@ class ModuleDefinitionBuilder {
     }
   }
 
+  /**
+   * Creates the view manager definition that scopes other view-related definitions.
+   */
   inline fun viewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
 
@@ -175,22 +184,37 @@ class ModuleDefinitionBuilder {
     viewManagerDefinition = viewManagerDefinitionBuilder.build()
   }
 
+  /**
+   * Creates module's lifecycle listener that is called right after the module initialization.
+   */
   inline fun onCreate(crossinline body: () -> Unit) {
     eventListeners[EventName.MODULE_CREATE] = BasicEventListener(EventName.MODULE_CREATE) { body() }
   }
 
+  /**
+   * Creates module's lifecycle listener that is called when the module is about to be deallocated.
+   */
   inline fun onDestroy(crossinline body: () -> Unit) {
     eventListeners[EventName.MODULE_DESTROY] = BasicEventListener(EventName.MODULE_DESTROY) { body() }
   }
 
+  /**
+   * Creates module's lifecycle listener that is called right after the activity is resumed.
+   */
   inline fun onActivityEntersForeground(crossinline body: () -> Unit) {
     eventListeners[EventName.ACTIVITY_ENTERS_FOREGROUND] = BasicEventListener(EventName.ACTIVITY_ENTERS_FOREGROUND) { body() }
   }
 
+  /**
+   * Creates module's lifecycle listener that is called right after the activity is paused.
+   */
   inline fun onActivityEntersBackground(crossinline body: () -> Unit) {
     eventListeners[EventName.ACTIVITY_ENTERS_BACKGROUND] = BasicEventListener(EventName.ACTIVITY_ENTERS_BACKGROUND) { body() }
   }
 
+  /**
+   * Creates module's lifecycle listener that is called right after the activity is destroyed.
+   */
   inline fun onActivityDestroys(crossinline body: () -> Unit) {
     eventListeners[EventName.ACTIVITY_DESTROYS] = BasicEventListener(EventName.ACTIVITY_DESTROYS) { body() }
   }
@@ -203,23 +227,29 @@ class ModuleDefinitionBuilder {
   }
 
   /**
-   * Method that is invoked when the first event listener is added.
+   * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
   inline fun onStartObserving(crossinline body: () -> Unit) {
     function("startObserving", body)
   }
 
   /**
-   * Method that is invoked when all event listeners are removed.
+   * Creates module's lifecycle listener that is called right after all event listeners are removed.
    */
   inline fun onStopObserving(crossinline body: () -> Unit) {
     function("stopObserving", body)
   }
 
+  /**
+   * Creates module's lifecycle listener that is called right after the new intent was received.
+   */
   inline fun onNewIntent(crossinline body: (Intent) -> Unit) {
     eventListeners[EventName.ON_NEW_INTENT] = EventListenerWithPayload<Intent>(EventName.ON_NEW_INTENT) { body(it) }
   }
 
+  /**
+   * Creates module's lifecycle listener that is called right after the activity has received a result.
+   */
   inline fun onActivityResult(crossinline body: (Activity, OnActivityResultPayload) -> Unit) {
     eventListeners[EventName.ON_ACTIVITY_RESULT] =
       EventListenerWithSenderAndPayload<Activity, OnActivityResultPayload>(EventName.ON_ACTIVITY_RESULT) { sender, payload -> body(sender, payload) }

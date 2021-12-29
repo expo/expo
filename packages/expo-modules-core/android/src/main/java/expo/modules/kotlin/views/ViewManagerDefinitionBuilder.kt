@@ -22,11 +22,18 @@ class ViewManagerDefinitionBuilder {
       props
     )
 
+  /**
+   * Defines the factory creating a native view when the module is used as a view.
+   */
   inline fun <reified ViewType : View> view(noinline body: (Context) -> ViewType) {
     viewType = ViewType::class.java
     viewFactory = body
   }
 
+
+  /**
+   * Creates a view prop that defines its name and setter.
+   */
   inline fun <reified ViewType : View, reified PropType> prop(
     name: String,
     noinline body: (view: ViewType, prop: PropType) -> Unit
