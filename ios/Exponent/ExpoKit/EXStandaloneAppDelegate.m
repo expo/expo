@@ -3,7 +3,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import "ExpoKit.h"
-#import "EXViewController.h"
+#import "EXStandaloneViewController.h"
 #import "EXStandaloneAppDelegate.h"
 
 @interface EXStandaloneAppDelegate ()
@@ -40,6 +40,7 @@
   if (_window) {
     return;
   }
+  [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXStandaloneViewController class]];
   [[ExpoKit sharedInstance] prepareWithLaunchOptions:launchOptions];
 
   _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
