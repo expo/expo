@@ -142,18 +142,13 @@ If this module wraps some 3rd party API then, before working on it, ensure it wo
           labelNames: ['Module', 'Android'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - Android: rewrite to SweetAPI`,
+          title: (moduleName: string) => `Audit ${moduleName} - Android: rewrite to Sweet API`,
           description: `Convert this module Android code to be SweetAPI-based`,
           labelNames: ['Module', 'Android'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - iOS: rewrite to Swift`,
-          description: `Convert this module iOS code to Swift.`,
-          labelNames: ['Module', 'iOS'],
-        },
-        {
-          title: (moduleName: string) => `Audit ${moduleName} - iOS: rewrite to SweetAPI`,
-          description: `Convert this module iOS code to be SweetAPI-based`,
+          title: (moduleName: string) => `Audit ${moduleName} - iOS: rewrite to Sweet API`,
+          description: `Convert this module iOS code to be Sweet API-based`,
           labelNames: ['Module', 'iOS'],
         },
         {
@@ -163,12 +158,12 @@ If this module wraps some 3rd party API then, before working on it, ensure it wo
         },
         {
           title: (moduleName: string) => `Audit ${moduleName} - Android tests`,
-          description: `Convert this module iOS code to be SweetAPI-based`,
+          description: `Audit and most probably add missing Android tests for this module.`,
           labelNames: ['Module', 'Android', 'Testing'],
         },
         {
           title: (moduleName: string) => `Audit ${moduleName} - iOS tests`,
-          description: `Convert this module iOS code to be SweetAPI-based`,
+          description: `Audit and most probably add missing iOS tests for this module.`,
           labelNames: ['Module', 'iOS', 'Testing'],
         },
         {
@@ -177,8 +172,13 @@ If this module wraps some 3rd party API then, before working on it, ensure it wo
           labelNames: ['Module', 'QA', `Testing`],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - compare with similar libraries`,
-          description: `Compare this module with other libraries available in the RN ecosystem. Check the differences and possibly narrow the functionalities gap.`,
+          title: (moduleName: string) =>
+            `Audit ${moduleName} - compare with similar libraries and explore new platforms' capabilities`,
+          description: `
+Compare this module with other libraries available in the RN ecosystem.
+Check the differences and possibly narrow the functionalities gap.
+Additionally, explore the possible new capabilities offered by each platform.
+`,
           labelNames: ['Module'],
         },
         {
