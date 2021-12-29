@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS build with Expo SDK 44 and React Native 0.65+. ([#15661](https://github.com/expo/expo/pull/15661) by [@schiller-manuel](https://github.com/schiller-manuel))
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-12-03
