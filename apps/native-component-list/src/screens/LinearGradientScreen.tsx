@@ -59,14 +59,14 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
           alignItems: 'stretch',
           paddingVertical: 10,
         }}>
-        {/* <AnimatedLinearGradient
+        <AnimatedLinearGradient
           style={{ display: 'none' }}
           colors={[this.state.colorTop, this.state.colorBottom]}
-        /> */}
+        />
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
-        {/* <LocationsTest locations={[location, 1.0 - location]} />
+        <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />
-        {Platform.OS !== 'web' && <SnapshotTest />} */}
+        {Platform.OS !== 'web' && <SnapshotTest />}
       </ScrollView>
     );
   }
@@ -134,11 +134,7 @@ const ColorsTest = ({ colors }: { colors: string[] }) => {
   return (
     <Container title="Colors">
       <MonoText>{`colors={[${info}]}`}</MonoText>
-      <LinearGradient
-        colors={colors}
-        style={styles.gradient}
-        onTest={(body) => console.log('onTest called', body.nativeEvent)}
-      />
+      <LinearGradient colors={colors} style={styles.gradient} />
     </Container>
   );
 };
