@@ -31,7 +31,7 @@ import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 import kotlin.reflect.typeOf
 
-class ModuleDefinitionBuilder {
+class ModuleDefinitionBuilder(private val module: Module? = null) {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
   private var eventsDefinition: EventsDefinition? = null
@@ -46,8 +46,10 @@ class ModuleDefinitionBuilder {
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
 
   fun build(): ModuleDefinitionData {
+    val moduleName = name ?: module?.javaClass?.simpleName
+
     return ModuleDefinitionData(
-      requireNotNull(name),
+      requireNotNull(moduleName),
       constantsProvider,
       methods,
       viewManagerDefinition,

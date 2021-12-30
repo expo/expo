@@ -4,6 +4,7 @@ import android.os.Bundle
 import expo.modules.kotlin.AppContext
 
 abstract class Module {
+  @Suppress("PropertyName")
   internal var _appContext: AppContext? = null
 
   private val moduleEventEmitter by lazy { appContext.eventEmitter(this) }
@@ -19,6 +20,6 @@ abstract class Module {
 }
 
 @Suppress("FunctionName")
-inline fun ModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
-  return ModuleDefinitionBuilder().also(block).build()
+inline fun Module.ModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
+  return ModuleDefinitionBuilder(this).also(block).build()
 }

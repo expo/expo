@@ -8,15 +8,28 @@ import org.junit.Assert
 import org.junit.Test
 
 class ModuleDefinitionBuilderTest {
+  private inline fun unboundModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
+    return ModuleDefinitionBuilder().also(block).build()
+  }
+
+  private class TestModule : Module() {
+    override fun definition() = ModuleDefinition {}
+  }
+
+  private class TestModuleWithName : Module() {
+    override fun definition() = ModuleDefinition {
+      name("OverriddenName")
+    }
+  }
 
   @Test
   fun `builder should throw if modules name wasn't provided`() {
     Assert.assertThrows(IllegalArgumentException::class.java) {
-      ModuleDefinition { }
+      unboundModuleDefinition { }
     }
 
     Assert.assertThrows(IllegalArgumentException::class.java) {
-      ModuleDefinition {
+      unboundModuleDefinition {
         function("method") { _: Int, _: Int -> }
       }
     }
@@ -27,7 +40,7 @@ class ModuleDefinitionBuilderTest {
     val moduleName = "Module"
     val moduleConstants = emptyMap<String, Any?>()
 
-    val moduleDefinition = ModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name(moduleName)
       constants {
         moduleConstants
@@ -46,7 +59,7 @@ class ModuleDefinitionBuilderTest {
   fun `builder should allow adding view manager`() {
     val moduleName = "Module"
 
-    val moduleDefinition = ModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name(moduleName)
       viewManager {
         view { mockk() }
@@ -61,7 +74,7 @@ class ModuleDefinitionBuilderTest {
   fun `builder should respect events`() {
     val moduleName = "Module"
 
-    val moduleDefinition = ModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name(moduleName)
       onCreate { }
       onDestroy { }
@@ -80,7 +93,7 @@ class ModuleDefinitionBuilderTest {
 
   @Test
   fun `onStartObserving should be translated into method`() {
-    val moduleDefinition = ModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name("module")
       onStartObserving { }
     }
@@ -90,11 +103,25 @@ class ModuleDefinitionBuilderTest {
 
   @Test
   fun `onStopObserving should be translated into method`() {
-    val moduleDefinition = ModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name("module")
       onStopObserving { }
     }
 
     Truth.assertThat(moduleDefinition.methods).containsKey("stopObserving")
+  }
+
+  @Test
+  fun `should fallback to module name if the name wasn't provided`() {
+    val moduleDefinition = TestModule().definition()
+
+    Truth.assertThat(moduleDefinition.name).isEqualTo("TestModule")
+  }
+
+  @Test
+  fun `should choose provided name over module class name`() {
+    val moduleDefinition = TestModuleWithName().definition()
+
+    Truth.assertThat(moduleDefinition.name).isEqualTo("OverriddenName")
   }
 }
