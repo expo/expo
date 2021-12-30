@@ -8,7 +8,7 @@ import org.junit.Assert
 import org.junit.Test
 
 class ModuleDefinitionBuilderTest {
-  private inline fun unbindModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
+  private inline fun unboundModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
     return ModuleDefinitionBuilder().also(block).build()
   }
 
@@ -25,11 +25,11 @@ class ModuleDefinitionBuilderTest {
   @Test
   fun `builder should throw if modules name wasn't provided`() {
     Assert.assertThrows(IllegalArgumentException::class.java) {
-      unbindModuleDefinition { }
+      unboundModuleDefinition { }
     }
 
     Assert.assertThrows(IllegalArgumentException::class.java) {
-      unbindModuleDefinition {
+      unboundModuleDefinition {
         function("method") { _: Int, _: Int -> }
       }
     }
@@ -40,7 +40,7 @@ class ModuleDefinitionBuilderTest {
     val moduleName = "Module"
     val moduleConstants = emptyMap<String, Any?>()
 
-    val moduleDefinition = unbindModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name(moduleName)
       constants {
         moduleConstants
@@ -59,7 +59,7 @@ class ModuleDefinitionBuilderTest {
   fun `builder should allow adding view manager`() {
     val moduleName = "Module"
 
-    val moduleDefinition = unbindModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name(moduleName)
       viewManager {
         view { mockk() }
@@ -74,7 +74,7 @@ class ModuleDefinitionBuilderTest {
   fun `builder should respect events`() {
     val moduleName = "Module"
 
-    val moduleDefinition = unbindModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name(moduleName)
       onCreate { }
       onDestroy { }
@@ -93,7 +93,7 @@ class ModuleDefinitionBuilderTest {
 
   @Test
   fun `onStartObserving should be translated into method`() {
-    val moduleDefinition = unbindModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name("module")
       onStartObserving { }
     }
@@ -103,7 +103,7 @@ class ModuleDefinitionBuilderTest {
 
   @Test
   fun `onStopObserving should be translated into method`() {
-    val moduleDefinition = unbindModuleDefinition {
+    val moduleDefinition = unboundModuleDefinition {
       name("module")
       onStopObserving { }
     }
