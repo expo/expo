@@ -30,7 +30,6 @@ class ViewManagerDefinitionBuilder {
     viewFactory = body
   }
 
-
   /**
    * Creates a view prop that defines its name and setter.
    */
