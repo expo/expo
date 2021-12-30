@@ -4,9 +4,11 @@ package expo.modules.kotlin.views
 
 import android.content.Context
 import android.view.View
+import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.typeOf
 
+@DefinitionMarker
 class ViewManagerDefinitionBuilder {
   @PublishedApi
   internal var viewFactory: ((Context) -> View)? = null
