@@ -36,8 +36,8 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   // NOTE: throttle the key handler because on iOS the handleKeyCommand:
   // method gets called repeatedly if the command key is held down.
   static private var lastKeyCommandExecutionTime: TimeInterval = 0
-  static private var lastKeyCommand: UIKeyCommand? = nil
-  
+  static private var lastKeyCommand: UIKeyCommand?
+
   @objc
   var EXDevMenu_keyCommands: [UIKeyCommand] {
     let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
@@ -51,11 +51,11 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   @objc
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
     tryHandleKeyCommand(key) {
-      let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction} as! [DevMenuExportedAction]
+      let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
       guard let action = actions.first(where: { $0.keyCommand == key }) else {
         return
       }
-      
+
       if action.isAvailable() {
         action.call()
         DevMenuManager.shared.closeMenu()
@@ -69,11 +69,11 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
       DevMenuManager.shared.toggleMenu()
     }
   }
-  
+
   private func shouldTriggerAction(_ key: UIKeyCommand) -> Bool {
     return UIResponder.lastKeyCommand !== key || CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5
   }
-  
+
   private func tryHandleKeyCommand(_ key: UIKeyCommand, handler: () -> Void ) {
     if shouldTriggerAction(key) {
       handler()

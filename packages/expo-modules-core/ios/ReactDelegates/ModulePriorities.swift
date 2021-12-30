@@ -11,7 +11,7 @@ internal struct ModulePriorities {
     // key: node package name
     // value: priority value, the higher value takes precedence
     "expo-screen-orientation": 10,
-    "expo-updates": 5,
+    "expo-updates": 5
   ]
 
   static func get(_ packageName: String) -> Int {

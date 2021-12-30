@@ -3,10 +3,9 @@
 import ExpoModulesCore
 
 public class ExpoSystemUIModule: Module {
-  
   public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
-    
+
     onCreate {
       // TODO: Maybe read from the app manifest instead of from Info.plist.
       // Set / reset the initial color on reload and app start.
@@ -24,7 +23,7 @@ public class ExpoSystemUIModule: Module {
   }
 
   static func getBackgroundColor() -> String? {
-    var color: String? = nil
+    var color: String?
     EXUtilities.performSynchronously {
       // Get the root view controller of the delegate window.
       if let window = UIApplication.shared.delegate?.window, let backgroundColor = window?.rootViewController?.view.backgroundColor?.cgColor {
@@ -33,10 +32,10 @@ public class ExpoSystemUIModule: Module {
     }
     return color
   }
-  
+
   static func setBackgroundColorAsync(color: Int?) {
     EXUtilities.performSynchronously {
-      if (color == nil) {
+      if color == nil {
         if let window = UIApplication.shared.delegate?.window {
           window?.backgroundColor = nil
           window?.rootViewController?.view.backgroundColor = UIColor.white

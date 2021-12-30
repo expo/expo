@@ -1,4 +1,3 @@
-
 /**
  A protocol for any type-erased module that provides functions used by the core.
  */

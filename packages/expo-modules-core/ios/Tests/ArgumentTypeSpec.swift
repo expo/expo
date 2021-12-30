@@ -7,7 +7,6 @@ import Nimble
 
 class ArgumentTypeSpec: QuickSpec {
   override func spec() {
-
     it("casts primitives") {
       let type = ArgumentType(Int.self)
       let value = 123

@@ -4,8 +4,6 @@ import Foundation
 
 @objc
 public protocol DevMenuManagerProviderProtocol {
-  
   @objc
   func getDevMenuManager() -> DevMenuManagerProtocol
-
 }

@@ -6,7 +6,7 @@ import XCTest
 
 class EXDevLauncherRecentlyOpenedAppsRegistry3DaysAgo: EXDevLauncherRecentlyOpenedAppsRegistry {
   override func getCurrentTimestamp() -> Int64 {
-    return Int64((Date().timeIntervalSince1970 - (60 * 60 * 24 * 3) - 1) * 1000); // 3 days and 1 second ago
+    return Int64((Date().timeIntervalSince1970 - (60 * 60 * 24 * 3) - 1) * 1_000); // 3 days and 1 second ago
   }
 }
 

@@ -15,7 +15,7 @@ class DevMenuMotionInterceptor {
       }
     }
   }
-  
+
   static var isEnabled: Bool = true
 
   static private func swizzle() {

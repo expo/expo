@@ -12,12 +12,12 @@ public struct Promise: AnyArgument {
    Necessary in some places not converted to Swift, such as `EXPermissionsMethodsDelegate`.
    */
   public var legacyRejecter: EXPromiseRejectBlock {
-    return { code, description, error in
+    return { code, description, _ in
       reject(code ?? "", description ?? "")
     }
   }
 
-  public func resolve(_ value: Any? = nil) -> Void {
+  public func resolve(_ value: Any? = nil) {
     resolver(value)
   }
 
@@ -29,7 +29,7 @@ public struct Promise: AnyArgument {
     rejecter(error)
   }
 
-  public func reject(_ code: String, _ description: String) -> Void {
+  public func reject(_ code: String, _ description: String) {
     rejecter(SimpleCodedError(code, description))
   }
 }

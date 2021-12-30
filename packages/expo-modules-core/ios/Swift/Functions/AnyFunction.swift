@@ -27,7 +27,7 @@ public protocol AnyFunction: AnyDefinition {
   /**
    Calls the function on given module with arguments and a promise.
    */
-  func call(args: [Any], promise: Promise) -> Void
+  func call(args: [Any], promise: Promise)
 
   /**
    Synchronously calls the function with given arguments. If the function takes a promise,

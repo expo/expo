@@ -1,4 +1,3 @@
-
 import Foundation
 
 @objc
@@ -21,11 +20,13 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func callFunction(_ functionName: String,
-                           onModule moduleName: String,
-                           withArgs args: [Any],
-                           resolve: @escaping EXPromiseResolveBlock,
-                           reject: @escaping EXPromiseRejectBlock) {
+  public func callFunction(
+    _ functionName: String,
+    onModule moduleName: String,
+    withArgs args: [Any],
+    resolve: @escaping EXPromiseResolveBlock,
+    reject: @escaping EXPromiseRejectBlock
+  ) {
     registry
       .get(moduleHolderForName: moduleName)?
       .call(function: functionName, args: args) { value, error in
@@ -40,9 +41,11 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func callFunctionSync(_ functionName: String,
-                               onModule moduleName: String,
-                               withArgs args: [Any]) -> Any? {
+  public func callFunctionSync(
+    _ functionName: String,
+    onModule moduleName: String,
+    withArgs args: [Any]
+  ) -> Any? {
     return registry
       .get(moduleHolderForName: moduleName)?
       .callSync(function: functionName, args: args)
@@ -53,11 +56,11 @@ public final class SwiftInteropBridge: NSObject {
     var constants = [String: [[String: Any]]]()
 
     for holder in registry {
-      constants[holder.name] = holder.definition.functions.map({ (functionName, function) in
+      constants[holder.name] = holder.definition.functions.map({ functionName, function in
         return [
           "name": functionName,
           "argumentsCount": function.argumentsCount,
-          "key": functionName,
+          "key": functionName
         ]
       })
     }

@@ -7,7 +7,7 @@ class RecordSpec: QuickSpec {
   override func spec() {
     it("initializes with empty dictionary") {
       struct TestRecord: Record { }
-      let _ = try TestRecord(from: [:])
+      _ = try TestRecord(from: [:])
     }
 
     it("works back and forth with a field") {
@@ -38,7 +38,7 @@ class RecordSpec: QuickSpec {
       }
 
       do {
-        let _ = try TestRecord(from: [:])
+        _ = try TestRecord(from: [:])
         fail()
       } catch let error as CodedError {
         expect(error).to(beAKindOf(FieldRequiredError.self))
@@ -54,7 +54,7 @@ class RecordSpec: QuickSpec {
       let dict = ["a": "try with String instead of Int"]
 
       do {
-        let _ = try TestRecord(from: dict)
+        _ = try TestRecord(from: dict)
         fail()
       } catch let error as CodedError {
         expect(error).to(beAKindOf(FieldInvalidTypeError.self))

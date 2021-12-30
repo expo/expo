@@ -72,7 +72,7 @@ class DevMenuViewController: UIViewController {
 
   // MARK: private
 
-  private func initialProps() -> [String : Any] {
+  private func initialProps() -> [String: Any] {
     return [
       "enableDevelopmentTools": true,
       "showOnboardingView": manager.shouldShowOnboarding(),

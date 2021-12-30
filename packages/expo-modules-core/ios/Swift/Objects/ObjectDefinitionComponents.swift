@@ -70,7 +70,11 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
 ) -> AnyFunction {
   return ConcreteFunction(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self)],
+    argTypes: [
+      ArgumentType(A0.self),
+      ArgumentType(A1.self),
+      ArgumentType(A2.self)
+    ],
     closure
   )
 }
@@ -84,7 +88,12 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return ConcreteFunction(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self)],
+    argTypes: [
+      ArgumentType(A0.self),
+      ArgumentType(A1.self),
+      ArgumentType(A2.self),
+      ArgumentType(A3.self)
+    ],
     closure
   )
 }
@@ -98,7 +107,13 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return ConcreteFunction(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self)],
+    argTypes: [
+      ArgumentType(A0.self),
+      ArgumentType(A1.self),
+      ArgumentType(A2.self),
+      ArgumentType(A3.self),
+      ArgumentType(A4.self)
+    ],
     closure
   )
 }
@@ -112,7 +127,14 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return ConcreteFunction(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self)],
+    argTypes: [
+      ArgumentType(A0.self),
+      ArgumentType(A1.self),
+      ArgumentType(A2.self),
+      ArgumentType(A3.self),
+      ArgumentType(A4.self),
+      ArgumentType(A5.self)
+    ],
     closure
   )
 }
@@ -126,7 +148,15 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return ConcreteFunction(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self)],
+    argTypes: [
+      ArgumentType(A0.self),
+      ArgumentType(A1.self),
+      ArgumentType(A2.self),
+      ArgumentType(A3.self),
+      ArgumentType(A4.self),
+      ArgumentType(A5.self),
+      ArgumentType(A6.self)
+    ],
     closure
   )
 }
@@ -140,7 +170,16 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return ConcreteFunction(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self), ArgumentType(A7.self)],
+    argTypes: [
+      ArgumentType(A0.self),
+      ArgumentType(A1.self),
+      ArgumentType(A2.self),
+      ArgumentType(A3.self),
+      ArgumentType(A4.self),
+      ArgumentType(A5.self),
+      ArgumentType(A6.self),
+      ArgumentType(A7.self)
+    ],
     closure
   )
 }
@@ -157,13 +196,13 @@ public func events(_ names: String...) -> AnyDefinition {
 /**
  Function that is invoked when the first event listener is added.
  */
-public func onStartObserving(_ body: @escaping () -> ()) -> AnyFunction {
+public func onStartObserving(_ body: @escaping () -> Void) -> AnyFunction {
   return ConcreteFunction("startObserving", argTypes: [], body)
 }
 
 /**
  Function that is invoked when all event listeners are removed.
  */
-public func onStopObserving(_ body: @escaping () -> ()) -> AnyFunction {
+public func onStopObserving(_ body: @escaping () -> Void) -> AnyFunction {
   return ConcreteFunction("stopObserving", argTypes: [], body)
 }

@@ -1,4 +1,3 @@
-
 #if swift(>=5.4)
 /**
  A function builder that provides DSL-like syntax. Thanks to this, the function doesn't need to explicitly return an array,

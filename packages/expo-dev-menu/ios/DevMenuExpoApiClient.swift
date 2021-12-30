@@ -4,32 +4,32 @@ import EXDevMenuInterface
 
 class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
   private static let authHeader = "expo-session"
-  
+
   private static let origin = "https://exp.host"
   private static let graphQLEndpoint = URL(string: "\(DevMenuExpoApiClient.origin)/--/graphql")!
   private static let restEndpoint = URL(string: "\(DevMenuExpoApiClient.origin)/--/api/v2/")!
-  
+
   var session: URLSession = URLSession.shared
-  var sessionSecret: String? = nil
-    
+  var sessionSecret: String?
+
   func isLoggedIn() -> Bool {
     return sessionSecret != nil
   }
-  
+
   func setSessionSecret(_ sessionSecret: String?) {
     self.sessionSecret = sessionSecret
   }
-  
+
   func queryDevSessionsAsync(_ installationID: String?, completionHandler: @escaping HTTPCompletionHandler) {
     var url = URL(string: "development-sessions", relativeTo: DevMenuExpoApiClient.restEndpoint)!
-    if (installationID != nil) {
+    if installationID != nil {
       var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
       urlComponents?.queryItems = [URLQueryItem(name: "deviceId", value: installationID)]
       url = urlComponents?.url ?? url
     }
     fetch(url, completionHandler: completionHandler)
   }
-  
+
   func queryUpdateChannels(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Channel]?, URLResponse?, Error?) -> Void,
@@ -51,11 +51,11 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
               }
             }
             """,
-      dataPath:  ["data", "app", "byId", "updateChannels"],
+      dataPath: ["data", "app", "byId", "updateChannels"],
       completionHandler: completionHandler
     )
   }
-  
+
   func queryUpdateBranches(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Branch]?, URLResponse?, Error?) -> Void,
@@ -87,18 +87,18 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
       completionHandler: completionHandler
     )
   }
-  
+
   private func fetch(_ url: URL, completionHandler: @escaping HTTPCompletionHandler) {
     var request = URLRequest(url: url)
     request.httpMethod = "GET"
     if sessionSecret != nil {
       request.setValue(sessionSecret, forHTTPHeaderField: DevMenuExpoApiClient.authHeader)
     }
-    
+
     session.dataTask(with: request, completionHandler: completionHandler).resume()
   }
-  
-  private func fetchGraphQL<T : DevMenuConstructibleFromDictionary>(
+
+  private func fetchGraphQL<T: DevMenuConstructibleFromDictionary>(
     _ url: URL,
     query: String,
     dataPath: [String],
@@ -112,12 +112,12 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     let parsedQuery = "{ \"query\": \"\(query.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "\n", with: "\\n").replacingOccurrences(of: "\"", with: "\\\""))\"}"
     request.httpBody = parsedQuery.data(using: .utf8)
-    
+
     let rawCompletionHandler = createGraphQLResponseHandler(dataPath: dataPath, completionHandler: completionHandler)
     session.dataTask(with: request, completionHandler: rawCompletionHandler).resume()
   }
-  
-  private func createGraphQLResponseHandler<T : DevMenuConstructibleFromDictionary>(
+
+  private func createGraphQLResponseHandler<T: DevMenuConstructibleFromDictionary>(
     dataPath: [String],
     completionHandler: @escaping ([T]?, URLResponse?, Error?) -> Void
   ) -> (Data?, URLResponse?, Error?) -> Void {
@@ -127,19 +127,19 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
         completionHandler(nil, response, error)
         return
       }
-      
+
       guard let rawData = rawData else {
         completionHandler(nil, response, error)
         return
       }
-      
+
       let parsedData = self.extractInnerJSONObject(
         data: rawData,
         path: dataPath,
-        toType: [[String : Any]].self
+        toType: [[String: Any]].self
       ) ?? []
       let output = parsedData.map { T.init(dictionary: $0) }
-      
+
       completionHandler(output, response, error)
     }
   }

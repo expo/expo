@@ -6,7 +6,7 @@ import Foundation
 public class EXDevLauncherErrorViewController: UIViewController, UITableViewDataSource {
   internal weak var manager: EXDevLauncherErrorManager?
   var error: EXDevLauncherAppError?
-  
+
   @IBOutlet weak var errorInformation: UILabel!
   @IBOutlet weak var errorStack: UITableView!
 
@@ -17,27 +17,27 @@ public class EXDevLauncherErrorViewController: UIViewController, UITableViewData
       navigateToLauncher()
       return
     }
-    
-    manager?.controller?.loadApp(appUrl, onSuccess: nil, onError: { [weak self] (error) in
+
+    manager?.controller?.loadApp(appUrl, onSuccess: nil, onError: { [weak self] _ in
       self?.navigateToLauncher()
     })
   }
-  
+
   @IBAction func goToHome(_ sender: Any) {
     navigateToLauncher()
   }
-    
+
   public override func viewDidLoad() {
     error = manager?.consumeError()
-    
-    errorInformation.text = error?.message ?? "Unknown error";
+
+    errorInformation.text = error?.message ?? "Unknown error"
     errorStack?.dataSource = self
   }
-  
+
   public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return error?.stack?.count ?? 0
   }
-  
+
   public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! EXDevLauncherStackTrace
     let frame = error!.stack![indexPath.item]
@@ -45,7 +45,7 @@ public class EXDevLauncherErrorViewController: UIViewController, UITableViewData
     cell.file.text = frame.file
     return cell
   }
-  
+
   @objc
   public static func create(forManager manager: EXDevLauncherErrorManager) -> EXDevLauncherErrorViewController? {
     guard let bundle = EXDevLauncherUtils.resourcesBundle() else {
@@ -54,11 +54,11 @@ public class EXDevLauncherErrorViewController: UIViewController, UITableViewData
 
     let storyboard = UIStoryboard(name: "EXDevLauncherErrorView", bundle: bundle)
     let vc = storyboard.instantiateViewController(withIdentifier: "EXDevLauncherErrorView") as? EXDevLauncherErrorViewController
-    
+
     vc?.manager = manager
     return vc
   }
-  
+
   private func navigateToLauncher() {
     manager?.controller?.navigateToLauncher()
   }

@@ -1,4 +1,3 @@
-
 public final class ModuleRegistry: Sequence {
   public typealias Element = ModuleHolder
 

@@ -62,7 +62,7 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
       let promise = Promise {
         result = $0
         semaphore.signal()
-      } rejecter: { error in
+      } rejecter: { _ in
         semaphore.signal()
       }
       call(args: args, promise: promise)
@@ -92,7 +92,7 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
     if args.count != argumentsCount {
       throw InvalidArgsNumberError(received: args.count, expected: argumentsCount)
     }
-    return try args.enumerated().map { (index, arg) in
+    return try args.enumerated().map { index, arg in
       let expectedType = argumentType(atIndex: index)
 
       // It's safe to unwrap since the arguments count matches.

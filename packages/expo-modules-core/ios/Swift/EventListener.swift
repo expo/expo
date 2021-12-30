@@ -10,7 +10,7 @@ internal struct EventListener: AnyDefinition {
    */
   init(_ name: EventName, _ listener: @escaping () -> Void) {
     self.name = name
-    self.call = { (sender, payload) in listener() }
+    self.call = { _, _ in listener() }
   }
 
   /**
@@ -18,7 +18,7 @@ internal struct EventListener: AnyDefinition {
    */
   init<Sender>(_ name: EventName, _ listener: @escaping (Sender) -> Void) {
     self.name = name
-    self.call = { (sender, payload) in
+    self.call = { sender, _ in
       guard let sender = sender as? Sender else {
         throw InvalidSenderTypeError(eventName: name, senderType: Sender.self)
       }
@@ -31,7 +31,7 @@ internal struct EventListener: AnyDefinition {
    */
   init<Sender, PayloadType>(_ name: EventName, _ listener: @escaping (Sender, PayloadType?) -> Void) {
     self.name = name
-    self.call = { (sender, payload) in
+    self.call = { sender, payload in
       guard let sender = sender as? Sender else {
         throw InvalidSenderTypeError(eventName: name, senderType: Sender.self)
       }

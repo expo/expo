@@ -13,7 +13,7 @@ public protocol DevMenuCallableProvider {
 public class DevMenuExportedCallable: NSObject {
   @objc
   public let id: String
-  
+
   @objc
   init(withId id: String) {
     self.id = id
@@ -23,15 +23,15 @@ public class DevMenuExportedCallable: NSObject {
 @objc
 public class DevMenuExportedFunction: DevMenuExportedCallable {
   @objc
-  public var function: ([String : Any]?) -> Void
-  
+  public var function: ([String: Any]?) -> Void
+
   @objc
-  public init(withId id: String, withFunction function: @escaping ([String : Any]?) -> Void) {
+  public init(withId id: String, withFunction function: @escaping ([String: Any]?) -> Void) {
     self.function = function
     super.init(withId: id)
   }
-  
-  public func call(args: [String : Any]?) {
+
+  public func call(args: [String: Any]?) {
     function(args)
   }
 }
@@ -40,23 +40,23 @@ public class DevMenuExportedFunction: DevMenuExportedCallable {
 public class DevMenuExportedAction: DevMenuExportedCallable {
   @objc
   public var action: () -> Void
-  
+
   @objc
-  public private(set) var keyCommand: UIKeyCommand? = nil
-  
+  public private(set) var keyCommand: UIKeyCommand?
+
   @objc
   public var isAvailable: () -> Bool = { true }
-  
+
   @objc
   public init(withId id: String, withAction action: @escaping  () -> Void) {
     self.action = action
     super.init(withId: id)
   }
-  
+
   public func call() {
     action()
   }
-  
+
   @objc
   public func registerKeyCommand(input: String, modifiers: UIKeyModifierFlags) {
     keyCommand = UIKeyCommand(input: input, modifierFlags: modifiers, action: #selector(DevMenuUIResponderExtensionProtocol.EXDevMenu_handleKeyCommand(_:)))

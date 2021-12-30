@@ -119,9 +119,9 @@ public final class ModuleHolder {
    */
   func modifyListenersCount(_ count: Int) {
     if count > 0 && listenersCount == 0 {
-      let _ = definition.functions["startObserving"]?.callSync(args: [])
+      _ = definition.functions["startObserving"]?.callSync(args: [])
     } else if count < 0 && listenersCount + count <= 0 {
-      let _ = definition.functions["stopObserving"]?.callSync(args: [])
+      _ = definition.functions["stopObserving"]?.callSync(args: [])
     }
     listenersCount = max(0, listenersCount + count)
   }

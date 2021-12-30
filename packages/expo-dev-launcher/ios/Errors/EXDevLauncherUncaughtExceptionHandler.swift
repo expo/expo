@@ -4,13 +4,13 @@ import Foundation
 
 @objc
 public class EXDevLauncherUncaughtExceptionHandler: NSObject {
-  static private var defaultHandler: (@convention(c) (NSException) -> Swift.Void)? = nil
-  
+  static private var defaultHandler: (@convention(c) (NSException) -> Swift.Void)?
+
   @objc
   public static var isInstalled: Bool = false {
     willSet {
-      if (isInstalled != newValue) {
-        if (newValue) {
+      if isInstalled != newValue {
+        if newValue {
           installHandler()
         } else {
           uninstallHandler()
@@ -18,19 +18,18 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
       }
     }
   }
-  
+
   static func installHandler() {
     defaultHandler = NSGetUncaughtExceptionHandler()
-    
+
     NSSetUncaughtExceptionHandler { exception in
-      NSLog("DevLauncher tries to handle uncaught exception: %@", exception);
-      NSLog("Stack Trace: %@", exception.callStackSymbols);
+      NSLog("DevLauncher tries to handle uncaught exception: %@", exception)
+      NSLog("Stack Trace: %@", exception.callStackSymbols)
       EXDevLauncherUncaughtExceptionHandler.defaultHandler?(exception)
     }
   }
-  
+
   static func uninstallHandler() {
     NSSetUncaughtExceptionHandler(defaultHandler)
   }
-  
 }

@@ -4,6 +4,6 @@ import ExpoModulesCore
 
 public class ScreenOrientationReactDelegateHandler: ExpoReactDelegateHandler {
   public override func createRootViewController(reactDelegate: ExpoReactDelegate) -> UIViewController? {
-    return EXScreenOrientationViewController(defaultScreenOrientationFromPlist: ());
+    return EXScreenOrientationViewController(defaultScreenOrientationFromPlist: ())
   }
 }
