@@ -1,7 +1,32 @@
 # See all available rules: https://realm.github.io/SwiftLint/rule-directory.html
 
-# Don't use `included` and `excluded` parameters even though we'd like to limit which paths should be linted.
-# SwiftLint is not very efficient in that, so we will always run it on explicit file paths.
+# Don't use `included` parameter even though we'd like to limit which paths should be linted.
+# When it's set, all paths passed as arguments to the command are ignored.
+
+# SwiftLint by default isn't efficient in excluding, `--use-alternative-excluding` flag makes it faster.
+excluded:
+  - .direnv
+  - android
+  - apps
+  - bin
+  - docs
+  - exponent-view-template
+  - fastlane
+  - guides
+  - home
+  - ios/Pods
+  - ios/vendored
+  - ios/versioned
+  - ios/versioned-react-native
+  - node_modules
+  - packages/*/ios/Tests
+  - packages/*/ios/UITests
+  - packages/expo-module-template
+  - react-native-lab
+  - scripts
+  - secrets
+  - template-files
+  - tools
 
 # Enable rules that are turned off by default. Run `swiftlint rules` to see what's available to opt-in.
 opt_in_rules:
@@ -112,7 +137,8 @@ mark: warning
 multiline_literal_brackets: warning
 
 # Functions and methods parameters should be either on the same line, or one per line.
-multiline_parameters: warning
+multiline_parameters:
+  severity: warning
 
 # Multiline parameters should have their surrounding brackets in a new line.
 multiline_parameters_brackets: warning
