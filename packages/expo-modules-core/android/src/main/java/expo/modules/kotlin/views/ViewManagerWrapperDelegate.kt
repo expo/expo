@@ -55,22 +55,22 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
     callbacks.forEach {
       val property = propertiesMap[it].ifNull {
-        Log.w("ExpoModuleCore", "Cannot find property for $it in ${kClass.simpleName}.")
+        Log.w("ExpoModuleCore", "Property `$it` does not exist in ${kClass.simpleName}.")
         return@forEach
       }
       property.isAccessible = true
 
       val delegate = property.getDelegate(view).ifNull {
-        Log.w("ExpoModulesCore", "Cannot find property delegate for $it in ${kClass.simpleName}")
+        Log.w("ExpoModulesCore", "Property delegate for `$it` in ${kClass.simpleName} does not exist.")
         return@forEach
       }
 
       val viewDelegate = (delegate as? ViewCallbackDelegate<*>).ifNull {
-        Log.w("ExpoModulesCore", "Cannot case `$it` property delegate into the `ViewCallbackDelegate`.")
+        Log.w("ExpoModulesCore", "Property delegate for `$it` cannot be cased to `ViewCallbackDelegate`.")
         return@forEach
       }
 
-      viewDelegate.wasValidated = true
+      viewDelegate.isValidated = true
     }
   }
 }

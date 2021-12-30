@@ -1,5 +1,5 @@
 package expo.modules.kotlin.callbacks
 
-interface Callback<T> {
-  fun invoke(arg: T)
+fun interface Callback<T> {
+  operator fun invoke(arg: T)
 }

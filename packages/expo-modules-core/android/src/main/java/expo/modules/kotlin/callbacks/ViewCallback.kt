@@ -14,7 +14,7 @@ class ViewCallback<T>(
 ) : Callback<T> {
   internal lateinit var module: Module
 
-  override fun invoke(arg: T) {
+  override operator fun invoke(arg: T) {
     val reactContext = view.context as ReactContext
     val nativeModulesProxy = reactContext.getNativeModule(NativeModulesProxy::class.java) ?: return
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext

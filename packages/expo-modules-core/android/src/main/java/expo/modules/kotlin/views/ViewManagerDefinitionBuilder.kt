@@ -62,7 +62,7 @@ class ViewManagerDefinitionBuilder {
   /**
    * Defines prop names that should be treated as callbacks.
    */
-  fun callbacks(vararg callbacks: String) {
+  fun events(vararg callbacks: String) {
     callbacksDefinition = CallbacksDefinition(callbacks)
   }
 }
