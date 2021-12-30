@@ -5,12 +5,11 @@ import Foundation
 let DEV_LAUNCHER_INSTALLATION_ID_FILENAME = "expo-dev-launcher-installation-id.txt"
 
 @objc
-public class EXDevLauncherInstallationIDHelper : NSObject  {
-
+public class EXDevLauncherInstallationIDHelper: NSObject {
   @objc
   public func getOrCreateInstallationID() -> String {
     let savedID = getInstallationID()
-    if (savedID != nil) {
+    if savedID != nil {
       return savedID!
     }
 
@@ -22,12 +21,12 @@ public class EXDevLauncherInstallationIDHelper : NSObject  {
   private var installationID: String?
 
   private func getInstallationID() -> String? {
-    if (installationID != nil) {
+    if installationID != nil {
       return installationID
     }
 
     let installationIDFileURL = getInstallationIDFileURL()
-    if (FileManager.default.fileExists(atPath: installationIDFileURL.path)) {
+    if FileManager.default.fileExists(atPath: installationIDFileURL.path) {
       do {
         installationID = try String(contentsOf: installationIDFileURL, encoding: .utf8)
       } catch let error {
@@ -59,7 +58,7 @@ public class EXDevLauncherInstallationIDHelper : NSObject  {
 
   private func getInstallationIDFileURL() -> URL {
     let applicationSupportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-    if (!FileManager.default.fileExists(atPath: applicationSupportURL.path)) {
+    if !FileManager.default.fileExists(atPath: applicationSupportURL.path) {
       do {
         try FileManager.default.createDirectory(at: applicationSupportURL, withIntermediateDirectories: true, attributes: nil)
       } catch let error {

@@ -93,7 +93,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public class func propConfig_proxiedProperties() -> [String] {
-    return ["NSDictionary", "__custom__"];
+    return ["NSDictionary", "__custom__"]
   }
 
   /**

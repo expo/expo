@@ -3,7 +3,7 @@
 import UIKit
 
 @objc(EXBlurView)
-public class BlurView : UIView {
+public class BlurView: UIView {
   private var blurEffectView: BlurEffectView
 
   override init(frame: CGRect) {
@@ -25,6 +25,6 @@ public class BlurView : UIView {
 
   @objc
   public func setIntensity(_ intensity: Double) {
-    blurEffectView.intensity = intensity;
+    blurEffectView.intensity = intensity
   }
 }

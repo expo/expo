@@ -21,7 +21,7 @@ class ModuleEventListenersSpec: QuickSpec {
 
     it("calls onCreate once the module instance is created") {
       waitUntil { done in
-        let _ = mockModuleHolder(appContext) {
+        _ = mockModuleHolder(appContext) {
           $0.onCreate {
             done()
           }

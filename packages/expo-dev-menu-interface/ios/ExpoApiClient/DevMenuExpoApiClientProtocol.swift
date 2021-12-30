@@ -10,13 +10,13 @@ public class DevMenuGraphQLOptions: NSObject {
   public let limit: Int
   @objc
   public let offset: Int
-  
+
   @objc
   public init(withLimit limit: Int = 10, withOffset offset: Int = 0) {
     self.limit = limit
     self.offset = offset
   }
-  
+
   @objc
   public convenience init(withOffset offset: Int) {
     self.init(withLimit: 10, withOffset: offset)
@@ -27,20 +27,20 @@ public class DevMenuGraphQLOptions: NSObject {
 public protocol DevMenuExpoApiClientProtocol {
   @objc
   func isLoggedIn() -> Bool
-  
+
   @objc
   func setSessionSecret(_ sessionSecret: String?)
-  
+
   @objc
   func queryDevSessionsAsync(_ installationID: String?, completionHandler: @escaping HTTPCompletionHandler)
-  
+
   @objc
   func queryUpdateChannels(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Channel]?, URLResponse?, Error?) -> Void,
     options: DevMenuGraphQLOptions
   )
-  
+
   @objc
   func queryUpdateBranches(
     appId: String,
@@ -57,7 +57,7 @@ public extension DevMenuExpoApiClientProtocol {
   ) {
     queryUpdateChannels(appId: appId, completionHandler: completionHandler, options: DevMenuGraphQLOptions())
   }
-  
+
   func queryUpdateBranches(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Branch]?, URLResponse?, Error?) -> Void

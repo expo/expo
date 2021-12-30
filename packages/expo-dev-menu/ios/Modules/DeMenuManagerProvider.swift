@@ -3,8 +3,7 @@
 import EXDevMenuInterface
 
 @objc(DevMenuManagerProvider)
-class DevMenuManagerProvider : NSObject, DevMenuManagerProviderProtocol {
-  
+class DevMenuManagerProvider: NSObject, DevMenuManagerProviderProtocol {
   @objc
   open func getDevMenuManager() -> DevMenuManagerProtocol {
     return DevMenuManager.shared

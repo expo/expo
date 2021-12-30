@@ -1,10 +1,9 @@
-
 internal final class Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
    */
   static func toTuple(_ array: [Any?]) throws -> Any? {
-    switch (array.count) {
+    switch array.count {
     case 0:
       return ()
     case 1:
@@ -68,10 +67,10 @@ internal final class Conversions {
         result.invalidKeys.append(key)
       }
     }
-    if result.missingKeys.count > 0 {
+    if !result.missingKeys.isEmpty {
       throw MissingKeysError<ValueType>(keys: result.missingKeys)
     }
-    if result.invalidKeys.count > 0 {
+    if !result.invalidKeys.isEmpty {
       throw CastingValuesError<ValueType>(keys: result.invalidKeys)
     }
     return result.values

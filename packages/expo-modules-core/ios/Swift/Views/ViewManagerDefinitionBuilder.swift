@@ -1,4 +1,3 @@
-
 #if swift(>=5.4)
 /**
  A result builder that captures scoped definitions specific for view managers, such as `ViewFactory` and `ConcreteViewProp`.

@@ -77,7 +77,7 @@ final class LinearGradientLayer: CALayer {
     ctx.saveGState()
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()
-    let locations = colors.enumerated().map { (offset: Int, element: CGColor) -> CGFloat in
+    let locations = colors.enumerated().map { (offset: Int, _: CGColor) -> CGFloat in
       if self.locations.count > offset {
         return self.locations[offset]
       } else {

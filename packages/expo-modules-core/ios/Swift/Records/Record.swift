@@ -61,7 +61,7 @@ public extension Record {
  Returns an array of fields found in record's mirror. If the field is missing the `key`,
  it gets assigned to the property label, so after all it's safe to enforce unwrapping it (using `key!`).
  */
-fileprivate func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
+private func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
   return Mirror(reflecting: record).children.compactMap { (label: String?, value: Any) in
     guard var field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
       return nil
@@ -74,6 +74,6 @@ fileprivate func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
 /**
  Converts mirror's label to field's key by dropping the "_" prefix from wrapped property label.
  */
-fileprivate func convertLabelToKey(_ label: String?) -> String? {
+private func convertLabelToKey(_ label: String?) -> String? {
   return (label != nil && label!.starts(with: "_")) ? String(label!.dropFirst()) : label
 }

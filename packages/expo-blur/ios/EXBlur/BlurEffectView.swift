@@ -49,7 +49,7 @@ final class BlurEffectView: UIVisualEffectView {
 }
 
 private func blurEffectStyleFrom(_ tint: String) -> UIBlurEffect.Style {
-  switch (tint) {
+  switch tint {
   case "light": return .extraLight
   case "dark": return .dark
   case "default": return .light

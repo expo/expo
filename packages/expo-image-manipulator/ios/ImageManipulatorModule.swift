@@ -6,7 +6,7 @@ import UIKit
 import ExpoModulesCore
 
 public class ImageManipulatorModule: Module {
-  typealias LoadImageCallback = (Result<UIImage, Error>) -> ()
+  typealias LoadImageCallback = (Result<UIImage, Error>) -> Void
   typealias SaveImageResult = (url: URL, data: Data)
 
   public func definition() -> ModuleDefinition {
@@ -87,7 +87,7 @@ public class ImageManipulatorModule: Module {
     options.isSynchronous = true
     options.deliveryMode = .highQualityFormat
 
-    PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: options) { image, info in
+    PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: options) { image, _ in
       guard let image = image else {
         return callback(.failure(ImageNotFoundError()))
       }

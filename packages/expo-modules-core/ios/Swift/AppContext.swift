@@ -85,7 +85,7 @@ public final class AppContext {
     [
       UIApplication.willEnterForegroundNotification,
       UIApplication.didBecomeActiveNotification,
-      UIApplication.didEnterBackgroundNotification,
+      UIApplication.didEnterBackgroundNotification
     ].forEach { name in
       NotificationCenter.default.addObserver(self, selector: #selector(handleClientAppNotification(_:)), name: name, object: nil)
     }

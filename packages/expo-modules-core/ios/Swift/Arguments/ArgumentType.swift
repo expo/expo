@@ -1,5 +1,9 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+// Function names should start with a lowercase character, but in this one case
+// we want it to be uppercase as we treat it more like a generic class.
+// swiftlint:disable identifier_name
+
 /**
  Factory creating an instance of the argument type wrapper conforming to `AnyArgumentType`.
  Depending on the given type, it may return one of `ArrayArgumentType`, `OptionalArgumentType`, `ConvertibleArgumentType`, etc.

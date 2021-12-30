@@ -14,7 +14,7 @@ open class ExpoReactDelegateHandler: NSObject {
    Otherwise return nil.
    */
   @objc
-  open func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
+  open func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge? {
     return nil
   }
 
@@ -23,7 +23,7 @@ open class ExpoReactDelegateHandler: NSObject {
    Otherwise return nil.
    */
   @objc
-  open func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
+  open func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> RCTRootView? {
     return nil
   }
 
@@ -36,7 +36,7 @@ open class ExpoReactDelegateHandler: NSObject {
     return nil
   }
 
-  // MARK - event callbacks
+  // MARK: - event callbacks
 
   /**
    Callback before bridge creation

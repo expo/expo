@@ -3,12 +3,12 @@
 import Foundation
 
 @objc
-public class EXDevLauncherURLHelper : NSObject  {
+public class EXDevLauncherURLHelper: NSObject {
   @objc
   public static func isDevLauncherURL(_ url: URL?) -> Bool {
     return url?.host == "expo-development-client"
   }
-  
+
   @objc
   public static func replaceEXPScheme(_ url: URL, to scheme: String) -> URL {
     var components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)!
@@ -24,7 +24,7 @@ public class EXDevLauncherURLHelper : NSObject  {
         return URL.init(string: parameter.value?.removingPercentEncoding ?? "")
       }
     }
-    
-    return nil;
+
+    return nil
   }
 }
