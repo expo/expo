@@ -128,6 +128,9 @@ class AppContext(
     )
   }
 
+  internal val callbackInvoker: EventEmitter?
+    get() = legacyModule()
+
   fun onDestroy() {
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
