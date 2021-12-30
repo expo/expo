@@ -68,8 +68,8 @@ public class LocationTaskService extends Service {
     extras.getString("killService");
     
     if(killService == "true"){
-    super.onTaskRemoved(rootIntent);
-    stop();
+      super.onTaskRemoved(rootIntent);
+      stop();
     }
   }
 
