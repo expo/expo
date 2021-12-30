@@ -3,11 +3,11 @@
 import UIKit
 import CoreGraphics
 
-/// Here we extend some common iOS types to implement `ConvertibleArgument` protocol and
-/// describe how they can be converted from primitive types received from JavaScript runtime.
-/// This allows these types to be used as argument types of functions callable from JavaScript.
-/// As an example, when the `CGPoint` type is used as an argument type, its instance can be
-/// created from an array of two doubles or an object with `x` and `y` fields.
+// Here we extend some common iOS types to implement `ConvertibleArgument` protocol and
+// describe how they can be converted from primitive types received from JavaScript runtime.
+// This allows these types to be used as argument types of functions callable from JavaScript.
+// As an example, when the `CGPoint` type is used as an argument type, its instance can be
+// created from an array of two doubles or an object with `x` and `y` fields.
 
 // MARK: - Foundation
 

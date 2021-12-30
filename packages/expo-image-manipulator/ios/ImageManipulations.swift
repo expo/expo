@@ -177,7 +177,6 @@ internal func fixImageOrientation(_ image: UIImage) throws -> UIImage {
     context.draw(cgImage, in: CGRect(x: 0, y: 0, width: image.size.height, height: image.size.width))
   default:
     context.draw(cgImage, in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-    break
   }
 
   guard let newCGImage = context.makeImage() else {

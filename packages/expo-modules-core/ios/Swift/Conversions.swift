@@ -67,10 +67,10 @@ internal final class Conversions {
         result.invalidKeys.append(key)
       }
     }
-    if result.missingKeys.count > 0 {
+    if !result.missingKeys.isEmpty {
       throw MissingKeysError<ValueType>(keys: result.missingKeys)
     }
-    if result.invalidKeys.count > 0 {
+    if !result.invalidKeys.isEmpty {
       throw CastingValuesError<ValueType>(keys: result.invalidKeys)
     }
     return result.values

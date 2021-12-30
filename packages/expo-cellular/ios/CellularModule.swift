@@ -104,10 +104,8 @@ public class CellularModule: Module {
     let netinfo = CTTelephonyNetworkInfo()
 
     if #available(iOS 12.0, *), let providers = netinfo.serviceSubscriberCellularProviders {
-      for carrier in providers.values {
-        if carrier.carrierName != nil {
-          return carrier
-        }
+      for carrier in providers.values where carrier.carrierName != nil {
+        return carrier
       }
       return providers.values.first
     }

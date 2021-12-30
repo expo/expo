@@ -20,11 +20,13 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func callFunction(_ functionName: String,
-                           onModule moduleName: String,
-                           withArgs args: [Any],
-                           resolve: @escaping EXPromiseResolveBlock,
-                           reject: @escaping EXPromiseRejectBlock) {
+  public func callFunction(
+    _ functionName: String,
+    onModule moduleName: String,
+    withArgs args: [Any],
+    resolve: @escaping EXPromiseResolveBlock,
+    reject: @escaping EXPromiseRejectBlock
+  ) {
     registry
       .get(moduleHolderForName: moduleName)?
       .call(function: functionName, args: args) { value, error in
@@ -39,9 +41,11 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func callFunctionSync(_ functionName: String,
-                               onModule moduleName: String,
-                               withArgs args: [Any]) -> Any? {
+  public func callFunctionSync(
+    _ functionName: String,
+    onModule moduleName: String,
+    withArgs args: [Any]
+  ) -> Any? {
     return registry
       .get(moduleHolderForName: moduleName)?
       .callSync(function: functionName, args: args)

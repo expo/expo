@@ -4,7 +4,7 @@ import ExpoModulesCore
 
 public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdatesAppControllerDelegate, RCTBridgeDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
-  private weak var bridgeDelegate: RCTBridgeDelegate?
+  private var bridgeDelegate: RCTBridgeDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?

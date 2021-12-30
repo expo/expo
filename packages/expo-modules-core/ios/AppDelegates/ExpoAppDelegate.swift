@@ -16,7 +16,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open var window: UIWindow?
 
   @objc
-  public weak var reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
+  public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
   // MARK: - Initializing the App
 
@@ -107,7 +107,11 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     subscribers.forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
   }
 
-  open func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+  open func application(
+    _ application: UIApplication,
+    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
@@ -143,7 +147,11 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     }
   }
 
-  open func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+  open func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
     let selector = #selector(application(_:continue:restorationHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count

@@ -22,7 +22,7 @@ class EXDevLauncherMenuDelegateTest: QuickSpec {
   class MockedMenu: DevMenuManagerProtocol {
     var isVisible: Bool = false
 
-    weak var delegate: DevMenuDelegateProtocol?
+    var delegate: DevMenuDelegateProtocol?
 
     func openMenu(_ screen: String?) -> Bool {
       return true

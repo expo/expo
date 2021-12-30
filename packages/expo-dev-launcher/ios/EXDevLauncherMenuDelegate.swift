@@ -63,8 +63,8 @@ internal class AppDelegate: DevMenuDelegateProtocol {
 @objc
 public class EXDevLauncherMenuDelegate: NSObject, DevMenuDelegateProtocol {
   private let controller: EXDevLauncherController
-  private weak var appDelegate: AppDelegate
-  private weak var launcherDelegate: LauncherDelegate
+  private let appDelegate: AppDelegate
+  private let launcherDelegate: LauncherDelegate
 
   @objc
   public init(withLauncherController launcherController: EXDevLauncherController) {
