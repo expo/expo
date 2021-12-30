@@ -19,4 +19,9 @@ class GroupViewManagerWrapper(
   fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
     viewWrapperDelegate.setProxiedProperties(view, proxiedProperties)
   }
+
+  override fun onDropViewInstance(view: ViewGroup) {
+    super.onDropViewInstance(view)
+    viewWrapperDelegate.onDestroy(view)
+  }
 }

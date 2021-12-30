@@ -18,4 +18,9 @@ class SimpleViewManagerWrapper(
   fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
     viewWrapperDelegate.setProxiedProperties(view, proxiedProperties)
   }
+
+  override fun onDropViewInstance(view: View) {
+    super.onDropViewInstance(view)
+    viewWrapperDelegate.onDestroy(view)
+  }
 }
