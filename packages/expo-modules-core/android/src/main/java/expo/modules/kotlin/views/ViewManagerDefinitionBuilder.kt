@@ -17,14 +17,14 @@ class ViewManagerDefinitionBuilder {
   @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()
   @PublishedApi
-  internal var onDestroy: ((View) -> Unit)? = null
+  internal var onViewDestroys: ((View) -> Unit)? = null
 
   fun build(): ViewManagerDefinition =
     ViewManagerDefinition(
       requireNotNull(viewFactory),
       requireNotNull(viewType),
       props,
-      onDestroy
+      onViewDestroys
     )
 
   /**
@@ -38,8 +38,8 @@ class ViewManagerDefinitionBuilder {
   /**
    * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
    */
-  inline fun <reified ViewType : View> onDestroy(noinline body: (view: ViewType) -> Unit) {
-    onDestroy = { body(it as ViewType)}
+  inline fun <reified ViewType : View> onViewDestroys(noinline body: (view: ViewType) -> Unit) {
+    onViewDestroys = { body(it as ViewType) }
   }
 
   /**

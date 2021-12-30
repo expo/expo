@@ -20,5 +20,5 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   }
 
   fun onDestroy(view: View) =
-    definition.onDestroy?.invoke(view)
+    definition.onViewDestroys?.invoke(view)
 }

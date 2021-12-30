@@ -12,7 +12,7 @@ class ViewManagerDefinition(
   private val viewFactory: (Context) -> View,
   private val viewType: Class<out View>,
   private val props: Map<String, AnyViewProp>,
-  val onDestroy: ((View) -> Unit)? = null
+  val onViewDestroys: ((View) -> Unit)? = null
 ) {
 
   fun createView(context: Context): View = viewFactory(context)
