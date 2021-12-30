@@ -73,6 +73,13 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
     this.constantsProvider = constantsProvider
   }
 
+  /**
+   * Definition of the module's constants to export.
+   */
+  fun constants(vararg constants: Pair<String, Any?>) {
+    constantsProvider = { constants.toMap() }
+  }
+
   @JvmName("methodWithoutArgs")
   inline fun function(
     name: String,
