@@ -13,7 +13,7 @@ For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/
 
 # Installation in bare React Native projects
 
-For bare React Native projects, this package is included in [`react-native-unimodules`](https://github.com/expo/expo/tree/master/packages/react-native-unimodules). Please refer to those installation instructions to install this package.
+For bare React Native projects, this package is included in [`expo-modules`](https://github.com/expo/expo/tree/master/packages/expo-modules-core). Please refer to those installation instructions to install this package.
 
 ## Installation in bare iOS React Native project
 
