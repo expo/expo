@@ -150,9 +150,16 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 - (void)setBridge:(RCTBridge *)bridge
 {
   if (!_bridge) {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    // The `setBridge` can be called during module setup or after. Registering more modules
+    // during setup causes a crash due to mutating `_moduleDataByID` while it's being enumerated.
+    // In just that case we register them asynchronously.
+    if ([[bridge valueForKey:@"_moduleSetupComplete"] boolValue]) {
       [self registerExpoModulesInBridge:bridge];
-    });
+    } else {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self registerExpoModulesInBridge:bridge];
+      });
+    }
   }
   _bridge = bridge;
 }
