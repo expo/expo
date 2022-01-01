@@ -586,7 +586,12 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
    * Checks whether all required permissions have been granted by the user.
    */
   private boolean isMissingForegroundPermissions() {
-    return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+    if (mPermissionsManager == null) {
+      return true;
+    }
+    boolean canAccessFineLocation = mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
+    boolean canAccessCoarseLocation = mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION);
+    return !canAccessFineLocation && !canAccessCoarseLocation;
   }
 
   /**
