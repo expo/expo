@@ -61,7 +61,7 @@ console.log(Constants.systemFonts);
 
 ### Using Expo SDK packages
 
-Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. Learn more in ["Using Libraries"](../using-libraries.md).
+Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. Learn more in ["Using Libraries"](/workflow/using-libraries).
 
 ### Expo modules included in the `expo` package
 
