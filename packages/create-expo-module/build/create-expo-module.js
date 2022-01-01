@@ -26,11 +26,13 @@ async function main(target, options) {
     const targetDir = target ? path_1.default.join(CWD, target) : CWD;
     options.target = targetDir;
     await fs_extra_1.default.ensureDir(targetDir);
+    const data = await askForSubstitutionDataAsync(targetDir, options);
+    const packageManager = await selectPackageManagerAsync();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir);
     const files = await getFilesAsync(packagePath);
-    const data = await askForSubstitutionDataAsync(targetDir, options);
+    console.log('🎨 Creating Expo module from the template files...');
     // Iterate through all template files.
     for (const file of files) {
         const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
@@ -55,10 +57,9 @@ async function main(target, options) {
     if (!options.withChangelog) {
         await fs_extra_1.default.remove(path_1.default.join(targetDir, 'CHANGELOG.md'));
     }
-    // Build TypeScript files.
-    await (0, spawn_async_1.default)('npm', ['run', 'build'], {
-        cwd: targetDir,
-    });
+    // Install dependencies and build
+    await postActionsAsync(packageManager, targetDir);
+    console.log('✅ Successfully created Expo module');
 }
 /**
  * Recursively scans for the files within the directory. Returned paths are relative to the `root` path.
@@ -106,11 +107,42 @@ async function npmWhoamiAsync(targetDir) {
  */
 async function downloadPackageAsync(targetDir) {
     const tarballUrl = await getNpmTarballUrl('expo-module-template');
+    console.log('⬇️  Downloading module template from npm...');
     await (0, download_tarball_1.default)({
         url: tarballUrl,
         dir: targetDir,
     });
     return path_1.default.join(targetDir, 'package');
+}
+/**
+ * Asks whether to use Yarn or npm as a dependency package manager.
+ */
+async function selectPackageManagerAsync() {
+    const { packageManager } = await (0, prompts_1.default)({
+        type: 'select',
+        name: 'packageManager',
+        message: 'Which package manager do you want to use to install dependencies?',
+        choices: [
+            { title: 'yarn', value: 'yarn' },
+            { title: 'npm', value: 'npm' },
+        ],
+    });
+    return packageManager;
+}
+/**
+ * Installs dependencies and builds TypeScript files.
+ */
+async function postActionsAsync(packageManager, targetDir) {
+    async function run(...args) {
+        await (0, spawn_async_1.default)(packageManager, args, {
+            cwd: targetDir,
+            stdio: 'ignore',
+        });
+    }
+    console.log('📦 Installing dependencies...');
+    await run('install');
+    console.log('🛠  Compiling TypeScript files...');
+    await run('run', 'build');
 }
 /**
  * Asks the user for some data necessary to render the template.

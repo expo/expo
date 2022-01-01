@@ -52,6 +52,8 @@ type CustomPromptObject = PromptObject & {
   resolvedValue?: string | null;
 };
 
+type PackageManager = 'npm' | 'yarn';
+
 /**
  * The main function of the command.
  *
@@ -64,11 +66,14 @@ async function main(target: string | undefined, options: CommandOptions) {
   options.target = targetDir;
   await fs.ensureDir(targetDir);
 
+  const data = await askForSubstitutionDataAsync(targetDir, options);
+  const packageManager = await selectPackageManagerAsync();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir);
   const files = await getFilesAsync(packagePath);
-  const data = await askForSubstitutionDataAsync(targetDir, options);
+
+  console.log('🎨 Creating Expo module from the template files...');
 
   // Iterate through all template files.
   for (const file of files) {
@@ -97,10 +102,10 @@ async function main(target: string | undefined, options: CommandOptions) {
     await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
   }
 
-  // Build TypeScript files.
-  await spawnAsync('npm', ['run', 'build'], {
-    cwd: targetDir,
-  });
+  // Install dependencies and build
+  await postActionsAsync(packageManager, targetDir);
+
+  console.log('✅ Successfully created Expo module');
 }
 
 /**
@@ -155,11 +160,47 @@ async function npmWhoamiAsync(targetDir: string): Promise<string | null> {
 async function downloadPackageAsync(targetDir: string): Promise<string> {
   const tarballUrl = await getNpmTarballUrl('expo-module-template');
 
+  console.log('⬇️  Downloading module template from npm...');
+
   await downloadTarball({
     url: tarballUrl,
     dir: targetDir,
   });
   return path.join(targetDir, 'package');
+}
+
+/**
+ * Asks whether to use Yarn or npm as a dependency package manager.
+ */
+async function selectPackageManagerAsync(): Promise<PackageManager> {
+  const { packageManager } = await prompts({
+    type: 'select',
+    name: 'packageManager',
+    message: 'Which package manager do you want to use to install dependencies?',
+    choices: [
+      { title: 'yarn', value: 'yarn' },
+      { title: 'npm', value: 'npm' },
+    ],
+  });
+  return packageManager;
+}
+
+/**
+ * Installs dependencies and builds TypeScript files.
+ */
+async function postActionsAsync(packageManager: PackageManager, targetDir: string) {
+  async function run(...args: string[]) {
+    await spawnAsync(packageManager, args, {
+      cwd: targetDir,
+      stdio: 'ignore',
+    });
+  }
+
+  console.log('📦 Installing dependencies...');
+  await run('install');
+
+  console.log('🛠  Compiling TypeScript files...');
+  await run('run', 'build');
 }
 
 /**
