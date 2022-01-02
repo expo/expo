@@ -122,7 +122,7 @@ If you have made it to this step, congratulations! Depending on which path you c
 
 ### Distribute your app to an app store
 
-You will only be able to install the submit to an app store if you built specifically for this purpose. If you created a build for a store, [learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
+You will only be able to submit to an app store if you built specifically for this purpose. If you created a build for a store, [learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
 
 ### Install and run the app
 
