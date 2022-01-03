@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow location to work on Android with only coarse location permission. All apps do not require fine/precise location permission, but in past Expo was enforcing fine/precise even if you only needed coarse level location. ([#15760](https://github.com/expo/expo/pull/15760) by [@Noitidart](https://github.com/Noitidart))
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
