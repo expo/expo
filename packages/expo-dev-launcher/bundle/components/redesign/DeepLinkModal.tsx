@@ -1,9 +1,7 @@
 import {
   View,
-  Heading,
   Text,
   Row,
-  XIcon,
   Spacer,
   Button,
   StatusIndicator,
@@ -11,7 +9,7 @@ import {
   Divider,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, Alert, ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 
 import { useDevSessions } from '../../hooks/useDevSessions';
 import { useModalStack } from '../../hooks/useModalStack';
@@ -65,8 +63,6 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
           </View>
         </Button.ScaleOnPressContainer>
       </View>
-
-      <Spacer.Vertical size="large" />
     </View>
   );
 }

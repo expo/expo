@@ -6,7 +6,9 @@ export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
     <View>
       <Spacer.Vertical size="medium" />
 
-      <Heading size="small" weight="medium">Are you sure you want to log out?</Heading>
+      <Heading size="small" weight="medium">
+        Are you sure you want to log out?
+      </Heading>
 
       <Spacer.Vertical size="large" />
 

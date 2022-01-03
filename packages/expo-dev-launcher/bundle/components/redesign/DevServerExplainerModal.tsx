@@ -18,8 +18,6 @@ export function DevServerExplainerModal() {
       <Text>
         Alternatively, open the Camera app and scan the QR code that appears in your terminal
       </Text>
-
-      <Spacer.Vertical size="large" />
     </View>
   );
 }

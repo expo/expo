@@ -215,10 +215,12 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
               <Row align="center" padding="medium">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
-                <Button.Text color="default" numberOfLines={1} style={{ flexShrink: 1 }}>
-                  {devSession.description}
-                </Button.Text>
-                <Spacer.Horizontal size="flex" />
+                <View flex="1">
+                  <Button.Text color="default" numberOfLines={1}>
+                    {devSession.description}
+                  </Button.Text>
+                </View>
+                <Spacer.Horizontal size="small" />
                 <ChevronRightIcon />
               </Row>
             </Button.ScaleOnPressContainer>

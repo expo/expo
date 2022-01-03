@@ -120,6 +120,7 @@ function ModalScreen({ status, element, onPopEnd, onPushEnd, onClose, title }: M
       <Button.Container>
         <View mx="medium" bg="default" rounded="large" overflow="hidden" shadow="medium">
           <ModalHeader title={title} />
+
           <View px="small">{element}</View>
 
           <Spacer.Vertical size="medium" />
