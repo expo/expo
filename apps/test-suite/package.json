@@ -4,7 +4,8 @@
   "description": "Test suite for the Expo SDK",
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall"
+    "postinstall": "expo-yarn-workspaces postinstall",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "MIT",

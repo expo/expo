@@ -13,10 +13,11 @@ const GEOFENCING_TASK = 'geofencing-task';
 export const name = 'Location';
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
-  const testShapeOrUnauthorized = testFunction => async () => {
+  const testShapeOrUnauthorized = (testFunction) => async () => {
     const providerStatus = await Location.getProviderStatusAsync();
     if (providerStatus.locationServicesEnabled) {
       const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
@@ -212,7 +213,7 @@ export async function test(t) {
         'gets a result of the correct shape (without high accuracy), or ' +
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           await testShapeOrUnauthorized(() =>
             Location.getCurrentPositionAsync({
               accuracy: Location.Accuracy.Balanced,
@@ -226,7 +227,7 @@ export async function test(t) {
         'gets a result of the correct shape (with high accuracy), or ' +
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           await testShapeOrUnauthorized(() =>
             Location.getCurrentPositionAsync({
               accuracy: Location.Accuracy.Highest,
@@ -337,7 +338,7 @@ export async function test(t) {
     describeWithPermissions('Location.watchPositionAsync()', () => {
       t.it('gets a result of the correct shape', async () => {
         await new Promise(async (resolve, reject) => {
-          const subscriber = await Location.watchPositionAsync({}, location => {
+          const subscriber = await Location.watchPositionAsync({}, (location) => {
             testLocationShape(location);
             subscriber.remove();
             resolve();
@@ -346,22 +347,22 @@ export async function test(t) {
       });
 
       t.it('can be called simultaneously', async () => {
-        const spies = [1, 2, 3].map(number => t.jasmine.createSpy(`watchPosition${number}`));
+        const spies = [1, 2, 3].map((number) => t.jasmine.createSpy(`watchPosition${number}`));
 
         const subscribers = await Promise.all(
-          spies.map(spy => Location.watchPositionAsync({}, spy))
+          spies.map((spy) => Location.watchPositionAsync({}, spy))
         );
 
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
 
-        spies.forEach(spy => t.expect(spy).toHaveBeenCalled());
-        subscribers.forEach(subscriber => subscriber.remove());
+        spies.forEach((spy) => t.expect(spy).toHaveBeenCalled());
+        subscribers.forEach((subscriber) => subscriber.remove());
       });
     });
 
     if (Platform.OS !== 'web') {
       describeWithPermissions('Location.getHeadingAsync()', () => {
-        const testCompass = options => async () => {
+        const testCompass = (options) => async () => {
           // Disable Compass Test if in simulator
           if (Constants.isDevice) {
             const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
@@ -434,7 +435,7 @@ export async function test(t) {
             t.expect(Array.isArray(result)).toBe(true);
             t.expect(typeof result[0]).toBe('object');
             const fields = ['city', 'street', 'region', 'country', 'postalCode', 'name'];
-            fields.forEach(field => {
+            fields.forEach((field) => {
               t.expect(
                 typeof result[field] === 'string' || typeof result[field] === 'undefined'
               ).toBe(true);

@@ -105,8 +105,8 @@ export async function test(t) {
         );
 
         if (Platform.OS === 'web') {
-          const imageInfo = await fetch(image.localUri).then(a => a.blob());
-          const resultInfo = await fetch(result.uri).then(a => a.blob());
+          const imageInfo = await fetch(image.localUri).then((a) => a.blob());
+          const resultInfo = await fetch(result.uri).then((a) => a.blob());
 
           t.expect(imageInfo.size).toBeGreaterThan(resultInfo.size);
         } else {

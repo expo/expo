@@ -14,11 +14,6 @@ async function createTestReminderAsync(calendarId) {
   });
 }
 
-async function getFirstCalendarForRemindersAsync() {
-  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.REMINDER);
-  return calendars[0] && calendars[0].id;
-}
-
 function expectMethodsToReject(t, methods) {
   for (const methodName of methods) {
     t.describe(`${methodName}()`, () => {
@@ -47,7 +42,8 @@ function testReminderShape(t, reminder) {
 }
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('CalendarReminders', () => {

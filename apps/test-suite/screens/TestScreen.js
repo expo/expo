@@ -32,7 +32,7 @@ export default class TestScreen extends React.Component {
     const selectedTestNames = selectionQuery.split(' ');
 
     // We get test modules here to make sure that React Native will reload this component when tests were changed.
-    const selectedModules = getTestModules().filter(m => selectedTestNames.includes(m.name));
+    const selectedModules = getTestModules().filter((m) => selectedTestNames.includes(m.name));
 
     if (!selectedModules.length) {
       console.log('[TEST_SUITE]', 'No selected modules', selectedTestNames);
@@ -46,24 +46,24 @@ export default class TestScreen extends React.Component {
     this._isMounted = false;
   }
 
-  setPortalChild = testPortal => {
+  setPortalChild = (testPortal) => {
     if (this._isMounted) return this.setState({ testPortal });
   };
 
   cleanupPortal = () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (this._isMounted) this.setState({ testPortal: null }, resolve);
     });
   };
 
-  _runTests = async modules => {
+  _runTests = async (modules) => {
     // Reset results state
     this.setState(initialState);
 
     const { jasmineEnv, jasmine } = await this._setupJasmine();
 
     await Promise.all(
-      modules.map(m =>
+      modules.map((m) =>
         m.test(jasmine, {
           setPortalChild: this.setPortalChild,
           cleanupPortal: this.cleanupPortal,
@@ -86,7 +86,7 @@ export default class TestScreen extends React.Component {
 
     // Get the interface and make it support `async ` by default
     const jasmine = jasmineModule.interface(jasmineCore, jasmineEnv);
-    const doneIfy = fn => async done => {
+    const doneIfy = (fn) => async (done) => {
       try {
         await Promise.resolve(fn());
         done();
@@ -198,7 +198,7 @@ export default class TestScreen extends React.Component {
         if (app._isMounted) {
           app.setState(({ state }) => ({
             state: state
-              .updateIn(state.get('path'), children =>
+              .updateIn(state.get('path'), (children) =>
                 children.push(
                   Immutable.fromJS({
                     result: jasmineResult,
@@ -207,7 +207,7 @@ export default class TestScreen extends React.Component {
                   })
                 )
               )
-              .update('path', path => path.push(state.getIn(path).size, 'children')),
+              .update('path', (path) => path.push(state.getIn(path).size, 'children')),
           }));
         }
       },
@@ -216,17 +216,12 @@ export default class TestScreen extends React.Component {
         if (app._isMounted) {
           app.setState(({ state }) => ({
             state: state
-              .updateIn(
-                state
-                  .get('path')
-                  .pop()
-                  .pop(),
-                children =>
-                  children.update(children.size - 1, child =>
-                    child.set('result', child.get('result'))
-                  )
+              .updateIn(state.get('path').pop().pop(), (children) =>
+                children.update(children.size - 1, (child) =>
+                  child.set('result', child.get('result'))
+                )
               )
-              .update('path', path => path.pop().pop()),
+              .update('path', (path) => path.pop().pop()),
           }));
         }
       },
@@ -234,15 +229,10 @@ export default class TestScreen extends React.Component {
       specStarted(jasmineResult) {
         if (app._isMounted) {
           app.setState(({ state }) => ({
-            state: state.updateIn(
-              state
-                .get('path')
-                .pop()
-                .pop(),
-              children =>
-                children.update(children.size - 1, child =>
-                  child.update('specs', specs => specs.push(Immutable.fromJS(jasmineResult)))
-                )
+            state: state.updateIn(state.get('path').pop().pop(), (children) =>
+              children.update(children.size - 1, (child) =>
+                child.update('specs', (specs) => specs.push(Immutable.fromJS(jasmineResult)))
+              )
             ),
           }));
         }
@@ -256,17 +246,12 @@ export default class TestScreen extends React.Component {
         }
         if (app._isMounted) {
           app.setState(({ state }) => ({
-            state: state.updateIn(
-              state
-                .get('path')
-                .pop()
-                .pop(),
-              children =>
-                children.update(children.size - 1, child =>
-                  child.update('specs', specs =>
-                    specs.set(specs.size - 1, Immutable.fromJS(jasmineResult))
-                  )
+            state: state.updateIn(state.get('path').pop().pop(), (children) =>
+              children.update(children.size - 1, (child) =>
+                child.update('specs', (specs) =>
+                  specs.set(specs.size - 1, Immutable.fromJS(jasmineResult))
                 )
+              )
             ),
           }));
         }

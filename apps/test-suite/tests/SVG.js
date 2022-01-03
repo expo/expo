@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as Svg from 'react-native-svg';
+
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'SVG';

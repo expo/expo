@@ -33,7 +33,7 @@ export async function test(
       it(`mounts`, async () => {
         await mountAndWaitFor(
           <FirebaseRecaptchaVerifierModal
-            ref={ref => (ref ? ref.verify() : undefined)}
+            ref={(ref) => (ref ? ref.verify() : undefined)}
             style={style}
             firebaseConfig={firebaseConfig}
           />

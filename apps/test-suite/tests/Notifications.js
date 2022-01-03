@@ -14,7 +14,8 @@ import { waitFor } from './helpers';
 export const name = 'Notifications';
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   t.describe('Notifications', () => {
@@ -24,7 +25,7 @@ export async function test(t) {
       let tokenFromMethodCall = null;
 
       t.beforeAll(() => {
-        subscription = Notifications.addPushTokenListener(newEvent => {
+        subscription = Notifications.addPushTokenListener((newEvent) => {
           tokenFromEvent = newEvent;
         });
       });
@@ -131,7 +132,7 @@ export async function test(t) {
         expoPushToken = pushToken.data;
 
         Notifications.setNotificationHandler({
-          handleNotification: async notification => {
+          handleNotification: async (notification) => {
             notificationToHandle = notification;
             if (handleFuncOverride) {
               return await handleFuncOverride(notification);
@@ -143,7 +144,7 @@ export async function test(t) {
               };
             }
           },
-          handleSuccess: event => {
+          handleSuccess: (event) => {
             handleSuccessEvent = event;
           },
           handleError: (...event) => {
@@ -151,7 +152,7 @@ export async function test(t) {
           },
         });
 
-        receivedSubscription = Notifications.addNotificationReceivedListener(event => {
+        receivedSubscription = Notifications.addNotificationReceivedListener((event) => {
           receivedEvent = event;
         });
       });
@@ -664,7 +665,7 @@ export async function test(t) {
         });
 
         t.afterEach(async () => {
-          allTestCategoryIds.forEach(async id => {
+          allTestCategoryIds.forEach(async (id) => {
             await Notifications.deleteNotificationCategoryAsync(id);
           });
         });
@@ -694,7 +695,7 @@ export async function test(t) {
 
       t.describe('setNotificationCategoriesAsync()', () => {
         t.afterEach(async () => {
-          allTestCategoryIds.forEach(async id => {
+          allTestCategoryIds.forEach(async (id) => {
             await Notifications.deleteNotificationCategoryAsync(id);
           });
         });
@@ -741,7 +742,7 @@ export async function test(t) {
 
       t.describe('deleteNotificationCategoriesAsync()', () => {
         t.afterEach(async () => {
-          allTestCategoryIds.forEach(async id => {
+          allTestCategoryIds.forEach(async (id) => {
             await Notifications.deleteNotificationCategoryAsync(id);
           });
         });
@@ -825,7 +826,7 @@ export async function test(t) {
           handleNotification: async () => ({
             shouldShowAlert: true,
           }),
-          handleSuccess: notificationId => {
+          handleSuccess: (notificationId) => {
             notificationStatuses[notificationId] = true;
           },
         });
@@ -975,9 +976,8 @@ export async function test(t) {
         'triggers a notification which emits an event',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription = Notifications.addNotificationReceivedListener(
-            notificationReceivedSpy
-          );
+          const subscription =
+            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
@@ -1030,9 +1030,8 @@ export async function test(t) {
         'triggers a notification which contains the custom color',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription = Notifications.addNotificationReceivedListener(
-            notificationReceivedSpy
-          );
+          const subscription =
+            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
@@ -1062,7 +1061,7 @@ export async function test(t) {
         async () => {
           let notificationFromEvent = undefined;
           Notifications.setNotificationHandler({
-            handleNotification: async event => {
+            handleNotification: async (event) => {
               notificationFromEvent = event;
               return {
                 shouldShowAlert: true,
@@ -1086,7 +1085,7 @@ export async function test(t) {
         async () => {
           let notificationFromEvent = undefined;
           Notifications.setNotificationHandler({
-            handleNotification: async event => {
+            handleNotification: async (event) => {
               notificationFromEvent = event;
               return {
                 shouldShowAlert: true,
@@ -1123,7 +1122,7 @@ export async function test(t) {
         async () => {
           let notificationFromEvent = undefined;
           Notifications.setNotificationHandler({
-            handleNotification: async event => {
+            handleNotification: async (event) => {
               notificationFromEvent = event;
               return {
                 shouldShowAlert: true,
@@ -1160,7 +1159,7 @@ export async function test(t) {
         async () => {
           let notificationFromEvent = undefined;
           Notifications.setNotificationHandler({
-            handleNotification: async event => {
+            handleNotification: async (event) => {
               notificationFromEvent = event;
               return {
                 shouldShowAlert: true,
@@ -1342,9 +1341,8 @@ export async function test(t) {
           'schedules a notification with calendar trigger',
           async () => {
             const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-            const subscription = Notifications.addNotificationReceivedListener(
-              notificationReceivedSpy
-            );
+            const subscription =
+              Notifications.addNotificationReceivedListener(notificationReceivedSpy);
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notification,
@@ -1440,9 +1438,8 @@ export async function test(t) {
         'makes a scheduled notification not trigger',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription = Notifications.addNotificationReceivedListener(
-            notificationReceivedSpy
-          );
+          const subscription =
+            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
           await Notifications.scheduleNotificationAsync({
             identifier,
             content: notification,
@@ -1464,9 +1461,8 @@ export async function test(t) {
         'removes all scheduled notifications',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
-          const subscription = Notifications.addNotificationReceivedListener(
-            notificationReceivedSpy
-          );
+          const subscription =
+            Notifications.addNotificationReceivedListener(notificationReceivedSpy);
           for (let i = 0; i < 3; i += 1) {
             await Notifications.scheduleNotificationAsync({
               identifier: `notification-${i}`,
@@ -1584,7 +1580,7 @@ export async function test(t) {
             shouldShowAlert: true,
           }),
         });
-        subscription = Notifications.addNotificationResponseReceivedListener(anEvent => {
+        subscription = Notifications.addNotificationResponseReceivedListener((anEvent) => {
           event = anEvent;
         });
       });

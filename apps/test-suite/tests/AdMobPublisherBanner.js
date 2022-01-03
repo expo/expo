@@ -39,7 +39,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await mountAndWaitFor(<PublisherBanner bannerSize="banner" adUnitID={validAdUnitID} />);
       });
 
-      forEach(sizes, size => {
+      forEach(sizes, (size) => {
         t.describe(`when given size = ${size}`, () => {
           t.it('displays an ad', async () => {
             await mountAndWaitFor(<PublisherBanner bannerSize={size} adUnitID={validAdUnitID} />);
