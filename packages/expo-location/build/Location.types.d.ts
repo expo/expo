@@ -187,11 +187,9 @@ export declare type LocationTaskServiceOptions = {
      */
     notificationColor?: string;
     /**
-     * Boolean value whether to destroy the foreground service if the app is killed..
+     * Boolean value whether to destroy the foreground service if the app is killed.
      */
     killServiceOnDestroy?: boolean;
-
-
 };
 /**
  * Type representing geofencing region object.
