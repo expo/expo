@@ -10,7 +10,7 @@
     "*.fx.web.js"
   ],
   "bin": {
-    "expo": "bin/cli.js"
+    "expo": "build/bin/cli.js"
   },
   "files": [
     "android",
@@ -28,12 +28,15 @@
     "tsconfig.base.json"
   ],
   "scripts": {
+    "dev": "taskr",    
+    "release": "taskr release",
+    "types": "tsc --declaration --emitDeclarationOnly --declarationDir build",
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublish": "npm run release && yarn types",
     "expo-module": "expo-module"
   },
   "jest": {
@@ -71,10 +74,20 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "pretty-format": "^26.5.2",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "@expo/prebuild-config": "^3.0.15",
+    "@expo/config-plugins": "^4.0.15",
+    "@expo/config": "^6.0.15",
+    "chalk": "^4.0.0",
+    "getenv": "^1.0.0"
   },
   "optionalDependencies": {
     "expo-error-recovery": "~3.0.4"
+  },
+  "taskr": {
+    "requires": [
+      "./taskfile-swc.js"
+    ]
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
@@ -86,6 +99,12 @@
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-native": "0.64.3"
+    "react-native": "0.64.3",
+    "@taskr/clear": "1.1.0",
+    "@taskr/esnext": "1.1.0",
+    "@taskr/watch": "1.1.0",
+    "taskr": "1.1.0",
+    "arg": "4.1.0",
+    "@swc/core": "^1.2.126"
   }
 }
