@@ -21,7 +21,7 @@ export const prepareParcels = new Task<TaskArgs>(
     logger.info('🔎 Gathering data about packages...');
 
     const { packageNames } = options;
-    const allPackages = await getListOfPackagesAsync(false);
+    const allPackages = await getListOfPackagesAsync();
     const allPackagesObj = allPackages.reduce((acc, pkg) => {
       acc[pkg.packageName] = pkg;
       return acc;
