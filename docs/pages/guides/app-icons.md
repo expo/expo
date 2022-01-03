@@ -24,7 +24,7 @@ Create an app icon and splash image with the [Figma template](https://www.figma.
 
 - The icon you use for iOS should follow the [Apple Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) for iOS Icons.
 - Use a png file.
-- 1024x1024 is a good size. [EAS Build](/build/setup.md) will generate the other sizes for you. The largest size it generates is 1024x1024.
+- 1024x1024 is a good size. If you have an Expo managed project, [EAS Build](/build/setup.md) will generate the other sizes for you. If you have a bare workflow project, you should generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square, i.e. a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 
