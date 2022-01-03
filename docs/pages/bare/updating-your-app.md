@@ -137,7 +137,9 @@ The release channel string to send under the `Expo-Release-Channel` header in th
 | ------------------------ | --------------- | --------------------------------------------------- | -------- | --------- |
 | `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌        |
 
-The condition under which `expo-updates` should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches).
+The condition under which `expo-updates` should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches), or `ERROR_RECOVERY_ONLY` (if you want the app to automatically download updates only if it encounters a fatal error when launching).
+
+Regardless of the value of this setting, as long as updates are enabled, your app can always use the JS API to manually check for and download updates in the background while your app is running.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name                             | Default | Required? |
 | ------------------------ | --------------- | -------------------------------------------------- | ------- | --------- |
