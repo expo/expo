@@ -100,7 +100,7 @@ public class LocationTaskService extends Service {
       builder.setColorized(true).setColor(color);
     } else {
       builder.setColorized(false);
-    }   
+    }
 
     Intent intent = mParentContext.getPackageManager().getLaunchIntentForPackage(mParentContext.getPackageName());
 
