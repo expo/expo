@@ -4,12 +4,16 @@ import { getSettingsAsync } from '../../native-modules/DevMenuInternal';
 import { getInitialData } from '../getInitialData';
 import { restoreUserAsync } from '../restoreUserAsync';
 
-// jest.mock('../getDevSessionsAsync');
 jest.mock('../restoreUserAsync');
 
 const mockRestoreUserAsync = restoreUserAsync as jest.Mock;
 
-const mockFns = [getBuildInfoAsync, getSettingsAsync, restoreUserAsync] as jest.Mock[];
+const mockFns = [
+  getBuildInfoAsync,
+  getSettingsAsync,
+  restoreUserAsync,
+  queryDevSessionsAsync,
+] as jest.Mock[];
 
 describe('getInitialData()', () => {
   beforeEach(() => {
@@ -45,4 +49,6 @@ describe('getInitialData()', () => {
     expect(getSettingsAsync).toHaveBeenCalled();
     expect(restoreUserAsync).toHaveBeenCalled();
   });
+
+  test.todo('querying dev sessions if installation id exists');
 });

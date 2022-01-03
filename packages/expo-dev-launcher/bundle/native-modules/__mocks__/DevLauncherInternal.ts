@@ -1,6 +1,6 @@
 export const loadApp = jest.fn().mockResolvedValue('');
 export const clientUrlScheme = '123';
-export const installationID = '00000000-0000-0000-0000-000000000000';
+export const installationID = '';
 export const isDevice = false;
 export const getBuildInfoAsync = jest.fn().mockResolvedValue({
   appName: '',
