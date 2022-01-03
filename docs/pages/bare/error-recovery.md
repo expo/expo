@@ -29,7 +29,7 @@ If you'd like more details about how this works, read on.
 
 The error recovery flow is intended to be as lightweight as possible. It is not a full safety net that protects your end users from the results of errors; in many cases users will still see a crash.
 
-Rather, the purpose is to prevent updates from "bricking" your app (causing a crash on launch before the app can check for updates, making the app unusuable until uninstalled and reinstalled) by ensuring that in as many cases as possible, the app has the opportunity to download a new update and fix itself.
+Rather, the purpose is to prevent updates from "bricking" your app (causing a crash on launch before the app can check for updates, making the app unusable until uninstalled and reinstalled) by ensuring that in as many cases as possible, the app has the opportunity to download a new update and fix itself.
 
 ### Catching an error
 
