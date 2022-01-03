@@ -17,8 +17,13 @@ module.exports = function (api) {
     'expo-dev-menu/vendored/react-native-safe-area-context/src/index.tsx'
   );
 
+  const gestureHandlerJest = tryResolveModule(
+    'expo-dev-menu/vendored/react-native-gesture-handler/src/jestSetup.js'
+  );
+
   const alias = {};
   if (gestureHandler) {
+    alias['react-native-gesture-handler/jestSetup'] = gestureHandlerJest;
     alias['react-native-gesture-handler'] = gestureHandler;
   }
 
