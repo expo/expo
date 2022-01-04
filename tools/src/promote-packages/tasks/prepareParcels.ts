@@ -16,7 +16,7 @@ export const prepareParcels = new Task<TaskArgs>(
     logger.info('🔎 Gathering data about packages...');
 
     const { exclude, packageNames } = options;
-    const allPackages = await getListOfPackagesAsync(false);
+    const allPackages = await getListOfPackagesAsync();
     const filteredPackages = allPackages.filter((pkg) => {
       const isPrivate = pkg.packageJson.private;
       const isIncluded = packageNames.length === 0 || packageNames.includes(pkg.packageName);

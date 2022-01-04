@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.ReactNativeHost
 import com.google.common.truth.Truth
+import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
@@ -43,6 +44,7 @@ internal class DevLauncherAppLoaderFactoryTest {
         single { reactNativeHost }
         single { devLauncherController }
         single<UpdatesInterface?> { null }
+        single { mockk<DevLauncherInstallationIDHelper>(relaxed = true) }
       }
     ))
   }
