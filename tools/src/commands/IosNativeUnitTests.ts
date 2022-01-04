@@ -110,11 +110,15 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
     }
 
     try {
+      console.log('erictest', 'preparing schemes', pkg.packageName);
       await prepareSchemes(pkg.podspecName, shouldUseBareExpo);
+      console.log('erictest', 'running tests', pkg.packageName);
       await runTests(pkg.podspecName, shouldUseBareExpo);
+      console.log('erictest', 'done', pkg.packageName);
       packagesTested.push(pkg.packageName);
     } catch (error) {
       errors.push({ error, packageName: pkg.packageName });
+      console.error('erictest', error.message, pkg.packageName);
     }
   }
   if (errors.length) {
