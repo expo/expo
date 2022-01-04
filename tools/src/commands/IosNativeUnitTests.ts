@@ -104,21 +104,26 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       continue;
     }
     const shouldUseBareExpo = packagesToTestWithBareExpo.includes(pkg.packageName);
+    // TODO: remove; for testing purposes only
+    if (!shouldUseBareExpo) {
+      continue;
+    }
 
     try {
       await prepareSchemes(pkg.podspecName, shouldUseBareExpo);
       await runTests(pkg.podspecName, shouldUseBareExpo);
       packagesTested.push(pkg.packageName);
     } catch (error) {
-      errors.push(error);
+      errors.push({ error, packageName: pkg.packageName });
     }
   }
   if (errors.length) {
     console.error('One or more iOS unit tests failed:');
-    for (const error of errors) {
-      console.error(error.message);
+    for (const { error, packageName } of errors) {
+      console.error(`Error running tests for ${packageName}: ${error.message}`);
       console.error('stdout >', error.stdout);
       console.error('stderr >', error.stderr);
+      console.error('JSON stringify >', JSON.stringify(error));
       if (error.message.startsWith('fastlane exited')) {
         console.warn(
           "Did you add unit tests to a package that didn't have unit tests before? If so, make sure to add the correct subspec to ios/Podfile."
