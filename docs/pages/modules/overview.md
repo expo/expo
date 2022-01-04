@@ -4,7 +4,7 @@ title: Overview
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-Expo Modules is a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app's capabilities.
+Expo provides a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app capabilities.
 
 - [Module API](./module-api.md) — Create native modules using Swift and Kotlin (_experimental_).
 - [AppDelegate Subscribers](./appdelegate-subscribers.md) — Respond to iOS AppDelegate events.
@@ -16,16 +16,19 @@ Expo Modules is a set of APIs and utilities to improve the process of developing
 - Config Plugins
 -->
 
-## Setup
+## Create a new module
 
-To create a new Expo module from scratch, run `npx create-expo-module`.<br/>
-In case you just want to use something from Expo Modules API in your existing React Native library (yes, you can!), follow the steps below.
+To create a new Expo module from scratch, run `npx create-expo-module`.
+
+## Use the Expo Modules API in an existing React Native library
+
+You may want to use the Expo Modules API in existing React Native libraries, for example with [AppDelegate Subscribers](./appdelegate-subscribers.md) you can hook into `AppDelegate` methods without requiring developers to copy any code over to their own `AppDelegate`. This is particularly useful to add seamless support for Expo managed projects to a library. The following steps will set up your existing React Native library to have access to the Expo Modules API.
 
 ### 1. Initialize the module config
 
 Create the [module config](module-config) **expo-module.config.json** file just near your **package.json** and start from the empty object `{}` in there. We will fill it in later to enable specific features. <br/>
 
-### 2. Add the `expo-modules-core` dependency
+### 2. Add the `expo-modules-core` native dependency
 
 Add `expo-modules-core` as a dependency in your podspec and **build.gradle** files.<br/>
 
@@ -66,4 +69,4 @@ Add `expo` package as a peer dependency in your **package.json** — we recommen
 
 </CodeBlocksTable>
 
-You can now use Expo Modules APIs in your library. A common use case for integrating these APIs in a React Native library is to integrate with [AppDelegateSubscribers](./appdelegate-subscribers.md). <!-- insert React delegates and MainActivity things here -->
+You can now use Expo Modules APIs in your library. You may be interested in referring to the [AppDelegate Subscribers](./appdelegate-subscribers.md) guide next.
