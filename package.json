@@ -17,7 +17,6 @@
       "apps/test-suite/puppeteer-test",
       "home",
       "packages/*",
-      "packages/@unimodules/*",
       "react-native-lab/react-native"
     ]
   },
