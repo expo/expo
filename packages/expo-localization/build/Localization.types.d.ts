@@ -62,3 +62,4 @@ export declare type Localization = {
      */
     timezone: string;
 };
+//# sourceMappingURL=Localization.types.d.ts.map

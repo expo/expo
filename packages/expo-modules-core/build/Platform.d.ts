@@ -42,3 +42,4 @@ declare const Platform: {
     isAsyncDebugging: boolean;
 };
 export default Platform;
+//# sourceMappingURL=Platform.d.ts.map

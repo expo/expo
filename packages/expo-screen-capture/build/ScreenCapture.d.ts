@@ -69,3 +69,4 @@ export declare function addScreenshotListener(listener: () => void): Subscriptio
  */
 export declare function removeScreenshotListener(subscription: Subscription): void;
 export { Subscription };
+//# sourceMappingURL=ScreenCapture.d.ts.map

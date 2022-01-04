@@ -7,3 +7,4 @@ export declare function getStories(config: StoryOptions): import("../types").Sto
 export declare function getStoriesDir(config: StoryOptions): string;
 export declare function getStoriesFile(config: StoryOptions): string;
 export declare function hashPath(filePath: string): string;
+//# sourceMappingURL=shared.d.ts.map

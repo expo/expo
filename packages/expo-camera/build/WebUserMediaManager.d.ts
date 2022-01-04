@@ -9,3 +9,4 @@ export declare function getUserMediaAsync(constraints: MediaStreamConstraints): 
 export declare function canGetUserMedia(): boolean;
 export declare function isFrontCameraAvailableAsync(devices?: MediaDeviceInfo[]): Promise<null | string>;
 export declare function isBackCameraAvailableAsync(devices?: MediaDeviceInfo[]): Promise<null | string>;
+//# sourceMappingURL=WebUserMediaManager.d.ts.map

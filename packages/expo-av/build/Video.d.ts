@@ -78,3 +78,4 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     _renderPoster: () => JSX.Element | null;
     render(): JSX.Element;
 }
+//# sourceMappingURL=Video.d.ts.map

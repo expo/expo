@@ -12,3 +12,4 @@ declare const _default: {
     isConnectedAsync(): Promise<boolean>;
 };
 export default _default;
+//# sourceMappingURL=ExpoGoogleSignIn.web.d.ts.map

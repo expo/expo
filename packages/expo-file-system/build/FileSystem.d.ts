@@ -85,3 +85,4 @@ export declare namespace StorageAccessFramework {
     const moveAsync: typeof import("./FileSystem").moveAsync;
     const copyAsync: typeof import("./FileSystem").copyAsync;
 }
+//# sourceMappingURL=FileSystem.d.ts.map

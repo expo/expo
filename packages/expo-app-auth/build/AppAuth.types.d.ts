@@ -51,3 +51,4 @@ export declare type TokenResponse = {
     tokenType: string | null;
     refreshToken: string | null;
 };
+//# sourceMappingURL=AppAuth.types.d.ts.map

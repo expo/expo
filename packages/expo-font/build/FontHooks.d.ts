@@ -17,3 +17,4 @@ import { FontSource } from './Font.types';
  * - __error__ (`Error | null`) - An error encountered when loading the fonts.
  */
 export declare function useFonts(map: string | Record<string, FontSource>): [boolean, Error | null];
+//# sourceMappingURL=FontHooks.d.ts.map

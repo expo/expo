@@ -43,3 +43,4 @@ declare class NativeAdsManager {
     setMediaCachePolicy(cachePolicy: AdManagerCachePolicy): void;
 }
 export default NativeAdsManager;
+//# sourceMappingURL=NativeAdsManager.d.ts.map

@@ -14,3 +14,4 @@ export interface NotificationCategoriesModule extends ProxyNativeModule {
     }) => Promise<NotificationCategory>;
     deleteNotificationCategoryAsync: (identifier: string) => Promise<boolean>;
 }
+//# sourceMappingURL=NotificationCategoriesModule.types.d.ts.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"withExpoRoot.web.d.ts","sourceRoot":"","sources":["../../src/launch/withExpoRoot.web.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAG/B,OAAO,EAAE,YAAY,EAAE,MAAM,sBAAsB,CAAC;AAEpD,MAAM,CAAC,OAAO,UAAU,YAAY,CAAC,CAAC,SAAS,YAAY,EACzD,gBAAgB,EAAE,KAAK,CAAC,aAAa,CAAC,CAAC,CAAC,GACvC,KAAK,CAAC,cAAc,CAAC,CAAC,CAAC,CAOzB"}

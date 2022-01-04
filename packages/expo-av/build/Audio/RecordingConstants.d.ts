@@ -60,3 +60,4 @@ export declare const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED
 export declare const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE = 3;
 export declare const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions;
 export declare const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions;
+//# sourceMappingURL=RecordingConstants.d.ts.map

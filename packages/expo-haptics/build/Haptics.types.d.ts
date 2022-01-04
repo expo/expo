@@ -34,3 +34,4 @@ export declare enum ImpactFeedbackStyle {
      */
     Heavy = "heavy"
 }
+//# sourceMappingURL=Haptics.types.d.ts.map

@@ -9,3 +9,4 @@ export default function setNotificationCategoryAsync(identifier: string, actions
     showSubtitle?: boolean;
     allowAnnouncement?: boolean;
 }): Promise<NotificationCategory>;
+//# sourceMappingURL=setNotificationCategoryAsync.d.ts.map

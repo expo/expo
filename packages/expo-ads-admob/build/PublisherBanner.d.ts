@@ -72,3 +72,4 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=PublisherBanner.d.ts.map

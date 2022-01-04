@@ -8,3 +8,4 @@ declare const _default: {
     setFullscreen(element: HTMLMediaElement, isFullScreenEnabled: boolean): Promise<AVPlaybackStatus>;
 };
 export default _default;
+//# sourceMappingURL=ExpoVideoManager.web.d.ts.map

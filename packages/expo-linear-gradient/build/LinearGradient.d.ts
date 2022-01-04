@@ -56,3 +56,4 @@ export declare type LinearGradientProps = ViewProps & {
 export declare class LinearGradient extends React.Component<LinearGradientProps> {
     render(): JSX.Element;
 }
+//# sourceMappingURL=LinearGradient.d.ts.map

@@ -15,3 +15,4 @@ export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, ProxyNativeModule
 export declare const RCTDeviceEventEmitter: import("react-native").DeviceEventEmitterStatic;
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
+//# sourceMappingURL=index.d.ts.map

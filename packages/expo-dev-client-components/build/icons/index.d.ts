@@ -13,3 +13,4 @@ export * from './ThreeFingerPressIcon';
 export * from './ToolbarOverlayIcon';
 export * from './UserIcon';
 export * from './XIcon';
+//# sourceMappingURL=index.d.ts.map

@@ -7,3 +7,4 @@ declare const _default: {
     supportedAuthenticationTypesAsync(): Promise<AuthenticationType[]>;
 };
 export default _default;
+//# sourceMappingURL=ExpoLocalAuthentication.web.d.ts.map

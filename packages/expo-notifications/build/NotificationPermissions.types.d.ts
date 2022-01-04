@@ -54,3 +54,4 @@ export interface NotificationPermissionsRequest {
     ios?: IosNotificationPermissionsRequest;
     android?: AndroidNotificationPermissionRequest;
 }
+//# sourceMappingURL=NotificationPermissions.types.d.ts.map

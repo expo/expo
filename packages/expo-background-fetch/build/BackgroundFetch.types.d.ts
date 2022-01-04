@@ -56,3 +56,4 @@ export interface BackgroundFetchOptions {
      */
     startOnBoot?: boolean;
 }
+//# sourceMappingURL=BackgroundFetch.types.d.ts.map

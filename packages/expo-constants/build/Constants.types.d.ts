@@ -289,3 +289,4 @@ export interface Constants extends NativeConstants {
      */
     __unsafeNoWarnManifest2?: Manifest;
 }
+//# sourceMappingURL=Constants.types.d.ts.map

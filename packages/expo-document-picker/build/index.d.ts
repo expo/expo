@@ -12,3 +12,4 @@ export { DocumentPickerOptions, DocumentResult };
  * If the user cancelled the document picking, the promise resolves to `{ type: 'cancel' }`.
  */
 export declare function getDocumentAsync({ type, copyToCacheDirectory, multiple, }?: DocumentPickerOptions): Promise<DocumentResult>;
+//# sourceMappingURL=index.d.ts.map

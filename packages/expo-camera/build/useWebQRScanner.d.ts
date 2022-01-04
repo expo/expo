@@ -10,3 +10,4 @@ export declare function useWebQRScanner(video: React.MutableRefObject<HTMLVideoE
     }) => void;
     onError?: MountErrorListener;
 }): void;
+//# sourceMappingURL=useWebQRScanner.d.ts.map

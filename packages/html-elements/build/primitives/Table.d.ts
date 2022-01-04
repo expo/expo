@@ -9,3 +9,4 @@ export declare type TableTextProps = NativeTextProps & {
 };
 export declare const TableText: ComponentType<TableTextProps>;
 export {};
+//# sourceMappingURL=Table.d.ts.map

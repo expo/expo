@@ -63,3 +63,4 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=ExponentVideo.web.d.ts.map

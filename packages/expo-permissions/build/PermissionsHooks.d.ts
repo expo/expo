@@ -22,3 +22,4 @@ export interface PermissionsOptions {
     /** If it should fetch information about the permissions when mounted, defaults to `true` */
     get?: boolean;
 }
+//# sourceMappingURL=PermissionsHooks.d.ts.map

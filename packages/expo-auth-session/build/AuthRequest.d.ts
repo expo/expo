@@ -46,3 +46,4 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     private ensureCodeIsSetupAsync;
 }
 export {};
+//# sourceMappingURL=AuthRequest.d.ts.map

@@ -15,3 +15,4 @@ import { PlatformMethods, ViewProps } from 'react-native-web/dist/types';
  */
 declare const View: React.AbstractComponent<ViewProps, HTMLElement & PlatformMethods>;
 export default View;
+//# sourceMappingURL=RNWView.d.ts.map

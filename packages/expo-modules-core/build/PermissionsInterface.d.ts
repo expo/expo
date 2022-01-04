@@ -10,3 +10,4 @@ export interface PermissionResponse {
     granted: boolean;
     canAskAgain: boolean;
 }
+//# sourceMappingURL=PermissionsInterface.d.ts.map

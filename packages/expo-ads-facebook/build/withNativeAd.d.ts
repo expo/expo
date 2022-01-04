@@ -86,3 +86,4 @@ export declare type NativeAd = {
     sponsoredTranslation?: string;
 };
 export {};
+//# sourceMappingURL=withNativeAd.d.ts.map

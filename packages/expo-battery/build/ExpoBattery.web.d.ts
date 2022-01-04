@@ -8,3 +8,4 @@ declare const _default: {
     stopObserving(): Promise<void>;
 };
 export default _default;
+//# sourceMappingURL=ExpoBattery.web.d.ts.map

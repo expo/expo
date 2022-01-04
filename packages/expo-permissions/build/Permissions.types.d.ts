@@ -19,3 +19,4 @@ export { PermissionExpiration };
 export declare type PermissionDetailsLocationAndroid = {
     accuracy: 'fine' | 'coarse' | 'none';
 };
+//# sourceMappingURL=Permissions.types.d.ts.map
