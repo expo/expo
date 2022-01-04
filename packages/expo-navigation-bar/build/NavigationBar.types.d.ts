@@ -30,3 +30,4 @@ export declare type NavigationBarVisibilityEvent = {
      */
     rawVisibility: number;
 };
+//# sourceMappingURL=NavigationBar.types.d.ts.map

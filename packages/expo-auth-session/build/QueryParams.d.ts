@@ -5,3 +5,4 @@ export declare function getQueryParams(url: string): {
         [key: string]: string;
     };
 };
+//# sourceMappingURL=QueryParams.d.ts.map

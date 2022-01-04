@@ -13,3 +13,4 @@ declare const _default: {
     stopObserving(): void;
 };
 export default _default;
+//# sourceMappingURL=ExponentAccelerometer.web.d.ts.map

@@ -12,3 +12,4 @@ interface Options {
 }
 export default function getExpoPushTokenAsync(options?: Options): Promise<ExpoPushToken>;
 export {};
+//# sourceMappingURL=getExpoPushTokenAsync.d.ts.map

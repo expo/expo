@@ -97,3 +97,4 @@ export declare class Asset {
      */
     downloadAsync(): Promise<this>;
 }
+//# sourceMappingURL=Asset.d.ts.map

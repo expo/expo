@@ -20,3 +20,4 @@ export declare type PermissionHookOptions<Options extends object> = PermissionHo
  */
 export declare function createPermissionHook<Permission extends PermissionResponse, Options extends object>(methods: PermissionHookMethods<Permission, Options>): (options?: PermissionHookOptions<Options> | undefined) => [Permission | null, RequestPermissionMethod<Permission>, GetPermissionMethod<Permission>];
 export {};
+//# sourceMappingURL=PermissionsHook.d.ts.map

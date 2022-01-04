@@ -59,3 +59,4 @@ export declare class AuthError extends ResponseError {
 export declare class TokenError extends ResponseError {
     constructor(response: ResponseErrorConfig);
 }
+//# sourceMappingURL=Errors.d.ts.map

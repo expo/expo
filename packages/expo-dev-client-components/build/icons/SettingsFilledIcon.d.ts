@@ -5,3 +5,4 @@ declare type TabBarIconProps = Partial<React.ComponentProps<typeof Image>> & {
 };
 export declare function SettingsFilledIcon(props: TabBarIconProps): JSX.Element;
 export {};
+//# sourceMappingURL=SettingsFilledIcon.d.ts.map

@@ -50,3 +50,4 @@ declare type ScalingPressableProps = {
 };
 declare function ScaleOnPressContainer({ minScale, ...props }: React.ComponentProps<typeof Container> & ScalingPressableProps): JSX.Element;
 export {};
+//# sourceMappingURL=Button.d.ts.map

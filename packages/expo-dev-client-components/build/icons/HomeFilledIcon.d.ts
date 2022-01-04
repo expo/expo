@@ -5,3 +5,4 @@ declare type TabBarIconProps = Partial<React.ComponentProps<typeof Image>> & {
 };
 export declare function HomeFilledIcon(props: TabBarIconProps): JSX.Element;
 export {};
+//# sourceMappingURL=HomeFilledIcon.d.ts.map

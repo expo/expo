@@ -462,3 +462,4 @@ export declare function migrateAlbumIfNeededAsync(album: AlbumRef): Promise<void
  * @return Returns a promise which fulfils with `true` if the album should be migrated.
  */
 export declare function albumNeedsMigrationAsync(album: AlbumRef): Promise<boolean>;
+//# sourceMappingURL=MediaLibrary.d.ts.map

@@ -38,3 +38,4 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=FirebaseRecaptchaVerifierModal.d.ts.map

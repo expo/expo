@@ -36,3 +36,4 @@ export declare type AppLoadingProps = {
      */
     autoHideSplash?: boolean;
 };
+//# sourceMappingURL=AppLoading.types.d.ts.map

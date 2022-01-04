@@ -53,3 +53,4 @@ export declare type CryptoDigestOptions = {
     encoding: CryptoEncoding;
 };
 export declare type Digest = string;
+//# sourceMappingURL=Crypto.types.d.ts.map

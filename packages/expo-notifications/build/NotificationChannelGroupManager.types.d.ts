@@ -17,3 +17,4 @@ export interface NotificationChannelGroupManager extends ProxyNativeModule {
     setNotificationChannelGroupAsync?: (groupId: string, group: NotificationChannelGroupInput) => Promise<NotificationChannelGroup | null>;
     deleteNotificationChannelGroupAsync?: (groupId: string) => Promise<void>;
 }
+//# sourceMappingURL=NotificationChannelGroupManager.types.d.ts.map

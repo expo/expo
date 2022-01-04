@@ -13,3 +13,4 @@ export declare function getRandomBytes(byteCount: number): Uint8Array;
  * @return A promise that fulfills with an array of random bytes with the same length as the `byteCount`.
  */
 export declare function getRandomBytesAsync(byteCount: number): Promise<Uint8Array>;
+//# sourceMappingURL=Random.d.ts.map

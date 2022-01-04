@@ -36,3 +36,4 @@ export declare type RecordingOptions = {
         bitsPerSecond?: number;
     };
 };
+//# sourceMappingURL=Recording.types.d.ts.map

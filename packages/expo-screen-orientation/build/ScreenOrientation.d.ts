@@ -103,3 +103,4 @@ export declare function removeOrientationChangeListeners(): void;
  * on an orientation change.
  */
 export declare function removeOrientationChangeListener(subscription: Subscription): void;
+//# sourceMappingURL=ScreenOrientation.d.ts.map

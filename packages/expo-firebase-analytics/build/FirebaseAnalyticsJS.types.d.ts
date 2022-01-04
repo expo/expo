@@ -121,3 +121,4 @@ export interface FirebaseAnalyticsJSOptions {
         [key: string]: any;
     };
 }
+//# sourceMappingURL=FirebaseAnalyticsJS.types.d.ts.map

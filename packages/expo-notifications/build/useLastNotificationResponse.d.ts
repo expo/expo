@@ -7,3 +7,4 @@ import { NotificationResponse } from './Notifications.types';
  *   that has been received by the app most recently.
  */
 export default function useLastNotificationResponse(): NotificationResponse | null | undefined;
+//# sourceMappingURL=useLastNotificationResponse.d.ts.map

@@ -34,3 +34,4 @@ export declare class GLView extends React.Component<GLViewProps> {
     createCameraTextureAsync(): Promise<void>;
     destroyObjectAsync(glObject: WebGLObject): Promise<void>;
 }
+//# sourceMappingURL=GLView.web.d.ts.map

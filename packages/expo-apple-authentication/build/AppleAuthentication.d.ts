@@ -61,3 +61,4 @@ export declare function signOutAsync(options: AppleAuthenticationSignOutOptions)
 export declare function getCredentialStateAsync(user: string): Promise<AppleAuthenticationCredentialState>;
 export declare function addRevokeListener(listener: () => void): Subscription;
 export { Subscription };
+//# sourceMappingURL=AppleAuthentication.d.ts.map

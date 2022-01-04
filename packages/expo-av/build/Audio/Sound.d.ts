@@ -99,3 +99,4 @@ export declare class Sound implements Playback {
     setProgressUpdateIntervalAsync: (progressUpdateIntervalMillis: number) => Promise<AVPlaybackStatus>;
 }
 export {};
+//# sourceMappingURL=Sound.d.ts.map

@@ -4,3 +4,4 @@ declare const _default: {
     getThumbnailAsync(sourceFilename: string, options?: VideoThumbnailsOptions): Promise<VideoThumbnailsResult>;
 };
 export default _default;
+//# sourceMappingURL=ExpoVideoThumbnails.web.d.ts.map

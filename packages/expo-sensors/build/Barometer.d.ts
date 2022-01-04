@@ -7,3 +7,4 @@ declare class BarometerSensor extends DeviceSensor<BarometerMeasurement> {
 }
 declare const _default: BarometerSensor;
 export default _default;
+//# sourceMappingURL=Barometer.d.ts.map

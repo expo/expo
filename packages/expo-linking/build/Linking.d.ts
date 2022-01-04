@@ -116,3 +116,4 @@ export declare function canOpenURL(url: string): Promise<boolean>;
  */
 export declare function useURL(): string | null;
 export * from './Linking.types';
+//# sourceMappingURL=Linking.d.ts.map

@@ -10,3 +10,4 @@ declare const BlurViewWithForwardedRef: React.ForwardRefExoticComponent<{
     intensity?: number | undefined;
 } & ViewProps & React.RefAttributes<View>>;
 export default BlurViewWithForwardedRef;
+//# sourceMappingURL=BlurView.d.ts.map

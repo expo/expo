@@ -8,3 +8,4 @@ export { default as Magnetometer } from './Magnetometer';
 export { default as MagnetometerUncalibrated } from './MagnetometerUncalibrated';
 export { ThreeAxisMeasurement } from './ThreeAxisSensor';
 export { Pedometer };
+//# sourceMappingURL=index.d.ts.map

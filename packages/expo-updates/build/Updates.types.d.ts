@@ -76,3 +76,4 @@ export declare type UpdateEvent = {
  * @hidden
  */
 export declare type LocalAssets = Record<string, string>;
+//# sourceMappingURL=Updates.types.d.ts.map

@@ -119,3 +119,4 @@ export declare function useAuthRequest(config?: Partial<GoogleAuthRequestConfig>
     (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ];
 export {};
+//# sourceMappingURL=Google.d.ts.map

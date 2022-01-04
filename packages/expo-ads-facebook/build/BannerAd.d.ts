@@ -11,3 +11,4 @@ export default class BannerAd extends React.Component<Props> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=BannerAd.d.ts.map

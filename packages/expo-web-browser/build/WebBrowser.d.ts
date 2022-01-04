@@ -144,3 +144,4 @@ export declare function dismissAuthSession(): void;
  * @platform web
  */
 export declare function maybeCompleteAuthSession(options?: WebBrowserCompleteAuthSessionOptions): WebBrowserCompleteAuthSessionResult;
+//# sourceMappingURL=WebBrowser.d.ts.map

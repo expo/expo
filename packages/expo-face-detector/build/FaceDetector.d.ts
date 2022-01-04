@@ -180,3 +180,4 @@ export declare type DetectionResult = {
  * @return Returns a Promise which fulfils with [`DetectionResult`](#detectionresult) object.
  */
 export declare function detectFacesAsync(uri: string, options?: DetectionOptions): Promise<DetectionResult>;
+//# sourceMappingURL=FaceDetector.d.ts.map

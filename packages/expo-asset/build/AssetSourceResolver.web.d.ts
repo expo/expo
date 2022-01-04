@@ -33,3 +33,4 @@ export default class AssetSourceResolver {
     static pickScale(scales: number[], deviceScale: number): number;
 }
 export {};
+//# sourceMappingURL=AssetSourceResolver.web.d.ts.map

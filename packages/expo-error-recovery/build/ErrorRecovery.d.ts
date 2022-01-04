@@ -12,3 +12,4 @@ export declare type ErrorRecoveryProps = Record<string, any>;
  * project was reloaded as a result of a fatal JS error.
  */
 export declare function setRecoveryProps(props: ErrorRecoveryProps): void;
+//# sourceMappingURL=ErrorRecovery.d.ts.map

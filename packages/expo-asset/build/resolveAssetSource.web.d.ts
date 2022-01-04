@@ -6,3 +6,4 @@ export declare function setCustomSourceTransformer(transformer: (resolver: Asset
  */
 export default function resolveAssetSource(source: any): ResolvedAssetSource | undefined;
 export declare const pickScale: typeof AssetSourceResolver.pickScale;
+//# sourceMappingURL=resolveAssetSource.web.d.ts.map

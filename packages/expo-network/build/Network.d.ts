@@ -65,3 +65,4 @@ export declare function getMacAddressAsync(interfaceName?: string | null): Promi
  * ```
  */
 export declare function isAirplaneModeEnabledAsync(): Promise<boolean>;
+//# sourceMappingURL=Network.d.ts.map

@@ -27,3 +27,4 @@ export declare type VideoThumbnailsOptions = {
      */
     headers?: Record<string, string>;
 };
+//# sourceMappingURL=VideoThumbnailsTypes.types.d.ts.map

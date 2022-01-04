@@ -60,3 +60,4 @@ export declare type LocalAuthenticationOptions = {
      */
     fallbackLabel?: string;
 };
+//# sourceMappingURL=LocalAuthentication.types.d.ts.map

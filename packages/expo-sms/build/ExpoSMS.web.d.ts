@@ -5,3 +5,4 @@ declare const _default: {
     sendSMSAsync(addresses: string[], message: string): Promise<SMSResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExpoSMS.web.d.ts.map

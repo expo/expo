@@ -161,3 +161,4 @@ export declare function revokeAsync(config: RevokeTokenRequestConfig, discovery:
  */
 export declare function fetchUserInfoAsync(config: Pick<TokenResponse, 'accessToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'userInfoEndpoint'>): Promise<Record<string, any>>;
 export {};
+//# sourceMappingURL=TokenRequest.d.ts.map

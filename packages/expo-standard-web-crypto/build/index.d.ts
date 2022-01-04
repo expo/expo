@@ -4,3 +4,4 @@ declare class Crypto {
 declare const webCrypto: Crypto;
 export default webCrypto;
 export declare function polyfillWebCrypto(): void;
+//# sourceMappingURL=index.d.ts.map

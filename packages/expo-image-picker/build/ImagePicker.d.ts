@@ -103,3 +103,4 @@ export declare function launchCameraAsync(options?: ImagePickerOptions): Promise
  */
 export declare function launchImageLibraryAsync<T extends ImagePickerOptions>(options?: T): Promise<ExpandImagePickerResult<T>>;
 export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, VideoExportPreset, CameraPermissionResponse, CameraRollPermissionResponse, MediaLibraryPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse, ImageInfo, ImagePickerMultipleResult, ImagePickerCancelledResult, OpenFileBrowserOptions, ExpandImagePickerResult, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+//# sourceMappingURL=ImagePicker.d.ts.map

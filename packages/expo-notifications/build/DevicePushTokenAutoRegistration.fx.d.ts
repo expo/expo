@@ -15,3 +15,4 @@ export declare function setAutoServerRegistrationEnabledAsync(enabled: boolean):
  * This function is exported only for testing purposes.
  */
 export declare function __handlePersistedRegistrationInfoAsync(registrationInfo: string | null | undefined): Promise<void>;
+//# sourceMappingURL=DevicePushTokenAutoRegistration.fx.d.ts.map

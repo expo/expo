@@ -59,3 +59,4 @@ export declare const StatusIndicator: import("react").ForwardRefExoticComponent<
     status?: "default" | "error" | "warning" | "success" | "info" | undefined;
     size?: "small" | "medium" | undefined;
 } & import("react").RefAttributes<import("react-native").ViewProps>>;
+//# sourceMappingURL=View.d.ts.map
