@@ -62,6 +62,7 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
 @property (nonatomic, assign) int audioRecorderDurationMillis;
+@property (nonatomic, assign) BOOL mediaServicesReset;
 
 @property (nonatomic, weak) EXModuleRegistry *expoModuleRegistry;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
@@ -95,6 +96,7 @@ EX_EXPORT_MODULE(ExponentAV);
     _audioRecorderIsPreparing = false;
     _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
+    _mediaServicesReset = false;
   }
   return self;
 }
@@ -305,6 +307,11 @@ EX_EXPORT_MODULE(ExponentAV);
   if ([[_kernelAudioSessionManagerDelegate activeCategory] isEqual:requiredAudioCategory] && [_kernelAudioSessionManagerDelegate activeCategoryOptions] == requiredAudioCategoryOptions) {
     return nil;
   }
+    
+  if (_allowsAudioRecording) {
+    // Bluetooth input is only available when recording is allowed
+    requiredAudioCategoryOptions = requiredAudioCategoryOptions | AVAudioSessionCategoryOptionAllowBluetooth;
+  }
   
   return [_kernelAudioSessionManagerDelegate setCategory:requiredAudioCategory withOptions:requiredAudioCategoryOptions forModule:self];
 }
@@ -424,18 +431,12 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   // See here: https://developer.apple.com/library/content/qa/qa1749/_index.html
   // (this is an unlikely notification to receive, but best practices suggests that we catch it just in case)
-  
-  _currentAudioSessionMode = EXAVAudioSessionModeInactive;
-  
-  [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    [exAVObject handleMediaServicesReset:nil];
-  }];
-  
-  if (_audioRecorder) {
-    [self _removeAudioRecorder:NO];
-    [self _createNewAudioRecorder];
-    [_audioRecorder prepareToRecord];
-  }
+    
+  // This is called whenever AirPods disconnect while a recording is in progress.
+  // The "best practice" is to tear down and recreate the audio session, but we're choosing to no-op 
+  // in order to be able to resume recording with the phone mic.
+    
+    _mediaServicesReset = true;
 }
 
 #pragma mark - Internal sound playback helper methods
@@ -603,6 +604,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
       @"canRecord": @(YES),
       @"isRecording": @([_audioRecorder isRecording]),
       @"durationMillis": @(durationMillis),
+      @"mediaServicesReset": @(_mediaServicesReset),
     } mutableCopy];
 
     if (_audioRecorder.meteringEnabled) {
@@ -862,6 +864,7 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
+  _mediaServicesReset = false;
   if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;
@@ -977,6 +980,57 @@ EX_EXPORT_METHOD_AS(unloadAudioRecorder,
     [self _removeAudioRecorder:YES];
     resolve(nil);
   }
+}
+
+EX_EXPORT_METHOD_AS(getAvailableInputs,
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+    NSMutableArray *inputs = [NSMutableArray new];
+    for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
+        [inputs addObject: @{
+          @"name": desc.portName,
+          @"type": desc.portType,
+          @"uid": desc.UID,
+        }];
+    }
+    resolve(inputs);
+}
+
+EX_EXPORT_METHOD_AS(getCurrentInput,
+                    getCurrentInput:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+    AVAudioSessionPortDescription *desc = [_kernelAudioSessionManagerDelegate activeInput];
+    if (desc) {
+        resolve(@{
+              @"name": desc.portName,
+              @"type": desc.portType,
+              @"uid": desc.UID,
+            });
+    } else {
+        reject(@"E_AUDIO_GETCURRENTINPUT", @"No input port found.", nil);
+    }
+
+}
+
+EX_EXPORT_METHOD_AS(setInput,
+                    setInput:(NSString*)input
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+    AVAudioSessionPortDescription* preferredInput = nil;
+    for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
+      if ([desc.UID isEqualToString:input]) {
+          preferredInput = desc;
+      }
+    }
+    if (preferredInput != nil) {
+        [_kernelAudioSessionManagerDelegate setActiveInput:preferredInput];
+        resolve(nil);
+    } else {
+        reject(@"E_AUDIO_SETINPUT_FAIL", @"Preferred input not found!", nil);
+    }
 }
 
 #pragma mark - Lifecycle

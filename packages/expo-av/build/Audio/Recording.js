@@ -173,6 +173,15 @@ export class Recording {
             throw new Error('This Recording object is already prepared to record.');
         }
     }
+    async getAvailableInputs() {
+        return ExponentAV.getAvailableInputs();
+    }
+    async getCurrentInput() {
+        return ExponentAV.getCurrentInput();
+    }
+    async setInput(input) {
+        return ExponentAV.setInput(input);
+    }
     async startAsync() {
         return this._performOperationAndHandleStatusAsync(() => ExponentAV.startAudioRecording());
     }

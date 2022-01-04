@@ -18,6 +18,8 @@
 @property (nonatomic, strong) NSMapTable<id, NSNumber *> *activeModules;
 @property (nonatomic, strong) NSMapTable<id, NSString *> *moduleCategory;
 @property (nonatomic, strong) NSMapTable<id, NSNumber *> *moduleCategoryOptions;
+@property (nonatomic, strong) NSArray<AVAudioSessionPortDescription *>* availableInputs;
+@property (nonatomic, strong) AVAudioSessionPortDescription *activeInput;
 
 @end
 
@@ -115,6 +117,27 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
     return [self _updateSessionConfiguration];
   }
   return nil;
+}
+
+- (NSArray<AVAudioSessionPortDescription *>*)availableInputs
+{
+  return [[AVAudioSession sharedInstance] availableInputs];
+}
+
+- (void)setActiveInput:(AVAudioSessionPortDescription *)activeInput {
+  NSError *error;
+  [[AVAudioSession sharedInstance] setPreferredInput:activeInput error:&error];
+}
+
+- (AVAudioSessionPortDescription *)activeInput
+{
+  AVAudioSessionRouteDescription *currentRoute = [[AVAudioSession sharedInstance] currentRoute];
+  NSArray *inputsForRoute = currentRoute.inputs;
+  AVAudioSessionPortDescription *inPortDesc;
+  if ([inputsForRoute count] > 0) {
+    inPortDesc = [inputsForRoute objectAtIndex:0];
+  }
+  return inPortDesc;
 }
 
 - (void)moduleDidBackground:(id)backgroundingModule

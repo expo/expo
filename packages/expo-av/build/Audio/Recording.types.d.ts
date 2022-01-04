@@ -5,6 +5,7 @@ export declare type RecordingStatus = {
     durationMillis: number;
     metering?: number;
     uri?: string | null;
+    mediaServicesReset?: boolean;
 };
 export declare type RecordingOptions = {
     isMeteringEnabled?: boolean;
@@ -35,4 +36,9 @@ export declare type RecordingOptions = {
         mimeType?: string;
         bitsPerSecond?: number;
     };
+};
+export declare type RecordingInput = {
+    name: string;
+    type: string;
+    uid: string;
 };
