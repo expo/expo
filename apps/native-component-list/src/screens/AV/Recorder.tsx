@@ -13,6 +13,7 @@ import {
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
+import AudioInputSelector from './AudioInputSelector';
 
 interface State {
   options?: Audio.RecordingOptions;
@@ -152,6 +153,7 @@ export default class Recorder extends React.Component<
             {_formatTime(this.state.durationMillis / 1000)}
           </Text>
         </View>
+        <AudioInputSelector recordingObject={this._recorder} />
         {this._maybeRenderErrorOverlay()}
       </View>
     );
