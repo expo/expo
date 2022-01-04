@@ -46,7 +46,7 @@ describe('<DeepLinkPrompt />', () => {
     const fakeDeepLink = 'testing-testing-123';
     mockGetPendingDeepLink.mockResolvedValueOnce(fakeDeepLink);
 
-    const { getByText } = render(null, {
+    const { getByText, queryByText } = render(null, {
       initialAppProviderProps: { initialDevSessions: [fakeLocalDevSession] },
     });
 
