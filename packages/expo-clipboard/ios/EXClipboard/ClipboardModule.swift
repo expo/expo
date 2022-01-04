@@ -16,6 +16,54 @@ public class ClipboardModule: Module {
       UIPasteboard.general.string = content ?? ""
     }
 
+    function("getUrlAsync") { () -> String? in
+      return UIPasteboard.general.url?.absoluteString
+    }
+
+    function("setUrlAsync") { (content: String, promise: Promise) in
+      if let url = URL(string: content) {
+        UIPasteboard.general.url = url
+        promise.resolve()
+      } else {
+        promise.reject(InvalidUrlError(url: content))
+      }
+    }
+    
+    function("hasUrlAsync") { () -> Bool in
+      return UIPasteboard.general.hasURLs
+    }
+
+    function("setImageAsync") { (content: String, promise: Promise) in
+      if let data = Data(base64Encoded: content), let image = UIImage(data: data) {
+        UIPasteboard.general.image = UIImage(data: data)
+        promise.resolve()
+      } else {
+        promise.reject(InvalidImageError(image: content))
+      }
+    }
+    
+    function("hasImageAsync") { () -> Bool in
+      return UIPasteboard.general.hasImages
+    }
+
+    function("getPngImageAsync") { () -> String? in
+      let pngPrefix = "data:image/png;base64,"
+      if let image = UIPasteboard.general.image, let data = image.pngData() {
+        return pngPrefix + data.base64EncodedString()
+      } else {
+        return nil
+      }
+    }
+      
+    function("getJpgImageAsync") { () -> String? in
+      let jpgPrefix = "data:image/jpeg;base64,"
+      if let image = UIPasteboard.general.image, let data = image.jpegData(compressionQuality: 1.0) {
+        return jpgPrefix + data.base64EncodedString()
+      } else {
+        return nil
+      }
+    }
+
     events(onClipboardChanged)
 
     onStartObserving {
@@ -38,5 +86,19 @@ public class ClipboardModule: Module {
     sendEvent(onClipboardChanged, [
       "content": UIPasteboard.general.string ?? ""
     ])
+  }
+}
+
+internal struct InvalidImageError: CodedError {
+  let image: String
+  var description: String {
+    return "Invalid base64 image: \(image.prefix(32))\(image.count ?? 0 > 32 ? "..." : "")"
+  }
+}
+
+internal struct InvalidUrlError: CodedError {
+  let url: String
+  var description: String {
+    "Invalid url: \(url)"
   }
 }

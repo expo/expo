@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for setting and getting url and images. ([#15786](https://github.com/expo/expo/pull/15786) by [@graszka22](https://github.com/graszka22))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
