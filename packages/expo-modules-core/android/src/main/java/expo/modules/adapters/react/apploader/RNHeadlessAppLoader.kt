@@ -3,6 +3,7 @@ package expo.modules.adapters.react.apploader
 import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
+import com.facebook.react.common.LifecycleState
 import expo.modules.apploader.HeadlessAppLoader
 import expo.modules.core.interfaces.Consumer
 import expo.modules.core.interfaces.DoNotStrip
@@ -43,7 +44,12 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
     return if (appRecords.containsKey(appScopeKey) && appRecords[appScopeKey] != null) {
       val appRecord: ReactInstanceManager = appRecords[appScopeKey]!!
       android.os.Handler(context.mainLooper).post {
-        appRecord.destroy()
+        // Only destroy the `ReactInstanceManager` if it does not bind with an Activity.
+        // And The Activity would take over the ownership of `ReactInstanceManager`.
+        // This case happens when a user clicks a background task triggered notification immediately.
+        if (appRecord.lifecycleState == LifecycleState.BEFORE_CREATE) {
+          appRecord.destroy()
+        }
         HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
         appRecords.remove(appScopeKey)
       }
