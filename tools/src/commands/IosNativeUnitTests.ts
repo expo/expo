@@ -13,7 +13,7 @@ const packagesToTestWithBareExpo = [
   'expo-dev-menu-interface',
 ];
 
-async function runTests(podspecName: string, shouldUseBareExpo: boolean) {
+async function runTests(podspecName: string, testSpecName: string, shouldUseBareExpo: boolean) {
   if (shouldUseBareExpo) {
     await spawnAsync(
       'fastlane',
@@ -22,8 +22,7 @@ async function runTests(podspecName: string, shouldUseBareExpo: boolean) {
         '--project',
         `Pods/${podspecName}.xcodeproj`,
         '--scheme',
-        // TODO(eric): include -Unit-UITests for modules that have UI tests
-        `${podspecName}-Unit-Tests`,
+        `${podspecName}-Unit-${testSpecName}`,
         '--clean',
         'false',
       ],
@@ -33,10 +32,14 @@ async function runTests(podspecName: string, shouldUseBareExpo: boolean) {
       }
     );
   } else {
-    await spawnAsync('fastlane', ['test_module', `pod:${podspecName}`], {
-      cwd: Directories.getExpoRepositoryRootDir(),
-      stdio: 'inherit',
-    });
+    await spawnAsync(
+      'fastlane',
+      ['test_module', `pod:${podspecName}`, `testSpecName:${testSpecName}`],
+      {
+        cwd: Directories.getExpoRepositoryRootDir(),
+        stdio: 'inherit',
+      }
+    );
   }
 }
 
@@ -88,13 +91,24 @@ async function moveSchemesToSharedData(podspecName: string, rootDirectory: strin
   }
 }
 
+function getTestSpecNames(pkg: Packages.Package): string[] {
+  const podspec = fs.readFileSync(path.join(pkg.path, pkg.podspecPath!), 'utf8');
+  const regex = new RegExp("test_spec\\s'([^']*)'", 'g');
+  let testSpecNames: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(podspec)) !== null) {
+    testSpecNames.push(match[1]);
+  }
+  return testSpecNames;
+}
+
 export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
   let packagesTested: string[] = [];
   let errors: any[] = [];
   for (const pkg of allPackages) {
-    if (!pkg.podspecName || !(await pkg.hasNativeTestsAsync('ios'))) {
+    if (!pkg.podspecName || !pkg.podspecPath || !(await pkg.hasNativeTestsAsync('ios'))) {
       if (packageNamesFilter.includes(pkg.packageName)) {
         throw new Error(`The package ${pkg.packageName} does not include iOS unit tests.`);
       }
@@ -108,8 +122,16 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
     try {
       console.log('erictest', 'preparing schemes', pkg.packageName);
       await prepareSchemes(pkg.podspecName, shouldUseBareExpo);
-      console.log('erictest', 'running tests', pkg.packageName);
-      await runTests(pkg.podspecName, shouldUseBareExpo);
+      const testSpecNames = getTestSpecNames(pkg);
+      if (!testSpecNames.length) {
+        throw new Error(
+          `Failed to test package ${pkg.packageName}: no test specs were found in podspec file.`
+        );
+      }
+      for (const testSpecName of testSpecNames) {
+        console.log('erictest', 'running tests', pkg.packageName, testSpecName);
+        await runTests(pkg.podspecName, testSpecName, shouldUseBareExpo);
+      }
       console.log('erictest', 'done', pkg.packageName);
       packagesTested.push(pkg.packageName);
     } catch (error) {
