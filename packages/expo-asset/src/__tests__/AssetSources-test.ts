@@ -29,7 +29,7 @@ describe('selectAssetSource', () => {
 
     const source = AssetSources.selectAssetSource(mockFontMetadata);
     expect(source.uri).toBe(
-      'https://d1wp6m56sqw74a.cloudfront.net/~assets/cafecafecafecafecafecafecafecafe'
+      'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe'
     );
     expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
   });
@@ -118,7 +118,7 @@ describe('selectAssetSource', () => {
     });
 
     expect(source.uri).toBe(
-      'https://d1wp6m56sqw74a.cloudfront.net/~assets/c0dec0dec0dec0dec0dec0dec0dec0de'
+      'https://classic-assets.eascdn.net/~assets/c0dec0dec0dec0dec0dec0dec0dec0de'
     );
     expect(source.hash).toBe('c0dec0dec0dec0dec0dec0dec0dec0de');
   });

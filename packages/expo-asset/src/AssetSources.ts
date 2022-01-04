@@ -96,7 +96,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
 
   // Production CDN URIs are based on each asset file hash
   return {
-    uri: `https://d1wp6m56sqw74a.cloudfront.net/~assets/${encodeURIComponent(hash)}`,
+    uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`,
     hash,
   };
 }

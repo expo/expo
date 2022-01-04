@@ -39,7 +39,7 @@
 - (void)testBundledAssetBaseUrl_ExpoDomain
 {
   EXManifestsLegacyManifest *manifest = [[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:@{}];
-  NSURL *expected = [NSURL URLWithString:@"https://d1wp6m56sqw74a.cloudfront.net/~assets/"];
+  NSURL *expected = [NSURL URLWithString:@"https://classic-assets.eascdn.net/~assets/"];
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test"}]]]);
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{EXUpdatesConfigUpdateUrlKey: @"https://expo.io/@test/test"}]]]);
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{EXUpdatesConfigUpdateUrlKey: @"https://expo.test/@test/test"}]]]);
@@ -48,7 +48,7 @@
 - (void)testBundledAssetBaseUrl_ExpoSubdomain
 {
   EXManifestsLegacyManifest *manifest = [[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:@{}];
-  NSURL *expected = [NSURL URLWithString:@"https://d1wp6m56sqw74a.cloudfront.net/~assets/"];
+  NSURL *expected = [NSURL URLWithString:@"https://classic-assets.eascdn.net/~assets/"];
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{EXUpdatesConfigUpdateUrlKey: @"https://staging.exp.host/@test/test"}]]]);
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{EXUpdatesConfigUpdateUrlKey: @"https://staging.expo.io/@test/test"}]]]);
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{EXUpdatesConfigUpdateUrlKey: @"https://staging.expo.test/@test/test"}]]]);

@@ -3,7 +3,7 @@ import * as AssetUris from '../AssetUris';
 describe('getFilename', () => {
   it(`gets the filename from a URL`, () => {
     const url =
-      'https://d1wp6m56sqw74a.cloudfront.net/~assets/4bd45bcdf50493e345e817c9281bffbf.png';
+      'https://classic-assets.eascdn.net/~assets/4bd45bcdf50493e345e817c9281bffbf.png';
     expect(AssetUris.getFilename(url)).toBe('4bd45bcdf50493e345e817c9281bffbf.png');
   });
 
@@ -16,7 +16,7 @@ describe('getFilename', () => {
 describe('getExtension', () => {
   it(`gets the file extension from a URL`, () => {
     const url =
-      'https://d1wp6m56sqw74a.cloudfront.net/~assets/4bd45bcdf50493e345e817c9281bffbf.png';
+      'https://classic-assets.eascdn.net/~assets/4bd45bcdf50493e345e817c9281bffbf.png';
     expect(AssetUris.getFileExtension(url)).toBe('.png');
   });
 
