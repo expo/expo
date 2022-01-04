@@ -61,8 +61,11 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
-@property (nonatomic, assign) int audioRecorderDurationMillis;
 @property (nonatomic, assign) BOOL mediaServicesReset;
+
+@property (nonatomic, assign) int audioRecorderDurationMillis;
+@property (nonatomic, assign) int prevAudioRecorderDurationMillis;
+@property (nonatomic, assign) int audioRecorderStartTimestamp;
 
 @property (nonatomic, weak) EXModuleRegistry *expoModuleRegistry;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
@@ -96,6 +99,8 @@ EX_EXPORT_MODULE(ExponentAV);
     _audioRecorderIsPreparing = false;
     _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
+    _prevAudioRecorderDurationMillis = 0;
+    _audioRecorderStartTimestamp = 0;
     _mediaServicesReset = false;
   }
   return self;
@@ -596,9 +601,12 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 - (NSDictionary *)_getAudioRecorderStatus
 {
   if (_audioRecorder) {
-    int durationMillisFromRecorder = [self _getDurationMillisOfRecordingAudioRecorder];
-    // After stop, the recorder's duration goes to zero, so we replace it with the correct duration in this case.
-    int durationMillis = durationMillisFromRecorder == 0 ? _audioRecorderDurationMillis : durationMillisFromRecorder;
+    // [_audioRecorder currentTime] returns bad values after changing to bluetooth input
+    // so we track durationMillis independently of the audio recorder.
+    // see: https://stackoverflow.com/questions/43351904/avaudiorecorder-currenttime-giving-bad-values
+    int curTimestamp = (int) (_audioRecorder.deviceCurrentTime * 1000);
+    int curDuration = [_audioRecorder isRecording] ? (curTimestamp - _audioRecorderStartTimestamp) : 0;
+    int durationMillis = _prevAudioRecorderDurationMillis + curDuration;
 
     NSMutableDictionary *result = [@{
       @"canRecord": @(YES),
@@ -922,6 +930,7 @@ EX_EXPORT_METHOD_AS(startAudioRecording,
       NSError *error = [self promoteAudioSessionIfNecessary];
       if (!error) {
         if ([_audioRecorder record]) {
+          _audioRecorderStartTimestamp = (int) (_audioRecorder.deviceCurrentTime * 1000);
           resolve([self _getAudioRecorderStatus]);
         } else {
           reject(@"E_AUDIO_RECORDING", @"Start encountered an error: recording not started.", nil);
@@ -943,6 +952,9 @@ EX_EXPORT_METHOD_AS(pauseAudioRecording,
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (_audioRecorder.recording) {
       [_audioRecorder pause];
+      int curTime = (int) (_audioRecorder.deviceCurrentTime * 1000);
+      _prevAudioRecorderDurationMillis += (curTime - _audioRecorderStartTimestamp);
+      _audioRecorderStartTimestamp = 0;
       [self demoteAudioSessionIfPossible];
     }
     resolve([self _getAudioRecorderStatus]);
@@ -957,6 +969,8 @@ EX_EXPORT_METHOD_AS(stopAudioRecording,
     if (_audioRecorder.recording) {
       _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
       [_audioRecorder stop];
+      _prevAudioRecorderDurationMillis = 0;
+      _audioRecorderStartTimestamp = 0;
       [self demoteAudioSessionIfPossible];
     }
     resolve([self _getAudioRecorderStatus]);
