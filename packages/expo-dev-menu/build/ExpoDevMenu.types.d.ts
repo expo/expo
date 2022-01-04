@@ -3,3 +3,4 @@ export declare type ExpoDevMenu = {
     openProfile(): any;
     openSettings(): any;
 };
+//# sourceMappingURL=ExpoDevMenu.types.d.ts.map
