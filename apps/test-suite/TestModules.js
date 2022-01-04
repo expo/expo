@@ -81,6 +81,10 @@ export function getTestModules() {
     modules.push(require('./tests/Hermes'));
   }
 
+  if (Platform.OS === 'ios') {
+    modules.push(require('./tests/Clipboard'));
+  }
+
   if (global.DETOX) {
     modules.push(
       require('./tests/Contacts'),

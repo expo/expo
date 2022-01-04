@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Native module on Android is now written in Kotlin using the new API. ([#16269](https://github.com/expo/expo/pull/16269) by [@barthap](https://github.com/barthap))
+- Added support for setting and getting url and images. ([#15786](https://github.com/expo/expo/pull/15786) by [@graszka22](https://github.com/graszka22))
 
 ### 🐛 Bug fixes
 
