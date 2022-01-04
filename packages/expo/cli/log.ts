@@ -1,10 +1,8 @@
-import { boolish } from 'getenv';
+import { EXPO_DEBUG, EXPO_PROFILE } from './utils/env';
 
-const isProfiling = boolish('EXPO_PROFILE', false);
+export const time: (label?: string) => void = EXPO_PROFILE ? console.time : () => {};
 
-export const time: (label?: string) => void = isProfiling ? console.time : () => {};
-
-export const timeEnd: (label?: string) => void = isProfiling ? console.timeEnd : () => {};
+export const timeEnd: (label?: string) => void = EXPO_PROFILE ? console.timeEnd : () => {};
 
 export function error(...message: string[]) {
   console.error(...message);
@@ -16,6 +14,10 @@ export function warn(...message: string[]) {
 
 export function log(...message: string[]) {
   console.log(...message);
+}
+
+export function debug(...message: string[]) {
+  if (EXPO_DEBUG) console.log(...message);
 }
 
 export function exit(message: string, code = 1) {
