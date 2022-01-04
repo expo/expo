@@ -131,13 +131,27 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (AVAudioSessionPortDescription *)activeInput
 {
+    
+  // If a current route exists for this recording, return the initial route input.
   AVAudioSessionRouteDescription *currentRoute = [[AVAudioSession sharedInstance] currentRoute];
   NSArray *inputsForRoute = currentRoute.inputs;
-  AVAudioSessionPortDescription *inPortDesc;
   if ([inputsForRoute count] > 0) {
-    inPortDesc = [inputsForRoute objectAtIndex:0];
+    return [inputsForRoute objectAtIndex:0];
   }
-  return inPortDesc;
+    
+  // If we've already set a preferred input, return it
+  AVAudioSessionPortDescription *preferredInput = [[AVAudioSession sharedInstance] preferredInput];
+  if (preferredInput != Nil) {
+    return preferredInput;
+  }
+    
+  // If we don't have a current route, select the first available input and set it as preferred input.
+  NSArray *availInputs = [[AVAudioSession sharedInstance] availableInputs];
+  if ([availInputs count] > 0) {
+    AVAudioSessionPortDescription *defaultInput = [availInputs objectAtIndex:0];
+    [self setActiveInput:defaultInput];
+    return defaultInput;
+  }
 }
 
 - (void)moduleDidBackground:(id)backgroundingModule

@@ -35,6 +35,7 @@ function AudioInputSelector({ recordingObject }: Props) {
           const title = input.name;
           return (
             <ListButton
+              key={`input-${input.uid}`}
               title={`${isSelected ? '✓ ' : ''}${title}`}
               onPress={async () => {
                 await recordingObject?.setInput(input.uid);
