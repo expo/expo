@@ -11,18 +11,19 @@ import {
   StatusIndicator,
   TerminalIcon,
   ChevronRightIcon,
-  XIcon,
   InfoIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 
 import { AppHeader } from '../components/redesign/AppHeader';
-import { useModalStack } from '../components/redesign/Modal';
+import { DevServerExplainerModal } from '../components/redesign/DevServerExplainerModal';
+import { LoadAppErrorModal } from '../components/redesign/LoadAppErrorModal';
 import { PulseIndicator } from '../components/redesign/PulseIndicator';
 import { UrlDropdown } from '../components/redesign/UrlDropdown';
 import { useBuildInfo } from '../hooks/useBuildInfo';
 import { useDevSessions } from '../hooks/useDevSessions';
+import { useModalStack } from '../hooks/useModalStack';
 import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
 import { DevSession } from '../types';
@@ -56,7 +57,10 @@ export function HomeScreen({
 
   const onLoadUrl = (url: string) => {
     loadApp(url).catch((error) => {
-      Alert.alert('Oops!', error.message);
+      modalStack.push({
+        title: 'Error loading app',
+        element: <LoadAppErrorModal message={error.message} />,
+      });
     });
   };
 
@@ -81,7 +85,7 @@ export function HomeScreen({
   };
 
   const onDevServerQuestionPress = () => {
-    modalStack.push({ element: <DevServerExplainerModal /> });
+    modalStack.push({ title: 'Development servers', element: <DevServerExplainerModal /> });
   };
 
   return (
@@ -211,10 +215,12 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
               <Row align="center" padding="medium">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
-                <Button.Text color="default" numberOfLines={1} style={{ flexShrink: 1 }}>
-                  {devSession.description}
-                </Button.Text>
-                <Spacer.Horizontal size="flex" />
+                <View flex="1">
+                  <Button.Text color="default" numberOfLines={1}>
+                    {devSession.description}
+                  </Button.Text>
+                </View>
+                <Spacer.Horizontal size="small" />
                 <ChevronRightIcon />
               </Row>
             </Button.ScaleOnPressContainer>
@@ -266,48 +272,6 @@ function RecentlyOpenedApps({ onAppPress }) {
             </View>
           );
         })}
-      </View>
-    </View>
-  );
-}
-
-function DevServerExplainerModal() {
-  const modalStack = useModalStack();
-
-  const onClosePress = () => {
-    modalStack.pop();
-  };
-
-  return (
-    <View style={{ flex: 1, justifyContent: 'center' }} px="medium">
-      <View padding="medium" bg="default" rounded="large">
-        <Row align="center">
-          <Heading size="small">Development servers</Heading>
-          <Spacer.Horizontal size="flex" />
-          <Button.ScaleOnPressContainer
-            bg="default"
-            rounded="full"
-            onPress={onClosePress}
-            accessibilityHint="Close modal">
-            <View padding="tiny">
-              <XIcon />
-            </View>
-          </Button.ScaleOnPressContainer>
-        </Row>
-        <Spacer.Vertical size="small" />
-        <Text size="medium">Start a local development server with:</Text>
-        <Spacer.Vertical size="small" />
-
-        <View bg="secondary" border="default" rounded="medium" padding="medium">
-          <Text type="mono">expo start</Text>
-        </View>
-
-        <Spacer.Vertical size="large" />
-        <Text>Then, select the local server when it appears here.</Text>
-        <Spacer.Vertical size="small" />
-        <Text>
-          Alternatively, open the Camera app and scan the QR code that appears in your terminal.
-        </Text>
       </View>
     </View>
   );

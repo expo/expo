@@ -24,6 +24,7 @@ describe('getInitialData()', () => {
     expect(getBuildInfoAsync).not.toHaveBeenCalled();
     expect(getSettingsAsync).not.toHaveBeenCalled();
     expect(restoreUserAsync).not.toHaveBeenCalled();
+    expect(queryDevSessionsAsync).not.toHaveBeenCalled();
 
     await getInitialData();
 
