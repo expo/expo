@@ -43,14 +43,15 @@ export type PackageDependency = {
 type Platform = 'ios' | 'android' | 'web';
 
 /**
- * Type representing `unimodule.json` structure.
+ * Type representing `expo-modules.config.json` structure.
  */
-export type UnimoduleJson = {
+export type ExpoModuleConfig = {
   name: string;
   platforms: Platform[];
   ios?: {
     subdirectory?: string;
     podName?: string;
+    podspecPath?: string;
   };
   android?: {
     subdirectory?: string;
@@ -63,13 +64,13 @@ export type UnimoduleJson = {
 export class Package {
   path: string;
   packageJson: PackageJson;
-  unimoduleJson: UnimoduleJson;
+  unimoduleJson: ExpoModuleConfig;
   packageView?: Npm.PackageViewType | null;
 
   constructor(rootPath: string, packageJson?: PackageJson) {
     this.path = rootPath;
     this.packageJson = packageJson || require(path.join(rootPath, 'package.json'));
-    this.unimoduleJson = readUnimoduleJsonAtDirectory(rootPath);
+    this.unimoduleJson = readExpoModuleConfigJson(rootPath);
   }
 
   get hasPlugin(): boolean {
@@ -92,6 +93,27 @@ export class Package {
     return this.packageJson.scripts || {};
   }
 
+  get podspecPath(): string | null {
+    if (this.unimoduleJson?.ios?.podspecPath) {
+      return this.unimoduleJson.ios.podspecPath;
+    }
+
+    const iosConfig = {
+      subdirectory: 'ios',
+      ...(this.unimoduleJson?.ios ?? {}),
+    };
+
+    // Obtain podspecName by looking for podspecs
+    const podspecPaths = glob.sync('*.podspec', {
+      cwd: path.join(this.path, iosConfig.subdirectory),
+    });
+
+    if (!podspecPaths || podspecPaths.length === 0) {
+      return null;
+    }
+    return path.join(iosConfig.subdirectory, podspecPaths[0]);
+  }
+
   get podspecName(): string | null {
     const iosConfig = {
       subdirectory: 'ios',
@@ -103,15 +125,11 @@ export class Package {
       return iosConfig.podName as string;
     }
 
-    // Obtain podspecName by looking for podspecs
-    const podspecPaths = glob.sync('*.podspec', {
-      cwd: path.join(this.path, iosConfig.subdirectory),
-    });
-
-    if (!podspecPaths || podspecPaths.length === 0) {
+    const podspecPath = this.podspecPath;
+    if (!podspecPath) {
       return null;
     }
-    return path.basename(podspecPaths[0], '.podspec');
+    return path.basename(podspecPath, '.podspec');
   }
 
   get iosSubdirectory(): string {
@@ -285,13 +303,8 @@ export class Package {
     if (platform === 'ios') {
       return (
         this.isSupportedOnPlatform(platform) &&
-        !!this.podspecName &&
-        fs
-          .readFileSync(
-            path.join(this.path, this.iosSubdirectory, `${this.podspecName}.podspec`),
-            'utf8'
-          )
-          .includes('test_spec')
+        !!this.podspecPath &&
+        fs.readFileSync(path.join(this.path, this.podspecPath), 'utf8').includes('test_spec')
       );
     }
     // TODO(tsapeta): Support web.
@@ -313,12 +326,10 @@ export class Package {
    * or `null` if the package doesn't have a podspec.
    */
   async getPodspecAsync(): Promise<Podspec | null> {
-    const podspecName = this.podspecName;
-    const podspecPath = path.join(this.path, this.iosSubdirectory, `${podspecName}.podspec`);
-
-    if (!podspecName) {
+    if (!this.podspecPath) {
       return null;
     }
+    const podspecPath = path.join(this.path, this.podspecPath);
     return await readPodspecAsync(podspecPath);
   }
 }
@@ -356,10 +367,12 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   return cachedPackages;
 }
 
-function readUnimoduleJsonAtDirectory(dir: string) {
+function readExpoModuleConfigJson(dir: string) {
+  const expoModuleConfigJsonPath = path.join(dir, 'expo-module.config.json');
+  const expoModuleConfigJsonExists = fs.existsSync(expoModuleConfigJsonPath);
   const unimoduleJsonPath = path.join(dir, 'unimodule.json');
   try {
-    return require(unimoduleJsonPath);
+    return require(expoModuleConfigJsonExists ? expoModuleConfigJsonPath : unimoduleJsonPath);
   } catch (error) {
     return null;
   }
