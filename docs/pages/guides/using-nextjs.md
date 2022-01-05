@@ -247,7 +247,7 @@ export default function FontDemo() {
     (async () => {
       try {
         await Font.loadAsync({
-          // You can get this font on Github: https://shorturl.at/chEHS
+          // You can get this font on GitHub: https://shorturl.at/chEHS
           'space-mono': require('./assets/SpaceMono-Regular.ttf'),
         });
       } catch ({ message }) {

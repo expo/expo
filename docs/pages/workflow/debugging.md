@@ -52,7 +52,7 @@ This might indicate that there is a performance issue. You likely need to run yo
 
 ## Stuck?
 
-The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.dev/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
+The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
 
 ## Useful tools for debugging
 
