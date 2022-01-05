@@ -20,9 +20,9 @@ Expo provides a set of APIs and utilities to improve the process of developing n
 
 To create a new Expo module from scratch, run `npx create-expo-module`.
 
-## Use the Expo Modules API in an existing React Native library
+## Use the Expo Module API in an existing React Native library
 
-You may want to use the Expo Modules API in existing React Native libraries, for example with [AppDelegate Subscribers](./appdelegate-subscribers.md) you can hook into `AppDelegate` methods without requiring developers to copy any code over to their own `AppDelegate`. This is particularly useful to add seamless support for Expo managed projects to a library. The following steps will set up your existing React Native library to have access to the Expo Modules API.
+You may want to use the Expo module API in existing React Native libraries, for example with [AppDelegate Subscribers](./appdelegate-subscribers.md) you can hook into `AppDelegate` methods without requiring developers to copy any code over to their own `AppDelegate`. This is particularly useful to add seamless support for Expo managed projects to a library. The following steps will set up your existing React Native library to have access to the Expo module API.
 
 ### 1. Initialize the module config
 
@@ -69,4 +69,4 @@ Add `expo` package as a peer dependency in your **package.json** — we recommen
 
 </CodeBlocksTable>
 
-You can now use Expo Modules APIs in your library. You may be interested in referring to the [AppDelegate Subscribers](./appdelegate-subscribers.md) guide next.
+You can now use Expo module APIs in your library. You may be interested in referring to the [AppDelegate Subscribers](./appdelegate-subscribers.md) guide next.
