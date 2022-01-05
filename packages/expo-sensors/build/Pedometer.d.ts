@@ -34,3 +34,4 @@ export declare function isAvailableAsync(): Promise<boolean>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+//# sourceMappingURL=Pedometer.d.ts.map

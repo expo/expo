@@ -162,3 +162,4 @@ export interface AuthRequestConfig {
      */
     usePKCE?: boolean;
 }
+//# sourceMappingURL=AuthRequest.types.d.ts.map

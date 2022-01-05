@@ -21,3 +21,4 @@ export * from './Crypto.types';
  * ```
  */
 export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data: string, options?: CryptoDigestOptions): Promise<Digest>;
+//# sourceMappingURL=Crypto.d.ts.map

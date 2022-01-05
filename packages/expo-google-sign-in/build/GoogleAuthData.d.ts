@@ -6,3 +6,4 @@ declare class GoogleAuthData {
     };
 }
 export default GoogleAuthData;
+//# sourceMappingURL=GoogleAuthData.d.ts.map

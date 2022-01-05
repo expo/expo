@@ -57,3 +57,4 @@ export declare class Recording {
 }
 export * from './RecordingConstants';
 export { PermissionResponse, PermissionStatus, PermissionHookOptions, RecordingOptions, RecordingStatus, };
+//# sourceMappingURL=Recording.d.ts.map

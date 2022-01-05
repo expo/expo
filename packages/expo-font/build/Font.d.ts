@@ -49,3 +49,4 @@ export declare function unloadAllAsync(): Promise<void>;
  */
 export declare function unloadAsync(fontFamilyOrFontMap: string | Record<string, UnloadFontOptions>, options?: UnloadFontOptions): Promise<void>;
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
+//# sourceMappingURL=Font.d.ts.map

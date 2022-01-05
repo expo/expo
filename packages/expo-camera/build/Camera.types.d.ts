@@ -282,3 +282,4 @@ export declare type BarCodeSettings = {
     interval?: number;
 };
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+//# sourceMappingURL=Camera.types.d.ts.map

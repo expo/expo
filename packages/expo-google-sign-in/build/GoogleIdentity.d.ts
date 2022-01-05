@@ -13,3 +13,4 @@ declare class GoogleIdentity extends GoogleAuthData {
     };
 }
 export default GoogleIdentity;
+//# sourceMappingURL=GoogleIdentity.d.ts.map

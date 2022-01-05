@@ -42,3 +42,4 @@ export declare type RecordingInput = {
     type: string;
     uid: string;
 };
+//# sourceMappingURL=Recording.types.d.ts.map

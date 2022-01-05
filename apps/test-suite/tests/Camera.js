@@ -10,19 +10,20 @@ export const name = 'Camera';
 const style = { width: 200, height: 200 };
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Camera', () => {
     let instance = null;
     let originalTimeout;
 
-    const refSetter = ref => {
+    const refSetter = (ref) => {
       instance = ref;
     };
 
     const mountAndWaitFor = (child, propName = 'onCameraReady') =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const response = originalMountAndWaitFor(child, propName, setPortalChild);
         setTimeout(() => resolve(response), 1500);
       });
@@ -260,7 +261,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             .recordAsync({
               codec: '123',
             })
-            .catch(error => {
+            .catch((error) => {
               t.expect(error.message).toMatch(/(?=.*codec)(?=.*is not supported)/i);
             });
         });
@@ -292,7 +293,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
 
       // Test for the fix to: https://github.com/expo/expo/issues/1976
-      const testFrontCameraRecording = async camera => {
+      const testFrontCameraRecording = async (camera) => {
         await mountAndWaitFor(camera);
         const response = await instance.recordAsync({ maxDuration: 2 });
 
@@ -350,7 +351,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.it('started/stopped manually', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
-          const recordFor = duration =>
+          const recordFor = (duration) =>
             new Promise(async (resolve, reject) => {
               const recordingPromise = instance.recordAsync();
               await waitFor(duration);
@@ -373,7 +374,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.it('started/stopped automatically', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
-          const recordFor = duration =>
+          const recordFor = (duration) =>
             new Promise(async (resolve, reject) => {
               try {
                 const response = await instance.recordAsync({ maxDuration: duration / 1000 });

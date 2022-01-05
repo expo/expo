@@ -106,3 +106,4 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+//# sourceMappingURL=Brightness.d.ts.map

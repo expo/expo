@@ -6,7 +6,7 @@ import { InlineCode } from '~/components/base/code';
 
 Expo automates the process of signing your app for iOS and Android, but in both cases you can choose to provide your own overrides. [EAS Build](/build/introduction.md) can generate signed or unsigned applications, but in order to distribute your application through the stores, it **must** be a signed application.
 
-On this page, we'll talk about the credentials that each platform requires. If you're curious about how we store your credentials on our end, take a look at our [security documentation](security.md).
+On this page, we'll talk about the credentials that each platform requires. If you're curious about how we store your credentials on our end, take a look at our [security documentation](/distribution/security.md).
 
 <details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
 

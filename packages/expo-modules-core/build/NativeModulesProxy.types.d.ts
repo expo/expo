@@ -6,3 +6,4 @@ export declare type ProxyNativeModule = {
 export declare type TurboNativeModuleProxy = {
     callMethodAsync: <ReturnType>(moduleName: string, methodName: string, args: any[]) => Promise<ReturnType>;
 };
+//# sourceMappingURL=NativeModulesProxy.types.d.ts.map

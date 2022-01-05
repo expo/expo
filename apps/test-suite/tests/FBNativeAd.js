@@ -4,14 +4,8 @@ import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const {
-  NativeAdsManager,
-  AdSettings,
-  withNativeAd,
-  AdMediaView,
-  AdIconView,
-  AdTriggerView,
-} = FacebookAds;
+const { NativeAdsManager, AdSettings, withNativeAd, AdMediaView, AdIconView, AdTriggerView } =
+  FacebookAds;
 
 try {
   AdSettings.addTestDevice(AdSettings.currentDeviceHash);
@@ -70,7 +64,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     t.describe('when given a valid placementId', () => {
       let nativeAd;
 
-      const mountAndWaitFor = child =>
+      const mountAndWaitFor = (child) =>
         new Promise((resolve, reject) => {
           const clonedChild = React.cloneElement(child, { onAdLoaded: resolve, onError: reject });
           setPortalChild(clonedChild);
@@ -92,7 +86,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         30000
       );
 
-      variables.forEach(variable => {
+      variables.forEach((variable) => {
         t.it(`checking if variable ${variable} is not null`, () => {
           t.expect(nativeAd ? nativeAd[variable] : null).not.toBeNull();
         });

@@ -183,3 +183,4 @@ export declare function getAttributionIDAsync(): Promise<string | null>;
  * Sets additional data about the user to increase the chances of matching a Facebook user.
  */
 export declare function setUserDataAsync(userData: UserData): Promise<void>;
+//# sourceMappingURL=Facebook.d.ts.map

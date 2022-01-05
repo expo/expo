@@ -48,3 +48,4 @@ export declare type DocumentResult = {
     file?: File;
     output?: FileList | null;
 };
+//# sourceMappingURL=types.d.ts.map

@@ -5,10 +5,10 @@ import { isMatch } from 'lodash';
 import React from 'react';
 import { Alert } from 'react-native';
 
-export const waitFor = millis => new Promise(resolve => setTimeout(resolve, millis));
+export const waitFor = (millis) => new Promise((resolve) => setTimeout(resolve, millis));
 
-export const alertAndWaitForResponse = async message => {
-  return new Promise(resolve => Alert.alert(message, null, [{ text: 'OK', onPress: resolve }]));
+export const alertAndWaitForResponse = async (message) => {
+  return new Promise((resolve) => Alert.alert(message, null, [{ text: 'OK', onPress: resolve }]));
 };
 
 export const retryForStatus = (object, status) =>
@@ -30,13 +30,13 @@ export const retryForStatus = (object, status) =>
 export const mountAndWaitFor = (
   child: React.Node,
   propName = 'ref',
-  setPortalChild: React.Node => void
+  setPortalChild: (React.Node) => void
 ) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     // `ref` prop is set directly in the child, not in the `props` object.
     // https://github.com/facebook/react/issues/8873#issuecomment-275423780
     const previousPropFunc = propName === 'ref' ? child.ref : child.props[propName];
-    const newPropFunc = val => {
+    const newPropFunc = (val) => {
       previousPropFunc && previousPropFunc(val);
       resolve(val);
     };
@@ -54,7 +54,7 @@ export class TimeoutError extends Error {
 export const mountAndWaitForWithTimeout = (
   child: React.Node,
   propName = 'ref',
-  setPortalChild: React.Node => void,
+  setPortalChild: (React.Node) => void,
   timeout
 ) =>
   Promise.race([

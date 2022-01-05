@@ -14,3 +14,4 @@ export declare function resolveScheme(props: {
     scheme?: string;
     isSilent?: boolean;
 }): string;
+//# sourceMappingURL=Schemes.d.ts.map

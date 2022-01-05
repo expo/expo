@@ -16,3 +16,4 @@ declare const _default: {
     isRootedExperimentalAsync(): Promise<boolean>;
 };
 export default _default;
+//# sourceMappingURL=ExpoDevice.web.d.ts.map

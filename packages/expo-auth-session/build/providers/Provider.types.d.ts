@@ -7,3 +7,4 @@ export interface ProviderAuthRequestConfig extends AuthRequestConfig {
      */
     language?: string;
 }
+//# sourceMappingURL=Provider.types.d.ts.map

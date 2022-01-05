@@ -149,3 +149,4 @@ export declare type WebBrowserCompleteAuthSessionResult = {
      */
     message: string;
 };
+//# sourceMappingURL=WebBrowser.types.d.ts.map

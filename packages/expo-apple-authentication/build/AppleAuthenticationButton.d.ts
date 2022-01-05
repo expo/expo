@@ -25,3 +25,4 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  */
 declare const AppleAuthenticationButton: React.FC<AppleAuthenticationButtonProps>;
 export default AppleAuthenticationButton;
+//# sourceMappingURL=AppleAuthenticationButton.d.ts.map

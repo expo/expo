@@ -112,3 +112,4 @@ export declare type ResultSet = {
     }[];
 };
 export declare type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError | ResultSet)[]) => void;
+//# sourceMappingURL=SQLite.types.d.ts.map

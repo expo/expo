@@ -29,3 +29,4 @@ export declare function stopMediaStream(stream: MediaStream | null): void;
 export declare function setVideoSource(video: HTMLVideoElement, stream: MediaStream | MediaSource | Blob | null): void;
 export declare function isCapabilityAvailable(video: HTMLVideoElement, keyName: string): boolean;
 export {};
+//# sourceMappingURL=WebCameraUtils.d.ts.map

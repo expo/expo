@@ -121,10 +121,10 @@ jobs:
       - name: 🥥 Install pods in apps/bare-expo/ios
         run: pod install
         working-directory: apps/bare-expo/ios
-      - name: Clean Detox
+      - name: 🧹 Clean Detox
         run: yarn detox:clean
         working-directory: apps/bare-expo
-      - name: Build iOS project for Detox
+      - name: 🏗️ Build iOS project for Detox
         run: yarn ios:detox:build:release
         working-directory: apps/bare-expo
         timeout-minutes: 30
@@ -187,7 +187,7 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn react-native config
         working-directory: apps/bare-expo
-      - name: Clean Detox
+      - name: 🧹 Clean Detox
         run: yarn detox:clean
         working-directory: apps/bare-expo
       - name: 💿 Patch react-native to support single abi
@@ -201,7 +201,7 @@ jobs:
         timeout-minutes: 35
         env:
           GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
-      - name: Build Android project for Detox
+      - name: 🏗️ Build Android project for Detox
         run: yarn android:detox:build:release
         working-directory: apps/bare-expo
         timeout-minutes: 35

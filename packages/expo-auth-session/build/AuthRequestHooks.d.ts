@@ -25,3 +25,4 @@ export declare function useAuthRequest(config: AuthRequestConfig, discovery: Dis
     (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ];
 export {};
+//# sourceMappingURL=AuthRequestHooks.d.ts.map

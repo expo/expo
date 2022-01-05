@@ -68,3 +68,4 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=AdMobBanner.d.ts.map

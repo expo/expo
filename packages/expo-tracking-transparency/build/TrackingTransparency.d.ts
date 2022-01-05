@@ -63,3 +63,4 @@ export declare const useTrackingPermissions: (options?: PermissionHookOptions<ob
  */
 export declare function isAvailable(): boolean;
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+//# sourceMappingURL=TrackingTransparency.d.ts.map

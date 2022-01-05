@@ -10,3 +10,4 @@ export declare function getManifest(): {
 export declare function getManifest2(): Manifest | undefined;
 export declare const manifestBaseUrl: string | null;
 export declare function downloadAsync(uri: any, hash: any, type: any, name: any): Promise<string>;
+//# sourceMappingURL=PlatformUtils.d.ts.map

@@ -3,3 +3,4 @@ declare const _default: {
     getIsReady(): Promise<boolean>;
 };
 export default _default;
+//# sourceMappingURL=ExpoAdsAdMobInterstitialManager.web.d.ts.map

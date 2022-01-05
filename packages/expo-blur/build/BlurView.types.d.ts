@@ -16,3 +16,4 @@ export declare type BlurViewProps = {
     intensity?: number;
 } & ViewProps;
 export declare type BlurTint = 'light' | 'dark' | 'default';
+//# sourceMappingURL=BlurView.types.d.ts.map

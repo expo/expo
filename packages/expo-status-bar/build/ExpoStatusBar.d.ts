@@ -10,3 +10,4 @@ import { StatusBarProps } from './StatusBar.types';
  * component exported from React Native, and it provides defaults that work better for Expo users.
  */
 export default function ExpoStatusBar(props: StatusBarProps): null;
+//# sourceMappingURL=ExpoStatusBar.d.ts.map

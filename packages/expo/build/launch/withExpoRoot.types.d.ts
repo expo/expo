@@ -9,3 +9,4 @@ export declare type InitialProps = {
     shellManifestUrl?: string;
     [key: string]: any;
 };
+//# sourceMappingURL=withExpoRoot.types.d.ts.map

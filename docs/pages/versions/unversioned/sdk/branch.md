@@ -6,7 +6,9 @@ packageName: 'expo-branch'
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referrals and attribution with deep links. **This module only works in standalone apps &mdash; you will need to [build a standalone app](../../../distribution/building-standalone-apps.md) in order to test it, rather than using Expo Go.**
+> ⚠️ **This module only works in standalone apps on the classic build service (`expo build`)**. It is **not compatible with EAS Build**. [Work is in progress to add managed EAS Build support for react-native-branch](https://github.com/expo/config-plugins/pull/28). Once this is ready, `expo-branch` will be deprecated.
+
+**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referrals and attribution with deep links.
 
 <PlatformsSection android emulator ios simulator />
 

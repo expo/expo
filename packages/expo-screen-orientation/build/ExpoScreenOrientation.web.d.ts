@@ -9,3 +9,4 @@ declare const _default: {
     unlockAsync(): Promise<void>;
 };
 export default _default;
+//# sourceMappingURL=ExpoScreenOrientation.web.d.ts.map

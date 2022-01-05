@@ -32,3 +32,4 @@ export declare function useAuthRequest(config?: Partial<FacebookAuthRequestConfi
     (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ];
 export {};
+//# sourceMappingURL=Facebook.d.ts.map

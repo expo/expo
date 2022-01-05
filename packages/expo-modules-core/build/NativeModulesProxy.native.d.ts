@@ -7,3 +7,4 @@ declare const NativeModulesProxy: {
  */
 export declare function useExpoTurboModules(state?: boolean): void;
 export default NativeModulesProxy;
+//# sourceMappingURL=NativeModulesProxy.native.d.ts.map

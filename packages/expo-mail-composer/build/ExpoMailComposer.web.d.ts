@@ -5,3 +5,4 @@ declare const _default: {
     isAvailableAsync(): Promise<boolean>;
 };
 export default _default;
+//# sourceMappingURL=ExpoMailComposer.web.d.ts.map

@@ -68,3 +68,4 @@ export declare type AuthSessionRedirectUriOptions = {
      */
     native?: string;
 };
+//# sourceMappingURL=AuthSession.types.d.ts.map

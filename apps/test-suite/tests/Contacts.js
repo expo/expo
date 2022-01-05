@@ -19,24 +19,15 @@ async function sortContacts(contacts, sortField, expect) {
   }
 }
 
-export async function test({
-  describe,
-  it,
-  xdescribe,
-  xit,
-  fit,
-  jasmine,
-  expect,
-  afterAll,
-  beforeAll,
-}) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+export async function test({ describe, it, xdescribe, jasmine, expect, afterAll }) {
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? xdescribe : describe;
 
   function compareArrays(array, expected) {
     return expected.reduce(
       (result, expectedItem) =>
-        result && array.filter(item => compareObjects(item, expectedItem)).length,
+        result && array.filter((item) => compareObjects(item, expectedItem)).length,
       true
     );
   }
@@ -80,7 +71,7 @@ export async function test({
     });
 
     const createdContactIds = [];
-    const createContact = async contact => {
+    const createContact = async (contact) => {
       const id = await Contacts.addContactAsync(contact);
       createdContactIds.push({ id, contact });
       return id;
@@ -123,7 +114,7 @@ export async function test({
       ];
 
       await Promise.all(
-        contacts.map(async contact => {
+        contacts.map(async (contact) => {
           const id = await createContact(contact);
           expect(typeof id).toBe('string');
         })
@@ -227,7 +218,7 @@ export async function test({
 
       const newContactId = await createContact(contact);
 
-      const { data, hasNextPage, hasPreviousPage, ...props } = await Contacts.getContactsAsync({
+      const { data, hasNextPage, hasPreviousPage } = await Contacts.getContactsAsync({
         id: newContactId,
       });
 
@@ -554,8 +545,8 @@ export async function test({
         let errorMessage;
         try {
           await Contacts.removeGroupAsync('some-value');
-        } catch ({ message }) {
-          errorMessage = message;
+        } catch (e) {
+          errorMessage = e.message;
         } finally {
           expect(errorMessage).toBe(
             `The method or property Contacts.removeGroupAsync is not available on android, are you sure you've linked all the native dependencies properly?`
@@ -566,8 +557,8 @@ export async function test({
           let errorMessage;
           try {
             await Contacts.removeGroupAsync(group.id);
-          } catch ({ message }) {
-            errorMessage = message;
+          } catch (e) {
+            errorMessage = e.message;
           }
           expect(errorMessage).toBeUndefined();
         }

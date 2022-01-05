@@ -4,3 +4,4 @@ declare const _default: {
     hideAsync(): boolean;
 };
 export default _default;
+//# sourceMappingURL=ExpoSplashScreen.web.d.ts.map

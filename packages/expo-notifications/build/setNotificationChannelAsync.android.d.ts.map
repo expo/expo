@@ -1,0 +1,1 @@
+{"version":3,"file":"setNotificationChannelAsync.android.d.ts","sourceRoot":"","sources":["../src/setNotificationChannelAsync.android.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,wBAAwB,EAAE,mBAAmB,EAAE,MAAM,oCAAoC,CAAC;AAEnG,wBAA8B,2BAA2B,CACvD,SAAS,EAAE,MAAM,EACjB,OAAO,EAAE,wBAAwB,GAChC,OAAO,CAAC,mBAAmB,GAAG,IAAI,CAAC,CAMrC"}

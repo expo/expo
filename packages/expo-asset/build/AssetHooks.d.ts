@@ -20,3 +20,4 @@ import { Asset } from './Asset';
  * ```
  */
 export declare function useAssets(moduleIds: number | number[]): [Asset[] | undefined, Error | undefined];
+//# sourceMappingURL=AssetHooks.d.ts.map

@@ -95,3 +95,4 @@ declare class FirebaseAnalyticsJS {
     setClientId(clientId: string): void;
 }
 export default FirebaseAnalyticsJS;
+//# sourceMappingURL=FirebaseAnalyticsJS.d.ts.map

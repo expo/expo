@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.5.5 — 2022-01-05
+
+### 🐛 Bug fixes
+
+- Fix `umbrella directory '../../Public/React-Core/React' not found` build error when in `use_frameworks!` mode. ([#15773](https://github.com/expo/expo/pull/15773) by [@kudo](https://github.com/kudo))
+
 ## 0.5.4 — 2021-12-29
 
 ### 🐛 Bug fixes

@@ -6,3 +6,4 @@ declare const _default: {
     removeClipboardListener(): void;
 };
 export default _default;
+//# sourceMappingURL=ExpoClipboard.web.d.ts.map
