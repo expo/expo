@@ -31,6 +31,11 @@ export const updateAndroidProjects = new Task<TaskArgs>(
         continue;
       }
 
+      // the ejs template versions are not necessary to update
+      if (pkg.packageName === 'expo-module-template') {
+        continue;
+      }
+
       const relativeGradlePath = path.relative(EXPO_DIR, gradlePath);
 
       logger.log('  ', `Updating ${yellow('version')} in ${magenta(relativeGradlePath)}`);
