@@ -718,9 +718,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void getCurrentInput(final Promise promise) {
-    // We can cast this safely because Robin only uses the wav recorder.
     AudioDeviceInfo deviceInfo = null;
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      // Only returns valid device when actively recording:
+      // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
       deviceInfo = mAudioRecorder.getRoutedDevice();
     } else {
       promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current input is unsupported on" +
