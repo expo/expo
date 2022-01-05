@@ -11,8 +11,7 @@ class EXDevLauncherURLHelperTests: XCTestCase {
     XCTAssertFalse(EXDevLauncherURLHelper.isDevLauncherURL(URL(string: "scheme://not-expo-development-client")))
   }
 
-  // TODO: fix
-  func xtestReplaceEXPScheme() {
+  func testReplaceEXPScheme() {
     let actual1 = EXDevLauncherURLHelper.replaceEXPScheme(URL(string: "exp://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081")!, to: "scheme")
     XCTAssertEqual(URL(string: "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081"), actual1)
 
