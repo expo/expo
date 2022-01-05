@@ -513,11 +513,31 @@ A static convenience method to construct and start a recording is also provided:
 
   A `Promise` that is fulfilled when the recorder is loaded and prepared, or rejects if this failed. If another `Recording` exists in your experience that is currently prepared to record, the `Promise` will reject. If the `RecordingOptions` provided are invalid, the `Promise` will also reject. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
 
-- `recordingInstance.isPreparedToRecord()`
+- `recordingInstance.getAvailableInputs()` 
+
+  Returns a list of available recording inputs. This method can only be called if the `Recording` has been prepared.
+  #### Returns
+
+  A `Promise` that is fulfilled with an array of `RecordingInput` objects with `name`, `uid` and `type` params.
+
+- `recordingInstance.getCurrentInput()`
+
+  Returns a the currently-selected recording input. This method can only be called if the `Recording` has been prepared.
 
   #### Returns
 
-  A `boolean` that is true if and only if the `Recording` is prepared to record.
+  A `Promise` that is fulfilled with a `RecordingInput` objects with `name`, `uid` and `type` params.
+
+- `recordingInstance.setInput(inputUid)` 
+
+  Sets the current recording input.
+
+  #### Parameters
+
+  - **inputUid (_string_)** -- The uid of a `RecordingInput`.
+  #### Returns
+
+  A `Promise` that is resolved if successful or rejected if not.
 
 - `recordingInstance.startAsync()`
 
