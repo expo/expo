@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Guess the device language on iOS rather than using the app-specific language.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
