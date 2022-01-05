@@ -213,7 +213,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalization (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.6.3):
+  - ExpoModulesCore (0.6.4):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoSystemUI (1.1.0):
@@ -1308,7 +1308,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: d04e519b3e8e21523b195bb21a40144e30f1e163
+  ExpoModulesCore: 64abda7af7cf659d2fa092934e29c6f4ea7e849f
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
   EXRandom: 06978dcf45075f3c9e17ae5e726b887316ee9877
