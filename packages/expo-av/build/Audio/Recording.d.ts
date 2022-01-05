@@ -40,7 +40,7 @@ export declare class Recording {
     prepareToRecordAsync(options?: RecordingOptions): Promise<RecordingStatus>;
     getAvailableInputs(): Promise<RecordingInput[]>;
     getCurrentInput(): Promise<RecordingInput>;
-    setInput(input: string): Promise<void>;
+    setInput(inputUid: string): Promise<void>;
     startAsync(): Promise<RecordingStatus>;
     pauseAsync(): Promise<RecordingStatus>;
     stopAndUnloadAsync(): Promise<RecordingStatus>;

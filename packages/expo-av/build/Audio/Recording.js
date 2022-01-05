@@ -179,8 +179,8 @@ export class Recording {
     async getCurrentInput() {
         return ExponentAV.getCurrentInput();
     }
-    async setInput(input) {
-        return ExponentAV.setInput(input);
+    async setInput(inputUid) {
+        return ExponentAV.setInput(inputUid);
     }
     async startAsync() {
         return this._performOperationAndHandleStatusAsync(() => ExponentAV.startAudioRecording());
