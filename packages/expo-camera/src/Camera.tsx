@@ -15,7 +15,6 @@ import {
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
-  VideoCodec,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import CameraManager from './ExponentCameraManager';
