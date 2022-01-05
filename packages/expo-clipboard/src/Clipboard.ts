@@ -120,11 +120,11 @@ export async function getPngImageAsync(): Promise<string | null> {
  * for example as the `Image` component source.
  * @platform iOS
  */
-export async function getJpgImageAsync(): Promise<string | null> {
-  if (!ExpoClipboard.getJpgImageAsync) {
-    throw new UnavailabilityError('Clipboard', 'getJpgImageAsync');
+export async function getJpegImageAsync(): Promise<string | null> {
+  if (!ExpoClipboard.getJpegImageAsync) {
+    throw new UnavailabilityError('Clipboard', 'getJpegImageAsync');
   }
-  return await ExpoClipboard.getJpgImageAsync();
+  return await ExpoClipboard.getJpegImageAsync();
 }
 
 /**

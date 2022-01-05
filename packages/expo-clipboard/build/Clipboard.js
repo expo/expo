@@ -102,11 +102,11 @@ export async function getPngImageAsync() {
  * for example as the `Image` component source.
  * @platform iOS
  */
-export async function getJpgImageAsync() {
-    if (!ExpoClipboard.getJpgImageAsync) {
-        throw new UnavailabilityError('Clipboard', 'getJpgImageAsync');
+export async function getJpegImageAsync() {
+    if (!ExpoClipboard.getJpegImageAsync) {
+        throw new UnavailabilityError('Clipboard', 'getJpegImageAsync');
     }
-    return await ExpoClipboard.getJpgImageAsync();
+    return await ExpoClipboard.getJpegImageAsync();
 }
 /**
  * Sets an image in the user's clipboard.

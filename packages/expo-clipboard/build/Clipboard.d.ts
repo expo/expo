@@ -66,7 +66,7 @@ export declare function getPngImageAsync(): Promise<string | null>;
  * for example as the `Image` component source.
  * @platform iOS
  */
-export declare function getJpgImageAsync(): Promise<string | null>;
+export declare function getJpegImageAsync(): Promise<string | null>;
 /**
  * Sets an image in the user's clipboard.
  *
