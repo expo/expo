@@ -118,6 +118,9 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       continue;
     }
     const shouldUseBareExpo = packagesToTestWithBareExpo.includes(pkg.packageName);
+    if (!shouldUseBareExpo) {
+      continue;
+    }
 
     try {
       console.log('erictest', 'preparing schemes', pkg.packageName);
