@@ -720,9 +720,32 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void getCurrentInput(final Promise promise) {
     AudioDeviceInfo deviceInfo = null;
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-      // Only returns valid device when actively recording:
-      // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
-      deviceInfo = mAudioRecorder.getRoutedDevice();
+
+      try {
+        // getRoutedDevice() is the most reliable way to return the actual mic input, however it
+        // only returns a valid device when actively recording, and may throw otherwise.
+        // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
+        deviceInfo = mAudioRecorder.getRoutedDevice();
+      } catch (Exception e) {
+        // Noop if this throws, try alternate method of determining current input below.
+      }
+
+      // If no routed device is found try preferred device
+      deviceInfo = mAudioRecorder.getPreferredDevice();
+
+      if (deviceInfo == null) {
+        // If no preferred device is found, set it to the first built-in input we can find
+        AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+        for (int i = 0; i < audioDevices.length; i++) {
+          AudioDeviceInfo availableDeviceInfo = audioDevices[i];
+          int type = availableDeviceInfo.getType();
+          if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
+            deviceInfo = availableDeviceInfo;
+            mAudioRecorder.setPreferredDevice(deviceInfo);
+            break;
+          }
+        }
+      }
     } else {
       promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current input is unsupported on" +
         " Android devices running SDK < 24.");
