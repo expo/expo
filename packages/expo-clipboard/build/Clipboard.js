@@ -30,9 +30,10 @@ export function setString(text) {
     return ExpoClipboard.setString(text);
 }
 /**
- * (iOS only) Gets the url from the user's clipboard.
+ * Gets the url from the user's clipboard.
  *
- * @returns A promise that resolves to the url in the clipboard.
+ * @returns A promise that fulfills to the url in the clipboard.
+ * @platform iOS
  */
 export async function getUrlAsync() {
     if (!ExpoClipboard.getUrlAsync) {
@@ -41,10 +42,10 @@ export async function getUrlAsync() {
     return await ExpoClipboard.getUrlAsync();
 }
 /**
- * (iOS only) Sets a url in the user's clipboard.
+ * Sets a url in the user's clipboard.
  *
  * @param url The url to save to the clipboard.
- * @returns
+ * @platform iOS
  */
 export async function setUrlAsync(url) {
     if (!ExpoClipboard.setUrlAsync) {
@@ -53,9 +54,10 @@ export async function setUrlAsync(url) {
     return ExpoClipboard.setUrlAsync(url);
 }
 /**
- * (iOS only) Returns whether the clipboard has a URL content.
+ * Returns whether the clipboard has a URL content.
  *
- * @returns A promise that resolves to `true` if clipboard has URL content, resolves to `false` otherwise.
+ * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
+ * @platform iOS
  */
 export async function hasUrlAsync() {
     if (!ExpoClipboard.hasUrlAsync) {
@@ -64,10 +66,11 @@ export async function hasUrlAsync() {
     return await ExpoClipboard.hasUrlAsync();
 }
 /**
- * (iOS only) Gets the image from the user's clipboard in the png format.
+ * Gets the image from the user's clipboard in the png format.
  *
- * @returns A promise that resolves to base64 png image from the clipboard. You can use it
+ * @returns A promise that fulfills to base64 png image from the clipboard. You can use it
  * for example as the Image component source.
+ * @platform iOS
  */
 export async function getPngImageAsync() {
     if (!ExpoClipboard.getPngImageAsync) {
@@ -76,10 +79,11 @@ export async function getPngImageAsync() {
     return await ExpoClipboard.getPngImageAsync();
 }
 /**
- * (iOS only) Gets the image from the user's clipboard in the jpg format.
+ * Gets the image from the user's clipboard in the jpg format.
  *
  * @returns A promise that resolves to base64 jpg image from the clipboard. You can use it
  * for example as the `Image` component source.
+ * @platform iOS
  */
 export async function getJpgImageAsync() {
     if (!ExpoClipboard.getJpgImageAsync) {
@@ -88,10 +92,10 @@ export async function getJpgImageAsync() {
     return await ExpoClipboard.getJpgImageAsync();
 }
 /**
- * (iOS only) Sets an image in the user's clipboard.
+ * Sets an image in the user's clipboard.
  *
  * @param base64Image Image encoded as a base64 string, without mime type.
- * @returns
+ * @platform iOS
  */
 export async function setImageAsync(base64Image) {
     if (!ExpoClipboard.setImageAsync) {
@@ -100,9 +104,10 @@ export async function setImageAsync(base64Image) {
     return ExpoClipboard.setImageAsync(base64Image);
 }
 /**
- * (iOS only) Returns whether the clipboard has a image content.
+ * Returns whether the clipboard has a image content.
  *
- * @returns A promise that resolves to `true` if clipboard has image content, resolves to `false` otherwise.
+ * @returns A promise that fulfills to `true` if clipboard has image content, resolves to `false` otherwise.
+ * @platform iOS
  */
 export async function hasImageAsync() {
     if (!ExpoClipboard.hasImageAsync) {
