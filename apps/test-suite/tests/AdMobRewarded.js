@@ -1,6 +1,5 @@
-import { Platform } from 'react-native';
 import { AdMobRewarded, setTestDeviceIDAsync } from 'expo-ads-admob';
-import { waitFor } from './helpers';
+import { Platform } from 'react-native';
 
 export const name = 'AdMobRewarded';
 

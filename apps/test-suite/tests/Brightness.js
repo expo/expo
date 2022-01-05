@@ -7,7 +7,8 @@ export const name = 'Brightness';
 export const EPSILON = Math.pow(10, -5);
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   t.describe(name, () => {

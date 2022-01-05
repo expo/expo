@@ -46,7 +46,8 @@ const amrSettings = {
 // > Source: https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Recording', () => {
@@ -323,7 +324,7 @@ export async function test(t) {
         await recordingObject.startAsync();
 
         const recordingDuration = defaultRecordingDurationMillis;
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           setTimeout(async () => {
             await recordingObject.stopAndUnloadAsync();
             let error = null;
@@ -353,7 +354,7 @@ export async function test(t) {
           await recordingObject.startAsync();
 
           const recordingDuration = defaultRecordingDurationMillis;
-          await new Promise(resolve => {
+          await new Promise((resolve) => {
             setTimeout(async () => {
               await recordingObject.stopAndUnloadAsync();
               let error = null;
@@ -415,7 +416,7 @@ export async function test(t) {
         await recordingObject.startAsync();
 
         const recordingDuration = defaultRecordingDurationMillis;
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           setTimeout(async () => {
             await recordingObject.stopAndUnloadAsync();
             let error = null;
@@ -446,7 +447,7 @@ export async function test(t) {
           await recordingObject.startAsync();
 
           const recordingDuration = defaultRecordingDurationMillis;
-          await new Promise(resolve => {
+          await new Promise((resolve) => {
             setTimeout(async () => {
               await recordingObject.stopAndUnloadAsync();
               let error = null;

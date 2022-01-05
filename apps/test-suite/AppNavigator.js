@@ -24,7 +24,6 @@ const shouldDisableTransition = !!global.DETOX;
 const transitionSpec = shouldDisableTransition ? { open: spec, close: spec } : undefined;
 
 export default function AppNavigator(props) {
-
   React.useLayoutEffect(() => {
     if (props.navigation) {
       props.navigation.setOptions({
@@ -34,7 +33,7 @@ export default function AppNavigator(props) {
           const color = focused ? Colors.activeTintColor : Colors.inactiveTintColor;
           return <MaterialCommunityIcons name="format-list-checks" size={27} color={color} />;
         },
-      })
+      });
     }
   }, [props.navigation]);
 
