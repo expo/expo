@@ -66,7 +66,7 @@
     "expo-font": "~10.0.3",
     "expo-keep-awake": "~10.0.0",
     "expo-modules-autolinking": "~0.3.4",
-    "expo-modules-core": "~0.4.9",
+    "expo-modules-core": "~0.4.10",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "md5-file": "^3.2.3",

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `ReactInstanceManager.onHostPause` exception from moving Android apps to background. ([#15748](https://github.com/expo/expo/pull/15748) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.4.10 — 2022-01-05
+
+### 🐛 Bug fixes
+
+- Fix `ReactInstanceManager.onHostPause` exception from moving Android apps to background. ([#15748](https://github.com/expo/expo/pull/15748) by [@kudo](https://github.com/kudo))
 
 ## 0.4.9 — 2021-12-08
 
