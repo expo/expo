@@ -8,6 +8,6 @@ interface Promise {
   fun reject(code: String, message: String?, cause: Throwable?)
 
   fun reject(exception: CodedException) {
-    reject(exception.code, exception.message, exception.cause)
+    reject(exception.code, exception.localizedMessage, exception.cause)
   }
 }

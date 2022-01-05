@@ -1,5 +1,6 @@
 package expo.modules.kotlin.exception
 
+import com.facebook.react.bridge.ReadableType
 import java.util.*
 import kotlin.reflect.KType
 
@@ -17,7 +18,7 @@ open class CodedException(
   val code
     get() = providedCode ?: inferCode(javaClass)
 
-  constructor(code: String, message: String, cause: Throwable?) : this(message, cause) {
+  constructor(code: String, message: String?, cause: Throwable?) : this(message, cause) {
     providedCode = code
   }
 
@@ -60,11 +61,70 @@ internal class MissingTypeConverter(
 internal class InvalidArgsNumberException(received: Int, expected: Int) :
   CodedException(message = "Received $received arguments, but $expected was expected.")
 
-internal class MethodNotFoundException(methodName: String, moduleName: String) :
-  CodedException(message = "Cannot fund method $methodName in module $moduleName")
+internal class MethodNotFoundException :
+  CodedException(message = "Method does not exist.")
 
-internal class NullArgumentException(desiredType: KType) :
-  CodedException(message = "Cannot assigned null to not nullable type $desiredType")
+internal class NullArgumentException :
+  CodedException(message = "Cannot assigned null to not nullable type.")
 
 internal class UnexpectedException(val throwable: Throwable) :
-  CodedException(throwable)
+  CodedException(message = throwable.toString(), throwable)
+
+/**
+ * A base class for all exceptions used in `exceptionDecorator` function.
+ */
+internal open class DecoratedException(
+  message: String?,
+  cause: CodedException,
+) : CodedException(
+  cause.code,
+  message = "$message${System.lineSeparator()}caused by: ${cause.localizedMessage ?: cause}",
+  cause
+)
+
+internal class MethodCallException(
+  methodName: String,
+  moduleName: String,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot call `$methodName` from the `$moduleName`.",
+  cause,
+)
+
+internal class ArgumentCastException(
+  argDesiredType: KType,
+  argIndex: Int,
+  providedType: ReadableType,
+  cause: CodedException,
+) : DecoratedException(
+  message = "Cannot obtain `$argIndex` parameter. Tried to cast `${providedType.name}` to `$argDesiredType`.",
+  cause,
+)
+
+internal class FieldCastException(
+  fieldName: String,
+  fieldType: KType,
+  providedType: ReadableType,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot obtain `$fieldName` field. Tried to cast `${providedType.name}` to $fieldType`.",
+  cause
+)
+
+internal class RecordCastException(
+  recordType: KType,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot create a record of the type: `$recordType`.",
+  cause
+)
+
+internal class CollectionElementCastException(
+  collectionType: KType,
+  elementType: KType,
+  providedType: ReadableType,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot cast `${providedType.name}` to `$elementType` required by the collection of type: `$collectionType`.",
+  cause
+)

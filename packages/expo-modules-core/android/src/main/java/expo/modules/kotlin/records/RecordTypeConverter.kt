@@ -3,6 +3,10 @@ package expo.modules.kotlin.records
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
+import expo.modules.kotlin.exception.FieldCastException
+import expo.modules.kotlin.exception.RecordCastException
+import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterProvider
 import kotlin.reflect.KClass
@@ -18,7 +22,7 @@ class RecordTypeConverter<T : Record>(
 ) : TypeConverter<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
 
-  override fun convertNonOptional(value: Dynamic): T {
+  override fun convertNonOptional(value: Dynamic): T = exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
     val jsMap = value.asMap()
 
     val kClass = type.classifier as KClass<*>
@@ -35,14 +39,17 @@ class RecordTypeConverter<T : Record>(
           return@map
         }
 
-        val value = jsMap.getDynamic(jsKey)
-        val javaField = property.javaField!!
+        jsMap.getDynamic(jsKey).recycle {
+          val javaField = property.javaField!!
 
-        val elementConverter = converterProvider.obtainTypeConverter(property.returnType)
-        val casted = elementConverter.convert(value)
+          val elementConverter = converterProvider.obtainTypeConverter(property.returnType)
+          val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
+            elementConverter.convert(this)
+          }
 
-        javaField.isAccessible = true
-        javaField.set(instance, casted)
+          javaField.isAccessible = true
+          javaField.set(instance, casted)
+        }
       }
 
     @Suppress("UNCHECKED_CAST")
