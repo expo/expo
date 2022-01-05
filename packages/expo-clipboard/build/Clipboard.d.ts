@@ -31,49 +31,54 @@ export declare function setStringAsync(text: string): Promise<boolean>;
  */
 export declare function setString(text: string): void;
 /**
- * (iOS only) Gets the url from the user's clipboard.
+ * Gets the url from the user's clipboard.
  *
- * @returns A promise that resolves to the url in the clipboard.
+ * @returns A promise that fulfills to the url in the clipboard.
+ * @platform iOS
  */
 export declare function getUrlAsync(): Promise<string | null>;
 /**
- * (iOS only) Sets a url in the user's clipboard.
+ * Sets a url in the user's clipboard.
  *
  * @param url The url to save to the clipboard.
- * @returns
+ * @platform iOS
  */
 export declare function setUrlAsync(url: string): Promise<void>;
 /**
- * (iOS only) Returns whether the clipboard has a URL content.
+ * Returns whether the clipboard has a URL content.
  *
- * @returns A promise that resolves to `true` if clipboard has URL content, resolves to `false` otherwise.
+ * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
+ * @platform iOS
  */
 export declare function hasUrlAsync(): Promise<boolean>;
 /**
- * (iOS only) Gets the image from the user's clipboard in the png format.
+ * Gets the image from the user's clipboard in the png format.
  *
- * @returns A promise that resolves to base64 png image from the clipboard. You can use it
+ * @returns A promise that fulfills to base64 png image from the clipboard. You can use it
  * for example as the Image component source.
+ * @platform iOS
  */
 export declare function getPngImageAsync(): Promise<string | null>;
 /**
- * (iOS only) Gets the image from the user's clipboard in the jpg format.
+ * Gets the image from the user's clipboard in the jpg format.
  *
  * @returns A promise that resolves to base64 jpg image from the clipboard. You can use it
  * for example as the `Image` component source.
+ * @platform iOS
  */
 export declare function getJpgImageAsync(): Promise<string | null>;
 /**
- * (iOS only) Sets an image in the user's clipboard.
+ * Sets an image in the user's clipboard.
  *
  * @param base64Image Image encoded as a base64 string, without mime type.
- * @returns
+ * @platform iOS
  */
 export declare function setImageAsync(base64Image: string): Promise<void>;
 /**
- * (iOS only) Returns whether the clipboard has a image content.
+ * Returns whether the clipboard has a image content.
  *
- * @returns A promise that resolves to `true` if clipboard has image content, resolves to `false` otherwise.
+ * @returns A promise that fulfills to `true` if clipboard has image content, resolves to `false` otherwise.
+ * @platform iOS
  */
 export declare function hasImageAsync(): Promise<boolean>;
 /**
