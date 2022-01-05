@@ -55,7 +55,7 @@ public class ClipboardModule: Module {
       }
     }
       
-    function("getJpgImageAsync") { () -> String? in
+    function("getJpegImageAsync") { () -> String? in
       let jpgPrefix = "data:image/jpeg;base64,"
       if let image = UIPasteboard.general.image, let data = image.jpegData(compressionQuality: 1.0) {
         return jpgPrefix + data.base64EncodedString()
