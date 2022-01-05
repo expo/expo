@@ -31,7 +31,7 @@ export const updateAndroidProjects = new Task<TaskArgs>(
         continue;
       }
 
-      // the ejs template versions are not necessary to update
+      // skip updating versions in the template project
       if (pkg.packageName === 'expo-module-template') {
         continue;
       }
