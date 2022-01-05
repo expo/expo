@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unpublished
+— Added methods to get and set audio recording inputs.
 
 ### 🛠 Breaking changes
 
