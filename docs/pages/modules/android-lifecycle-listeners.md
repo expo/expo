@@ -179,7 +179,7 @@ public class MyLibPackage implements Package {
 
 </Tabs>
 
-`MyLibApplicationLifecycleListener` is an `ApplicationLifecycleListener` derived class that can hook into the `Application` lifecycle callbacks. You should only override the methods you need.
+`MyLibApplicationLifecycleListener` is an `ApplicationLifecycleListener` derived class that can hook into the `Application` lifecycle callbacks. You should only override the methods you need ([due to possible maintenance costs](#interface-stability)).
 
 <Tabs tabs={["Kotlin", "Java"]}>
 
@@ -229,8 +229,8 @@ public class MyLibApplicationLifecycleListener implements ApplicationLifecycleLi
 
 ### Why there are no `onStart` and `onStop` Activity listeners
 
-In the current implementation, we do not set up the hooks from `MainActivity` but from [`ReactActivityDelegate`](https://github.com/facebook/react-native/blob/400902093aa3ccfc05712a996c592a86f342253a/ReactAndroid/src/main/java/com/facebook/react/ReactActivityDelegate.java). There is some slight difference between `MainActivity` and `ReactActivityDelegate`. Since `ReactActivityDelegate` does not have `onStart` and `onStop`, that is why we don't support them in the meantime.
+In the current implementation, we do not set up the hooks from `MainActivity` but from [`ReactActivityDelegate`](https://github.com/facebook/react-native/blob/400902093aa3ccfc05712a996c592a86f342253a/ReactAndroid/src/main/java/com/facebook/react/ReactActivityDelegate.java). There are some slight differences between `MainActivity` and `ReactActivityDelegate`. Since `ReactActivityDelegate` does not have `onStart` and `onStop`, we don't yet support them here.
 
-### Interfaces stability
+### Interface stability
 
 The listener interfaces may change from time to time between Expo SDK releases. Our strategy for backward compatibility is always to add new interfaces and add `@Deprecated` annotation for interfaces we plan to remove. Our interfaces are all based on Java 8 interface default method; you don't have to and should not implement all methods. Doing this will benefit your module's maintenance cost between Expo SDKs.
