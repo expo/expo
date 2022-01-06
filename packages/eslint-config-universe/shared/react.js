@@ -14,7 +14,7 @@ module.exports = {
     'react/jsx-fragments': ['warn', 'syntax'],
     'react/jsx-indent': ['warn', 2],
     'react/jsx-indent-props': ['warn', 2],
-    'react/jsx-no-bind': ['warn', { allowArrowFunctions: true }],
+    'react/jsx-no-bind': ['warn', { allowArrowFunctions: true, allowFunctions: true }],
     'react/jsx-no-duplicate-props': 'error',
     'react/jsx-no-undef': 'error',
     'react/jsx-props-no-multi-spaces': 'warn',
