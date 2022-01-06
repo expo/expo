@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix bug where all URL schemes, rather than just `exp`, were replaced with `http`. ([#15796](https://github.com/expo/expo/pull/15796) by [@esamelson](https://github.com/esamelson))
+- Fix bug on iOS where all URL schemes, rather than just `exp`, were replaced with `http`. ([#15796](https://github.com/expo/expo/pull/15796) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
