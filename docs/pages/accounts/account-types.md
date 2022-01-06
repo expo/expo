@@ -63,4 +63,4 @@ If you aren't happy with the name you originally chose for your account, you may
 
 If you need to transfer a project between your Personal Account or Organzions you are an Owner of, you can do so by visiting [the project overview page](https://expo.dev/accounts/[account]/projects/[project]) and following the prompts under **Transfer Project**.
 
-> 💡 If you need to transfer a project from your account (`source`) to an Organization (`destination`) you are not the Owner of, you can create a new Organization (`escrow`) to complete the transfer without Owner access on the destination account. You can and the Owner to the `destination` account can safely share Owner access on the `escrow` account.
+> 💡 If you need to transfer a project from your account (`source`) to an Organization (`destination`) you are not the Owner of, you can create a new Organization (`escrow`) to complete the transfer without Owner access on the destination account. You can add the Owner to the `destination` account can safely share Owner access on the `escrow` account.
