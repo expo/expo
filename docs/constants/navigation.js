@@ -26,6 +26,7 @@ const GROUPS = {
   'Technical Specs': ['Technical Specs'],
   'Development Builds': ['Development Builds'],
   'EAS Update': ['EAS Update'],
+  'Expo Modules': ['Expo Modules'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -426,6 +427,16 @@ const sections = [
       'View Style Props',
     ],
   },
+  {
+    name: 'Expo Modules',
+    reference: [
+      'Overview',
+      'Module API',
+      'Android Lifecycle Listeners',
+      'iOS AppDelegate Subscribers',
+      'Module Config',
+    ],
+  },
 ];
 
 // Order of sections (mapped from directory names in navigation-data.js DIR_MAPPING)
@@ -438,6 +449,7 @@ const ROOT = [
   'Fundamentals',
   'Distributing Your App',
   'Assorted Guides',
+  'Expo Modules',
   'Expo Accounts',
   'Bare Workflow',
   'Push Notifications',
