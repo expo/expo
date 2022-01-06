@@ -37,7 +37,7 @@ concurrency:
 jobs:
   build:
     runs-on: macos-11
-    timeout-minutes: 60
+    timeout-minutes: 2
     steps:
       - uses: actions/checkout@v2
         with:
@@ -99,5 +99,5 @@ jobs:
         run: pod install
         working-directory: apps/bare-expo/ios
       - name: Run native iOS unit tests
-        timeout-minutes: 45
+        timeout-minutes: 1
         run: expotools native-unit-tests --platform ios
