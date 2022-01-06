@@ -14,7 +14,7 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for Node 10 due to dependency upgrades. Also ESlint 7.28.x or newer is required.
+- Dropped support for Node 10 due to dependency upgrades. Also ESlint 7.28.x or newer is required. ([#15810](https://github.com/expo/expo/pull/15810) by [@ide](https://github.com/ide))
 - Bumped `@typescript-eslint/eslint-plugin` from 4.28.5 to 5.9.0 for ESLint 8.x support. Same with `@typescript-eslint/parser`. 
 - Bumped `"eslint-plugin-prettier` from 3.4.0 to 4.0.0
 
