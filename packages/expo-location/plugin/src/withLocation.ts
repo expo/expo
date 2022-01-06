@@ -20,13 +20,15 @@ const withBackgroundLocation: ConfigPlugin = (config) => {
   });
 };
 
-const withLocation: ConfigPlugin<{
-  locationAlwaysAndWhenInUsePermission?: string;
-  locationAlwaysPermission?: string;
-  locationWhenInUsePermission?: string;
-  isIosBackgroundLocationEnabled?: boolean;
-  isAndroidBackgroundLocationEnabled?: boolean;
-} | void> = (
+const withLocation: ConfigPlugin<
+  {
+    locationAlwaysAndWhenInUsePermission?: string;
+    locationAlwaysPermission?: string;
+    locationWhenInUsePermission?: string;
+    isIosBackgroundLocationEnabled?: boolean;
+    isAndroidBackgroundLocationEnabled?: boolean;
+  } | void
+> = (
   config,
   {
     locationAlwaysAndWhenInUsePermission,

@@ -25,9 +25,11 @@ interface ExpoConfigWithInitialOrientation extends ExpoConfig {
   initialOrientation?: OrientationMasks;
 }
 
-const withScreenOrientationViewController: ConfigPlugin<{
-  initialOrientation?: keyof typeof OrientationLock;
-} | void> = (config, { initialOrientation = 'DEFAULT' } = {}) => {
+const withScreenOrientationViewController: ConfigPlugin<
+  {
+    initialOrientation?: keyof typeof OrientationLock;
+  } | void
+> = (config, { initialOrientation = 'DEFAULT' } = {}) => {
   config = withInfoPlist(config, (config) => {
     const extendedConfig = {
       ...config,

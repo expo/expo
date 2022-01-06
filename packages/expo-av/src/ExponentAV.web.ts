@@ -321,7 +321,7 @@ export default {
       return this.getAudioRecordingStatus();
     }
 
-    const dataPromise = new Promise((resolve) =>
+    const dataPromise = new Promise<Blob>((resolve) =>
       mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data))
     );
 

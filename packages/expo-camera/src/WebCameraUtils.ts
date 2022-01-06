@@ -384,7 +384,7 @@ export function setVideoSource(
   } else if (typeof (video as any).mozSrcObject !== 'undefined') {
     (video as any).mozSrcObject = stream;
   } else if (stream && createObjectURL) {
-    video.src = createObjectURL(stream);
+    video.src = createObjectURL(stream as MediaSource | Blob);
   }
 
   if (!stream) {
