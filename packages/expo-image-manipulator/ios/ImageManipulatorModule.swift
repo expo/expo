@@ -106,7 +106,7 @@ public class ImageManipulatorModule: Module {
     let filename = UUID().uuidString.appending(options.format.fileExtension)
     let fileUrl = directory.appendingPathComponent(filename)
 
-    fileSystem.ensureDirExists(withPath: directory.absoluteString)
+    fileSystem.ensureDirExists(withPath: directory.path)
 
     guard let data = imageData(from: image, format: options.format, compression: options.compress) else {
       throw CorruptedImageDataError()
