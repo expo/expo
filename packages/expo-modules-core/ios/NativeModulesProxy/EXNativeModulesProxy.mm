@@ -161,6 +161,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
       });
     }
   }
+  [_swiftInteropBridge setReactBridge:bridge];
   _bridge = bridge;
 }
 
