@@ -15,7 +15,7 @@ val BundledAppManifest = """
      "scheme":"myapp",
      "splash":{
         "image":"./assets/images/splash.png",
-        "imageUrl":"https://d1wp6m56sqw74a.cloudfront.net/~assets/201a91bd1740bb1d6a1dbad049310724",
+        "imageUrl":"https://classic-assets.eascdn.net/~assets/201a91bd1740bb1d6a1dbad049310724",
         "resizeMode":"contain",
         "backgroundColor":"#ffffff"
      },
@@ -24,10 +24,10 @@ val BundledAppManifest = """
         "adaptiveIcon":{
            "backgroundColor":"#ffffff",
            "foregroundImage":"./assets/images/adaptive-icon.png",
-           "foregroundImageUrl":"https://d1wp6m56sqw74a.cloudfront.net/~assets/97dae5a0e62ad8551d8a31897b425e63"
+           "foregroundImageUrl":"https://classic-assets.eascdn.net/~assets/97dae5a0e62ad8551d8a31897b425e63"
         }
      },
-     "iconUrl":"https://d1wp6m56sqw74a.cloudfront.net/~assets/4e3f888fc8475f69fd5fa32f1ad5216a",
+     "iconUrl":"https://classic-assets.eascdn.net/~assets/4e3f888fc8475f69fd5fa32f1ad5216a",
      "locales":{
         
      },

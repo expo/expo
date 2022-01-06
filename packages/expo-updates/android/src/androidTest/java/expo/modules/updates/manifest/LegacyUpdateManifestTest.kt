@@ -20,7 +20,7 @@ class LegacyUpdateManifestTest {
     val mockManifest = mockk<LegacyManifest>()
     every { mockManifest.getAssetUrlOverride() } returns null
 
-    val expected = Uri.parse("https://d1wp6m56sqw74a.cloudfront.net/~assets/")
+    val expected = Uri.parse("https://classic-assets.eascdn.net/~assets/")
     Assert.assertEquals(
       expected,
       LegacyUpdateManifest.getAssetsUrlBase(Uri.parse("https://exp.host/@test/test"), mockManifest)
@@ -40,7 +40,7 @@ class LegacyUpdateManifestTest {
     val mockManifest = mockk<LegacyManifest>()
     every { mockManifest.getAssetUrlOverride() } returns null
 
-    val expected = Uri.parse("https://d1wp6m56sqw74a.cloudfront.net/~assets/")
+    val expected = Uri.parse("https://classic-assets.eascdn.net/~assets/")
     Assert.assertEquals(
       expected,
       LegacyUpdateManifest.getAssetsUrlBase(
