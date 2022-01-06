@@ -75,10 +75,6 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [[_moduleRegistryAdapter extraModulesForBridge:bridge] mutableCopy];
-  // RCTDevMenu was removed when integrating React with Expo client:
-  // https://github.com/expo/react-native/commit/7f2912e8005ea6e81c45935241081153b822b988
-  // Let's bring it back in Bare Expo.
-  [extraModules addObject:(id<RCTBridgeModule>)[RCTDevMenu new]];
   // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
   return extraModules;
 }
