@@ -4,15 +4,21 @@ title: Android Lifecycle Listeners
 
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 
-Some native modules need to apply changes in the **MainActivity.java** or **MainApplication.java** to finish the setup. The Expo Modules system has an extensible design allowing your module to hook into `Activity` or `Application` functions.
+In order to respond to certain Android system events relevant to an app, such as inbound links and configuration changes, it is necessary to override the corresponding lifecycle callbacks in **MainActivity.java** and/or **MainApplication.java**.
+
+The React Native module API does not provide any mechanism to hook into these, and so setup instructions for React Native libraries often include steps to copy code into these files. To simplify and automate setup and maintenance, the Expo module API provides a mechanism that allows your library to hook into `Activity` or `Application` functions.
 
 ## Get Started
 
-You should [create an Android module first](./overview.md#setup), then to create a concrete class that implements the [`Package`](https://github.com/expo/expo/blob/master/packages/expo-modules-core/android/src/main/java/expo/modules/core/interfaces/Package.java) interface. For most cases, you only need to implement `createReactActivityLifecycleListeners` or `createApplicationLifecycleListeners` methods.
+First, you need to have created an Expo module or integrated the Expo modules API in library using the React Native module API. [Learn more](./overview.md#setup)
+
+Inside of your module, a concrete class that implements the [`Package`](https://github.com/expo/expo/blob/master/packages/expo-modules-core/android/src/main/java/expo/modules/core/interfaces/Package.java) interface. For most cases, you only need to implement the `createReactActivityLifecycleListeners` or `createApplicationLifecycleListeners` methods.
 
 ## `Activity` Lifecycle Listeners
 
-If you want to have hook code from `Activity` lifecycles, the `ReactActivityLifecycleListener` is aimed for this use case. `ReactActivityLifecycleListener` hooks into React Native's `ReactActivity` lifecycles by its `ReactActivityDelegate` and provides approximate experience to Android `Activity` lifecycles. We support these lifecycles so far:
+You can hook into the `Activity` lifecycle using `ReactActivityLifecycleListener`. `ReactActivityLifecycleListener` hooks into React Native's `ReactActivity` lifecycles using its `ReactActivityDelegate` and provides a similar experience to Android `Activity` lifecycles.
+
+The following `Activity` lifecycle callbacks are currently supported:
 
 - `onCreate`
 - `onResume`
@@ -119,7 +125,9 @@ public class MyLibReactActivityLifecycleListener implements ReactActivityLifecyc
 
 ## `Application` Lifecycle Listeners
 
-If you want to have hook code from `Application` lifecycles, the `ApplicationLifecycleListener` is aimed for this use case. We support these `Application` lifecycles:
+You can hook into the `Application` lifecycle using `ApplicationLifecycleListener`.
+
+The following `Application` lifecycle callbacks are currently supported:
 
 - `onCreate`
 - `onConfigurationChanged`
@@ -171,7 +179,7 @@ public class MyLibPackage implements Package {
 
 </Tabs>
 
-`MyLibApplicationLifecycleListener` is an `ApplicationLifecycleListener` derived class that you can hook into the lifecycles. You can only override the methods you need.
+`MyLibApplicationLifecycleListener` is an `ApplicationLifecycleListener` derived class that can hook into the `Application` lifecycle callbacks. You should only override the methods you need.
 
 <Tabs tabs={["Kotlin", "Java"]}>
 

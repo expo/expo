@@ -1,14 +1,18 @@
 ---
-title: AppDelegate Subscribers
+title: iOS AppDelegate Subscribers
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-In order to respond to certain operating system events relevant to an app, such as inbound links and notifications, it is necessary to handle the corresponding methods in the `AppDelegate`. The React Native module API does not provide any mechanism to hook into these, and so setup intructions for React Native libraries often include a step to copy code into the project **AppDelegate.m**. To automate this process, Expo modules provide a mechanism that allows your library to subscribe to calls to `AppDelegate` functions. In order for this to work, the app `AppDelegate` must inherit from `ExpoAppDelegate`, and this is a requirement for using Expo Modules.
+In order to respond to certain iOS system events relevant to an app, such as inbound links and notifications, it is necessary to handle the corresponding methods in the `AppDelegate`.
+
+The React Native module API does not provide any mechanism to hook into these methods, and so setup instructions for React Native libraries often include a step to copy code into the `AppDelegate` file. To simplify and automate setup and maintenace, the Expo module API provides a mechanism that allows your library to subscribe to calls to `AppDelegate` functions. In order for this to work, the app `AppDelegate` must inherit from `ExpoAppDelegate`, and this is a requirement for using Expo Modules.
 
 `ExpoAppDelegate` implements most functions from [`UIApplicationDelegate`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate) protocol and forwards their calls to all the subscribers.
 
 ## Get Started
+
+First, you need to have created an Expo module or integrated the Expo modules API in library using the React Native module API. [Learn more](./overview.md#setup)
 
 Create a new public Swift class that extends `ExpoAppDelegateSubscriber` from `ExpoModulesCore` and add its name to the `ios.appDelegateSubscribers` array in the [module config](./module-config.md). Run `pod install`, and the subscriber will be generated in the **ExpoModulesProvider.swift** file within the application project.
 

@@ -432,8 +432,8 @@ const sections = [
     reference: [
       'Overview',
       'Module API',
-      'AppDelegate Subscribers',
       'Android Lifecycle Listeners',
+      'iOS AppDelegate Subscribers',
       'Module Config',
     ],
   },

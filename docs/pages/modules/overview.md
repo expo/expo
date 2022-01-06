@@ -6,16 +6,10 @@ import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
 Expo provides a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app capabilities.
 
-- [Module API](./module-api.md) — Create native modules using Swift and Kotlin (_experimental_).
-- [AppDelegate Subscribers](./appdelegate-subscribers.md) — Respond to iOS AppDelegate events.
+- [Module API](./module-api.md) - Create native modules using Swift and Kotlin (_experimental_).
 - [Android Lifecycle Listeners](./android-lifecycle-listeners.md) - Hook into Android Activity and Application lifecycle events.
+- [iOS AppDelegate Subscribers](./appdelegate-subscribers.md) — Respond to iOS AppDelegate events.
 - [Module Config](./module-config.md) — Configure and opt in to features.
-
-<!--
-- [Autolinking](./autolinking.md) — Link native dependencies automatically.
-- React Delegates
-- Config Plugins
--->
 
 ## Create a new module
 
@@ -70,4 +64,4 @@ Add `expo` package as a peer dependency in your **package.json** — we recommen
 
 </CodeBlocksTable>
 
-You can now use Expo module APIs in your library. You may be interested in referring to the [AppDelegate Subscribers](./appdelegate-subscribers.md) guide next.
+You can now use Expo module APIs in your library. You may be interested in referring to the [Android Lifecycle Listeners](./android-lifecycle-listeners.md) and [iOS AppDelegate Subscribers](./appdelegate-subscribers.md) guides next.
