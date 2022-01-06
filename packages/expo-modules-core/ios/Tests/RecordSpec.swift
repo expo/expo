@@ -37,14 +37,9 @@ class RecordSpec: QuickSpec {
         @Field(.required) var a: Int
       }
 
-      do {
-        _ = try TestRecord(from: [:])
-        fail()
-      } catch let error as CodedError {
+      expect { try TestRecord(from: [:]) }.to(throwError { error in
         expect(error).to(beAKindOf(FieldRequiredException.self))
-        expect(error.code).to(equal("ERR_FIELD_REQUIRED"))
-        expect(error.description).to(equal(FieldRequiredException("a").description))
-      }
+      })
     }
 
     it("throws when casting is not possible") {
@@ -53,14 +48,9 @@ class RecordSpec: QuickSpec {
       }
       let dict = ["a": "try with String instead of Int"]
 
-      do {
-        _ = try TestRecord(from: dict)
-        fail()
-      } catch let error as CodedError {
+      expect { try TestRecord(from: dict) }.to(throwError { error in
         expect(error).to(beAKindOf(FieldInvalidTypeException.self))
-        expect(error.code).to(equal("ERR_FIELD_INVALID_TYPE"))
-        expect(error.description).to(equal(FieldInvalidTypeException((fieldKey: "a", value: dict["a"], desiredType: Int.self)).description))
-      }
+      })
     }
   }
 }

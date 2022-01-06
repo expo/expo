@@ -18,6 +18,11 @@ public protocol ChainableException: Error, AnyObject {
    Sets the direct cause of the exception and returns itself.
    */
   func causedBy(_ error: Error) -> Self
+
+  /**
+   Tells whether any of the cause in chain is of given type.
+   */
+  func isCausedBy<ErrorType: Error>(_ errorType: ErrorType.Type) -> Bool
 }
 
 public extension ChainableException {
@@ -32,5 +37,15 @@ public extension ChainableException {
   func causedBy(_ error: Error) -> Self {
     cause = error
     return self
+  }
+
+  func isCausedBy<ErrorType: Error>(_ errorType: ErrorType.Type) -> Bool {
+    if cause is ErrorType {
+      return true
+    }
+    if let cause = cause as? ChainableException {
+      return cause.isCausedBy(errorType)
+    }
+    return false
   }
 }
