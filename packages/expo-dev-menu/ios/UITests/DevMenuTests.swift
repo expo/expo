@@ -56,8 +56,7 @@ class DevMenuTests: XCTestCase {
     }
   }
 
-  // TODO: fix
-  func xtest_if_dev_menu_is_rendered() {
+  func test_if_dev_menu_is_rendered() {
     DevMenuManager.configure(withBridge: UIMockedNOOPBridge(delegate: nil, launchOptions: nil))
 
     DevMenuManager.shared.openMenu()
@@ -69,7 +68,6 @@ class DevMenuTests: XCTestCase {
     assertViewExists(text: "Host:")
     assertViewExists(text: "localhost:1234")
     assertViewExists(text: "JS Engine:")
-    assertViewExists(text: "JavaScriptCore")
   }
 
   func test_dev_menu_auto_launch() {

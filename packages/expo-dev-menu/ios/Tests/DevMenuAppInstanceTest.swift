@@ -44,8 +44,7 @@ class DevMenuAppInstanceTest: QuickSpec {
       expect(sourceURL).toNot(beNil())
     }
 
-    // TODO: fix
-    xit("checks if extra modules was exported") {
+    it("checks if extra modules was exported") {
       let mockedBridge = MockedBridge(delegate: nil, launchOptions: nil)!
       let appInstance = DevMenuAppInstance(
         manager: DevMenuManager.shared,
@@ -55,10 +54,11 @@ class DevMenuAppInstanceTest: QuickSpec {
       let extraModules = appInstance.extraModules(for: mockedBridge)
 
       expect(extraModules).toNot(beNil())
-      expect(extraModules?.count).toNot(equal(7))
+      expect(extraModules?.count).to(equal(7))
 
       expect(extraModules?.first { type(of: $0).moduleName() == "ExpoDevMenuInternal" }).toNot(beNil())
       expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaProvider" }).toNot(beNil())
+      expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaView" }).toNot(beNil())
       expect(extraModules?.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
     }
   }

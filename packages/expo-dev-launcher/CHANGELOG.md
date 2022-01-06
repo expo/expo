@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug on iOS where all URL schemes, rather than just `exp`, were replaced with `http`. ([#15796](https://github.com/expo/expo/pull/15796) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.10.0 — 2021-12-22
