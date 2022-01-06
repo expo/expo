@@ -14,6 +14,11 @@ public final class AppContext {
   public private(set) var legacyModuleRegistry: EXModuleRegistry?
 
   /**
+   React bridge of the context's app.
+   */
+  public internal(set) weak var reactBridge: RCTBridge?
+
+  /**
    Designated initializer without modules provider.
    */
   public init() {
