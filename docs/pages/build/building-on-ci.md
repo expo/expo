@@ -90,7 +90,7 @@ jobs:
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
