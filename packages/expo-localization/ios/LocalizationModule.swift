@@ -36,7 +36,6 @@ public class LocalizationModule: Module {
     if languageIds.isEmpty {
       languageIds.append("en-US")
     }
-    
     return [
       "currency": locale.currencyCode ?? "USD",
       "decimalSeparator": locale.decimalSeparator ?? ".",
