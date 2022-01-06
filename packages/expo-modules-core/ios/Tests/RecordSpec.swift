@@ -41,9 +41,9 @@ class RecordSpec: QuickSpec {
         _ = try TestRecord(from: [:])
         fail()
       } catch let error as CodedError {
-        expect(error).to(beAKindOf(FieldRequiredError.self))
+        expect(error).to(beAKindOf(FieldRequiredException.self))
         expect(error.code).to(equal("ERR_FIELD_REQUIRED"))
-        expect(error.description).to(equal(FieldRequiredError(fieldKey: "a").description))
+        expect(error.description).to(equal(FieldRequiredException("a").description))
       }
     }
 
@@ -57,9 +57,9 @@ class RecordSpec: QuickSpec {
         _ = try TestRecord(from: dict)
         fail()
       } catch let error as CodedError {
-        expect(error).to(beAKindOf(FieldInvalidTypeError.self))
+        expect(error).to(beAKindOf(FieldInvalidTypeException.self))
         expect(error.code).to(equal("ERR_FIELD_INVALID_TYPE"))
-        expect(error.description).to(equal(FieldInvalidTypeError(fieldKey: "a", value: dict["a"], desiredType: Int.self).description))
+        expect(error.description).to(equal(FieldInvalidTypeException((fieldKey: "a", value: dict["a"], desiredType: Int.self)).description))
       }
     }
   }

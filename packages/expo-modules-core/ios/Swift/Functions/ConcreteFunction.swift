@@ -43,7 +43,7 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
       let tuple = try Conversions.toTuple(finalArgs) as! Args
       returnedValue = closure(tuple)
     } catch let error as CodedError {
-      promise.reject(error)
+      promise.reject(FunctionCallException(name).causedBy(error))
       return
     } catch let error {
       promise.reject(UnexpectedError(error))
@@ -90,21 +90,35 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
 
   private func castArguments(_ args: [Any]) throws -> [Any] {
     if args.count != argumentsCount {
-      throw InvalidArgsNumberError(received: args.count, expected: argumentsCount)
+      throw InvalidArgsNumberException((received: args.count, expected: argumentsCount))
     }
     return try args.enumerated().map { index, arg in
       let expectedType = argumentType(atIndex: index)
 
-      // It's safe to unwrap since the arguments count matches.
-      return try expectedType!.cast(arg)
+      do {
+        // It's safe to unwrap since the arguments count matches.
+        return try expectedType!.cast(arg)
+      } catch {
+        throw ArgumentCastException((index: index, type: expectedType!)).causedBy(error)
+      }
     }
   }
 }
 
-internal struct InvalidArgsNumberError: CodedError {
-  let received: Int
-  let expected: Int
-  var description: String {
-    "Received \(received) arguments, but \(expected) was expected."
+internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int)> {
+  override var reason: String {
+    "Received \(params.received) arguments, but \(params.expected) was expected."
+  }
+}
+
+internal class ArgumentCastException: GenericException<(index: Int, type: AnyArgumentType)> {
+  override var reason: String {
+    "Argument at index \"\(params.index)\" couldn't be casted to type \"\(params.type.description)\"."
+  }
+}
+
+internal class FunctionCallException: GenericException<String> {
+  override var reason: String {
+    "Call to function '\(params)' has been rejected"
   }
 }

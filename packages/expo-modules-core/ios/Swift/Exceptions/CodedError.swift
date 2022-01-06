@@ -18,7 +18,7 @@ public extension CodedError {
    */
   var code: String {
     let className = String(describing: type(of: self))
-      .replacingOccurrences(of: #"(Error)?(<.*>)?$"#, with: "", options: .regularExpression)
+      .replacingOccurrences(of: #"(Error|Exception)?(<.*>)?$"#, with: "", options: .regularExpression)
     let regex = try! NSRegularExpression(pattern: "(.)([A-Z])", options: [])
     let range = NSRange(location: 0, length: className.count)
 
