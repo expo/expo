@@ -1,0 +1,228 @@
+---
+title: Android Lifecycle Listeners
+---
+
+import { Tab, Tabs } from '~/components/plugins/Tabs';
+
+Some native modules need to apply changes in the **MainActivity.java** or **MainApplication.java** to finish the setup. The Expo Modules system has an extensible design allowing your module to hook into `Activity` or `Application` functions.
+
+## Get Started
+
+You should [create an Android module first](./overview.md#setup), then to create a concrete class that implements the [`Package`](https://github.com/expo/expo/blob/master/packages/expo-modules-core/android/src/main/java/expo/modules/core/interfaces/Package.java) interface. For most cases, you only need to implement `createReactActivityLifecycleListeners` or `createApplicationLifecycleListeners` methods.
+
+## `Activity` Lifecycle Listeners
+
+If you want to have hook code from `Activity` lifecycles, the `ReactActivityLifecycleListener` is aimed for this use case. `ReactActivityLifecycleListener` hooks into React Native's `ReactActivity` lifecycles by its `ReactActivityDelegate` and provides approximate experience to Android `Activity` lifecycles. We support these lifecycles so far:
+
+- `onCreate`
+- `onResume`
+- `onPause`
+- `onDestrory`
+- `onNewIntent`
+- `onBackPressed`
+
+To create a `ReactActivityLifecycleListener`, you should implement `createReactActivityLifecycleListeners` in your derived `Package` class, e.g. `MyLibPackage`.
+
+<Tabs tabs={["Kotlin", "Java"]}>
+
+<Tab>
+
+```kotlin
+// android/src/main/java/expo/modules/mylib/MyLibPackage.kt
+package expo.modules.mylib
+
+import android.content.Context
+import expo.modules.core.interfaces.Package
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class MyLibPackage : Package {
+  override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
+    return listOf(MyLibReactActivityLifecycleListener())
+  }
+}
+```
+
+</Tab>
+
+<Tab>
+
+```java
+// android/src/main/java/expo/modules/mylib/MyLibPackage.java
+package expo.modules.mylib;
+
+import android.content.Context;
+import expo.modules.core.interfaces.Package;
+import expo.modules.core.interfaces.ReactActivityLifecycleListener;
+
+import java.util.Collections;
+import java.util.List;
+
+public class MyLibPackage implements Package {
+  @Override
+  public List<? extends ReactActivityLifecycleListener> createReactActivityLifecycleListeners(Context activityContext) {
+    return Collections.singletonList(new MyLibReactActivityLifecycleListener());
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+`MyLibReactActivityLifecycleListener` is a `ReactActivityLifecycleListener` derived class that you can hook into the lifecycles. You can only override the methods you need.
+
+<Tabs tabs={["Kotlin", "Java"]}>
+
+<Tab>
+
+```kotlin
+// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.kt
+package expo.modules.mylib
+
+import android.app.Activity
+import android.os.Bundle
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class MyLibReactActivityLifecycleListener : ReactActivityLifecycleListener {
+  override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
+    // Your setup code in `Activity.onCreate`.
+    doSomeSetupInActivityOnCreate(activity)
+  }
+}
+```
+
+</Tab>
+
+<Tab>
+
+```java
+// android/src/main/java/expo/modules/mylib/MyLibReactActivityLifecycleListener.java
+package expo.modules.mylib;
+
+import android.app.Activity;
+import android.os.Bundle;
+
+import expo.modules.core.interfaces.ReactActivityLifecycleListener;
+
+public class MyLibReactActivityLifecycleListener implements ReactActivityLifecycleListener {
+  @Override
+  public void onCreate(Activity activity, Bundle savedInstanceState) {
+    // Your setup code in `Activity.onCreate`.
+    doSomeSetupInActivityOnCreate(activity);
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+## `Application` Lifecycle Listeners
+
+If you want to have hook code from `Application` lifecycles, the `ApplicationLifecycleListener` is aimed for this use case. We support these `Application` lifecycles:
+
+- `onCreate`
+- `onConfigurationChanged`
+
+To create a `ApplicationLifecycleListener`, you should implement `createApplicationLifecycleListeners` in your derived `Package` class, e.g. `MyLibPackage`.
+
+<Tabs tabs={["Kotlin", "Java"]}>
+
+<Tab>
+
+```kotlin
+// android/src/main/java/expo/modules/mylib/MyLibPackage.kt
+package expo.modules.mylib
+
+import android.content.Context
+import expo.modules.core.interfaces.ApplicationLifecycleListener
+import expo.modules.core.interfaces.Package
+
+class MyLibPackage : Package {
+  override fun createApplicationLifecycleListeners(context: Context): List<ApplicationLifecycleListener> {
+    return listOf(MyLibApplicationLifecycleListener())
+  }
+}
+```
+
+</Tab>
+
+<Tab>
+
+```java
+// android/src/main/java/expo/modules/mylib/MyLibPackage.java
+import android.content.Context;
+
+import java.util.Collections;
+import java.util.List;
+
+import expo.modules.core.interfaces.ApplicationLifecycleListener;
+import expo.modules.core.interfaces.Package;
+
+public class MyLibPackage implements Package {
+  @Override
+  public List<? extends ApplicationLifecycleListener> createApplicationLifecycleListeners(Context context) {
+    return Collections.singletonList(new MyLibApplicationLifecycleListener());
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+`MyLibApplicationLifecycleListener` is an `ApplicationLifecycleListener` derived class that you can hook into the lifecycles. You can only override the methods you need.
+
+<Tabs tabs={["Kotlin", "Java"]}>
+
+<Tab>
+
+```kotlin
+// android/src/main/java/expo/modules/mylib/MyLibApplicationLifecycleListener.kt
+package expo.modules.mylib
+
+import android.app.Application
+import expo.modules.core.interfaces.ApplicationLifecycleListener
+
+class MyLibApplicationLifecycleListener : ApplicationLifecycleListener {
+  override fun onCreate(application: Application) {
+    // Your setup code in `Application.onCreate`.
+    doSomeSetupInApplicationOnCreate(application)
+  }
+}
+```
+
+</Tab>
+
+<Tab>
+
+```java
+// android/src/main/java/expo/modules/mylib/MyLibApplicationLifecycleListener.java
+package expo.modules.mylib;
+
+import android.app.Application;
+
+import expo.modules.core.interfaces.ApplicationLifecycleListener;
+
+public class MyLibApplicationLifecycleListener implements ApplicationLifecycleListener {
+  @Override
+  public void onCreate(Application application) {
+    // Your setup code in `Application.onCreate`.
+    doSomeSetupInApplicationOnCreate(application);
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+## Known Issues
+
+### Why there are no `onStart` and `onStop` Activity listeners
+
+In the current implementation, we do not set up the hooks from `MainActivity` but from [`ReactActivityDelegate`](https://github.com/facebook/react-native/blob/400902093aa3ccfc05712a996c592a86f342253a/ReactAndroid/src/main/java/com/facebook/react/ReactActivityDelegate.java). There is some slight difference between `MainActivity` and `ReactActivityDelegate`. Since `ReactActivityDelegate` does not have `onStart` and `onStop`, that is why we don't support them in the meantime.
+
+### Interfaces stability
+
+The listener interfaces may change from time to time between Expo SDK releases. Our strategy for backward compatibility is always to add new interfaces and add `@Deprecated` annotation for interfaces we plan to remove. Our interfaces are all based on Java 8 interface default method; you don't have to and should not implement all methods. Doing this will benefit your module's maintenance cost between Expo SDKs.

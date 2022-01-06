@@ -8,6 +8,7 @@ Expo provides a set of APIs and utilities to improve the process of developing n
 
 - [Module API](./module-api.md) — Create native modules using Swift and Kotlin (_experimental_).
 - [AppDelegate Subscribers](./appdelegate-subscribers.md) — Respond to iOS AppDelegate events.
+- [Android Lifecycle Listeners](./android-lifecycle-listeners.md) - Hook into Android Activity and Application lifecycle events.
 - [Module Config](./module-config.md) — Configure and opt in to features.
 
 <!--
