@@ -27,6 +27,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-18.04
+    timeout-minutes: 60
     env:
       NDK_ABI_FILTERS: x86_64
     steps:
@@ -74,6 +75,7 @@ jobs:
         working-directory: android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
       - name: Run native Android unit tests
+        timeout-minutes: 30
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         run: expotools native-unit-tests --platform android
