@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@expo/config-types": "^43.0.1",
-    "eslint": "^7.31.0",
+    "eslint": "^8.6.0",
     "expo-yarn-workspaces": "*",
     "jsc-android": "^245459.0.0",
     "prettier": "^2.4.1",

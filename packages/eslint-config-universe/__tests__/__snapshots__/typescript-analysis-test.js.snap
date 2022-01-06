@@ -44,6 +44,7 @@ Object {
 export function myFunc(foo: T | null) {
   return foo && foo.a && foo.a.b && foo.a.b.c;
 }",
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;
@@ -74,6 +75,7 @@ for (const b in arr) {
   sum += b;
 }
 export { sum };",
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -116,6 +118,7 @@ Object {
   return a || b;
 }
 ",
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;
@@ -142,6 +145,7 @@ Object {
   "source": "export function wat() {
   throw 3;
 }",
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;

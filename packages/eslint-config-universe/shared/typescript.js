@@ -52,7 +52,7 @@ module.exports = {
 
     // Overrides
     'no-dupe-class-members': 'off',
-    '@typescript-eslint/no-dupe-class-members': 'error',
+    '@typescript-eslint/no-dupe-class-members': 'warn',
 
     'no-redeclare': 'off',
     '@typescript-eslint/no-redeclare': 'warn',

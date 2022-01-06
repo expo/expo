@@ -64,7 +64,7 @@ function watchAsync(config) {
                             case 0: return [4 /*yield*/, (0, addStoriesAsync_1.addStoriesAsync)([relPath], config)];
                             case 1:
                                 _a.sent();
-                                console.log("Added " + relPath + " file to stories");
+                                console.log("Added ".concat(relPath, " file to stories"));
                                 return [2 /*return*/];
                         }
                     });
@@ -77,14 +77,14 @@ function watchAsync(config) {
                             case 0: return [4 /*yield*/, (0, removeStoryAsync_1.removeStoryAsync)(relPath, config)];
                             case 1:
                                 _a.sent();
-                                console.log("Removed " + relPath + " file from stories");
+                                console.log("Removed ".concat(relPath, " file from stories"));
                                 return [2 /*return*/];
                         }
                     });
                 });
             });
             watcher.on('ready', function () {
-                console.log("Watching for changes in " + config.watchRoot);
+                console.log("Watching for changes in ".concat(config.watchRoot));
             });
             return [2 /*return*/];
         });
