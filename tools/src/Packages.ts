@@ -64,13 +64,13 @@ export type ExpoModuleConfig = {
 export class Package {
   path: string;
   packageJson: PackageJson;
-  unimoduleJson: ExpoModuleConfig;
+  expoModuleConfig: ExpoModuleConfig;
   packageView?: Npm.PackageViewType | null;
 
   constructor(rootPath: string, packageJson?: PackageJson) {
     this.path = rootPath;
     this.packageJson = packageJson || require(path.join(rootPath, 'package.json'));
-    this.unimoduleJson = readExpoModuleConfigJson(rootPath);
+    this.expoModuleConfig = readExpoModuleConfigJson(rootPath);
   }
 
   get hasPlugin(): boolean {
@@ -86,7 +86,7 @@ export class Package {
   }
 
   get packageSlug(): string {
-    return (this.unimoduleJson && this.unimoduleJson.name) || this.packageName;
+    return (this.expoModuleConfig && this.expoModuleConfig.name) || this.packageName;
   }
 
   get scripts(): { [key: string]: string } {
@@ -94,13 +94,13 @@ export class Package {
   }
 
   get podspecPath(): string | null {
-    if (this.unimoduleJson?.ios?.podspecPath) {
-      return this.unimoduleJson.ios.podspecPath;
+    if (this.expoModuleConfig?.ios?.podspecPath) {
+      return this.expoModuleConfig.ios.podspecPath;
     }
 
     const iosConfig = {
       subdirectory: 'ios',
-      ...(this.unimoduleJson?.ios ?? {}),
+      ...(this.expoModuleConfig?.ios ?? {}),
     };
 
     // Obtain podspecName by looking for podspecs
@@ -117,10 +117,10 @@ export class Package {
   get podspecName(): string | null {
     const iosConfig = {
       subdirectory: 'ios',
-      ...(this.unimoduleJson?.ios ?? {}),
+      ...(this.expoModuleConfig?.ios ?? {}),
     };
 
-    // 'ios.podName' is actually not used anywhere in our unimodules, but let's have the same logic as react-native-unimodules script.
+    // 'ios.podName' is actually not used anywhere in our modules, but let's have the same logic as react-native-unimodules script.
     if ('podName' in iosConfig) {
       return iosConfig.podName as string;
     }
@@ -133,11 +133,11 @@ export class Package {
   }
 
   get iosSubdirectory(): string {
-    return this.unimoduleJson?.ios?.subdirectory ?? 'ios';
+    return this.expoModuleConfig?.ios?.subdirectory ?? 'ios';
   }
 
   get androidSubdirectory(): string {
-    return this.unimoduleJson?.android?.subdirectory ?? 'android';
+    return this.expoModuleConfig?.android?.subdirectory ?? 'android';
   }
 
   get androidPackageName(): string | null {
@@ -156,13 +156,13 @@ export class Package {
     return path.join(this.path, 'CHANGELOG.md');
   }
 
-  isUnimodule() {
-    return !!this.unimoduleJson;
+  isExpoModule() {
+    return !!this.expoModuleConfig;
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (this.unimoduleJson) {
-      return this.unimoduleJson.platforms?.includes(platform) ?? false;
+    if (this.expoModuleConfig) {
+      return this.expoModuleConfig.platforms?.includes(platform) ?? false;
     } else if (platform === 'android') {
       return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
     } else if (platform === 'ios') {
