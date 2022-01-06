@@ -3,7 +3,6 @@ import XCTest
 @testable import EXDevMenu
 
 class DevMenuVendoredModulesUtilsTests: XCTestCase {
-  // TODO: fix
   func test_if_vendored_modules_are_available() {
     let vendoredModules = DevMenuVendoredModulesUtils.vendoredModules()
 
