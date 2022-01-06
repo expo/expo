@@ -34,7 +34,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
   <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
   <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
-  <SocialGridItem title="Github" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
+  <SocialGridItem title="GitHub" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
   <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
   <SocialGridItem title="Imgur" protocol={['OAuth 2']} href="#imgur" image="/static/images/sdk/auth-session/imgur.png" />
   <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
@@ -945,7 +945,7 @@ export default function App() {
 
 ### GitHub
 
-<CreateAppButton name="Github" href="https://github.com/settings/developers" />
+<CreateAppButton name="GitHub" href="https://github.com/settings/developers" />
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
@@ -1028,13 +1028,13 @@ export default function App() {
 
 <Tab>
 
-- Implicit grant is [not supported for Github](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
+- Implicit grant is [not supported for GitHub](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
 </Tab>
 
 </Tabs>
 
-<!-- End Github -->
+<!-- End GitHub -->
 
 ### Google
 

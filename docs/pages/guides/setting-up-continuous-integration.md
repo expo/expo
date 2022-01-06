@@ -449,6 +449,6 @@ Here are some extra links that might help you further.
 
 ### Example repositories from this guide
 
-- [Github](https://github.com/bycedric/expo-guide-ci)
+- [GitHub](https://github.com/bycedric/expo-guide-ci)
 - [GitLab](https://gitlab.com/byCedric/expo-guide-ci)
 - [Bitbucket](https://bitbucket.org/byCedric/expo-guide-ci)

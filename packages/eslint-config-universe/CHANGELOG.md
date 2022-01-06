@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- `react/react-in-jsx-scope` no longer reports errors (the rule is off) because React 17 no longer requires `react` to be imported.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
