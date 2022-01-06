@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Guess the device language on iOS rather than using the app-specific language. ([#15807](https://github.com/expo/expo/pull/15807) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
