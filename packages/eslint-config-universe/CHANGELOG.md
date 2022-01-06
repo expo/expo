@@ -20,7 +20,7 @@
 
 ### 🎉 New features
 
-- Added support for ESLint 8.x
+- Added support for ESLint 8.x ([#15810](https://github.com/expo/expo/pull/15810) by [@ide](https://github.com/ide))
 - `react/react-in-jsx-scope` no longer reports errors (the rule is off) because React 17 no longer requires `react` to be imported.
 
 ### 🐛 Bug fixes
