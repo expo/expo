@@ -16,8 +16,7 @@
       "apps/*",
       "apps/test-suite/puppeteer-test",
       "home",
-      "packages/*",
-      "react-native-lab/react-native"
+      "packages/*"
     ]
   },
   "resolutions": {
