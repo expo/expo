@@ -59,6 +59,9 @@
   "peerDependenciesMeta": {
     "@babel/core": {
       "optional": true
+    },
+    "prettier": {
+      "optional": true
     }
   },
   "devDependencies": {
