@@ -96,6 +96,13 @@ public final class AppContext {
   public var eventEmitter: EXEventEmitterService? {
     return legacyModule(implementing: EXEventEmitterService.self)
   }
+  
+  /**
+   Provides access to the logger from legacy module registry.
+   */
+  public var logger: EXLogManager {
+    return legacyModuleRegistry?.getSingletonModule(forName: EXLogManager.name()) as! EXLogManager
+  }
 
   /**
    Starts listening to `UIApplication` notifications.
