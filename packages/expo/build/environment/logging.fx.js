@@ -60,12 +60,4 @@ if (__DEV__) {
         }
     }
 }
-/**
- * In all web browsers navigator.product is "Gecko" for compatibility reasons.
- * See https://developer.mozilla.org/en-US/docs/Web/API/NavigatorID/product
- * and the discussion at https://github.com/expo/expo/pull/8807#discussion_r441391148.
- */
-function isRunningInWebBrowser() {
-    return navigator?.product === 'Gecko';
-}
 //# sourceMappingURL=logging.fx.js.map
