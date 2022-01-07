@@ -87,7 +87,7 @@ internal class FunctionCallException(
   moduleName: String,
   cause: CodedException
 ) : DecoratedException(
-  message = "Call to function '${moduleName}.$methodName' has been rejected.",
+  message = "Call to function '$moduleName.$methodName' has been rejected.",
   cause,
 )
 

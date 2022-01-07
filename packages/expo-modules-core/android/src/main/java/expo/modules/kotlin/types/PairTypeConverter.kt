@@ -13,8 +13,7 @@ class PairTypeConverter(
 ) : TypeConverter<Pair<*, *>>(pairType.isMarkedNullable) {
   private val converters = listOf(
     converterProvider.obtainTypeConverter(
-      requireNotNull(pairType.arguments.getOrNull(0)?.type)
-      {
+      requireNotNull(pairType.arguments.getOrNull(0)?.type) {
         "The pair type should contain the type of the first parameter."
       }
     ),
