@@ -16,7 +16,10 @@ class ViewCallback<T>(
 
   override operator fun invoke(arg: T) {
     val reactContext = view.context as ReactContext
-    val nativeModulesProxy = reactContext.getNativeModule(NativeModulesProxy::class.java) ?: return
+    val nativeModulesProxy = reactContext
+      .catalystInstance
+      ?.getNativeModule("NativeUnimoduleProxy") as? NativeModulesProxy
+      ?: return
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
     // TODO(@lukmccall): handles other types
