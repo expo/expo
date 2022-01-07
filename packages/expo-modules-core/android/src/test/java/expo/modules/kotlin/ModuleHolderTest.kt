@@ -5,7 +5,7 @@ import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.assertThrows
-import expo.modules.kotlin.exception.MethodCallException
+import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import org.junit.Test
@@ -31,13 +31,13 @@ class ModuleHolderTest {
     val holder = ModuleHolder(EmptyModule())
     val promise = PromiseMock()
 
-    assertThrows<MethodCallException>(
+    assertThrows<FunctionCallException>(
       """
-      Cannot call `not existing method` from the `empty-module`.
-      caused by: Method does not exist.
+      Call to function 'empty-module.not_existing_method' has been rejected.
+      → Caused by: Method does not exist.
       """.trimIndent()
     ) {
-      holder.call("not existing method", JavaOnlyArray(), promise)
+      holder.call("not_existing_method", JavaOnlyArray(), promise)
     }
 
     Truth.assertThat(promise.state).isEqualTo(PromiseState.NONE)

@@ -66,8 +66,8 @@ class AnyMethodTest {
 
     assertThrows<ArgumentCastException>(
       """
-      Cannot obtain `0` parameter. Tried to cast `String` to `kotlin.Int`.
-      caused by: java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Number
+      Argument at index '0' couldn't be casted to type 'kotlin.Int' (received 'String').
+      → Caused by: java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Number
       """.trimIndent()
     ) {
       method.call(

@@ -48,14 +48,14 @@ internal class IncompatibleArgTypeException(
   desiredType: KType,
   cause: Throwable? = null
 ) : CodedException(
-  message = "Argument type $argumentType is not compatible with expected type $desiredType.",
+  message = "Argument type '$argumentType' is not compatible with expected type '$desiredType'.",
   cause = cause
 )
 
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
-  message = "Cannot find type converter for $forType.",
+  message = "Cannot find type converter for '$forType'.",
 )
 
 internal class InvalidArgsNumberException(received: Int, expected: Int) :
@@ -74,20 +74,20 @@ internal class UnexpectedException(val throwable: Throwable) :
  * A base class for all exceptions used in `exceptionDecorator` function.
  */
 internal open class DecoratedException(
-  message: String?,
+  message: String,
   cause: CodedException,
 ) : CodedException(
   cause.code,
-  message = "$message${System.lineSeparator()}caused by: ${cause.localizedMessage ?: cause}",
+  message = "$message${System.lineSeparator()}→ Caused by: ${cause.localizedMessage ?: cause}",
   cause
 )
 
-internal class MethodCallException(
+internal class FunctionCallException(
   methodName: String,
   moduleName: String,
   cause: CodedException
 ) : DecoratedException(
-  message = "Cannot call `$methodName` from the `$moduleName`.",
+  message = "Call to function '${moduleName}.$methodName' has been rejected.",
   cause,
 )
 
@@ -97,7 +97,7 @@ internal class ArgumentCastException(
   providedType: ReadableType,
   cause: CodedException,
 ) : DecoratedException(
-  message = "Cannot obtain `$argIndex` parameter. Tried to cast `${providedType.name}` to `$argDesiredType`.",
+  message = "Argument at index '$argIndex' couldn't be casted to type '$argDesiredType' (received '$providedType').",
   cause,
 )
 
@@ -107,7 +107,7 @@ internal class FieldCastException(
   providedType: ReadableType,
   cause: CodedException
 ) : DecoratedException(
-  message = "Cannot obtain `$fieldName` field. Tried to cast `${providedType.name}` to $fieldType`.",
+  message = "Cannot cast '${providedType.name}' for field '$fieldName' ('$fieldType').",
   cause
 )
 
@@ -115,7 +115,7 @@ internal class RecordCastException(
   recordType: KType,
   cause: CodedException
 ) : DecoratedException(
-  message = "Cannot create a record of the type: `$recordType`.",
+  message = "Cannot create a record of the type: '$recordType'.",
   cause
 )
 
@@ -125,6 +125,6 @@ internal class CollectionElementCastException(
   providedType: ReadableType,
   cause: CodedException
 ) : DecoratedException(
-  message = "Cannot cast `${providedType.name}` to `$elementType` required by the collection of type: `$collectionType`.",
+  message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
   cause
 )
