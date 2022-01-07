@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 import getDevServer from 'react-native/Libraries/Core/Devtools/getDevServer';
 
 // Metro and terser don't seem to be capable of shaking the imports unless they're wrapped in __DEV__.
@@ -54,14 +55,14 @@ if (__DEV__) {
   ) {
     // Enable logging to the Expo dev tools only if this JS is not running in a web browser (ex: the
     // remote debugger). In Expo Web we don't show console logs in the CLI, so there's no special case needed.
-    if (!isRunningInWebBrowser()) {
-      const Logs = require('../logs/Logs');
-      Logs.enableExpoCliLogging();
-    } else {
+    if (Platform.isAsyncDebugging) {
       const RemoteLogging = require('../logs/RemoteLogging').default;
       RemoteLogging.enqueueRemoteLogAsync('info', {}, [
         'You are now debugging remotely; check your browser console for your application logs.',
       ]);
+    } else {
+      const Logs = require('../logs/Logs');
+      Logs.enableExpoCliLogging();
     }
   }
 }
