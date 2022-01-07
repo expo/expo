@@ -4,13 +4,13 @@
 
 ### 🛠 Breaking changes
 
-- `KeepAwake.activateKeepAwake` now returns a promise to accommodate web.
+- `KeepAwake.activateKeepAwake` now returns a promise to accommodate web. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
-- Added web support.
-- Added `KeepAwake.isAvailableAsync` which returns false on certain web browsers.
-- Added `KeepAwake.addListener` to observe state changes on web.
+- Added web support. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `KeepAwake.isAvailableAsync` which returns false on certain web browsers. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `KeepAwake.addListener` to observe state changes on web. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
 - Native module on iOS is now written in Swift using the new API. ([#15705](https://github.com/expo/expo/pull/15705) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
