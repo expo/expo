@@ -41,10 +41,13 @@ class ViewManagerDefinition(
         } catch (exception: Throwable) {
           Log.e("ExpoModulesCore", "Cannot set the '$key' prop on the '${viewType.simpleName}'.", exception)
 
-          handleException(onView, when (exception) {
-            is CodedException -> exception
-            else -> UnexpectedException(exception)
-          })
+          handleException(
+            onView,
+            when (exception) {
+              is CodedException -> exception
+              else -> UnexpectedException(exception)
+            }
+          )
         }
       }
     }

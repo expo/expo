@@ -29,7 +29,7 @@ class ModuleRegistry(
   fun getModule(name: String): Module? = registry[name]?.module
 
   inline fun <reified T> getModule(): T? {
-    return registry.values.find { it.module is T}?.module as? T
+    return registry.values.find { it.module is T }?.module as? T
   }
 
   fun getModuleHolder(name: String): ModuleHolder? = registry[name]
