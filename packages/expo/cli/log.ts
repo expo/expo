@@ -1,10 +1,8 @@
-import { boolish } from 'getenv';
+import { EXPO_PROFILE } from './utils/env';
 
-const isProfiling = boolish('EXPO_PROFILE', false);
+export const time: (label?: string) => void = EXPO_PROFILE ? console.time : () => {};
 
-export const time: (label?: string) => void = isProfiling ? console.time : () => {};
-
-export const timeEnd: (label?: string) => void = isProfiling ? console.timeEnd : () => {};
+export const timeEnd: (label?: string) => void = EXPO_PROFILE ? console.timeEnd : () => {};
 
 export function error(...message: string[]) {
   console.error(...message);
