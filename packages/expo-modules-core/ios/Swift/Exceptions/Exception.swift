@@ -13,16 +13,16 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
   }
 
   /**
-   The location in code where the exception was created.
+   The origin in code where the exception was created.
    */
-  open var location: ExceptionLocation
+  open var origin: ExceptionOrigin
 
   /**
    The default initializer that captures the place in the code where the exception was created.
    - Warning: Call it only without arguments!
    */
   public init(file: String = #fileID, line: UInt = #line, function: String = #function) {
-    self.location = ExceptionLocation(file: file, line: line, function: function)
+    self.origin = ExceptionOrigin(file: file, line: line, function: function)
   }
 
   // MARK: ChainableException
@@ -38,7 +38,7 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
   // MARK: CustomDebugStringConvertible
 
   open var debugDescription: String {
-    let debugDescription = "\(name): \(reason) (at \(location.file):\(location.line))"
+    let debugDescription = "\(name): \(reason) (at \(origin.file):\(origin.line))"
     return concatDescription(debugDescription, withCause: cause, debug: true)
   }
 }

@@ -113,12 +113,12 @@ internal class InvalidArgsNumberException: GenericException<(received: Int, expe
 
 internal class ArgumentCastException: GenericException<(index: Int, type: AnyArgumentType)> {
   override var reason: String {
-    "Argument at index \"\(params.index)\" couldn't be casted to type \"\(params.type.description)\"."
+    "Argument at index '\(params.index)' couldn't be casted to type '\(params.type.description)'."
   }
 }
 
 internal class FunctionCallException: GenericException<String> {
   override var reason: String {
-    "Call to function '\(params)' has been rejected"
+    "Call to function '\(params)' has been rejected."
   }
 }

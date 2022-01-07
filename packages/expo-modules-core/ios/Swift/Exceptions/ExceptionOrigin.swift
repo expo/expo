@@ -3,7 +3,7 @@
 /**
  Represents the place in code where the exception was created.
  */
-public struct ExceptionLocation: CustomStringConvertible {
+public struct ExceptionOrigin: CustomStringConvertible {
   /**
    The path to the file in which the exception was created.
    */
@@ -20,7 +20,7 @@ public struct ExceptionLocation: CustomStringConvertible {
   let function: String
 
   /**
-   Stringified representation of the exception location.
+   Stringified representation of the exception origin.
    */
   public var description: String {
     "at \(file):\(line) in \(function)"
