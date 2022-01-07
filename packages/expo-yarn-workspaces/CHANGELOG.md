@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support looking up .cjs and .mjs files (still the bundler's job to be able to handle these files; EYW just allows them to be found)
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
