@@ -31,7 +31,7 @@ class KotlinInteropModuleRegistry(
     try {
       requireNotNull(
         registry.getModuleHolder(moduleName)
-      ) { "Trying to call '$method' on the nom-existing module '$moduleName'" }
+      ) { "Trying to call '$method' on the non-existing module '$moduleName'" }
         .call(method, arguments, promise)
     } catch (e: CodedException) {
       promise.reject(e)
