@@ -93,7 +93,7 @@ This was a very simple test, for more information, take a look at the following 
 
 ## Code Coverage Reports
 
-Running tests are cool and all, but wouldn't you like to see total code coverage inyour Expo projects?! Maybe even see it in an HTML format?! This section is for you!
+Running tests are cool and all, but wouldn't you like to see total code coverage in your Expo projects?! Maybe even see it in an HTML format?! This section is for you!
 
 Let's head back to **package.json** and add the following:
 
