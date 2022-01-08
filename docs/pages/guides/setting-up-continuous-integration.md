@@ -374,46 +374,40 @@ pipelines:
 
 ```yaml
 ---
-version: 2
-publish: &publish
-  working_directory: ~/my-app
-  docker:
-    - image: circleci/node:10.4.1
-  steps:
-    - checkout
-
-    - run:
-        name: Installing dependencies
-        command: npm ci
-
-    - run:
-        name: Login into Expo
-        command: npx expo-cli login -u $EXPO_USERNAME -p $EXPO_PASSWORD
-
-    - run:
-        name: Publish to Expo
-        command: npx expo-cli publish --non-interactive --max-workers 1 --release-channel $EXPO_RELEASE_CHANNEL
+version: 2.1
 
 jobs:
-  publish_to_expo_dev:
-    environment:
-      EXPO_RELEASE_CHANNEL: dev
-    <<: *publish
-
-  publish_to_expo_prod:
-    environment:
-      EXPO_RELEASE_CHANNEL: default
-    <<: *publish
+  publish_to_expo:
+    parameters:
+      release-channel:
+        type: string
+        default: 'default'
+    docker:
+      - image: cimg/node:lts
+    working_directory: ~/my-app
+    steps:
+      - checkout
+      - run:
+          name: Installing dependencies
+          command: npm ci
+      - run:
+          name: Login into Expo
+          command: npx expo-cli login -u $EXPO_USERNAME -p $EXPO_PASSWORD
+      - run:
+          name: Publish to Expo
+          command: npx expo-cli publish --non-interactive --max-workers 1 --release-channel << parameters.release-channel >>
 
 workflows:
-  version: 2
   my_app:
     jobs:
-      - publish_to_expo_dev:
+      - publish_to_expo:
+          name: publish_to_expo_dev
+          release-channel: dev
           filters:
             branches:
               only: development
-      - publish_to_expo_prod:
+      - publish_to_expo:
+          name: publish_to_expo_prod
           filters:
             branches:
               only: master
