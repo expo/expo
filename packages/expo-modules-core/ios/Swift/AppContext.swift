@@ -19,6 +19,11 @@ public final class AppContext {
   public internal(set) weak var reactBridge: RCTBridge?
 
   /**
+   JSI runtime of the running app.
+   */
+  public internal(set) var runtime: JavaScriptRuntime?
+
+  /**
    Designated initializer without modules provider.
    */
   public init() {

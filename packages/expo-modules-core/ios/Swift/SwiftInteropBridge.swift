@@ -103,6 +103,24 @@ public final class SwiftInteropBridge: NSObject {
     }
   }
 
+  /**
+   Sets the JSI runtime on the operating `AppContext`.
+   */
+  @objc
+  public func setRuntime(_ runtime: JavaScriptRuntime?) {
+    appContext.runtime = runtime
+  }
+
+  @objc
+  public func getModuleNames() -> [String] {
+    return registry.getModuleNames()
+  }
+
+  @objc
+  public func getNativeModuleObject(_ moduleName: String) -> JavaScriptObject? {
+    return registry.get(moduleHolderForName: moduleName)?.javaScriptObject
+  }
+
   // MARK: - Events
 
   /**
