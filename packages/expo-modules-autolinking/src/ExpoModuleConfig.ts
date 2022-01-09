@@ -16,8 +16,9 @@ export class ExpoModuleConfig {
   /**
    * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
    */
-  iosModulesClassNames() {
-    return this.rawConfig.ios?.modulesClassNames ?? [];
+  iosModules() {
+    const iosConfig = this.rawConfig.ios;
+    return iosConfig?.modules ?? iosConfig?.modulesClassNames ?? [];
   }
 
   /**
@@ -44,8 +45,9 @@ export class ExpoModuleConfig {
   /**
    * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
    */
-  androidModulesClassNames() {
-    return this.rawConfig.android?.modulesClassNames ?? [];
+  androidModules() {
+    const androidConfig = this.rawConfig.android;
+    return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
   }
 
   /**

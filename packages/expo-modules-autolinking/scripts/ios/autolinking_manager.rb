@@ -70,7 +70,7 @@ module Expo
 
     # Filters only these packages that needs to be included in the generated modules provider.
     public def packages_to_generate
-      @packages.select { |package| package.modules_class_names.any? }
+      @packages.select { |package| package.modules.any? }
     end
 
     # Returns the provider name which is also a name of the generated file

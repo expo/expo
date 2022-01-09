@@ -42,7 +42,7 @@ export async function resolveModuleAsync(
   return {
     projectName: convertPackageNameToProjectName(packageName),
     sourceDir,
-    modulesClassNames: revision.config?.androidModulesClassNames(),
+    modules: revision.config?.androidModules(),
   };
 }
 
@@ -92,8 +92,8 @@ ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n
 }
 
 function findAndroidModules(modules: ModuleDescriptor[]): string[] {
-  const modulesToProvide = modules.filter((module) => module.modulesClassNames.length > 0);
-  const classNames = [].concat(...modulesToProvide.map((module) => module.modulesClassNames));
+  const modulesToProvide = modules.filter((module) => module.modules.length > 0);
+  const classNames = [].concat(...modulesToProvide.map((module) => module.modules));
   return classNames;
 }
 
