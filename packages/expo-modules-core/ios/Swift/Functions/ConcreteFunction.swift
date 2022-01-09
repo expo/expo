@@ -1,7 +1,7 @@
 import Dispatch
 
 public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
-  public typealias ClosureType = (Args) -> ReturnType
+  public typealias ClosureType = (Args) throws -> ReturnType
 
   public let name: String
 
@@ -41,7 +41,7 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
       }
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args
-      returnedValue = closure(tuple)
+      returnedValue = try closure(tuple)
     } catch let error as CodedError {
       promise.reject(FunctionCallException(name).causedBy(error))
       return
@@ -72,7 +72,7 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
       do {
         let finalArgs = try castArguments(args)
         let tuple = try Conversions.toTuple(finalArgs) as! Args
-        return closure(tuple)
+        return try closure(tuple)
       } catch let error {
         return error
       }
