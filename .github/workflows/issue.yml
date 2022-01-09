@@ -16,7 +16,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           status: ${{ job.status }}
-          channel: '#expo-support'
+          channel: '#support'
           text: 'This issue should be triaged ASAP: ${{ github.event.issue.html_url }}'
           author_name: ${{ github.event.issue.user.login }}
           fields: repo

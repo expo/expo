@@ -60,7 +60,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_web }}
         with:
-          channel: '#platform-web'
+          channel: '#expo-web'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite (Web)
@@ -144,7 +144,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
-          channel: '#platform-ios'
+          channel: '#expo-ios'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite (iOS)
@@ -228,7 +228,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
         with:
-          channel: '#platform-android'
+          channel: '#expo-android'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite (Android)

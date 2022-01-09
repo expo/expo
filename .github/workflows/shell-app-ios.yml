@@ -96,7 +96,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_IOS }}
         with:
-          channel: '#platform-ios'
+          channel: '#expo-ios'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Shell App (iOS)
