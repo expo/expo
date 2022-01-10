@@ -92,8 +92,6 @@ PODS:
   - EXImageLoader (3.1.0):
     - ExpoModulesCore
     - React-Core
-  - EXImagePicker (12.0.0):
-    - ExpoModulesCore
   - EXInAppPurchases (12.1.0):
     - ExpoModulesCore
   - EXJSONUtils (0.2.0)
@@ -210,6 +208,8 @@ PODS:
     - ExpoModulesCore
   - ExpoImageManipulator (10.2.0):
     - EXImageLoader
+    - ExpoModulesCore
+  - ExpoImagePicker (12.0.0):
     - ExpoModulesCore
   - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
@@ -705,7 +705,7 @@ PODS:
     - React-cxxreact (= 0.64.3)
     - React-jsi (= 0.64.3)
     - React-perflogger (= 0.64.3)
-  - RNCAsyncStorage (1.15.9):
+  - RNCAsyncStorage (1.15.14):
     - React-Core
   - RNCMaskedView (0.2.6):
     - React-Core
@@ -802,7 +802,6 @@ DEPENDENCIES:
   - EXGoogleSignIn (from `../../../packages/expo-google-sign-in/ios`)
   - EXImage (from `../../../packages/expo-image`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
-  - EXImagePicker (from `../../../packages/expo-image-picker/ios`)
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
@@ -825,6 +824,7 @@ DEPENDENCIES:
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
+  - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
@@ -1031,9 +1031,6 @@ EXTERNAL SOURCES:
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
-  EXImagePicker:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-image-picker/ios"
   EXInAppPurchases:
     inhibit_warnings: false
     :path: "../../../packages/expo-in-app-purchases/ios"
@@ -1087,6 +1084,9 @@ EXTERNAL SOURCES:
   ExpoImageManipulator:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-manipulator/ios"
+  ExpoImagePicker:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-image-picker/ios"
   ExpoKeepAwake:
     inhibit_warnings: false
     :path: "../../../packages/expo-keep-awake/ios"
@@ -1293,7 +1293,6 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
   EXImage: ee032fea95d6a21800d6678eb14d1face73236d6
   EXImageLoader: 9539bfc5ad0fc36abf78c82c096f701b43e994d7
-  EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
   EXInAppPurchases: 9c65b5ed6313e3aa32a5b75e4bcbce19868d66b4
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
@@ -1312,6 +1311,7 @@ SPEC CHECKSUMS:
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
+  ExpoImagePicker: fcb2c6ef0267c2ec4274d9b7eea61063fa2433f3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
@@ -1398,7 +1398,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: c7f845861e79eae13dc1e8217a3cf47a3945b504
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
-  RNCAsyncStorage: 26f25150da507524a7815f2ada06ca0967f65633
+  RNCAsyncStorage: ea6b5c280997b2b32a587793163b1f10e580c4f7
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNCPicker: cb57c823d5ce8d2d0b5dfb45ad97b737260dc59e
   RNDateTimePicker: 2224ee77a86b7123377597a015502435e2e49957
