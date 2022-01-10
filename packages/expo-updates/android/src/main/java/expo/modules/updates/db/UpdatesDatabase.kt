@@ -18,7 +18,7 @@ import java.util.*
 
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
-  exportSchema = true,
+  exportSchema = false,
   version = 10
 )
 @TypeConverters(Converters::class)
