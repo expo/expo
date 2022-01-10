@@ -11,6 +11,7 @@ shopt -s dotglob
 OPTIONAL_TEMPLATE_FILES=(
   # add a relative file path from `templates/` for each new optional file
   "scripts/source-login-scripts.sh"
+  "android/maven-eas.gradle"
 )
 
 # returns relative file paths inside a given directory without the leading "./".
