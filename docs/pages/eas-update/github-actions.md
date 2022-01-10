@@ -27,9 +27,10 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
                exit 1
              fi
          - uses: actions/checkout@v2
-         - uses: actions/setup-node@v1
+         - uses: actions/setup-node@v2
            with:
              node-version: 16.x
+             cache: yarn
          - uses: expo/expo-github-action@v6
            with:
              expo-version: latest
@@ -37,16 +38,6 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
              token: ${{ secrets.EXPO_TOKEN }}
              expo-cache: true
              eas-cache: true
-         - name: Find cache
-           id: yarn-cache-dir-path
-           run: echo "::set-output name=dir::$(yarn cache dir)"
-         - name: Restore cache
-           uses: actions/cache@v2
-           with:
-             path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-             key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-             restore-keys: |
-               ${{ runner.os }}-yarn-
          - name: Install dependencies
            run: yarn install
          - name: Publish update

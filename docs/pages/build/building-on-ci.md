@@ -191,34 +191,28 @@ workflows:
 ```yaml
 name: EAS Build
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
-  workflow_dispatch:
-
 jobs:
   build:
     name: Install and build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 16.x
-
+          cache: npm
       - name: Setup Expo
-        uses: expo/expo-github-action@v5
+        uses: expo/expo-github-action@v6
         with:
-          expo-version: 4.x
-          expo-token: ${{ secrets.EXPO_TOKEN }}
+          expo-version: 5.x
           expo-cache: true
-
+          token: ${{ secrets.EXPO_TOKEN }}
       - name: Install dependencies
         run: npm ci
-
       - name: Build on EAS
         run: npx eas-cli build --platform all --non-interactive
 ```
