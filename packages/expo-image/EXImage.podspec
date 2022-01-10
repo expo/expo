@@ -5,7 +5,7 @@ package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 # Following the example of react-native-firebase
 # https://github.com/invertase/react-native-firebase/blob/bf5271ef46b534d3363206f816d114f9ac5c59ee/packages/app/RNFBApp.podspec#L5-L10
 
-sd_web_image_version = '~> 5.0'
+sd_web_image_version = '~> 5.12.2'
 using_custom_sd_web_image_version = defined? $SDWebImageVersion
 if using_custom_sd_web_image_version
   sd_web_image_version = $SDWebImageVersion
