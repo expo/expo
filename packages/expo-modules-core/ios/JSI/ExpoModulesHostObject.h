@@ -17,11 +17,11 @@ public:
 
   virtual ~ExpoModulesHostObject();
 
-  virtual jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name);
+  jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 
-  virtual void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value);
+  void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) override;
 
-  virtual std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt);
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
 
 private:
   SwiftInteropBridge *swiftInterop;
