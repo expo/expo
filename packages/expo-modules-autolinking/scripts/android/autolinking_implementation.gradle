@@ -151,11 +151,18 @@ if (rootProject instanceof ProjectDescriptor) {
   def addModule = { DependencyHandler handler, String projectName, Boolean useAAR ->
     Project dependency = rootProject.project(":${projectName}")
 
+    def addedAsAAR = false
     if (useAAR) {
       handler.add('api', "${dependency.group}:${projectName}:${dependency.version}")
+      addedAsAAR = true
+    } else if (dependency.findProperty('isAarProject')) {
+      handler.add('api', dependency)
+      addedAsAAR = true
     } else {
       handler.add('api', dependency)
     }
+
+    return addedAsAAR
   }
 
   def addDependencies = { DependencyHandler handler, Project project ->
@@ -175,14 +182,14 @@ if (rootProject instanceof ProjectDescriptor) {
         continue
       }
 
-      addModule(handler, module.projectName, manager.shouldUseAAR())
+      def aarTag = addModule(handler, module.projectName, manager.shouldUseAAR()) ? '#aar' : '';
 
       // Can remove this once we move all the interfaces into the core.
       if (module.name.endsWith('-interface')) {
         continue
       }
 
-      println "  - ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version})"
+      println "  - ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version}${aarTag})"
     }
 
     println ''
