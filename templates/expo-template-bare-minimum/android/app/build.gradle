@@ -186,6 +186,22 @@ android {
     }
 }
 
+// Apply static values from `gradle.properties` to the `android.packagingOptions`
+// Accepts values in comma delimited lists, example:
+// android.packagingOptions.pickFirsts=/LICENSE,**/picasa.ini
+["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
+    // Split option: 'foo,bar' -> ['foo', 'bar']
+    // `[] - ""` is essentially `[""].filter(Boolean)` removing all empty strings.
+    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",") - "";
+    if (options.length > 0) {
+        println "android.packagingOptions.$prop += $options $options.length"
+        // Ex: android.packagingOptions.pickFirsts += '**/SCCS/**'
+        options.each {
+            android.packagingOptions[prop] += it
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
