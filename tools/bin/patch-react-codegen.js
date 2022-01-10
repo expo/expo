@@ -23,6 +23,12 @@ if (semver.gte(rnVersion, '0.65.0')) {
 
 const expoRNRoot = path.join(EXPO_ROOT, 'react-native-lab', 'react-native');
 const nodeModulesRNRoot = path.join(EXPO_ROOT, 'node_modules', 'react-native');
+
+// Skip when submodule doesn't checkout
+if (!fs.existsSync(expoRNRoot)) {
+  return;
+}
+
 const copyFiles = ['scripts/generate-specs.sh', 'scripts/react_native_pods.rb'];
 for (const file of copyFiles) {
   fs.copyFileSync(path.join(expoRNRoot, file), path.join(nodeModulesRNRoot, file));
