@@ -25,7 +25,7 @@ const expoRNRoot = path.join(EXPO_ROOT, 'react-native-lab', 'react-native');
 const nodeModulesRNRoot = path.join(EXPO_ROOT, 'node_modules', 'react-native');
 
 // Skip when submodule doesn't checkout
-if (!fs.existsSync(expoRNRoot)) {
+if (!fs.existsSync(path.join(expoRNRoot, 'package.json'))) {
   return;
 }
 
