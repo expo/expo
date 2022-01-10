@@ -67,10 +67,16 @@ allprojects {
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }
 
-       maven {
-           // Detox is installed from npm
-           url "$rootDir/../node_modules/detox/Detox-android"
-       }
+        maven {
+            // Detox is installed from npm
+            url "$rootDir/../node_modules/detox/Detox-android"
+        }
+
+        if (System.env.MAVEN_EAS) {
+          maven {
+            url(System.env.MAVEN_EAS)
+          }
+        }
 
         google()
         mavenCentral()
