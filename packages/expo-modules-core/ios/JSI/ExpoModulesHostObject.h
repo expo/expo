@@ -5,9 +5,9 @@
 #import <vector>
 #import <jsi/jsi.h>
 
-#import <ExpoModulesCore/Swift.h>
-
 using namespace facebook;
+
+@class SwiftInteropBridge;
 
 namespace expo {
 

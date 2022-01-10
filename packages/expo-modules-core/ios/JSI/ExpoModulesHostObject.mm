@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/Swift.h>
 
 namespace expo {
 
