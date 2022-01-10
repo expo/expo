@@ -1,6 +1,8 @@
+apply from: './maven-eas.gradle'
+if (findProperty('isAarProject')) { return }
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -108,4 +110,3 @@ dependencies {
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation 'io.mockk:mockk-android:1.10.6'
 }
-
