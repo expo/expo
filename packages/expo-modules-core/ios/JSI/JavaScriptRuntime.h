@@ -4,7 +4,10 @@
 
 #ifdef __cplusplus
 #import <ReactCommon/CallInvoker.h>
-#endif
+
+namespace jsi = facebook::jsi;
+namespace react = facebook::react;
+#endif // __cplusplus
 
 @interface JavaScriptRuntime : NSObject
 
@@ -17,7 +20,7 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
 /**
  Returns the underlying runtime object.
  */
-- (nullable jsi::Runtime *)get;
+- (nonnull jsi::Runtime *)get;
 
 /**
  Returns the call invoker the runtime was initialized with.
@@ -36,8 +39,7 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
 - (jsi::Function)createAsyncFunction:(nonnull NSString *)name
                            argsCount:(NSInteger)argsCount
                                block:(nonnull JSAsyncFunctionBlock)block;
-
-#endif
+#endif // __cplusplus
 
 /**
  Returns the runtime global object for use in Swift.

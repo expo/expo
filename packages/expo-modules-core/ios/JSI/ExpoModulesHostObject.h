@@ -5,7 +5,7 @@
 #import <vector>
 #import <jsi/jsi.h>
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 @class SwiftInteropBridge;
 

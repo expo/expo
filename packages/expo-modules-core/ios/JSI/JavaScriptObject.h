@@ -7,8 +7,8 @@
 #import <jsi/jsi.h>
 #import <ReactCommon/CallInvoker.h>
 
-using namespace facebook;
-#endif
+namespace jsi = facebook::jsi;
+#endif // __cplusplus
 
 typedef void (^JSAsyncFunctionBlock)(NSArray * _Nonnull, RCTPromiseResolveBlock _Nonnull, RCTPromiseRejectBlock _Nonnull);
 typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
@@ -19,14 +19,14 @@ typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
 
 // Some parts of the interface must be hidden for Swift – it can't import any C++ code.
 #ifdef __cplusplus
-- (nonnull instancetype)initWith:(std::shared_ptr<jsi::Object>)jsObject
+- (nonnull instancetype)initWith:(std::shared_ptr<jsi::Object>)jsObjectPtr
                          runtime:(nonnull JavaScriptRuntime *)runtime;
 
 /**
  Returns the pointer to the underlying object.
  */
-- (nullable jsi::Object *)get;
-#endif
+- (nonnull jsi::Object *)get;
+#endif // __cplusplus
 
 #pragma mark - Subscripting
 

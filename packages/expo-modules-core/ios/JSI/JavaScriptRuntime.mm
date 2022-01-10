@@ -27,7 +27,7 @@ using namespace facebook;
   return self;
 }
 
-- (jsi::Runtime *)get
+- (nonnull jsi::Runtime *)get
 {
   return _runtime;
 }
@@ -55,7 +55,8 @@ using namespace facebook;
 }
 
 - (jsi::Function)createSyncFunction:(nonnull NSString *)name
-argsCount:(NSInteger)argsCount block:(nonnull JSSyncFunctionBlock)block
+                          argsCount:(NSInteger)argsCount
+                              block:(nonnull JSSyncFunctionBlock)block
 {
   return [self createHostFunction:name argsCount:argsCount block:^jsi::Value(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments) {
     return expo::convertObjCObjectToJSIValue(runtime, block(arguments));
