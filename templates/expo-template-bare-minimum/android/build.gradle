@@ -32,6 +32,12 @@ allprojects {
             url(new File(["node", "--print", "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), "../dist"))
         }
 
+        if (System.env.MAVEN_EAS) {
+          maven {
+            url(System.env.MAVEN_EAS)
+          }
+        }
+
         google()
         mavenCentral()
         jcenter()
