@@ -1,3 +1,6 @@
+group = 'host.exp.exponent'
+version = '0.8.0'
+
 apply from: './maven-eas.gradle'
 if (findProperty('isAarProject')) { return }
 

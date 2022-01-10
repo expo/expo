@@ -5,6 +5,9 @@ def DEFAULT_TARGET_SDK_VERSION = 28
 
 def DEFAULT_OKHTTP_VERSION = '3.14.9'
 
+group = 'host.exp.exponent'
+version = '0.2.0'
+
 apply from: './maven-eas.gradle'
 if (findProperty('isAarProject')) { return }
 
