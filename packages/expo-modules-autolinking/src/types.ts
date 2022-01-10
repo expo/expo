@@ -63,7 +63,7 @@ export interface RawExpoModuleConfig {
 
     /**
      * Names of Swift native modules classes to put to the generated modules provider file.
-     * @deprecated Deprecated in favor of `modules`.
+     * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
      */
     modulesClassNames?: string[];
 
@@ -94,7 +94,7 @@ export interface RawExpoModuleConfig {
 
     /**
      * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
-     * @deprecated In favor of `modules`.
+     * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
      */
     modulesClassNames?: string[];
   };

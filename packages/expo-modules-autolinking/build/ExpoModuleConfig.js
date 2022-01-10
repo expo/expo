@@ -21,6 +21,7 @@ class ExpoModuleConfig {
     iosModules() {
         var _a, _b;
         const iosConfig = this.rawConfig.ios;
+        // `modulesClassNames` is a legacy name for the same config.
         return (_b = (_a = iosConfig === null || iosConfig === void 0 ? void 0 : iosConfig.modules) !== null && _a !== void 0 ? _a : iosConfig === null || iosConfig === void 0 ? void 0 : iosConfig.modulesClassNames) !== null && _b !== void 0 ? _b : [];
     }
     /**
@@ -50,6 +51,7 @@ class ExpoModuleConfig {
     androidModules() {
         var _a, _b;
         const androidConfig = this.rawConfig.android;
+        // `modulesClassNames` is a legacy name for the same config.
         return (_b = (_a = androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modules) !== null && _a !== void 0 ? _a : androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modulesClassNames) !== null && _b !== void 0 ? _b : [];
     }
     /**
