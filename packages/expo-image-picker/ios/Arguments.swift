@@ -31,7 +31,7 @@ internal struct PickingOptions: Record {
   var videoQuality: VideoQuality = .typeHigh
   
   @Field
-  var videoMaxDuration: Int = 0
+  var videoMaxDuration: Double = 0
   
   @Field
   var presentationStyle: PresentationStyle = .automatic
@@ -116,9 +116,9 @@ internal enum MediaType: String, EnumArgument {
     case .images:
       return [kUTTypeImage as String]
     case .videos:
-      return [kUTTypeVideo as String]
+      return [kUTTypeMovie as String]
     case .all:
-      return [kUTTypeImage as String, kUTTypeVideo as String]
+      return [kUTTypeImage as String, kUTTypeMovie as String]
     }
   }
 }

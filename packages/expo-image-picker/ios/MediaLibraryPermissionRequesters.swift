@@ -86,9 +86,9 @@ extension DefaultMediaLibraryPermissionRequester {
     }
     
     return [
-      "status": status,
+      // TODO: (@bbarthec): had to return status.rawValue, because otherwise this value is casted to string in Obj-C
+      "status": status.rawValue,
       "accessPrivileges": scope,
-      "granted": status == EXPermissionStatusGranted
     ]
   }
   

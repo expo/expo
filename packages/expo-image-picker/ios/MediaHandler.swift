@@ -26,13 +26,12 @@ internal struct MediaHandler {
   // TODO: convert to async/await syntax once we drop support for iOS 12
   private func handleImage(mediaInfo: MediaInfo, completion: @escaping (Result) -> Void) {
     let metadata = mediaInfo[.mediaMetadata] as! Dictionary<String, Any>?
-    let imageUrl = mediaInfo[.referenceURL] as! URL
+    // nil when taking photo with camera
+    let imageUrl = mediaInfo[.referenceURL] as! URL?
 
     var image = mediaInfo[.originalImage] as! UIImage
     image = image.fixOrientation()
-    
-    let cropRect = mediaInfo[.cropRect] as! CGRect
-    image = pickingOptions.allowsEditing ? self.cropImage(image, to: cropRect) : image
+    image = pickingOptions.allowsEditing ? self.cropImage(image, to: mediaInfo[.cropRect] as! CGRect) : image
 
     let data: Data?
     let fileExtension: String
@@ -113,16 +112,16 @@ internal struct MediaHandler {
   }
   
   private func readImageData(image: UIImage,
-                             url: URL,
+                             url: URL?,
                              metadata: [String: Any]?) throws -> (data: Data?, fileExtension: String) {
     let compressionQuality = self.pickingOptions.quality ?? DEFAULT_QUALITY
 
-    switch (url.absoluteString) {
-    case let s where s.contains("ext=PNG"):
+    switch (url?.absoluteString) {
+    case .some(let s) where s.contains("ext=PNG"):
       let data = image.pngData()
       return (data, ".png")
 
-    case let s where s.contains("ext=BMP"):
+    case .some(let s) where s.contains("ext=BMP"):
       if (self.pickingOptions.allowsEditing || self.pickingOptions.quality != nil) {
         // switch to png if editing
         let data = image.pngData()
@@ -131,7 +130,7 @@ internal struct MediaHandler {
 
       return (nil, ".bmp")
 
-    case let s where s.contains("ext=GIF"):
+    case .some(let s) where s.contains("ext=GIF"):
       let data = image.jpegData(compressionQuality: compressionQuality)
       let imageDestination = CGImageDestinationCreateWithData(data as! CFMutableData, kUTTypeGIF, 1, nil)
 
@@ -207,7 +206,7 @@ internal struct MediaHandler {
   }
   
   private func readExifFrom(imageMetadata: [String: Any]) -> [String: Any] {
-    var exif = imageMetadata[kCGImagePropertyExifDictionary as String] as! [String: Any]
+    var exif = imageMetadata[kCGImagePropertyExifDictionary as String] as! [String: Any]? ?? [:]
 
     // Copy ["{GPS}"]["<tag>"] to ["GPS<tag>"]
     let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as! [String: Any]?
@@ -231,37 +230,34 @@ internal struct MediaHandler {
 
   // TODO: convert to async/await syntax once we drop support for iOS 12
   func handleVideo(mediaInfo: MediaInfo, completion: (Result) -> Void) {
-    guard let originalVideoUrl = mediaInfo[.mediaURL] as! URL?
-                              ?? mediaInfo[.referenceURL] as! URL? else { return completion(.Failure(FailedToOpenVideoError())) }
+    guard let pickedVideoUrl = mediaInfo[.mediaURL] as! URL?
+                            ?? mediaInfo[.referenceURL] as! URL? else { return completion(.Failure(FailedToOpenVideoError())) }
 
-    let destinationPath = self.generateDestinationPath(withExtension: ".mov")
-    let destinationFileUrl: URL = URL.init(fileURLWithPath: destinationPath)
+    let targetPath = self.generateDestinationPath(withExtension: ".mov")
+    let targetUrl: URL = URL.init(fileURLWithPath: targetPath)
 
     do {
       // we copy the file as `moveItem(at:,to:)` throws an error in iOS 13 due to missing permissions
-      try FileManager.default.copyItem(at: originalVideoUrl, to: destinationFileUrl)
+      try FileManager.default.copyItem(at: pickedVideoUrl, to: targetUrl)
     } catch {
       return completion(.Failure(FailedToPickVideo(reason: error)))
     }
 
     // Adding information about asset
-    let asset = AVURLAsset.init(url: destinationFileUrl)
+    let asset = AVURLAsset.init(url: targetUrl)
     guard let size: CGSize = asset.tracks(withMediaType: .video).first?.naturalSize else {
       return completion(.Failure(FailedToReadVideoSize()))
     }
 
-    let uri = destinationFileUrl.absoluteString
-    let width = size.width
-    let height = size.height
-
     // If video was edited (the duration is affected) then read the duration from the original edited video.
-    // Otherwise read the duration from the final video.
-    let videoAssetToReadDurationFrom = self.pickingOptions.allowsEditing ? AVURLAsset.init(url: originalVideoUrl) : asset
+    // Otherwise read the duration from the target video file.
+    // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
+    let videoAssetToReadDurationFrom = self.pickingOptions.allowsEditing ? AVURLAsset.init(url: pickedVideoUrl) : asset
     let duration = self.readVideoAssetDuration(videoAssetToReadDurationFrom)
 
-    let result: Response = .Video(VideoInfo(uri: uri,
-                                            width: width,
-                                            height: height,
+    let result: Response = .Video(VideoInfo(uri: targetUrl.absoluteString,
+                                            width: size.width,
+                                            height: size.height,
                                             duration: duration))
     completion(.Success(result))
   }
