@@ -54,12 +54,17 @@ class UpdatesController private constructor(
 
   // TODO: move away from DatabaseHolder pattern to Handler thread
   private val databaseHandlerThread = HandlerThread("expo-updates-database")
+  private var isDatabaseHandlerThreadStarted = false
   private lateinit var databaseHandler: Handler
   private fun initializeDatabaseHandler() {
-    databaseHandlerThread.start()
+    if (!isDatabaseHandlerThreadStarted) {
+      isDatabaseHandlerThreadStarted = true
+      databaseHandlerThread.start()
+    }
     databaseHandler = Handler(databaseHandlerThread.looper)
   }
 
+  private var isStarted = false
   private var loaderTask: LoaderTask? = null
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
@@ -191,6 +196,11 @@ class UpdatesController private constructor(
    */
   @Synchronized
   fun start(context: Context) {
+    if (isStarted) {
+      return
+    }
+    isStarted = true
+
     if (!updatesConfiguration.isEnabled) {
       launcher = NoDatabaseLauncher(context, updatesConfiguration)
     }
@@ -444,8 +454,10 @@ class UpdatesController private constructor(
      * @param context the base context of the application, ideally a [ReactApplication]
      */
     @JvmStatic fun initialize(context: Context) {
-      initializeWithoutStarting(context)
-      singletonInstance!!.start(context)
+      if (singletonInstance == null) {
+        initializeWithoutStarting(context)
+        singletonInstance!!.start(context)
+      }
     }
 
     /**

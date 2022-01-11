@@ -136,16 +136,17 @@ object UpdatesUtils {
   ) {
     val host = reactNativeHost?.get()
     if (host != null) {
-      val instanceManager = host.reactInstanceManager
       AsyncTask.execute {
         try {
           var reactContext: ReactContext? = null
           // in case we're trying to send an event before the reactContext has been initialized
           // continue to retry for 5000ms
           for (i in 0..4) {
-            reactContext = instanceManager.currentReactContext
-            if (reactContext != null) {
-              break
+            if (host.hasInstance()) {
+              reactContext = host.reactInstanceManager.currentReactContext
+              if (reactContext != null) {
+                break
+              }
             }
             Thread.sleep(1000)
           }
