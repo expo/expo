@@ -74,8 +74,8 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
       // test-suite includes a db asset
       assetExts: [...assetExts, 'db'],
 
-      // Include .cjs and .mjs files
-      sourceExts: [...sourceExts, 'cjs', 'mjs'],
+      // Include .cjs files
+      sourceExts: [...sourceExts, 'cjs'],
 
       // Make the symlinked packages visible to Metro
       extraNodeModules,
