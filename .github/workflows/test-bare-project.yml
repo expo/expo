@@ -1,0 +1,67 @@
+name: Expo modules test from bare template
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [master, 'sdk-*']
+    paths:
+      - .github/workflows/test-suite.yml
+      - apps/bare-expo/**
+      - apps/test-suite/**
+      - packages/**
+      - yarn.lock
+  pull_request:
+    paths:
+      - .github/workflows/test-suite.yml
+      - apps/bare-expo/**
+      - apps/test-suite/**
+      - packages/**
+      - yarn.lock
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    timeout-minutes: 60
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
+        with:
+          # PR workflow needs to compare with base, setup fetch-depth as 50
+          fetch-depth: ${{ github.event_name == 'pull_request' && 50 || 1 }}
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
+        with:
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
+      - run: npm install -g expo-cli
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 📀 Create project with PR changed packages
+        if: github.event_name == 'pull_request'
+        run: expotools create-bare-project -n baretest -p changed --changed-base ${{ github.event.pull_request.base.sha }} --changed-ref ${{ github.sha }}
+      - name: 📀 Create default project
+        if: github.event_name != 'pull_request'
+        run: expotools create-bare-project -n baretest -p default
+      - name: 🏗️ Build Android project
+        run: ./gradlew :app:assembleDebug
+        working-directory: baretest/android

@@ -4,6 +4,7 @@ import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 
 import * as ExpoCLI from '../ExpoCLI';
+import Git from '../Git';
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
 
@@ -22,6 +23,8 @@ type ActionOptions = {
   name: string;
   packages: string;
   workingDirectory: string;
+  changedBase: string;
+  changedRef: string;
 };
 
 async function action(options: ActionOptions) {
@@ -29,7 +32,7 @@ async function action(options: ActionOptions) {
     throw new Error('Missing project name. Run with `--name <string>`.');
   }
 
-  const extraPackages = await getExtraPackagesAsync(options.packages);
+  const extraPackages = await getExtraPackagesAsync(options);
 
   console.log('\u203A Creating project\n');
   const projectDir = await createBareProjectAsync(
@@ -51,14 +54,16 @@ export default (program: Command) => {
     .option('-n, --name <string>', 'Name of the project to create.', null)
     .option(
       '-p, --packages [string]',
-      '[optional] Extra packages to install. May be `all`, `default`, or a comma-separate list of package names.',
+      '[optional] Extra packages to install. May be `all`, `default`, `changed`, or a comma-separate list of package names.',
       'default'
     )
     .option(
-      '-w, --workingDirectory [string]',
+      '-w, --working-directory [string]',
       'Working directory to create the project.',
       process.cwd()
     )
+    .option('--changed-base <commit>', 'Git base for `-p changed` mode', 'master')
+    .option('--changed-ref <commit>', 'Git ref for `-p changed` mode', 'HEAD')
     .asyncAction(action);
 };
 
@@ -134,22 +139,49 @@ function getExpoTransitivePackages(): string[] {
  * @param packages
  *   - 'default': to install default packages from bare templates and `expo`'s transitive packages
  *   - 'all': to install all supported packages
+ *   - 'changed': to install changed packages from the current branch
  *   -'pkg-1, pkg-2': comma separated extra packages
  *
  * @returns extra packages
  */
-async function getExtraPackagesAsync(packages: string): Promise<string[]> {
+async function getExtraPackagesAsync(options: ActionOptions): Promise<string[]> {
+  const { packages } = options;
   const defaultPackages = getExpoTransitivePackages();
 
+  let extraPackages: string[];
   if (packages === 'default') {
-    return defaultPackages;
-  }
-  if (packages === 'all') {
+    extraPackages = [];
+  } else if (packages === 'all') {
     const allPackages = await getListOfPackagesAsync();
-    return allPackages
+    extraPackages = allPackages
       .map((pkg) => pkg.packageName)
       .filter((packageName) => packageName && !EXCLUDED_PACKAGES.includes(packageName));
+  } else if (packages === 'changed') {
+    extraPackages = await getChangedPackagesAsync(options.changedBase, options.changedRef);
+  } else {
+    extraPackages = packages.split(',').map((pkg) => pkg.trim());
   }
 
-  return [...defaultPackages, ...packages.split(',').map((pkg) => pkg.trim())];
+  return [...defaultPackages, ...extraPackages];
+}
+
+/**
+ * Get changed packages between git merge base of master and HEAD
+ */
+async function getChangedPackagesAsync(base: string, ref: string): Promise<string[]> {
+  const result: string[] = [];
+  const rootDir = getExpoRepositoryRootDir();
+  const allPackages = await getListOfPackagesAsync();
+  const changedFiles = await Git.getChangedFilesAsync(base, ref);
+  for (const file of changedFiles) {
+    for (const pkg of allPackages) {
+      const pkgRelativePath = path.relative(rootDir, pkg.path);
+      const relativePath = path.relative(pkgRelativePath, file);
+      // If changed file is located inside package path.
+      if (relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath)) {
+        result.push(pkg.packageName);
+      }
+    }
+  }
+  return result;
 }
