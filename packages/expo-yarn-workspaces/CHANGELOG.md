@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support looking up .cjs (still the bundler's job to be able to handle these files; EYW just allows them to be found) ([#15836](https://github.com/expo/expo/pull/15836) by [@ide](https://github.com/ide))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
