@@ -241,7 +241,9 @@ The following are two possible alternative approaches, each with different trade
 
 <div style={{marginTop: -20, display: 'block'}} />
 
-> ⚠️  Secrets set on the Expo website or through the EAS CLI will override any env variables with the same name set within your eas.json or app.config.js files. 
+### How are naming collisions between secrets and the `env` field in eas.json handled?
+
+A secret created on the Expo website or with `eas secret:create` will take precedence over an environment variables of the same name that is set through the `env` field in **eas.json**. For example, if you create a secret with name `MY_TOKEN` and value `secret` and also set `"env": { "MY_TOKEN": "public" }` in your **eas.json**, then `process.env.MY_TOKEN` on EAS Build will evaluate to `secret`.
 
 ### How do environment variables work for my Expo Development Client builds?
 
