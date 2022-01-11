@@ -190,17 +190,6 @@ jobs:
       - name: 🧹 Clean Detox
         run: yarn detox:clean
         working-directory: apps/bare-expo
-      - name: 💿 Patch react-native to support single abi
-        run: sed -i '' 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
-        working-directory: react-native-lab/react-native
-      - name: Prebuild react-native AAR
-        # Workaround for next `yarn android:detox:build:release` occasionally failed at gradle fetching libraries on GitHub Actions
-        # Just to introduce another trail for gradle building.
-        run: ./gradlew :ReactAndroid:installArchives | true
-        working-directory: react-native-lab/react-native
-        timeout-minutes: 35
-        env:
-          GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
       - name: 🏗️ Build Android project for Detox
         run: yarn android:detox:build:release
         working-directory: apps/bare-expo
