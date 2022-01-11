@@ -21,7 +21,16 @@ public final class AppContext {
   /**
    JSI runtime of the running app.
    */
-  public internal(set) var runtime: JavaScriptRuntime?
+  public internal(set) var runtime: JavaScriptRuntime? {
+    didSet {
+      // When the runtime is unpinned from the context (e.g. deallocated),
+      // we should make sure to release all JS objects from the memory.
+      // Otherwise the JSCRuntime asserts may fail on deallocation.
+      if runtime == nil {
+        releaseRuntimeObjects()
+      }
+    }
+  }
 
   /**
    Designated initializer without modules provider.
@@ -117,6 +126,19 @@ public final class AppContext {
       return
     }
   }
+
+  // MARK: - Runtime
+
+  /**
+   Unsets runtime objects that we hold for each module.
+   */
+  private func releaseRuntimeObjects() {
+    for module in moduleRegistry {
+      module.javaScriptObject = nil
+    }
+  }
+
+  // MARK: - Deallocation
 
   /**
    Cleans things up before deallocation.
