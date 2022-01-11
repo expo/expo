@@ -12,7 +12,7 @@
     "eject": "SDK_VERSION=43.0.0 expo eject",
     "lint": "eslint .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
-    "start": "expo start",
+    "start": "expo start --dev-client",
     "ios": "react-native run-ios",
     "android": "react-native run-android"
   },
@@ -40,6 +40,7 @@
     }
   },
   "dependencies": {
+    "@expo/html-elements": "^0.1.0",
     "@expo/react-native-action-sheet": "^3.8.0",
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-native-community/datetimepicker": "4.0.0",
@@ -72,7 +73,6 @@
     "expo-barcode-scanner": "~11.2.0",
     "expo-battery": "~6.1.0",
     "expo-blur": "~11.0.0",
-    "expo-branch": "~5.1.0",
     "expo-brightness": "~10.1.0",
     "expo-calendar": "~10.1.0",
     "expo-camera": "~12.1.0",
@@ -82,6 +82,7 @@
     "expo-constants": "~13.0.0",
     "expo-contacts": "~10.1.0",
     "expo-crypto": "~10.1.0",
+    "expo-dev-client": "^0.8.0",
     "expo-device": "~4.1.0",
     "expo-document-picker": "~10.1.0",
     "expo-face-detector": "~11.1.0",

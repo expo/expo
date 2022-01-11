@@ -18,7 +18,7 @@ export default ({ config }) => {
     // Add a plugin to modify the AppDelegate.
     './plugins/withNotFoundModule',
     // Add the React DevMenu back to the client.
-    './plugins/withDevMenu',
+    //'./plugins/withDevMenu',
     // Add AsyncStorage
     './plugins/withExpoAsyncStorage',
     // Set the minimum version to 12 for Amplitude support
@@ -44,6 +44,7 @@ export default ({ config }) => {
         packagePath: '../../../packages/unimodules-test-core/android',
       },
     ],
+    'expo-dev-client',
   ];
 
   config.plugins.push([
