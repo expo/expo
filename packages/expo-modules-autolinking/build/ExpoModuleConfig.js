@@ -18,9 +18,11 @@ class ExpoModuleConfig {
     /**
      * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
      */
-    iosModulesClassNames() {
+    iosModules() {
         var _a, _b;
-        return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.modulesClassNames) !== null && _b !== void 0 ? _b : [];
+        const iosConfig = this.rawConfig.ios;
+        // `modulesClassNames` is a legacy name for the same config.
+        return (_b = (_a = iosConfig === null || iosConfig === void 0 ? void 0 : iosConfig.modules) !== null && _a !== void 0 ? _a : iosConfig === null || iosConfig === void 0 ? void 0 : iosConfig.modulesClassNames) !== null && _b !== void 0 ? _b : [];
     }
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
@@ -46,9 +48,11 @@ class ExpoModuleConfig {
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
-    androidModulesClassNames() {
+    androidModules() {
         var _a, _b;
-        return (_b = (_a = this.rawConfig.android) === null || _a === void 0 ? void 0 : _a.modulesClassNames) !== null && _b !== void 0 ? _b : [];
+        const androidConfig = this.rawConfig.android;
+        // `modulesClassNames` is a legacy name for the same config.
+        return (_b = (_a = androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modules) !== null && _a !== void 0 ? _a : androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modulesClassNames) !== null && _b !== void 0 ? _b : [];
     }
     /**
      * Returns serializable raw config.

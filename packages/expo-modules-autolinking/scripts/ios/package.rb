@@ -18,7 +18,7 @@ module Expo
     attr_reader :flags
 
     # Class names of the modules that need to be included in the generated modules provider.
-    attr_reader :modules_class_names
+    attr_reader :modules
 
     def initialize(json)
       @name = json['packageName']
@@ -26,7 +26,7 @@ module Expo
       @pod_name = json['podName']
       @podspec_dir = json['podspecDir']
       @flags = json.fetch('flags', {})
-      @modules_class_names = json.fetch('modulesClassNames', [])
+      @modules = json.fetch('modules', [])
     end
 
   end # class Package

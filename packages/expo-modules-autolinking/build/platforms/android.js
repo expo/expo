@@ -34,7 +34,7 @@ async function resolveModuleAsync(packageName, revision) {
     return {
         projectName: convertPackageNameToProjectName(packageName),
         sourceDir,
-        modulesClassNames: (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidModulesClassNames(),
+        modules: (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidModules(),
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
@@ -76,8 +76,8 @@ ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n
 `;
 }
 function findAndroidModules(modules) {
-    const modulesToProvide = modules.filter((module) => module.modulesClassNames.length > 0);
-    const classNames = [].concat(...modulesToProvide.map((module) => module.modulesClassNames));
+    const modulesToProvide = modules.filter((module) => module.modules.length > 0);
+    const classNames = [].concat(...modulesToProvide.map((module) => module.modules));
     return classNames;
 }
 async function findAndroidPackagesAsync(modules) {
