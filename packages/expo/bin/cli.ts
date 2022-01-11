@@ -27,22 +27,22 @@ const args = arg(
 );
 
 if (args['--version']) {
-  // Version is inlined into the file using taskr build pipeline
-  console.log(`expo v${process.env.__EXPO_VERSION}`);
+  // Version is added in the build script.
+  console.log(process.env.__EXPO_VERSION);
   process.exit(0);
 }
 
 // Check if we are running `npx expo <subcommand>` or `npx expo`
-const targetCmd = Boolean(commands[args._[0]]);
+const isSubcommand = Boolean(commands[args._[0]]);
 
 // Handle `--help` flag
-if (!targetCmd && args['--help']) {
+if (!isSubcommand && args['--help']) {
   console.log(chalk`
     {bold Usage}
       {bold $} npx expo <command>
 
     {bold Available commands}
-      ${Object.keys(commands).join(', ')}
+      ${Object.keys({ foo: true, bar: true }).join(', ')}
 
     {bold Options}
       --version, -v   Version number
@@ -54,16 +54,21 @@ if (!targetCmd && args['--help']) {
   process.exit(0);
 }
 
-const command = targetCmd ? args._[0] : defaultCmd;
-const targetArgs = targetCmd ? args._.slice(1) : args._;
+const command = isSubcommand ? args._[0] : defaultCmd;
+const commandArgs = isSubcommand ? args._.slice(1) : args._;
 
 // Push the help flag to the subcommand args.
 if (args['--help']) {
-  targetArgs.push('--help');
+  commandArgs.push('--help');
+} else {
+  // Beta warning when not using `--help` or `--version`
+  console.log(
+    chalk`\n{gray {bold npx expo} is in beta. Please report any issues at {underline https://github.com/expo/expo/issues}}\n`
+  );
 }
 
 // Install exit hooks
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
-commands[command]().then((exec) => exec(targetArgs));
+commands[command]().then((exec) => exec(commandArgs));

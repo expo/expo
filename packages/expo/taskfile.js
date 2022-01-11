@@ -4,16 +4,16 @@ const IS_CLIENT_SUPPORTED = false;
 export async function bin(task, opts) {
   await task
     .source(opts.src || 'bin/*')
-    .swc('server', { stripExtension: true, dev: opts.dev })
+    .swc('cli', { stripExtension: true, dev: opts.dev })
     .target('build-cli/bin', { mode: '0755' });
 }
 
 export async function cli(task, opts) {
   await task
-    .source('cli/**/*.+(js|ts|tsx)', {
+    .source('cli/**/*.+(js|ts)', {
       ignore: ['**/__tests__/**', '**/__mocks__/**'],
     })
-    .swc('server', { dev: opts.dev })
+    .swc('cli', { dev: opts.dev })
     .target('build-cli/cli');
 }
 
@@ -30,7 +30,7 @@ export async function src(task, opts) {
     .source(opts.src || 'src/**/*.+(js|ts|tsx)', {
       ignore: ['**/__tests__/**', '**/__mocks__/**'],
     })
-    .swc('client', { dev: opts.dev })
+    .swc('sdk', { dev: opts.dev })
     .target('build');
 }
 
@@ -52,7 +52,7 @@ export default async function (task) {
   await task.clear('build-cli');
   await task.start('build', opts);
   await task.watch('bin/*', 'bin', opts);
-  await task.watch('cli/**/*.+(js|ts|tsx)', 'cli', opts);
+  await task.watch('cli/**/*.+(js|ts)', 'cli', opts);
 
   if (IS_CLIENT_SUPPORTED) {
     await task.watch('src/**/*.+(js|ts|tsx)', 'client', opts);

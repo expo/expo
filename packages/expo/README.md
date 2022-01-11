@@ -20,7 +20,7 @@ To develop the CLI run (defaults to watch mode):
 yarn build:cli
 ```
 
-We highly recommend setting up an alias for the expo CLI so you can try it in projects all around your computer. Open your `.zshrc` or other config file and add:
+We highly recommend setting up an alias for the Expo CLI so you can try it in projects all around your computer. Open your `.zshrc` or other config file and add:
 
 ```
 alias nexpo="/path/to/expo/packages/expo/build-cli/bin/cli"

@@ -6,9 +6,8 @@ const ERROR_PREFIX = 'Error: ';
 export class CommandError extends Error {
   name = 'CommandError';
   readonly isCommandError = true;
-  code: string;
 
-  constructor(code: string, message: string = '') {
+  constructor(public code: string, message: string = '') {
     super('');
     // If e.toString() was called to get `message` we don't want it to look
     // like "Error: Error:".
@@ -17,6 +16,5 @@ export class CommandError extends Error {
     }
 
     this.message = message || code;
-    this.code = code;
   }
 }

@@ -30,14 +30,14 @@ export const expoConfig: Command = (argv) => {
       {bold Usage}
         $ expo config <dir>
 
-      <dir> represents the directory of the Expo application.
-      If no directory is provided, the current directory will be used.
+      <dir> is the directory of the Expo project.
+      Defaults to the current working directory.
 
       Options
       --full                                   Include all project config data
       --json                                   Output in JSON format
       -t, --type <public|prebuild|introspect>  Type of config to show
-      -h, --help                               output usage information
+      -h, --help                               Output usage information
     `,
       0
     );
