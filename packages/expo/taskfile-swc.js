@@ -17,7 +17,7 @@ module.exports = function (task) {
         },
         env: {
           targets: {
-            node: '12.0.0',
+            node: '12.13.0',
           },
         },
         jsc: {
