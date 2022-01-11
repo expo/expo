@@ -81,7 +81,7 @@ class UpdatesController private constructor(
     private set
 
   fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    if (isEmergencyLaunch) {
+    if (isEmergencyLaunch || !updatesConfiguration.isEnabled) {
       return
     }
     errorRecovery.startMonitoring(reactInstanceManager)
@@ -193,6 +193,8 @@ class UpdatesController private constructor(
   fun start(context: Context) {
     if (!updatesConfiguration.isEnabled) {
       launcher = NoDatabaseLauncher(context, updatesConfiguration)
+      notifyController()
+      return
     }
     if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
       throw AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.")
@@ -200,6 +202,8 @@ class UpdatesController private constructor(
     if (updatesDirectory == null) {
       launcher = NoDatabaseLauncher(context, updatesConfiguration, updatesDirectoryException)
       isEmergencyLaunch = true
+      notifyController()
+      return
     }
 
     initializeDatabaseHandler()
