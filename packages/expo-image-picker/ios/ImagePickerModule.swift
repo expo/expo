@@ -6,11 +6,12 @@ import ExpoModulesCore
 typealias MediaInfo = [UIImagePickerController.InfoKey : Any]
 
 /**
- Helper struct storing single picking operation context variables.
+ Helper struct storing single picking operation context variables that have their own non-sharable state.
  */
 struct PickingContext {
   let promise: Promise
   let options: PickingOptions
+  let imagePickerDelegate: ImagePickerDelegate
 }
 
 public class ImagePickerModule : Module, OnMediaPickingResultHandler {
@@ -77,14 +78,18 @@ public class ImagePickerModule : Module, OnMediaPickingResultHandler {
       return promise.reject(MissingCameraPermissionError())
     }
 
-    let pickingContext = PickingContext(promise: promise, options: options)
+    let pickingContext = PickingContext(promise: promise,
+                                        options: options,
+                                        imagePickerDelegate: ImagePickerDelegate(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing))
     self.launchImagePicker(sourceType: .camera, pickingContext: pickingContext)
   }
 
   private func launchImageLibrary(options: PickingOptions, promise: Promise) {
     guard let _ = self.appContext?.permissions else { return promise.reject(PermissionsModuleNotFoundError()) }
 
-    let pickingContext = PickingContext(promise: promise, options: options)
+    let pickingContext = PickingContext(promise: promise,
+                                        options: options,
+                                        imagePickerDelegate: ImagePickerDelegate(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing))
     self.launchImagePicker(sourceType: .photoLibrary, pickingContext: pickingContext)
   }
 
@@ -110,7 +115,7 @@ public class ImagePickerModule : Module, OnMediaPickingResultHandler {
     picker.mediaTypes = options.mediaTypes.toArray()
     picker.videoExportPreset = options.videoExportPreset.toAVAssetExportPreset()
     picker.videoQuality = options.videoQuality.toQualityType()
-    picker.videoMaximumDuration = Double(options.videoMaxDuration)
+    picker.videoMaximumDuration = options.videoMaxDuration
 
     if (options.allowsEditing) {
       picker.allowsEditing = options.allowsEditing
@@ -123,10 +128,8 @@ public class ImagePickerModule : Module, OnMediaPickingResultHandler {
     }
 
     picker.modalPresentationStyle = options.presentationStyle.toPresentationStyle()
-
-    let imagePickerDelegate = ImagePickerDelegate(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing)
-    picker.delegate = imagePickerDelegate
-    picker.presentationController?.delegate = imagePickerDelegate
+    picker.delegate = context.imagePickerDelegate
+    picker.presentationController?.delegate = context.imagePickerDelegate
 
     guard let currentViewController = self.appContext?.utilities?.currentViewController() else {
       return promise.reject(MissingCurrentViewController())
@@ -144,15 +147,15 @@ public class ImagePickerModule : Module, OnMediaPickingResultHandler {
     self.currentPickingContext = nil
   }
 
-  func didPickedMedia(mediaInfo: MediaInfo) {    
+  func didPickedMedia(mediaInfo: MediaInfo) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else { self.appContext?.logger.warn("Picking operation context has been lost."); return }
     guard let fileSystem = self.appContext?.fileSystem else { return promise.reject(MissingFileSystemMmoduleError()) }
     guard let logger = self.appContext?.logger else { return promise.reject(MissingLoggerModuleError()) }
-    
+
     // Clenaup the currently stored picking context
     self.currentPickingContext = nil
-  
+
     let mediaHandler = MediaHandler(fileSystem: fileSystem,
                                     logger: logger,
                                     pickingOptions: options)

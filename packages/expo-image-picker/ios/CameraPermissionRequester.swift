@@ -41,6 +41,9 @@ public class CameraPermissionRequester : NSObject, EXPermissionsRequester {
       break
     }
     
-    return ["status": status]
+    return [
+      // TODO: (@bbarthec): had to return status.rawValue, because otherwise this value is casted to string in Obj-C
+      "status": status.rawValue
+    ]
   }
 }
