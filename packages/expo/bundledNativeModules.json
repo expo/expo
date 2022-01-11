@@ -45,6 +45,7 @@
   "expo-file-system": "~11.1.3",
   "expo-firebase-analytics": "~4.1.0",
   "expo-firebase-core": "~3.1.0",
+  "expo-firebase-recaptcha": "~1.4.4",
   "expo-font": "~9.2.1",
   "expo-gl": "~10.4.2",
   "expo-gl-cpp": "~10.4.1",
