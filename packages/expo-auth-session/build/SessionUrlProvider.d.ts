@@ -12,3 +12,4 @@ export declare class SessionUrlProvider {
 }
 declare const _default: SessionUrlProvider;
 export default _default;
+//# sourceMappingURL=SessionUrlProvider.d.ts.map

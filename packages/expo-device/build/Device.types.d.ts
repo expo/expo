@@ -5,3 +5,4 @@ export declare enum DeviceType {
     DESKTOP = 3,
     TV = 4
 }
+//# sourceMappingURL=Device.types.d.ts.map

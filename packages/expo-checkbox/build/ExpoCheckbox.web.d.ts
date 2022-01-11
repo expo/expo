@@ -11,3 +11,4 @@ import { CheckboxComponent } from './Checkbox.types';
 declare const ExpoCheckbox: CheckboxComponent;
 export default ExpoCheckbox;
 export declare const name = "ExpoCheckbox";
+//# sourceMappingURL=ExpoCheckbox.web.d.ts.map

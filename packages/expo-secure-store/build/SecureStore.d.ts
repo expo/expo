@@ -99,3 +99,4 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
  * @return A promise that will reject if value cannot be stored on the device.
  */
 export declare function setItemAsync(key: string, value: string, options?: SecureStoreOptions): Promise<void>;
+//# sourceMappingURL=SecureStore.d.ts.map

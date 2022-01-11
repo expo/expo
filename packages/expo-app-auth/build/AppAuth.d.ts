@@ -13,3 +13,4 @@ export declare const
 OAuthRedirect: any, 
 /** @deprecated `expo-app-auth` has been deprecated in favor of `expo-auth-session`. [Learn more](https://expo.fyi/expo-app-auth-deprecated). */
 URLSchemes: any;
+//# sourceMappingURL=AppAuth.d.ts.map

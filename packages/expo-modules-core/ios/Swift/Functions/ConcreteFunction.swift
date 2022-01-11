@@ -1,7 +1,7 @@
 import Dispatch
 
 public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
-  public typealias ClosureType = (Args) -> ReturnType
+  public typealias ClosureType = (Args) throws -> ReturnType
 
   public let name: String
 
@@ -14,6 +14,8 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
   }
 
   public var queue: DispatchQueue?
+
+  public var isAsync: Bool = true
 
   let closure: ClosureType
 
@@ -41,9 +43,9 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
       }
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args
-      returnedValue = closure(tuple)
+      returnedValue = try closure(tuple)
     } catch let error as CodedError {
-      promise.reject(error)
+      promise.reject(FunctionCallException(name).causedBy(error))
       return
     } catch let error {
       promise.reject(UnexpectedError(error))
@@ -72,7 +74,7 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
       do {
         let finalArgs = try castArguments(args)
         let tuple = try Conversions.toTuple(finalArgs) as! Args
-        return closure(tuple)
+        return try closure(tuple)
       } catch let error {
         return error
       }
@@ -84,27 +86,46 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
     return self
   }
 
+  public func runSynchronously() -> Self {
+    self.isAsync = false
+    return self
+  }
+
   private func argumentType(atIndex index: Int) -> AnyArgumentType? {
     return (0..<argTypes.count).contains(index) ? argTypes[index] : nil
   }
 
   private func castArguments(_ args: [Any]) throws -> [Any] {
     if args.count != argumentsCount {
-      throw InvalidArgsNumberError(received: args.count, expected: argumentsCount)
+      throw InvalidArgsNumberException((received: args.count, expected: argumentsCount))
     }
     return try args.enumerated().map { index, arg in
       let expectedType = argumentType(atIndex: index)
 
-      // It's safe to unwrap since the arguments count matches.
-      return try expectedType!.cast(arg)
+      do {
+        // It's safe to unwrap since the arguments count matches.
+        return try expectedType!.cast(arg)
+      } catch {
+        throw ArgumentCastException((index: index, type: expectedType!)).causedBy(error)
+      }
     }
   }
 }
 
-internal struct InvalidArgsNumberError: CodedError {
-  let received: Int
-  let expected: Int
-  var description: String {
-    "Received \(received) arguments, but \(expected) was expected."
+internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int)> {
+  override var reason: String {
+    "Received \(params.received) arguments, but \(params.expected) was expected."
+  }
+}
+
+internal class ArgumentCastException: GenericException<(index: Int, type: AnyArgumentType)> {
+  override var reason: String {
+    "Argument at index '\(params.index)' couldn't be casted to type '\(params.type.description)'."
+  }
+}
+
+internal class FunctionCallException: GenericException<String> {
+  override var reason: String {
+    "Call to function '\(params)' has been rejected."
   }
 }

@@ -31,3 +31,4 @@ declare const _default: {
     requestPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExponentAV.web.d.ts.map

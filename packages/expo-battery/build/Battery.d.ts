@@ -112,3 +112,4 @@ export declare function addBatteryStateListener(listener: (event: BatteryStateEv
  */
 export declare function addLowPowerModeListener(listener: (event: PowerModeEvent) => void): Subscription;
 export { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState, Subscription, };
+//# sourceMappingURL=Battery.d.ts.map

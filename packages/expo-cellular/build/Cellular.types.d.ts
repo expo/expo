@@ -24,3 +24,4 @@ export declare enum CellularGeneration {
      */
     CELLULAR_5G = 4
 }
+//# sourceMappingURL=Cellular.types.d.ts.map

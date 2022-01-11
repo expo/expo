@@ -7,14 +7,14 @@ export const name = 'Device';
 export async function test(t) {
   t.describe(`Device.getDeviceType()`, () => {
     t.it(`returns enum values`, async () => {
-      let deviceType = await Device.getDeviceTypeAsync();
+      const deviceType = await Device.getDeviceTypeAsync();
       t.expect(Object.values(Device.DeviceType).includes(deviceType)).toBeTruthy();
     });
   });
 
   t.describe(`Device.getUptimeAsync()`, () => {
     t.it(`calls getUptimeAsync() and returns number`, async () => {
-      let uptime = await Device.getUptimeAsync();
+      const uptime = await Device.getUptimeAsync();
       t.expect(uptime).toBeDefined();
       t.expect(typeof uptime).toEqual('number');
     });
@@ -23,17 +23,17 @@ export async function test(t) {
   if (Platform.OS === 'ios') {
     t.describe(`Device on iOS`, () => {
       t.it(`gets most constants and correct types`, async () => {
-        let brand = Device.brand;
-        let manufacturer = Device.manufacturer;
-        let modelName = Device.modelName;
-        let osName = Device.osName;
-        let totalMemory = Device.totalMemory;
-        let isDevice = Device.isDevice;
-        let osBuildId = Device.osBuildId;
-        let osInternalBuildId = Device.osInternalBuildId;
-        let osVersion = Device.osVersion;
-        let deviceName = Device.deviceName;
-        let deviceYearClass = Device.deviceYearClass;
+        const brand = Device.brand;
+        const manufacturer = Device.manufacturer;
+        const modelName = Device.modelName;
+        const osName = Device.osName;
+        const totalMemory = Device.totalMemory;
+        const isDevice = Device.isDevice;
+        const osBuildId = Device.osBuildId;
+        const osInternalBuildId = Device.osInternalBuildId;
+        const osVersion = Device.osVersion;
+        const deviceName = Device.deviceName;
+        const deviceYearClass = Device.deviceYearClass;
         t.expect(brand).toBeDefined();
         t.expect(typeof brand).toEqual('string');
         t.expect(manufacturer).toBeDefined();
@@ -59,10 +59,10 @@ export async function test(t) {
       });
 
       t.it(`doesn't get Android-only constants`, async () => {
-        let osBuildFingerprint = Device.osBuildFingerprint;
-        let designName = Device.designName;
-        let productName = Device.productName;
-        let platformApiLevel = Device.platformApiLevel;
+        const osBuildFingerprint = Device.osBuildFingerprint;
+        const designName = Device.designName;
+        const productName = Device.productName;
+        const platformApiLevel = Device.platformApiLevel;
         t.expect(designName).toBeNull();
         t.expect(productName).toBeNull();
         t.expect(platformApiLevel).toBeNull();
@@ -70,14 +70,12 @@ export async function test(t) {
       });
 
       t.it(`getPlatformFeaturesAsync() returns empty array on iOS`, async () => {
-        let allFeatures;
-        allFeatures = await Device.getPlatformFeaturesAsync();
+        const allFeatures = await Device.getPlatformFeaturesAsync();
         t.expect(allFeatures).toEqual([]);
       });
 
       t.it(`hasPlatformFeatureAsync() returns false on iOS`, async () => {
-        let hasFeature;
-        hasFeature = await Device.hasPlatformFeatureAsync('amazon_fire_tv');
+        const hasFeature = await Device.hasPlatformFeatureAsync('amazon_fire_tv');
         t.expect(hasFeature).toEqual(false);
       });
 
@@ -106,8 +104,8 @@ export async function test(t) {
       });
 
       t.it(`gets osBuildId same as osInternalBuildId`, async () => {
-        let osBuildId = await Device.osBuildId;
-        let osInternalBuildId = await Device.osInternalBuildId;
+        const osBuildId = await Device.osBuildId;
+        const osInternalBuildId = await Device.osInternalBuildId;
         t.expect(Device.osBuildId).toBeTruthy();
         t.expect(Device.osInternalBuildId).toBeTruthy();
         t.expect(osBuildId).toEqual(osInternalBuildId);
@@ -116,21 +114,21 @@ export async function test(t) {
   } else if (Platform.OS === 'android') {
     t.describe(`Device on Android`, () => {
       t.it(`gets constants and correct types`, async () => {
-        let designName = await Device.designName;
-        let productName = await Device.productName;
-        let brand = await Device.brand;
-        let manufacturer = await Device.manufacturer;
-        let modelName = await Device.modelName;
-        let osName = await Device.osName;
-        let totalMemory = await Device.totalMemory;
-        let isDevice = await Device.isDevice;
-        let osBuildId = await Device.osBuildId;
-        let osBuildFingerprint = await Device.osBuildFingerprint;
-        let osInternalBuildId = await Device.osInternalBuildId;
-        let platformApiLevel = await Device.platformApiLevel;
-        let osVersion = await Device.osVersion;
-        let deviceName = await Device.deviceName;
-        let deviceYearClass = await Device.deviceYearClass;
+        const designName = await Device.designName;
+        const productName = await Device.productName;
+        const brand = await Device.brand;
+        const manufacturer = await Device.manufacturer;
+        const modelName = await Device.modelName;
+        const osName = await Device.osName;
+        const totalMemory = await Device.totalMemory;
+        const isDevice = await Device.isDevice;
+        const osBuildId = await Device.osBuildId;
+        const osBuildFingerprint = await Device.osBuildFingerprint;
+        const osInternalBuildId = await Device.osInternalBuildId;
+        const platformApiLevel = await Device.platformApiLevel;
+        const osVersion = await Device.osVersion;
+        const deviceName = await Device.deviceName;
+        const deviceYearClass = await Device.deviceYearClass;
         t.expect(designName).toBeDefined();
         t.expect(typeof designName).toEqual('string');
         t.expect(productName).toBeDefined();
@@ -181,6 +179,7 @@ export async function test(t) {
           error = e;
         }
         t.expect(hasFeature).toEqual(t.jasmine.any(Boolean));
+        t.expect(error).toBeUndefined();
       });
 
       t.it(
@@ -195,16 +194,17 @@ export async function test(t) {
           }
           t.expect(hasFeature).toEqual(t.jasmine.any(Boolean));
           t.expect(hasFeature).toEqual(false);
+          t.expect(error).toBeUndefined();
         }
       );
 
       t.it(`calls getMaxMemoryAsync() and returns a number under integer limit`, async () => {
-        let maxMemory = await Device.getMaxMemoryAsync();
+        const maxMemory = await Device.getMaxMemoryAsync();
         t.expect(maxMemory).toBeLessThanOrEqual(Number.MAX_SAFE_INTEGER);
       });
 
       t.it(`calls getPlatformFeaturesAsync()`, async () => {
-        let allFeatures = await Device.getPlatformFeaturesAsync();
+        const allFeatures = await Device.getPlatformFeaturesAsync();
         t.expect(allFeatures).toBeDefined();
       });
     });

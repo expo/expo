@@ -12,7 +12,8 @@ export const name = 'BarCodeScanner';
 const style = { width: 200, height: 200 };
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   const testPoint = (value, expected, inaccuracy) => {
@@ -38,7 +39,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
   describeWithPermissions('BarCodeScanner', () => {
     const mountAndWaitFor = (child, propName = 'ref') =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const response = originalMountAndWaitFor(child, propName, setPortalChild);
         setTimeout(() => resolve(response), 1500);
       });

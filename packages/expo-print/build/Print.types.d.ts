@@ -121,3 +121,4 @@ export declare type FilePrintResult = {
      */
     base64?: string;
 };
+//# sourceMappingURL=Print.types.d.ts.map

@@ -86,7 +86,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
               autoCapitalize="none"
               autoCompleteType="off"
               autoCorrect={false}
-              placeholder={`${clientUrlScheme || 'myapp'}://expo-development-client/...`}
+              placeholder="http://10.0.0.25:19000"
               placeholderTextColor={theme.text.secondary}
               ref={ref as any}
               value={inputValue}

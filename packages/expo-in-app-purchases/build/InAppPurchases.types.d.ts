@@ -270,3 +270,4 @@ export declare type IAPPurchaseHistoryOptions = {
      */
     useGooglePlayCache: boolean;
 };
+//# sourceMappingURL=InAppPurchases.types.d.ts.map

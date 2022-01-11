@@ -22,3 +22,4 @@ export declare class EventEmitter {
     emit(eventName: string, ...params: any[]): void;
 }
 export {};
+//# sourceMappingURL=EventEmitter.d.ts.map

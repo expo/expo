@@ -42,3 +42,4 @@ export default class Image extends React.Component<ImageProps, ImageState> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=Image.d.ts.map

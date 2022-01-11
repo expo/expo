@@ -396,7 +396,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 Metro Bundler (the default React Native bundler) now errors (instead of silently ignoring) dynamic requires. In particular this breaks an older version of moment.js if you were using that (or indirectly depending on it).
 
-- This is a known issue with Metro [which is being tracked on the project’s Github issues](https://github.com/facebook/metro-bundler/issues/65).
+- This is a known issue with Metro [which is being tracked on the project’s GitHub issues](https://github.com/facebook/metro-bundler/issues/65).
 - If you use moment.js in your app, [you may have success with this fix](https://github.com/facebook/metro-bundler/issues/65#issuecomment-336838866).
 
 Several deprecated APIs have been removed. All of these APIs printed warning messages in previous releases:

@@ -40,7 +40,7 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
       if (Platform.OS === 'web') {
         const styleSheet = document.getElementById('expo-generated-fonts');
         expect(!!styleSheet).toBe(true);
-        const [rule] = [...styleSheet.sheet.cssRules].filter(rule => {
+        const [rule] = [...styleSheet.sheet.cssRules].filter((rule) => {
           return (
             rule instanceof CSSFontFaceRule &&
             rule.style.fontFamily === 'cool-font' &&

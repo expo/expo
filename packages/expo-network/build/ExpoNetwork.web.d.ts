@@ -5,3 +5,4 @@ declare const _default: {
     getMacAddressAsync(): Promise<null>;
 };
 export default _default;
+//# sourceMappingURL=ExpoNetwork.web.d.ts.map

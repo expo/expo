@@ -109,3 +109,4 @@ export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string):
  * listener.
  */
 export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
+//# sourceMappingURL=Updates.d.ts.map

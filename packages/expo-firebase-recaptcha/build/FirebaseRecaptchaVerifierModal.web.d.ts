@@ -9,3 +9,4 @@ interface Props {
 }
 declare const _default: React.ForwardRefExoticComponent<Omit<Props, "innerRef"> & React.RefAttributes<unknown>>;
 export default _default;
+//# sourceMappingURL=FirebaseRecaptchaVerifierModal.web.d.ts.map

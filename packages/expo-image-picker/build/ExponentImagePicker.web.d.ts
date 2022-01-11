@@ -18,3 +18,4 @@ declare const _default: {
     requestMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExponentImagePicker.web.d.ts.map

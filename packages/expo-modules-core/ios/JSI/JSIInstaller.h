@@ -17,3 +17,13 @@ void installRuntimeObjects(jsi::Runtime &runtime, std::shared_ptr<CallInvoker> c
 } // namespace expo
 
 #endif
+
+#import <ExpoModulesCore/JavaScriptRuntime.h>
+
+@class SwiftInteropBridge;
+
+@interface JavaScriptRuntimeManager : NSObject
+
++ (void)installExpoModulesToRuntime:(nonnull JavaScriptRuntime *)runtime withSwiftInterop:(nonnull SwiftInteropBridge *)swiftInterop;
+
+@end

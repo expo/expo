@@ -447,3 +447,4 @@ export interface LocationPermissionResponse extends UMPermissionResponse {
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
 }
+//# sourceMappingURL=Location.types.d.ts.map

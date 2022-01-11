@@ -35,3 +35,4 @@ export declare function storeUrl(): string | null;
  * ```
  */
 export declare function hasAction(): Promise<boolean>;
+//# sourceMappingURL=StoreReview.d.ts.map

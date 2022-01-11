@@ -25,3 +25,4 @@ export declare type SMSAttachment = {
 export declare type SMSOptions = {
     attachments?: SMSAttachment | SMSAttachment[] | undefined;
 };
+//# sourceMappingURL=SMS.types.d.ts.map

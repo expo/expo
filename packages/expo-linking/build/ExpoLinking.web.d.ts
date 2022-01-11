@@ -7,3 +7,4 @@ declare const _default: {
     openURL(url: string): Promise<void>;
 };
 export default _default;
+//# sourceMappingURL=ExpoLinking.web.d.ts.map

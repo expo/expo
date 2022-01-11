@@ -11,14 +11,17 @@ import {
   XIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LogoutConfirmationModal } from '../components/redesign/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
+import { useModalStack } from '../hooks/useModalStack';
 import { useUser, useUserActions } from '../hooks/useUser';
 
 export function UserProfileScreen({ navigation }) {
   const { userData, selectedAccount } = useUser();
+  const modalStack = useModalStack();
   const actions = useUserActions();
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -39,18 +42,18 @@ export function UserProfileScreen({ navigation }) {
   };
 
   const onLogoutPress = () => {
-    Alert.alert('Log out', 'Are you sure you want to log out?', [
-      {
-        text: 'Log out',
-        onPress: () => actions.logout(),
-        style: 'cancel',
-      },
-      {
-        text: 'Nevermind',
-        onPress: () => {},
-        style: 'default',
-      },
-    ]);
+    modalStack.push({
+      title: 'Confirm logout?',
+      element: (
+        <LogoutConfirmationModal
+          onClosePress={() => modalStack.pop()}
+          onLogoutPress={() => {
+            actions.logout();
+            modalStack.pop();
+          }}
+        />
+      ),
+    });
   };
 
   const onClosePress = () => {

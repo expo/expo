@@ -60,3 +60,4 @@ export declare enum FontDisplay {
  * Object used to query fonts for unloading.
  */
 export declare type UnloadFontOptions = Pick<FontResource, 'display'>;
+//# sourceMappingURL=Font.types.d.ts.map

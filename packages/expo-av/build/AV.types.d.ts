@@ -59,3 +59,4 @@ export declare type AVPlaybackStatusToSet = {
     isLooping?: boolean;
     pitchCorrectionQuality?: PitchCorrectionQuality;
 };
+//# sourceMappingURL=AV.types.d.ts.map

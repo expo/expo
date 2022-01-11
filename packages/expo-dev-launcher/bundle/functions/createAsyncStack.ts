@@ -72,7 +72,9 @@ export function createAsyncStack<T>(): IStack<T> {
     const item = lookup[key];
 
     if (item) {
-      item.status = 'settled';
+      if (item.status === 'pushing') {
+        item.status = 'settled';
+      }
 
       emit('pushend', key);
 

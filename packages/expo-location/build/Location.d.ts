@@ -240,3 +240,4 @@ export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
 export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, PermissionHookOptions, setGoogleApiKey, };
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';
+//# sourceMappingURL=Location.d.ts.map

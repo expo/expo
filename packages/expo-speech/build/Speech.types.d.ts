@@ -75,3 +75,4 @@ export declare type WebVoice = Voice & {
     name: string;
     voiceURI: string;
 };
+//# sourceMappingURL=Speech.types.d.ts.map

@@ -13,3 +13,4 @@ declare const _default: {
     getMobileNetworkCodeAsync(): Promise<string | null>;
 };
 export default _default;
+//# sourceMappingURL=ExpoCellular.web.d.ts.map

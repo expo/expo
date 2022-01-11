@@ -203,9 +203,11 @@ export function setFacebookApplicationQuerySchemes(
   };
 }
 
-export const withUserTrackingPermission: ConfigPlugin<{
-  userTrackingPermission?: string | false;
-} | void> = (config, { userTrackingPermission } = {}) => {
+export const withUserTrackingPermission: ConfigPlugin<
+  {
+    userTrackingPermission?: string | false;
+  } | void
+> = (config, { userTrackingPermission } = {}) => {
   if (userTrackingPermission === false) {
     return config;
   }

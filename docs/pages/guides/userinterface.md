@@ -14,4 +14,4 @@ Below (in no particular order) are some of the most popular UI Libraries. Test t
 - [React Native UI Kitten](https://akveo.github.io/react-native-ui-kitten/#/home), and their [docs](https://akveo.github.io/react-native-ui-kitten/#/docs/quick-start/getting-started)
 - [React Native iOS Kit](https://github.com/callstack/react-native-ios-kit), and their [docs](https://callstack.github.io/react-native-ios-kit/docs/installation.html)
 
-> **Note:** As with any library, it's always best to find one with a large and active community. This way, help is easy to come by. Check out any project's Github page to see what the activity is like.
+> **Note:** As with any library, it's always best to find one with a large and active community. This way, help is easy to come by. Check out any project's GitHub page to see what the activity is like.

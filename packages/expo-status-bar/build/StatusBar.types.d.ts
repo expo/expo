@@ -42,3 +42,4 @@ export declare type StatusBarProps = {
      */
     translucent?: boolean;
 };
+//# sourceMappingURL=StatusBar.types.d.ts.map

@@ -45,3 +45,4 @@ export declare function registerTaskAsync(taskName: string, options?: Background
  */
 export declare function unregisterTaskAsync(taskName: string): Promise<void>;
 export { BackgroundFetchResult, BackgroundFetchStatus, BackgroundFetchOptions };
+//# sourceMappingURL=BackgroundFetch.d.ts.map

@@ -165,7 +165,7 @@ async function main(packageNames: string[], options: CommandOptions): Promise<vo
 
       logger.info(`♻️  Restoring from backup saved on ${chalk.magenta(dateString)}...`);
 
-      const allPackages = await getListOfPackagesAsync(false);
+      const allPackages = await getListOfPackagesAsync();
 
       for (const [packageName, restoredState] of Object.entries(backup.data!.state)) {
         const pkg = allPackages.find((pkg) => pkg.packageName === packageName);

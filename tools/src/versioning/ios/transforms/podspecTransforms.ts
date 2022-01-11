@@ -1,6 +1,3 @@
-import fs from 'fs-extra';
-import path from 'path';
-
 import { TransformPipeline } from '.';
 
 export function podspecTransforms(versionName: string): TransformPipeline {
@@ -40,13 +37,6 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         paths: 'React-Core.podspec',
         replace: /"AccessibilityResources"/g,
         with: `"${versionName}AccessibilityResources"`,
-      },
-      {
-        // Add custom modulemap for React-Core to generate correct submodules for swift integration
-        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
-        paths: 'React-Core.podspec',
-        replace: /(s.default_subspec\s+=.*$)/mg,
-        with: `$1\n  s.module_map             = "${versionName}React-Core.modulemap"`,
       },
       {
         // Hide Hermes headers from public headers because clang modoules does not support c++
@@ -100,19 +90,4 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       },
     ],
   };
-}
-
-export async function generateModulemapAsync(podspecFile: string, versionName: string) {
-    const basename = path.basename(podspecFile, '.podspec');
-    if (basename === 'React-Core') {
-      const modulemap = `\
-module ${versionName}React {
-  umbrella "../../Public/${versionName}React-Core/${versionName}React"
-
-  export *
-  module * { export * }
-}`;
-      const modulemapPath = path.join(path.dirname(podspecFile), `${versionName}React-Core.modulemap`);
-      await fs.writeFile(modulemapPath, modulemap);
-    }
 }

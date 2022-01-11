@@ -23,6 +23,8 @@ type Package = {
 // There are a few packages that we want to exclude from shell app builds; they don't follow any
 // easy pattern so we just keep track of them manually here.
 export const EXCLUDED_PACKAGE_SLUGS = [
+  'expo-dev-client',
+  'expo-dev-launcher',
   'expo-dev-menu',
   'expo-dev-menu-interface',
   'expo-module-template',

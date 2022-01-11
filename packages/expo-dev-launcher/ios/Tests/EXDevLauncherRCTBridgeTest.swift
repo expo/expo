@@ -2,14 +2,13 @@ import Quick
 import Nimble
 
 @testable import EXDevLauncher
+@testable import EXDevMenu
 
 class EXDevLauncherRCTBridgeTest: QuickSpec {
   @objc(RCTAllowModule)
   class RCTAllowModule: NSObject {}
   @objc(NotAllowModule)
   class NotAllowModule: NSObject {}
-  @objc(DevMenuModule)
-  class DevMenuModule: NSObject {}
 
   override func spec() {
     it("should be connected with EXDevLauncherRCTCxxBridge") {

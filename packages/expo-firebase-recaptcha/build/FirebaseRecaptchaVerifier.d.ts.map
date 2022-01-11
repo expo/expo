@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseRecaptchaVerifier.d.ts","sourceRoot":"","sources":["../src/FirebaseRecaptchaVerifier.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,+BAA+B,EAAE,MAAM,2BAA2B,CAAC;AAI5E,MAAM,CAAC,OAAO,OAAO,yBAA0B,YAAW,+BAA+B;IACvF,OAAO,CAAC,KAAK,CAAS;gBAEV,KAAK,EAAE,MAAM;IAIzB,IAAI,IAAI,IAAI,MAAM,CAEjB;IAEK,MAAM,IAAI,OAAO,CAAC,MAAM,CAAC;CAGhC"}

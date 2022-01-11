@@ -14,3 +14,4 @@ declare const _default: {
     removeAllListeners(): void;
 };
 export default _default;
+//# sourceMappingURL=AdMobInterstitial.d.ts.map

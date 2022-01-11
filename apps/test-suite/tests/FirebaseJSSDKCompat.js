@@ -58,10 +58,7 @@ export async function test({ describe, it, expect, beforeAll }) {
       it(`reads data once`, async () => {
         let error = null;
         try {
-          const snapshot = await firebase
-            .database()
-            .ref('/test1')
-            .once('value');
+          const snapshot = await firebase.database().ref('/test1').once('value');
           expect(snapshot.val()).toBe('foobar');
         } catch (e) {
           error = e;
@@ -78,10 +75,7 @@ export async function test({ describe, it, expect, beforeAll }) {
       it(`gets a collection`, async () => {
         let error = null;
         try {
-          const { docs } = await firebase
-            .firestore()
-            .collection('tests')
-            .get();
+          const { docs } = await firebase.firestore().collection('tests').get();
           expect(docs.length).toBeGreaterThan(0);
         } catch (e) {
           error = e;
@@ -91,10 +85,7 @@ export async function test({ describe, it, expect, beforeAll }) {
       it(`gets a document`, async () => {
         let error = null;
         try {
-          const snapshot = await firebase
-            .firestore()
-            .doc('tests/doc1')
-            .get();
+          const snapshot = await firebase.firestore().doc('tests/doc1').get();
           expect(snapshot).not.toBeNull();
         } catch (e) {
           error = e;
@@ -131,10 +122,7 @@ export async function test({ describe, it, expect, beforeAll }) {
       it(`lists all files`, async () => {
         let error = null;
         try {
-          const files = await firebase
-            .storage()
-            .ref('public')
-            .listAll();
+          const files = await firebase.storage().ref('public').listAll();
           expect(files.items.length).toBeGreaterThan(0);
         } catch (e) {
           error = e;
@@ -144,10 +132,7 @@ export async function test({ describe, it, expect, beforeAll }) {
       it(`downloads a file`, async () => {
         let error = null;
         try {
-          const files = await firebase
-            .storage()
-            .ref('public')
-            .listAll();
+          const files = await firebase.storage().ref('public').listAll();
           expect(files.items.length).toBeGreaterThan(0);
           const file = files.items[0];
           const downloadUrl = await file.getDownloadURL();

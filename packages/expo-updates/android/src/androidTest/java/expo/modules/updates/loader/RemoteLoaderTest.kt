@@ -58,7 +58,7 @@ class RemoteLoaderTest {
       mockLoaderFiles
     )
     manifest = LegacyUpdateManifest.fromLegacyManifest(
-      LegacyManifest(JSONObject("{\"name\":\"updates-unit-test-template\",\"slug\":\"updates-unit-test-template\",\"sdkVersion\":\"42.0.0\",\"bundledAssets\":[\"asset_54da1e9816c77e30ebc5920e256736f2.png\"],\"currentFullName\":\"@esamelson/updates-unit-test-template\",\"originalFullName\":\"@esamelson/updates-unit-test-template\",\"id\":\"@esamelson/updates-unit-test-template\",\"scopeKey\":\"@esamelson/updates-unit-test-template\",\"releaseId\":\"2c246487-8879-43ad-a67b-2c22d8a5675e\",\"publishedTime\":\"2021-09-01T00:05:57.701Z\",\"commitTime\":\"2021-09-01T00:05:57.737Z\",\"bundleUrl\":\"https://d1wp6m56sqw74a.cloudfront.net/%40esamelson%2Fupdates-unit-test-template%2F1.0.0%2Fe5507cbb1760d32bb20d77cefc8cfff5-42.0.0-ios.js\",\"bundleKey\":\"e5507cbb1760d32bb20d77cefc8cfff5\",\"releaseChannel\":\"default\",\"hostUri\":\"exp.host/@esamelson/updates-unit-test-template\"}")),
+      LegacyManifest(JSONObject("{\"name\":\"updates-unit-test-template\",\"slug\":\"updates-unit-test-template\",\"sdkVersion\":\"42.0.0\",\"bundledAssets\":[\"asset_54da1e9816c77e30ebc5920e256736f2.png\"],\"currentFullName\":\"@esamelson/updates-unit-test-template\",\"originalFullName\":\"@esamelson/updates-unit-test-template\",\"id\":\"@esamelson/updates-unit-test-template\",\"scopeKey\":\"@esamelson/updates-unit-test-template\",\"releaseId\":\"2c246487-8879-43ad-a67b-2c22d8a5675e\",\"publishedTime\":\"2021-09-01T00:05:57.701Z\",\"commitTime\":\"2021-09-01T00:05:57.737Z\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fupdates-unit-test-template%2F1.0.0%2Fe5507cbb1760d32bb20d77cefc8cfff5-42.0.0-ios.js\",\"bundleKey\":\"e5507cbb1760d32bb20d77cefc8cfff5\",\"releaseChannel\":\"default\",\"hostUri\":\"exp.host/@esamelson/updates-unit-test-template\"}")),
       configuration
     )
 
@@ -167,7 +167,7 @@ class RemoteLoaderTest {
     // ensure the asset in the DB was updated with the URL from the manifest
     assets.forEach {
       Assert.assertNotNull(it.url)
-      Assert.assertEquals(it.url!!.host, "d1wp6m56sqw74a.cloudfront.net")
+      Assert.assertEquals(it.url!!.host, "classic-assets.eascdn.net")
     }
   }
 

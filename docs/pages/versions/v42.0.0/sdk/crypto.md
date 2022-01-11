@@ -29,7 +29,7 @@ export default function App() {
     (async () => {
       const digest = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
-        'Github stars are neat 🌟'
+        'GitHub stars are neat 🌟'
       );
       console.log('Digest: ', digest);
       /* Some crypto operation... */

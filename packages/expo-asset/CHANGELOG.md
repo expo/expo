@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Swap out Cloudfront CDN for `classic-assets.eascdn.net`. ([#15781](https://github.com/expo/expo/pull/15781)) by [@quinlanj](https://github.com/quinlanj)
+
 ## 8.4.5 — 2021-12-21
 
 ### 🐛 Bug fixes

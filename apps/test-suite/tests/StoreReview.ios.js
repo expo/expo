@@ -1,5 +1,5 @@
-import * as StoreReview from 'expo-store-review';
 import Constants from 'expo-constants';
+import * as StoreReview from 'expo-store-review';
 
 export const name = 'StoreReview';
 

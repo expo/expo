@@ -16,3 +16,4 @@ export default class AdOptionsView extends React.Component<Props> {
 export declare type NativeAdOptionsView = React.Component<Props>;
 export declare const NativeAdOptionsView: React.ComponentType<any>;
 export {};
+//# sourceMappingURL=AdOptionsView.d.ts.map

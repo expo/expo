@@ -14,7 +14,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 ## Known issues
 
-**iOS only**: BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582)
+**iOS only**: BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant GitHub issue](https://github.com/expo/expo/issues/3582)
 
 ## Installation
 

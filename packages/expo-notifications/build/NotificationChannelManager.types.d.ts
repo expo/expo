@@ -78,3 +78,4 @@ export interface NotificationChannelManager extends ProxyNativeModule {
     deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
 }
 export {};
+//# sourceMappingURL=NotificationChannelManager.types.d.ts.map

@@ -91,3 +91,4 @@ export declare function logInAsync(config: GoogleLogInConfig): Promise<LogInResu
 export declare function logOutAsync({ accessToken, ...inputConfig }: GoogleLogInConfig & {
     accessToken: string;
 }): Promise<any>;
+//# sourceMappingURL=Google.d.ts.map

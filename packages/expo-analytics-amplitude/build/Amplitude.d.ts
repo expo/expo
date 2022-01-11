@@ -121,3 +121,4 @@ export declare function setGroupAsync(groupType: string, groupNames: string[]): 
  * passing `disableCarrier: true` disables tracking the device's carrier.
  */
 export declare function setTrackingOptionsAsync(options: AmplitudeTrackingOptions): Promise<void>;
+//# sourceMappingURL=Amplitude.d.ts.map

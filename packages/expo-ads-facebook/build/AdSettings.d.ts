@@ -41,3 +41,4 @@ declare const _default: {
     setUrlPrefix(urlPrefix: string): void;
 };
 export default _default;
+//# sourceMappingURL=AdSettings.d.ts.map

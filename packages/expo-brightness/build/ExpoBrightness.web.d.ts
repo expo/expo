@@ -5,3 +5,4 @@ declare const _default: {
     requestPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExpoBrightness.web.d.ts.map

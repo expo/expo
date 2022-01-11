@@ -7,7 +7,7 @@ It's the idea of automating as much as you can, like running tests or creating n
 
 CI/CD is a relatively broad idea and can get as complex as you can make it.
 In this guide, we will create a basic setup for testing (CI) and deployments (CD).
-Also, the configuration for Bitbucket Pipelines, Gitlab CI, and Travis CI are provided.
+Also, the configuration for Bitbucket Pipelines, GitLab CI, and Travis CI are provided.
 Other CI/CD vendors can be used too; everything is executable through CLI.
 
 ## Test with Jest
@@ -56,7 +56,7 @@ script:
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -148,7 +148,7 @@ script:
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -295,7 +295,7 @@ jobs:
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -439,7 +439,7 @@ Here are some extra links that might help you further.
 
 ### Official documentation CI/CD vendors
 
-- [Gitlab CI](https://docs.gitlab.com/ce/ci/)
+- [GitLab CI](https://docs.gitlab.com/ce/ci/)
 - [Travis CI](https://docs.travis-ci.com/)
 - [Bitbucket Pipelines](https://confluence.atlassian.com/bitbucket/build-test-and-deploy-with-pipelines-792496469.html)
 
@@ -449,6 +449,6 @@ Here are some extra links that might help you further.
 
 ### Example repositories from this guide
 
-- [Github](https://github.com/bycedric/expo-guide-ci)
-- [Gitlab](https://gitlab.com/byCedric/expo-guide-ci)
+- [GitHub](https://github.com/bycedric/expo-guide-ci)
+- [GitLab](https://gitlab.com/byCedric/expo-guide-ci)
 - [Bitbucket](https://bitbucket.org/byCedric/expo-guide-ci)

@@ -20,3 +20,4 @@ declare namespace FirebaseRecaptcha {
     };
 }
 export default FirebaseRecaptcha;
+//# sourceMappingURL=FirebaseRecaptcha.d.ts.map

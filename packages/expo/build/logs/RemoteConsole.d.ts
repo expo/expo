@@ -3,3 +3,4 @@
  * the messages to the development environment over a remote connection.
  */
 export declare function createRemoteConsole(originalConsole: Console): Console;
+//# sourceMappingURL=RemoteConsole.d.ts.map

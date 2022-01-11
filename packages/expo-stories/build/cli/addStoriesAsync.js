@@ -133,7 +133,7 @@ function parseStoryConfigAsync(storyFile) {
                                         var name = d.id.name;
                                         storyData.stories.push({
                                             name: name,
-                                            id: id + "_" + name,
+                                            id: "".concat(id, "_").concat(name),
                                         });
                                     });
                                 }
@@ -142,7 +142,7 @@ function parseStoryConfigAsync(storyFile) {
                                     console.log({ node: node });
                                     storyData.stories.push({
                                         name: name_1,
-                                        id: id + "_" + name_1,
+                                        id: "".concat(id, "_").concat(name_1),
                                     });
                                 }
                             }
@@ -152,7 +152,7 @@ function parseStoryConfigAsync(storyFile) {
                                     if (!storyData.stories.includes(name)) {
                                         storyData.stories.push({
                                             name: name,
-                                            id: id + "_" + name,
+                                            id: "".concat(id, "_").concat(name),
                                         });
                                     }
                                 });

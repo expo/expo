@@ -8,3 +8,4 @@ export declare enum BackgroundNotificationResult {
     NewData = 2,
     Failed = 3
 }
+//# sourceMappingURL=BackgroundNotificationTasksModule.types.d.ts.map

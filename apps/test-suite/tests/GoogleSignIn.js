@@ -51,7 +51,7 @@ export async function test({
     it('has constants', () => {
       function validateConstants(constants) {
         expect(constants).toBeDefined();
-        Object.values(constants).map(constant => {
+        Object.values(constants).map((constant) => {
           expect(typeof constant).toBe('string');
         });
       }

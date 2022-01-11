@@ -5,3 +5,4 @@
  * @platform android
  */
 export default function setStatusBarTranslucent(translucent: boolean): void;
+//# sourceMappingURL=setStatusBarTranslucent.d.ts.map

@@ -2,3 +2,4 @@ import { AndroidManifest, AppOwnership, Constants, ExecutionEnvironment, IOSMani
 export { AndroidManifest, AppOwnership, Constants, ExecutionEnvironment, IOSManifest, NativeConstants, PlatformManifest, UserInterfaceIdiom, WebManifest, };
 declare const _default: Constants;
 export default _default;
+//# sourceMappingURL=Constants.d.ts.map

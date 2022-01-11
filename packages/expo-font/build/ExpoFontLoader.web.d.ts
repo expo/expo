@@ -7,3 +7,4 @@ declare const _default: {
     loadAsync(fontFamilyName: string, resource: FontResource): Promise<void>;
 };
 export default _default;
+//# sourceMappingURL=ExpoFontLoader.web.d.ts.map
