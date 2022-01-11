@@ -387,6 +387,14 @@ export class GitDirectory {
   }
 
   /**
+   * Gets the changed files between two commits
+   */
+  async getChangedFilesAsync(base: string = 'master', ref: string = 'HEAD'): Promise<string[]> {
+    const { stdout } = await this.runAsync(['diff', '--name-only', `${base}...${ref}`]);
+    return stdout.trim().split(/\n+/g).filter(Boolean);
+  }
+
+  /**
    * Lists the contents of a given tree object, like what "ls -a" does in the current working directory.
    */
   async listTreeAsync(ref: string, paths: string[]): Promise<GitListTree[]> {
