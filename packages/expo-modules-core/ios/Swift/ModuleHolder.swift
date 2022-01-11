@@ -15,6 +15,11 @@ public final class ModuleHolder {
   private(set) weak var appContext: AppContext?
 
   /**
+   JavaScript object that represents the module instance in the runtime.
+   */
+  public internal(set) lazy var javaScriptObject: JavaScriptObject? = createJavaScriptModuleObject()
+
+  /**
    Caches the definition of the module type.
    */
   let definition: ModuleDefinition
@@ -90,6 +95,36 @@ public final class ModuleHolder {
       return function.callSync(args: args)
     }
     return nil
+  }
+
+  // MARK: JavaScript Module Object
+
+  /**
+   Creates the JavaScript object that will be used to communicate with the native module.
+   The object is prefilled with module's constants and functions.
+   JavaScript can access it through `global.ExpoModules[moduleName]`.
+   - Note: The object will be `nil` when the runtime is unavailable (e.g. remote debugger is enabled).
+   */
+  private func createJavaScriptModuleObject() -> JavaScriptObject? {
+    // It might be impossible to create any object at the moment (e.g. remote debugging, app context destroyed)
+    guard let object = appContext?.runtime?.createObject() else {
+      return nil
+    }
+
+    // Fill in with constants
+    for (key, value) in getConstants() {
+      object[key] = value
+    }
+
+    // Fill in with functions
+    for (_, fn) in definition.functions {
+      if fn.isAsync {
+        object.setAsyncFunction(fn.name, argsCount: fn.argumentsCount, block: createAsyncFunctionBlock(holder: self, name: fn.name))
+      } else {
+        object.setSyncFunction(fn.name, argsCount: fn.argumentsCount, block: createSyncFunctionBlock(holder: self, name: fn.name))
+      }
+    }
+    return object
   }
 
   // MARK: Listening to native events

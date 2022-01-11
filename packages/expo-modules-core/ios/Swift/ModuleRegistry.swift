@@ -62,6 +62,10 @@ public final class ModuleRegistry: Sequence {
     return registry[moduleName]?.module
   }
 
+  public func getModuleNames() -> [String] {
+    return Array(registry.keys)
+  }
+
   public func makeIterator() -> IndexingIterator<[ModuleHolder]> {
     return registry.map({ $1 }).makeIterator()
   }

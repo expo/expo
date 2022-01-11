@@ -15,6 +15,8 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
 
   public var queue: DispatchQueue?
 
+  public var isAsync: Bool = true
+
   let closure: ClosureType
 
   let argTypes: [AnyArgumentType]
@@ -81,6 +83,11 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
 
   public func runOnQueue(_ queue: DispatchQueue?) -> Self {
     self.queue = queue
+    return self
+  }
+
+  public func runSynchronously() -> Self {
+    self.isAsync = false
     return self
   }
 
