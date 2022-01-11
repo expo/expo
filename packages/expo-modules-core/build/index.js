@@ -10,6 +10,7 @@ export { default as deprecate } from './deprecate';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, SyntheticPlatformEmitter, requireNativeViewManager, 
 // Errors
 CodedError, UnavailabilityError, };
+export * from './requireNativeModule';
 /**
  * @deprecated renamed to `DeviceEventEmitter`
  */
