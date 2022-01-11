@@ -1,6 +1,6 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <EXRandom/EXRandom.h>
+#import <ExpoRandom/EXRandom.h>
 
 @implementation EXRandom
 

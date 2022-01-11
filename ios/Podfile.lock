@@ -1935,12 +1935,12 @@ PODS:
     - Quick
     - React-Core
     - ReactCommon/turbomodule/core
+  - ExpoRandom (12.1.0):
+    - ExpoModulesCore
   - ExpoSystemUI (1.1.0):
     - ExpoModulesCore
   - EXPrint (11.1.0):
     - ExpoModulesCore
-  - EXRandom (12.1.0):
-    - React-Core
   - EXScreenCapture (4.1.0):
     - ExpoModulesCore
   - EXScreenOrientation (4.1.1):
@@ -2859,9 +2859,9 @@ DEPENDENCIES:
   - ExpoLocalization (from `../packages/expo-localization/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
+  - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
-  - EXRandom (from `../packages/expo-random/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - EXSecureStore (from `../packages/expo-secure-store/ios`)
@@ -3704,12 +3704,12 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-localization/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
+  ExpoRandom:
+    :path: "../packages/expo-random/ios"
   ExpoSystemUI:
     :path: "../packages/expo-system-ui/ios"
   EXPrint:
     :path: "../packages/expo-print/ios"
-  EXRandom:
-    :path: "../packages/expo-random/ios"
   EXScreenCapture:
     :path: "../packages/expo-screen-capture/ios"
   EXScreenOrientation:
@@ -4201,9 +4201,9 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
   ExpoModulesCore: 98f874d20b96d4497eb8ff9df686f14384913a30
+  ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
-  EXRandom: 9839c2a2a02d4b594a2c5af22b5faf53b316db05
   EXScreenCapture: 0146fdf6ca4c3402a1cf62b2ddb739a840e08c94
   EXScreenOrientation: 35776938aaa9b6460b4df72ff96f2b35e9a4e28b
   EXSecureStore: fa0fdde1c81ceee2a3cb0519e649feae42767969
@@ -4299,6 +4299,6 @@ SPEC CHECKSUMS:
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 1c1a40349b560b1ce4aa426b37df4fe50b9262ba
+PODFILE CHECKSUM: cb2f28921ed6d8cb6fcbcdde41be7a058f1558d4
 
 COCOAPODS: 1.11.2

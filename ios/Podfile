@@ -43,9 +43,6 @@ abstract_target 'Expo Go' do
     }
   })
 
-  # Expo modules that are not unimodules
-  pod 'EXRandom', path: '../packages/expo-random/ios'
-
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
