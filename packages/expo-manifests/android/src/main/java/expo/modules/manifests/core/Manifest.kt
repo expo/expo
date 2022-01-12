@@ -68,6 +68,8 @@ abstract class Manifest(protected val json: JSONObject) {
   @Throws(JSONException::class)
   fun getRevisionId(): String = getExpoClientConfigRootObject()!!.require("revisionId")
 
+  fun getMetadata(): JSONObject? = json.getNullable("metadata")
+
   abstract fun getSDKVersion(): String?
 
   abstract fun getAssets(): JSONArray?
@@ -120,8 +122,6 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoClientConfig.getNullable("updates")
   }
 
-  abstract fun getSortTime(): String?
-
   fun getPrimaryColor(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return expoClientConfig.getNullable("primaryColor")
@@ -171,7 +171,7 @@ abstract class Manifest(protected val json: JSONObject) {
     val sharedJsEngine = expoClientConfig.getNullable<String>("jsEngine")
     val androidJsEngine = expoClientConfig
       .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
-    return androidJsEngine ?: sharedJsEngine ?: null
+    return androidJsEngine ?: sharedJsEngine
   }
 
   fun getIconUrl(): String? {
