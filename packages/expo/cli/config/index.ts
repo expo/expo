@@ -28,7 +28,7 @@ export const expoConfig: Command = (argv) => {
         Show the project config
 
       {bold Usage}
-        $ expo config <dir>
+        $ npx expo config <dir>
 
       <dir> is the directory of the Expo project.
       Defaults to the current working directory.
