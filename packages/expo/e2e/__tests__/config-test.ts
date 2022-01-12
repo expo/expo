@@ -21,7 +21,7 @@ it('runs `npx expo config --help`', async () => {
             Show the project config
 
           [1mUsage[22m
-            $ expo config <dir>
+            $ npx expo config <dir>
 
           <dir> is the directory of the Expo project.
           Defaults to the current working directory.
