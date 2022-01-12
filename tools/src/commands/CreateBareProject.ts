@@ -1,8 +1,9 @@
 import { Command } from '@expo/commander';
-import JsonFile from '@expo/json-file';
+import JsonFile, { JSONObject } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import glob from 'glob-promise';
+import mergeWith from 'lodash/mergeWith';
 import os from 'os';
 import path from 'path';
 import semver from 'semver';
@@ -23,13 +24,19 @@ const EXCLUDED_PACKAGES = [
   'unimodules-test-core',
 ];
 
-type ActionOptions = {
+interface ActionOptions {
   name: string;
   packages: string;
   workingDirectory: string | null;
   changedBase: string;
   changedRef: string;
-};
+  detox: boolean;
+}
+
+interface DetoxOptions {
+  androidAvd: string;
+  iosSimulator: string;
+}
 
 async function action(options: ActionOptions) {
   if (!options.name) {
@@ -45,6 +52,14 @@ async function action(options: ActionOptions) {
   console.log('\u203A Creating managed project\n');
   const projectDir = await createManagedProjectAsync(options.name, workingDir);
   console.log(`\u203A Managed project created - projectDir[${projectDir}]\n`);
+
+  if (options.detox) {
+    console.log('\u203A Setup project for detox\n');
+    await setupDetoxAsync(projectDir, {
+      androidAvd: 'bare-expo',
+      iosSimulator: 'iPhone 13',
+    });
+  }
 
   console.log('\u203A Prebuilding project\n');
   await prebuildProjectAsync(options.name, projectDir, workingDir, extraPackages);
@@ -72,11 +87,12 @@ export default (program: Command) => {
     )
     .option('--changed-base <commit>', 'Git base for `-p changed` mode', 'master')
     .option('--changed-ref <commit>', 'Git ref for `-p changed` mode', 'HEAD')
+    .option('--detox', 'Setup project for detox testing', false)
     .asyncAction(action);
 };
 
 /**
- * This function will do `expo init` with local `expo-template-blank` template.
+ * This function will do `expo init` with local `expo-template-blank-typescript` template.
  *
  * @param name project name
  * @param workDir working directory to create the project
@@ -86,7 +102,7 @@ async function createManagedProjectAsync(name: string, workDir: string) {
   const managedTemplateDir = path.join(
     getExpoRepositoryRootDir(),
     'templates',
-    'expo-template-blank'
+    'expo-template-blank-typescript'
   );
   await ExpoCLI.runExpoCliAsync('init', [name, '-t', managedTemplateDir, '--no-install'], {
     cwd: workDir,
@@ -114,7 +130,7 @@ async function prebuildProjectAsync(
     throw new Error('Cannot find the `expo` package.');
   }
   const appId = `dev.expo.${name}`;
-  await JsonFile.mergeAsync(path.join(projectDir, 'app.json'), {
+  await jsonFileDeepMergeAsync(path.join(projectDir, 'app.json'), {
     expo: {
       sdkVersion: `${semver.major(expoPackage.packageVersion)}.0.0`,
       android: { package: appId },
@@ -240,4 +256,88 @@ async function getChangedPackagesAsync(base: string, ref: string): Promise<strin
     }
   }
   return result;
+}
+
+async function jsonFileDeepMergeAsync(
+  file: string,
+  sources: JSONObject[] | JSONObject,
+  options?: Parameters<typeof JsonFile.readAsync>[1]
+) {
+  const object = await JsonFile.readAsync(file, options);
+  return JsonFile.writeAsync(
+    file,
+    mergeWith(object, sources, (obj, src) => {
+      if (Array.isArray(obj)) {
+        return obj.concat(src);
+      }
+      return undefined;
+    }),
+    options
+  );
+}
+
+async function addPluginAsync(appJsonPath: string, plugin: string) {
+  return jsonFileDeepMergeAsync(appJsonPath, {
+    expo: {
+      plugins: [plugin],
+    },
+  });
+}
+
+async function setupDetoxAsync(projectDir: string, options: DetoxOptions) {
+  await spawnAsync(
+    'yarn',
+    [
+      'add',
+      '--no-lockfile',
+      '-D',
+      'detox',
+      '@config-plugins/detox',
+      '@types/jest',
+      'babel-jest',
+      'jest',
+      'jest-circus',
+      'ts-jest',
+    ],
+    { stdio: 'inherit', cwd: projectDir }
+  );
+
+  await addPluginAsync(path.join(projectDir, 'app.json'), '@config-plugins/detox');
+
+  await spawnAsync('yarn', ['detox', 'init', '-r', 'jest'], { stdio: 'inherit', cwd: projectDir });
+
+  await JsonFile.mergeAsync(path.join(projectDir, '.detoxrc.json'), {
+    devices: {
+      emulator: {
+        type: 'android.emulator',
+        device: {
+          avdName: options.androidAvd,
+        },
+      },
+    },
+    apps: {
+      'android.debug': {
+        type: 'android.apk',
+        binaryPath: 'android/app/build/outputs/apk/debug/app-debug.apk',
+        build:
+          'cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..',
+      },
+      'android.release': {
+        type: 'android.apk',
+        binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
+        build:
+          'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
+      },
+    },
+    configurations: {
+      'android.emu.debug': {
+        device: 'emulator',
+        app: 'android.debug',
+      },
+      'android.emu.release': {
+        device: 'emulator',
+        app: 'android.release',
+      },
+    },
+  });
 }
