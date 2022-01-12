@@ -62,6 +62,6 @@ it('throws on invalid project root', async () => {
   try {
     await execute('very---invalid', 'config', '--json');
   } catch (e) {
-    expect(e.stderr).toMatch(/Invalid project root: \/private\//);
+    expect(e.stderr).toMatch(/Invalid project root: \//);
   }
 });
