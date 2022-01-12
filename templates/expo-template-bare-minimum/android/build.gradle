@@ -10,7 +10,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.0")
@@ -31,10 +30,14 @@ allprojects {
             // Android JSC is installed from npm
             url(new File(["node", "--print", "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), "../dist"))
         }
-
+        mavenCentral {
+            // We don't want to fetch react-native from Maven Central as there are
+            // older versions over there.
+            content {
+                excludeGroup "com.facebook.react"
+            }
+        }
         google()
-        mavenCentral()
-        jcenter()
         maven { url 'https://www.jitpack.io' }
     }
 }
