@@ -140,7 +140,7 @@ To use this in web, add the following script to your **web/index.html**. This sc
 ## How to retrieve your debug keystore fingerprint (Android only)
 
 When building a debug version of your application outside of Expo Go (for example, when using a [development client](https://docs.expo.dev/development/introduction/) or a standalone debug build), your app will be signed with the debug keystore on Android. The debug keystore location and password is defined in your `android/app/build.gradle` file like this:
-```gradle
+```groovy
 signingConfigs {
     debug {
         storeFile file('debug.keystore')
