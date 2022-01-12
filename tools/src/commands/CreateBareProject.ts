@@ -31,11 +31,8 @@ interface ActionOptions {
   changedBase: string;
   changedRef: string;
   detox: boolean;
-}
-
-interface DetoxOptions {
-  androidAvd: string;
-  iosSimulator: string;
+  detoxAndroidEmulatorAvd: string;
+  detoxIosSimulator: string;
 }
 
 async function action(options: ActionOptions) {
@@ -55,10 +52,7 @@ async function action(options: ActionOptions) {
 
   if (options.detox) {
     console.log('\u203A Setup project for detox\n');
-    await setupDetoxAsync(projectDir, {
-      androidAvd: 'bare-expo',
-      iosSimulator: 'iPhone 13',
-    });
+    await setupDetoxAsync(projectDir, options);
   }
 
   console.log('\u203A Prebuilding project\n');
@@ -67,6 +61,7 @@ async function action(options: ActionOptions) {
   process.chdir(projectDir);
   console.log('\u203A Installing packages\n');
   await spawnAsync('yarn', [], { stdio: 'inherit' });
+  await spawnAsync('pod', ['install'], { stdio: 'inherit', cwd: path.join(projectDir, 'ios') });
 }
 
 export default (program: Command) => {
@@ -88,6 +83,16 @@ export default (program: Command) => {
     .option('--changed-base <commit>', 'Git base for `-p changed` mode', 'master')
     .option('--changed-ref <commit>', 'Git ref for `-p changed` mode', 'HEAD')
     .option('--detox', 'Setup project for detox testing', false)
+    .option(
+      '--detox-android-emulator-avd <name>',
+      'Specify Android emulator AVD name for detox testing',
+      'bare-expo'
+    )
+    .option(
+      '--detox-ios-simulator <type>',
+      'Specify iOS simulator type for detox testing',
+      'iPhone 13'
+    )
     .asyncAction(action);
 };
 
@@ -258,6 +263,9 @@ async function getChangedPackagesAsync(base: string, ref: string): Promise<strin
   return result;
 }
 
+/**
+ * Same as `JsonFile.mergeAsync` but with deep merging by `lodash.mergeWith`.
+ */
 async function jsonFileDeepMergeAsync(
   file: string,
   sources: JSONObject[] | JSONObject,
@@ -276,6 +284,9 @@ async function jsonFileDeepMergeAsync(
   );
 }
 
+/**
+ * Add a config plugin to app.json
+ */
 async function addPluginAsync(appJsonPath: string, plugin: string) {
   return jsonFileDeepMergeAsync(appJsonPath, {
     expo: {
@@ -284,7 +295,15 @@ async function addPluginAsync(appJsonPath: string, plugin: string) {
   });
 }
 
-async function setupDetoxAsync(projectDir: string, options: DetoxOptions) {
+/**
+ * Setup managed project for detox.
+ *
+ * This function will do the following things:
+ *   - `yarn add -D detox @config-plugins/detox` # and other related packages
+ *   - `yarn detox init -r jest`
+ *   - setup configurations in `.detoxrc.json`
+ */
+async function setupDetoxAsync(projectDir: string, options: ActionOptions) {
   await spawnAsync(
     'yarn',
     [
@@ -306,12 +325,20 @@ async function setupDetoxAsync(projectDir: string, options: DetoxOptions) {
 
   await spawnAsync('yarn', ['detox', 'init', '-r', 'jest'], { stdio: 'inherit', cwd: projectDir });
 
+  const { name } = options;
+  // Using non-deep merge to drop the default configs in .detoxrc.json
   await JsonFile.mergeAsync(path.join(projectDir, '.detoxrc.json'), {
     devices: {
       emulator: {
         type: 'android.emulator',
         device: {
-          avdName: options.androidAvd,
+          avdName: options.detoxAndroidEmulatorAvd,
+        },
+      },
+      simulator: {
+        type: 'ios.simulator',
+        device: {
+          type: options.detoxIosSimulator,
         },
       },
     },
@@ -328,6 +355,18 @@ async function setupDetoxAsync(projectDir: string, options: DetoxOptions) {
         build:
           'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
       },
+      'ios.debug': {
+        name: name,
+        type: 'ios.app',
+        binaryPath: `ios/build/Build/Products/Debug-iphonesimulator/${name}.app`,
+        build: `xcodebuild -workspace ios/${name}.xcworkspace -scheme ${name} -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build`,
+      },
+      'ios.release': {
+        name: name,
+        type: 'ios.app',
+        binaryPath: `ios/build/Build/Products/Release-iphonesimulator/${name}.app`,
+        build: `xcodebuild -workspace ios/${name}.xcworkspace -scheme ${name} -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build`,
+      },
     },
     configurations: {
       'android.emu.debug': {
@@ -337,6 +376,14 @@ async function setupDetoxAsync(projectDir: string, options: DetoxOptions) {
       'android.emu.release': {
         device: 'emulator',
         app: 'android.release',
+      },
+      'ios.sim.debug': {
+        device: 'simulator',
+        app: 'ios.debug',
+      },
+      'ios.sim.release': {
+        device: 'simulator',
+        app: 'ios.release',
       },
     },
   });
