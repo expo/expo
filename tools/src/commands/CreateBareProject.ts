@@ -1,6 +1,8 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
+import fs from 'fs';
+import glob from 'glob-promise';
 import path from 'path';
 
 import * as ExpoCLI from '../ExpoCLI';
@@ -35,11 +37,10 @@ async function action(options: ActionOptions) {
   const extraPackages = await getExtraPackagesAsync(options);
 
   console.log('\u203A Creating project\n');
-  const projectDir = await createBareProjectAsync(
-    options.name,
-    options.workingDirectory,
-    extraPackages
-  );
+  const projectDir = await createManagedProjectAsync(options.name, options.workingDirectory);
+
+  console.log('\u203A Prebuilding project\n');
+  await prebuildProjectAsync(options.name, projectDir, options.workingDirectory, extraPackages);
 
   process.chdir(projectDir);
   console.log('\u203A Installing packages\n');
@@ -68,26 +69,72 @@ export default (program: Command) => {
 };
 
 /**
- * This function will do `expo init` and setup package.json to have expo dependencies to local path.
+ * This function will do `expo init` with local `expo-template-blank` template.
  *
  * @param name project name
  * @param workDir working directory to create the project
- * @param extraPackages extra packages to install
  * @returns path to created project
  */
-export async function createBareProjectAsync(
+async function createManagedProjectAsync(name: string, workDir: string) {
+  const managedTemplateDir = path.join(
+    getExpoRepositoryRootDir(),
+    'templates',
+    'expo-template-blank'
+  );
+  await ExpoCLI.runExpoCliAsync('init', [name, '-t', managedTemplateDir, '--no-install'], {
+    cwd: workDir,
+  });
+
+  return path.join(workDir, name);
+}
+
+/**
+ * This function will do `expo prebuild` and setup package.json to have expo dependencies to local path.
+ *
+ * @param name project name
+ * @param projectDir project path
+ * @param workDir working directory to create the project
+ * @param extraPackages extra packages to install
+ */
+async function prebuildProjectAsync(
   name: string,
+  projectDir: string,
   workDir: string,
-  extraPackages: string[]
-): Promise<string> {
+  extraInstallPackages: string[]
+) {
+  const appId = `dev.expo.${name}`;
+  await JsonFile.mergeAsync(path.join(projectDir, 'app.json'), {
+    expo: {
+      android: { package: appId },
+      ios: { bundleIdentifier: appId },
+    },
+  });
+
   const bareTemplateDir = path.join(
     getExpoRepositoryRootDir(),
     'templates',
     'expo-template-bare-minimum'
   );
-  await ExpoCLI.runExpoCliAsync('init', [name, '-t', bareTemplateDir, '--no-install'], {
-    cwd: workDir,
-  });
+  await spawnAsync('npm', ['pack', '--pack-destination', workDir], { cwd: bareTemplateDir });
+
+  const bareTemplateTarball = (
+    await glob('expo-template-bare-minimum-*.tgz', {
+      cwd: workDir,
+      absolute: true,
+    })
+  )[0];
+  if (!bareTemplateTarball) {
+    throw new Error('Failed to create expo-template-bare-minimum tarball.');
+  }
+
+  try {
+    await ExpoCLI.runExpoCliAsync('prebuild', ['--template', bareTemplateTarball, '--no-install'], {
+      cwd: projectDir,
+    });
+  } finally {
+    await fs.promises.unlink(bareTemplateTarball);
+  }
+
   const projectPackageJsonPath = path.join(workDir, name, 'package.json');
 
   // Update package.json for packages installation
@@ -99,12 +146,10 @@ export async function createBareProjectAsync(
 
   const projectPackageJson = require(projectPackageJsonPath);
   const installPackages: Set<Package> = new Set(
-    [...Object.keys(projectPackageJson.dependencies), ...extraPackages]
+    [...Object.keys(projectPackageJson.dependencies), ...extraInstallPackages]
       .filter((name) => allPackageMap[name])
       .map((name) => allPackageMap[name])
   );
-
-  const projectDir = path.join(workDir, name);
 
   console.log('\u203A Packages to be installed\n');
   projectPackageJson.resolutions ??= {};
@@ -117,7 +162,6 @@ export async function createBareProjectAsync(
   }
   console.log('\n');
   await JsonFile.writeAsync(projectPackageJsonPath, projectPackageJson);
-  return projectDir;
 }
 
 /**
