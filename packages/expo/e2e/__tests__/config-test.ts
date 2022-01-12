@@ -4,8 +4,13 @@ import path from 'path';
 
 import { execute, projectRoot, getRoot } from './utils';
 
+const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
   await fs.mkdirp(projectRoot);
+  process.env.FORCE_COLOR = '1';
+});
+afterAll(() => {
+  process.env.FORCE_COLOR = originalForceColor;
 });
 
 it('runs `npx expo config --help`', async () => {

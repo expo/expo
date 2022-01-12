@@ -3,8 +3,13 @@ import fs from 'fs-extra';
 
 import { execute, projectRoot } from './utils';
 
+const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
   await fs.mkdirp(projectRoot);
+  process.env.FORCE_COLOR = '1';
+});
+afterAll(() => {
+  process.env.FORCE_COLOR = originalForceColor;
 });
 
 it('runs `npx expo --version`', async () => {
