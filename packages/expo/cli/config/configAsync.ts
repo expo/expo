@@ -4,7 +4,7 @@ import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 import assert from 'assert';
 import util from 'util';
 
-import * as Log from '../Log';
+import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import { profile } from '../utils/profile';
 
