@@ -61,7 +61,9 @@ async function action(options: ActionOptions) {
   process.chdir(projectDir);
   console.log('\u203A Installing packages\n');
   await spawnAsync('yarn', [], { stdio: 'inherit' });
-  await spawnAsync('pod', ['install'], { stdio: 'inherit', cwd: path.join(projectDir, 'ios') });
+  if (os.platform() === 'darwin') {
+    await spawnAsync('pod', ['install'], { stdio: 'inherit', cwd: path.join(projectDir, 'ios') });
+  }
 }
 
 export default (program: Command) => {
