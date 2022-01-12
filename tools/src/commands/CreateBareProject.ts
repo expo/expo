@@ -3,7 +3,9 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import glob from 'glob-promise';
+import os from 'os';
 import path from 'path';
+import semver from 'semver';
 
 import * as ExpoCLI from '../ExpoCLI';
 import Git from '../Git';
@@ -24,7 +26,7 @@ const EXCLUDED_PACKAGES = [
 type ActionOptions = {
   name: string;
   packages: string;
-  workingDirectory: string;
+  workingDirectory: string | null;
   changedBase: string;
   changedRef: string;
 };
@@ -35,12 +37,17 @@ async function action(options: ActionOptions) {
   }
 
   const extraPackages = await getExtraPackagesAsync(options);
+  const workingDir = options.workingDirectory ?? os.tmpdir();
+  if (fs.existsSync(path.join(workingDir, options.name))) {
+    throw new Error(`Project directory existed: ${path.join(workingDir, options.name)}`);
+  }
 
-  console.log('\u203A Creating project\n');
-  const projectDir = await createManagedProjectAsync(options.name, options.workingDirectory);
+  console.log('\u203A Creating managed project\n');
+  const projectDir = await createManagedProjectAsync(options.name, workingDir);
+  console.log(`\u203A Managed project created - projectDir[${projectDir}]\n`);
 
   console.log('\u203A Prebuilding project\n');
-  await prebuildProjectAsync(options.name, projectDir, options.workingDirectory, extraPackages);
+  await prebuildProjectAsync(options.name, projectDir, workingDir, extraPackages);
 
   process.chdir(projectDir);
   console.log('\u203A Installing packages\n');
@@ -60,8 +67,8 @@ export default (program: Command) => {
     )
     .option(
       '-w, --working-directory [string]',
-      'Working directory to create the project.',
-      process.cwd()
+      'Working directory to create the project. Default is os.tmpdir()',
+      null
     )
     .option('--changed-base <commit>', 'Git base for `-p changed` mode', 'master')
     .option('--changed-ref <commit>', 'Git ref for `-p changed` mode', 'HEAD')
@@ -102,9 +109,14 @@ async function prebuildProjectAsync(
   workDir: string,
   extraInstallPackages: string[]
 ) {
+  const expoPackage = getPackageByName('expo');
+  if (!expoPackage) {
+    throw new Error('Cannot find the `expo` package.');
+  }
   const appId = `dev.expo.${name}`;
   await JsonFile.mergeAsync(path.join(projectDir, 'app.json'), {
     expo: {
+      sdkVersion: `${semver.major(expoPackage.packageVersion)}.0.0`,
       android: { package: appId },
       ios: { bundleIdentifier: appId },
     },
