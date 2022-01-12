@@ -3,7 +3,7 @@ import execa from 'execa';
 import os from 'os';
 import path from 'path';
 
-export const bin = require.resolve('../build-cli/bin/cli');
+export const bin = require.resolve('../../build-cli/bin/cli');
 
 export const projectRoot = getTemporaryPath();
 

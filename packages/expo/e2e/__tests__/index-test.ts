@@ -9,7 +9,7 @@ beforeAll(async () => {
 
 it('runs `npx expo --version`', async () => {
   const results = await execute('--version');
-  expect(results.stdout).toEqual(require('../package.json').version);
+  expect(results.stdout).toEqual(require('../../package.json').version);
 });
 
 it('runs `npx expo --help`', async () => {
