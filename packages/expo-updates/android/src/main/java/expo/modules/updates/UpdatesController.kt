@@ -284,6 +284,9 @@ class UpdatesController private constructor(
 
   @Synchronized
   private fun notifyController() {
+    if (launcher == null) {
+      throw AssertionError("UpdatesController.notifyController was called with a null launcher, which is an error. This method should only be called when an update is ready to launch.")
+    }
     isLoaderTaskFinished = true
     (this as java.lang.Object).notify()
   }
