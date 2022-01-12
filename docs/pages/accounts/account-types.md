@@ -53,13 +53,13 @@ We have taken a lot of care to make sure that all of the functionality that you 
 
 ### Renaming an Account
 
-> ⚠️ This feature is in private beta, please email support@expo.dev with the name of the Personal Account or Organization you would like to rename to get access.
+> ⚠️ This feature is in private beta, please email secure@expo.dev with the name of the Personal Account or Organization you would like to rename to get access.
 
 If you aren't happy with the name you originally chose for your account, you may choose a new name a limited number of times. Simply visit [the account settings page](https://expo.dev/accounts/[account]/settings) and follow the prompts under **Rename Account**.
 
 ### Transferring Projects Between Accounts
 
-> ⚠️ This feature is in private beta, please email support@expo.dev with the names of the Personal Accounts or Organizations you would like to transfer the project to and from to get access.
+> ⚠️ This feature is in private beta, please email secure@expo.dev with the names of the Personal Accounts or Organizations you would like to transfer the project to and from to get access.
 
 If you need to transfer a project between your Personal Account or Organzions you are an Owner of, you can do so by visiting [the project overview page](https://expo.dev/accounts/[account]/projects/[project]) and following the prompts under **Transfer Project**.
 
