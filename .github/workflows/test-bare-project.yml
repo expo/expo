@@ -56,12 +56,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - run: echo "WORK_DIR=$(mktemp -d)" >> $GITHUB_ENV
       - name: 📀 Create project with PR changed packages
         if: github.event_name == 'pull_request'
-        run: expotools create-bare-project -n baretest -p changed --changed-base ${{ github.event.pull_request.base.sha }} --changed-ref ${{ github.sha }}
+        run: expotools create-bare-project -n baretest -w ${{ env.WORK_DIR }} -p changed --changed-base ${{ github.event.pull_request.base.sha }} --changed-ref ${{ github.sha }}
       - name: 📀 Create default project
         if: github.event_name != 'pull_request'
-        run: expotools create-bare-project -n baretest -p default
+        run: expotools create-bare-project -n baretest -w ${{ env.WORK_DIR }} -p default
       - name: 🏗️ Build Android project
         run: ./gradlew :app:assembleDebug
-        working-directory: baretest/android
+        working-directory: ${{ env.WORK_DIR }}/baretest/android
