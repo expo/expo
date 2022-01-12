@@ -54,14 +54,12 @@ class UpdatesController private constructor(
 
   // TODO: move away from DatabaseHolder pattern to Handler thread
   private val databaseHandlerThread = HandlerThread("expo-updates-database")
-  private var isDatabaseHandlerThreadStarted = false
   private lateinit var databaseHandler: Handler
   private fun initializeDatabaseHandler() {
-    if (!isDatabaseHandlerThreadStarted) {
-      isDatabaseHandlerThreadStarted = true
+    if (!::databaseHandler.isInitialized) {
       databaseHandlerThread.start()
+      databaseHandler = Handler(databaseHandlerThread.looper)
     }
-    databaseHandler = Handler(databaseHandlerThread.looper)
   }
 
   private var isStarted = false

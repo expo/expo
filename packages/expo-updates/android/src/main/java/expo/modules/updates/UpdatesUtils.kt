@@ -142,6 +142,9 @@ object UpdatesUtils {
           // in case we're trying to send an event before the reactContext has been initialized
           // continue to retry for 5000ms
           for (i in 0..4) {
+            // Calling host.reactInstanceManager has a side effect of creating a new
+            // reactInstanceManager if there isn't already one. We want to avoid this so we check
+            // if it has an instance first.
             if (host.hasInstance()) {
               reactContext = host.reactInstanceManager.currentReactContext
               if (reactContext != null) {

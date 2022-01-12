@@ -13,18 +13,16 @@ import kotlin.Exception
 
 class ErrorRecovery {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
-  private var isHandlerThreadStarted = false
   internal lateinit var handler: Handler
 
   private var weakReactInstanceManager: WeakReference<ReactInstanceManager>? = null
   private var previousExceptionHandler: DefaultNativeModuleCallExceptionHandler? = null
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
-    if (!isHandlerThreadStarted) {
-      isHandlerThreadStarted = true
+    if (!::handler.isInitialized) {
       handlerThread.start()
+      handler = ErrorRecoveryHandler(handlerThread.looper, delegate)
     }
-    handler = ErrorRecoveryHandler(handlerThread.looper, delegate)
   }
 
   fun startMonitoring(reactInstanceManager: ReactInstanceManager) {
