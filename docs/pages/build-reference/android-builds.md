@@ -17,12 +17,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 
    - Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're prompted to generate a new keystore.
 
-1. Additional step for **bare** projects: Check if the Android project is configured to be buildable on the EAS servers.
-
-   > In this step, EAS CLI checks whether `android/app/build.gradle` contains `apply from: "./eas-build.gradle"`.
-   > If the project is not configured, EAS CLI runs auto-configuration steps ([learn more below](#project-auto-configuration)).
-
-1. Create the tarball containing a copy of the repository. Actual behavior depends on the VCS workflow you are using. [Learn more here](https://expo.fyi/eas-vcs-workflow).
+1. Create a tarball containing a copy of the repository. Actual behavior depends on the VCS workflow you are using. [Learn more here](https://expo.fyi/eas-vcs-workflow).
 1. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps
@@ -37,12 +32,11 @@ Next, this is what happens when EAS Build picks up your request:
 1. Create `.npmrc` if `NPM_TOKEN` is set. ([Learn more](/build-reference/private-npm-packages).)
 1. Run the `eas-build-pre-install` script from package.json if defined.
 1. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
-1. Additional steps for **managed** projects:
-   - Run `expo prebuild` to convert the project to a bare one.
-   - Configure the Android similarly to the step 3 from [Local Steps](#local-steps).
+1. Additional step for **managed** projects: Run `expo prebuild` to convert the project to a bare one.
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
 1. Run the `eas-build-post-install` script from package.json if defined.
 1. Restore the keystore (if it was included in the build request).
+1. Inject the signing configuration into **build.gradl**. [Learn more](#configuring-gradle).
 1. Run `./gradlew COMMAND` in the **android** directory inside your project.
 
    - `COMMAND` is the command defined in your **eas.json** at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
@@ -65,7 +59,7 @@ Your application's keystore should be kept private. **Under no circumstances sho
 
 ### Configuring Gradle
 
-Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Since we're building the project on a remote server, we had to come up with a way to provide Gradle with credentials which aren't, for security reasons, checked in to your repository. When running `eas build:configure`, we're writing the `android/app/eas-build.gradle` file with the following contents:
+Your app binary needs to be signed with a keystore. Since we're building the project on a remote server, we had to come up with a way to provide Gradle with credentials which aren't, for security reasons, checked in to your repository. In one of the remote steps, we inject the signing configuration into your Gradle configuration. EAS Build creates the **android/app/eas-build.gradle** file with the following contents:
 
 <!-- prettier-ignore -->
 ```groovy
@@ -85,75 +79,47 @@ android {
     release {
       // This is necessary to avoid needing the user to define a release build type manually
     }
+    debug {
+      // This is necessary to avoid needing the user to define a debug build type manually
+    }
   }
 }
 
-def isEasBuildConfigured = false
-
 tasks.whenTaskAdded {
-  /* @info Don't read credentials.json if the task name contains debug */
-  def debug = gradle.startParameter.taskNames.any { it.toLowerCase().contains('debug') }
-
-  if (debug) {
-    return
-  }
-  /* @end */
-
-  // We need to configure EAS Build only once
-  if (isEasBuildConfigured) {
-    return
-  }
-
-  isEasBuildConfigured = true;
-
-  /* @info This is where we configure the release signing config */android.signingConfigs.release/* @end */  {
+  android.signingConfigs.release {
     def credentialsJson = rootProject.file("../credentials.json");
+    def credentials = new groovy.json.JsonSlurper().parse(credentialsJson)
+    def keystorePath = Paths.get(credentials.android.keystore.keystorePath);
+    def storeFilePath = keystorePath.isAbsolute()
+      ? keystorePath
+      : rootProject.file("..").toPath().resolve(keystorePath);
 
-    if (credentialsJson.exists()) {
-      if (storeFile && !System.getenv("EAS_BUILD")) {
-        println("Path to release keystore file is already set, ignoring 'credentials.json'")
-      } else {
-        try {
-          def credentials = new groovy.json.JsonSlurper().parse(credentialsJson)
-          def keystorePath = Paths.get(credentials.android.keystore.keystorePath);
-          def storeFilePath = keystorePath.isAbsolute()
-            ? keystorePath
-            : rootProject.file("..").toPath().resolve(keystorePath);
-
-          /* @info Use the data from credentials.json for the signing config */
-          storeFile storeFilePath.toFile()
-          storePassword credentials.android.keystore.keystorePassword
-          keyAlias credentials.android.keystore.keyAlias
-          if (credentials.android.keystore.containsKey("keyPassword")) {
-            keyPassword credentials.android.keystore.keyPassword
-          } else {
-            // key password is required by Gradle, but PKCS keystores don't have one
-            // using the keystore password seems to satisfy the requirement
-            keyPassword credentials.android.keystore.keystorePassword
-          } /* @end */
-
-        } catch (Exception e) {
-          println("An error occurred while parsing 'credentials.json': " + e.message)
-        }
-      }
+    storeFile storeFilePath.toFile()
+    storePassword credentials.android.keystore.keystorePassword
+    keyAlias credentials.android.keystore.keyAlias
+    if (credentials.android.keystore.containsKey("keyPassword")) {
+      keyPassword credentials.android.keystore.keyPassword
     } else {
-      if (storeFile == null) {
-        println("Couldn't find a 'credentials.json' file, skipping release keystore configuration")
-      }
+      // key password is required by Gradle, but PKCS keystores don't have one
+      // using the keystore password seems to satisfy the requirement
+      keyPassword credentials.android.keystore.keystorePassword
     }
   }
 
-  /* @info Use the above signing config for the release build type */
   android.buildTypes.release {
     signingConfig android.signingConfigs.release
-  } /* @end */
+  }
 
+  android.buildTypes.debug {
+    signingConfig android.signingConfigs.release
+  }
 }
+
 ```
 
 The most important part is the `release` signing config. It's configured to read the keystore and passwords from the **credentials.json** file at the project root. Even though you're not required to create this file on your own, it's created and populated with your credentials by EAS Build before running the build.
 
-This file is imported in `android/app/build.gradle` like this:
+This file is imported in **android/app/build.gradle** like this:
 
 ```groovy
 // ...
