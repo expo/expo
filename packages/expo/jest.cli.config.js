@@ -2,7 +2,7 @@ const path = require('path');
 
 const enableE2E = process.env.CI || process.env.E2E;
 
-const roots = ['__tests__', 'cli', 'bin'];
+const roots = ['cli', 'bin'];
 
 if (enableE2E) {
   roots.push('e2e');
