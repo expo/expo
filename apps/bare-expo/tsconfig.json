@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "lib": [
-      "dom",
-      "esnext"
-    ]
-  },
-  "extends": "expo/tsconfig.base"
-}

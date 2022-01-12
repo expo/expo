@@ -1,1 +1,0 @@
-{"version":3,"file":"NativeModulesProxy.native.d.ts","sourceRoot":"","sources":["../src/NativeModulesProxy.native.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,iBAAiB,EAA0B,MAAM,4BAA4B,CAAC;AAWvF,QAAA,MAAM,kBAAkB,EAAE;IAAE,CAAC,UAAU,EAAE,MAAM,GAAG,iBAAiB,CAAA;CAAO,CAAC;AAK3E;;GAEG;AACH,wBAAgB,mBAAmB,CAAC,KAAK,GAAE,OAAc,QAExD;AAuDD,eAAe,kBAAkB,CAAC"}

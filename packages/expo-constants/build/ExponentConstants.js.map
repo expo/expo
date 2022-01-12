@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentConstants.js","sourceRoot":"","sources":["../src/ExponentConstants.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AACvD,eAAe,kBAAkB,CAAC,iBAAiB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\nexport default NativeModulesProxy.ExponentConstants;\n"]}

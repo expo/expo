@@ -1,1 +1,0 @@
-{"version":3,"file":"requireNativeModule.d.ts","sourceRoot":"","sources":["../src/requireNativeModule.ts"],"names":[],"mappings":"AAEA,OAAO,CAAC,MAAM,CAAC;IAEb,IAAI,WAAW,EACX,SAAS,GACT;QACE,CAAC,GAAG,EAAE,MAAM,GAAG,GAAG,CAAC;KACpB,CAAC;CACP;AAED;;;;;;;;GAQG;AACH,wBAAgB,mBAAmB,CAAC,UAAU,GAAG,GAAG,EAAE,UAAU,EAAE,MAAM,GAAG,UAAU,CAQpF"}

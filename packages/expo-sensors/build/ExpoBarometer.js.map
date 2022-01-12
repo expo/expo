@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoBarometer.js","sourceRoot":"","sources":["../src/ExpoBarometer.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AACvD,eAAe,kBAAkB,CAAC,aAAa,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\nexport default NativeModulesProxy.ExpoBarometer;\n"]}

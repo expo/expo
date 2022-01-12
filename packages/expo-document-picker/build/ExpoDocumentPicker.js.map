@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoDocumentPicker.js","sourceRoot":"","sources":["../src/ExpoDocumentPicker.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,kBAAkB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoDocumentPicker;\n"]}

@@ -1,4 +1,0 @@
-<manifest package="expo.modules.gl"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-feature android:glEsVersion="0x00020000" android:required="false" />
-</manifest>

@@ -1,6 +1,0 @@
-<!--
-    Settings in this file should/will be overridden by specific app's resources.
--->
-<resources>
-  <color name="splashscreen_background">#FFFFFF</color>
-</resources>

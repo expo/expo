@@ -1,1 +1,0 @@
-{"version":3,"file":"UnavailabilityError.d.ts","sourceRoot":"","sources":["../../src/errors/UnavailabilityError.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,UAAU,EAAE,MAAM,cAAc,CAAC;AAE1C;;;;GAIG;AACH,qBAAa,mBAAoB,SAAQ,UAAU;gBACrC,UAAU,EAAE,MAAM,EAAE,YAAY,EAAE,MAAM;CAMrD"}

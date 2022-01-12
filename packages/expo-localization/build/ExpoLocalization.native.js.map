@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoLocalization.native.js","sourceRoot":"","sources":["../src/ExpoLocalization.native.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,gBAAgB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoLocalization;\n"]}

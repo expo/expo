@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoBackgroundFetch.js","sourceRoot":"","sources":["../src/ExpoBackgroundFetch.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,mBAAmB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoBackgroundFetch;\n"]}

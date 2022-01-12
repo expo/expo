@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoVideoThumbnails.js","sourceRoot":"","sources":["../src/ExpoVideoThumbnails.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AACvD,eAAe,kBAAkB,CAAC,mBAAmB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\nexport default NativeModulesProxy.ExpoVideoThumbnails;\n"]}

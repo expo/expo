@@ -1,8 +1,0 @@
-*.pbxproj binary linguist-generated
-ios/Exponent.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
-apps/bare-expo/ios/BareExpo.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
-apps/bare-sandbox/ios/bare-sandbox.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
-templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
-packages/*/build/** -diff linguist-generated
-packages/*/plugin/build/** -diff linguist-generated
-packages/@*/*/build/** -diff linguist-generated

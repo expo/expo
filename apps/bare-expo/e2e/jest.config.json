@@ -1,7 +1,0 @@
-{
-  "setupFilesAfterEnv": ["./setup/setupSockets.js", "./setup/setupDetox.js"],
-  "testEnvironment": "node",
-  "reporters": ["detox/runners/jest/streamlineReporter"],
-  "testMatch": ["**/*-test.native.js"],
-  "verbose": true
-}

@@ -1,6 +1,0 @@
-framework module ABI44_0_0EXFacebook {
-  umbrella header "ABI44_0_0EXFacebook.h"
-
-  export *
-  module * { export * }
-}

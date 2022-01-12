@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentAV.js","sourceRoot":"","sources":["../src/ExponentAV.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,UAAU,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExponentAV;\n"]}

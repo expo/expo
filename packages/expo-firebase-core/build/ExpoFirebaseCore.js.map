@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoFirebaseCore.js","sourceRoot":"","sources":["../src/ExpoFirebaseCore.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,gBAAgB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoFirebaseCore;\n"]}
