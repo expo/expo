@@ -35,6 +35,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:cli": "jest --config jest.cli.config.js",
     "prepublishOnly": "npm run prepare:cli && expo-module prepublishOnly",
     "expo-module": "expo-module"
   },

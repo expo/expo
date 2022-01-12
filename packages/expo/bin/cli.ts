@@ -42,7 +42,7 @@ if (!isSubcommand && args['--help']) {
       {bold $} npx expo <command>
 
     {bold Available commands}
-      ${Object.keys({ foo: true, bar: true }).join(', ')}
+      ${Object.keys(commands).join(', ')}
 
     {bold Options}
       --version, -v   Version number
@@ -60,11 +60,6 @@ const commandArgs = isSubcommand ? args._.slice(1) : args._;
 // Push the help flag to the subcommand args.
 if (args['--help']) {
   commandArgs.push('--help');
-} else {
-  // Beta warning when not using `--help` or `--version`
-  console.log(
-    chalk`\n{gray {bold npx expo} is in beta. Please report any issues at {underline https://github.com/expo/expo/issues}}\n`
-  );
 }
 
 // Install exit hooks
