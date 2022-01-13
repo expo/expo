@@ -1,12 +1,12 @@
 /* eslint-env jest */
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 import path from 'path';
 
 import { execute, projectRoot, getRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
-  await fs.mkdirp(projectRoot);
+  await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '1';
 });
 afterAll(() => {
@@ -39,13 +39,14 @@ it('runs `npx expo config --json`', async () => {
   const projectName = 'basic-config';
   const projectRoot = getRoot(projectName);
   // Create the project root aot
-  await fs.mkdirp(projectRoot);
+  await fs.mkdir(projectRoot, { recursive: true });
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
-  fs.writeFileSync(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
-  fs.writeFileSync(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
+  await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+  await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
   const results = await execute(projectName, 'config', '--json');
 
+  console.log(results);
   // @ts-ignore
   const exp = JSON.parse(results.stdout);
 

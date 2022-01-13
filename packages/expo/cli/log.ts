@@ -1,17 +1,9 @@
-import { EXPO_PROFILE } from './utils/env';
-
-/** `console.time` but only enabled when `EXPO_PROFILE` is truthy */
 export function time(label?: string): void {
-  if (EXPO_PROFILE) {
-    console.time(label);
-  }
+  console.time(label);
 }
 
-/** `console.timeEnd` but only enabled when `EXPO_PROFILE` is truthy */
 export function timeEnd(label?: string): void {
-  if (EXPO_PROFILE) {
-    console.timeEnd(label);
-  }
+  console.timeEnd(label);
 }
 
 export function error(...message: string[]): void {

@@ -1,11 +1,11 @@
 /* eslint-env jest */
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 
 import { execute, projectRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
-  await fs.mkdirp(projectRoot);
+  await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '1';
 });
 afterAll(() => {
