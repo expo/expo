@@ -2,6 +2,7 @@ import { Command } from '@expo/commander';
 import JsonFile, { JSONObject } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
+import { copy } from 'fs-extra';
 import glob from 'glob-promise';
 import mergeWith from 'lodash/mergeWith';
 import os from 'os';
@@ -33,6 +34,7 @@ interface ActionOptions {
   detox: boolean;
   detoxAndroidEmulatorAvd: string;
   detoxIosSimulator: string;
+  testSuite: boolean;
 }
 
 async function action(options: ActionOptions) {
@@ -46,8 +48,15 @@ async function action(options: ActionOptions) {
     throw new Error(`Project directory existed: ${path.join(workingDir, options.name)}`);
   }
 
-  console.log('\u203A Creating managed project\n');
-  const projectDir = await createManagedProjectAsync(options.name, workingDir);
+  let projectDir: string;
+  if (!options.testSuite) {
+    console.log('\u203A Creating managed project\n');
+    projectDir = await createManagedProjectAsync(options.name, workingDir);
+  } else {
+    console.log('\u203A Creating managed test-suite project\n');
+    projectDir = await createTestSuiteProjectAsync(options.name, workingDir);
+  }
+
   await useLocalExpoPackagesAsync(projectDir);
   console.log(`\u203A Managed project created - projectDir[${projectDir}]\n`);
 
@@ -96,6 +105,7 @@ export default (program: Command) => {
       'Specify iOS simulator type for detox testing',
       'iPhone 13'
     )
+    .option('--test-suite', 'Create project from test-suite', false)
     .asyncAction(action);
 };
 
@@ -117,6 +127,55 @@ async function createManagedProjectAsync(name: string, workDir: string) {
   });
 
   return path.join(workDir, name);
+}
+
+async function createTestSuiteProjectAsync(name: string, workDir: string) {
+  const projectDir = path.join(workDir, name);
+  await fs.promises.mkdir(projectDir, { recursive: true });
+  await copy(path.join(getExpoRepositoryRootDir(), 'apps', 'test-suite'), projectDir);
+
+  // app.json: remove sdkVersion
+  const appJsonPath = path.join(projectDir, 'app.json');
+  const appJson = await JsonFile.readAsync(appJsonPath);
+  delete appJson?.expo?.['sdkVersion'];
+  await JsonFile.writeAsync(appJsonPath, appJson);
+
+  // package.json:
+  //   - remove main (to make prebuild update package.json)
+  //   - remove unused expo packages to make the test-suite project being bare
+  const packageJsonPath = path.join(projectDir, 'package.json');
+  const packageJson = require(packageJsonPath);
+  delete packageJson['main'];
+  const keepExpoPackages = ['expo-linking'];
+  for (const depName of Object.keys(packageJson.dependencies)) {
+    if (depName.match(/^@?expo[/-]/) && !keepExpoPackages.includes(depName)) {
+      delete packageJson.dependencies[depName];
+    }
+  }
+  await JsonFile.writeAsync(packageJsonPath, packageJson);
+
+  // Generate TestModules.js
+  // TODO: move test cases inside `packages/expo-*/e2e/` and add cases by `extraPackages`.
+  const testModulesContent = `\
+'use strict';
+
+import Constants from 'expo-constants';
+import { Platform } from 'expo-modules-core';
+
+export function getTestModules() {
+  const modules = [
+    // Sanity
+    require('./tests/Basic'),
+  ];
+
+  return modules
+    .filter(Boolean)
+    .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+}
+`;
+  await fs.promises.writeFile(path.join(projectDir, 'TestModules.js'), testModulesContent);
+
+  return projectDir;
 }
 
 /**
@@ -371,6 +430,12 @@ async function setupDetoxAsync(projectDir: string, options: ActionOptions) {
   });
 }
 
+/**
+ * Update package.json dependencies to use local packages
+ *
+ * @param projectDir project directory
+ * @param extraInstallPackages extra packages to add in dependencies
+ */
 async function useLocalExpoPackagesAsync(
   projectDir: string,
   extraInstallPackages: string[] = []
