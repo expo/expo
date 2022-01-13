@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `IllegalThreadStateException` that occurred when creating an event to send to React Native early in the app lifecycle. ([#15880](https://github.com/expo/expo/pull/15880) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.11.3 — 2021-12-22
