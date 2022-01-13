@@ -11,6 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@expo/html-elements": "^0.0.4",
+    "@react-navigation/native": "~5.8.9",
+    "@react-navigation/stack": "~5.12.6",
     "async-retry": "^1.1.4",
     "expo": "~44.0.0-alpha.0",
     "expo-ads-admob": "~12.0.0",
@@ -35,6 +37,7 @@
     "expo-haptics": "~11.1.0",
     "expo-image-manipulator": "~10.2.0",
     "expo-keep-awake": "~10.0.0",
+    "expo-linking": "~3.0.0",
     "expo-localization": "~12.0.0",
     "expo-location": "~14.0.0",
     "expo-media-library": "~14.0.0",
@@ -55,6 +58,7 @@
     "react": "17.0.1",
     "react-native": "0.64.3",
     "react-native-gesture-handler": "~2.1.0",
+    "react-native-safe-area-context": "3.3.2",
     "react-native-safe-area-view": "^0.14.8",
     "sinon": "^7.1.1"
   },
