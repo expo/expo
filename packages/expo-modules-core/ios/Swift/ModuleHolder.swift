@@ -66,7 +66,7 @@ public final class ModuleHolder {
   func call(function functionName: String, args: [Any], promise: Promise) {
     do {
       guard let function = definition.functions[functionName] else {
-        throw FunctionNotFoundError(functionName: functionName, moduleName: self.name)
+        throw FunctionNotFoundException((functionName: functionName, moduleName: self.name))
       }
       let queue = function.queue ?? DispatchQueue.global(qos: .default)
 
@@ -76,7 +76,7 @@ public final class ModuleHolder {
     } catch let error as CodedError {
       promise.reject(error)
     } catch {
-      promise.reject(UnexpectedError(error))
+      promise.reject(UnexpectedException(error))
     }
   }
 
@@ -167,20 +167,17 @@ public final class ModuleHolder {
     post(event: .moduleDestroy)
   }
 
-  // MARK: Errors
+  // MARK: - Exceptions
 
-  struct ModuleNotFoundError: CodedError {
-    let moduleName: String
-    var description: String {
-      "Cannot find module `\(moduleName)`"
+  internal class ModuleNotFoundException: GenericException<String> {
+    override var reason: String {
+      "Module '\(param)' not found"
     }
   }
 
-  struct FunctionNotFoundError: CodedError {
-    let functionName: String
-    let moduleName: String
-    var description: String {
-      "Cannot find function `\(functionName)` in module `\(moduleName)`"
+  internal class FunctionNotFoundException: GenericException<(functionName: String, moduleName: String)> {
+    override var reason: String {
+      "Function '\(param.functionName)' not found in module '\(param.moduleName)'"
     }
   }
 }

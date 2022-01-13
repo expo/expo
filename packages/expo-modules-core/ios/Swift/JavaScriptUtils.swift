@@ -38,6 +38,6 @@ internal func createSyncFunctionBlock(holder: ModuleHolder, name functionName: S
 
 private class ModuleUnavailableException: GenericException<String> {
   override var reason: String {
-    "Module '\(params)' is no longer available"
+    "Module '\(param)' is no longer available"
   }
 }
