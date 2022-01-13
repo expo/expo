@@ -65,11 +65,11 @@ export async function getDevSettingsAsync(): Promise<DevSettings> {
 export async function getBuildInfoAsync(): Promise<BuildInfo> {
   return {
     appIcon: '',
-    appName: '',
-    appVersion: '',
-    sdkVersion: '',
-    runtimeVersion: '',
-    hostUrl: '',
+    appName: '123',
+    appVersion: '32.1.2',
+    sdkVersion: '45.0.0',
+    runtimeVersion: '12',
+    hostUrl: '127.0.0.1',
   };
 }
 

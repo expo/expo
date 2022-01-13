@@ -7,23 +7,23 @@ import {
   XIcon,
   Button,
   Divider,
-  HomeFilledIcon,
-  RefreshIcon,
-  StatusIndicator,
   ClipboardIcon,
-  PerformanceIcon,
-  InspectElementIcon,
   DebugIcon,
+  HomeFilledIcon,
+  InspectElementIcon,
+  PerformanceIcon,
+  RefreshIcon,
   RunIcon,
+  StatusIndicator,
   Image,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Switch } from 'react-native';
 
 import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useDevSettings } from '../hooks/useDevSettings';
 import { useClipboard } from '../hooks/useClipboard';
-import { navigateToLauncherAsync, reload, copyToClipboardAsync } from '../native-modules/DevMenu';
+import { useDevSettings } from '../hooks/useDevSettings';
+import { navigateToLauncherAsync, reload } from '../native-modules/DevMenu';
 
 export function MainScreen() {
   const buildInfo = useBuildInfo();
@@ -50,7 +50,7 @@ export function MainScreen() {
         <Row align="start">
           <Row align="center">
             <View>
-              <View height="xl" width="xl" overflow="hidden" rounded="medium">
+              <View height="xl" width="xl" overflow="hidden" bg="secondary" rounded="medium">
                 {Boolean(buildInfo.appIcon) && (
                   <Image
                     source={{ uri: buildInfo.appIcon }}
@@ -70,7 +70,7 @@ export function MainScreen() {
               {Boolean(buildInfo.runtimeVersion) && (
                 <>
                   <Text size="small" color="secondary">
-                    Runtime version: 1
+                    {`Runtime version: ${buildInfo.runtimeVersion}`}
                   </Text>
                 </>
               )}
@@ -163,12 +163,19 @@ export function MainScreen() {
       <View mx="small" rounded="large" overflow="hidden">
         <BuildInfoRow title="Version" value={buildInfo.appVersion} />
         <Divider />
+        {Boolean(buildInfo.runtimeVersion) && (
+          <>
+            <BuildInfoRow title="Runtime version" value={buildInfo.runtimeVersion} />
+            <Divider />
+          </>
+        )}
 
-        <BuildInfoRow title="Runtime version" value="12" />
-        <Divider />
-
-        <BuildInfoRow title="SDK Version" value="123" />
-        <Divider />
+        {Boolean(buildInfo.sdkVersion) && (
+          <>
+            <BuildInfoRow title="SDK Version" value={buildInfo.sdkVersion} />
+            <Divider />
+          </>
+        )}
 
         <Button.ScaleOnPressContainer
           onPress={onCopyBuildInfoPress}
@@ -209,14 +216,14 @@ function ActionButton({ icon, label, onPress }: ActionButtonProps) {
   );
 }
 
-type SettingsRowButton = {
+type SettingsRowButtonProps = {
   icon: React.ReactElement<any>;
   label: string;
   description?: string;
   onPress: () => void;
 };
 
-function SettingsRowButton({ label, icon, description = '', onPress }: SettingsRowButton) {
+function SettingsRowButton({ label, icon, description = '', onPress }: SettingsRowButtonProps) {
   return (
     <Button.ScaleOnPressContainer onPress={onPress}>
       <Row padding="small" align="center">
