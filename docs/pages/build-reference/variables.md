@@ -241,6 +241,12 @@ The following are two possible alternative approaches, each with different trade
 
 <div style={{marginTop: -20, display: 'block'}} />
 
+### How are naming collisions between secrets and the `env` field in eas.json handled?
+
+A secret created on the Expo website or with `eas secret:create` will take precedence over an environment variable of the same name that is set through the `env` field in **eas.json**.
+
+For example, if you create a secret with name `MY_TOKEN` and value `secret` and also set `"env": { "MY_TOKEN": "public" }` in your **eas.json**, then `process.env.MY_TOKEN` on EAS Build will evaluate to `secret`.
+
 ### How do environment variables work for my Expo Development Client builds?
 
 Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
