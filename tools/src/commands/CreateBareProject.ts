@@ -48,6 +48,7 @@ async function action(options: ActionOptions) {
 
   console.log('\u203A Creating managed project\n');
   const projectDir = await createManagedProjectAsync(options.name, workingDir);
+  await useLocalExpoPackagesAsync(projectDir);
   console.log(`\u203A Managed project created - projectDir[${projectDir}]\n`);
 
   if (options.detox) {
@@ -170,33 +171,12 @@ async function prebuildProjectAsync(
     await fs.promises.unlink(bareTemplateTarball);
   }
 
-  const projectPackageJsonPath = path.join(workDir, name, 'package.json');
-
-  // Update package.json for packages installation
-  const allPackages = await getListOfPackagesAsync();
-  const allPackageMap = allPackages.reduce((accu, currValue) => {
-    accu[currValue.packageName] = currValue;
-    return accu;
-  }, {});
-
-  const projectPackageJson = require(projectPackageJsonPath);
-  const installPackages: Set<Package> = new Set(
-    [...Object.keys(projectPackageJson.dependencies), ...extraInstallPackages]
-      .filter((name) => allPackageMap[name])
-      .map((name) => allPackageMap[name])
-  );
-
+  const installPackages = await useLocalExpoPackagesAsync(projectDir, extraInstallPackages);
   console.log('\u203A Packages to be installed\n');
-  projectPackageJson.resolutions ??= {};
   for (const pkg of installPackages) {
-    console.log(`- ${pkg.packageName}`);
-    const relativePath = path.relative(projectDir, pkg.path);
-    projectPackageJson.dependencies[pkg.packageName] = relativePath;
-    // Also setup `resolutions` to local packages
-    projectPackageJson.resolutions[pkg.packageName] = relativePath;
+    console.log(`- ${pkg}`);
   }
   console.log('\n');
-  await JsonFile.writeAsync(projectPackageJsonPath, projectPackageJson);
 }
 
 /**
@@ -389,4 +369,35 @@ async function setupDetoxAsync(projectDir: string, options: ActionOptions) {
       },
     },
   });
+}
+
+async function useLocalExpoPackagesAsync(
+  projectDir: string,
+  extraInstallPackages: string[] = []
+): Promise<string[]> {
+  const packageJsonPath = path.join(projectDir, 'package.json');
+  const packageJson = require(packageJsonPath);
+
+  // Update package.json for packages installation
+  const allPackages = await getListOfPackagesAsync();
+  const allPackageMap = allPackages.reduce((accu, currValue) => {
+    accu[currValue.packageName] = currValue;
+    return accu;
+  }, {});
+
+  const installPackages: Set<Package> = new Set(
+    [...Object.keys(packageJson.dependencies), ...extraInstallPackages]
+      .filter((name) => allPackageMap[name])
+      .map((name) => allPackageMap[name])
+  );
+
+  packageJson.resolutions ??= {};
+  for (const pkg of installPackages) {
+    const relativePath = path.relative(projectDir, pkg.path);
+    packageJson.dependencies[pkg.packageName] = relativePath;
+    // Also setup `resolutions` to local packages
+    packageJson.resolutions[pkg.packageName] = relativePath;
+  }
+  await JsonFile.writeAsync(packageJsonPath, packageJson);
+  return Array.from(installPackages).map((pkg) => pkg.packageName);
 }
