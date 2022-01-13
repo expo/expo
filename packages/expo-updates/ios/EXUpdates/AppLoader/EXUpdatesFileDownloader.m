@@ -8,6 +8,12 @@
 #import <EXUpdates/EXUpdatesParameterParser.h>
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
 
+#if __has_include(<EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>)
+#import <EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
@@ -28,6 +34,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeManifestSignatureError = 1043;
 const NSInteger EXUpdatesFileDownloaderErrorCodeMultipartParsingError = 1044;
 const NSInteger EXUpdatesFileDownloaderErrorCodeMultipartMissingManifestError = 1045;
 const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 1047;
+const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048;
 
 @interface EXUpdatesFileDownloader () <NSURLSessionDataDelegate>
 
@@ -162,7 +169,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
     EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
                                                                                      serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
                                                                                           manifestFilters:responseHeaders[@"expo-manifest-filters"]
-                                                                                        manifestSignature:responseHeaders[@"expo-manifest-signature"]];
+                                                                                        manifestSignature:responseHeaders[@"expo-manifest-signature"]
+                                                                                                signature:responseHeaders[@"expo-signature"]];
     
     return [self parseManifestBodyData:data
                        manifestHeaders:manifestHeaders
@@ -259,7 +267,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
                                                                                    serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
                                                                                         manifestFilters:responseHeaders[@"expo-manifest-filters"]
-                                                                                      manifestSignature:responseHeaders[@"expo-manifest-signature"]];
+                                                                                      manifestSignature:responseHeaders[@"expo-manifest-signature"]
+                                                                                              signature:manifestPartHeaders[@"expo-signature"]];
 
   return [self parseManifestBodyData:manifestPartData
                      manifestHeaders:manifestHeaders
@@ -320,7 +329,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
                 ]);
     return;
   }
-  NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+
     
   if (signature != nil && !isUnsignedFromXDL) {
     if (![signature isKindOfClass:[NSString class]]) {
@@ -337,7 +346,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
                                       config:self->_config
                                 successBlock:^(BOOL isValid) {
                                                 if (isValid) {
-                                                  [self _createUpdateWithManifest:mutableManifest
+                                                  [self _createUpdateWithManifest:manifest
+                                                                 manifestBodyData:manifestBodyData
                                                                   manifestHeaders:manifestHeaders
                                                                        extensions:extensions
                                                                          database:database
@@ -356,7 +366,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
                                               }
     ];
   } else {
-    [self _createUpdateWithManifest:mutableManifest
+    [self _createUpdateWithManifest:manifest
+                   manifestBodyData:manifestBodyData
                     manifestHeaders:manifestHeaders
                          extensions:extensions
                            database:database
@@ -391,7 +402,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
   } errorBlock:errorBlock];
 }
 
-- (void)_createUpdateWithManifest:(NSMutableDictionary *)mutableManifest
+- (void)_createUpdateWithManifest:(NSDictionary *)manifest
+                 manifestBodyData:(NSData *)manifestBodyData
                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
                        extensions:(NSDictionary *)extensions
                          database:(EXUpdatesDatabase *)database
@@ -399,6 +411,55 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
                      successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  if (codeSigningConfiguration) {
+    NSError *error;
+    EXUpdatesSignatureHeaderInfo *signatureHeaderInfo = [[EXUpdatesSignatureHeaderInfo alloc] initWithSignatureHeader:manifestHeaders.signature
+                                                                                                                error:&error];
+    if (error) {
+      NSString *message;
+      if (error.code == EXUpdatesSignatureHeaderInfoErrorMissingSignatureHeader) {
+        message = @"No expo-signature header specified";
+      } else if (error.code == EXUpdatesSignatureHeaderInfoErrorStructuredFieldParseError) {
+        message = @"expo-signature structured header parsing failed";
+      } else if (error.code == EXUpdatesSignatureHeaderInfoErrorSigMissing) {
+        message = @"Structured field sig not found in expo-signature header";
+      }
+      
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
+      return;
+    }
+    
+    BOOL isSignatureValid = [codeSigningConfiguration verifySignatureHeaderInfoWithSignatureHeaderInfo:signatureHeaderInfo
+                                                                                            signedData:manifestBodyData
+                                                                                                 error:&error].boolValue;
+    if (error) {
+      NSString *message;
+      if (error.code == EXUpdatesCodeSigningConfigurationErrorKeyIdMismatchError) {
+        message = @"Key with keyid from signature not found in client configuration";
+      } else if (error.code == EXUpdatesCodeSigningConfigurationErrorSignatureEncodingError) {
+        message = @"Signature in header has invalid encoding";
+      } else if (error.code == EXUpdatesCodeSigningConfigurationErrorSecurityFrameworkError) {
+        message = @"Signature verification failed due to security framework error";
+      }
+      
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
+      return;
+    }
+    
+    if (!isSignatureValid) {
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
+      return;
+    }
+  }
+  
+  NSMutableDictionary *mutableManifest = manifest.mutableCopy;
   if (_config.expectsSignedManifest) {
     // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
     mutableManifest[@"isVerified"] = @(isVerified);
@@ -407,7 +468,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
   NSError *error;
   EXUpdatesUpdate *update;
   @try {
-    update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
+    update = [EXUpdatesUpdate updateWithManifest:mutableManifest
                                  manifestHeaders:manifestHeaders
                                       extensions:extensions
                                           config:_config
@@ -559,6 +620,11 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 
 
   for (NSString *key in _config.requestHeaders) {
     [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
+  }
+  
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  if (codeSigningConfiguration) {
+    [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expects-signature"];
   }
 }
 

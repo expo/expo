@@ -84,8 +84,8 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
     NSAssert(asset.filename, @"asset filename should be nonnull");
     NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"extra_request_headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"marked_for_deletion\")\
-    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, 0);";
+    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"extra_request_headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"expected_hash\", \"marked_for_deletion\")\
+    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0);";
     if ([self _executeSql:assetInsertSql
                  withArgs:@[
                           asset.key ?: [NSNull null],
@@ -97,7 +97,8 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
                           asset.downloadTime,
                           asset.filename,
                           asset.contentHash,
-                          @(EXUpdatesDatabaseHashTypeSha1)
+                          @(EXUpdatesDatabaseHashTypeSha1),
+                          asset.expectedHash ?: [NSNull null],
                           ]
                     error:error] == nil) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
@@ -165,7 +166,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   NSAssert(asset.filename, @"asset filename should be nonnull");
   NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"extra_request_headers\" = ?3, \"type\" = ?4, \"metadata\" = ?5, \"download_time\" = ?6, \"relative_path\" = ?7, \"hash\" = ?8, \"url\" = ?9 WHERE \"key\" = ?1;";
+  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"extra_request_headers\" = ?3, \"type\" = ?4, \"metadata\" = ?5, \"download_time\" = ?6, \"relative_path\" = ?7, \"hash\" = ?8, \"expected_hash\" = ?9, \"url\" = ?10 WHERE \"key\" = ?1;";
   [self _executeSql:assetUpdateSql
            withArgs:@[
                       asset.key ?: [NSNull null],
@@ -176,6 +177,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
                       asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
+                      asset.expectedHash,
                       asset.url ? asset.url.absoluteString : [NSNull null]
                       ]
               error:error];
@@ -202,6 +204,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   // all other properties should be overridden by database values
   asset.filename = existingAsset.filename;
   asset.contentHash = existingAsset.contentHash;
+  asset.expectedHash = existingAsset.expectedHash;
   asset.downloadTime = existingAsset.downloadTime;
 }
 
@@ -639,6 +642,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   asset.downloadTime = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
   asset.filename = row[@"relative_path"];
   asset.contentHash = row[@"hash"];
+  asset.expectedHash = row[@"expected_hash"];
   asset.metadata = metadata;
   asset.isLaunchAsset = (launchAssetId && [launchAssetId isKindOfClass:[NSNumber class]])
     ? [(NSNumber *)launchAssetId isEqualToNumber:(NSNumber *)row[@"id"]]
