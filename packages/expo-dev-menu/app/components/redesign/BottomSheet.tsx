@@ -1,6 +1,4 @@
-import { useIsFocused } from '@react-navigation/native';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Dimensions, Platform, View, LayoutChangeEvent, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
@@ -8,10 +6,6 @@ import {
   State as GestureState,
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-
-import DevMenuScreen from './DevMenuScreen';
-
-const Stack = createStackNavigator();
 
 type Props = {
   /**
@@ -71,8 +65,6 @@ type Props = {
    * Refs for gesture handlers used for building bottomsheet
    */
   innerGestureHandlerRefs: [React.RefObject<PanGestureHandler>, React.RefObject<TapGestureHandler>];
-
-  openScreen?: string;
 
   animationEnabled?: boolean;
 };
@@ -227,7 +219,7 @@ function withDecaying(
   ]);
 }
 
-export default class BottomSheetBehavior extends React.Component<Props, State> {
+export class BottomSheet extends React.Component<Props, State> {
   static defaultProps = {
     overdragResistanceFactor: 0,
     initialSnap: 0,
@@ -253,15 +245,14 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
   private snapPoint: Animated.Node<number>;
   private clampingValue: Animated.Value<number> = new Value(0);
   private screenIndex: Animated.Value<number> = new Value(0);
-  private screens = {};
-  private savedScreensHeight = {};
+  private translateY: Animated.Value<number> = new Value(0);
 
   constructor(props: Props) {
     super(props);
 
     this.panRef = props.innerGestureHandlerRefs[0];
     this.tapRef = props.innerGestureHandlerRefs[1];
-    this.state = BottomSheetBehavior.getDerivedStateFromProps(props, undefined);
+    this.state = BottomSheet.getDerivedStateFromProps(props, undefined);
 
     const { snapPoints, init } = this.state;
     const middlesOfSnapPoints: [Animated.Node<number>, Animated.Node<number>][] = [];
@@ -349,16 +340,23 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
       ),
     ]);
 
-    this.updateScreenValues();
+    this.translateY = this.withEnhancedLimits(
+      withDecaying(
+        withPreservingAdditiveOffset(this.dragY, this.panState),
+        this.panState,
+        this.decayClock,
+        this.velocity,
+        this.preventDecaying
+      ),
+      this.masterOffseted,
+      0
+    );
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
     const { snapPoints } = this.state;
     if (this.props.enabledBottomClamp && snapPoints !== prevState.snapPoints) {
       this.clampingValue.setValue(snapPoints[snapPoints.length - 1]);
-    }
-    if (this.props.screens !== prevProps.screens) {
-      this.updateScreenValues();
     }
   }
 
@@ -404,46 +402,7 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
     ];
   }
 
-  getCurrentScreenValues() {
-    const { index, routes } = this.navigation.dangerouslyGetState();
-    const routeName = routes[index].name;
-    return this.screens[routeName];
-  }
-
-  getCurrentScreenIndex() {
-    const { index, routes } = this.navigation.dangerouslyGetState();
-    const routeName = routes[index].name;
-    return this.props.screens.findIndex(screen => screen.name === routeName);
-  }
-
-  updateScreenValues() {
-    this.props.screens.forEach((screen, index) => {
-      if (this.screens[screen.name]) {
-        return;
-      }
-
-      this.screens[screen.name] = {
-        index,
-        y: this.withEnhancedLimits(
-          withDecaying(
-            withPreservingAdditiveOffset(this.dragY, this.panState),
-            this.panState,
-            this.decayClock,
-            this.velocity,
-            this.preventDecaying
-          ),
-          this.masterOffseted,
-          index
-        ),
-      };
-    });
-  }
-
   private handlePan = ({ nativeEvent: { translationY, state, velocityY } }) => {
-    if (state === GestureState.BEGAN) {
-      const screenIndex = this.getCurrentScreenIndex();
-      this.screenIndex.setValue(screenIndex);
-    }
     this.dragY.setValue(translationY);
     this.panState.setValue(state);
     this.velocity.setValue(velocityY);
@@ -581,18 +540,23 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
       val: number;
       ind: number;
     }[] = props.snapPoints
-      .map((s: number | string, i: number): {
-        val: number;
-        ind: number;
-      } => {
-        if (typeof s === 'number') {
-          return { val: s, ind: i };
-        } else if (typeof s === 'string') {
-          return { val: BottomSheetBehavior.renumber(s), ind: i };
-        }
+      .map(
+        (
+          s: number | string,
+          i: number
+        ): {
+          val: number;
+          ind: number;
+        } => {
+          if (typeof s === 'number') {
+            return { val: s, ind: i };
+          } else if (typeof s === 'string') {
+            return { val: BottomSheet.renumber(s), ind: i };
+          }
 
-        throw new Error(`Invalid type for value ${s}: ${typeof s}`);
-      })
+          throw new Error(`Invalid type for value ${s}: ${typeof s}`);
+        }
+      )
       .sort(({ val: a }, { val: b }) => b - a);
     if (state && state.snapPoints) {
       state.snapPoints.forEach(
@@ -602,7 +566,9 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
       );
       snapPoints = state.snapPoints;
     } else {
-      snapPoints = sortedPropsSnapPoints.map(p => new Value(sortedPropsSnapPoints[0].val - p.val));
+      snapPoints = sortedPropsSnapPoints.map(
+        (p) => new Value(sortedPropsSnapPoints[0].val - p.val)
+      );
     }
 
     const propsToNewIndices: { [key: string]: number } = {};
@@ -627,58 +593,6 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
       snapPoints,
     };
   }
-
-  renderScreen = screen => {
-    const ScreenComponent = screen.component;
-
-    return (
-      <Stack.Screen key={screen.name} name={screen.name} options={screen.options}>
-        {props => {
-          this.navigation = props.navigation;
-
-          // Not always screens are unmounted.
-          // So we need to reset the state of the bottom sheet manually.
-          const isFocused = useIsFocused();
-
-          useEffect(() => {
-            if (!isFocused) {
-              return;
-            }
-
-            if (this.savedScreensHeight[screen.name]) {
-              this.handleContentHeightChange(this.savedScreensHeight[screen.name]);
-            }
-
-            const screenIndex = this.getCurrentScreenIndex();
-            this.screenIndex.setValue(screenIndex);
-          }, [isFocused]);
-
-          return (
-            <Animated.View
-              style={{
-                transform: [
-                  {
-                    translateY: this.screens[screen.name].y as any,
-                  },
-                ],
-              }}
-              onLayout={event => {
-                const height = event.nativeEvent.layout.height;
-                if (height === 0) {
-                  return;
-                }
-
-                // We saved screen heigh to apply it when we come back to the same screen later.
-                this.savedScreensHeight[screen.name] = height;
-                this.handleContentHeightChange(height);
-              }}>
-              <DevMenuScreen ScreenComponent={ScreenComponent} {...props} {...screen.props} />
-            </Animated.View>
-          );
-        }}
-      </Stack.Screen>
-    );
-  };
 
   render() {
     return (
@@ -707,16 +621,25 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
               <Animated.View>
                 <TapGestureHandler ref={this.tapRef} onHandlerStateChange={this.handleTap}>
                   <View style={styles.fullscreenView}>
-                    <Stack.Navigator
-                      initialRouteName={this.props.openScreen ?? this.props.screens[0].name}
-                      headerMode="screen"
-                      screenOptions={{
-                        animationEnabled: this.props?.animationEnabled,
-                        ...TransitionPresets.SlideFromRightIOS,
+                    <Animated.View
+                      style={{
+                        ...StyleSheet.absoluteFillObject,
+                        transform: [
+                          {
+                            translateY: this.translateY as any,
+                          },
+                        ],
+                      }}
+                      onLayout={(event) => {
+                        const height = event.nativeEvent.layout.height;
+                        if (height === 0) {
+                          return;
+                        }
+                        // We saved screen heigh to apply it when we come back to the same screen later.
+                        this.handleContentHeightChange(height);
                       }}>
-                      {this.props.screens.map(this.renderScreen)}
-                    </Stack.Navigator>
-                    {this.props.children}
+                      {this.props.children}
+                    </Animated.View>
                   </View>
                 </TapGestureHandler>
               </Animated.View>
@@ -731,16 +654,18 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
               <Animated.Code
                 exec={onChange(
                   this.translateMaster,
-                  set(
-                    this.props.callbackNode,
-                    sub(
-                      1,
-                      divide(
-                        this.translateMaster,
-                        this.state.snapPoints[this.state.snapPoints.length - 1]
+                  block([
+                    set(
+                      this.props.callbackNode,
+                      sub(
+                        1,
+                        divide(
+                          this.translateMaster,
+                          this.state.snapPoints[this.state.snapPoints.length - 1]
+                        )
                       )
-                    )
-                  )
+                    ),
+                  ])
                 )}
               />
             )}
