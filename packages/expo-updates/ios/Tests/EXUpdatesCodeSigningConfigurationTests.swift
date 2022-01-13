@@ -15,6 +15,14 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     XCTAssertEqual(signatureHeader, "sig, keyid=\"root\", alg=\"rsa-v1_5-sha256\"")
   }
   
+  func test_createAcceptSignatureHeader_CreatesSignatureHeaderEscapedValues() throws {
+    let configuration = try EXUpdatesCodeSigningConfiguration(certificate: testCertificate,
+                                                              metadata: [EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey: EXUpdatesCodeSigningAlgorithm.RSA_SHA256.rawValue,
+                                                                         EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: #"test"hello\"#])
+    let signatureHeader = configuration.createAcceptSignatureHeader()
+    XCTAssertEqual(signatureHeader, #"sig, keyid="test\"hello\\", alg="rsa-v1_5-sha256""#)
+  }
+  
   func test_createAcceptSignatureHeader_CreatesSignatureHeaderValuesFromConfig() throws {
     let configuration = try EXUpdatesCodeSigningConfiguration(certificate: testCertificate,
                                                               metadata: [EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey: EXUpdatesCodeSigningAlgorithm.RSA_SHA256.rawValue,
