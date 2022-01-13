@@ -42,14 +42,7 @@ This is your EAS Build configuration. It defines three build profiles named `dev
 
 This step varies depending on the project type you have.
 
-#### 3.1. Bare project
-
-If you choose to configure the Android project, EAS CLI will update your Gradle project so we can build it on our servers.
-This step patches **build.gradle** and includes our custom signing configuration. The configuration itself is saved to a separate file: **eas-build.gradle**.
-
-If you also choose to configure the iOS project, there are no additional steps.
-
-#### 3.2. Managed project
+#### 3.1. Managed project
 
 If you haven't configured your **app.json** with `android.package` and/or `ios.bundleIdentifier` yet, EAS CLI will prompt you to specify them.
 
@@ -59,6 +52,10 @@ If you haven't configured your **app.json** with `android.package` and/or `ios.b
 <ImageSpotlight alt="Application identifier prompts in eas build:configure" src="/static/images/eas-build/configure/02-configure-app-ids.png" containerStyle={{ paddingBottom: 0 }} />
 
 In the example above, we defined exactly the same Android application id and iOS bundle identifier. However, they don't need to match.
+
+#### 3.2. Bare project
+
+There are no additional steps for bare workflow projects.
 
 #### 5. Next steps
 
