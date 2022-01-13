@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix missing `getManifest2()` function on web. ([#15891](https://github.com/expo/expo/pull/15891)) by [@jonsamp](https://github.com/jonsamp)
-
 ### 💡 Others
+
+## 8.4.6 — 2022-01-13
+
+### 🐛 Bug fixes
+
+- Fix missing `getManifest2()` function on web. ([#15891](https://github.com/expo/expo/pull/15891)) by [@jonsamp](https://github.com/jonsamp)
 
 ## 8.4.5 — 2021-12-21
 
