@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Ensure we return early when updates are disabled on Android.
+- Ensure we return early when updates are disabled on Android. ([#15882](https://github.com/expo/expo/pull/15882) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
