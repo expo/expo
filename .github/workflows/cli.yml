@@ -45,18 +45,12 @@ jobs:
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-v2-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
-        # if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: ♻️ Restore node modules in tools
-        uses: actions/cache@v2
-        with:
-          path: tools/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
       - name: Build CLI
         run: yarn prepare:cli
         working-directory: packages/expo
       - name: Test CLI
-        run: yarn test:cli
+        run: yarn test:cli:e2e
         working-directory: packages/expo
       # - name: 🔔 Notify on Slack
       #   uses: 8398a7/action-slack@v3
