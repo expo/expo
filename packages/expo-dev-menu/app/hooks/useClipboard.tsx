@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { copyToClipboardAsync } from '../native-modules/DevMenu';
 
 export function useClipboard(clearInMillis: number = 3000) {
@@ -19,7 +20,7 @@ export function useClipboard(clearInMillis: number = 3000) {
     };
   }, [clipboardContent, clearInMillis]);
 
-  async function onCopyPress(data: Object) {
+  async function onCopyPress(data: object) {
     const content = JSON.stringify(data, null, '\t');
 
     setClipboardError('');

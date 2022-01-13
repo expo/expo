@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 
+import { BottomSheetProvider } from '../../hooks/useBottomSheet';
 import {
   hideMenu,
   subscribeToCloseEvents,
@@ -49,24 +50,28 @@ export function BottomSheetContainer({ children }: BottomSheetContainerProps) {
     outputRange: [0, 0.5],
   });
 
-  // renders
   return (
-    <View style={styles.container}>
-      <Pressable
-        onPress={() => bottomSheetRef.current.snapTo(0)}
-        style={styles.bottomSheetBackground}>
-        <Animated.View
-          style={[
-            styles.bottomSheetBackground,
-            { opacity: backgroundOpacity, backgroundColor: '#000' },
-          ]}
-        />
-      </Pressable>
-      <BottomSheet ref={bottomSheetRef} callbackNode={callbackNode.current} snapPoints={snapPoints}>
-        {children}
-        <Animated.Code exec={trackCallbackNode.current} />
-      </BottomSheet>
-    </View>
+    <BottomSheetProvider collapse={() => bottomSheetRef.current.snapTo(0)}>
+      <View style={styles.container}>
+        <Pressable
+          onPress={() => bottomSheetRef.current.snapTo(0)}
+          style={styles.bottomSheetBackground}>
+          <Animated.View
+            style={[
+              styles.bottomSheetBackground,
+              { opacity: backgroundOpacity, backgroundColor: '#000' },
+            ]}
+          />
+        </Pressable>
+        <BottomSheet
+          ref={bottomSheetRef}
+          callbackNode={callbackNode.current}
+          snapPoints={snapPoints}>
+          {children}
+          <Animated.Code exec={trackCallbackNode.current} />
+        </BottomSheet>
+      </View>
+    </BottomSheetProvider>
   );
 }
 

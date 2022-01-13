@@ -23,7 +23,6 @@ import { Switch } from 'react-native';
 import { useBuildInfo } from '../hooks/useBuildInfo';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
-import { navigateToLauncherAsync, reload } from '../native-modules/DevMenu';
 
 export function MainScreen() {
   const buildInfo = useBuildInfo();
@@ -113,7 +112,7 @@ export function MainScreen() {
           <ActionButton
             icon={<HomeFilledIcon />}
             label="Go home"
-            onPress={() => navigateToLauncherAsync()}
+            onPress={actions.navigateToLauncher}
           />
         </View>
 
@@ -126,7 +125,7 @@ export function MainScreen() {
         <Spacer.Horizontal size="medium" />
 
         <View flex="1">
-          <ActionButton icon={<RefreshIcon />} label="Reload" onPress={() => reload()} />
+          <ActionButton icon={<RefreshIcon />} label="Reload" onPress={actions.reload} />
         </View>
       </Row>
 
