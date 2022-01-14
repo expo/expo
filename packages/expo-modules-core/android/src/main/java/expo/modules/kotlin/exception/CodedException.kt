@@ -1,5 +1,6 @@
 package expo.modules.kotlin.exception
 
+import com.facebook.react.bridge.ReadableType
 import java.util.*
 import kotlin.reflect.KType
 
@@ -17,7 +18,7 @@ open class CodedException(
   val code
     get() = providedCode ?: inferCode(javaClass)
 
-  constructor(code: String, message: String, cause: Throwable?) : this(message, cause) {
+  constructor(code: String, message: String?, cause: Throwable?) : this(message, cause) {
     providedCode = code
   }
 
@@ -47,24 +48,83 @@ internal class IncompatibleArgTypeException(
   desiredType: KType,
   cause: Throwable? = null
 ) : CodedException(
-  message = "Argument type $argumentType is not compatible with expected type $desiredType.",
+  message = "Argument type '$argumentType' is not compatible with expected type '$desiredType'.",
   cause = cause
 )
 
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
-  message = "Cannot find type converter for $forType.",
+  message = "Cannot find type converter for '$forType'.",
 )
 
 internal class InvalidArgsNumberException(received: Int, expected: Int) :
   CodedException(message = "Received $received arguments, but $expected was expected.")
 
-internal class MethodNotFoundException(methodName: String, moduleName: String) :
-  CodedException(message = "Cannot fund method $methodName in module $moduleName")
+internal class MethodNotFoundException :
+  CodedException(message = "Method does not exist.")
 
-internal class NullArgumentException(desiredType: KType) :
-  CodedException(message = "Cannot assigned null to not nullable type $desiredType")
+internal class NullArgumentException :
+  CodedException(message = "Cannot assigned null to not nullable type.")
 
 internal class UnexpectedException(val throwable: Throwable) :
-  CodedException(throwable)
+  CodedException(message = throwable.toString(), throwable)
+
+/**
+ * A base class for all exceptions used in `exceptionDecorator` function.
+ */
+internal open class DecoratedException(
+  message: String,
+  cause: CodedException,
+) : CodedException(
+  cause.code,
+  message = "$message${System.lineSeparator()}→ Caused by: ${cause.localizedMessage ?: cause}",
+  cause
+)
+
+internal class FunctionCallException(
+  methodName: String,
+  moduleName: String,
+  cause: CodedException
+) : DecoratedException(
+  message = "Call to function '$moduleName.$methodName' has been rejected.",
+  cause,
+)
+
+internal class ArgumentCastException(
+  argDesiredType: KType,
+  argIndex: Int,
+  providedType: ReadableType,
+  cause: CodedException,
+) : DecoratedException(
+  message = "Argument at index '$argIndex' couldn't be casted to type '$argDesiredType' (received '$providedType').",
+  cause,
+)
+
+internal class FieldCastException(
+  fieldName: String,
+  fieldType: KType,
+  providedType: ReadableType,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot cast '${providedType.name}' for field '$fieldName' ('$fieldType').",
+  cause
+)
+
+internal class RecordCastException(
+  recordType: KType,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot create a record of the type: '$recordType'.",
+  cause
+)
+
+internal class CollectionElementCastException(
+  collectionType: KType,
+  elementType: KType,
+  providedType: ReadableType,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
+  cause
+)
