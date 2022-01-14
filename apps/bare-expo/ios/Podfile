@@ -32,10 +32,9 @@ abstract_target 'BareExpoMain' do
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|
-    # `installer.pod_project` might be nil for `incremental_installation: true` and no new project generated
+    # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
     react_native_post_install(installer) if installer.pods_project
-
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
 
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
