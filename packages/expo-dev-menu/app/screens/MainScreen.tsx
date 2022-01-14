@@ -76,10 +76,9 @@ export function MainScreen() {
 
               {Boolean(buildInfo.sdkVersion) && !buildInfo.runtimeVersion && (
                 <>
-                  <Divider />
-                  <Row px="medium" py="small" align="center" bg="default">
-                    <Text>{`SDK version: ${buildInfo.sdkVersion}`}</Text>
-                  </Row>
+                  <Text size="small" color="secondary">
+                    {`SDK version: ${buildInfo.sdkVersion}`}
+                  </Text>
                 </>
               )}
             </View>
@@ -338,7 +337,7 @@ type BuildInfoRowProps = {
   value: string;
 };
 
-function BuildInfoRow({ title, value }) {
+function BuildInfoRow({ title, value }: BuildInfoRowProps) {
   return (
     <Row px="medium" py="small" align="center" bg="default">
       <Text size="medium">{title}</Text>
