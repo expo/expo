@@ -21,7 +21,7 @@ export function useClipboard(clearInMillis: number = 3000) {
   }, [clipboardContent, clearInMillis]);
 
   async function onCopyPress(data: object) {
-    const content = JSON.stringify(data, null, '\t');
+    const content = JSON.stringify(data, null, 2);
 
     setClipboardError('');
     setClipboardContent(content);
