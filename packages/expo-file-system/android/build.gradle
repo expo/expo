@@ -66,6 +66,14 @@ android {
   lintOptions {
     abortOnError false
   }
+
+  configurations.all {
+    resolutionStrategy {
+      force 'com.squareup.okhttp3:okhttp:3.10.0'
+      force 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+      force 'com.squareup.okio:okio:1.17.5'
+    }
+  }
 }
 
 repositories {
@@ -77,8 +85,9 @@ dependencies {
 
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:1.4'
-  api 'com.squareup.okhttp3:okhttp:3.10.0'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+  compileOnly 'com.squareup.okhttp3:okhttp:3.10.0'
+  compileOnly 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+  compileOnly 'com.squareup.okio:okio:1.17.5'
   api "androidx.legacy:legacy-support-v4:1.0.0"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"

@@ -74,6 +74,12 @@ android {
   buildFeatures {
     viewBinding true
   }
+
+  configurations.all {
+    resolutionStrategy {
+      force "com.squareup.okhttp3:okhttp:3.14.9"
+    }
+  }
 }
 
 repositories {

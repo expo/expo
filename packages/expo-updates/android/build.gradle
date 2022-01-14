@@ -84,6 +84,13 @@ android {
   sourceSets {
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
   }
+  configurations.all {
+    resolutionStrategy {
+      force("com.squareup.okhttp3:okhttp:3.12.1")
+      force("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
+      force("com.squareup.okio:okio:1.15.0")
+    }
+  }
 }
 
 dependencies {
@@ -104,9 +111,9 @@ dependencies {
   // https://issuetracker.google.com/issues/174695268
   kapt "org.xerial:sqlite-jdbc:3.36.0"
 
-  implementation("com.squareup.okhttp3:okhttp:3.12.1")
-  implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
-  implementation("com.squareup.okio:okio:1.15.0")
+  compileOnly("com.squareup.okhttp3:okhttp:3.12.1")
+  compileOnly("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
+  compileOnly("com.squareup.okio:okio:1.15.0")
   implementation("commons-codec:commons-codec:1.10")
   implementation("commons-io:commons-io:2.6")
   implementation("commons-fileupload:commons-fileupload:1.4")
