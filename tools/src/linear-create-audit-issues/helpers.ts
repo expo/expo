@@ -94,7 +94,6 @@ const PACKAGES_TO_BE_DEPRECATED = [
   'expo-firebase-recaptcha',
   'expo-google-sign-in',
   'expo-google-app-auth',
-  'expo-location',
   'expo-segment',
 ]
 
