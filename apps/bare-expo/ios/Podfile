@@ -35,6 +35,8 @@ abstract_target 'BareExpoMain' do
     # `installer.pod_project` might be nil for `incremental_installation: true` and no new project generated
     react_native_post_install(installer) if installer.pods_project
 
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
