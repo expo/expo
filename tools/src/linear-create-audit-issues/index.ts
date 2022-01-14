@@ -1,4 +1,4 @@
-import { fetchCurrentLinearData } from './cache';
+import { fetchCurrentLinearData } from './linearCache';
 import { readPackages } from './helpers';
 import { createOrUpdateIssues } from './issues';
 

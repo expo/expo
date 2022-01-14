@@ -1,4 +1,7 @@
+import fetch from 'node-fetch';
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
+import { cacheData, readCache } from './utils/fileCache';
+import { JSDOM } from 'jsdom';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
 
@@ -104,4 +107,84 @@ export async function whoamiAsync(): Promise<string | null> {
   } catch (e) {
     return null;
   }
+}
+
+async function fetchDownloadStatsAsync(packageName: string) {
+  const cacheKey = `npm.download_stats.${packageName}`;
+  const cachedData = await readCache<typeof result>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  const result = {
+    byVersions: await scrapNpmDownloadsByVersion(packageName),
+    byTimePeriods: await downloadNpmDownloadsByTimePeriod(packageName),
+  };
+
+  await cacheData(cacheKey, result);
+  return result;
+}
+
+/**
+ * Adapted from https://gist.github.com/DavidWells/5c99bf9cd3277700cb40114b72b8a113
+ */
+async function downloadNpmDownloadsByTimePeriod(packageName: string) {
+  const getDateRange = (daysOffset?: number) => {
+    const pad = (n: number) => `${n < 10 ? '0' : ''}${n}`;
+    let date = new Date();
+    if (daysOffset) {
+      date.setTime(date.getTime() + daysOffset * 1000 * 60 * 60 * 24);
+    }
+    return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+  };
+
+  const periods = {
+    'last-day': 'last-day',
+    'last-week': 'last-week',
+    'last-month': 'last-month',
+    'last-year': `${getDateRange(-365)}:${getDateRange()}`,
+  } as const;
+
+  const stats = await Promise.all(
+    Object.entries(periods).map(([k, v]) =>
+      fetch(`https://api.npmjs.org/downloads/point/${v}/${packageName}`)
+        .then((res) => res.json())
+        .then((json) => [k, json.downloads as number] as const)
+    )
+  );
+  return Object.fromEntries(stats) as { [k in keyof typeof periods]: number };
+}
+
+async function scrapNpmDownloadsByVersion(packageName: string) {
+  const scrapedPage = await fetch(
+    `https://www.npmjs.com/package/${packageName}?activeTab=versions`
+  ).then((res) => res.text());
+
+  const dom = new JSDOM(scrapedPage);
+  const versionsContainer = dom.window.document.querySelector(
+    '#tabpanel-versions > div > :last-child'
+  );
+  if (!versionsContainer) {
+    throw new Error(`Failed to locate versions ul element for ${packageName}`);
+  }
+  const [_, ...versions] = Array.from(versionsContainer.children);
+  const perVersionEntires = versions.map((el) => {
+    const version = el.querySelector('a')?.textContent;
+    const downloads = Number(el.querySelector('code')?.textContent?.replaceAll(',', ''));
+    const releaseDate = el.querySelector('time')?.dateTime;
+    return [version, { downloads, releaseDate } as const];
+  });
+  return Object.fromEntries(perVersionEntires) as {
+    [key: string]: { downloads: number; releaseDate: string };
+  };
+}
+
+export type NpmDownloadStats = Awaited<ReturnType<typeof getDownloadStatsAsync>>;
+
+/**
+ * Returns the download stats both version-based and time period-based.
+ */
+export async function getDownloadStatsAsync(packageName: string) {
+  const stats = await fetchDownloadStatsAsync(packageName);
+  return stats;
 }

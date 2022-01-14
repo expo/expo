@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import ora from 'ora';
+import { getDownloadStatsAsync, NpmDownloadStats } from '../Npm';
 
-import { getListOfPackagesAsync } from '../Packages';
+import { getListOfPackagesAsync, Package } from '../Packages';
 
 const VALID_PACKAGES = [
   'expo-ads-admob',
@@ -83,6 +84,24 @@ const VALID_PACKAGES = [
   'expo-web-browser',
 ];
 
+const PACKAGES_TO_BE_DEPRECATED = [
+  'expo-ads-admob',
+  'expo-amplitude',
+  'expo-ads-facebook',
+  'expo-facebook',
+  'expo-firebase-analytics',
+  'expo-firebase-core',
+  'expo-firebase-recaptcha',
+  'expo-google-sign-in',
+  'expo-google-app-auth',
+  'expo-location',
+  'expo-segment',
+]
+
+export function isSchedulesForDeprecation(packageName: string) {
+  return PACKAGES_TO_BE_DEPRECATED.includes(packageName)
+}
+
 export async function readPackages(packageNames: string[]) {
   const allPackages = await getListOfPackagesAsync(false);
   const allPackagesObj = allPackages.reduce((acc, pkg) => {
@@ -139,4 +158,14 @@ export function withSpinner<Args extends any[], R>(
       throw e;
     }
   };
+}
+
+/**
+ * Fetches all Npm download stats for each package and store them in fs cache.
+ */
+export async function getNpmDownloadStats(packages: Package[]) {
+  return Object.fromEntries(await Promise.all(packages.map(pkg => pkg.packageName).map( async packageName => {
+    const stats = await getDownloadStatsAsync(packageName)
+    return [packageName, stats] as const;
+  }))) as { [packageName: string]: NpmDownloadStats }
 }
