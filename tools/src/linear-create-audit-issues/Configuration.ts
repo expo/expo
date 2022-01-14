@@ -1,4 +1,5 @@
 import { listOpenIssuesAsync, listOpenPRsAsync } from '../GitHub';
+import { NpmDownloadStats } from '../Npm';
 
 /**
  * Most packages labels resemble the module name with dropped `expo-` prefix and CamelCased-conversion,
@@ -35,7 +36,11 @@ function getGitHubLabels(moduleName: string) {
   if (exoticLabels) {
     return Array.isArray(exoticLabels) ? exoticLabels : [exoticLabels];
   }
-  return [moduleName.replace('expo', '').replace(/-(\w)/, (c) => c.toUpperCase())];
+  return [moduleName.replace('expo', '').replaceAll(/-(\w)/g, (c) => c[1].toUpperCase())];
+}
+
+function todayDateToString() {
+  return Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date());
 }
 
 const createGitHubBasedIssue = (type: 'PR' | 'issue') => async (moduleName: string) => {
@@ -75,10 +80,71 @@ const createGitHubBasedIssue = (type: 'PR' | 'issue') => async (moduleName: stri
 
   return `
 ### Below is an aggregated list of open ${type}s.
+
+_This issue was generated on ${todayDateToString()} and presents the state from that day_
+
 ${optionalGithubSearchReference}
 ${elementsList}
 `;
 };
+
+function getMonthlyDownloads(stats: NpmDownloadStats): string {
+  return `${Math.floor(stats.byTimePeriods['last-month'] / 1000)}k/month`;
+}
+
+function getDownloadStatsReport(packageName: string, stats: NpmDownloadStats): string {
+  const formatAndPad = (value: number, length: number = 23) => {
+    return value
+      .toString()
+      .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+      .padStart(length, ' ');
+  };
+
+  const {
+    'last-day': daily,
+    'last-week': weekly,
+    'last-month': monthly,
+    'last-year': yearly,
+  } = stats.byTimePeriods;
+
+  return `
+## Downloads
+
+_Below stats were generated on ${todayDateToString()} and presents the state from that day_
+
+## Per time period
+
+\`\`\`
+| Timespan   | Total downloads         | Daily downloads         |
+|------------|-------------------------|-------------------------|
+| last day   | ${formatAndPad(daily)} | ${formatAndPad(daily)} |
+| last week  | ${formatAndPad(weekly)} | ${formatAndPad(Math.floor(weekly / 7))} |
+| last month | ${formatAndPad(monthly)} | ${formatAndPad(Math.floor(monthly / 30))} |
+| last year  | ${formatAndPad(yearly)} | ${formatAndPad(Math.floor(yearly / 365))} |
+\`\`\`
+
+## [Per version](https://www.npmjs.com/package/${packageName}?activeTab=versions)
+
+_First 10 most popular versions presented_
+
+\`\`\`
+| Version    | Downloads (last 7 days) | Daily downloads         | Date published          |
+|------------|-------------------------|-------------------------|-------------------------|
+${Object.entries(stats.byVersions)
+  .sort((a, b) => b[1].downloads - a[1].downloads)
+  .slice(0, 10)
+  .map(
+    ([version, { downloads, releaseDate }]) =>
+      `| ${version.padStart(10, ' ')} | ${formatAndPad(downloads)} | ${formatAndPad(
+        Math.floor(downloads / 7)
+      )} | ${Intl.DateTimeFormat('en-US', { dateStyle: 'long' })
+        .format(new Date(releaseDate))
+        .padStart(23, ' ')} |`
+  )
+  .join('\n')}
+\`\`\`
+`;
+}
 
 const LinearConfiguration: {
   teamName: string;
@@ -89,8 +155,20 @@ const LinearConfiguration: {
     description: string;
     labelNames: string[];
     childIssueTemplate: {
-      title: (moduleName: string) => string;
-      description: string;
+      title: (moduleName: string, downloadStats: NpmDownloadStats) => string;
+      description: (moduleName: string, downloadStats: NpmDownloadStats) => string;
+      labelNames: string[];
+      childIssueTemplates: {
+        title: (moduleName: string) => string;
+        /* If this returns null then the issue should not be created nor updated */
+        description: string | null | ((moduleName: string) => Promise<string | null>);
+        labelNames: string[];
+      }[];
+    };
+    deprecatedChildIssueTemplate: {
+      title: (moduleName: string, downloadStats: NpmDownloadStats) => string;
+      description: (moduleName: string, downloadStats: NpmDownloadStats) => string;
+      labelNames: string[];
       childIssueTemplates: {
         title: (moduleName: string) => string;
         /* If this returns null then the issue should not be created nor updated */
@@ -110,65 +188,70 @@ We haven't given many Expo modules the attention that they deserve.
 Most of the modules need some cleaning and improvements across many areas (docs, tests, API consistency, migrating native codebase, etc.).
 
 Below is the list of modules we're actively taking care of. Each of this module needs to be audited separately and ideally in every area mentioned.
-Beware that there are modules that might be deprecated or dropped completely in the near future.
+
+Beware that there are modules that are scheduled to be deprecated in favour of the official alternatives developed by the 3rd parties.
+We need to provide safe migration path for these modules before we deprecate them.
 `,
     labelNames: ['Module'],
     childIssueTemplate: {
-      title: (moduleName: string) => `Audit ${moduleName}`,
-      description: `
+      title: (moduleName, downloadStats) =>
+        `Audit ${moduleName} (${getMonthlyDownloads(downloadStats)})`,
+      description: (moduleName, downloadStats) => `
 Go through the following sub-issues and ensure the module is taken care of in each aspect mentioned.
 Additionally add any missing sub-issues (reported on Twitter, Discord, etc.).
-If this module wraps some 3rd party API then, before working on it, ensure it won't to be deprecated in the nearest future in favour of the official alternative.
+
+${getDownloadStatsReport(moduleName, downloadStats)}
 `,
+      labelNames: ['Module'],
       childIssueTemplates: [
         {
-          title: (moduleName: string) => `Audit ${moduleName} - JS/TS API`,
+          title: (moduleName) => `Audit ${moduleName} - JS/TS API`,
           description: `Look at the JS/TS API and ensure it's consistent and properly typed. Pay extra attention to our public API rules (like adding \`Async\` suffix to the method names)`,
           labelNames: ['Module', 'API'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - audit docs`,
+          title: (moduleName) => `Audit ${moduleName} - audit docs`,
           description: `Ensure the docs for this module are up to date, comprehensive and easy to understand. Additionally ensure native english speaker has reviewed any changes.`,
           labelNames: ['Module', 'Docs'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - Web`,
+          title: (moduleName) => `Audit ${moduleName} - Web`,
           description: `Ensure this module is properly implemented on the Web platform.`,
           labelNames: ['Module', 'Web'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - Android: rewrite to Kotlin`,
+          title: (moduleName) => `Audit ${moduleName} - Android: rewrite to Kotlin`,
           description: `Convert this module Android code to Kotlin.`,
           labelNames: ['Module', 'Android'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - Android: rewrite to Sweet API`,
+          title: (moduleName) => `Audit ${moduleName} - Android: rewrite to Sweet API`,
           description: `Convert this module Android code to be SweetAPI-based`,
           labelNames: ['Module', 'Android'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - iOS: rewrite to Sweet API`,
+          title: (moduleName) => `Audit ${moduleName} - iOS: rewrite to Sweet API`,
           description: `Convert this module iOS code to be Sweet API-based`,
           labelNames: ['Module', 'iOS'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - JS tests`,
+          title: (moduleName) => `Audit ${moduleName} - JS tests`,
           description: `Audit JS tests for this module. Check \`test-suite\` app and provide solid test coverage.`,
           labelNames: ['Module', 'Testing'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - Android tests`,
+          title: (moduleName) => `Audit ${moduleName} - Android tests`,
           description: `Audit and most probably add missing Android tests for this module.`,
           labelNames: ['Module', 'Android', 'Testing'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - iOS tests`,
+          title: (moduleName) => `Audit ${moduleName} - iOS tests`,
           description: `Audit and most probably add missing iOS tests for this module.`,
           labelNames: ['Module', 'iOS', 'Testing'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - examples screen`,
-          description: `Audit example screen by checking all module's functionalities are presented.`,
+          title: (moduleName) => `Audit ${moduleName} - examples screen`,
+          description: `Audit example screen by checking whether all module's functionalities are presented.`,
           labelNames: ['Module', 'QA', `Testing`],
         },
         {
@@ -182,14 +265,43 @@ Additionally, explore the possible new capabilities offered by each platform.
           labelNames: ['Module'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - bug bush GitHub issues`,
+          title: (moduleName) => `Audit ${moduleName} - bug bash GitHub issues`,
           description: createGitHubBasedIssue('issue'),
           labelNames: ['Module', 'Issue'],
         },
         {
-          title: (moduleName: string) => `Audit ${moduleName} - address open PRs`,
+          title: (moduleName) => `Audit ${moduleName} - address open PRs`,
           description: createGitHubBasedIssue('PR'),
           labelNames: ['Module', 'PR'],
+        },
+      ],
+    },
+    deprecatedChildIssueTemplate: {
+      title: (moduleName, downloadStats) =>
+        `Deprecate ${moduleName} (${getMonthlyDownloads(downloadStats)})`,
+      description: (moduleName, downloadStats) => `
+This module is scheduled to be deprecated.
+Go through the following sub-issues and ensure each of them if taken care of.
+Additionally add any missing sub-issues.
+
+${getDownloadStatsReport(moduleName, downloadStats)}
+`,
+      labelNames: ['Module', 'Deprecation'],
+      childIssueTemplates: [
+        {
+          title: (moduleName) => `Deprecate ${moduleName} - create config plugin`,
+          description: `Write config plugin for the official 3rd party module and make it be merged and hopefully released.`,
+          labelNames: ['Module', 'Deprecation'],
+        },
+        {
+          title: (moduleName) => `Deprecate ${moduleName} - propagate native enchantments`,
+          description: `We have Android Lifecycle Listeners and iOS AppDelegate Subscribers. We might be able to propagate them into official 3rd party module.`,
+          labelNames: ['Module', 'Deprecation'],
+        },
+        {
+          title: (moduleName) => `Deprecate ${moduleName} - remove from Expo`,
+          description: `Once the official alternative is ready to be recommended by us remove this module from Expo (to be discussed how we do it).`,
+          labelNames: ['Module', 'Deprecation'],
         },
       ],
     },

@@ -85,18 +85,25 @@ const fetchLabels = createFetchingFunction({
   keyExtractor: (label) => label.name,
   initialQuery: () => linearClient.issueLabels(),
   requiredEntities: [
-    ...new Set(
-      Configuration.umbrellaIssue.childIssueTemplate.childIssueTemplates.flatMap(
+    ...new Set([
+      ...Configuration.umbrellaIssue.childIssueTemplate.childIssueTemplates.flatMap(
         (el) => el.labelNames
-      )
-    ),
+      ),
+      ...Configuration.umbrellaIssue.deprecatedChildIssueTemplate.childIssueTemplates.flatMap(
+        (el) => el.labelNames
+      ),
+    ]),
   ],
 });
 
 const fetchIssues = createFetchingFunction({
   spinnerText: `Fetching issues`,
   cacheKey: 'issues',
-  keyExtractor: (issue) => issue.title,
+  keyExtractor: (issue) => {
+    const matched = issue.title.match(/(?<title>.+)(?<downloads> \(.*)/);
+    const key = matched?.groups?.title ?? issue.title;
+    return key;
+  },
   initialQuery: () =>
     linearClient.issues({
       filter: {
@@ -142,8 +149,10 @@ export function getUmbrellaIssue() {
 }
 
 export function getIssue(title: string) {
-  if (CACHE.issues[title]) {
-    return CACHE.issues[title];
+  const matched = title.match(/(?<title>.+)(?<downloads> \(.*)/);
+  const key = matched?.groups?.title ?? title;
+  if (CACHE.issues[key]) {
+    return CACHE.issues[key];
   }
   return undefined;
 }

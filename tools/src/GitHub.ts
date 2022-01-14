@@ -179,7 +179,7 @@ export async function getIssueAsync(issue_number: number) {
 }
 
 /**
- * Internally GitHub threats pull requests as issues, therefore this endpoints returns both open issues and open PRs.
+ * Internally GitHub treats pull requests as issues, therefore this endpoints returns both open issues and open PRs.
  * To determine whether and issue is a PR, use check for `pull_request` property existence.
  */
 async function fetchOpenIssuesAsync() {
