@@ -12,7 +12,7 @@ buildscript {
         ndkVersion = "21.4.7075529"
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
-        kotlinVersion = '1.4.21'
+        kotlinVersion = '1.6.10'
     }
     repositories {
         google()
