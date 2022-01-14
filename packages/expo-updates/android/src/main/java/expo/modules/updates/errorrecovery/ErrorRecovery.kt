@@ -19,8 +19,10 @@ class ErrorRecovery {
   private var previousExceptionHandler: DefaultNativeModuleCallExceptionHandler? = null
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
-    handlerThread.start()
-    handler = ErrorRecoveryHandler(handlerThread.looper, delegate)
+    if (!::handler.isInitialized) {
+      handlerThread.start()
+      handler = ErrorRecoveryHandler(handlerThread.looper, delegate)
+    }
   }
 
   fun startMonitoring(reactInstanceManager: ReactInstanceManager) {

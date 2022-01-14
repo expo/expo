@@ -42,8 +42,8 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
   'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import 'expo-dev-client'`;
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER = `import 'expo-dev-launcher'`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX =
+  /import ['"](?:expo-dev-client|expo-dev-launcher)['"]/;
 
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
@@ -274,11 +274,8 @@ const withDevLauncherPodfile: ConfigPlugin = (config) => {
 const withErrorHandling: ConfigPlugin = (config) => {
   const injectErrorHandlers = async (config: ExportedConfigWithProps) => {
     await editIndex(config, (index) => {
-      if (
-        !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS) &&
-        !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER)
-      ) {
-        index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + ';\n\n' + index;
+      if (!DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX.test(index)) {
+        index = `import 'expo-dev-client';\n\n${index}`;
       }
       return index;
     });
