@@ -53,6 +53,19 @@ class CryptoTest {
     Assert.assertEquals(signatureHeader, "sig, keyid=\"test\", alg=\"rsa-v1_5-sha256\"")
   }
 
+  @Test
+  fun test_createAcceptSignatureHeader_CreatesSignatureHeaderEscapedValues() {
+    val configuration = Crypto.CodeSigningConfiguration(
+      testCertificate,
+      mapOf(
+        Crypto.CODE_SIGNING_METADATA_ALGORITHM_KEY to "rsa-v1_5-sha256",
+        Crypto.CODE_SIGNING_METADATA_KEY_ID_KEY to """test"hello\"""
+      )
+    )
+    val signatureHeader = Crypto.createAcceptSignatureHeader(configuration)
+    Assert.assertEquals("""sig, keyid="test\"hello\\", alg="rsa-v1_5-sha256"""", signatureHeader)
+  }
+
   @Test(expected = Exception::class)
   @Throws(Exception::class)
   fun test_createAcceptSignatureHeader_ThrowsInvalidAlg() {
