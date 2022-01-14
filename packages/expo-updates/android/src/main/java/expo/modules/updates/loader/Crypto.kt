@@ -144,8 +144,8 @@ object Crypto {
       val certificate = certificateFactory.generateCertificate(certificateString.byteInputStream()) as X509Certificate
       certificate.checkValidity()
 
-      val keyUsage = certificate.keyUsage
-      if (keyUsage.isEmpty() || !keyUsage[0]) {
+      val keyUsage: BooleanArray? = certificate.keyUsage
+      if (keyUsage == null || keyUsage.isEmpty() || !keyUsage[0]) {
         throw CertificateException("X509v3 Key Usage: Digital Signature not present")
       }
 
