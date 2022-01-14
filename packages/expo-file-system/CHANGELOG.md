@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.2.0 — 2021-12-22
