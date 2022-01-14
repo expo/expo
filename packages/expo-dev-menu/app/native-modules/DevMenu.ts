@@ -41,17 +41,29 @@ export function openDevMenuFromReactNative() {
   DevMenu.openDevMenuFromReactNative();
 }
 
-export async function navigateToLauncherAsync(): Promise<void> {}
+export async function navigateToLauncherAsync(): Promise<void> {
+  return await dispatchCallableAsync('backToLauncher');
+}
 
-export async function togglePerformanceMonitor() {}
+export async function togglePerformanceMonitorAsync() {
+  return await dispatchCallableAsync('performance-monitor');
+}
 
-export async function toggleElementInspector() {}
+export async function toggleElementInspectorAsync() {
+  return await dispatchCallableAsync('inspector');
+}
 
-export async function reload() {}
+export async function reloadAsync() {
+  return await dispatchCallableAsync('reload');
+}
 
-export async function toggleDebugRemoteJS() {}
+export async function toggleDebugRemoteJSAsync() {
+  return await dispatchCallableAsync('remote-debug');
+}
 
-export async function toggleFastRefresh() {}
+export async function toggleFastRefreshAsync() {
+  return await dispatchCallableAsync('fast-refresh');
+}
 
 export async function getDevSettingsAsync(): Promise<DevSettings> {
   return {
@@ -63,14 +75,9 @@ export async function getDevSettingsAsync(): Promise<DevSettings> {
 }
 
 export async function getBuildInfoAsync(): Promise<BuildInfo> {
-  return {
-    appIcon: '',
-    appName: '123',
-    appVersion: '32.1.2',
-    sdkVersion: '45.0.0',
-    runtimeVersion: '12',
-    hostUrl: '127.0.0.1',
-  };
+  return await DevMenu.getBuildInfoAsync();
 }
 
-export async function copyToClipboardAsync(content: string) {}
+export async function copyToClipboardAsync(content: string) {
+  return await DevMenu.copyToClipboardAsync(content);
+}

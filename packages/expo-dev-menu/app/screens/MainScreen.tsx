@@ -41,7 +41,7 @@ export function MainScreen() {
     buildInfoClipboard.onCopyPress({ runtimeVersion, sdkVersion, appName, appVersion });
   }
 
-  const hasCopiedBuildInfoContext = Boolean(buildInfoClipboard.clipboardContent);
+  const hasCopiedBuildInfoContent = Boolean(buildInfoClipboard.clipboardContent);
 
   return (
     <View flex="1" bg="secondary">
@@ -73,12 +73,25 @@ export function MainScreen() {
                   </Text>
                 </>
               )}
+
+              {Boolean(buildInfo.sdkVersion) && !buildInfo.runtimeVersion && (
+                <>
+                  <Divider />
+                  <Row px="medium" py="small" align="center" bg="default">
+                    <Text>{`SDK version: ${buildInfo.sdkVersion}`}</Text>
+                  </Row>
+                </>
+              )}
             </View>
           </Row>
 
           <Spacer.Horizontal size="flex" />
 
-          <Button.ScaleOnPressContainer bg="ghost" rounded="full" minScale={0.8}>
+          <Button.ScaleOnPressContainer
+            bg="ghost"
+            rounded="full"
+            minScale={0.8}
+            onPress={actions.closeMenu}>
             <View padding="micro">
               <XIcon />
             </View>
@@ -88,24 +101,28 @@ export function MainScreen() {
 
       <Divider />
 
-      <View bg="default" padding="medium">
-        <Text color="secondary">Connected to local server</Text>
+      {Boolean(buildInfo.hostUrl) && (
+        <>
+          <View bg="default" padding="medium">
+            <Text color="secondary">Connected to local server</Text>
 
-        <Spacer.Vertical size="small" />
+            <Spacer.Vertical size="small" />
 
-        <Row align="center">
-          <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
-          <Spacer.Horizontal size="tiny" />
-          <View flex="1">
-            <Text type="mono" numberOfLines={1} size="small">
-              {buildInfo.hostUrl}
-            </Text>
+            <Row align="center">
+              <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
+              <Spacer.Horizontal size="tiny" />
+              <View flex="1">
+                <Text type="mono" numberOfLines={1} size="small">
+                  {buildInfo.hostUrl}
+                </Text>
+              </View>
+              <Spacer.Horizontal size="small" />
+            </Row>
           </View>
-          <Spacer.Horizontal size="small" />
-        </Row>
-      </View>
 
-      <Divider />
+          <Divider />
+        </>
+      )}
 
       <Row padding="small">
         <View flex="1">
@@ -169,7 +186,7 @@ export function MainScreen() {
           </>
         )}
 
-        {Boolean(buildInfo.sdkVersion) && (
+        {Boolean(buildInfo.sdkVersion) && !buildInfo.runtimeVersion && (
           <>
             <BuildInfoRow title="SDK Version" value={buildInfo.sdkVersion} />
             <Divider />
@@ -178,13 +195,13 @@ export function MainScreen() {
 
         <Button.ScaleOnPressContainer
           onPress={onCopyBuildInfoPress}
-          disabled={hasCopiedBuildInfoContext}
+          disabled={hasCopiedBuildInfoContent}
           bg="default"
           roundedTop="none"
           roundedBottom="large">
           <Row px="medium" py="small" align="center">
             <Text color="primary" size="large">
-              {hasCopiedBuildInfoContext ? 'Copied to clipboard!' : 'Tap to Copy All'}
+              {hasCopiedBuildInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
             </Text>
           </Row>
         </Button.ScaleOnPressContainer>

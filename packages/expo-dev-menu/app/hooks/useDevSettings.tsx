@@ -60,6 +60,10 @@ export function useDevSettings() {
     await updateSettings();
   }, []);
 
+  const closeMenu = React.useCallback(async () => {
+    bottomSheet.collapse();
+  }, []);
+
   return {
     devSettings,
     actions: {
@@ -69,6 +73,7 @@ export function useDevSettings() {
       toggleFastRefresh,
       reload,
       navigateToLauncher,
+      closeMenu,
     },
   };
 }
