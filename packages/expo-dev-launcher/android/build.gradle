@@ -74,12 +74,6 @@ android {
   buildFeatures {
     viewBinding true
   }
-
-  configurations.implementation {
-    resolutionStrategy {
-      force "com.squareup.okhttp3:okhttp:3.14.9"
-    }
-  }
 }
 
 repositories {
@@ -136,12 +130,19 @@ dependencies {
   testImplementation "org.robolectric:robolectric:4.3.1"
 }
 
-// Koin uses a different version of Kotlin under the hood.
-configurations.all {
+configurations.all { conf ->
   resolutionStrategy.eachDependency { DependencyResolveDetails details ->
     def requested = details.requested
+    // Koin uses a different version of Kotlin under the hood.
     if (requested.group == 'org.jetbrains.kotlin') {
       details.useVersion safeExtGet('kotlinVersion', '1.6.10')
+    }
+
+    // Keep old okhttp in compile time
+    if (conf.name.contains('Compile')) {
+      if (requested.group == 'com.squareup.okhttp3' && requested.name == 'okhttp') {
+        details.useVersion '3.14.9'
+      }
     }
   }
 }
