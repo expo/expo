@@ -31,7 +31,7 @@ const devSessionInstructionsRegex = /start a local development server with/i;
 const fetchingDevSessionsRegex = /searching for development servers/i;
 const refetchDevSessionsRegex = /refetch development servers/i;
 const textInputToggleRegex = /enter url manually/i;
-const textInputPlaceholder = `${clientUrlScheme}://expo-development-client/...`;
+const textInputPlaceholder = 'http://10.0.0.25:19000';
 
 const mockLoadApp = loadApp as jest.Mock;
 
@@ -115,7 +115,7 @@ describe('<HomeScreen />', () => {
     });
   });
 
-  test('select DevSession by entered url', async () => {
+  test('select dev session by entered url', async () => {
     const { getByText, getByPlaceholderText } = renderHomeScreen();
 
     expect(() => getByPlaceholderText(textInputPlaceholder)).toThrow();

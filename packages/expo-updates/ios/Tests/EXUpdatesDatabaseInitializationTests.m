@@ -190,6 +190,54 @@ CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id
 CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
 ";
 
+static NSString * const EXUpdatesDatabaseV8Schema = @"\
+CREATE TABLE \"updates\" (\
+\"id\"  BLOB UNIQUE,\
+\"scope_key\"  TEXT NOT NULL,\
+\"commit_time\"  INTEGER NOT NULL,\
+\"runtime_version\"  TEXT NOT NULL,\
+\"launch_asset_id\" INTEGER,\
+\"manifest\"  TEXT,\
+\"status\"  INTEGER NOT NULL,\
+\"keep\"  INTEGER NOT NULL,\
+\"last_accessed\"  INTEGER NOT NULL,\
+\"successful_launch_count\"  INTEGER NOT NULL DEFAULT 0,\
+\"failed_launch_count\"  INTEGER NOT NULL DEFAULT 0,\
+PRIMARY KEY(\"id\"),\
+FOREIGN KEY(\"launch_asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
+);\
+CREATE TABLE \"assets\" (\
+\"id\"  INTEGER PRIMARY KEY AUTOINCREMENT,\
+\"url\"  TEXT,\
+\"key\"  TEXT UNIQUE,\
+\"headers\"  TEXT,\
+\"extra_request_headers\"  TEXT,\
+\"type\"  TEXT NOT NULL,\
+\"metadata\"  TEXT,\
+\"download_time\"  INTEGER NOT NULL,\
+\"relative_path\"  TEXT NOT NULL,\
+\"hash\"  BLOB NOT NULL,\
+\"hash_type\"  INTEGER NOT NULL,\
+\"marked_for_deletion\"  INTEGER NOT NULL\
+);\
+CREATE TABLE \"updates_assets\" (\
+\"update_id\"  BLOB NOT NULL,\
+\"asset_id\" INTEGER NOT NULL,\
+FOREIGN KEY(\"update_id\") REFERENCES \"updates\"(\"id\") ON DELETE CASCADE,\
+FOREIGN KEY(\"asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
+);\
+CREATE TABLE \"json_data\" (\
+\"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
+\"key\" TEXT NOT NULL,\
+\"value\" TEXT NOT NULL,\
+\"last_updated\" INTEGER NOT NULL,\
+\"scope_key\" TEXT NOT NULL\
+);\
+CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\");\
+CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id\");\
+CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
+";
+
 @interface EXUpdatesDatabaseInitializationTests : XCTestCase
 
 @property (nonatomic, strong) NSURL *testDatabaseDir;
@@ -676,6 +724,48 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   NSString * const assetsSql2 = @"SELECT * FROM `assets` WHERE `id` = 3 AND `url` = 'https://url.to/bundle-1614137308871' AND `key` = 'bundle-1614137308871' AND `headers` IS NULL AND `type` = 'application/javascript' AND `metadata` IS NULL AND `download_time` = 1614137309513 AND `relative_path` = 'bundle-1614137308871' AND `hash` = 'e4d658861e85e301fb89bcfc49c42738ebcc0f9d5c979e037556435f44a27aa2' AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL";
   XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:assetsSql2 withArgs:nil onDatabase:migratedDb error:nil].count);
   NSString * const assetsSql3 = @"SELECT * FROM `assets` WHERE `id` = 4 AND `url` IS NULL AND `key` IS NULL AND `headers` IS NULL AND `type` = 'js' AND `metadata` IS NULL AND `download_time` = 1614137406588 AND `relative_path` = 'bundle-1614137401950' AND `hash` = '6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952' AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL";
+  XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:assetsSql3 withArgs:nil onDatabase:migratedDb error:nil].count);
+}
+
+- (void)testMigration8To9 {
+  sqlite3 *db;
+  NSError *initializeError;
+  [EXUpdatesDatabaseInitialization initializeDatabaseWithSchema:EXUpdatesDatabaseV8Schema
+                                                       filename:@"expo-v8.db"
+                                                    inDirectory:_testDatabaseDir
+                                                  shouldMigrate:NO
+                                                     migrations:@[]
+                                                       database:&db
+                                                          error:&initializeError];
+  XCTAssertNil(initializeError);
+  
+  // insert test data
+  NSString * const insertAssetsSql = @"INSERT INTO \"assets\" (\"id\",\"url\",\"key\",\"headers\",\"type\",\"metadata\",\"download_time\",\"relative_path\",\"hash\",\"hash_type\",\"marked_for_deletion\",\"extra_request_headers\") VALUES\
+  (2,'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e','b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,'image/png',NULL,1614137309295,'b56cf690e0afa93bd4dc7756d01edd3e.png','c4fdfc2ec388025067a0f755bda7731a0a868a2be79c84509f4de4e40d23161b',0,0,NULL),\
+  (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871','e4d658861e85e301fb89bcfc49c42738ebcc0f9d5c979e037556435f44a27aa2',0,0,NULL),\
+  (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950','6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952',0,0,NULL);";
+  
+  NSError *insertAssetsError;
+  [EXUpdatesDatabaseUtils executeSql:insertAssetsSql withArgs:nil onDatabase:db error:&insertAssetsError];
+  
+  XCTAssert(!insertAssetsError);
+
+  sqlite3_close(db);
+
+  // initialize a new database object the normal way and run migrations
+  sqlite3 *migratedDb;
+  NSError *migrateError;
+  // initialize without specifying migrations in order to run them all
+  [EXUpdatesDatabaseInitialization initializeDatabaseWithLatestSchemaInDirectory:_testDatabaseDir
+                                                                        database:&migratedDb
+                                                                           error:&migrateError];
+  XCTAssertNil(migrateError);
+  
+  NSString * const assetsSql1 = @"SELECT * FROM `assets` WHERE `id` = 2 AND `url` = 'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e' AND `key` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `headers` IS NULL AND `type` = 'image/png' AND `metadata` IS NULL AND `download_time` = 1614137309295 AND `relative_path` = 'b56cf690e0afa93bd4dc7756d01edd3e.png' AND `hash` = 'c4fdfc2ec388025067a0f755bda7731a0a868a2be79c84509f4de4e40d23161b' AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL AND `expected_hash` IS NULL";
+  XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:assetsSql1 withArgs:nil onDatabase:migratedDb error:nil].count);
+  NSString * const assetsSql2 = @"SELECT * FROM `assets` WHERE `id` = 3 AND `url` = 'https://url.to/bundle-1614137308871' AND `key` = 'bundle-1614137308871' AND `headers` IS NULL AND `type` = 'application/javascript' AND `metadata` IS NULL AND `download_time` = 1614137309513 AND `relative_path` = 'bundle-1614137308871' AND `hash` = 'e4d658861e85e301fb89bcfc49c42738ebcc0f9d5c979e037556435f44a27aa2' AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL AND `expected_hash` IS NULL";
+  XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:assetsSql2 withArgs:nil onDatabase:migratedDb error:nil].count);
+  NSString * const assetsSql3 = @"SELECT * FROM `assets` WHERE `id` = 4 AND `url` IS NULL AND `key` IS NULL AND `headers` IS NULL AND `type` = 'js' AND `metadata` IS NULL AND `download_time` = 1614137406588 AND `relative_path` = 'bundle-1614137401950' AND `hash` = '6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952' AND `hash_type` = 0 AND `marked_for_deletion` = 0 AND `extra_request_headers` IS NULL AND `expected_hash` IS NULL";
   XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:assetsSql3 withArgs:nil onDatabase:migratedDb error:nil].count);
 }
 

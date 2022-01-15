@@ -125,4 +125,4 @@ Once the update is built and uploaded to EAS and the command completes, force cl
 
 ## Next
 
-You can publish updates continuously with GitHub Actions. Learn more: [Using GitHub Actions with EAS Update](/preview/eas-update/github-actions)
+You can publish updates continuously with GitHub Actions. Learn more: [Using GitHub Actions with EAS Update](/eas-update/github-actions)

@@ -167,7 +167,7 @@ identify the areas in your app where users spend their time and how they interac
 #### Example
 
 ```js
-await Analytics.setCurrentScreen('GiveGithubStarsScreen');
+await Analytics.setCurrentScreen('GiveGitHubStarsScreen');
 ```
 
 ### setSessionTimeoutDuration

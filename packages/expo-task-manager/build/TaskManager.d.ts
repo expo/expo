@@ -148,3 +148,4 @@ export declare function unregisterAllTasksAsync(): Promise<void>;
  * On the web it always returns `false`.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+//# sourceMappingURL=TaskManager.d.ts.map

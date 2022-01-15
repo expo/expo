@@ -2,82 +2,80 @@
 // https://github.com/vercel/next.js/blob/5378db8f807dbb9ff0993662f0a39d0f6cba2452/packages/next/taskfile-swc.js
 
 const path = require('path');
+const assert = require('assert');
 
 const transform = require('@swc/core').transform;
 
 module.exports = function (task) {
-  task.plugin('swc', {}, function* (file, serverOrClient, { stripExtension, dev } = {}) {
+  const ENVIRONMENTS = {
+    // Settings for compiling the CLI code that runs in Node.js environments.
+    cli: {
+      output: 'build-cli',
+      options: {
+        module: {
+          type: 'commonjs',
+        },
+        env: {
+          targets: {
+            node: '12.13.0',
+          },
+        },
+        jsc: {
+          loose: true,
+          parser: {
+            syntax: 'typescript',
+            dynamicImport: true,
+          },
+        },
+      },
+    },
+    // Settings for compiling the `src` code that runs in the client or native runtime.
+    sdk: {
+      output: 'build',
+      options: {
+        module: {
+          type: 'es6',
+        },
+        jsc: {
+          loose: true,
+          target: 'es2016',
+          parser: {
+            syntax: 'typescript',
+            dynamicImport: true,
+          },
+          transform: {
+            react: {
+              pragma: 'React.createElement',
+              pragmaFrag: 'React.Fragment',
+              throwIfNamespace: true,
+              development: false,
+              useBuiltins: true,
+            },
+          },
+        },
+      },
+    },
+  };
+  // Like `/^(cli|sdk)$/`
+  const matcher = new RegExp(`^(${Object.keys(ENVIRONMENTS).join('|')})$`);
+
+  task.plugin('swc', {}, function* (file, environment, { stripExtension } = {}) {
     // Don't compile .d.ts
     if (file.base.endsWith('.d.ts')) return;
 
-    const isClient = serverOrClient === 'client';
+    // Environment assertion
+    assert.match(environment, matcher);
 
-    const swcClientOptions = {
-      module: {
-        type: 'es6',
-      },
-      jsc: {
-        loose: true,
-
-        target: 'es2016',
-        parser: {
-          syntax: 'typescript',
-          dynamicImport: true,
-          tsx: file.base.endsWith('.tsx'),
-        },
-        transform: {
-          react: {
-            pragma: 'React.createElement',
-            pragmaFrag: 'React.Fragment',
-            throwIfNamespace: true,
-            development: false,
-            useBuiltins: true,
-          },
-        },
-      },
-    };
-
-    const swcServerOptions = {
-      module: {
-        type: 'commonjs',
-      },
-      env: {
-        targets: {
-          node: '12.0.0',
-        },
-      },
-      jsc: {
-        loose: true,
-
-        parser: {
-          syntax: 'typescript',
-          dynamicImport: true,
-          tsx: file.base.endsWith('.tsx'),
-        },
-        transform: {
-          react: {
-            pragma: 'React.createElement',
-            pragmaFrag: 'React.Fragment',
-            throwIfNamespace: true,
-            development: false,
-            useBuiltins: true,
-          },
-        },
-      },
-    };
-
-    const swcOptions = isClient ? swcClientOptions : swcServerOptions;
-
+    const setting = ENVIRONMENTS[environment];
     const filePath = path.join(file.dir, file.base);
-    const fullFilePath = path.join(__dirname, filePath);
-    const distFilePath = path.dirname(path.join(__dirname, isClient ? 'build' : 'dist', filePath));
+    const inputFilePath = path.join(__dirname, filePath);
+    const outputFilePath = path.dirname(path.join(__dirname, setting.output, filePath));
 
     const options = {
       filename: path.join(file.dir, file.base),
       sourceMaps: true,
-      sourceFileName: path.relative(distFilePath, fullFilePath),
-
-      ...swcOptions,
+      sourceFileName: path.relative(outputFilePath, inputFilePath),
+      ...setting.options,
     };
 
     const output = yield transform(file.data.toString('utf-8'), options);

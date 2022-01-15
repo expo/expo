@@ -33,3 +33,4 @@ export declare type CheckboxComponent = React.FC<CheckboxProps> & {
      */
     isAvailableAsync: () => Promise<boolean>;
 };
+//# sourceMappingURL=Checkbox.types.d.ts.map

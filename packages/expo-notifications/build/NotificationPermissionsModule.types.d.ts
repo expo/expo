@@ -4,3 +4,4 @@ export interface NotificationPermissionsModule extends ProxyNativeModule {
     getPermissionsAsync?: () => Promise<NotificationPermissionsStatus>;
     requestPermissionsAsync?: (request: NativeNotificationPermissionsRequest) => Promise<NotificationPermissionsStatus>;
 }
+//# sourceMappingURL=NotificationPermissionsModule.types.d.ts.map

@@ -11,3 +11,4 @@ export declare function requestPermissionsAsync(permissions?: NotificationPermis
  * ```
  */
 export declare const usePermissions: (options?: import("expo-modules-core").PermissionHookOptions<NotificationPermissionsRequest> | undefined) => [NotificationPermissionsStatus | null, () => Promise<NotificationPermissionsStatus>, () => Promise<NotificationPermissionsStatus>];
+//# sourceMappingURL=NotificationPermissions.d.ts.map

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BarCodeScanningResult, CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, ConstantsType, FaceDetectionResult, PermissionExpiration, PermissionResponse, PermissionStatus, VideoCodec } from './Camera.types';
+import { BarCodeScanningResult, CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, ConstantsType, FaceDetectionResult, PermissionExpiration, PermissionResponse, PermissionStatus } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     static isAvailableAsync(): Promise<boolean>;
     static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
@@ -57,7 +57,6 @@ export default class Camera extends React.Component<CameraProps> {
     getAvailablePictureSizesAsync(ratio?: string): Promise<string[]>;
     recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
-        codec?: VideoCodec;
     }>;
     stopRecording(): void;
     pausePreview(): void;
@@ -76,3 +75,4 @@ export default class Camera extends React.Component<CameraProps> {
 }
 export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;
 export { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError, };
+//# sourceMappingURL=Camera.d.ts.map

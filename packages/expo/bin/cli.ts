@@ -2,21 +2,14 @@
 import arg from 'arg';
 import chalk from 'chalk';
 
-['react', 'react-native'].forEach((dependency) => {
-  try {
-    // When 'npm link' is used it checks the clone location. Not the project.
-    require.resolve(dependency);
-  } catch (err) {
-    console.warn(
-      `The module '${dependency}' was not found. Expo requires that you include it in 'dependencies' of your 'package.json'. To add it, run 'npm install ${dependency}'`
-    );
-  }
-});
+const defaultCmd = 'config';
 
-const defaultCommand = 'config';
-export type cliCommand = (argv?: string[]) => void;
-const commands: { [command: string]: () => Promise<cliCommand> } = {
+export type Command = (argv?: string[]) => void;
+
+const commands: { [command: string]: () => Promise<Command> } = {
+  // Add a new command here
   config: () => import('../cli/config').then((i) => i.expoConfig),
+  prebuild: () => import('../cli/prebuild').then((i) => i.expoPrebuild),
 };
 
 const args = arg(
@@ -34,19 +27,17 @@ const args = arg(
   }
 );
 
-// Version is inlined into the file using taskr build pipeline
 if (args['--version']) {
-  console.log(`expo v${process.env.__EXPO_VERSION}`);
+  // Version is added in the build script.
+  console.log(process.env.__EXPO_VERSION);
   process.exit(0);
 }
 
-// Check if we are running `expo <subcommand>` or `expo`
-const foundCommand = Boolean(commands[args._[0]]);
+// Check if we are running `npx expo <subcommand>` or `npx expo`
+const isSubcommand = Boolean(commands[args._[0]]);
 
-// Makes sure the `expo --help` case is covered
-// This help message is only showed for `expo --help`
-// `expo <subcommand> --help` falls through to be handled later
-if (!foundCommand && args['--help']) {
+// Handle `--help` flag
+if (!isSubcommand && args['--help']) {
   console.log(chalk`
     {bold Usage}
       {bold $} npx expo <command>
@@ -64,16 +55,16 @@ if (!foundCommand && args['--help']) {
   process.exit(0);
 }
 
-const command = foundCommand ? args._[0] : defaultCommand;
-const forwardedArgs = foundCommand ? args._.slice(1) : args._;
+const command = isSubcommand ? args._[0] : defaultCmd;
+const commandArgs = isSubcommand ? args._.slice(1) : args._;
 
-// Make sure the `expo <subcommand> --help` case is covered
+// Push the help flag to the subcommand args.
 if (args['--help']) {
-  forwardedArgs.push('--help');
+  commandArgs.push('--help');
 }
 
-// Make sure commands gracefully respect termination signals (e.g. from Docker)
-process.on('SIGTERM', () => process.exit(0));
+// Install exit hooks
 process.on('SIGINT', () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));
 
-commands[command]().then((exec) => exec(forwardedArgs));
+commands[command]().then((exec) => exec(commandArgs));

@@ -1,5 +1,5 @@
-import { NativeModules } from 'react-native';
 import getenv from 'getenv';
+import { NativeModules } from 'react-native';
 
 // Used for bare android device farm builds
 const ExponentTest = (NativeModules && NativeModules.ExponentTest) || {

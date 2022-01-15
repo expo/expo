@@ -20,11 +20,13 @@ Pod::Spec.new do |s|
   s.dependency 'EXStructuredHeaders'
   s.dependency 'EXUpdatesInterface'
   s.dependency 'EXManifests'
+  s.dependency 'ASN1Decoder', '~> 1.8'
 
   s.pod_target_xcconfig = {
     'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
     'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
     'DEFINES_MODULE' => 'YES',
+    'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')

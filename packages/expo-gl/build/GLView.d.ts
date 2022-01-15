@@ -40,3 +40,4 @@ export declare class GLView extends React.Component<GLViewProps> {
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
 }
+//# sourceMappingURL=GLView.d.ts.map

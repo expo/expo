@@ -5,3 +5,4 @@
  * @platform android
  */
 export default function setStatusBarBackgroundColor(backgroundColor: string, animated: boolean): void;
+//# sourceMappingURL=setStatusBarBackgroundColor.d.ts.map

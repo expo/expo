@@ -87,3 +87,4 @@ export declare type SaveOptions = {
      */
     format?: SaveFormat;
 };
+//# sourceMappingURL=ImageManipulator.types.d.ts.map

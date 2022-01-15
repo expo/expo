@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
-import { waitFor } from './helpers'
+import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 
@@ -19,7 +19,7 @@ const WAIT_TIME = 1000;
 const IMG_NUMBER = 3;
 const VIDEO_NUMBER = 1;
 const F_SIZE = IMG_NUMBER + VIDEO_NUMBER;
-const MEDIA_TYPES = [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video];
+// const MEDIA_TYPES = [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video];
 const DEFAULT_MEDIA_TYPES = [MediaLibrary.MediaType.photo];
 const DEFAULT_PAGE_SIZE = 20;
 const ASSET_KEYS = [
@@ -91,7 +91,7 @@ async function checkIfThrows(f) {
 }
 
 function timeoutWrapper(fun, time) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       fun();
       resolve(null);
@@ -189,33 +189,33 @@ export async function test(t) {
       t.describe('Every return value has proper shape', async () => {
         t.it('createAssetAsync', () => {
           const keys = Object.keys(testAssets[0]);
-          ASSET_KEYS.forEach(key => t.expect(keys).toContain(key));
+          ASSET_KEYS.forEach((key) => t.expect(keys).toContain(key));
         });
 
         t.it('getAssetInfoAsync', async () => {
           const { assets } = await MediaLibrary.getAssetsAsync();
           const value = await MediaLibrary.getAssetInfoAsync(assets[0]);
           const keys = Object.keys(value);
-          INFO_KEYS.forEach(key => t.expect(keys).toContain(key));
+          INFO_KEYS.forEach((key) => t.expect(keys).toContain(key));
         });
 
         t.it('getAlbumAsync', async () => {
           const value = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
           const keys = Object.keys(value);
-          ALBUM_KEYS.forEach(key => t.expect(keys).toContain(key));
+          ALBUM_KEYS.forEach((key) => t.expect(keys).toContain(key));
         });
 
         t.it('getAssetsAsync', async () => {
           const value = await MediaLibrary.getAssetsAsync();
           const keys = Object.keys(value);
-          GET_ASSETS_KEYS.forEach(key => t.expect(keys).toContain(key));
+          GET_ASSETS_KEYS.forEach((key) => t.expect(keys).toContain(key));
         });
       });
 
       t.describe('Small tests', async () => {
         t.it('Function getAlbums returns test album', async () => {
           const albums = await MediaLibrary.getAlbumsAsync();
-          t.expect(albums.filter(elem => elem.id === album.id).length).toBe(1);
+          t.expect(albums.filter((elem) => elem.id === album.id).length).toBe(1);
         });
 
         t.it('getAlbum returns test album', async () => {
@@ -269,31 +269,27 @@ export async function test(t) {
           const { assets } = await MediaLibrary.getAssetsAsync(options);
           t.expect(assets.length).toBeLessThanOrEqual(DEFAULT_PAGE_SIZE);
           t.expect(assets.length).toBeGreaterThanOrEqual(IMG_NUMBER);
-          assets.forEach(asset => t.expect(DEFAULT_MEDIA_TYPES).toContain(asset.mediaType));
+          assets.forEach((asset) => t.expect(DEFAULT_MEDIA_TYPES).toContain(asset.mediaType));
         });
 
         t.it('album', async () => {
           const options = { album };
           const { assets } = await MediaLibrary.getAssetsAsync(options);
           t.expect(assets.length).toBe(IMG_NUMBER);
-          assets.forEach(asset => t.expect(DEFAULT_MEDIA_TYPES).toContain(asset.mediaType));
+          assets.forEach((asset) => t.expect(DEFAULT_MEDIA_TYPES).toContain(asset.mediaType));
           if (Platform.OS === 'android')
-            assets.forEach(asset => t.expect(asset.albumId).toBe(album.id));
+            assets.forEach((asset) => t.expect(asset.albumId).toBe(album.id));
         });
 
         t.it('first, after', async () => {
           const options = { first: 2, album };
           {
-            const {
-              assets,
-              endCursor,
-              hasNextPage,
-              totalCount,
-            } = await MediaLibrary.getAssetsAsync(options);
+            const { assets, endCursor, hasNextPage, totalCount } =
+              await MediaLibrary.getAssetsAsync(options);
             t.expect(assets.length).toBe(2);
             t.expect(totalCount).toBe(IMG_NUMBER);
             t.expect(hasNextPage).toBeTruthy();
-            assets.forEach(asset => t.expect(DEFAULT_MEDIA_TYPES).toContain(asset.mediaType));
+            assets.forEach((asset) => t.expect(DEFAULT_MEDIA_TYPES).toContain(asset.mediaType));
             options.after = endCursor;
           }
           {
@@ -308,7 +304,7 @@ export async function test(t) {
           const mediaType = MediaLibrary.MediaType.video;
           const options = { mediaType, album };
           const { assets } = await MediaLibrary.getAssetsAsync(options);
-          assets.forEach(asset => t.expect(asset.mediaType).toBe(mediaType));
+          assets.forEach((asset) => t.expect(asset.mediaType).toBe(mediaType));
           t.expect(assets.length).toBe(1);
         });
 
@@ -317,7 +313,7 @@ export async function test(t) {
           const options = { mediaType, album };
           const { assets } = await MediaLibrary.getAssetsAsync(options);
           t.expect(assets.length).toBe(IMG_NUMBER);
-          assets.forEach(asset => t.expect(asset.mediaType).toBe(mediaType));
+          assets.forEach((asset) => t.expect(asset.mediaType).toBe(mediaType));
         });
 
         t.it('check size - photo', async () => {
@@ -325,7 +321,7 @@ export async function test(t) {
           const options = { mediaType, album };
           const { assets } = await MediaLibrary.getAssetsAsync(options);
           t.expect(assets.length).toBe(IMG_NUMBER);
-          assets.forEach(asset => {
+          assets.forEach((asset) => {
             t.expect(asset.width).not.toEqual(0);
             t.expect(asset.height).not.toEqual(0);
           });
@@ -336,7 +332,7 @@ export async function test(t) {
           const options = { mediaType, album };
           const { assets } = await MediaLibrary.getAssetsAsync(options);
           t.expect(assets.length).toBe(VIDEO_NUMBER);
-          assets.forEach(asset => {
+          assets.forEach((asset) => {
             t.expect(asset.width).not.toEqual(0);
             t.expect(asset.height).not.toEqual(0);
           });
@@ -388,7 +384,7 @@ export async function test(t) {
             ios: ['isNetworkAsset'],
             default: [],
           });
-          expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+          expectedExtraKeys.forEach((key) => t.expect(keys).toContain(key));
           if (Platform.OS === 'ios') {
             t.expect(value['isNetworkAsset']).toBe(false);
           }
@@ -407,7 +403,7 @@ export async function test(t) {
             ios: ['isNetworkAsset'],
             default: [],
           });
-          expectedExtraKeys.forEach(key => t.expect(keys).not.toContain(key));
+          expectedExtraKeys.forEach((key) => t.expect(keys).not.toContain(key));
         });
 
         t.it('shouldDownloadFromNetwork: false, for videos', async () => {
@@ -423,7 +419,7 @@ export async function test(t) {
             ios: ['isNetworkAsset'],
             default: [],
           });
-          expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+          expectedExtraKeys.forEach((key) => t.expect(keys).toContain(key));
           if (Platform.OS === 'ios') {
             t.expect(value['isNetworkAsset']).toBe(false);
           }
@@ -442,7 +438,7 @@ export async function test(t) {
             ios: ['isNetworkAsset'],
             default: [],
           });
-          expectedExtraKeys.forEach(key => t.expect(keys).not.toContain(key));
+          expectedExtraKeys.forEach((key) => t.expect(keys).not.toContain(key));
         });
       });
     });
@@ -454,12 +450,12 @@ export async function test(t) {
           const assets = await getAssets(files);
           const result = await MediaLibrary.deleteAssetsAsync(assets);
           const deletedAssets = await Promise.all(
-            assets.map(async asset => await MediaLibrary.getAssetInfoAsync(asset))
+            assets.map(async (asset) => await MediaLibrary.getAssetInfoAsync(asset))
           );
           t.expect(result).toEqual(true);
           t.expect(assets.length).not.toEqual(0);
           t.expect(deletedAssets.length).toEqual(assets.length);
-          deletedAssets.forEach(deletedAsset => t.expect(deletedAsset).toBeNull);
+          deletedAssets.forEach((deletedAsset) => t.expect(deletedAsset).toBeNull);
         },
         TIMEOUT_WHEN_USER_NEEDS_TO_INTERACT
       );

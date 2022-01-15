@@ -6,9 +6,9 @@ const pkg = require('expo-document-picker/package.json');
 
 const withDocumentPicker: ConfigPlugin<IosProps | void> = (
   config,
-  { appleTeamId = process.env.EXPO_APPLE_TEAM_ID } = {}
+  { appleTeamId = process.env.EXPO_APPLE_TEAM_ID, iCloudContainerEnvironment } = {}
 ) => {
-  config = withDocumentPickerIOS(config, { appleTeamId });
+  config = withDocumentPickerIOS(config, { appleTeamId, iCloudContainerEnvironment });
   return config;
 };
 

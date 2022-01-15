@@ -34,7 +34,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
   <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
   <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
-  <SocialGridItem title="Github" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
+  <SocialGridItem title="GitHub" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
   <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
   <SocialGridItem title="Imgur" protocol={['OAuth 2']} href="#imgur" image="/static/images/sdk/auth-session/imgur.png" />
   <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
@@ -43,6 +43,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
   <SocialGridItem title="Strava" protocol={['OAuth 2']} href="#strava" image="/static/images/sdk/auth-session/strava.png" />
   <SocialGridItem title="Twitch" protocol={['OAuth 2']} href="#twitch" image="/static/images/sdk/auth-session/twitch.png" />
+  <SocialGridItem title="Twitter" protocol={['OAuth 2']} href="#twitter" image="/static/images/sdk/auth-session/twitter.png" />
   <SocialGridItem title="Uber" protocol={['OAuth 2']} href="#uber" image="/static/images/sdk/auth-session/uber.png" />
 </SocialGrid>
 
@@ -945,7 +946,7 @@ export default function App() {
 
 ### GitHub
 
-<CreateAppButton name="Github" href="https://github.com/settings/developers" />
+<CreateAppButton name="GitHub" href="https://github.com/settings/developers" />
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
@@ -1028,13 +1029,13 @@ export default function App() {
 
 <Tab>
 
-- Implicit grant is [not supported for Github](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
+- Implicit grant is [not supported for GitHub](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
 </Tab>
 
 </Tabs>
 
-<!-- End Github -->
+<!-- End GitHub -->
 
 ### Google
 
@@ -2160,6 +2161,105 @@ export default function App() {
 </Tabs>
 
 <!-- End Twitch -->
+
+### Twitter
+
+<CreateAppButton name="Twitter" href="https://developer.twitter.com/en/portal/projects/new" />
+
+| Website                      | Provider | PKCE      | Auto Discovery | Scopes            |
+| ---------------------------- | -------- | --------- | -------------- | ----------------- |
+| [Get your Config][c-twitter] | OAuth    | Supported | Not Available  | [Info][s-twitter] |
+
+[c-twitter]: https://developer.twitter.com/en/portal/projects/new
+[s-twitter]: https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code
+
+- You will need to be approved by Twitter support before you can use the Twitter v2 API.
+- Web does not appear to work, the Twitter authentication website appears to block the popup, causing the `response` of `useAuthRequest` to always be `{type: 'dismiss'}`.
+- Example redirects:
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://`
+  - Web (dev `expo start --https`): `https://localhost:19006` (no ending slash)
+- The `redirectUri` requires 2 slashes (`://`).
+
+#### Expo Go
+
+You must use the proxy service in the Expo Go app because `exp://localhost:19000` cannot be added to your Twitter app as a redirect.
+
+<Tabs tabs={["Auth Code"]}>
+
+<Tab>
+
+<SnackInline label='Twitter Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
+
+<!-- prettier-ignore -->
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
+
+const useProxy = Platform.select({ web: false, default: true });
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: "https://twitter.com/i/oauth2/authorize",
+  tokenEndpoint: "https://twitter.com/i/oauth2/token",
+  revocationEndpoint: "https://twitter.com/i/oauth2/revoke",
+};
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      redirectUri: makeRedirectUri({
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app',
+        /* @end */
+        useProxy
+      }),
+      usePKCE: true,
+      scopes: [
+        "tweet.read",
+      ],
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</Tab>
+
+</Tabs>
+
+<!-- End Twitter -->
 
 ### Uber
 

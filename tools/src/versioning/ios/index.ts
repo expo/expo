@@ -14,7 +14,7 @@ import { renderExpoKitPodspecAsync } from '../../dynamic-macros/IosMacrosGenerat
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
 import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
-import { podspecTransforms, generateModulemapAsync } from './transforms/podspecTransforms';
+import { podspecTransforms } from './transforms/podspecTransforms';
 import { postTransforms } from './transforms/postTransforms';
 import { getVersionedDirectory, getVersionedExpoKitPath } from './utils';
 import { versionExpoModulesAsync } from './versionExpoModules';
@@ -321,8 +321,6 @@ async function generateReactNativePodspecsAsync(
     );
 
     const podspecSource = await fs.readFile(podspecFile, 'utf8');
-
-    await generateModulemapAsync(podspecFile, versionName);
 
     const podspecOutput = await runTransformPipelineAsync({
       pipeline: podspecTransforms(versionName),

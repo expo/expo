@@ -196,3 +196,4 @@ export declare function getMobileCountryCodeAsync(): Promise<string | null>;
  * ```
  */
 export declare function getMobileNetworkCodeAsync(): Promise<string | null>;
+//# sourceMappingURL=Cellular.d.ts.map

@@ -343,3 +343,4 @@ declare type NavigationTheme = {
 export declare const lightNavigationTheme: NavigationTheme;
 export declare const darkNavigationTheme: NavigationTheme;
 export {};
+//# sourceMappingURL=theme.d.ts.map

@@ -25,6 +25,8 @@ export {
   UnavailabilityError,
 };
 
+export * from './requireNativeModule';
+
 /**
  * @deprecated renamed to `DeviceEventEmitter`
  */

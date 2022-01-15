@@ -6,3 +6,4 @@ export interface NotificationPresenterModule extends ProxyNativeModule {
     dismissNotificationAsync?: (identifier: string) => Promise<void>;
     dismissAllNotificationsAsync?: () => Promise<void>;
 }
+//# sourceMappingURL=NotificationPresenterModule.types.d.ts.map

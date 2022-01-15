@@ -252,3 +252,4 @@ export declare enum AppleAuthenticationButtonStyle {
      */
     BLACK = 2
 }
+//# sourceMappingURL=AppleAuthentication.types.d.ts.map

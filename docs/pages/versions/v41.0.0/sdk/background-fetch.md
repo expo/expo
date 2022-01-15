@@ -11,7 +11,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Known issues
 
-BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582)
+BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant GitHub issue](https://github.com/expo/expo/issues/3582)
 
 ## Installation
 

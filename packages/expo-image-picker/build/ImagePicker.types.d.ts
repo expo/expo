@@ -297,3 +297,4 @@ export declare type OpenFileBrowserOptions = {
 export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
     allowsMultipleSelection: true;
 } ? ImagePickerMultipleResult : ImagePickerResult;
+//# sourceMappingURL=ImagePicker.types.d.ts.map

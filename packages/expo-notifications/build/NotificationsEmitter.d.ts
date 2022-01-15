@@ -6,3 +6,4 @@ export declare function addNotificationsDroppedListener(listener: () => void): S
 export declare function addNotificationResponseReceivedListener(listener: (event: NotificationResponse) => void): Subscription;
 export declare function removeNotificationSubscription(subscription: Subscription): void;
 export declare function getLastNotificationResponseAsync(): Promise<NotificationResponse | null>;
+//# sourceMappingURL=NotificationsEmitter.d.ts.map

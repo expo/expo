@@ -129,3 +129,4 @@ export declare function getInstallationTimeAsync(): Promise<Date>;
  * @platform android
  */
 export declare function getLastUpdateTimeAsync(): Promise<Date>;
+//# sourceMappingURL=Application.d.ts.map

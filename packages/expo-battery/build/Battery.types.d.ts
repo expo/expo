@@ -48,3 +48,4 @@ export declare type PowerModeEvent = {
      */
     lowPowerMode: boolean;
 };
+//# sourceMappingURL=Battery.types.d.ts.map

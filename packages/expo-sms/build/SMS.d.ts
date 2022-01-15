@@ -51,3 +51,4 @@ export declare function sendSMSAsync(addresses: string | string[], message: stri
  * ```
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+//# sourceMappingURL=SMS.d.ts.map

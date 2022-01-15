@@ -7,3 +7,4 @@ export default class AdIconView extends React.Component<Props> {
 export declare type NativeAdIconView = React.Component<Props>;
 export declare const NativeAdIconView: React.ComponentType<Props>;
 export {};
+//# sourceMappingURL=AdIconView.d.ts.map

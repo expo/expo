@@ -10,3 +10,4 @@ export declare type FetchRequest = {
     method?: string;
 };
 export declare function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T>;
+//# sourceMappingURL=Fetch.d.ts.map

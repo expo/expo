@@ -86,6 +86,15 @@ NSArray *convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value
   return [result copy];
 }
 
+NSArray *convertJSIValuesToNSArray(jsi::Runtime &runtime, const jsi::Value *values, size_t count, std::shared_ptr<CallInvoker> jsInvoker)
+{
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity:count];
+  for (int i = 0; i < count; i++) {
+    result[i] = convertJSIValueToObjCObject(runtime, values[i], jsInvoker);
+  }
+  return result;
+}
+
 NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);

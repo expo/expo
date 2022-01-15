@@ -149,3 +149,4 @@ export declare type OrientationChangeEvent = {
      */
     orientationInfo: ScreenOrientationInfo;
 };
+//# sourceMappingURL=ScreenOrientation.types.d.ts.map

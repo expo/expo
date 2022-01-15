@@ -107,3 +107,4 @@ export declare function screenWithProperties(screenName: string, properties: Rec
 export declare function flush(): void;
 export declare function getEnabledAsync(): Promise<boolean>;
 export declare function setEnabledAsync(enabled: boolean): Promise<void>;
+//# sourceMappingURL=Segment.d.ts.map

@@ -3,11 +3,11 @@ import { darkNavigationTheme, lightNavigationTheme } from 'expo-dev-client-compo
 import * as React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 
-import { ModalProvider } from '../../components/redesign/Modal';
 import { UserData } from '../../functions/getUserProfileAsync';
 import { BuildInfoProvider } from '../../hooks/useBuildInfo';
 import { DevMenuSettingsProvider } from '../../hooks/useDevMenuSettings';
 import { DevSessionsProvider } from '../../hooks/useDevSessions';
+import { ModalProvider } from '../../hooks/useModalStack';
 import { PendingDeepLinkProvider } from '../../hooks/usePendingDeepLink';
 import { RecentApp, RecentlyOpenedAppsProvider } from '../../hooks/useRecentlyOpenedApps';
 import { UserContextProvider } from '../../hooks/useUser';

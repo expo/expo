@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-universe",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "description": "Shared ESLint configs for universal Expo projects, Node, and web",
   "main": "default.js",
   "scripts": {
@@ -26,7 +26,6 @@
     "shared"
   ],
   "jest": {
-    "testEnvironment": "node",
     "testMatch": [
       "**/__tests__/*-test.js"
     ]
@@ -41,31 +40,35 @@
   },
   "homepage": "https://github.com/expo/expo/tree/master/packages/eslint-config-universe",
   "dependencies": {
-    "@babel/eslint-parser": "^7.12.17",
-    "@babel/eslint-plugin": "^7.12.13",
-    "@typescript-eslint/eslint-plugin": "^4.28.5",
-    "@typescript-eslint/parser": "^4.28.5",
+    "@babel/eslint-parser": "^7.16.5",
+    "@babel/eslint-plugin": "^7.16.5",
+    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@typescript-eslint/parser": "^5.9.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0"
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0"
   },
   "peerDependencies": {
-    "@babel/core": ">=7.12.0",
-    "eslint": ">= 7",
-    "prettier": ">= 2.4"
+    "@babel/core": ">=7.16",
+    "eslint": ">=7.28",
+    "prettier": ">=2.4"
   },
   "peerDependenciesMeta": {
     "@babel/core": {
       "optional": true
+    },
+    "prettier": {
+      "optional": true
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
+    "@babel/core": "^7.16.7",
     "@expo/spawn-async": "^1.5.0",
-    "eslint": "^7.31.0",
-    "jest": "^26.6.3",
-    "prettier": "^2.4.1"
+    "eslint": "^8.6.0",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1"
   }
 }

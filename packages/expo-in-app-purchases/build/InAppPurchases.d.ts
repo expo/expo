@@ -201,3 +201,4 @@ export declare function getBillingResponseCodeAsync(): Promise<IAPResponseCode>;
  *@return Returns a Promise that fulfils when disconnecting process is finished.
  */
 export declare function disconnectAsync(): Promise<void>;
+//# sourceMappingURL=InAppPurchases.d.ts.map

@@ -22,3 +22,4 @@ export declare function activateKeepAwake(tag?: string): void;
  * the default tag is used.
  */
 export declare function deactivateKeepAwake(tag?: string): void;
+//# sourceMappingURL=index.d.ts.map

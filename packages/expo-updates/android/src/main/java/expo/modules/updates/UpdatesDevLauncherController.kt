@@ -1,7 +1,6 @@
 package expo.modules.updates
 
 import android.content.Context
-import expo.modules.manifests.core.Manifest.Companion.fromManifestJson
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.DatabaseLauncher
@@ -112,10 +111,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
           controller.setLauncher(launcher)
           callback.onSuccess(object : UpdatesInterface.Update {
             override fun getManifest(): JSONObject {
-              val manifest = fromManifestJson(
-                launcher.launchedUpdate!!.manifest!!
-              )
-              return manifest.getRawJson()
+              return launcher.launchedUpdate!!.manifest!!
             }
 
             override fun getLaunchAssetPath(): String {

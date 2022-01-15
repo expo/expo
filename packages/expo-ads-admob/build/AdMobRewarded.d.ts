@@ -15,3 +15,4 @@ declare const _default: {
     removeAllListeners(): void;
 };
 export default _default;
+//# sourceMappingURL=AdMobRewarded.d.ts.map

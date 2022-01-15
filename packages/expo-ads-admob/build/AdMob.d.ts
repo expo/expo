@@ -19,3 +19,4 @@ export declare const usePermissions: (options?: PermissionHookOptions<object> | 
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 export declare function setTestDeviceIDAsync(testDeviceID: string | null): Promise<void>;
+//# sourceMappingURL=AdMob.d.ts.map

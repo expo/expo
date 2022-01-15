@@ -185,3 +185,4 @@ export declare function fetchDiscoveryAsync(issuer: Issuer): Promise<DiscoveryDo
  */
 export declare function resolveDiscoveryAsync(issuerOrDiscovery: IssuerOrDiscovery): Promise<DiscoveryDocument>;
 export {};
+//# sourceMappingURL=Discovery.d.ts.map

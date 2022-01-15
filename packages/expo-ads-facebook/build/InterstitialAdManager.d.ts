@@ -5,3 +5,4 @@ declare const _default: {
     showAd(placementId: string): Promise<boolean>;
 };
 export default _default;
+//# sourceMappingURL=InterstitialAdManager.d.ts.map

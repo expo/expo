@@ -14,3 +14,4 @@ import { WebSQLDatabase } from './SQLite.types';
  * @return
  */
 export declare function openDatabase(name: string, version?: string, description?: string, size?: number, callback?: (db: WebSQLDatabase) => void): WebSQLDatabase;
+//# sourceMappingURL=SQLite.d.ts.map

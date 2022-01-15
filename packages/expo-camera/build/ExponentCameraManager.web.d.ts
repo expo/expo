@@ -39,3 +39,4 @@ declare const _default: {
     requestMicrophonePermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExponentCameraManager.web.d.ts.map

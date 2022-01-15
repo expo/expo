@@ -2,13 +2,11 @@ import { boolish } from 'getenv';
 
 export const EXPO_NO_GIT_STATUS = boolish('EXPO_NO_GIT_STATUS', false);
 
-export const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
-
+/** Enable profiling metrics */
 export const EXPO_PROFILE = boolish('EXPO_PROFILE', false);
 
-// import program from 'commander';
+/** Enable debug logging */
+export const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
 
-export function isNonInteractive() {
-  // TODO: Implement this
-  return false;
-}
+/** Is running in non-interactive CI mode */
+export const CI = boolish('CI', false);

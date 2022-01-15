@@ -4,3 +4,4 @@ export interface ServerRegistrationModule extends ProxyNativeModule {
     getRegistrationInfoAsync?: () => Promise<string | undefined | null>;
     setRegistrationInfoAsync?: (registrationInfo: string | null) => Promise<void>;
 }
+//# sourceMappingURL=ServerRegistrationModule.types.d.ts.map

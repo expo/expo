@@ -20,3 +20,4 @@ export declare const FacingModeToCameraType: {
     user: CameraType;
     environment: CameraType;
 };
+//# sourceMappingURL=WebConstants.d.ts.map

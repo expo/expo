@@ -76,3 +76,4 @@ export declare type VideoState = {
     showPoster: boolean;
 };
 export declare type ExponentVideoComponent = React.ComponentClass<VideoNativeProps>;
+//# sourceMappingURL=Video.types.d.ts.map

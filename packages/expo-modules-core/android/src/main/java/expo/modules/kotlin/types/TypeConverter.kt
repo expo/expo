@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.NullArgumentException
 
 abstract class TypeConverter<Type : Any>(
   private val isOptional: Boolean
@@ -10,7 +11,7 @@ abstract class TypeConverter<Type : Any>(
       if (isOptional) {
         return null
       }
-      throw IllegalArgumentException()
+      throw NullArgumentException()
     }
     return convertNonOptional(value)
   }

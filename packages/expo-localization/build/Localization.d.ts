@@ -76,3 +76,4 @@ export declare const region: string | null;
  * ```
  */
 export declare function getLocalizationAsync(): Promise<Localization>;
+//# sourceMappingURL=Localization.d.ts.map

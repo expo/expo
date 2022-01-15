@@ -1,4 +1,7 @@
+// Copyright 2021-present 650 Industries. All rights reserved.
+
 import Foundation
+import React
 
 @objc
 public final class SwiftInteropBridge: NSObject {
@@ -17,6 +20,11 @@ public final class SwiftInteropBridge: NSObject {
   @objc
   public func hasModule(_ moduleName: String) -> Bool {
     return registry.has(moduleWithName: moduleName)
+  }
+
+  @objc
+  public func setReactBridge(_ reactBridge: RCTBridge) {
+    appContext.reactBridge = reactBridge
   }
 
   @objc
@@ -93,6 +101,24 @@ public final class SwiftInteropBridge: NSObject {
         return nil
       }
     }
+  }
+
+  /**
+   Sets the JSI runtime on the operating `AppContext`.
+   */
+  @objc
+  public func setRuntime(_ runtime: JavaScriptRuntime?) {
+    appContext.runtime = runtime
+  }
+
+  @objc
+  public func getModuleNames() -> [String] {
+    return registry.getModuleNames()
+  }
+
+  @objc
+  public func getNativeModuleObject(_ moduleName: String) -> JavaScriptObject? {
+    return registry.get(moduleHolderForName: moduleName)?.javaScriptObject
   }
 
   // MARK: - Events

@@ -1,28 +1,27 @@
-import { EXPO_DEBUG, EXPO_PROFILE } from './utils/env';
+export function time(label?: string): void {
+  console.time(label);
+}
 
-export const time: (label?: string) => void = EXPO_PROFILE ? console.time : () => {};
+export function timeEnd(label?: string): void {
+  console.timeEnd(label);
+}
 
-export const timeEnd: (label?: string) => void = EXPO_PROFILE ? console.timeEnd : () => {};
-
-export function error(...message: string[]) {
+export function error(...message: string[]): void {
   console.error(...message);
 }
 
-export function warn(...message: string[]) {
+export function warn(...message: string[]): void {
   console.warn(...message);
 }
 
-export function log(...message: string[]) {
+export function log(...message: string[]): void {
   console.log(...message);
 }
 
-export function debug(...message: string[]) {
-  if (EXPO_DEBUG) console.log(...message);
-}
-
-export function exit(message: string, code = 1) {
+/** Log a message and exit the current process. If the `code` is non-zero then `console.error` will be used instead of `console.log`. */
+export function exit(message: string, code: number = 1): never {
   if (code === 0) {
-    console.log(message);
+    log(message);
   } else {
     error(message);
   }

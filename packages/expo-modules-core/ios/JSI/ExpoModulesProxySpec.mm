@@ -7,9 +7,7 @@
 
 namespace expo {
 
-using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
-
-static void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<Promise> promise, PromiseInvocationBlock setupBlock)
+void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<Promise> promise, PromiseInvocationBlock setupBlock)
 {
   auto weakResolveWrapper = CallbackWrapper::createWeak(promise->resolve_.getFunction(runtime), runtime, jsInvoker);
   auto weakRejectWrapper = CallbackWrapper::createWeak(promise->reject_.getFunction(runtime), runtime, jsInvoker);

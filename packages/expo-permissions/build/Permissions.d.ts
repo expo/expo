@@ -21,3 +21,4 @@ export declare const SYSTEM_BRIGHTNESS = "systemBrightness";
 export declare const MOTION = "motion";
 export declare function getAsync(...types: PermissionType[]): Promise<PermissionResponse>;
 export declare function askAsync(...types: PermissionType[]): Promise<PermissionResponse>;
+//# sourceMappingURL=Permissions.d.ts.map

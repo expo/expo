@@ -28,3 +28,4 @@ export declare type FirebaseOptions = {
     measurementId?: string;
 };
 export declare function getDefaultWebOptions(): FirebaseOptions | void;
+//# sourceMappingURL=FirebaseOptions.d.ts.map

@@ -18,3 +18,4 @@ export declare function hide(): void;
  * @ignore
  */
 export declare function preventAutoHide(): void;
+//# sourceMappingURL=SplashScreen.d.ts.map

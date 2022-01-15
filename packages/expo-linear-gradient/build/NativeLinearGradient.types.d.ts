@@ -7,3 +7,4 @@ export declare type NativeLinearGradientProps = ViewProps & PropsWithChildren<{
     endPoint?: NativeLinearGradientPoint | null;
 }>;
 export declare type NativeLinearGradientPoint = [number, number];
+//# sourceMappingURL=NativeLinearGradient.types.d.ts.map

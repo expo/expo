@@ -5,3 +5,4 @@ export * from './Text';
 export * from './theme';
 export * from './View';
 export * from './useExpoTheme';
+//# sourceMappingURL=index.d.ts.map

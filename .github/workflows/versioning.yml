@@ -94,7 +94,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
-          channel: '#platform-ios'
+          channel: '#expo-ios'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Versioning Expo Go (iOS)

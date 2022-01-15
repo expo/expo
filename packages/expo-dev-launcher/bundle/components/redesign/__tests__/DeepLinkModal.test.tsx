@@ -13,9 +13,9 @@ const mockGetPendingDeepLink = getPendingDeepLink as jest.Mock;
 const mockAddDeepLinkListener = addDeepLinkListener as jest.Mock;
 const mockLoadApp = loadApp as jest.Mock;
 
-const fakeLocalPackager: DevSession = {
+const fakeLocalDevSession: DevSession = {
   url: 'hello',
-  description: 'fakePackagerDescription',
+  description: 'fakeDevSessionDescription',
   source: 'test',
 };
 
@@ -38,36 +38,35 @@ describe('<DeepLinkPrompt />', () => {
 
     await act(async () => {
       expect(getPendingDeepLink).toHaveBeenCalled();
-      await waitFor(() => getByText(/deep link received/i));
       await waitFor(() => getByText(fakeDeepLink));
     });
   });
 
-  test('shows packagers in modal', async () => {
-    const closeFn = jest.fn();
+  test('shows dev sessions in modal', async () => {
+    const fakeDeepLink = 'testing-testing-123';
+    mockGetPendingDeepLink.mockResolvedValueOnce(fakeDeepLink);
 
-    const { getByText } = render(<DeepLinkModal onClosePress={closeFn} pendingDeepLink="123" />, {
-      initialAppProviderProps: { initialDevSessions: [fakeLocalPackager] },
+    const { getByText, queryByText } = render(null, {
+      initialAppProviderProps: { initialDevSessions: [fakeLocalDevSession] },
     });
+
+    expect(queryByText(fakeLocalDevSession.description)).toBe(null);
 
     await act(async () => {
       await waitFor(() => getByText(/deep link received/i));
-      getByText(fakeLocalPackager.description);
+      getByText(fakeLocalDevSession.description);
     });
   });
 
   test('packagers in modal call loadApp() when pressed', async () => {
-    const closeFn = jest.fn();
-
-    const { getByText } = render(<DeepLinkModal onClosePress={closeFn} pendingDeepLink="123" />, {
-      initialAppProviderProps: { initialDevSessions: [fakeLocalPackager] },
+    const { getByText } = render(<DeepLinkModal pendingDeepLink="123" />, {
+      initialAppProviderProps: { initialDevSessions: [fakeLocalDevSession] },
     });
 
     await act(async () => {
       expect(loadApp).not.toHaveBeenCalled();
 
-      await waitFor(() => getByText(/deep link received/i));
-      const button = getByText(fakeLocalPackager.description);
+      const button = await waitFor(() => getByText(fakeLocalDevSession.description));
       fireEvent.press(button);
 
       expect(loadApp).toHaveBeenCalled();
@@ -75,21 +74,15 @@ describe('<DeepLinkPrompt />', () => {
   });
 
   test('shows empty message when no packagers are found', async () => {
-    const closeFn = jest.fn();
-
-    const { getByText, queryByText } = render(
-      <DeepLinkModal onClosePress={closeFn} pendingDeepLink="123" />,
-      {
-        initialAppProviderProps: { initialDevSessions: [], initialRecentlyOpenedApps: [] },
-      }
-    );
+    const { getByText, queryByText } = render(<DeepLinkModal pendingDeepLink="123" />, {
+      initialAppProviderProps: { initialDevSessions: [], initialRecentlyOpenedApps: [] },
+    });
 
     expect(queryByText(/unable to find any packagers/i)).toBe(null);
 
     await act(async () => {
       expect(queryByText(/unable to find any packagers/i)).toBe(null);
-      await waitFor(() => getByText(/deep link received/i));
-      getByText(/unable to find any packagers/i);
+      await waitFor(() => getByText(/unable to find any packagers/i));
     });
   });
 

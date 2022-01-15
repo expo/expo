@@ -39,3 +39,4 @@ export interface ImageErrorEventData {
     android?: AndroidGlideException | null;
 }
 export {};
+//# sourceMappingURL=Image.types.d.ts.map

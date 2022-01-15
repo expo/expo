@@ -29,3 +29,4 @@ export declare const TextInput: import("react").ForwardRefExoticComponent<import
     weight?: "normal" | "bold" | "medium" | "thin" | "extralight" | "light" | "semibold" | "extrabold" | "black" | undefined;
     color?: "primary" | "secondary" | "default" | "error" | "warning" | "success" | undefined;
 } & import("react").RefAttributes<import("react-native").TextInputProps>>;
+//# sourceMappingURL=Text.d.ts.map

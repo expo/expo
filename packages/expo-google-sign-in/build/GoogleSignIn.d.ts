@@ -50,3 +50,4 @@ GoogleSignInOptions,
 GoogleSignInAuthResultType, 
 /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 GoogleSignInAuthResult, } from './GoogleSignIn.types';
+//# sourceMappingURL=GoogleSignIn.d.ts.map

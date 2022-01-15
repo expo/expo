@@ -6,3 +6,4 @@ declare const _default: {
     isAvailableAsync(): Promise<boolean>;
 };
 export default _default;
+//# sourceMappingURL=ExpoTaskManager.web.d.ts.map

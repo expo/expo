@@ -17,3 +17,4 @@ export declare type GoogleSignInAuthResult = {
     type: GoogleSignInAuthResultType;
     user?: GoogleUser | null;
 };
+//# sourceMappingURL=GoogleSignIn.types.d.ts.map
