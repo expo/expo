@@ -75,7 +75,7 @@ android {
     viewBinding true
   }
 
-  configurations.all {
+  configurations.implementation {
     resolutionStrategy {
       force "com.squareup.okhttp3:okhttp:3.14.9"
     }
@@ -109,7 +109,8 @@ dependencies {
 
   implementation 'commons-io:commons-io:2.6'
 
-  implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+  compileOnly 'com.squareup.okhttp3:okhttp:3.14.9'
+  testImplementation 'com.squareup.okhttp3:okhttp:3.14.9'
   implementation 'com.google.code.gson:gson:2.8.6'
 
   // Fixes

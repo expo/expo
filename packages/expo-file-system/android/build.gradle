@@ -88,6 +88,9 @@ dependencies {
   compileOnly 'com.squareup.okhttp3:okhttp:3.10.0'
   compileOnly 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
   compileOnly 'com.squareup.okio:okio:1.17.5'
+  testApi 'com.squareup.okhttp3:okhttp:3.10.0'
+  testApi 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+  testApi 'com.squareup.okio:okio:1.17.5'
   api "androidx.legacy:legacy-support-v4:1.0.0"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"

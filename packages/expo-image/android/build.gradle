@@ -96,6 +96,7 @@ dependencies {
 
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
   compileOnly "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
+  testApi "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"

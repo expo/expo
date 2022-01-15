@@ -114,6 +114,10 @@ dependencies {
   compileOnly("com.squareup.okhttp3:okhttp:3.12.1")
   compileOnly("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
   compileOnly("com.squareup.okio:okio:1.15.0")
+  testImplementation("com.squareup.okhttp3:okhttp:3.12.1")
+  testImplementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
+  testImplementation("com.squareup.okio:okio:1.15.0")
+
   implementation("commons-codec:commons-codec:1.10")
   implementation("commons-io:commons-io:2.6")
   implementation("commons-fileupload:commons-fileupload:1.4")
