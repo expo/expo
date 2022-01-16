@@ -43,10 +43,10 @@ public protocol EnumArgument: AnyArgument {
 public extension EnumArgument where Self: RawRepresentable, Self: Hashable {
   static func create<ArgType>(fromRawValue rawValue: ArgType) throws -> Self {
     guard let rawValue = rawValue as? RawValue else {
-      throw EnumCastingError(type: RawValue.self, value: rawValue)
+      throw EnumCastingException((type: RawValue.self, value: rawValue))
     }
     guard let enumCase = Self.init(rawValue: rawValue) else {
-      throw EnumNoSuchValueError(type: Self.self, value: rawValue)
+      throw EnumNoSuchValueException((type: Self.self, value: rawValue))
     }
     return enumCase
   }
@@ -75,31 +75,25 @@ public extension EnumArgument where Self: RawRepresentable, Self: Hashable {
 }
 
 /**
- An error that is thrown when the value cannot be casted to associated `RawValue`.
+ An error that is thrown when the value cannot be cast to associated `RawValue`.
  */
-internal struct EnumCastingError: CodedError {
-  let type: Any.Type
-  let value: Any
-
-  var description: String {
-    "Cannot cast value `\(value)` to expected type `\(type)`"
+internal class EnumCastingException: GenericException<(type: Any.Type, value: Any)> {
+  override var reason: String {
+    "Unable to cast '\(param.value)' to expected type \(param.type)"
   }
 }
 
 /**
  An error that is thrown when the value doesn't match any available case.
  */
-internal struct EnumNoSuchValueError: CodedError {
-  let type: EnumArgument.Type
-  let value: Any
-
+internal class EnumNoSuchValueException: GenericException<(type: EnumArgument.Type, value: Any)> {
   var allRawValuesFormatted: String {
-    return type.allRawValues
-      .map { "`\($0)`" }
+    return param.type.allRawValues
+      .map { "'\($0)'" }
       .joined(separator: ", ")
   }
 
-  var description: String {
-    "Cannot create `\(type)` enum from value `\(value)`. It must be one of: \(allRawValuesFormatted)"
+  override var reason: String {
+    "'\(param.value)' is not present in \(param.type) enum, it must be one of: \(allRawValuesFormatted)"
   }
 }

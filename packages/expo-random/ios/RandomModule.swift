@@ -26,6 +26,6 @@ private func getRandomBase64String(length: Int) throws -> String {
 
 private class FailedGeneratingRandomBytesException: GenericException<OSStatus> {
   override var reason: String {
-    "Generating random bytes has failed with OSStatus code: \(params)"
+    "Generating random bytes has failed with OSStatus code: \(param)"
   }
 }

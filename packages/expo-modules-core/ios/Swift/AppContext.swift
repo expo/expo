@@ -148,9 +148,11 @@ public final class AppContext {
     moduleRegistry.post(event: .appContextDestroys)
   }
 
-  // MARK: Errors
+  // MARK: - Exceptions
 
-  struct DeallocatedAppContextError: CodedError {
-    var description: String = "The app context has been deallocated."
+  class DeallocatedAppContextException: Exception {
+    override var reason: String {
+      "The app context has been deallocated"
+    }
   }
 }

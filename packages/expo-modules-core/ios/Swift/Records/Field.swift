@@ -90,16 +90,15 @@ public final class Field<Type>: AnyFieldInternal {
 
 internal class FieldRequiredException: GenericException<String> {
   override var reason: String {
-    "Value for field '\(params)' is required, got nil."
+    "Value for field '\(param)' is required, got nil"
   }
 }
 
 internal class FieldInvalidTypeException: GenericException<(fieldKey: String, value: Any?, desiredType: Any.Type)> {
   override var reason: String {
-    let value = String(describing: params.value!)
-    let valueType = type(of: params.value!)
-    let desiredType = String(describing: params.desiredType)
+    let value = String(describing: param.value ?? "null")
+    let desiredType = String(describing: param.desiredType)
 
-    return "Cannot cast value '\(value)' (\(valueType)) for field '\(params.fieldKey)' (\(desiredType))"
+    return "Cannot cast '\(value)' for field '\(param.fieldKey)' of type \(desiredType)"
   }
 }
