@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix: release build won't install on Android 12. ([#15429](https://github.com/expo/expo/pull/15429) by [@zhigang1992](https://github.com/zhigang1992))
+
 ### 💡 Others
 
 ## 0.9.0 — 2021-12-22
