@@ -53,6 +53,8 @@ class DevLauncherUncaughtExceptionHandler(
 
     exceptionWasReported = true
     Log.e("DevLauncher", "DevLauncher tries to handle uncaught exception.", exception)
+    tryToSaveException(exception)
+
     applicationHolder.get()?.let {
       DevLauncherErrorActivity.showFatalError(
         it,
@@ -83,5 +85,11 @@ class DevLauncherUncaughtExceptionHandler(
         exitProcess(0)
       }
     }
+  }
+
+  private fun tryToSaveException(exception: Throwable) {
+    val context = DevLauncherKoinContext.app.koin.getOrNull<Context>() ?: return
+    val errorRegistry = DevLauncherErrorRegistry(context)
+    errorRegistry.storeException(exception)
   }
 }
