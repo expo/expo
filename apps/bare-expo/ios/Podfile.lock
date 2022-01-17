@@ -142,11 +142,13 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
+    - hermes-engine
     - Nimble
     - OHHTTPStubs
     - Quick
     - React-Core
     - React-CoreModules
+    - React-hermes
   - expo-dev-launcher/Unsafe (0.10.0):
     - EXManifests
     - expo-dev-menu
@@ -194,12 +196,16 @@ PODS:
     - Yoga
   - expo-dev-menu/SafeAreaView (0.9.0)
   - expo-dev-menu/Tests (0.9.0):
+    - hermes-engine
     - Nimble
     - Quick
     - React-CoreModules
+    - React-hermes
   - expo-dev-menu/UITests (0.9.0):
+    - hermes-engine
     - React
     - React-CoreModules
+    - React-hermes
   - expo-dev-menu/Vendored (0.9.0):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
@@ -1324,8 +1330,8 @@ SPEC CHECKSUMS:
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
   expo-dev-client: c0116deee06925cb80157dc1773c8e9e2cc8a3e2
-  expo-dev-launcher: 72ba55279ff01fce311caed10e2af94c7ea1ad30
-  expo-dev-menu: 5edb61593458973c6a4b4a14548922eb217c71aa
+  expo-dev-launcher: 506cd66f30735eb4212d9700dccaa0f6f3fd7ba1
+  expo-dev-menu: 072c7b146f89a6e95a6d1cd4af856eb0b37593b2
   expo-dev-menu-interface: 8562bfafa19d01531694ab492fc93f598f8c8d7b
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
