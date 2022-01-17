@@ -30,7 +30,7 @@ const renderClass = (
   classCount: number
 ): JSX.Element => {
   const properties = children?.filter(
-    child => child.kind === TypeDocKind.Property && !child.overwrites
+    child => child.kind === TypeDocKind.Property && !child.overwrites && !child.name.startsWith('_')
   );
   const methods = children?.filter(child => child.kind === TypeDocKind.Method && !child.overwrites);
   return (

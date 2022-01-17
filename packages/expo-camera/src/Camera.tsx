@@ -3,18 +3,13 @@ import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 
 import {
-  BarCodeScanningResult,
   CameraCapturedPicture,
-  CameraMountError,
-  CameraNativeProps,
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
+  CameraType,
   ConstantsType,
-  FaceDetectionResult,
-  PermissionExpiration,
   PermissionResponse,
-  PermissionStatus,
   VideoCodec,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
@@ -69,6 +64,12 @@ function _onPictureSaved({
 }
 
 export default class Camera extends React.Component<CameraProps> {
+  /**
+   * Check whether the current device has a camera. This is useful for web and simulators cases.
+   * This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser).
+   * You will still need to check if the native permission has been accepted.
+   * @platform web
+   */
   static async isAvailableAsync(): Promise<boolean> {
     if (!CameraManager.isAvailableAsync) {
       throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
@@ -77,7 +78,11 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.isAvailableAsync();
   }
 
-  static async getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]> {
+  /**
+   * Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
+   * @platform web
+   */
+  static async getAvailableCameraTypesAsync(): Promise<CameraType[]> {
     if (!CameraManager.getAvailableCameraTypesAsync) {
       throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
     }
@@ -85,7 +90,13 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailableCameraTypesAsync();
   }
 
-  static async getAvailableVideoCodecsAsync(): Promise<string[]> {
+  // @needsAudit
+  /**
+   * Queries the device for the available video codecs that can be used in video recording.
+   * @return A promise that resolves to a list of strings that represents available codecs.
+   * @platform ios
+   */
+  static async getAvailableVideoCodecsAsync(): Promise<VideoCodec[]> {
     if (!CameraManager.getAvailableVideoCodecsAsync) {
       throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
     }
@@ -117,8 +128,10 @@ export default class Camera extends React.Component<CameraProps> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
+  // @needsAudit
   /**
-   * @deprecated Use `getCameraPermissionsAync` or `getMicrophonePermissionsAsync` instead.
+   * @deprecated Deprecated. Use `getCameraPermissionsAsync` or `getMicrophonePermissionsAsync` instead.
+   * Checks user's permissions for accessing camera.
    */
   static async getPermissionsAsync(): Promise<PermissionResponse> {
     console.warn(
@@ -127,7 +140,11 @@ export default class Camera extends React.Component<CameraProps> {
     return CameraManager.getPermissionsAsync();
   }
 
+  // @needsAudit
   /**
+   * Asks the user to grant permissions for accessing camera.
+   * On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the **Info.plist**.
+   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
    * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
    */
   static async requestPermissionsAsync(): Promise<PermissionResponse> {
@@ -137,10 +154,21 @@ export default class Camera extends React.Component<CameraProps> {
     return CameraManager.requestPermissionsAsync();
   }
 
+  // @needsAudit
+  /**
+   * Checks user's permissions for accessing camera.
+   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+   */
   static async getCameraPermissionsAsync(): Promise<PermissionResponse> {
     return CameraManager.getCameraPermissionsAsync();
   }
 
+  // @needsAudit
+  /**
+   * Asks the user to grant permissions for accessing camera.
+   * On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the **Info.plist**.
+   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+   */
   static async requestCameraPermissionsAsync(): Promise<PermissionResponse> {
     return CameraManager.requestCameraPermissionsAsync();
   }
@@ -160,10 +188,21 @@ export default class Camera extends React.Component<CameraProps> {
     requestMethod: Camera.requestCameraPermissionsAsync,
   });
 
+  // @needsAudit
+  /**
+   * Checks user's permissions for accessing microphone.
+   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+   */
   static async getMicrophonePermissionsAsync(): Promise<PermissionResponse> {
     return CameraManager.getMicrophonePermissionsAsync();
   }
 
+  // @needsAudit
+  /**
+   * Asks the user to grant permissions for accessing the microphone.
+   * On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the **Info.plist**.
+   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+   */
   static async requestMicrophonePermissionsAsync(): Promise<PermissionResponse> {
     return CameraManager.requestMicrophonePermissionsAsync();
   }
@@ -188,12 +227,38 @@ export default class Camera extends React.Component<CameraProps> {
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
+  // @needsAudit
+  /**
+   * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
+   * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview. Anyway on Android it is essential
+   * to set ratio prop to get a picture with correct dimensions.
+   * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
+   * @param options An object in form of `CameraPictureOptions` type.
+   * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on iOS,
+   * Android, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
+   * the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
+   * of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
+   * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
+   * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+   *
+   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
+   * > to make a permanent copy of the image.
+   *
+   * > On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser.
+   * > The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings),
+   * > if available.
+   */
   async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture> {
     const pictureOptions = ensurePictureOptions(options);
 
     return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
   }
 
+  /**
+   * Get aspect ratios that are supported by the device and can be passed via `ratio` prop.
+   * @return Returns a Promise that resolves to an array of strings representing ratios, eg. `['4:3', '1:1']`.
+   * @platform android
+   */
   async getSupportedRatiosAsync(): Promise<string[]> {
     if (!CameraManager.getSupportedRatios) {
       throw new UnavailabilityError('Camera', 'getSupportedRatiosAsync');
@@ -202,6 +267,12 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getSupportedRatios(this._cameraHandle);
   }
 
+  /**
+   * Get picture sizes that are supported by the device for given `ratio`.
+   * @param ratio A string representing aspect ratio of sizes to be returned.
+   * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
+   * The list varies across Android devices but is the same for every iOS.
+   */
   async getAvailablePictureSizesAsync(ratio?: string): Promise<string[]> {
     if (!CameraManager.getAvailablePictureSizes) {
       throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
@@ -209,6 +280,15 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
+  /**
+   * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
+   * Flipping camera during a recording results in stopping it.
+   * @param options A map of `CameraRecordingOptions` type.
+   * @return Returns a Promise that resolves to an object containing video file `uri` property and a `codec` property on iOS.
+   * The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
+   * @platform android
+   * @platform ios
+   */
   async recordAsync(
     options?: CameraRecordingOptions
   ): Promise<{ uri: string; codec?: VideoCodec }> {
@@ -220,6 +300,9 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.record(recordingOptions, this._cameraHandle);
   }
 
+  /**
+   * Stops recording if any is in progress.
+   */
   stopRecording() {
     if (!CameraManager.stopRecording) {
       throw new UnavailabilityError('Camera', 'stopRecording');
@@ -228,6 +311,9 @@ export default class Camera extends React.Component<CameraProps> {
     CameraManager.stopRecording(this._cameraHandle);
   }
 
+  /**
+   * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+   */
   pausePreview() {
     if (!CameraManager.pausePreview) {
       throw new UnavailabilityError('Camera', 'pausePreview');
@@ -236,6 +322,9 @@ export default class Camera extends React.Component<CameraProps> {
     CameraManager.pausePreview(this._cameraHandle);
   }
 
+  /**
+   * Resumes the camera preview.
+   */
   resumePreview() {
     if (!CameraManager.resumePreview) {
       throw new UnavailabilityError('Camera', 'resumePreview');
@@ -322,17 +411,3 @@ export const {
   getMicrophonePermissionsAsync,
   requestMicrophonePermissionsAsync,
 } = Camera;
-
-export {
-  CameraCapturedPicture,
-  CameraNativeProps,
-  CameraPictureOptions,
-  CameraProps,
-  CameraRecordingOptions,
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  BarCodeScanningResult,
-  FaceDetectionResult,
-  CameraMountError,
-};
