@@ -18,6 +18,7 @@ export function TrackPageView({ id }: { id: string }) {
       window?.gtag?.('config', id, {
         page_path: url,
         transport_type: 'beacon',
+        anonymize_ip: true,
       });
     };
 
