@@ -60,12 +60,6 @@ android {
       }
     }
   }
-
-  configurations.all {
-    resolutionStrategy {
-      force "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
-    }
-  }
 }
 
 repositories {
@@ -95,10 +89,28 @@ dependencies {
   api 'com.caverock:androidsvg-aar:1.4'
 
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
-  compileOnly "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
-  testApi "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
+  api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 }
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.api.getDependencies().removeIf { it ->
+  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
+    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testApi', artifact)
+  configurations.all {
+    resolutionStrategy.force(artifact)
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue

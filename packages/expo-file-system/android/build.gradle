@@ -66,14 +66,6 @@ android {
   lintOptions {
     abortOnError false
   }
-
-  configurations.all {
-    resolutionStrategy {
-      force 'com.squareup.okhttp3:okhttp:3.10.0'
-      force 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-      force 'com.squareup.okio:okio:1.17.5'
-    }
-  }
 }
 
 repositories {
@@ -85,13 +77,29 @@ dependencies {
 
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:1.4'
-  compileOnly 'com.squareup.okhttp3:okhttp:3.10.0'
-  compileOnly 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-  compileOnly 'com.squareup.okio:okio:1.17.5'
-  testApi 'com.squareup.okhttp3:okhttp:3.10.0'
-  testApi 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-  testApi 'com.squareup.okio:okio:1.17.5'
+  api 'com.squareup.okhttp3:okhttp:3.10.0'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+  api 'com.squareup.okio:okio:1.17.5'
   api "androidx.legacy:legacy-support-v4:1.0.0"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 }
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.api.getDependencies().removeIf { it ->
+  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
+    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testApi', artifact)
+  configurations.all {
+    resolutionStrategy.force(artifact)
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue
