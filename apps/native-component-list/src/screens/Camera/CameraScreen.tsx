@@ -87,12 +87,12 @@ interface State {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default class CameraScreen extends React.Component<{}, State> {
   readonly state: State = {
-    flash: 'off',
+    flash: FlashMode.off,
     zoom: 0,
-    autoFocus: 'on',
+    autoFocus: AutoFocus.on,
     type: CameraType.back,
     depth: 0,
-    whiteBalance: 'auto',
+    whiteBalance: WhiteBalance.auto,
     ratio: '16:9',
     ratios: [],
     barcodeScanning: false,

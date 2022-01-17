@@ -1,4 +1,4 @@
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 import * as GL from 'expo-gl';
 import { GLView } from 'expo-gl';
 import * as Permissions from 'expo-permissions';
@@ -39,7 +39,7 @@ class GLCameraScreen extends React.Component<{}, State> {
 
   readonly state: State = {
     zoom: 0,
-    type: Camera.Constants.Type.back,
+    type: CameraType.back,
   };
 
   _rafID?: number;
