@@ -78,10 +78,12 @@ function appendContents({
   return { contents: src, didClear: false, didMerge: false };
 }
 
-const withCamera: ConfigPlugin<{
-  cameraPermission?: string;
-  microphonePermission?: string;
-} | void> = (config, { cameraPermission, microphonePermission } = {}) => {
+const withCamera: ConfigPlugin<
+  {
+    cameraPermission?: string;
+    microphonePermission?: string;
+  } | void
+> = (config, { cameraPermission, microphonePermission } = {}) => {
   config = withInfoPlist(config, (config) => {
     config.modResults.NSCameraUsageDescription =
       cameraPermission || config.modResults.NSCameraUsageDescription || CAMERA_USAGE;

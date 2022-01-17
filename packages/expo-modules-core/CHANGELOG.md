@@ -6,18 +6,28 @@
 
 ### 🎉 New features
 
+- Allow accessing `RCTBridge` from the modules on iOS. ([#15816](https://github.com/expo/expo/pull/15816) by [@tsapeta](https://github.com/tsapeta))
 - Added support for native callbacks through the view props in Sweet API on iOS. ([#15731](https://github.com/expo/expo/pull/15731) by [@tsapeta](https://github.com/tsapeta))
 - Added support for native callbacks through the view props in Sweet API on Android. ([#15743](https://github.com/expo/expo/pull/15743) by [@lukmccall](https://github.com/lukmccall))
 - The `ModuleDefinition` will use class name if the `name` component wasn't provided in Sweet API on Android. ([#15738](https://github.com/expo/expo/pull/15738) by [@lukmccall](https://github.com/lukmccall))
 - Added `onViewDestroys` component to the `ViewManager` in Sweet API on Android. ([#15740](https://github.com/expo/expo/pull/15740) by [@lukmccall](https://github.com/lukmccall))
 - Added shortened `constants` component that takes `vargs Pair<String, Any?>` as an argument in Sweet API on Android. ([#15742](https://github.com/expo/expo/pull/15742) by [@lukmccall](https://github.com/lukmccall))
+- Introduced the concept of chainable exceptions in Sweet API on iOS. ([#15813](https://github.com/expo/expo/pull/15813) by [@tsapeta](https://github.com/tsapeta))
+- Sweet function closures can throw errors on iOS. ([#15849](https://github.com/expo/expo/pull/15849) by [@tsapeta](https://github.com/tsapeta))
+- Add `requireNativeModule` function to replace accessing native modules from `NativeModulesProxy`. ([#15848](https://github.com/expo/expo/pull/15848) by [@tsapeta](https://github.com/tsapeta))
+- Implemented basic functionality of JSI host object to replace `NativeModulesProxy` on iOS. ([#15847](https://github.com/expo/expo/pull/15847) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - It's no longer possible to directly call methods from the `ModuleDefinition` in the `ViewManagers` on Android. ([#15741](https://github.com/expo/expo/pull/15741) by [@lukmccall](https://github.com/lukmccall))
-- Fix `ReactInstanceManager.onHostPause` exception from moving Android apps to background. ([#15748](https://github.com/expo/expo/pull/15748) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 0.6.4 — 2022-01-05
+
+### 🐛 Bug fixes
+
+- Fix `ReactInstanceManager.onHostPause` exception from moving Android apps to background. ([#15748](https://github.com/expo/expo/pull/15748) by [@kudo](https://github.com/kudo))
 
 ## 0.6.3 — 2021-12-16
 

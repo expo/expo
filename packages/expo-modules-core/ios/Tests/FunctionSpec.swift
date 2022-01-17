@@ -152,9 +152,8 @@ class FunctionSpec: QuickSpec {
         // Function expects one argument, let's give it more.
         .call(function: functionName, args: [1, 2]) { _, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(InvalidArgsNumberError.self))
-          expect(error?.code).to(equal("ERR_INVALID_ARGS_NUMBER"))
-          expect(error?.description).to(equal(InvalidArgsNumberError(received: 2, expected: 1).description))
+          expect(error).to(beAKindOf(FunctionCallException.self))
+          expect((error as! Exception).isCausedBy(InvalidArgsNumberException.self)) == true
           done()
         }
       }
@@ -170,9 +169,8 @@ class FunctionSpec: QuickSpec {
         // Function expects a string, let's give it a number.
         .call(function: functionName, args: [1]) { value, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(Conversions.CastingError<String>.self))
-          expect(error?.code).to(equal("ERR_CASTING_FAILED"))
-          expect(error?.description).to(equal(Conversions.CastingError<String>(value: 1).description))
+          expect(error).to(beAKindOf(FunctionCallException.self))
+          expect((error as! Exception).isCausedBy(Conversions.CastingException<String>.self)) == true
           done()
         }
       }

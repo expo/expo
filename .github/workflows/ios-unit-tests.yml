@@ -37,6 +37,7 @@ concurrency:
 jobs:
   build:
     runs-on: macos-11
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v2
         with:
@@ -86,5 +87,17 @@ jobs:
       - name: 🥥 Install CocoaPods in `ios`
         run: pod install
         working-directory: ios
+      - name: Restore apps/bare-expo/ios/Pods from cache
+        uses: actions/cache@v2
+        id: pods-cache-bare-expo
+        with:
+          path: 'apps/bare-expo/ios/Pods'
+          key: ${{ runner.os }}-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+          # restore-keys: |
+          #   ${{ runner.os }}-pods-
+      - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
+        run: pod install
+        working-directory: apps/bare-expo/ios
       - name: Run native iOS unit tests
+        timeout-minutes: 45
         run: expotools native-unit-tests --platform ios

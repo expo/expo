@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- The module on iOS is now written in Swift and uses JSI host object instead of the bridge module for communication between JavaScript and native code. ([#15875](https://github.com/expo/expo/pull/15875) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

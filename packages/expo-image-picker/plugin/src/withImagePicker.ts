@@ -42,11 +42,13 @@ const withImagePickerManifestActivity: ConfigPlugin = (config) => {
   });
 };
 
-const withImagePicker: ConfigPlugin<{
-  photosPermission?: string;
-  cameraPermission?: string;
-  microphonePermission?: string;
-} | void> = (config, { photosPermission, cameraPermission, microphonePermission } = {}) => {
+const withImagePicker: ConfigPlugin<
+  {
+    photosPermission?: string;
+    cameraPermission?: string;
+    microphonePermission?: string;
+  } | void
+> = (config, { photosPermission, cameraPermission, microphonePermission } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSPhotoLibraryUsageDescription =

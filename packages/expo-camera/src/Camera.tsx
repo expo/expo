@@ -9,8 +9,7 @@ import {
   CameraRecordingOptions,
   CameraType,
   ConstantsType,
-  PermissionResponse,
-  VideoCodec,
+  PermissionResponse
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import CameraManager from './ExponentCameraManager';
@@ -289,9 +288,7 @@ export default class Camera extends React.Component<CameraProps> {
    * @platform android
    * @platform ios
    */
-  async recordAsync(
-    options?: CameraRecordingOptions
-  ): Promise<{ uri: string; codec?: VideoCodec }> {
+  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string }> {
     if (!CameraManager.record) {
       throw new UnavailabilityError('Camera', 'recordAsync');
     }

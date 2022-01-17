@@ -76,27 +76,29 @@ public final class Field<Type>: AnyFieldInternal {
    */
   internal func set(_ newValue: Any?) throws {
     if newValue == nil && (!isOptional || isRequired) {
-      throw FieldRequiredError(fieldKey: key!)
+      throw FieldRequiredException(key!)
     }
-    guard let value = try? fieldType.cast(newValue) as? Type else {
-      throw FieldInvalidTypeError(fieldKey: key!, value: newValue, desiredType: Type.self)
+    do {
+      if let value = try fieldType.cast(newValue) as? Type {
+        wrappedValue = value
+      }
+    } catch {
+      throw FieldInvalidTypeException((fieldKey: key!, value: newValue, desiredType: Type.self)).causedBy(error)
     }
-    wrappedValue = value
   }
 }
 
-internal struct FieldRequiredError: CodedError {
-  let fieldKey: String
-  var description: String {
-    "Value for field `\(fieldKey)` is required, got `nil`"
+internal class FieldRequiredException: GenericException<String> {
+  override var reason: String {
+    "Value for field '\(param)' is required, got nil"
   }
 }
 
-internal struct FieldInvalidTypeError: CodedError {
-  let fieldKey: String
-  let value: Any?
-  let desiredType: Any.Type
-  var description: String {
-    "Cannot cast value `\(String(describing: value!))` (\(type(of: value!))) for field `\(fieldKey)` (\(String(describing: desiredType)))"
+internal class FieldInvalidTypeException: GenericException<(fieldKey: String, value: Any?, desiredType: Any.Type)> {
+  override var reason: String {
+    let value = String(describing: param.value ?? "null")
+    let desiredType = String(describing: param.desiredType)
+
+    return "Cannot cast '\(value)' for field '\(param.fieldKey)' of type \(desiredType)"
   }
 }

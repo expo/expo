@@ -90,7 +90,7 @@ jobs:
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -156,26 +156,17 @@ version: 2.1
 executors:
   default:
     docker:
-      - image: circleci/node:16
+      - image: cimg/node:lts
     working_directory: ~/my-app
-
-commands:
-  attach_project:
-    steps:
-      - attach_workspace:
-          at: ~/my-app
 
 jobs:
   eas_build:
     executor: default
     steps:
       - checkout
-      - attach_project
-
       - run:
           name: Install dependencies
           command: npm ci
-
       - run:
           name: Trigger build
           command: npx eas-cli build --platform all --non-interactive

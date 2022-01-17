@@ -27,7 +27,7 @@ buildscript {
     }
     dependencies {
       classpath 'com.android.tools.build:gradle:3.4.1'
-      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
     }
   }
 }
@@ -92,6 +92,6 @@ dependencies {
   api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 }

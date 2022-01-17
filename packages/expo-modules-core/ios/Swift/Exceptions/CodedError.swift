@@ -18,7 +18,7 @@ public extension CodedError {
    */
   var code: String {
     let className = String(describing: type(of: self))
-      .replacingOccurrences(of: #"(Error)?(<.*>)?$"#, with: "", options: .regularExpression)
+      .replacingOccurrences(of: #"(Error|Exception)?(<.*>)?$"#, with: "", options: .regularExpression)
     let regex = try! NSRegularExpression(pattern: "(.)([A-Z])", options: [])
     let range = NSRange(location: 0, length: className.count)
 
@@ -46,16 +46,5 @@ public struct SimpleCodedError: CodedError {
   init(_ code: String, _ description: String) {
     self.code = code
     self.description = description
-  }
-}
-
-/**
- Coded wrapper for uncoded errors. Intended to be used to handle unexpected native errors.
- */
-public struct UnexpectedError: CodedError {
-  public let description: String
-
-  init(_ error: Error) {
-    self.description = error.localizedDescription
   }
 }

@@ -1,8 +1,8 @@
 'use strict';
 
-import { Platform } from 'expo-modules-core';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
+import { Platform } from 'expo-modules-core';
 import * as SQLite from 'expo-sqlite';
 
 export const name = 'SQLite';
@@ -14,7 +14,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -77,7 +77,7 @@ export function test(t) {
           const db = SQLite.openDatabase('downloaded.db');
           await new Promise((resolve, reject) => {
             db.transaction(
-              tx => {
+              (tx) => {
                 const onError = (tx, error) => reject(error);
                 tx.executeSql(
                   'SELECT * FROM Users',
@@ -104,7 +104,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -152,7 +152,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -198,7 +198,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -243,7 +243,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -290,7 +290,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -314,8 +314,7 @@ export function test(t) {
       });
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
-            const nop = () => {};
+          (tx) => {
             const onError = (tx, error) => reject(error);
             tx.executeSql(
               'DELETE FROM Users WHERE name=?',
@@ -355,7 +354,7 @@ export function test(t) {
         db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {});
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -394,7 +393,7 @@ export function test(t) {
         });
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
               tx.executeSql('PRAGMA foreign_keys=on;', [], nop, onError);

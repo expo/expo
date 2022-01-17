@@ -42,7 +42,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   XCTAssert([EXUpdatesNewUpdate updateWithNewManifest:manifest
                                       manifestHeaders:manifestHeaders
                                            extensions:@{}
@@ -60,7 +61,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest
                                             manifestHeaders:manifestHeaders
                                                  extensions:@{}
@@ -78,7 +80,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest
                                             manifestHeaders:manifestHeaders
                                                  extensions:@{}
@@ -96,7 +99,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest
                                             manifestHeaders:manifestHeaders
                                                  extensions:@{}
@@ -114,7 +118,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest
                                             manifestHeaders:manifestHeaders
                                                  extensions:@{}

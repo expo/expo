@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 10.0.0 - 2022-01-06
+
+### 🛠 Breaking changes
+
+- Dropped support for Node 10 due to dependency upgrades. Also ESlint 7.28.x or newer is required. ([#15810](https://github.com/expo/expo/pull/15810) by [@ide](https://github.com/ide))
+- Bumped `@typescript-eslint/eslint-plugin` from 4.28.5 to 5.9.0 for ESLint 8.x support. Same with `@typescript-eslint/parser`. 
+- Bumped `"eslint-plugin-prettier` from 3.4.0 to 4.0.0
+
+### 🎉 New features
+
+- Added support for ESLint 8.x ([#15810](https://github.com/expo/expo/pull/15810) by [@ide](https://github.com/ide))
+- `react/react-in-jsx-scope` no longer reports errors (the rule is off) because React 17 no longer requires `react` to be imported.
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Bumped `@babel/eslint-parser` and `@babel/eslint-plugin` from 7.12.x to 7.16.5
+- Bumped `eslint-plugin-react` from 7.24.0 to 7.28.0 and `"eslint-plugin-react-hooks` from 4.2.0 to 4.3.0
+
 ## 9.0.0 — 2021-12-03
 
 ### 🛠 Breaking changes

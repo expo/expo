@@ -68,7 +68,6 @@ class DevMenuTests: XCTestCase {
     assertViewExists(text: "Host:")
     assertViewExists(text: "localhost:1234")
     assertViewExists(text: "JS Engine:")
-    assertViewExists(text: "JavaScriptCore")
   }
 
   func test_dev_menu_auto_launch() {

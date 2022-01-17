@@ -25,7 +25,7 @@ First, you’ll need to export all the static files of your update so they can b
 
 ## Hosting your static files
 
-Once you've exported your update's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to Github. You can enable [Github Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on Github, you'd do something like this:
+Once you've exported your update's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to GitHub. You can enable [GitHub Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on GitHub, you'd do something like this:
 
 ```
 # run this from your project directory

@@ -29,14 +29,13 @@ const withMediaLibraryExternalStorage: ConfigPlugin = (config) => {
   });
 };
 
-const withMediaLibrary: ConfigPlugin<{
-  photosPermission?: string;
-  savePhotosPermission?: string;
-  isAccessMediaLocationEnabled?: boolean;
-} | void> = (
-  config,
-  { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}
-) => {
+const withMediaLibrary: ConfigPlugin<
+  {
+    photosPermission?: string;
+    savePhotosPermission?: string;
+    isAccessMediaLocationEnabled?: boolean;
+  } | void
+> = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSPhotoLibraryUsageDescription =

@@ -73,6 +73,7 @@ export function test(t) {
 
     t.it('non-existant method fails', () => {
       t.expect(() => {
+        // eslint-disable-next-line import/namespace
         Segment.doesNotExist();
       }).toThrow();
     });

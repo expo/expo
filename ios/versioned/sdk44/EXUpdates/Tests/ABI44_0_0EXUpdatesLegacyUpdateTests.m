@@ -40,7 +40,7 @@
 - (void)testBundledAssetBaseUrl_ExpoDomain
 {
   ABI44_0_0EXManifestsLegacyManifest *manifest = [[ABI44_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:@{}];
-  NSURL *expected = [NSURL URLWithString:@"https://d1wp6m56sqw74a.cloudfront.net/~assets/"];
+  NSURL *expected = [NSURL URLWithString:@"https://classic-assets.eascdn.net/~assets/"];
   XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test"}]]]);
   XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://expo.io/@test/test"}]]]);
   XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://expo.test/@test/test"}]]]);
@@ -49,7 +49,7 @@
 - (void)testBundledAssetBaseUrl_ExpoSubdomain
 {
   ABI44_0_0EXManifestsLegacyManifest *manifest = [[ABI44_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:@{}];
-  NSURL *expected = [NSURL URLWithString:@"https://d1wp6m56sqw74a.cloudfront.net/~assets/"];
+  NSURL *expected = [NSURL URLWithString:@"https://classic-assets.eascdn.net/~assets/"];
   XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://staging.exp.host/@test/test"}]]]);
   XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://staging.expo.io/@test/test"}]]]);
   XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://staging.expo.test/@test/test"}]]]);
