@@ -1,4 +1,4 @@
-import { getAccountUsername } from '@expo/config';
+import { ExpoConfig, getAccountUsername } from '@expo/config';
 import { compileModsAsync, ModPlatform } from '@expo/config-plugins';
 import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 
@@ -10,13 +10,13 @@ import {
   getOrPromptForPackage,
 } from '../utils/getOrPromptApplicationId';
 
-export default async function configureManagedProjectAsync({
+export async function configureProjectAsync({
   projectRoot,
   platforms,
 }: {
   projectRoot: string;
   platforms: ModPlatform[];
-}) {
+}): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
   if (platforms.includes('ios')) {
     // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.

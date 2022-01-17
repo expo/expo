@@ -1,3 +1,5 @@
+import { exit } from '../log';
+
 const ERROR_PREFIX = 'Error: ';
 
 /**
@@ -40,4 +42,12 @@ export class SilentError extends CommandError {
       this.name = messageOrError?.name ?? this.name;
     }
   }
+}
+
+export function logCmdError(error: Error): never {
+  if (error instanceof AbortCommandError || error instanceof SilentError) {
+    // Do nothing, this is used for prompts or other cases that were custom logged.
+    process.exit(0);
+  }
+  exit(error.toString());
 }

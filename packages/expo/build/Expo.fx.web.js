@@ -5,15 +5,16 @@ import { Platform } from 'expo-modules-core';
 // This conditional side-effect provides a more helpful error message for debugging.
 if (__DEV__) {
     // Use a wrapper `__DEV__` to remove this entire block in production.
-    if (// Only on web platforms.
-    Platform.OS === 'web' && // Skip mocking if someone is shimming this value out.
-    !('__fbBatchedBridgeConfig' in global)) {
+    if (
+    // Only on web platforms.
+    Platform.OS === 'web' &&
+        // Skip mocking if someone is shimming this value out.
+        !('__fbBatchedBridgeConfig' in global)) {
         Object.defineProperty(global, '__fbBatchedBridgeConfig', {
-            get () {
+            get() {
                 throw new Error("Your web project is importing a module from 'react-native' instead of 'react-native-web'. Learn more: https://expo.fyi/fb-batched-bridge-config-web");
-            }
+            },
         });
     }
 }
-
 //# sourceMappingURL=Expo.fx.web.js.map

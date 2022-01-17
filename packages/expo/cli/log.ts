@@ -1,3 +1,5 @@
+import { EXPO_DEBUG } from './utils/env';
+
 export function time(label?: string): void {
   console.time(label);
 }
@@ -16,6 +18,10 @@ export function warn(...message: string[]): void {
 
 export function log(...message: string[]): void {
   console.log(...message);
+}
+
+export function debug(...message: string[]): void {
+  if (EXPO_DEBUG) console.log(...message);
 }
 
 /** Log a message and exit the current process. If the `code` is non-zero then `console.error` will be used instead of `console.log`. */

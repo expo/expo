@@ -1,9 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import program from 'commander';
 
 import * as Log from '../log';
-import { EXPO_NO_GIT_STATUS } from './env';
+import { CI, EXPO_NO_GIT_STATUS } from './env';
 import { confirmAsync } from './prompts';
 
 export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
@@ -17,9 +16,9 @@ export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
 
   // Give people a chance to bail out if git working tree is dirty
   if (!isGitStatusClean) {
-    if (program.nonInteractive) {
+    if (CI) {
       Log.warn(
-        `Git status is dirty but the command will continue because nonInteractive is enabled.`
+        `Git status is dirty but the command will continue because the terminal is not interactive.`
       );
       return false;
     }

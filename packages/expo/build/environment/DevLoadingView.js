@@ -1,20 +1,22 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, UIManager, View } from 'react-native';
-var ref, ref1;
+import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, UIManager, View, } from 'react-native';
 export default function DevLoadingView() {
     const [isDevLoading, setIsDevLoading] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const translateY = useRef(new Animated.Value(0)).current;
-    const emitter = useMemo(()=>{
+    const emitter = useMemo(() => {
         try {
             return new NativeEventEmitter(NativeModules.DevLoadingView);
-        } catch (error) {
-            throw new Error('Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' + error.message);
+        }
+        catch (error) {
+            throw new Error('Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
+                error.message);
         }
     }, []);
-    useEffect(()=>{
-        if (!emitter) return;
-        function handleShowMessage({ message  }) {
+    useEffect(() => {
+        if (!emitter)
+            return;
+        function handleShowMessage({ message }) {
             // "Refreshing..." is the standard fast refresh message and it's the
             // only time we want to display this overlay.
             if (message !== 'Refreshing...') {
@@ -35,8 +37,8 @@ export default function DevLoadingView() {
                 toValue: 150,
                 delay: 1000,
                 duration: 350,
-                useNativeDriver: true
-            }).start(({ finished  })=>{
+                useNativeDriver: true,
+            }).start(({ finished }) => {
                 if (finished) {
                     setIsAnimating(false);
                     translateY.setValue(0);
@@ -49,65 +51,41 @@ export default function DevLoadingView() {
             emitter.removeListener('devLoadingView:showMessage', handleShowMessage);
             emitter.removeListener('devLoadingView:hide', handleHide);
         };
-    }, [
-        translateY,
-        emitter
-    ]);
+    }, [translateY, emitter]);
     if (isDevLoading || isAnimating) {
-        return(/*#__PURE__*/ React.createElement(Animated.View, {
-            style: [
-                styles.animatedContainer,
-                {
-                    transform: [
-                        {
-                            translateY
-                        }
-                    ]
-                }
-            ],
-            pointerEvents: "none"
-        }, /*#__PURE__*/ React.createElement(View, {
-            style: styles.banner
-        }, /*#__PURE__*/ React.createElement(View, {
-            style: styles.contentContainer
-        }, /*#__PURE__*/ React.createElement(View, {
-            style: {
-                flexDirection: 'row'
-            }
-        }, /*#__PURE__*/ React.createElement(Text, {
-            style: styles.text
-        }, isDevLoading ? 'Refreshing...' : 'Refreshed')), /*#__PURE__*/ React.createElement(View, {
-            style: {
-                flex: 1
-            }
-        }, /*#__PURE__*/ React.createElement(Text, {
-            style: styles.subtitle
-        }, isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"))))));
-    } else {
+        return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
+            React.createElement(View, { style: styles.banner },
+                React.createElement(View, { style: styles.contentContainer },
+                    React.createElement(View, { style: { flexDirection: 'row' } },
+                        React.createElement(Text, { style: styles.text }, isDevLoading ? 'Refreshing...' : 'Refreshed')),
+                    React.createElement(View, { style: { flex: 1 } },
+                        React.createElement(Text, { style: styles.subtitle }, isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"))))));
+    }
+    else {
         return null;
     }
-};
+}
 /**
  * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
  * The following code is lifted from: https://git.io/Jzk4k
  *
  * TODO: This will need to be updated for Fabric/TurboModules.
- **/ const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig('RNCSafeAreaProvider');
-const initialWindowMetrics = RNCSafeAreaProviderConfig === null || RNCSafeAreaProviderConfig === void 0 ? void 0 : (ref = RNCSafeAreaProviderConfig.Constants) === null || ref === void 0 ? void 0 : ref.initialWindowMetrics;
-var ref2;
+ **/
+const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig('RNCSafeAreaProvider');
+const initialWindowMetrics = RNCSafeAreaProviderConfig?.Constants?.initialWindowMetrics;
 const styles = StyleSheet.create({
     animatedContainer: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 42
+        zIndex: 42, // arbitrary
     },
     banner: {
         flex: 1,
         overflow: 'visible',
         backgroundColor: 'rgba(0,0,0,0.75)',
-        paddingBottom: (ref2 = initialWindowMetrics === null || initialWindowMetrics === void 0 ? void 0 : (ref1 = initialWindowMetrics.insets) === null || ref1 === void 0 ? void 0 : ref1.bottom) !== null && ref2 !== void 0 ? ref2 : 0
+        paddingBottom: initialWindowMetrics?.insets?.bottom ?? 0,
     },
     contentContainer: {
         flex: 1,
@@ -115,15 +93,14 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     text: {
         color: '#fff',
-        fontSize: 15
+        fontSize: 15,
     },
     subtitle: {
-        color: 'rgba(255,255,255,0.8)'
-    }
+        color: 'rgba(255,255,255,0.8)',
+    },
 });
-
 //# sourceMappingURL=DevLoadingView.js.map

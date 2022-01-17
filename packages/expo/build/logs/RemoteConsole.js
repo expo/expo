@@ -1,36 +1,9 @@
 import RemoteLogging from './RemoteLogging';
-function _defineProperty(obj, key, value) {
-    if (key in obj) {
-        Object.defineProperty(obj, key, {
-            value: value,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else {
-        obj[key] = value;
-    }
-    return obj;
-}
-function _objectSpread(target) {
-    for(var i = 1; i < arguments.length; i++){
-        var source = arguments[i] != null ? arguments[i] : {};
-        var ownKeys = Object.keys(source);
-        if (typeof Object.getOwnPropertySymbols === "function") {
-            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym) {
-                return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-            }));
-        }
-        ownKeys.forEach(function(key) {
-            _defineProperty(target, key, source[key]);
-        });
-    }
-    return target;
-}
 /**
  * Creates a console object that delegates calls to the specified underlying console and also sends
  * the messages to the development environment over a remote connection.
- */ export function createRemoteConsole(originalConsole) {
+ */
+export function createRemoteConsole(originalConsole) {
     let groupDepth = 0;
     const enhancedConsole = Object.create(originalConsole);
     // https://console.spec.whatwg.org/#debug
@@ -57,10 +30,12 @@ function _objectSpread(target) {
         const assertionMessage = 'Assertion failed';
         if (!data.length) {
             data.push(assertionMessage);
-        } else {
+        }
+        else {
             if (typeof data[0] !== 'string') {
                 data.unshift(assertionMessage);
-            } else {
+            }
+            else {
                 data[0] = `${assertionMessage}: ${data[0]}`;
             }
         }
@@ -81,9 +56,7 @@ function _objectSpread(target) {
             // @ts-ignore
             originalConsole.groupCollapsed(...data);
         }
-        _enqueueRemoteLog('info', {
-            groupCollapsed: true
-        }, data);
+        _enqueueRemoteLog('info', { groupCollapsed: true }, data);
         groupDepth++;
     };
     // https://console.spec.whatwg.org/#groupend
@@ -94,14 +67,13 @@ function _objectSpread(target) {
         if (groupDepth > 0) {
             groupDepth--;
         }
-        _enqueueRemoteLog('info', {
-            shouldHide: true
-        }, []);
+        _enqueueRemoteLog('info', { shouldHide: true }, []);
     };
     /**
-   * Defines a method in the `console.log()` family on the enhanced console
-   * instance
-   */ function _defineConsoleLogMethod(name, level) {
+     * Defines a method in the `console.log()` family on the enhanced console
+     * instance
+     */
+    function _defineConsoleLogMethod(name, level) {
         enhancedConsole[name] = function __expoConsoleLog(...data) {
             const originalMethod = originalConsole[name];
             if (typeof originalMethod === 'function') {
@@ -111,18 +83,16 @@ function _objectSpread(target) {
         };
     }
     /**
-   * Schedules the given log entry to be sent remotely in a safe way that handles all errors. This
-   * function is responsible for error handling because the console methods are synchronous but
-   * sending log messages is asynchronous, so this code (instead of the console methods) needs to be
-   * responsible for asynchronous errors.
-   */ function _enqueueRemoteLog(level, additionalFields, data) {
-        RemoteLogging.enqueueRemoteLogAsync(level, _objectSpread({
-            groupDepth
-        }, additionalFields), data).catch((error)=>{
+     * Schedules the given log entry to be sent remotely in a safe way that handles all errors. This
+     * function is responsible for error handling because the console methods are synchronous but
+     * sending log messages is asynchronous, so this code (instead of the console methods) needs to be
+     * responsible for asynchronous errors.
+     */
+    function _enqueueRemoteLog(level, additionalFields, data) {
+        RemoteLogging.enqueueRemoteLogAsync(level, { groupDepth, ...additionalFields }, data).catch((error) => {
             originalConsole.error(`There was a problem sending log messages to your development environment`, error);
         });
     }
     return enhancedConsole;
 }
-
 //# sourceMappingURL=RemoteConsole.js.map

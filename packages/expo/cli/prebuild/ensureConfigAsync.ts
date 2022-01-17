@@ -23,11 +23,8 @@ export async function ensureConfigExistsAsync(projectRoot: string) {
       // Remove the internal object before writing.
       delete config.exp._internal;
 
-      // Don't check for a custom config path because the process should fail if a custom file doesn't exist.
       // Write the generated config.
-      // writeConfigJsonAsync(projectRoot, config.exp);
       await JsonFile.writeAsync(
-        // TODO: Write to app.config.json because it's easier to convert to a js config file.
         path.join(projectRoot, 'app.json'),
         { expo: config.exp as unknown as JSONObject },
         { json5: false }

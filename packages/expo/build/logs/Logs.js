@@ -18,5 +18,4 @@ export function disableExpoCliLogging() {
         _originalConsole = null;
     }
 }
-
 //# sourceMappingURL=Logs.js.map

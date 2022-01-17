@@ -1,7 +1,7 @@
 import { getPackageJson, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 import crypto from 'crypto';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
@@ -10,39 +10,43 @@ import { logNewSection } from '../utils/ora';
 
 export type DependenciesMap = { [key: string]: string | number };
 
+export type PackageJsonModificationResults = DependenciesModificationResults & {
+  removedMainField: string | null;
+};
+
 export type DependenciesModificationResults = {
+  /** Indicates that new values were added to the `dependencies` object in the `package.json`. */
   hasNewDependencies: boolean;
+  /** Indicates that new values were added to the `devDependencies` object in the `package.json`. */
   hasNewDevDependencies: boolean;
 };
 
-export async function updatePackageJSONAsync({
-  projectRoot,
-  tempDir,
-  pkg,
-  skipDependencyUpdate,
-}: {
-  projectRoot: string;
-  tempDir: string;
-  pkg: PackageJSONConfig;
-  skipDependencyUpdate?: string[];
-}): Promise<DependenciesModificationResults> {
-  // NOTE(brentvatne): Removing spaces between steps for now, add back when
-  // there is some additional context for steps
+/** Modifies the `package.json` with `_modifyPackageJson` and format/displays the results. */
+export async function updatePackageJSONAsync(
+  projectRoot: string,
+  {
+    tempDir,
+    pkg,
+    skipDependencyUpdate,
+  }: {
+    tempDir: string;
+    pkg: PackageJSONConfig;
+    skipDependencyUpdate?: string[];
+  }
+): Promise<DependenciesModificationResults> {
   const updatingPackageJsonStep = logNewSection(
     'Updating your package.json scripts, dependencies, and main file'
   );
 
-  updatePackageJSONScripts({ pkg });
+  const templatePkg = getPackageJson(tempDir);
 
-  const results = updatePackageJSONDependencies({
-    projectRoot,
+  const results = _modifyPackageJson(projectRoot, {
+    templatePkg,
     pkg,
-    tempDir,
     skipDependencyUpdate,
   });
 
-  const removedPkgMain = updatePackageJSONEntryPoint({ pkg });
-  await fs.writeFile(
+  await fs.promises.writeFile(
     path.resolve(projectRoot, 'package.json'),
     // Add new line to match the format of running yarn.
     // This prevents the `package.json` from changing when running `prebuild --no-install` multiple times.
@@ -52,16 +56,54 @@ export async function updatePackageJSONAsync({
   updatingPackageJsonStep.succeed(
     'Updated package.json and added index.js entry point for iOS and Android'
   );
-  if (removedPkgMain) {
+
+  if (results.removedMainField) {
     Log.log(
       `\u203A Removed ${chalk.bold(
-        `"main": "${removedPkgMain}"`
-      )} from package.json because we recommend using index.js as main instead`
+        `"main": "${results.removedMainField}"`
+      )} from package.json because we recommend using index.js as main instead\n`
     );
-    Log.newLine();
   }
 
   return results;
+}
+
+/**
+ * Make required modifications to the `package.json` file as a JSON object.
+ *
+ * 1. Update `package.json` `scripts`.
+ * 2. Update `package.json` `dependencies` and `devDependencies`.
+ * 3. Update `package.json` `main`.
+ *
+ * @param projectRoot The root directory of the project.
+ * @param props.templatePkg Template project package.json as JSON.
+ * @param props.pkg Current package.json as JSON.
+ * @param props.skipDependencyUpdate Array of dependencies to skip updating.
+ * @returns
+ */
+function _modifyPackageJson(
+  projectRoot: string,
+  {
+    templatePkg,
+    pkg,
+    skipDependencyUpdate,
+  }: {
+    templatePkg: PackageJSONConfig;
+    pkg: PackageJSONConfig;
+    skipDependencyUpdate?: string[];
+  }
+): PackageJsonModificationResults {
+  updatePkgScripts({ pkg });
+
+  const results = updatePkgDependencies(projectRoot, {
+    pkg,
+    templatePkg,
+    skipDependencyUpdate,
+  });
+
+  const removedMainField = updatePkgMain({ pkg });
+
+  return { ...results, removedMainField };
 }
 
 /**
@@ -74,22 +116,25 @@ export async function updatePackageJSONAsync({
  *   with the ones in the template.
  * - The same applies to expo-updates -- since some native project configuration may depend on the
  *   version, we should always use the version of expo-updates in the template.
+ *
+ * > Exposed for testing.
  */
-export function updatePackageJSONDependencies({
-  projectRoot,
-  tempDir,
-  pkg,
-  skipDependencyUpdate = [],
-}: {
-  projectRoot: string;
-  tempDir: string;
-  pkg: PackageJSONConfig;
-  skipDependencyUpdate?: string[];
-}): DependenciesModificationResults {
+export function updatePkgDependencies(
+  projectRoot: string,
+  {
+    pkg,
+    templatePkg,
+    skipDependencyUpdate = [],
+  }: {
+    pkg: PackageJSONConfig;
+    templatePkg: PackageJSONConfig;
+    skipDependencyUpdate?: string[];
+  }
+): DependenciesModificationResults {
   if (!pkg.devDependencies) {
     pkg.devDependencies = {};
   }
-  const { dependencies, devDependencies } = getPackageJson(tempDir);
+  const { dependencies, devDependencies } = templatePkg;
   const defaultDependencies = createDependenciesMap(dependencies);
   const defaultDevDependencies = createDependenciesMap(devDependencies);
 
@@ -114,7 +159,7 @@ export function updatePackageJSONDependencies({
     ) {
       if (
         // Then ensure it isn't symlinked (i.e. the user has a custom version in their yarn workspace).
-        isModuleSymlinked({ projectRoot, moduleId: dependenciesKey, isSilent: true })
+        isModuleSymlinked(projectRoot, { moduleId: dependenciesKey, isSilent: true })
       ) {
         // If the package is in the project's package.json and it's symlinked, then skip overwriting it.
         symlinkedPackages.push(dependenciesKey);
@@ -148,11 +193,11 @@ export function updatePackageJSONDependencies({
   // Save the dependencies
   if (hasNewDependencies) {
     // Use Object.assign to preserve the original order of dependencies, this makes it easier to see what changed in the git diff.
-    pkg.dependencies = Object.assign(pkg.dependencies, combinedDependencies);
+    pkg.dependencies = Object.assign(pkg.dependencies ?? {}, combinedDependencies);
   }
   if (hasNewDevDependencies) {
     // Same as with dependencies
-    pkg.devDependencies = Object.assign(pkg.devDependencies, combinedDevDependencies);
+    pkg.devDependencies = Object.assign(pkg.devDependencies ?? {}, combinedDevDependencies);
   }
 
   return {
@@ -191,10 +236,10 @@ export function createDependenciesMap(dependencies: any): DependenciesMap {
 }
 
 /**
- * Update package.json scripts - `npm start` should default to `react-native
- * start` rather than `expo start` after ejecting, for example.
+ * Update package.json scripts - `npm start` should default to `expo
+ * start --dev-client` rather than `expo start` after ejecting, for example.
  */
-function updatePackageJSONScripts({ pkg }: { pkg: PackageJSONConfig }) {
+function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
   if (!pkg.scripts) {
     pkg.scripts = {};
   }
@@ -212,8 +257,8 @@ function updatePackageJSONScripts({ pkg }: { pkg: PackageJSONConfig }) {
 /**
  * Add new app entry points
  */
-function updatePackageJSONEntryPoint({ pkg }: { pkg: PackageJSONConfig }): boolean {
-  let removedPkgMain = false;
+function updatePkgMain({ pkg }: { pkg: PackageJSONConfig }): string | null {
+  let removedPkgMain: null | string = null;
   // Check that the pkg.main doesn't match:
   // - ./node_modules/expo/AppEntry
   // - ./node_modules/expo/AppEntry.js

@@ -2,6 +2,7 @@
 import arg from 'arg';
 import chalk from 'chalk';
 
+// TODO: Change to `start`
 const defaultCmd = 'config';
 
 export type Command = (argv?: string[]) => void;

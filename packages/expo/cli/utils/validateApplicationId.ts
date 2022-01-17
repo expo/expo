@@ -1,25 +1,43 @@
-import got from 'got';
+import assert from 'assert';
+import chalk from 'chalk';
+import fetch from 'node-fetch';
 
-import * as Log from '../log';
-import { learnMore } from './TerminalLink';
+import { learnMore } from './link';
 import { isUrlAvailableAsync } from './url';
 
+const IOS_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
+const ANDROID_PACKAGE_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
+
+/** Validate an iOS bundle identifier. */
 export function validateBundleId(value: string): boolean {
-  return /^[a-zA-Z0-9-.]+$/.test(value);
+  return IOS_BUNDLE_ID_REGEX.test(value);
 }
 
+/** Validate an Android package name. */
 export function validatePackage(value: string): boolean {
-  return /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(value);
+  return ANDROID_PACKAGE_REGEX.test(value);
+}
+
+export function assertValidBundleId(value: string) {
+  assert.match(
+    value,
+    IOS_BUNDLE_ID_REGEX,
+    `The ios.bundleIdentifier defined in your Expo config is not formatted properly. Only alphanumeric characters, '.', '-', and '_' are allowed, and each '.' must be followed by a letter.`
+  );
+}
+
+export function assertValidPackage(value: string) {
+  assert.match(
+    value,
+    ANDROID_PACKAGE_REGEX,
+    `Invalid format of Android package name. Only alphanumeric characters, '.' and '_' are allowed, and each '.' must be followed by a letter.`
+  );
 }
 
 const cachedBundleIdResults: Record<string, string> = {};
 const cachedPackageNameResults: Record<string, string> = {};
 
-/**
- * A quality of life method that provides a warning when the bundle ID is already in use.
- *
- * @param bundleId
- */
+/** Returns a warning message if an iOS bundle identifier is potentially already in use. */
 export async function getBundleIdWarningAsync(bundleId: string): Promise<string | null> {
   // Prevent fetching for the same ID multiple times.
   if (cachedBundleIdResults[bundleId]) {
@@ -33,8 +51,8 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
 
   const url = `http://itunes.apple.com/lookup?bundleId=${bundleId}`;
   try {
-    const response = await got(url);
-    const json = JSON.parse(response.body?.trim());
+    const response = await fetch(url);
+    const json = await response.json();
     if (json.resultCount > 0) {
       const firstApp = json.results[0];
       const message = formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);
@@ -47,6 +65,7 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
   return null;
 }
 
+/** Returns a warning message if an Android package name is potentially already in use. */
 export async function getPackageNameWarningAsync(packageName: string): Promise<string | null> {
   // Prevent fetching for the same ID multiple times.
   if (cachedPackageNameResults[packageName]) {
@@ -60,14 +79,14 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
 
   const url = `https://play.google.com/store/apps/details?id=${packageName}`;
   try {
-    const response = await got(url);
+    const response = await fetch(url);
     // If the page exists, then warn the user.
-    if (response.statusCode === 200) {
+    if (response.status === 200) {
       // There is no JSON API for the Play Store so we can't concisely
       // locate the app name and developer to match the iOS warning.
-      const message = `⚠️  The package ${Log.chalk.bold(
-        packageName
-      )} is already in use. ${Log.chalk.dim(learnMore(url))}`;
+      const message = `⚠️  The package ${chalk.bold(packageName)} is already in use. ${chalk.dim(
+        learnMore(url)
+      )}`;
       cachedPackageNameResults[packageName] = message;
       return message;
     }
@@ -78,7 +97,7 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
 }
 
 function formatInUseWarning(appName: string, author: string, id: string): string {
-  return `⚠️  The app ${Log.chalk.bold(appName)} by ${Log.chalk.italic(
+  return `⚠️  The app ${chalk.bold(appName)} by ${chalk.italic(
     author
-  )} is already using ${Log.chalk.bold(id)}`;
+  )} is already using ${chalk.bold(id)}`;
 }

@@ -1,12 +1,12 @@
 import { PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
+import { learnMore } from '../utils/link';
 import { logNewSection } from '../utils/ora';
-import { learnMore } from '../utils/TerminalLink';
 import { createFileHash } from './updatePackageJson';
 
 export function writeMetroConfig({
@@ -26,44 +26,72 @@ export function writeMetroConfig({
   const updatingMetroConfigStep = logNewSection('Adding Metro bundler config');
 
   try {
-    const sourceConfigPath = path.join(tempDir, 'metro.config.js');
-    const targetConfigPath = path.join(projectRoot, 'metro.config.js');
-    const targetConfigPathExists = fs.existsSync(targetConfigPath);
-    if (targetConfigPathExists) {
-      // Prevent re-runs from throwing an error if the metro config hasn't been modified.
-      const contents = createFileHash(fs.readFileSync(targetConfigPath, 'utf8'));
-      const targetContents = createFileHash(fs.readFileSync(sourceConfigPath, 'utf8'));
-      if (contents !== targetContents) {
-        throw new CommandError('Existing Metro config found; not overwriting.');
-      } else {
-        // Nothing to change, hide the step and exit.
-        updatingMetroConfigStep.stop();
-        updatingMetroConfigStep.clear();
-        return;
-      }
-    } else if (
-      fs.existsSync(path.join(projectRoot, 'metro.config.json')) ||
-      pkg.metro ||
-      fs.existsSync(path.join(projectRoot, 'rn-cli.config.js'))
-    ) {
-      throw new CommandError('Existing Metro config found; not overwriting.');
+    const didChange = copyTemplateMetroConfig(projectRoot, { pkg, tempDir });
+    if (!didChange) {
+      // Nothing to change, hide the step and exit.
+      updatingMetroConfigStep.stop();
+      updatingMetroConfigStep.clear();
+      return;
     }
-
-    fs.copySync(sourceConfigPath, targetConfigPath);
     updatingMetroConfigStep.succeed('Added Metro config');
   } catch (e) {
     updatingMetroConfigStep.stopAndPersist({
-      symbol: '⚠️ ',
-      text: chalk.yellow('Skipped Metro config updates:'),
+      symbol: chalk.yellow('›'),
+      text: chalk.yellow(chalk`{bold Metro skipped:} ${e.message}`),
     });
-    Log.nested(`\u203A ${e.message}`);
-    Log.nested(
-      `\u203A You will need to extend the default ${chalk.bold(
-        '@expo/metro-config'
-      )} in your Metro config.\n  ${Log.chalk.dim(
-        learnMore('https://docs.expo.dev/guides/customizing-metro')
-      )}`
+    // Log.log(`\u203A ${e.message}`);
+    Log.log(
+      chalk`\u203A Ensure the project uses {bold @expo/metro-config}.\n  {dim ${learnMore(
+        'https://docs.expo.dev/guides/customizing-metro'
+      )}}`
     );
-    Log.newLine();
   }
+}
+
+/**
+ * Detects if the project's existing `metro.config.js` matches the template, and if not,
+ * throws errors indicating what the user should do.
+ *
+ * > Exposed for testing.
+ *
+ * @returns Boolean indicating the `metro.config.js` changed.
+ */
+export function copyTemplateMetroConfig(
+  projectRoot: string,
+  {
+    pkg,
+    tempDir,
+  }: {
+    pkg: PackageJSONConfig;
+    tempDir: string;
+  }
+): boolean {
+  const sourceConfigPath = path.join(tempDir, 'metro.config.js');
+  const targetConfigPath = path.join(projectRoot, 'metro.config.js');
+  const targetConfigPathExists = fs.existsSync(targetConfigPath);
+  if (targetConfigPathExists) {
+    // Prevent re-runs from throwing an error if the metro config hasn't been modified.
+    const contents = createFileHash(fs.readFileSync(targetConfigPath, 'utf8'));
+    const targetContents = createFileHash(fs.readFileSync(sourceConfigPath, 'utf8'));
+    if (contents !== targetContents) {
+      throw new CommandError('Project metro.config.js does not match prebuild template.');
+    }
+    return false;
+  }
+
+  // We don't support legacy file names so just throw.
+  if (
+    fs.existsSync(path.join(projectRoot, 'metro.config.json')) ||
+    pkg.metro ||
+    fs.existsSync(path.join(projectRoot, 'rn-cli.config.js'))
+  ) {
+    throw new CommandError(
+      'Project is using a legacy config system that cannot be extend automatically.'
+    );
+  }
+
+  // Finally, copy if nothing goes wrong.
+  fs.copyFileSync(sourceConfigPath, targetConfigPath);
+
+  return true;
 }

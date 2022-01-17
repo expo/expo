@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command } from '../../bin/cli';
 import * as Log from '../log';
 import { assertArgs, getProjectRoot } from '../utils/args';
+import { logCmdError } from '../utils/errors';
 import { configAsync } from './configAsync';
 
 export const expoConfig: Command = (argv) => {
@@ -48,7 +49,5 @@ export const expoConfig: Command = (argv) => {
     full: args['--full'],
     json: args['--json'],
     type: args['--type'],
-  }).catch((err) => {
-    Log.exit(err);
-  });
+  }).catch(logCmdError);
 };

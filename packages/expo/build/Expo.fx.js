@@ -10,24 +10,25 @@ import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import React from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 import DevAppContainer from './environment/DevAppContainer';
-var ref;
 // Represents an app running in the store client or an app built with the legacy `expo build` command.
 // `false` when running in bare workflow, custom dev clients, or `eas build`s (managed or bare).
 // This should be used to ensure code that _should_ exist is treated as such.
-const isManagedEnvironment = Constants.executionEnvironment === ExecutionEnvironment.Standalone || Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+const isManagedEnvironment = Constants.executionEnvironment === ExecutionEnvironment.Standalone ||
+    Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
 if (StyleSheet.setStyleAttributePreprocessor) {
     StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 }
 // Asserts if bare workflow isn't setup correctly.
-if ((ref = NativeModulesProxy.ExpoUpdates) === null || ref === void 0 ? void 0 : ref.isMissingRuntimeVersion) {
-    const message = 'expo-updates is installed but there is no runtime or SDK version configured. ' + "You'll need to configure one of these two properties in " + Platform.select({
-        ios: 'Expo.plist',
-        android: 'AndroidManifest.xml'
-    }) + ' before OTA updates will work properly.';
+if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
+    const message = 'expo-updates is installed but there is no runtime or SDK version configured. ' +
+        "You'll need to configure one of these two properties in " +
+        Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +
+        ' before OTA updates will work properly.';
     if (__DEV__) {
         console.warn(message);
-    } else {
+    }
+    else {
         throw new Error(message);
     }
 }
@@ -37,20 +38,18 @@ if (__DEV__) {
     if (isManagedEnvironment && Platform.OS === 'ios') {
         // add the dev app container wrapper component on ios
         // @ts-ignore
-        AppRegistry.setWrapperComponentProvider(()=>DevAppContainer
-        );
+        AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
         // @ts-ignore
         const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
         // @ts-ignore
-        AppRegistry.setWrapperComponentProvider = (provider)=>{
+        AppRegistry.setWrapperComponentProvider = (provider) => {
             function PatchedProviderComponent(props) {
                 const ProviderComponent = provider();
-                return(/*#__PURE__*/ React.createElement(DevAppContainer, null, /*#__PURE__*/ React.createElement(ProviderComponent, Object.assign({}, props))));
+                return (React.createElement(DevAppContainer, null,
+                    React.createElement(ProviderComponent, { ...props })));
             }
-            originalSetWrapperComponentProvider(()=>PatchedProviderComponent
-            );
+            originalSetWrapperComponentProvider(() => PatchedProviderComponent);
         };
     }
 }
-
 //# sourceMappingURL=Expo.fx.js.map

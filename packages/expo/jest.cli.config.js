@@ -1,6 +1,6 @@
 const path = require('path');
 
-const roots = ['cli', 'bin'];
+const roots = ['__mocks__', 'cli', 'bin'];
 
 if (process.env.E2E) {
   // Only add E2E tests when explicitly enabled.

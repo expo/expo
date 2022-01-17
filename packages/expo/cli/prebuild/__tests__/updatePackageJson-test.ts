@@ -1,14 +1,11 @@
-import { getPackageJson } from '@expo/config';
-
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
 import {
   hashForDependencyMap,
   isPkgMainExpoAppEntry,
   shouldDeleteMainField,
-  updatePackageJSONDependencies,
+  updatePkgDependencies,
 } from '../updatePackageJson';
 
-jest.mock('@expo/config');
 jest.mock('../../utils/isModuleSymlinked');
 
 describe(hashForDependencyMap, () => {
@@ -48,7 +45,7 @@ describe(isPkgMainExpoAppEntry, () => {
   });
 });
 
-describe(updatePackageJSONDependencies, () => {
+describe(updatePkgDependencies, () => {
   beforeAll(() => {
     (isModuleSymlinked as any).mockImplementation(() => false);
   });
@@ -60,14 +57,6 @@ describe(updatePackageJSONDependencies, () => {
   };
 
   test('default bahaviour', () => {
-    (getPackageJson as any).mockImplementation(() => ({
-      dependencies: {
-        ...requiredPackages,
-        'optional-package': 'version-from-template-1',
-        'optional-package-2': 'version-from-template-2',
-      },
-      devDependencies: {},
-    }));
     const pkg = {
       dependencies: {
         'react-native': 'version-from-project',
@@ -76,7 +65,17 @@ describe(updatePackageJSONDependencies, () => {
       },
       devDependencies: {},
     };
-    updatePackageJSONDependencies({ projectRoot: 'fake path', tempDir: 'fake path', pkg });
+    updatePkgDependencies('fake path', {
+      templatePkg: {
+        dependencies: {
+          ...requiredPackages,
+          'optional-package': 'version-from-template-1',
+          'optional-package-2': 'version-from-template-2',
+        },
+        devDependencies: {},
+      },
+      pkg,
+    });
     expect(pkg.dependencies).toStrictEqual({
       ...requiredPackages,
       'optional-package': 'version-from-project-1',
@@ -85,15 +84,6 @@ describe(updatePackageJSONDependencies, () => {
     });
   });
   test('with skipDependencyUpdate', () => {
-    (getPackageJson as any).mockImplementation(() => ({
-      dependencies: {
-        ...requiredPackages,
-        'react-native': 'version-from-project',
-        'optional-package': 'version-from-template-1',
-        'optional-package-2': 'version-from-template-2',
-      },
-      devDependencies: {},
-    }));
     const pkg = {
       dependencies: {
         'react-native': 'version-from-project',
@@ -102,10 +92,17 @@ describe(updatePackageJSONDependencies, () => {
       },
       devDependencies: {},
     };
-    updatePackageJSONDependencies({
-      projectRoot: 'fake path',
-      tempDir: 'fake path',
+    updatePkgDependencies('fake path', {
       pkg,
+      templatePkg: {
+        dependencies: {
+          ...requiredPackages,
+          'react-native': 'version-from-project',
+          'optional-package': 'version-from-template-1',
+          'optional-package-2': 'version-from-template-2',
+        },
+        devDependencies: {},
+      },
       skipDependencyUpdate: ['react-native'],
     });
     expect(pkg.dependencies).toStrictEqual({
@@ -121,14 +118,6 @@ describe(updatePackageJSONDependencies, () => {
       react: 'version-from-template-required-1',
       'react-native': 'version-from-template-required-1',
     };
-    (getPackageJson as any).mockImplementation(() => ({
-      dependencies: {
-        ...sdk44RequiredPackages,
-        'optional-package': 'version-from-template-1',
-        'optional-package-2': 'version-from-template-2',
-      },
-      devDependencies: {},
-    }));
     const pkg = {
       dependencies: {
         'react-native': 'version-from-project',
@@ -137,7 +126,17 @@ describe(updatePackageJSONDependencies, () => {
       },
       devDependencies: {},
     };
-    updatePackageJSONDependencies({ projectRoot: 'fake path', tempDir: 'fake path', pkg });
+    updatePkgDependencies('fake path', {
+      templatePkg: {
+        dependencies: {
+          ...sdk44RequiredPackages,
+          'optional-package': 'version-from-template-1',
+          'optional-package-2': 'version-from-template-2',
+        },
+        devDependencies: {},
+      },
+      pkg,
+    });
     expect(pkg.dependencies).toStrictEqual({
       ...sdk44RequiredPackages,
       'optional-package': 'version-from-project-1',

@@ -44,7 +44,7 @@ it('runs `npx expo config --json`', async () => {
   await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
-  const results = await execute(projectName, 'config', '--json');
+  const results = await execute('config', projectName, '--json');
 
   console.log(results);
   // @ts-ignore
