@@ -127,10 +127,7 @@ class GLCameraScreen extends React.Component<{}, State> {
 
   toggleFacing = () => {
     this.setState((state) => ({
-      type:
-        state.type === Camera.Constants.Type.back
-          ? Camera.Constants.Type.front
-          : Camera.Constants.Type.back,
+      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
     }));
   };
 
