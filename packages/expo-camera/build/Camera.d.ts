@@ -134,7 +134,6 @@ export default class Camera extends React.Component<CameraProps> {
      */
     recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
-        codec?: VideoCodec;
     }>;
     /**
      * Stops recording if any is in progress.

@@ -9,7 +9,8 @@ import {
   CameraRecordingOptions,
   CameraType,
   ConstantsType,
-  PermissionResponse
+  PermissionResponse,
+  VideoCodec,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import CameraManager from './ExponentCameraManager';
