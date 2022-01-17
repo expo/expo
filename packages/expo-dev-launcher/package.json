@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
@@ -32,7 +32,7 @@
     "@expo/config-plugins": "^4.0.14",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5",
-    "expo-dev-menu": "0.9.0"
+    "expo-dev-menu": "0.9.1"
   },
   "devDependencies": {
     "@react-navigation/bottom-tabs": "^6.0.9",
