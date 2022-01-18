@@ -108,15 +108,12 @@ export declare type WebCameraSettings = Partial<{
     focusDistance: number;
     zoom: number;
 }>;
-export declare type CapturedPicture = {
+export declare type CameraCapturedPicture = {
     width: number;
     height: number;
     uri: string;
     base64?: string;
-    /**
-     * @platform web
-     */
-    exif?: Partial<MediaTrackSettings>;
+    exif?: Partial<MediaTrackSettings> | any;
 };
 export declare type CameraPictureOptions = {
     /**
@@ -206,16 +203,9 @@ export declare type CameraRecordingOptions = {
      */
     codec?: VideoCodec;
 };
-export declare type CameraCapturedPicture = {
-    width: number;
-    height: number;
-    uri: string;
-    base64?: string;
-    exif?: any;
-};
 export declare type PictureSavedListener = (event: {
     nativeEvent: {
-        data: CapturedPicture;
+        data: CameraCapturedPicture;
         id: number;
     };
 }) => void;

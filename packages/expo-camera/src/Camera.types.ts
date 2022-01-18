@@ -128,15 +128,12 @@ export type WebCameraSettings = Partial<{
   zoom: number;
 }>;
 
-export type CapturedPicture = {
+export type CameraCapturedPicture = {
   width: number;
   height: number;
   uri: string;
   base64?: string;
-  /**
-   * @platform web
-   */
-  exif?: Partial<MediaTrackSettings>;
+  exif?: Partial<MediaTrackSettings> | any;
 };
 
 // @needsAudit @docsMissing
@@ -232,17 +229,8 @@ export type CameraRecordingOptions = {
   codec?: VideoCodec;
 };
 
-// @docsMissing
-export type CameraCapturedPicture = {
-  width: number;
-  height: number;
-  uri: string;
-  base64?: string;
-  exif?: any;
-};
-
 export type PictureSavedListener = (event: {
-  nativeEvent: { data: CapturedPicture; id: number };
+  nativeEvent: { data: CameraCapturedPicture; id: number };
 }) => void;
 
 export type CameraReadyListener = () => void;
