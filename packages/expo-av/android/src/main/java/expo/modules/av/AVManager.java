@@ -710,7 +710,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     } else if (type == AudioDeviceInfo.TYPE_TELEPHONY) {
       typeStr = "Telephony";
     } else if (type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-      typeStr = "WiredHeadset";
+      typeStr = "MicrophoneWired";
     }
     map.putString(RECORDING_INPUT_NAME_KEY, deviceInfo.getProductName().toString());
     map.putString(RECORDING_INPUT_TYPE_KEY, typeStr);
