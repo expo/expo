@@ -709,6 +709,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       typeStr = "BluetoothA2DP";
     } else if (type == AudioDeviceInfo.TYPE_TELEPHONY) {
       typeStr = "Telephony";
+    } else if (type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+      typeStr = "WiredHeadset";
     }
     map.putString(RECORDING_INPUT_NAME_KEY, deviceInfo.getProductName().toString());
     map.putString(RECORDING_INPUT_TYPE_KEY, typeStr);
@@ -767,7 +769,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       for (int i = 0; i < audioDevices.length; i++) {
         AudioDeviceInfo deviceInfo = audioDevices[i];
         int type = deviceInfo.getType();
-        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
           final Bundle map = getMapFromDeviceInfo(deviceInfo);
           devices.add(map);
         }
