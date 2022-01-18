@@ -10,6 +10,7 @@
 
 ### ⚠️ Notices
 
+- Expose `findModulesAsync` from `expo-modules-autolinking/build/autolinking` again.
 - Deprecated `modulesClassNames` in favor of `modules` in the Expo module config. ([#15852](https://github.com/expo/expo/pull/15852) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
