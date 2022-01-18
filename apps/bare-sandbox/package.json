@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "expo": "~44.0.0-alpha.0",
-    "expo-dev-client": "~0.7.0",
+    "expo-dev-client": "~0.8.1",
     "expo-splash-screen": "~0.14.0",
     "expo-status-bar": "~1.2.0",
     "expo-system-ui": "1.1.0",
