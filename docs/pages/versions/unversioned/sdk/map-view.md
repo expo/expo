@@ -159,4 +159,3 @@ You can view the fingerprint for this keystore using the `keytool` command, and 
 Enter keystore password: 
 ```
 
-
