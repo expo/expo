@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "0.8.6",
+  "version": "0.9.1",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -14,10 +14,10 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "start": "./scripts/start.sh",
-    "bundle:dev:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev true --bundle-output assets/EXDevMenuApp.ios.js",
-    "bundle:prod:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js",
-    "bundle:dev:android": "react-native bundle --entry-file app/index.ts --platform android --dev true --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res",
-    "bundle:prod:android": "react-native bundle --entry-file app/index.ts --platform android --dev false --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res"
+    "bundle:dev:ios": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform ios --dev true --bundle-output assets/EXDevMenuApp.ios.js",
+    "bundle:prod:ios": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js",
+    "bundle:dev:android": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform android --dev true --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res",
+    "bundle:prod:android": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform android --dev false --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res"
   },
   "keywords": [
     "expo",
@@ -36,21 +36,20 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io",
+  "homepage": "https://docs.expo.dev",
   "jest": {
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "^4.0.2",
-    "expo-dev-menu-interface": "0.4.2"
+    "@expo/config-plugins": "^4.0.14",
+    "expo-dev-menu-interface": "0.5.1"
   },
   "devDependencies": {
     "@apollo/client": "^3.4.10",
+    "@babel/preset-typescript": "^7.7.4",
     "@react-navigation/core": "5.15.1",
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
-    "apollo-boost": "^0.4.4",
-    "apollo-cache-inmemory": "^1.6.3",
     "babel-plugin-module-resolver": "^4.1.0",
     "expo-module-scripts": "^2.0.0",
     "fuse.js": "^6.4.6",
@@ -59,5 +58,8 @@
     "react": "17.0.1",
     "react-native": "0.64.3",
     "url": "^0.11.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -51,12 +51,12 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun queryDevSessionsAsync(promise: Promise) {
+  fun queryDevSessionsAsync(deviceID: String?, promise: Promise) {
     devMenuManager.coroutineScope.launch {
       try {
         devMenuManager
           .getExpoApiClient()
-          .queryDevSessions()
+          .queryDevSessions(deviceID)
           .use {
             @Suppress("DEPRECATION_ERROR")
             promise.resolve(it.body()?.charStream()?.readText() ?: "")

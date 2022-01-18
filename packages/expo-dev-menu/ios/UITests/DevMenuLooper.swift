@@ -7,23 +7,23 @@ class DevMenuLooper {
     RunLoop.main.run(mode: .common, before: Date(timeIntervalSinceNow: sec))
     RunLoop.main.run(mode: .tracking, before: Date(timeIntervalSinceNow: sec))
   }
-  
+
   static func runMainLoopUntilEmpty() {
     var isEmpty = false
-    
+
     DispatchQueue.main.async {
       isEmpty = true
     }
-    
+
     let timout = Date(timeIntervalSinceNow: DevMenuTestOptions.defaultTimeout)
     while timout.timeIntervalSinceNow > 0 {
-      if (isEmpty) {
+      if isEmpty {
         return
       }
-      
+
       DevMenuLooper.runMainLoop(for: DevMenuTestOptions.loopTime)
     }
-    
+
     XCTFail("Wait for main thread timeout.")
   }
 }

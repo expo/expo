@@ -6,11 +6,26 @@
 
 ### 🎉 New features
 
-- Vendor react-native-safe-area-context. ([#15382](https://github.com/expo/expo/pull/15382) by [@ajsmth](https://github.com/ajsmth))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.9.1 — 2022-01-17
+
+### 🐛 Bug fixes
+
+- Fix: release build won't install on Android 12. ([#15429](https://github.com/expo/expo/pull/15429) by [@zhigang1992](https://github.com/zhigang1992))
+
+## 0.9.0 — 2021-12-22
+
+### 🎉 New features
+
+- Vendor react-native-safe-area-context. ([#15382](https://github.com/expo/expo/pull/15382) by [@ajsmth](https://github.com/ajsmth))
+- Add ability to query development sessions with a device ID. ([#15539](https://github.com/expo/expo/pull/15539) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.8.6 — 2021-12-03
 

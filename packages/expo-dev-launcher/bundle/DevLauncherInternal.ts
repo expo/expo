@@ -26,3 +26,5 @@ export function addDeepLinkListener(callback: (string) => void): EventSubscripti
 }
 
 export const clientUrlScheme = DevLauncher.clientUrlScheme;
+export const installationID = DevLauncher.installationID;
+export const isDevice = !!DevLauncher.isDevice;

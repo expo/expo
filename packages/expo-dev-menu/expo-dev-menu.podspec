@@ -23,7 +23,7 @@ folly_version = '2021.04.26.00'
 boost_compiler_flags = '-Wno-documentation'
 
 
-require_relative './TargetValidator'
+require_relative 'TargetValidator'
 # end reanimated 2
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
@@ -129,7 +129,7 @@ Pod::Spec.new do |s|
   s.subspec 'Main' do |main|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
-    s.exclude_files  = 'ios/*Tests/**'
+    s.exclude_files  = 'ios/*Tests/**/*', 'vendored/**/*'
     
     main.dependency 'React-Core'
     main.dependency 'expo-dev-menu-interface'
@@ -138,7 +138,7 @@ Pod::Spec.new do |s|
   
   s.test_spec 'Tests' do |test_spec|
     test_spec.requires_app_host = false
-    test_spec.source_files = 'ios/Tests/**'
+    test_spec.source_files = 'ios/Tests/**/*'
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
@@ -147,7 +147,7 @@ Pod::Spec.new do |s|
   
   s.test_spec 'UITests' do |test_spec|
     test_spec.requires_app_host = true
-    test_spec.source_files = 'ios/UITests/**'
+    test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
     test_spec.platform = :ios, '12.0'

@@ -6,7 +6,7 @@ import Foundation
 public protocol DevMenuItemsContainerProtocol {
   @objc
   func getRootItems() -> [DevMenuScreenItem]
-  
+
   @objc
   func getAllItems() -> [DevMenuScreenItem]
 }

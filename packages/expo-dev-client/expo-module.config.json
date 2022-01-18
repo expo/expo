@@ -1,0 +1,4 @@
+{
+  "name": "expo-dev-client",
+  "platforms": ["ios", "android"]
+}

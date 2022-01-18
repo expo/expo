@@ -8,6 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherErrorManager;
@@ -52,7 +53,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (EXDevLauncherErrorManager *)errorManager;
 
+- (EXDevLauncherInstallationIDHelper *)installationIDHelper;
+
 + (NSString * _Nullable)version;
+
+- (NSDictionary *)getBuildInfo;
+
+- (void)copyToClipboard:(NSString *)content;
 
 @end
 

@@ -14,7 +14,7 @@ interface DevMenuExpoApiClientInterface {
   fun isLoggedIn(): Boolean
   fun setSessionSecret(newSessionSecret: String?)
   suspend fun queryMyProjects(options: DevMenuGraphQLOptions = DevMenuGraphQLOptions()): okhttp3.Response
-  suspend fun queryDevSessions(): okhttp3.Response
+  suspend fun queryDevSessions(deviceID: String?): okhttp3.Response
   suspend fun queryUpdateChannels(
     appId: String,
     options: DevMenuGraphQLOptions = DevMenuGraphQLOptions()

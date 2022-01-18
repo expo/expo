@@ -16,7 +16,7 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
     self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
     fixChromeDevTools()
   }
-  
+
   init(manager: DevMenuManager, bridge: RCTBridge) {
     self.manager = manager
 

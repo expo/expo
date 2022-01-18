@@ -57,17 +57,16 @@ class LauncherMainScreen extends React.Component<Props, State> {
     pendingDeepLink: null,
   };
 
-  private onNewDeepLink = DevLauncher.addDeepLinkListener(link =>
+  private onNewDeepLink = DevLauncher.addDeepLinkListener((link) =>
     this.setState({ pendingDeepLink: link })
   );
 
   componentDidMount() {
-    DevLauncher.getPendingDeepLink().then(pendingDeepLink => {
-      console.log({ pendingDeepLink });
+    DevLauncher.getPendingDeepLink().then((pendingDeepLink) => {
       this.setState({ pendingDeepLink });
     });
 
-    DevLauncher.getRecentlyOpenedApps().then(openedProjects => {
+    DevLauncher.getRecentlyOpenedApps().then((openedProjects) => {
       const newOpenedProjects = [];
       for (const [url, name] of Object.entries(openedProjects)) {
         newOpenedProjects.push({
@@ -117,25 +116,22 @@ class LauncherMainScreen extends React.Component<Props, State> {
   };
 
   private fetchDevelopmentSessions = async () => {
-    if (!this.props.isUserLoggedIn) {
-      const localPackagers = await this.detectLocalPackagers();
-      if (this.props.isUserLoggedIn) {
-        return;
-      }
-      this.setState({
-        onlineProjects: localPackagers,
-      });
-      return;
+    let devSessions: any[];
+    if (this.props.isUserLoggedIn) {
+      const data = await queryDevSessionsAsync();
+      devSessions = JSON.parse(data).data;
     }
-
-    const data = await queryDevSessionsAsync();
-    const { data: projects } = JSON.parse(data);
-    if (!this.props.isUserLoggedIn) {
-      return;
+    if (!devSessions || !devSessions.length) {
+      const deviceID = DevLauncher.installationID;
+      const data = await queryDevSessionsAsync(deviceID);
+      devSessions = JSON.parse(data).data;
+    }
+    if ((!devSessions || !devSessions.length) && !DevLauncher.isDevice) {
+      devSessions = await this.detectLocalPackagers();
     }
 
     this.setState({
-      onlineProjects: projects,
+      onlineProjects: devSessions,
     });
   };
 
@@ -145,7 +141,7 @@ class LauncherMainScreen extends React.Component<Props, State> {
     this.setState({ isRefreshing: false });
   };
 
-  private loadApp = async url => {
+  private loadApp = async (url) => {
     try {
       this.setState({ loadingApp: true });
       await DevLauncher.loadApp(url);
@@ -200,8 +196,8 @@ class LauncherMainScreen extends React.Component<Props, State> {
   private renderRecentlyInDevelopment() {
     const onlineProjects = this.state.onlineProjects
       // We're temporarily skipping snack projects
-      .filter(project => project.source !== 'snack')
-      .map(project => {
+      .filter((project) => project.source !== 'snack')
+      .map((project) => {
         const { url, description } = project;
         return (
           <ListItem
@@ -235,7 +231,7 @@ class LauncherMainScreen extends React.Component<Props, State> {
   }
 
   private renderOpenedProjects() {
-    const openedProjects = this.state.openedProjects.map(project => {
+    const openedProjects = this.state.openedProjects.map((project) => {
       const { url, name } = project;
       const title = name ?? url;
       return (

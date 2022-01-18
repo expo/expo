@@ -1,38 +1,54 @@
-import ApolloClient from 'apollo-boost';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { HttpLink } from '@apollo/client/link/http';
 
 import Endpoints from '../constants/Endpoints';
 
 let session = null;
-const client = new ApolloClient({
+
+const httpLink = new HttpLink({
   uri: `${Endpoints.api.origin}/--/graphql`,
+});
 
-  async request(operation): Promise<void> {
-    // TODO(lukmccall): Check if the connection is available
-    // const isConnected = await Connectivity.isAvailableAsync();
-    // if (!isConnected) {
-    //   throw new Error('No connection available');
-    // }
+const authMiddlewareLink = setContext((): any => {
+  if (session?.sessionSecret) {
+    return {
+      headers: {
+        'expo-session': session.sessionSecret,
+      },
+    };
+  }
+});
 
-    if (session?.sessionSecret) {
-      operation.setContext({
-        headers: {
-          'expo-session': session.sessionSecret,
-        },
-      });
-    }
+const link = authMiddlewareLink.concat(httpLink);
+
+const cache = new InMemoryCache({
+  possibleTypes: {
+    ActivityTimelineProjectActivity: ['Build', 'BuildJob'],
+    BuildOrBuildJob: ['Build', 'BuildJob'],
+    BaseSearchResult: ['UserSearchResult', 'AppSearchResult'],
+    Project: ['App', 'Snack'],
   },
-
-  cache: new InMemoryCache({
-    dataIdFromObject(value) {
-      // Make sure to return null if this object doesn't have an ID
-      return value.hasOwnProperty('id') ? value.id : null;
+  addTypename: true,
+  typePolicies: {
+    Query: {
+      fields: {
+        account: {
+          merge: false,
+        },
+        app: {
+          merge: false,
+        },
+      },
     },
-  }),
+  },
 });
 
 export function setApolloSession(newSession) {
   session = newSession;
 }
 
-export default client;
+export default new ApolloClient({
+  link,
+  cache,
+});
