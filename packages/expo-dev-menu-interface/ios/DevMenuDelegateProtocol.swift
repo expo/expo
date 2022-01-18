@@ -15,7 +15,7 @@ public protocol DevMenuDelegateProtocol {
    Returns a dictionary with the most important informations about the current app.
    */
   @objc
-  optional func appInfo(forDevMenuManager manager: DevMenuManagerProtocol) -> [String : Any]?
+  optional func appInfo(forDevMenuManager manager: DevMenuManagerProtocol) -> [String: Any]?
 
   /**
    Tells the manager whether it can change dev menu visibility. In some circumstances you may want not to show/close the dev menu. (Optional)
@@ -42,7 +42,7 @@ public protocol DevMenuDelegateProtocol {
   @available(iOS 12.0, *)
   @objc
   optional func userInterfaceStyle(forDevMenuManager manager: DevMenuManagerProtocol) -> UIUserInterfaceStyle
-  
+
   @objc
   optional func supportsDevelopment() -> Bool
 }

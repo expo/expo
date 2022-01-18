@@ -12,15 +12,15 @@ class DevMenuEASUpdatesTest: QuickSpec {
         "createdAt": "1635508863",
         "updatedAt": "1635508873"
       ]
-      
+
       let channel = DevMenuEASUpdates.Channel(dictionary: seeder)
-      
+
       expect(channel.id).to(equal("1234"))
       expect(channel.name).to(equal("channel-1"))
       expect(channel.createdAt).to(equal("1635508863"))
       expect(channel.updatedAt).to(equal("1635508873"))
     }
-    
+
     it("Update constructor should populate all fields") {
       let seeder = [
         "id": "1234",
@@ -30,9 +30,9 @@ class DevMenuEASUpdatesTest: QuickSpec {
         "createdAt": "1635508863",
         "updatedAt": "1635508873"
       ]
-      
+
       let update = DevMenuEASUpdates.Update(dictionary: seeder)
-      
+
       expect(update.id).to(equal("1234"))
       expect(update.message).to(equal("update-1"))
       expect(update.platform).to(equal("ios"))
@@ -40,7 +40,7 @@ class DevMenuEASUpdatesTest: QuickSpec {
       expect(update.createdAt).to(equal("1635508863"))
       expect(update.updatedAt).to(equal("1635508873"))
     }
-    
+
     it("Branch constructor should populate all fields") {
       let seeder = [
         "id": "1",
@@ -62,12 +62,12 @@ class DevMenuEASUpdatesTest: QuickSpec {
             "updatedAt": "1635508873"
           ]
         ]
-      ] as [String : Any]
-      
+      ] as [String: Any]
+
       let branch = DevMenuEASUpdates.Branch(dictionary: seeder)
       let update1 = branch.updates[0]
       let update2 = branch.updates[1]
-      
+
       expect(branch.id).to(equal("1"))
       expect(update1.id).to(equal("1234"))
       expect(update1.message).to(equal("update-1"))

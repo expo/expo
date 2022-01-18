@@ -45,10 +45,10 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
         if (!data.waitForInsertSync) {
           data.waitForInsertSync = true;
 
-          setImmediate(() => {
+          setTimeout(() => {
             data.sharableViewDescriptors.value = data.items;
             data.waitForInsertSync = false;
-          });
+          }, 0);
         }
       },
 
@@ -58,7 +58,7 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
         if (!data.waitForRemoveSync) {
           data.waitForRemoveSync = true;
 
-          setImmediate(() => {
+          setTimeout(() => {
             const items = [];
             for (const item of data.items) {
               if (data.batchToRemove.has(item.tag)) {
@@ -71,7 +71,7 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
             data.sharableViewDescriptors.value = items;
             data.batchToRemove = new Set();
             data.waitForRemoveSync = false;
-          });
+          }, 0);
         }
       },
 

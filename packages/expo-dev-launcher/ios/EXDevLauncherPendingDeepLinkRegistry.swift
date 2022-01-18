@@ -3,28 +3,28 @@
 import Foundation
 
 @objc
-public class EXDevLauncherPendingDeepLinkRegistry : NSObject {
+public class EXDevLauncherPendingDeepLinkRegistry: NSObject {
   private var listeners: [EXDevLauncherPendingDeepLinkListener] = []
-  
+
   @objc
   public var pendingDeepLink: URL? {
     didSet {
-      if (pendingDeepLink != nil) {
+      if pendingDeepLink != nil {
         listeners.forEach { $0.onNewPendingDeepLink(pendingDeepLink!) }
       }
     }
   }
-  
+
   @objc
   public func subscribe(_ listener: EXDevLauncherPendingDeepLinkListener) {
     self.listeners.append(listener)
   }
-  
+
   @objc
   public func unsubscribe(_ listener: EXDevLauncherPendingDeepLinkListener) {
     self.listeners.removeAll { $0 === listener }
   }
-  
+
   @objc
   public func consumePendingDeepLink() -> URL? {
     let result = pendingDeepLink

@@ -64,7 +64,15 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null] };
+  BOOL isDevice = YES;
+#if TARGET_IPHONE_SIMULATOR
+  isDevice = NO;
+#endif
+  return @{
+    @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null],
+    @"installationID": [EXDevLauncherController.sharedInstance.installationIDHelper getOrCreateInstallationID] ?: [NSNull null],
+    @"isDevice": @(isDevice)
+  };
 }
 
 - (void)onNewPendingDeepLink:(NSURL *)deepLink
@@ -107,5 +115,22 @@ RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
 {
   resolve([[EXDevLauncherController sharedInstance] recentlyOpenedApps]);
 }
+
+RCT_EXPORT_METHOD(getBuildInfo:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *buildInfo = [[EXDevLauncherController sharedInstance] getBuildInfo];
+  resolve(buildInfo);
+}
+
+RCT_EXPORT_METHOD(copyToClipboard:(NSString *)content
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  
+  [[EXDevLauncherController sharedInstance] copyToClipboard:content];
+  resolve(nil);
+}
+
 
 @end

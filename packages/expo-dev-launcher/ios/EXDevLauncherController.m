@@ -27,6 +27,7 @@
 #import <EXManifests/EXManifestsManifestFactory.h>
 
 @import EXDevMenuInterface;
+@import EXDevMenu;
 
 #ifdef EX_DEV_LAUNCHER_VERSION
 #define STRINGIZE(x) #x
@@ -36,7 +37,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//#define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
+//  #define DEV_LAUNCHER_URL "http://10.0.0.226:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
@@ -51,6 +52,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
+@property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 
 @end
 
@@ -74,6 +76,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     self.recentlyOpenedAppsRegistry = [EXDevLauncherRecentlyOpenedAppsRegistry new];
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
+    self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
@@ -83,12 +86,16 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  return @[
-    (id<RCTBridgeModule>)[RCTDevMenu new],
-    [RCTAsyncLocalStorage new],
-    [EXDevLauncherLoadingView new],
-    [EXDevLauncherInternal new]
-  ];
+  
+  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
+  
+  [modules addObject:[DevMenuInternalModule new]];
+  [modules addObject:[RCTDevMenu new]];
+  [modules addObject:[RCTAsyncLocalStorage new]];
+  [modules addObject:[EXDevLauncherLoadingView new]];
+  [modules addObject:[EXDevLauncherInternal new]];
+   
+   return modules;
 }
 
 + (NSString * _Nullable)version {
@@ -226,7 +233,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
           return;
         }
         
-        [self.errorManager showErrorWithMessage:error.description stack:nil];
+        EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
+        [self.errorManager showError:appError];
       });
     }];
     return true;
@@ -272,9 +280,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
 
+  NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
   expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
-  NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl];
+  NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
+                                                                                      installationID:installationID];
 
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
@@ -304,7 +314,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [_updatesInterface reset];
   }
 
-  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl session:[NSURLSession sharedSession]];
+  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl installationID:installationID session:[NSURLSession sharedSession]];
   [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
     if (!isManifestURL) {
       // assume this is a direct URL to a bundle hosted by metro
@@ -480,6 +490,68 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"d"
                                                      modifierFlags:UIKeyModifierCommand];
   }
+}
+
+-(NSDictionary *)getBuildInfo
+{ 
+  NSMutableDictionary *buildInfo = [NSMutableDictionary new];
+
+  NSString *appIcon = [self getAppIcon];
+  NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
+  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
+  NSString *appVersion = [self getFormattedAppVersion];
+  NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
+
+  [buildInfo setObject:appName forKey:@"appName"];
+  [buildInfo setObject:appIcon forKey:@"appIcon"];
+  [buildInfo setObject:appVersion forKey:@"appVersion"];
+  [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
+  [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
+
+  return buildInfo;
+}
+
+-(NSString *)getAppIcon 
+{
+  NSString *appIcon = @"";
+  NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
+  
+  if (appIconName != nil) {
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *appIconPath = [[resourcePath stringByAppendingString:appIconName] stringByAppendingString:@".png"];
+    appIcon = [@"file://" stringByAppendingString:appIconPath];
+  }
+  
+  return appIcon;
+}
+
+-(NSString *)getUpdatesConfigForKey:(NSString *)key
+{
+  NSString *value = @"";
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"Expo" ofType:@"plist"];
+  
+  if (path != nil) {
+    NSDictionary *expoConfig = [NSDictionary dictionaryWithContentsOfFile:path];
+    
+    if (expoConfig != nil) {
+      value = [expoConfig objectForKey:key] ?: @"";
+    }
+  }
+
+  return value;
+}
+
+-(NSString *)getFormattedAppVersion 
+{
+  NSString *shortVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+  NSString *buildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+  NSString *appVersion = [NSString stringWithFormat:@"%@ (%@)", shortVersion, buildVersion];
+  return appVersion;
+}
+
+-(void)copyToClipboard:(NSString *)content {
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+  clipboard.string = (content ? : @"");
 }
 
 @end

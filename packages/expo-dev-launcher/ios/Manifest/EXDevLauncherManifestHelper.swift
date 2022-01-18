@@ -14,7 +14,7 @@ public class EXDevLauncherManifestHelper: NSObject {
     } else if orientationMask.contains(.portraitUpsideDown) {
       return UIInterfaceOrientation.portraitUpsideDown
     }
-    
+
     return UIInterfaceOrientation.unknown
   }
 
@@ -26,7 +26,7 @@ public class EXDevLauncherManifestHelper: NSObject {
     } else if orientation == "landscape" {
       orientationMask = .landscape
     }
-    
+
     return defaultOrientationForOrientationMask(orientationMask)
   }
 
@@ -35,16 +35,16 @@ public class EXDevLauncherManifestHelper: NSObject {
     guard var hexString = hexString else {
       return nil
     }
-    
-    if (hexString.count != 7 || !hexString.starts(with: "#")) {
+
+    if hexString.count != 7 || !hexString.starts(with: "#") {
       return nil
     }
-    
+
     hexString.removeFirst()
-    
+
     var rgbValue: UInt64 = 0
     Scanner(string: hexString).scanHexInt64(&rgbValue)
-    
+
     return UIColor(red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
                    green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
                    blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
@@ -54,7 +54,7 @@ public class EXDevLauncherManifestHelper: NSObject {
   @objc
   @available(iOS 12.0, *)
   public static func exportManifestUserInterfaceStyle(_ userInterfaceStyle: String?) -> UIUserInterfaceStyle {
-    switch (userInterfaceStyle){
+    switch userInterfaceStyle {
       case "light":
         return .light
       case "dark":

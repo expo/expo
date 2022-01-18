@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Shared JS components and configuration for expo-dev-client",
   "main": "build/index.js",
-  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

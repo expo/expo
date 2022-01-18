@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.8.1 — 2022-01-17
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.0 — 2021-12-22
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.7.2 — 2021-12-15
 
 _This version does not introduce any user-facing changes._

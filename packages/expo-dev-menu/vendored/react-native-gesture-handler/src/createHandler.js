@@ -227,10 +227,10 @@ export default function createHandler(
         // setImmediate. This makes it so _update function gets called after all
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
-        this._updateEnqueued = setImmediate(() => {
+        this._updateEnqueued = setTimeout(() => {
           this._updateEnqueued = null;
           this._update();
-        });
+        }, 0);
       }
 
       this._createGestureHandler(

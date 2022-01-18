@@ -2,22 +2,22 @@
 
 import EXDevMenuInterface
 
-class DevMenuExtensionDefaultSettings : DevMenuExtensionSettingsProtocol {
+class DevMenuExtensionDefaultSettings: DevMenuExtensionSettingsProtocol {
   private let manager: DevMenuManager
 
   init(manager: DevMenuManager) {
     self.manager = manager
   }
-  
+
   func wasRunOnDevelopmentBridge() -> Bool {
-    if (manager.delegate?.supportsDevelopment?() == false) {
+    if manager.delegate?.supportsDevelopment?() == false {
       return false
     }
-    
+
     #if DEBUG
-      return true;
+      return true
     #else
-      return false;
+      return false
     #endif
   }
 }

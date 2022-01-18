@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
-  s.exclude_files  = ['ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}']
+  s.exclude_files  = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}'
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
@@ -40,6 +40,7 @@ Pod::Spec.new do |s|
   s.dependency "expo-dev-menu-interface"
   s.dependency "EXManifests"
   s.dependency "EXUpdatesInterface"
+  s.dependency "expo-dev-menu"
   
   s.subspec 'Unsafe' do |unsafe|
     unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
