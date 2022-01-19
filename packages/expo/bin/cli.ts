@@ -9,8 +9,8 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
-  config: () => import('../cli/config').then((i) => i.expoConfig),
   prebuild: () => import('../cli/prebuild').then((i) => i.expoPrebuild),
+  config: () => import('../cli/config').then((i) => i.expoConfig),
 };
 
 const args = arg(
