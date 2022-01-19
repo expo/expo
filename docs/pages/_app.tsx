@@ -45,6 +45,7 @@ export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric)
     event_label: id,
     // Use a non-interaction event to avoid affecting bounce rate.
     non_interaction: true,
+    anonymize_ip: true,
   });
 }
 
@@ -66,7 +67,7 @@ function App({ Component, pageProps }: AppProps) {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${googleAnalyticsId}', { 'transport_type': 'beacon' });
+                gtag('config', '${googleAnalyticsId}', { 'transport_type': 'beacon', 'anonymize_ip': true });
               `,
           }}
         />

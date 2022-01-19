@@ -53,7 +53,8 @@
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
 
   _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e71",

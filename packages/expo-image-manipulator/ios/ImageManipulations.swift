@@ -48,7 +48,7 @@ internal func manipulate(image: UIImage, resize: ResizeOptions) throws -> UIImag
 
   guard let newImage = UIGraphicsGetImageFromCurrentImageContext() else {
     UIGraphicsEndImageContext()
-    throw NoImageInContextError()
+    throw NoImageInContextException()
   }
 
   UIGraphicsEndImageContext()
@@ -60,7 +60,7 @@ internal func manipulate(image: UIImage, resize: ResizeOptions) throws -> UIImag
  */
 internal func manipulate(image: UIImage, rotate: Double) throws -> UIImage {
   guard let cgImage = image.cgImage else {
-    throw ImageNotFoundError()
+    throw ImageNotFoundException()
   }
   let rads = rotate * Double.pi / 180
   let rotatedView = UIView(frame: CGRect(origin: .zero, size: image.size))
@@ -108,10 +108,10 @@ internal func manipulate(image: UIImage, crop: CropRect) throws -> UIImage {
   || rect.height > image.size.height
 
   guard !isOutOfBounds else {
-    throw ImageInvalidCropError()
+    throw ImageInvalidCropException()
   }
   guard let cgImage = image.cgImage?.cropping(to: rect) else {
-    throw ImageCropFailedError(rect: rect)
+    throw ImageCropFailedException(rect)
   }
   return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
 }
@@ -122,11 +122,11 @@ internal func manipulate(image: UIImage, crop: CropRect) throws -> UIImage {
  */
 internal func fixImageOrientation(_ image: UIImage) throws -> UIImage {
   guard let cgImage = image.cgImage else {
-    throw ImageNotFoundError()
+    throw ImageNotFoundException()
   }
   guard let colorSpace = cgImage.colorSpace else {
     // That should never happen as `colorSpace` is empty only when the image is a mask.
-    throw ImageColorSpaceNotFoundError()
+    throw ImageColorSpaceNotFoundException()
   }
 
   var transform = CGAffineTransform.identity
@@ -167,7 +167,7 @@ internal func fixImageOrientation(_ image: UIImage) throws -> UIImage {
   )
 
   guard let context = context else {
-    throw ImageContextLostError()
+    throw ImageContextLostException()
   }
 
   context.concatenate(transform)
@@ -180,28 +180,28 @@ internal func fixImageOrientation(_ image: UIImage) throws -> UIImage {
   }
 
   guard let newCGImage = context.makeImage() else {
-    throw ImageDrawingFailedError()
+    throw ImageDrawingFailedException()
   }
   return UIImage(cgImage: newCGImage)
 }
 
 /**
  Helper function for drawing the image in graphics context.
- Throws appropriate errors when the context is missing or the image couldn't be rendered.
+ Throws appropriate exceptions when the context is missing or the image couldn't be rendered.
  */
 private func drawInNewContext(size: CGSize, drawing: (CGContext) -> Void) throws -> UIImage {
   UIGraphicsBeginImageContext(size)
 
   guard let context = UIGraphicsGetCurrentContext() else {
     UIGraphicsEndImageContext()
-    throw ImageContextLostError()
+    throw ImageContextLostException()
   }
 
   drawing(context)
 
   guard let newImage = UIGraphicsGetImageFromCurrentImageContext() else {
     UIGraphicsEndImageContext()
-    throw NoImageInContextError()
+    throw NoImageInContextException()
   }
 
   UIGraphicsEndImageContext()

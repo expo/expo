@@ -12,7 +12,7 @@ export declare class ExpoModuleConfig {
     /**
      * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
      */
-    iosModulesClassNames(): string[];
+    iosModules(): string[];
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
      */
@@ -28,7 +28,7 @@ export declare class ExpoModuleConfig {
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
-    androidModulesClassNames(): string[];
+    androidModules(): string[];
     /**
      * Returns serializable raw config.
      */

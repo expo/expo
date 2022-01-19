@@ -15,7 +15,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
   }
 }
 
@@ -25,7 +25,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 9
-    versionName "0.10.0"
+    versionName "0.10.1"
   }
 
   lintOptions {
@@ -56,7 +56,7 @@ android {
     main {
       java {
         def rnVersion = getRNVersion()
-        
+
         if (rnVersion >= versionToNumber(0, 66, 0)) {
           srcDirs += "src/react-native-66"
         } else if (rnVersion >= versionToNumber(0, 65, 0)) {
@@ -112,10 +112,10 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
 
   api "io.insert-koin:koin-core:3.1.2"
 
@@ -134,7 +134,7 @@ configurations.all {
   resolutionStrategy.eachDependency { DependencyResolveDetails details ->
     def requested = details.requested
     if (requested.group == 'org.jetbrains.kotlin') {
-      details.useVersion safeExtGet('kotlinVersion', '1.4.21')
+      details.useVersion safeExtGet('kotlinVersion', '1.6.10')
     }
   }
 }

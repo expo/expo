@@ -31,7 +31,7 @@ public extension Record {
     if let value = value as? Dict {
       return try Self(from: value)
     }
-    throw Conversions.ConvertingError<Self>(value: value)
+    throw Conversions.ConvertingException<Self>(value)
   }
 
   init(from dict: Dict) throws {

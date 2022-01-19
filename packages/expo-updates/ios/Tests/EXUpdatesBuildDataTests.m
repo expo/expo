@@ -82,7 +82,8 @@ static NSString * const scopeKey = @"test";
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
-                                                                                      manifestSignature:nil];
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
   
   // start every test with an update
   dispatch_sync(_db.databaseQueue, ^{

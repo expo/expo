@@ -416,10 +416,15 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
  */
 - (void)installExpoTurboModules
 {
-  facebook::jsi::Runtime *runtime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : NULL;
+  facebook::jsi::Runtime *jsiRuntime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : nullptr;
 
-  if (runtime) {
-    expo::installRuntimeObjects(*runtime, _bridge.jsCallInvoker, self);
+  if (jsiRuntime) {
+    JavaScriptRuntime *runtime = [[JavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
+
+    [JavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
+    [_swiftInteropBridge setRuntime:runtime];
+
+    expo::installRuntimeObjects(*jsiRuntime, _bridge.jsCallInvoker, self);
   }
 }
 

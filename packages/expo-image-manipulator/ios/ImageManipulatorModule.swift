@@ -45,7 +45,7 @@ public class ImageManipulatorModule: Module {
   internal func loadImage(atUrl url: URL, callback: @escaping LoadImageCallback) {
     if url.scheme == "data" {
       guard let data = try? Data(contentsOf: url), let image = UIImage(data: data) else {
-        return callback(.failure(CorruptedImageDataError()))
+        return callback(.failure(CorruptedImageDataException()))
       }
       return callback(.success(image))
     }
@@ -55,18 +55,18 @@ public class ImageManipulatorModule: Module {
     }
 
     guard let imageLoader = self.appContext?.imageLoader else {
-      return callback(.failure(ImageLoaderNotFoundError()))
+      return callback(.failure(ImageLoaderNotFoundException()))
     }
     guard let fileSystem = self.appContext?.fileSystem else {
-      return callback(.failure(FileSystemNotFoundError()))
+      return callback(.failure(FileSystemNotFoundException()))
     }
     guard fileSystem.permissions(forURI: url).contains(.read) else {
-      return callback(.failure(FileSystemReadPermissionError(path: url.absoluteString)))
+      return callback(.failure(FileSystemReadPermissionException(url.absoluteString)))
     }
 
     imageLoader.loadImage(for: url) { error, image in
       guard let image = image, error == nil else {
-        return callback(.failure(ImageLoadingFailedError(cause: error.debugDescription)))
+        return callback(.failure(ImageLoadingFailedException(error.debugDescription)))
       }
       callback(.success(image))
     }
@@ -77,7 +77,7 @@ public class ImageManipulatorModule: Module {
    */
   internal func loadImageFromPhotoLibrary(url: URL, callback: @escaping LoadImageCallback) {
     guard let asset = PHAsset.fetchAssets(withALAssetURLs: [url], options: nil).firstObject else {
-      return callback(.failure(ImageNotFoundError()))
+      return callback(.failure(ImageNotFoundException()))
     }
     let size = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
     let options = PHImageRequestOptions()
@@ -89,7 +89,7 @@ public class ImageManipulatorModule: Module {
 
     PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: options) { image, _ in
       guard let image = image else {
-        return callback(.failure(ImageNotFoundError()))
+        return callback(.failure(ImageNotFoundException()))
       }
       return callback(.success(image))
     }
@@ -100,7 +100,7 @@ public class ImageManipulatorModule: Module {
    */
   internal func saveImage(_ image: UIImage, options: ManipulateOptions) throws -> SaveImageResult {
     guard let fileSystem = self.appContext?.fileSystem else {
-      throw FileSystemNotFoundError()
+      throw FileSystemNotFoundException()
     }
     let directory = URL(fileURLWithPath: fileSystem.cachesDirectory).appendingPathComponent("ImageManipulator")
     let filename = UUID().uuidString.appending(options.format.fileExtension)
@@ -109,12 +109,12 @@ public class ImageManipulatorModule: Module {
     fileSystem.ensureDirExists(withPath: directory.path)
 
     guard let data = imageData(from: image, format: options.format, compression: options.compress) else {
-      throw CorruptedImageDataError()
+      throw CorruptedImageDataException()
     }
     do {
       try data.write(to: fileUrl, options: .atomic)
     } catch let error {
-      throw ImageWriteFailedError(cause: error.localizedDescription)
+      throw ImageWriteFailedException(error.localizedDescription)
     }
     return (url: fileUrl, data: data)
   }
