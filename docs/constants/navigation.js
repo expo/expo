@@ -51,6 +51,7 @@ const sections = [
       'Using EAS Update with a bare React Native project',
       'Runtime versions and updates',
       'Using environment variables with EAS Update',
+      'Using expo-dev-client with EAS Update',
       'Known issues',
       'FAQ',
     ],
