@@ -45,7 +45,7 @@ export default [
     type: 'string',
     description: [
       'Optional override of the prebuild command used by EAS.',
-      'Note: `--platform` and `--non-interactive` will be added automatically by the build engine, so do not need to be specified.',
+      'Note: `--platform` and `--non-interactive` will be added automatically by the build engine, so you do not need to specify them manually.',
     ],
   },
   {
