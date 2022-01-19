@@ -2,7 +2,6 @@ package expo.modules.devlauncher.launcher.errors
 
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.os.Process
@@ -110,13 +109,7 @@ class DevLauncherUncaughtExceptionHandler(
     }
 
     try {
-      val url = Uri
-        .parse(controller.appHost.reactInstanceManager.devSupportManager.sourceUrl)
-        .buildUpon()
-        .path("logs")
-        .clearQuery()
-        .build()
-
+      val url = getLogsUrl()
       val remoteLogManager = DevLauncherRemoteLogManager(DevLauncherKoinContext.app.koin.get(), url)
         .apply {
           deferError("Your app just crashed. See the error below.")
@@ -126,5 +119,19 @@ class DevLauncherUncaughtExceptionHandler(
     } catch (e: Throwable) {
       Log.e("DevLauncher", "Couldn't send an exception to bundler. $e", e)
     }
+  }
+
+  private fun getLogsUrl(): Uri {
+    val logsUrlFromManifest = controller.manifest?.getRawJson()?.optString("logUrl")
+    if (logsUrlFromManifest != null) {
+      return Uri.parse(logsUrlFromManifest)
+    }
+
+    return Uri
+      .parse(controller.appHost.reactInstanceManager.devSupportManager.sourceUrl)
+      .buildUpon()
+      .path("logs")
+      .clearQuery()
+      .build()
   }
 }
