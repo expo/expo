@@ -12,7 +12,7 @@ In order to be able to have multiple instances of an app installed on your devic
 
 **If you have a managed project**, this can be accomplished by using **app.config.js** and environment variables in **eas.json**.
 
-## Example: configuring development and production variants in the managed project
+## Example: configuring development and production variants in a managed project
 
 Let's say we wanted a development build and production build of our managed Expo project. Your **eas.json** might look like this:
 
@@ -102,11 +102,11 @@ When you run `eas build --profile production` the `APP_VARIANT` variable environ
 
 > **Note**: if you use `expo-updates` to publish JavaScript updates to your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `expo publish` command. Refer to the EAS Build ["Environment variables and secrets" guide](/build/updates.md) for more information.
 
-## Example: configuring development and production variants in the bare project
+## Example: configuring development and production variants in a bare project
 
 ### Android
 
-In `android/app/build.gradle`, create a separate flavor for every build profile from eas.json you want to build.
+In **android/app/build.gradle**, create a separate flavor for every build profile from **eas.json** that you want to build.
 
 ```groovy
 android {
@@ -128,7 +128,7 @@ android {
 
 > **Note**: Currently, EAS CLI supports only the `applicationId` field. If you use `applicationIdSuffix` inside `productFlavors` or `buildTypes` sections then this value will not be detected correctly.
 
-Assign Android flavors to EAS build profiles by specifying a `gradleCommand` in the `eas.json`
+Assign Android flavors to EAS build profiles by specifying a `gradleCommand` in the **eas.json**:
 
 ```json
 {
@@ -147,7 +147,7 @@ Assign Android flavors to EAS build profiles by specifying a `gradleCommand` in 
 }
 ```
 
-By default, every flavor can be built in either debug or release mode. If you want to restrict some flavor to a specific mode, see the snippet below, and modify `build.gradle`.
+By default, every flavor can be built in either debug or release mode. If you want to restrict some flavor to a specific mode, see the snippet below, and modify **build.gradle**.
 
 ```groovy
 android {
@@ -170,19 +170,19 @@ android {
 ```
 
 The rest of the configuration at this point is not specific to EAS, it's the same as it would be for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
- - To change the name of the app built with the development profile, create a `android/app/src/development/res/value/strings.xml` file.
+ - To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file.
     ```xml
     <resources>
         <string name="app_name">MyApp - Dev</string>
     </resources>
     ```
- - To change the icon of the app built with the development profile, create `android/app/src/development/res/midimap-*` directories with appropriate assets (you can copy them from `android/app/src/main/res` and replace the icon files).
- - To specify `google-services.json` for a specific flavor put it in a `android/app/src/{flavor}/google-services.json` file.
- - To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to `android/app/build.gradle` and name your properties file `android/sentry-{flavor}-{buildType}.properties` (e.g. `android/sentry-production-release.properties`)
+ - To change the icon of the app built with the development profile, create `android/app/src/development/res/mipmap-*` directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
+ - To specify **google-services.json** for a specific flavor put it in a **android/app/src/{flavor}/google-services.json** file.
+ - To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (e.g. **android/sentry-production-release.properties**)
 
 ### iOS
 
-Assign separate scheme to every build profile in `eas.json`:
+Assign a distinct scheme to every build profile in **eas.json**:
 
 ```json
 {
@@ -235,22 +235,22 @@ Configure a scheme for the new target:
 - Go to `Product` -> `Scheme` -> `Manage schemes`.
 - Find scheme `myapp copy` on the list.
 - Change scheme name `myapp copy` -> `myapp-dev`.
-- By default, the new scheme should be marked as shared, but Xcode does not create `.xcscheme` files. To fix that, uncheck the "Shared" checkbox and check it again, after that new `.xcscheme` file should show up in the `ios/myapp.xcodeproj/xcshareddata/xcschemes` directory.
+- By default, the new scheme should be marked as shared, but Xcode does not create `.xcscheme` files. To fix that, uncheck the "Shared" checkbox and check it again, after that new `.xcscheme` file should show up in the **ios/myapp.xcodeproj/xcshareddata/xcschemes** directory.
 
 <ImageSpotlight alt="Xcode scheme list" src="/static/images/eas-build/variants/2-scheme-list.png" style={{maxWidth: 720}} />
 
-By default, the newly created target has separate Info.plist file (in our case it's `ios/myapp copy-Info.plist`). To simplify your project we recommend using the same file for all targets:
-- Delete `./ios/myapp copy-Info.plist`.
+By default, the newly created target has separate **Info.plist** file (in our case it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
+- Delete **./ios/myapp copy-Info.plist**.
 - Click on the new target.
 - Go to `Build Settings` tab.
 - Find `Packaging` section.
-- Change `Info.plist` value - `myapp copy-Info.plist` -> `myapp/Info.plist`.
+- Change **Info.plist** value - **myapp copy-Info.plist** -> **myapp/Info.plist**.
 - Change `Product Bundle Identifier`.
 
 <ImageSpotlight alt="Xcode build settings" src="/static/images/eas-build/variants/3-target-build-settings.png" style={{maxWidth: 720}} />
 
 To change the display name:
-- Open `Info.plist` and add key `Bundle display name` with value `$(DISPLAY_NAME)`.
+- Open **Info.plist** and add key `Bundle display name` with value `$(DISPLAY_NAME)`.
 - Open `Build Settings` for both targets and find `User-Defined` section.
 - Add key `DISIPLAY_NAME` with the name you want to use for that target.
 
