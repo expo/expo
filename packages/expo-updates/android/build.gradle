@@ -142,6 +142,7 @@ configurations.implementation.getDependencies().removeIf { it ->
 okhttpPinnedArtifacts.each { artifact ->
   dependencies.add('compileOnly', artifact)
   dependencies.add('testImplementation', artifact)
+  dependencies.add('androidTestImplementation', artifact)
   configurations.all {
     resolutionStrategy.force(artifact)
   }
