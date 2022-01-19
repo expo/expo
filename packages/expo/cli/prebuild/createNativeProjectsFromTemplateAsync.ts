@@ -2,6 +2,7 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import { getBareExtensions, getFileWithExtensions } from '@expo/config/paths';
 import chalk from 'chalk';
+import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
@@ -9,7 +10,7 @@ import * as Log from '../log';
 import { copySync, directoryExistsAsync } from '../utils/dir';
 import { AbortCommandError, SilentError } from '../utils/errors';
 import { mergeGitIgnorePaths } from '../utils/mergeGitIgnorePaths';
-import { downloadAndExtractNpmModuleAsync, getNpmUrlAsync } from '../utils/npm';
+import { downloadAndExtractNpmModuleAsync } from '../utils/npm';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { resolveTemplateArgAsync } from './resolveTemplate';
@@ -21,9 +22,7 @@ import {
 import { writeMetroConfig } from './writeMetroConfig';
 
 /**
- *
- * @param projectRoot
- * @param tempDir
+ * Creates local native files from an input template file path.
  *
  * @return `true` if the project is ejecting, and `false` if it's syncing.
  */
@@ -112,8 +111,6 @@ async function cloneNativeDirectoriesAsync({
   pkg: PackageJSONConfig;
   platforms: ModPlatform[];
 }): Promise<string[]> {
-  // NOTE(brentvatne): Removing spaces between steps for now, add back when
-  // there is some additional context for steps
   const creatingNativeProjectStep = logNewSection(
     'Creating native project directories (./ios and ./android) and updating .gitignore'
   );
@@ -135,10 +132,15 @@ async function cloneNativeDirectoriesAsync({
     const copyResults = await copyPathsFromTemplateAsync(projectRoot, tempDir, targetPaths);
     copiedPaths = copyResults.copiedPaths;
     skippedPaths = copyResults.skippedPaths;
-    const results = mergeGitIgnorePaths(
-      path.join(projectRoot, '.gitignore'),
-      path.join(tempDir, '.gitignore')
+
+    const hasPlatformSpecificGitIgnores = platforms.reduce(
+      (p, platform) => p && fs.existsSync(path.join(tempDir, platform, '.gitignore')),
+      true
     );
+    Log.debug(`All platforms have an internal gitignore: ${hasPlatformSpecificGitIgnores}`);
+    const results = hasPlatformSpecificGitIgnores
+      ? null
+      : mergeGitIgnorePaths(path.join(projectRoot, '.gitignore'), path.join(tempDir, '.gitignore'));
 
     let message = `Created native project${platforms.length > 1 ? 's' : ''}`;
 
@@ -147,7 +149,9 @@ async function cloneNativeDirectoriesAsync({
         ` | ${skippedPaths.map((path) => chalk.bold(`/${path}`)).join(', ')} already created`
       );
     }
-    if (!results?.didMerge) {
+    if (!results) {
+      message += chalk.dim(` | gitignore skipped`);
+    } else if (!results.didMerge) {
       message += chalk.dim(` | gitignore already synced`);
     } else if (results.didMerge && results.didClear) {
       message += chalk.dim(` | synced gitignore`);

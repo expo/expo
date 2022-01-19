@@ -11,6 +11,8 @@ type MergeResults = {
  *
  * @param targetGitIgnorePath
  * @param sourceGitIgnorePath
+ *
+ * @returns `null` if one of the gitignore files doesn't exist. Otherwise, returns the merged contents.
  */
 export function mergeGitIgnorePaths(
   targetGitIgnorePath: string,
