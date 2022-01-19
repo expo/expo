@@ -2,8 +2,7 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
-import { Camera, FlashMode } from 'expo-camera';
-import { CameraType } from 'expo-camera/build/Camera.types';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import {
@@ -101,7 +100,7 @@ function useCameraAvailable(): boolean {
 }
 
 export default function QRCodeScreen() {
-  const [isPermissionsGranted] = usePermissions(Camera.requestPermissionsAsync);
+  const [isPermissionsGranted] = usePermissions(Camera.requestCameraPermissionsAsync);
   const isAvailable = useCameraAvailable();
 
   if (!isPermissionsGranted || !isAvailable) {
