@@ -2,6 +2,8 @@
 title: Migrating from Classic Updates to EAS Update
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
 ## Prerequisites
@@ -104,7 +106,7 @@ eas update --branch production --message "Fixes typo"
 
 EAS Update adds a new type of object called a "branch". A branch is a list of updates, and it is linked to a channel. In the diagram below, builds with a channel of "production" are linked to a branch named "production". By default, channels and branches of the same name are linked until changed.
 
-<ImageSpotlight alt="Two command deployment diagram" src="/static/images/eas-update/channel-branch.png" style={{maxWidth: 1200}} />
+<ImageSpotlight alt={`Channel "production" linked to branch "production"`} src="/static/images/eas-update/channel-branch.png" />
 
 ## Additional possible migration steps
 
