@@ -32,7 +32,7 @@ export declare type LinearGradientProps = ViewProps & {
      * - the second color, solid, from the 80% point to the end of the gradient view.
      *
      * > The color-stop locations must be ascending from least to greatest.
-     * @default [0.0, 1.0]
+     * @default []
      */
     locations?: number[] | null;
     /**
