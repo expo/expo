@@ -134,14 +134,14 @@ Assign Android flavors to EAS build profiles by specifying a `gradleCommand` in 
 {
   "build": {
     "development": {
-        "android": {
-            "gradleCommand": ":app:assembleDevelopmentDebug"
-        }
+      "android": {
+        "gradleCommand": ":app:assembleDevelopmentDebug"
+      }
     },
     "production": {
-        "android": {
-            "gradleCommand": ":app:bundleProductionRelease"
-        }
+      "android": {
+        "gradleCommand": ":app:bundleProductionRelease"
+      }
     }
   }
 }
@@ -188,16 +188,16 @@ Assign a distinct scheme to every build profile in **eas.json**:
 {
   "build": {
     "development": {
-        "ios": {
-            "buildConfiguration": "Debug",
-            "scheme": "myapp"
-        }
+      "ios": {
+        "buildConfiguration": "Debug",
+        "scheme": "myapp"
+      }
     },
     "production": {
-        "ios": {
-            "buildConfiguration": "Release",
-            "scheme": "myapp-dev"
-        }
+      "ios": {
+        "buildConfiguration": "Release",
+        "scheme": "myapp-dev"
+      }
     }
   }
 }
