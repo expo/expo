@@ -47,7 +47,7 @@ export default [
       'Optional override of the prebuild command used by EAS.',
       'For example, you can specify `prebuild --template example-template` to use a custom template.',
       'Note: `--platform` and `--non-interactive` will be added automatically by the build engine, so you do not need to specify them manually.',
-      '[Learn more about prebuild options](/workflow/expo-cli/#expo-prebuild).'
+      '[Learn more about prebuild options](../../workflow/expo-cli/#expo-prebuild).'
     ],
   },
   {
