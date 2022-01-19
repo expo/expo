@@ -50,6 +50,7 @@ const sections = [
       'Migrating from Classic Updates to EAS Update',
       'Using EAS Update with a bare React Native project',
       'Runtime versions and updates',
+      'Using environment variables with EAS Update',
       'Known issues',
       'FAQ',
     ],
