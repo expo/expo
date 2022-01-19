@@ -1,12 +1,18 @@
+import { ExpoConfig } from '@expo/config-types';
 import chalk from 'chalk';
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { Ora } from 'ora';
 import path from 'path';
+import semver from 'semver';
 
 import * as Log from '../log';
 import { AbortCommandError, CommandError } from '../utils/errors';
-import { extractLocalNpmTarballAsync, extractNpmTarballFromUrlAsync } from '../utils/npm';
+import {
+  downloadAndExtractNpmModuleAsync,
+  extractLocalNpmTarballAsync,
+  extractNpmTarballFromUrlAsync,
+} from '../utils/npm';
 import { isUrlOk } from '../utils/url';
 
 type RepoInfo = {
@@ -15,6 +21,38 @@ type RepoInfo = {
   branch: string;
   filePath: string;
 };
+
+export async function cloneTemplateAsync({
+  templateDirectory,
+  template,
+  exp,
+  ora,
+}: {
+  templateDirectory: string;
+  template?: string;
+  exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
+  ora: Ora;
+}) {
+  if (template) {
+    await resolveTemplateArgAsync(templateDirectory, ora, exp.name, template);
+  } else {
+    const templatePackageName = await getTemplateNpmPackageName(exp.sdkVersion);
+    await downloadAndExtractNpmModuleAsync(templatePackageName, {
+      cwd: templateDirectory,
+      name: exp.name,
+    });
+  }
+}
+
+/** Given an `sdkVersion` like `44.0.0` return a fully qualified NPM package name like: `expo-template-bare-minimum@sdk-44` */
+function getTemplateNpmPackageName(sdkVersion?: string): string {
+  // When undefined or UNVERSIONED, we use the latest version.
+  if (!sdkVersion || sdkVersion === 'UNVERSIONED') {
+    Log.log('Using an unspecified Expo SDK version. The latest template will be used.');
+    return `expo-template-bare-minimum@latest`;
+  }
+  return `expo-template-bare-minimum@sdk-${semver.major(sdkVersion)}`;
+}
 
 async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | undefined> {
   const [, username, name, t, _branch, ...file] = url.pathname.split('/');
@@ -68,7 +106,7 @@ async function downloadAndExtractRepoAsync(
 }
 
 export async function resolveTemplateArgAsync(
-  tempDir: string,
+  templateDirectory: string,
   oraInstance: Ora,
   appName: string,
   template: string,
@@ -96,8 +134,8 @@ export async function resolveTemplateArgAsync(
         throw new CommandError(`template file does not exist: ${templatePath}`);
       }
 
-      await extractLocalNpmTarballAsync(templatePath, { cwd: tempDir, name: appName });
-      return tempDir;
+      await extractLocalNpmTarballAsync(templatePath, { cwd: templateDirectory, name: appName });
+      return templateDirectory;
     }
 
     if (repoUrl.origin !== 'https://github.com') {
@@ -135,7 +173,7 @@ export async function resolveTemplateArgAsync(
       `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
     );
 
-    await downloadAndExtractRepoAsync(tempDir, repoInfo);
+    await downloadAndExtractRepoAsync(templateDirectory, repoInfo);
   }
 
   return true;

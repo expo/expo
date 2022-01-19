@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { resolveBareEntryFile } from '../createNativeProjectsFromTemplateAsync';
+import { resolveBareEntryFile } from '../copyTemplateFiles';
 
 jest.mock('os');
 jest.mock('fs');

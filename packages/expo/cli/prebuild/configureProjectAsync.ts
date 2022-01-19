@@ -10,13 +10,14 @@ import {
   getOrPromptForPackage,
 } from '../utils/getOrPromptApplicationId';
 
-export async function configureProjectAsync({
-  projectRoot,
-  platforms,
-}: {
-  projectRoot: string;
-  platforms: ModPlatform[];
-}): Promise<ExpoConfig> {
+export async function configureProjectAsync(
+  projectRoot: string,
+  {
+    platforms,
+  }: {
+    platforms: ModPlatform[];
+  }
+): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
   if (platforms.includes('ios')) {
     // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.

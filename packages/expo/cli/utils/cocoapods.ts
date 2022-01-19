@@ -25,8 +25,8 @@ type PackageChecksums = {
 
 function hasNewDependenciesSinceLastBuild(projectRoot: string, packageChecksums: PackageChecksums) {
   // TODO: Maybe comparing lock files would be better...
-  const tempDir = getTempPrebuildFolder(projectRoot);
-  const tempPkgJsonPath = path.join(tempDir, CACHED_PACKAGE_JSON);
+  const templateDirectory = getTempPrebuildFolder(projectRoot);
+  const tempPkgJsonPath = path.join(templateDirectory, CACHED_PACKAGE_JSON);
   if (!fs.existsSync(tempPkgJsonPath)) {
     return true;
   }
@@ -53,8 +53,8 @@ export async function hasPackageJsonDependencyListChangedAsync(projectRoot: stri
 
   // Cache package.json
   await ensureDirectoryAsync(getTempPrebuildFolder(projectRoot));
-  const tempDir = path.join(getTempPrebuildFolder(projectRoot), CACHED_PACKAGE_JSON);
-  await JsonFile.writeAsync(tempDir, packages);
+  const templateDirectory = path.join(getTempPrebuildFolder(projectRoot), CACHED_PACKAGE_JSON);
+  await JsonFile.writeAsync(templateDirectory, packages);
 
   return hasNewDependencies;
 }

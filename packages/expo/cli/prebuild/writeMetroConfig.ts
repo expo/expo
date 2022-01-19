@@ -9,15 +9,16 @@ import { learnMore } from '../utils/link';
 import { logNewSection } from '../utils/ora';
 import { createFileHash } from './updatePackageJson';
 
-export function writeMetroConfig({
-  projectRoot,
-  pkg,
-  tempDir,
-}: {
-  projectRoot: string;
-  pkg: PackageJSONConfig;
-  tempDir: string;
-}) {
+export function writeMetroConfig(
+  projectRoot: string,
+  {
+    pkg,
+    templateDirectory,
+  }: {
+    pkg: PackageJSONConfig;
+    templateDirectory: string;
+  }
+) {
   /**
    * Add metro config, or warn if metro config already exists. The developer will need to add the
    * hashAssetFiles plugin manually.
@@ -26,7 +27,7 @@ export function writeMetroConfig({
   const updatingMetroConfigStep = logNewSection('Adding Metro bundler config');
 
   try {
-    const didChange = copyTemplateMetroConfig(projectRoot, { pkg, tempDir });
+    const didChange = copyTemplateMetroConfig(projectRoot, { pkg, templateDirectory });
     if (!didChange) {
       // Nothing to change, hide the step and exit.
       updatingMetroConfigStep.stop();
@@ -60,13 +61,13 @@ export function copyTemplateMetroConfig(
   projectRoot: string,
   {
     pkg,
-    tempDir,
+    templateDirectory,
   }: {
     pkg: PackageJSONConfig;
-    tempDir: string;
+    templateDirectory: string;
   }
 ): boolean {
-  const sourceConfigPath = path.join(tempDir, 'metro.config.js');
+  const sourceConfigPath = path.join(templateDirectory, 'metro.config.js');
   const targetConfigPath = path.join(projectRoot, 'metro.config.js');
   const targetConfigPathExists = fs.existsSync(targetConfigPath);
   if (targetConfigPathExists) {

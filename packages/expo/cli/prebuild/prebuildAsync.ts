@@ -9,9 +9,9 @@ import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
-import { createNativeProjectsFromTemplateAsync } from './createNativeProjectsFromTemplateAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { updateFromTemplateAsync } from './updateFromTemplate';
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -72,17 +72,19 @@ export async function prebuildAsync(
   assertPlatforms(options.platforms);
 
   // Get the Expo config, create it if missing.
-  const { exp, pkg } = await ensureConfigAsync({ projectRoot, platforms: options.platforms });
+  const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
 
   // Create native projects from template.
-  const { hasNewProjectFiles, needsPodInstall, hasNewDependencies } =
-    await createNativeProjectsFromTemplateAsync(projectRoot, {
+  const { hasNewProjectFiles, needsPodInstall, hasNewDependencies } = await updateFromTemplateAsync(
+    projectRoot,
+    {
       exp,
       pkg,
       template: options.template != null ? resolveTemplateOption(options.template) : undefined,
       platforms: options.platforms,
       skipDependencyUpdate: options.skipDependencyUpdate,
-    });
+    }
+  );
 
   // Install node modules
   const packageManager = resolvePackageManager({
@@ -102,8 +104,7 @@ export async function prebuildAsync(
   // Apply Expo config to native projects
   const configSyncingStep = logNewSection('Config syncing');
   try {
-    await profile(configureProjectAsync)({
-      projectRoot,
+    await profile(configureProjectAsync)(projectRoot, {
       platforms: options.platforms,
     });
     configSyncingStep.succeed('Config synced');

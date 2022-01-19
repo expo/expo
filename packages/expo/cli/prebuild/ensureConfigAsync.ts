@@ -37,13 +37,15 @@ export async function ensureConfigExistsAsync(projectRoot: string) {
   }
 }
 
-export async function ensureConfigAsync({
-  projectRoot,
-  platforms,
-}: {
-  projectRoot: string;
-  platforms: ModPlatform[];
-}): Promise<{ exp: ExpoConfig; pkg: PackageJSONConfig }> {
+/** Ensure config is written, prompts for application identifiers, and removes entryPoint value. */
+export async function ensureConfigAsync(
+  projectRoot: string,
+  {
+    platforms,
+  }: {
+    platforms: ModPlatform[];
+  }
+): Promise<{ exp: ExpoConfig; pkg: PackageJSONConfig }> {
   await ensureConfigExistsAsync(projectRoot);
 
   // Prompt for the Android package first because it's more strict than the bundle identifier
@@ -59,7 +61,8 @@ export async function ensureConfigAsync({
   // We need the SDK version to proceed
   const { exp, pkg } = getConfig(projectRoot);
 
-  // TODO: Should we attempt to persist this change?
+  // TODO(EvanBacon): Remove the requirement for this once we have a
+  // custom bundle script that respects Expo entry point resolution.
   if (exp.entryPoint) {
     delete exp.entryPoint;
     Log.log(`\u203A expo.entryPoint is not needed and has been removed.`);

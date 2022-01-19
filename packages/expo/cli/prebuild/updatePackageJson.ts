@@ -25,11 +25,11 @@ export type DependenciesModificationResults = {
 export async function updatePackageJSONAsync(
   projectRoot: string,
   {
-    tempDir,
+    templateDirectory,
     pkg,
     skipDependencyUpdate,
   }: {
-    tempDir: string;
+    templateDirectory: string;
     pkg: PackageJSONConfig;
     skipDependencyUpdate?: string[];
   }
@@ -38,7 +38,7 @@ export async function updatePackageJSONAsync(
     'Updating your package.json scripts, dependencies, and main file'
   );
 
-  const templatePkg = getPackageJson(tempDir);
+  const templatePkg = getPackageJson(templateDirectory);
 
   const results = _modifyPackageJson(projectRoot, {
     templatePkg,
