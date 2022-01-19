@@ -191,10 +191,14 @@ android {
 // android.packagingOptions.pickFirsts=/LICENSE,**/picasa.ini
 ["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
     // Split option: 'foo,bar' -> ['foo', 'bar']
+    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",");
+    // Trim all elements in place.
+    for (i in 0..<options.size()) options[i] = options[i].trim();
     // `[] - ""` is essentially `[""].filter(Boolean)` removing all empty strings.
-    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",") - "";
+    options -= ""
+
     if (options.length > 0) {
-        println "android.packagingOptions.$prop += $options $options.length"
+        println "android.packagingOptions.$prop += $options ($options.length)"
         // Ex: android.packagingOptions.pickFirsts += '**/SCCS/**'
         options.each {
             android.packagingOptions[prop] += it
