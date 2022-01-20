@@ -1,5 +1,10 @@
 import { EXPO_DEBUG } from './utils/env';
 
+/** Clear the terminal of all text. */
+export function clear(): void {
+  process.stdout.write(process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
+}
+
 export function time(label?: string): void {
   console.time(label);
 }
