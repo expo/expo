@@ -2459,7 +2459,7 @@ PODS:
     - ExpoModulesCore
   - EXClipboard (2.1.0):
     - ExpoModulesCore
-  - EXConstants (13.0.0):
+  - EXConstants (13.0.1):
     - ExpoModulesCore
   - EXContacts (10.1.0):
     - ExpoModulesCore
@@ -2481,7 +2481,7 @@ PODS:
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
-  - EXFileSystem (13.1.0):
+  - EXFileSystem (13.1.1):
     - ExpoModulesCore
   - EXFirebaseAnalytics (6.0.0):
     - EXFirebaseCore
@@ -2589,13 +2589,13 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (2.1.0):
     - ExpoModulesCore
-  - EXUpdates (0.11.4):
+  - EXUpdates (0.11.5):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.11.4):
+  - EXUpdates/Tests (0.11.5):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -5209,7 +5209,7 @@ SPEC CHECKSUMS:
   EXCalendar: b821662d595ef8d5ae20c5285f4cfcc5e58ac68c
   EXCamera: bbc12f14b807c84f570fd2acd63159a4a9d23381
   EXClipboard: 4d6ee6f9572ef999fc323e4b99c8d180e041ad33
-  EXConstants: 5d18484e38e8eacef7695a82214b6ac90133dedf
+  EXConstants: 6966f4fa7a22770dd240a66d029819ff94c748c9
   EXContacts: 6c1bab5a594d591ab08a992e494e52b7e19cb647
   EXCrypto: e3c0853c2a9ef885928f6227b967b9598132f727
   EXDevice: 7de98d8f97088fad9c01e9a68abad07e501208b2
@@ -5217,7 +5217,7 @@ SPEC CHECKSUMS:
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFacebook: ab91b0eefa108009cbeebb9b947d2d29a10e123d
   EXFaceDetector: 0307e979c5876f5c45e07edb2742268f7f35e007
-  EXFileSystem: a099e3b7d0fee5e50a39b316aa90524ad8713c5a
+  EXFileSystem: eb1082d5178aa381d20a625a766037b9c2576572
   EXFirebaseAnalytics: 27dbc5cb83c244d8404b2927676299f3e172470e
   EXFirebaseCore: 16f39b0ea94ce985a8f2e16cc796bf79bdcfa297
   EXFont: 1fb13af43dc517c01c0ff21a6e32f9f9bf2ea602
@@ -5260,7 +5260,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 31387a5533a33e5b5195c9b90d57eff11c264b18
   EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
-  EXUpdates: a3b8d5aa2ed0946c6fcee107ccd9c6ca8eada502
+  EXUpdates: 9b6dc4e9acb9fde090968c866a23cef16b863237
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: 6c08e978ed7a5542c5dca04a1757363fd29cb2a1
   EXWebBrowser: 37388663fa51cbfc883de2244931a5182d948e5f

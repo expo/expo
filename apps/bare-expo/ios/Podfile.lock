@@ -42,7 +42,7 @@ PODS:
     - ExpoModulesCore
   - EXClipboard (2.1.0):
     - ExpoModulesCore
-  - EXConstants (13.0.0):
+  - EXConstants (13.0.1):
     - ExpoModulesCore
   - EXContacts (10.1.0):
     - ExpoModulesCore
@@ -64,7 +64,7 @@ PODS:
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
-  - EXFileSystem (13.1.0):
+  - EXFileSystem (13.1.1):
     - ExpoModulesCore
   - EXFirebaseAnalytics (6.0.0):
     - EXFirebaseCore
@@ -83,7 +83,7 @@ PODS:
   - EXGoogleSignIn (10.1.0):
     - ExpoModulesCore
     - GoogleSignIn (~> 5.0.2)
-  - EXImage (0.2.0):
+  - EXImage (0.2.1):
     - React-Core
     - SDWebImage (~> 5.0)
     - SDWebImageSVGKitPlugin (~> 1.3)
@@ -1276,7 +1276,7 @@ SPEC CHECKSUMS:
   EXCalendar: b821662d595ef8d5ae20c5285f4cfcc5e58ac68c
   EXCamera: bbc12f14b807c84f570fd2acd63159a4a9d23381
   EXClipboard: 4d6ee6f9572ef999fc323e4b99c8d180e041ad33
-  EXConstants: 5d18484e38e8eacef7695a82214b6ac90133dedf
+  EXConstants: 6966f4fa7a22770dd240a66d029819ff94c748c9
   EXContacts: 6c1bab5a594d591ab08a992e494e52b7e19cb647
   EXCrypto: e3c0853c2a9ef885928f6227b967b9598132f727
   EXDevice: 7de98d8f97088fad9c01e9a68abad07e501208b2
@@ -1284,14 +1284,14 @@ SPEC CHECKSUMS:
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFacebook: ab91b0eefa108009cbeebb9b947d2d29a10e123d
   EXFaceDetector: 0307e979c5876f5c45e07edb2742268f7f35e007
-  EXFileSystem: a099e3b7d0fee5e50a39b316aa90524ad8713c5a
+  EXFileSystem: eb1082d5178aa381d20a625a766037b9c2576572
   EXFirebaseAnalytics: 27dbc5cb83c244d8404b2927676299f3e172470e
   EXFirebaseCore: 16f39b0ea94ce985a8f2e16cc796bf79bdcfa297
   EXFont: 1fb13af43dc517c01c0ff21a6e32f9f9bf2ea602
   EXGL: 95631064ed19b9fc8dfbedcc71c205961ae3c954
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
-  EXImage: ee032fea95d6a21800d6678eb14d1face73236d6
+  EXImage: 392847b1bda1061e59b3d2c3c1e425306c968208
   EXImageLoader: df83442d32bcfb57b7cfc5690096b6caf8203f8d
   EXImageManipulator: 810c7ea8d4cdcc52d07ad377a9b4ffeaee3d937f
   EXImagePicker: 91337b8d57a0a8f56800b9ac0f2b2f10aecf88ce
