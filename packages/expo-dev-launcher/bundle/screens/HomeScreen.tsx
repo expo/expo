@@ -133,7 +133,7 @@ export function HomeScreen({
                     <Spacer.Vertical size="small" />
 
                     <View bg="secondary" border="default" rounded="medium" padding="medium">
-                      <Text type="mono">expo start</Text>
+                      <Text type="mono">expo start --dev-client</Text>
                     </View>
 
                     <Spacer.Vertical size="small" />

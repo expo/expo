@@ -3,6 +3,8 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.views.GroupViewManagerWrapper
 import expo.modules.kotlin.views.SimpleViewManagerWrapper
 import expo.modules.kotlin.views.ViewManagerWrapperDelegate
@@ -26,9 +28,16 @@ class KotlinInteropModuleRegistry(
   fun hasModule(name: String): Boolean = registry.hasModule(name)
 
   fun callMethod(moduleName: String, method: String, arguments: ReadableArray, promise: Promise) {
-    registry
-      .getModuleHolder(moduleName)
-      ?.call(method, arguments, promise)
+    try {
+      requireNotNull(
+        registry.getModuleHolder(moduleName)
+      ) { "Trying to call '$method' on the non-existing module '$moduleName'" }
+        .call(method, arguments, promise)
+    } catch (e: CodedException) {
+      promise.reject(e)
+    } catch (e: Throwable) {
+      promise.reject(UnexpectedException(e))
+    }
   }
 
   fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> {

@@ -10,12 +10,13 @@
     "*.fx.web.js"
   ],
   "bin": {
-    "expo": "bin/cli.js"
+    "expo": "build/bin/cli.js"
   },
   "files": [
     "android",
     "bin",
     "build",
+    "build-cli",
     "ios",
     "scripts",
     "tools",
@@ -28,12 +29,15 @@
     "tsconfig.base.json"
   ],
   "scripts": {
+    "build:cli": "taskr",
+    "prepare:cli": "taskr release",
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "test:cli": "jest --config jest.cli.config.js",
+    "test:cli:e2e": "cross-env E2E=1 jest --config jest.cli.config.js",
+    "prepublishOnly": "npm run prepare:cli && expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "jest": {
@@ -55,9 +59,13 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
+    "@expo/config": "^6.0.15",
+    "@expo/config-plugins": "^4.0.15",
     "@expo/metro-config": "~0.3.7",
+    "@expo/prebuild-config": "^3.0.15",
     "@expo/vector-icons": "^12.0.4",
     "babel-preset-expo": "~9.0.1",
+    "chalk": "^4.0.0",
     "cross-spawn": "^6.0.5",
     "expo-application": "~4.0.1",
     "expo-asset": "~8.4.5",
@@ -68,6 +76,7 @@
     "expo-modules-autolinking": "0.5.5",
     "expo-modules-core": "0.6.1",
     "fbemitter": "^2.1.1",
+    "getenv": "^1.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "pretty-format": "^26.5.2",
@@ -76,16 +85,28 @@
   "optionalDependencies": {
     "expo-error-recovery": "~3.0.4"
   },
+  "taskr": {
+    "requires": [
+      "./taskfile-swc.js"
+    ]
+  },
   "devDependencies": {
+    "@swc/core": "^1.2.126",
+    "@taskr/clear": "1.1.0",
+    "@taskr/esnext": "1.1.0",
+    "@taskr/watch": "1.1.0",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.33",
     "@types/react": "~17.0.21",
     "@types/react-native": "~0.64.12",
     "@types/react-test-renderer": "^17.0.1",
     "@types/uuid": "^3.4.7",
+    "arg": "4.1.0",
+    "cross-env": "^7.0.3",
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-native": "0.64.3"
+    "react-native": "0.64.3",
+    "taskr": "1.1.0"
   }
 }

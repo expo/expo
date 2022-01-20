@@ -128,3 +128,23 @@ dependencies {
 repositories {
   mavenCentral()
 }
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.implementation.getDependencies().removeIf { it ->
+  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
+    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testImplementation', artifact)
+  dependencies.add('androidTestImplementation', artifact)
+  configurations.all {
+    resolutionStrategy.force(artifact)
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue

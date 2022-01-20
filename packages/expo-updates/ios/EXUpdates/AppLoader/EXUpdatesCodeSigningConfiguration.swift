@@ -57,9 +57,16 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
     algorithm = try parseCodeSigningAlgorithm(metadata[EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey])
   }
   
+  /**
+   * String escaping is defined by https://www.rfc-editor.org/rfc/rfc8941.html#section-3.3.3
+   */
+  private static func escapeStructuredHeaderStringItem(_ str: String) -> String {
+    return str.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
+  }
+  
   @objc
   public func createAcceptSignatureHeader() -> String {
-    return "sig, keyid=\"\(keyId)\", alg=\"\(algorithm.rawValue)\""
+    return "sig, keyid=\"\(EXUpdatesCodeSigningConfiguration.escapeStructuredHeaderStringItem(keyId))\", alg=\"\(EXUpdatesCodeSigningConfiguration.escapeStructuredHeaderStringItem(algorithm.rawValue))\""
   }
   
   @objc

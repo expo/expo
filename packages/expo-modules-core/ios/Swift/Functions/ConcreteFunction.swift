@@ -47,8 +47,8 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
     } catch let error as CodedError {
       promise.reject(FunctionCallException(name).causedBy(error))
       return
-    } catch let error {
-      promise.reject(UnexpectedError(error))
+    } catch {
+      promise.reject(UnexpectedException(error))
       return
     }
     if !takesPromise {
@@ -114,18 +114,18 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
 
 internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int)> {
   override var reason: String {
-    "Received \(params.received) arguments, but \(params.expected) was expected."
+    "Received \(param.received) arguments, but \(param.expected) was expected"
   }
 }
 
 internal class ArgumentCastException: GenericException<(index: Int, type: AnyArgumentType)> {
   override var reason: String {
-    "Argument at index '\(params.index)' couldn't be casted to type '\(params.type.description)'."
+    "Argument at index '\(param.index)' couldn't be cast to type \(param.type.description)"
   }
 }
 
 internal class FunctionCallException: GenericException<String> {
   override var reason: String {
-    "Call to function '\(params)' has been rejected."
+    "Call to function '\(param)' has been rejected"
   }
 }

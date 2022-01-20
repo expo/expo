@@ -170,7 +170,7 @@ class FunctionSpec: QuickSpec {
         .call(function: functionName, args: [1]) { value, error in
           expect(error).notTo(beNil())
           expect(error).to(beAKindOf(FunctionCallException.self))
-          expect((error as! Exception).isCausedBy(Conversions.CastingError<String>.self)) == true
+          expect((error as! Exception).isCausedBy(Conversions.CastingException<String>.self)) == true
           done()
         }
       }

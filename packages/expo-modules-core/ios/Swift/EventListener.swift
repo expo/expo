@@ -20,7 +20,7 @@ internal struct EventListener: AnyDefinition {
     self.name = name
     self.call = { sender, _ in
       guard let sender = sender as? Sender else {
-        throw InvalidSenderTypeError(eventName: name, senderType: Sender.self)
+        throw InvalidSenderTypeException((eventName: name, senderType: Sender.self))
       }
       listener(sender)
     }
@@ -33,18 +33,16 @@ internal struct EventListener: AnyDefinition {
     self.name = name
     self.call = { sender, payload in
       guard let sender = sender as? Sender else {
-        throw InvalidSenderTypeError(eventName: name, senderType: Sender.self)
+        throw InvalidSenderTypeException((eventName: name, senderType: Sender.self))
       }
       listener(sender, payload as? PayloadType)
     }
   }
 }
 
-struct InvalidSenderTypeError: CodedError {
-  var eventName: EventName
-  var senderType: Any.Type
-  var description: String {
-    "Sender for event `\(eventName)` must be of type `\(senderType)`."
+class InvalidSenderTypeException: GenericException<(eventName: EventName, senderType: Any.Type)> {
+  override var reason: String {
+    "Sender for event '\(param.eventName)' must be of type \(param.senderType)"
   }
 }
 
