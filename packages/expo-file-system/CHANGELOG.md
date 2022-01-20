@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 13.2.0 — 2021-12-22
+
+### 🐛 Bug fixes
+
 - Fixed runtime crash due to `.toUpperCase` not being invoked as a function, it was missing `()`. ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
 - Fixed `totalByteSent` in upload progress callback incorrectly sending `bytesSent` on iOS. ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
 - Fixed simulator runtime crash on arm64 devices caused by `CFRelease(NULL)`. ([#15496](https://github.com/expo/expo/pull/15496) by [@daxaxelrod](https://github.com/daxaxelrod))
@@ -18,9 +26,7 @@
 
 ## 13.1.1 — 2022-01-20
 
-### 🐛 Bug fixes
-
-- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
+_This version does not introduce any user-facing changes._
 
 ## 13.1.0 — 2021-11-17
 
