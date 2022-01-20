@@ -36,9 +36,9 @@
   return self;
 }
 
-+ (void)registerWithBridge:(RCTBridge *)bridge
++ (void)registerWithBridge:(RCTBridge *)bridge andManifest:(NSDictionary *)manifest
 {
-  EXDevMenuInstance *instance = [[EXDevMenuInstance alloc] initWithBridge:bridge];
+  EXDevMenuInstance *instance = [[EXDevMenuInstance alloc] initWithBridge:bridge andManifest:manifest];
   [EXDevMenuRegistry registerWithInstance:instance];
 }
 

@@ -361,7 +361,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
   
   
-  [EXDevMenuRegistry registerWithBridge:self.appBridge];
+  [EXDevMenuRegistry registerWithBridge:self.appBridge andManifest:self.manifest];
   
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
