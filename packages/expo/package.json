@@ -126,9 +126,9 @@
     "cross-env": "^7.0.3",
     "expo-module-scripts": "^2.0.0",
     "klaw-sync": "^6.0.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-native": "0.64.3",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-native": "0.66.4",
     "taskr": "1.1.0"
   }
 }

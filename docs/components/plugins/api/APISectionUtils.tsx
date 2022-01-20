@@ -92,9 +92,6 @@ const omittableTypes = [
  * Map of internal names/type names that should be replaced with something more developer-friendly.
  */
 const replaceableTypes: Partial<Record<string, string>> = {
-  /**
-   *
-   */
   ForwardRefExoticComponent: 'Component',
 };
 
@@ -148,6 +145,7 @@ export const resolveTypeName = ({
   declaration,
   value,
   queryType,
+  operator,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   try {
     if (name) {
@@ -274,6 +272,8 @@ export const resolveTypeName = ({
             {index + 1 !== array.length && ' & '}
           </span>
         ));
+    } else if (type === 'typeOperator') {
+      return operator || 'undefined';
     } else if (value === null) {
       return 'null';
     }

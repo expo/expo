@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 13.2.1 — 2022-01-20
+
+### 🐛 Bug fixes
+
+- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
+
 ## 13.2.0 — 2021-12-22
 
 ### 🐛 Bug fixes
@@ -21,6 +27,10 @@
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.1.1 — 2022-01-20
+
+_This version does not introduce any user-facing changes._
 
 ## 13.1.0 — 2021-11-17
 

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
-import { GeneratedData } from '~/components/plugins/api/APIDataTypes';
+import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
 import APISectionConstants from '~/components/plugins/api/APISectionConstants';
@@ -51,7 +51,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
     : false);
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants'].includes(name) &&
+  !['default', 'Constants', 'EventEmitter'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const renderAPI = (
@@ -121,9 +121,33 @@ const renderAPI = (
       entry => !isComponent(entry) && (apiName ? !entry.name.includes(apiName) : true)
     );
 
+    const componentsChildren = components
+      .map((cls: ClassDefinitionData) =>
+        cls.children?.filter(
+          child =>
+            child.kind === TypeDocKind.Method &&
+            child?.flags?.isExternal !== true &&
+            child.name !== 'render' &&
+            // note(simek): hide unannotated "private" methods
+            !child.name.startsWith('_')
+        )
+      )
+      .flat();
+
+    const methodsNames = methods.map(method => method.name);
+    const staticMethods = componentsChildren.filter(
+      // note(simek): hide duplicate exports for Camera API
+      method => method?.flags?.isStatic === true && !methodsNames.includes(method.name)
+    );
+    const componentMethods = componentsChildren
+      .filter(method => method?.flags?.isStatic !== true && !method?.overwrites)
+      .filter(Boolean);
+
     return (
       <>
         <APISectionComponents data={components} componentsProps={componentsProps} />
+        <APISectionMethods data={staticMethods} header="Static Methods" />
+        <APISectionMethods data={componentMethods} header="Component Methods" />
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={hooks} header="Hooks" />
         <APISectionClasses data={classes} />

@@ -159,3 +159,30 @@ def getRNVersion() {
       patch
   )
 }
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.implementation.getDependencies().removeIf { it ->
+  if (it.group == 'com.squareup.okhttp3' && it.name == 'okhttp') {
+    okhttpPinnedArtifacts.add(it)
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testImplementation', artifact)
+  configurations.all { conf ->
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+      def requested = details.requested
+      // Only to pin old okhttp in compile phase because mockwebserver requires okhttp4
+      if (conf.name.contains('Compile')) {
+        if (requested.group == artifact.group && requested.name == artifact.name) {
+          details.useVersion artifact.version
+        }
+      }
+    }
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue

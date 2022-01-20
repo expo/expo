@@ -19,7 +19,7 @@ import {
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionMethodsProps = {
-  data: MethodDefinitionData[];
+  data: (MethodDefinitionData | PropData)[];
   apiName?: string;
   header?: string;
 };
@@ -73,7 +73,9 @@ const APISectionMethods = ({ data, apiName, header = 'Methods' }: APISectionMeth
   data?.length ? (
     <>
       <H2 key="methods-header">{header}</H2>
-      {data.map((method, index) => renderMethod(method, index, data.length, apiName, header))}
+      {data.map((method: MethodDefinitionData | PropData, index: number) =>
+        renderMethod(method, index, data.length, apiName, header)
+      )}
     </>
   ) : null;
 

@@ -4,8 +4,8 @@ import groovy.json.JsonSlurper
 
 buildscript {
     ext {
-        buildToolsVersion = "30.0.5"
-        gradlePluginVersion = '4.1.2'
+        buildToolsVersion = "30.0.2"
+        gradlePluginVersion = '4.2.2'
         minSdkVersion = 21
         compileSdkVersion = 30
         targetSdkVersion = 30
