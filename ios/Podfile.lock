@@ -2519,9 +2519,9 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (11.1.0):
     - ExpoModulesCore
-  - EXManifests (0.2.2):
+  - EXManifests (0.2.3):
     - EXJSONUtils
-  - EXManifests/Tests (0.2.2):
+  - EXManifests/Tests (0.2.3):
     - EXJSONUtils
   - EXMediaLibrary (14.0.0):
     - ExpoModulesCore
@@ -2532,7 +2532,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.1.0):
     - ExpoModulesCore
-  - Expo (44.0.4):
+  - Expo (44.0.5):
     - ExpoModulesCore
   - ExpoCellular (4.1.0):
     - ExpoModulesCore
@@ -5232,12 +5232,12 @@ SPEC CHECKSUMS:
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
   EXLocation: 0cf83c4cc0441fdcefc59f553ac6486a48d8b1d2
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
-  EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
+  EXManifests: d854c4d16fde48a19a2c2b6785b303177597bd08
   EXMediaLibrary: 92ad88fa1904ad703b636ce4818cd6d5c5ba653b
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
-  Expo: d9b8b5e49c200471fc473a652a84fe30dee73027
+  Expo: 337c72b7e9314e93023af79c875930db8e008275
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
@@ -5341,6 +5341,6 @@ SPEC CHECKSUMS:
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7c71ae606a1e83e2827e31f0cce4ef247399610e
+PODFILE CHECKSUM: 1c1a40349b560b1ce4aa426b37df4fe50b9262ba
 
 COCOAPODS: 1.11.2

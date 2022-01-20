@@ -17,6 +17,10 @@ useExpoModules([
         'expo-module-template',
         'expo-in-app-purchases',
         'react-native-reanimated',
+        'expo-dev-menu-interface',
+        'expo-dev-menu',
+        'expo-dev-launcher',
+        'expo-dev-client'
     ],
     searchPaths: [
       'enabled-modules'
@@ -59,6 +63,10 @@ useExpoModules([
     exclude : [
         'expo-module-template',
         'react-native-reanimated',
+        'expo-dev-menu-interface',
+        'expo-dev-menu',
+        'expo-dev-launcher',
+        'expo-dev-client'
     ]
 ])
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
