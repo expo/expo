@@ -2,6 +2,8 @@
 
 @import UIKit;
 
+#import <ExpoModulesCore/EXDefines.h>
+
 #import "EXAppViewController.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
@@ -156,72 +158,77 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
 {
+  // Some transition is in progress
   if (_isAnimatingAppTransition) {
     return;
   }
+  
   EXAppViewController *viewControllerToShow = appRecord.viewController;
-  EXAppViewController *viewControllerToHide;
-  if (viewControllerToShow != self.contentViewController) {
-    _isAnimatingAppTransition = YES;
-    if (self.contentViewController) {
-      viewControllerToHide = (EXAppViewController *)self.contentViewController;
-    }
-    if (viewControllerToShow) {
-      [viewControllerToShow willMoveToParentViewController:self];
-      [self.view addSubview:viewControllerToShow.view];
-      [viewControllerToShow foregroundControllers];
-    }
-
-    __weak typeof(self) weakSelf = self;
-    void (^transitionFinished)(void) = ^{
-      __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
-        if (viewControllerToHide) {
-          // backgrounds and then dismisses all modals that are presented by the app
-          [viewControllerToHide backgroundControllers];
-          [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
-          [viewControllerToHide willMoveToParentViewController:nil];
-          [viewControllerToHide.view removeFromSuperview];
-          [viewControllerToHide didMoveToParentViewController:nil];
-        }
-        if (viewControllerToShow) {
-          [viewControllerToShow didMoveToParentViewController:strongSelf];
-          strongSelf.contentViewController = viewControllerToShow;
-        }
-        [strongSelf.view setNeedsLayout];
-        strongSelf.isAnimatingAppTransition = NO;
-        if (strongSelf.delegate) {
-          [strongSelf.delegate viewController:strongSelf didNavigateAppToVisible:appRecord];
-        }
-      }
-    };
-
-    BOOL animated = (viewControllerToHide && viewControllerToShow);
-    if (animated) {
-      if (viewControllerToHide.contentView) {
-        viewControllerToHide.contentView.transform = CGAffineTransformIdentity;
-        viewControllerToHide.contentView.alpha = 1.0f;
-      }
-      if (viewControllerToShow.contentView) {
-        viewControllerToShow.contentView.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
-        viewControllerToShow.contentView.alpha = 0;
-      }
-      [UIView animateWithDuration:0.3f animations:^{
-        if (viewControllerToHide.contentView) {
-          viewControllerToHide.contentView.transform = CGAffineTransformMakeScale(0.95f, 0.95f);
-          viewControllerToHide.contentView.alpha = 0.5f;
-        }
-        if (viewControllerToShow.contentView) {
-          viewControllerToShow.contentView.transform = CGAffineTransformIdentity;
-          viewControllerToShow.contentView.alpha = 1.0f;
-        }
-      } completion:^(BOOL finished) {
-        transitionFinished();
-      }];
-    } else {
-      transitionFinished();
-    }
+  
+  // Tried to foregroung the very same view controller
+  if (viewControllerToShow == self.contentViewController) {
+    return;
   }
+  
+  _isAnimatingAppTransition = YES;
+  
+  EXAppViewController *viewControllerToHide = (EXAppViewController *)self.contentViewController;
+  
+  if (viewControllerToShow) {
+    [self.view addSubview:viewControllerToShow.view];
+    [self addChildViewController:viewControllerToShow];
+  }
+
+  EX_WEAKIFY(self)
+  void (^finalizeTransition)(void) = ^{
+    EX_ENSURE_STRONGIFY(self)
+    if (viewControllerToHide) {
+      // backgrounds and then dismisses all modals that are presented by the app
+      [viewControllerToHide backgroundControllers];
+      [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
+      [viewControllerToHide willMoveToParentViewController:nil];
+      [viewControllerToHide removeFromParentViewController];
+      [viewControllerToHide.view removeFromSuperview];
+    }
+  
+    if (viewControllerToShow) {
+      [viewControllerToShow didMoveToParentViewController:self];
+      self.contentViewController = viewControllerToShow;
+    }
+    
+    [self.view setNeedsLayout];
+    self.isAnimatingAppTransition = NO;
+    if (self.delegate) {
+      [self.delegate viewController:self didNavigateAppToVisible:appRecord];
+    }
+  };
+
+  BOOL animated = (viewControllerToHide && viewControllerToShow);
+  if (!animated) {
+    return finalizeTransition();
+  }
+  
+  if (viewControllerToHide.contentView) {
+    viewControllerToHide.contentView.transform = CGAffineTransformIdentity;
+    viewControllerToHide.contentView.alpha = 1.0f;
+  }
+  if (viewControllerToShow.contentView) {
+    viewControllerToShow.contentView.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
+    viewControllerToShow.contentView.alpha = 0;
+  }
+
+  [UIView animateWithDuration:0.3f animations:^{
+    if (viewControllerToHide.contentView) {
+      viewControllerToHide.contentView.transform = CGAffineTransformMakeScale(0.95f, 0.95f);
+      viewControllerToHide.contentView.alpha = 0.5f;
+    }
+    if (viewControllerToShow.contentView) {
+      viewControllerToShow.contentView.transform = CGAffineTransformIdentity;
+      viewControllerToShow.contentView.alpha = 1.0f;
+    }
+  } completion:^(BOOL finished) {
+    finalizeTransition();
+  }];
 }
 
 - (EXHomeAppManager *)_getHomeAppManager
