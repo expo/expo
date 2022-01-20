@@ -52,10 +52,10 @@ describe(ensureNativeProps, () => {
         },
         // Web and node
         default: {
-          autoFocus: 'auto',
-          flashMode: 'torch',
-          type: 'front',
-          whiteBalance: 'continuous',
+          autoFocus: 'auto' as AutoFocus,
+          flashMode: 'torch' as FlashMode,
+          type: 'front' as CameraType,
+          whiteBalance: 'continuous' as WhiteBalance,
           barCodeScannerSettings: {},
           onBarCodeScanned,
           onFacesDetected,
