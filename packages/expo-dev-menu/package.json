@@ -56,8 +56,8 @@
     "fuse.js": "^6.4.6",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
-    "react": "17.0.1",
-    "react-native": "0.64.3",
+    "react": "17.0.2",
+    "react-native": "0.66.4",
     "url": "^0.11.0"
   },
   "peerDependencies": {
