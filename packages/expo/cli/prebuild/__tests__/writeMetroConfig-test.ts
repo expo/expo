@@ -2,9 +2,6 @@ import { vol } from 'memfs';
 
 import { copyTemplateMetroConfig } from '../writeMetroConfig';
 
-jest.mock('fs');
-jest.mock('resolve-from');
-
 describe(copyTemplateMetroConfig, () => {
   afterEach(() => {
     vol.reset();

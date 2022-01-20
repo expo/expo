@@ -7,8 +7,6 @@ import {
   resolveTemplateOption,
 } from '../resolveOptions';
 
-jest.mock('fs');
-
 describe(resolvePlatformOption, () => {
   const platform = process.platform;
 

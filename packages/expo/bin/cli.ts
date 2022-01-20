@@ -44,7 +44,7 @@ if (!isSubcommand && args['--help']) {
       {bold $} npx expo <command>
 
     {bold Available commands}
-      ${Object.keys(commands).join(', ')}
+      ${Object.keys(commands).sort().join(', ')}
 
     {bold Options}
       --version, -v   Version number

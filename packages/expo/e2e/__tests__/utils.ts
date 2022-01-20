@@ -64,7 +64,7 @@ async function installAsync(projectRoot: string) {
  * @param parentDir Directory to create the project folder in, i.e. os temp directory
  * @param props.dirName Name of the project folder, used to prevent recreating the project locally
  * @param props.reuseExisting Should reuse the existing project if possible, good for testing locally
- * @param props.fixtureName Name of the fixture folder to use, this must map to the directories in the `expo-cli/e2e/fixtures/` folder
+ * @param props.fixtureName Name of the fixture folder to use, this must map to the directories in the `expo/e2e/fixtures/` folder
  * @param props.config Optional extra values to add inside the app.json `expo` object
  * @param props.pkg Optional extra values to add to the fixture package.json file before installing
  * @returns The project root that can be tested inside of
@@ -99,7 +99,7 @@ export async function createFromFixtureAsync(
   }
 
   try {
-    const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
+    const fixturePath = path.join(__dirname, '../fixtures', fixtureName);
 
     if (!fs.existsSync(fixturePath)) {
       throw new Error('No fixture project named: ' + fixtureName);

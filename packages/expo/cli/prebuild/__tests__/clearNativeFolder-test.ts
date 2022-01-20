@@ -3,9 +3,6 @@ import { vol } from 'memfs';
 import { getMalformedNativeProjectsAsync } from '../clearNativeFolder';
 import rnFixture from './fixtures/react-native-project';
 
-jest.mock('fs');
-jest.mock('resolve-from');
-
 describe(getMalformedNativeProjectsAsync, () => {
   afterEach(() => {
     vol.reset();

@@ -3,9 +3,6 @@ import { vol } from 'memfs';
 
 import { ensureConfigExistsAsync } from '../ensureConfigAsync';
 
-jest.mock('fs');
-jest.mock('resolve-from');
-
 describe(ensureConfigExistsAsync, () => {
   const projectRoot = '/alpha';
   const projectRootBeta = '/beta';

@@ -2,10 +2,6 @@ import { vol } from 'memfs';
 
 import { resolveBareEntryFile } from '../copyTemplateFiles';
 
-jest.mock('os');
-jest.mock('fs');
-jest.mock('resolve-from');
-
 describe(resolveBareEntryFile, () => {
   const projectRoot = '/alpha';
   const projectRootBeta = '/beta';

@@ -7,17 +7,10 @@ import {
   validateBundleId,
   validatePackage,
 } from '../validateApplicationId';
+import { stripAnsi } from './utils';
 
 jest.mock('../url');
 jest.mock('node-fetch');
-
-const originalForceColor = process.env.FORCE_COLOR;
-beforeAll(async () => {
-  process.env.FORCE_COLOR = '1';
-});
-afterAll(() => {
-  process.env.FORCE_COLOR = originalForceColor;
-});
 
 describe(validateBundleId, () => {
   it(`validates`, () => {
@@ -66,8 +59,10 @@ describe(getBundleIdWarningAsync, () => {
         });
       },
     }));
-    expect(await getBundleIdWarningAsync('com.bacon.pillarvalley')).toMatchInlineSnapshot(
-      `"⚠️  The app [1mPillar Valley[22m by [3mEvan Bacon[23m is already using [1mcom.bacon.pillarvalley[22m"`
+    expect(
+      stripAnsi(await getBundleIdWarningAsync('com.bacon.pillarvalley'))
+    ).toMatchInlineSnapshot(
+      `"⚠️  The app Pillar Valley by Evan Bacon is already using com.bacon.pillarvalley"`
     );
   });
 });
@@ -82,8 +77,10 @@ describe(getPackageNameWarningAsync, () => {
     (fetch as any).mockImplementationOnce(() => ({
       status: 200,
     }));
-    expect(await getPackageNameWarningAsync('com.bacon.pillarvalley')).toMatchInlineSnapshot(
-      `"⚠️  The package [1mcom.bacon.pillarvalley[22m is already in use. [2mLearn more: [4mhttps://play.google.com/store/apps/details?id=com.bacon.pillarvalley[24m[22m"`
+    expect(
+      stripAnsi(await getPackageNameWarningAsync('com.bacon.pillarvalley'))
+    ).toMatchInlineSnapshot(
+      `"⚠️  The package com.bacon.pillarvalley is already in use. Learn more: https://play.google.com/store/apps/details?id=com.bacon.pillarvalley"`
     );
   });
 });

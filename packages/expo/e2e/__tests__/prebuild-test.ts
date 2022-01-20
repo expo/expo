@@ -1,9 +1,9 @@
 /* eslint-env jest */
+import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs/promises';
-import path from 'path';
 import klawSync from 'klaw-sync';
-import JsonFile from '@expo/json-file';
+import path from 'path';
 
 import { bin, execute, projectRoot, getRoot, setupTestProjectAsync } from './utils';
 
@@ -66,9 +66,7 @@ it(
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
     // `npx expo prebuild --no-install`
-    const results = await execa('node', [bin, 'prebuild', '--no-install'], { cwd: projectRoot });
-
-    console.log(results);
+    await execa('node', [bin, 'prebuild', '--no-install'], { cwd: projectRoot });
 
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
@@ -88,7 +86,7 @@ it(
     expect(pkg.main).not.toBeDefined();
 
     // Added new packages
-    expect(Object.keys(pkg.dependencies)).toStrictEqual([
+    expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
       'expo',
       'expo-splash-screen',
       'expo-status-bar',
@@ -115,10 +113,10 @@ it(
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
-        "android/app/src/debug/java/com/bacon/foobar/ReactNativeFlipper.java",
+        "android/app/src/debug/java/com/example/minimal/ReactNativeFlipper.java",
         "android/app/src/main/AndroidManifest.xml",
-        "android/app/src/main/java/com/bacon/foobar/MainActivity.java",
-        "android/app/src/main/java/com/bacon/foobar/MainApplication.java",
+        "android/app/src/main/java/com/example/minimal/MainActivity.java",
+        "android/app/src/main/java/com/example/minimal/MainApplication.java",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
@@ -145,29 +143,30 @@ it(
         "index.js",
         "ios/Podfile",
         "ios/Podfile.properties.json",
-        "ios/foobar/AppDelegate.h",
-        "ios/foobar/AppDelegate.m",
-        "ios/foobar/Images.xcassets/AppIcon.appiconset/Contents.json",
-        "ios/foobar/Images.xcassets/Contents.json",
-        "ios/foobar/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
-        "ios/foobar/Images.xcassets/SplashScreenBackground.imageset/image.png",
-        "ios/foobar/Info.plist",
-        "ios/foobar/SplashScreen.storyboard",
-        "ios/foobar/Supporting/Expo.plist",
-        "ios/foobar/foobar-Bridging-Header.h",
-        "ios/foobar/foobar.entitlements",
-        "ios/foobar/main.m",
-        "ios/foobar/noop-file.swift",
-        "ios/foobar.xcodeproj/project.pbxproj",
-        "ios/foobar.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
-        "ios/foobar.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
-        "ios/foobar.xcodeproj/project.xcworkspace/xcuserdata/brentvatne.xcuserdatad/UserInterfaceState.xcuserstate",
-        "ios/foobar.xcodeproj/xcshareddata/xcschemes/foobar.xcscheme",
+        "ios/basicprebuild/AppDelegate.h",
+        "ios/basicprebuild/AppDelegate.m",
+        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
+        "ios/basicprebuild/Images.xcassets/Contents.json",
+        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
+        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/image.png",
+        "ios/basicprebuild/Info.plist",
+        "ios/basicprebuild/SplashScreen.storyboard",
+        "ios/basicprebuild/Supporting/Expo.plist",
+        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
+        "ios/basicprebuild/basicprebuild.entitlements",
+        "ios/basicprebuild/main.m",
+        "ios/basicprebuild/noop-file.swift",
+        "ios/basicprebuild.xcodeproj/project.pbxproj",
+        "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcuserdata/brentvatne.xcuserdatad/UserInterfaceState.xcuserstate",
+        "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
         "metro.config.js",
         "package.json",
         "yarn.lock",
       ]
     `);
   },
-  45 * 1000
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
 );

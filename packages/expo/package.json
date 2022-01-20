@@ -35,8 +35,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "test:cli": "jest --config jest.cli.config.js",
-    "test:cli:e2e": "cross-env E2E=1 jest --config jest.cli.config.js",
+    "test:cli": "jest --config e2e/jest-cli.config.js",
+    "test:cli:e2e": "jest --config e2e/jest-e2e.config.js",
     "prepublishOnly": "npm run prepare:cli && expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
