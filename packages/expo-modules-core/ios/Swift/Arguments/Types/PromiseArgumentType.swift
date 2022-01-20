@@ -8,7 +8,7 @@ internal struct PromiseArgumentType: AnyArgumentType {
     if let value = value as? Promise {
       return value
     }
-    throw Conversions.CastingError<Promise>(value: value)
+    throw Conversions.CastingException<Promise>(value)
   }
 
   var description: String = "Promise"

@@ -30,7 +30,7 @@ EAS Update requires the following versions or greater:
    eas login
    ```
 
-3. After logging in, you can verify the logged in account with `eas whoami`.
+3. After logging in, you can verify the logged-in account with `eas whoami`.
 
 ## Create a project
 
@@ -45,7 +45,7 @@ expo init
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   yarn add expo-updates@0.11.2
+   expo install expo-updates
    ```
 
 2. Initialize your project with EAS Update:
@@ -79,9 +79,9 @@ expo init
    }
    ```
 
-   This `channel` property will allow you to point updates at builds. For example, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will publish an update that will be made available to builds with the channel "production".
+   The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
 
-5. Optional: If your project is a bare React Native project, [read the doc](/eas-update/bare-react-native) on extra configuration you may need.
+5. Optional: If your project is a bare React Native project, [read the doc](/eas-update/bare-react-native) on additional configuration you may need.
 
 ## Create a build for the project
 
@@ -120,8 +120,7 @@ eas update --branch preview --message "Updating the app"
 
 Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
 
-> ⚠️ While EAS Update is in "preview" we are only allowing up to 100 assets to be uploaded in a single publish.
-
+> ⚠️ While EAS Update is in "preview" we are only allowing up to 300 assets to be uploaded in a single publish.
 
 ## Next
 

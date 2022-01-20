@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 EAS Update is a service that allows you to deliver small bug fixes and updates to your users immediately as you work on your next app store release. Making an update available to builds involves creating a link between a build and an update.
 
-To create a link between a build and an update, we have to make sure the update can run on the build. We also want to make sure we can create a deployment process, so that we can expose certain updates to certain builds when we're ready.
+To create a link between a build and an update, we have to make sure the update can run on the build. We also want to make sure we can create a deployment process so that we can expose certain updates to certain builds when we're ready.
 
 To illustrate how builds and updates interact, take a look at the following diagram:
 
@@ -18,15 +18,15 @@ To make sure the update can run on the build, we have to set a variety of proper
 
 ## Conceptual overview
 
-**Creating a build**
+**Distributing builds**
 
-When we're ready to create a build of our Expo project, we can run a command like `eas build` to create a build. During the build, the process will include some properties inside the build that are important for updates. They are:
+When we're ready to create a build of our Expo project, we can run `eas build` to create a build. During the build, the process will include some properties inside the build that are important for updates. They are:
 
-- Channel: The channel is a name we can give to multiple builds to identify them easily. It is defined in **eas.json**. For instance, we may have an Android and an iOS build with a channel named "production", while we have another pair of builds with a channel named "staging". Then, we can distribute the builds with the "production" channel to the public app stores, while keeping the "staging" builds on the Play Store Internal Track and TestFlight. Later when we publish updates, we can target the builds with the "staging" channel first; then once we test our changes, we can target the builds with the "production" channel.
-- Runtime version: The runtime version describes the JS–native interface defined by the native code layer that runs our app's update layer. It is defined in **app.json** or **app.config.js**. Whenever we make changes to our native code that change our app's JS–native interface, we'll need to update the runtime version.
+- Channel: The channel is a name we can give to multiple builds to identify them easily. It is defined in **eas.json**. For instance, we may have an Android and an iOS build with a channel named "production", while we have another pair of builds with a channel named "staging". Then, we can distribute the builds with the "production" channel to the public app stores, while keeping the "staging" builds on the Play Store Internal Track and TestFlight. Later when we publish an update, we can make it available to the builds with the "staging" channel first; then once we test our changes, we can make the update available to the builds with the "production" channel.
+- Runtime version: The runtime version describes the JS–native interface defined by the native code layer that runs our app's update layer. It is defined in a project's app config (**app.json**/**app.config.js**). Whenever we make changes to our native code that change our app's JS–native interface, we'll need to update the runtime version. [Learn more.](/eas-update/runtime-versions)
 - Platform: Every build has a platform, such as "Android" or "iOS".
 
-If we were to make two builds with the channel named "staging" and two builds with the channel named "production", we'd end up with something like this:
+If we made two sets of builds with the channels named "staging" and "production", we could distribute builds to four different places:
 
 <ImageSpotlight alt="Build types diagram" src="/static/images/eas-update/builds.png" />
 
@@ -34,9 +34,9 @@ This diagram is just an example of how you could create builds and name their ch
 
 **Publishing an update**
 
-After we've created builds, we can change the update layer of our project and publish it as an update, which will make our changes available to certain builds. For example, we could change some text inside **App.js**, and then we could publish that change as an update.
+Once we've created builds, we can change the update layer of our project by publishing an update. For example, we could change some text inside **App.js**, then we could publish that change as an update.
 
-To publish an update, we can run `eas update --auto`. This command will create a local update bundle inside the **dist/** folder in our project. Once it's created an update bundle, it will upload that bundle to EAS' servers, in a database object named a _branch_. A branch has a name, and contains a list of updates, where the most recent update is the active update on the branch.
+To publish an update, we can run `eas update --auto`. This command will create a local update bundle inside the **./dist** folder in our project. Once it's created an update bundle, it will upload that bundle to EAS' servers, in a database object named a _branch_. A branch has a name, and contains a list of updates, where the most recent update is the active update on the branch. We can think of EAS branches just like Git branches. Just as Git branches contain a list of commits, EAS branches contain a list of updates.
 
 <ImageSpotlight alt="Branches with its most recent update pointed out as the active one" src="/static/images/eas-update/branch.png" />
 
@@ -48,13 +48,33 @@ Like builds, every update on a branch includes a target runtime version and targ
 - The runtime version of the build and the target runtime version of an update must match exactly.
 - A channel can be linked to any branch. By default, a channel is linked to a branch of the same name.
 
-Let's focus on that last point. Every build has a channel, and we, as developers, can link that channel to any branch, which will make its most recent compatible update available on the channel. To simplify this linking, by default we'll auto-link a channel to a branch of the same name. For instance, if we created builds with the channel named "production", we could publish updates to a branch named "production" and our builds would get the updates on a matching branch named "production", even though we did not manually link anything.
+Let's focus on that last point. Every build has a channel, and we, as developers, can link that channel to any branch, which will make its most recent compatible update available on the branch to the linked channel. To simplify this linking, by default we auto-link channelse to branches of the same name. For instance, if we created builds with the channel named "production", we could publish updates to a branch named "production" and our builds would get the updates from the branch named "production", even though we did not manually link anything.
 
 <ImageSpotlight alt={`Channel "production" linked to branch "production" by default`} src="/static/images/eas-update/default-link.png" />
 
-While this default will work in many cases, we can always change the mapping. Say we found a bug, found it, fixed it, and published it to a branch named "production-hotfix". We could then point our builds with the channel "production" at the branch "production-hotfix":
+This default linking works great if you have a deployment process where you have multiple consistent Git and EAS branches. For instance, we could have a "production" branch and a "staging" branch, both on Git and on EAS. Paired with a [GitHub Action](/eas-update/github-actions), we could make it so that every time a commit is pushed to the "staging" Git branch, we publish to the "staging" EAS Update branch, which would make that update apply to all our builds with the "staging" channel. Once we tested changes on the staging builds, then we could merge the "staging" Git branch into the "production" Git branch, which would publish an update on the "production" EAS Update branch. Finally, the latest update on the "production" EAS Update branch would apply to builds with the "production" channel.
 
-<ImageSpotlight alt={`Channel "production" updated to be linked to branch "production-hotfix"`} src="/static/images/eas-update/custom-link.png" />
+This flow makes it so that we can push to GitHub, then see our builds update without any other interventions.
+
+While this flow works for many developers, there's another flow we can accomplish since we have the ability to change the link between channels and branches. Imagine we name our branches like "version-1.0", "version-2.0", and "version-3.0". We could link the "version-1.0" EAS Update branch to the "production" channel, to make it available to our "production" builds. We could also link the "version-2.0" EAS Update branch to the "staging" channel to make it available to testers. Finally, we could make a "version-3.0" EAS Update branch that is not linked to any builds yet, that only developers are testing with a development build.
+
+<ImageSpotlight alt={`Channel "production" linked to branch "version-1.0", channel "staging" linked to branch "version-2.0"`} src="/static/images/eas-update/custom-link-1.png" />
+
+Once testers verify that the update on the "version-2.0" EAS Update branch is ready for production, we can update the "production" channel so that it's linked to the "version-2.0" branch. To accomplish this, we could run:
+
+```bash
+eas channel:edit production --branch version-2.0
+```
+
+<ImageSpotlight alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-2.0"`} src="/static/images/eas-update/custom-link-2.png" />
+
+After this state, we'd be ready to start testing the "version-3.0" EAS Update branch. Similarly to the last step, we could link the "staging" channel to the "version-3.0" EAS Update branch with this command:
+
+```bash
+eas channel:edit staging --branch version-3.0
+```
+
+<ImageSpotlight alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-3.0"`} src="/static/images/eas-update/custom-link-3.png" />
 
 ## Practical overview
 

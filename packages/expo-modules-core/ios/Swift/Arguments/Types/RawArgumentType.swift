@@ -14,9 +14,9 @@ internal struct RawArgumentType<InnerType>: AnyArgumentType {
     // Raw arguments are always non-optional, but they may receive `nil` values.
     // Let's throw more specific error in this case.
     if Optional.isNil(value) {
-      throw Conversions.NullCastError<InnerType>()
+      throw Conversions.NullCastException<InnerType>()
     }
-    throw Conversions.CastingError<InnerType>(value: value)
+    throw Conversions.CastingException<InnerType>(value)
   }
 
   var description: String {

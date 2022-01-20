@@ -48,14 +48,3 @@ public struct SimpleCodedError: CodedError {
     self.description = description
   }
 }
-
-/**
- Coded wrapper for uncoded errors. Intended to be used to handle unexpected native errors.
- */
-public struct UnexpectedError: CodedError {
-  public let description: String
-
-  init(_ error: Error) {
-    self.description = error.localizedDescription
-  }
-}
