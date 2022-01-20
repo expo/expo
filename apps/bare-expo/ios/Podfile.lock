@@ -117,27 +117,27 @@ PODS:
     - ExpoModulesCore
   - Expo (44.0.0-beta.1):
     - ExpoModulesCore
-  - expo-dev-client (0.8.0):
+  - expo-dev-client (0.8.1):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.10.0):
+  - expo-dev-launcher (0.10.1):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.10.0)
+    - expo-dev-launcher/Main (= 0.10.1)
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.10.0):
+  - expo-dev-launcher/Main (0.10.1):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.10.0):
+  - expo-dev-launcher/Tests (0.10.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -149,24 +149,24 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-hermes
-  - expo-dev-launcher/Unsafe (0.10.0):
+  - expo-dev-launcher/Unsafe (0.10.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.9.0):
-    - expo-dev-menu/Main (= 0.9.0)
-  - expo-dev-menu-interface (0.5.0)
-  - expo-dev-menu-interface/Tests (0.5.0):
+  - expo-dev-menu (0.9.1):
+    - expo-dev-menu/Main (= 0.9.1)
+  - expo-dev-menu-interface (0.5.1)
+  - expo-dev-menu-interface/Tests (0.5.1):
     - Nimble
     - Quick
-  - expo-dev-menu/GestureHandler (0.9.0)
-  - expo-dev-menu/Main (0.9.0):
+  - expo-dev-menu/GestureHandler (0.9.1)
+  - expo-dev-menu/Main (0.9.1):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Reanimated (0.9.0):
+  - expo-dev-menu/Reanimated (0.9.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -194,19 +194,19 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (0.9.0)
-  - expo-dev-menu/Tests (0.9.0):
+  - expo-dev-menu/SafeAreaView (0.9.1)
+  - expo-dev-menu/Tests (0.9.1):
     - hermes-engine
     - Nimble
     - Quick
     - React-CoreModules
     - React-hermes
-  - expo-dev-menu/UITests (0.9.0):
+  - expo-dev-menu/UITests (0.9.1):
     - hermes-engine
     - React
     - React-CoreModules
     - React-hermes
-  - expo-dev-menu/Vendored (0.9.0):
+  - expo-dev-menu/Vendored (0.9.1):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -1287,7 +1287,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
-  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
+  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
   EXAppAuth: 628fbc475121581364241f9f12fc082f23d0b567
   EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
@@ -1329,10 +1329,10 @@ SPEC CHECKSUMS:
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
-  expo-dev-client: c0116deee06925cb80157dc1773c8e9e2cc8a3e2
-  expo-dev-launcher: 506cd66f30735eb4212d9700dccaa0f6f3fd7ba1
-  expo-dev-menu: 072c7b146f89a6e95a6d1cd4af856eb0b37593b2
-  expo-dev-menu-interface: 8562bfafa19d01531694ab492fc93f598f8c8d7b
+  expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
+  expo-dev-launcher: 859ff87239fde76a2014c0a1d21d7d8bcbc6c840
+  expo-dev-menu: 96c0a87ce8c2c522e17616285d5ec6a6aa7241f4
+  expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
@@ -1370,7 +1370,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
