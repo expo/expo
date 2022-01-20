@@ -8,7 +8,10 @@ RESOURCE_BUNDLE_NAME="EXConstants.bundle"
 # Path to expo-constants folder inside node_modules
 EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Suppress environment errors from sourcing the login scripts
+set +e
 source "$EXPO_CONSTANTS_PACKAGE_DIR/scripts/source-login-scripts.sh"
+set -e
 
 NODE_BINARY=${NODE_BINARY:-node}
 

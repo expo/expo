@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the `PhaseScriptExecution` build errors when the `source_login_scripts.sh` failed to load. ([#15890](https://github.com/expo/expo/pull/15890) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.0.0 — 2021-12-03
