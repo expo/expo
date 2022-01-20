@@ -548,7 +548,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
   - iOS: `eas build` or `expo build:ios`.
   - Android: `eas build` or `expo build:android`.
 - **Bare:**
-  - Regenerate your native projects with `expo eject`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
+  - Regenerate your native projects with `expo prebuild`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
   - Rebuild the projects with `yarn ios` & `yarn android`
 
 #### Native iOS
@@ -558,7 +558,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png" />
 
-- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your **app.json** - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your **app.json** - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
 - Press "Save Changes" in the footer.
 - Copy the "App ID" in the header into your `iosClientId: '<YOUR FBID>'` or `clientId`. Ex: `{ iosClientId: '474614477183384' }` (no `fb` prefix).
 - Now you're ready to use the demo component in your native iOS app.
@@ -570,7 +570,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-android-guide.png" />
 
-- Under Android > Google Play Package Name: Add your app's android package, this should match the value in your **app.json** - `expo.android.package`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Under Android > Google Play Package Name: Add your app's android package, this should match the value in your **app.json** - `expo.android.package`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
 - Under Android > Class Name: This should match the package name + `.MainActivity`, i.e. `com.bacon.yolo15.MainActivity`.
 - Under Android > Key Hashes: You'll need to create two different values, one for Debug and one for Release. Learn how to create the [Key Hash here](https://stackoverflow.com/questions/4388992/key-hash-for-android-facebook-app).
   - In your app root, run: `keytool -exportcert -alias androiddebugkey -keystore android/app/debug.keystore | openssl sha1 -binary | openssl base64` you don't need a password, but it is recommended.
@@ -1087,7 +1087,7 @@ This can only be used in standalone and bare workflow apps. This method cannot b
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
 - To test this you can:
-  1. Eject to bare: `expo eject` and run `yarn ios`
+  1. Eject to bare: `expo prebuild` and run `yarn ios`
   2. Build a simulator app: `expo build:ios -t simulator` on `eas build`
   3. Build a production IPA: `expo build:ios` or `eas build`
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
@@ -1112,7 +1112,7 @@ This can only be used in Standalone, and bare workflow apps. This method cannot 
   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
 - To test this you can:
-  1. Eject to bare: `expo eject` and run `yarn android`
+  1. Eject to bare: `expo prebuild` and run `yarn android`
   2. Build a production APK: `expo build:android`
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
@@ -2456,7 +2456,7 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
 - **Environment:**
 
   - Bare workflow
-    - `npx create-react-native-app` or `expo eject`
+    - `npx create-react-native-app` or `expo prebuild`
   - Standalone builds in the App or Play Store
     - `expo build:ios` or `expo build:android`
   - Standalone builds for local testing

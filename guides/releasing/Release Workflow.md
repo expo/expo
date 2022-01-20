@@ -43,13 +43,12 @@
   - [5.10. Start release notes document](#510-start-release-notes-document)
 - [Stage 6 - Final release](#stage-6---final-release)
   - [6.1. Release Expo Go for iOS/Android to the general public](#61-release-expo-go-for-iosandroid-to-the-general-public)
-  - [6.2. Make adhoc client shell app for iOS](#62-make-adhoc-client-shell-app-for-ios)
-  - [6.3. Promote packages to latest on NPM registry](#63-promote-packages-to-latest-on-npm-registry)
-  - [6.4. Remove beta tag from new SDK on versions endpoint](#64-remove-beta-tag-from-new-sdk-on-versions-endpoint)
-  - [6.5. Remove beta tag from new SDK on Snack](#65-remove-beta-tag-from-new-sdk-on-snack)
-  - [6.6. Deploy final docs](#66-deploy-final-docs)
-  - [6.7. Publish final project templates](#67-publish-final-project-templates)
-  - [6.8. Press release](#68-press-release)
+  - [6.2. Promote packages to latest on NPM registry](#62-promote-packages-to-latest-on-npm-registry)
+  - [6.3. Remove beta tag from new SDK on versions endpoint](#63-remove-beta-tag-from-new-sdk-on-versions-endpoint)
+  - [6.4. Remove beta tag from new SDK on Snack](#64-remove-beta-tag-from-new-sdk-on-snack)
+  - [6.5. Deploy final docs](#65-deploy-final-docs)
+  - [6.6. Publish final project templates](#66-publish-final-project-templates)
+  - [6.7. Press release](#67-press-release)
   - [6.8. Follow-up](#68-follow-up)
 - [Stage 7 - Clean up](#stage-7---clean-up)
   - [7.1. Remove old SDK from Turtle](#71-remove-old-sdk-from-turtle)
@@ -470,7 +469,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 5.3. Add related packages to versions endpoint
 
-**Why:** These package versions are used by `expo-cli` in the `eject` command to ensure that the proper versions of packages are installed in developers' projects.
+**Why:** These package versions are used by `expo-cli` in the `prebuild` command to ensure that the proper versions of packages are installed in developers' projects.
 
 **How:**
 

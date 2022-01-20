@@ -114,7 +114,7 @@ If you want to add MapView with Google Maps to a bare (ejected) project on iOS, 
 [GMSServices provideApiKey:@"your api key"]
 ```
 
-Alternatively, you can provide the `GMSApiKey` key in your app's **Info.plist**. If you ejected after already configuring Google Maps, the `eject` command may have already provided this for you.
+Alternatively, you can provide the `GMSApiKey` key in your app's **Info.plist**. If you ejected after already configuring Google Maps, the `prebuild` command may have already provided this for you.
 
 ### Web Setup
 

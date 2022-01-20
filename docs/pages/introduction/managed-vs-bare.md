@@ -22,7 +22,7 @@ While you can do a lot with the managed workflow, you can't do _everything_ with
 
 ### What happens if I run up against a limitation?
 
-If you get to the point where you need to have full control over the native code in your app, you can "eject" (run `expo eject` in your project) and expo-cli will expose all of the underlying native projects and configuration. You'll then be using the bare workflow.
+If you get to the point where you need to have full control over the native code in your app, you can "eject" (run `expo prebuild` in your project) and expo-cli will expose all of the underlying native projects and configuration. You'll then be using the bare workflow.
 
 ## Bare workflow
 

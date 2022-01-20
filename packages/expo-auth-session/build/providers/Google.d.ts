@@ -45,7 +45,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      *   - _Standalone_: Automatically added, do nothing.
      *   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
      * - To test this you can:
-     *   1. Eject to bare: `expo eject` and run `yarn ios`
+     *   1. Eject to bare: `expo prebuild` and run `yarn ios`
      *   2. Create a custom client: `expo client:ios`
      *   3. Build a production IPA: `expo build:ios`
      * - Whenever you change the values in `app.json` you'll need to rebuild the native app.
@@ -66,7 +66,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      *   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
      *   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
      * - To test this you can:
-     *   1. Eject to bare: `expo eject` and run `yarn ios`
+     *   1. Eject to bare: `expo prebuild` and run `yarn ios`
      *   2. Build a production IPA: `expo build:android`
      */
     androidClientId?: string;

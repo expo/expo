@@ -148,7 +148,6 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
   },
   "dependencies": {
     "cool-package": "*",

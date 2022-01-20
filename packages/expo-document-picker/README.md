@@ -52,7 +52,7 @@ In order to enable Apple iCloud storage in managed EAS builds, you'll need to de
 }
 ```
 
-> Running `expo eject` will generate a the native project locally with the applied changes in your iOS Entitlements file.
+> Running `expo prebuild` will generate a the native project locally with the applied changes in your iOS Entitlements file.
 
 # Contributing
 
