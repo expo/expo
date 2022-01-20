@@ -2,12 +2,14 @@
 import arg from 'arg';
 import chalk from 'chalk';
 
+// TODO: Change to `start`
 const defaultCmd = 'config';
 
 export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
+  prebuild: () => import('../cli/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../cli/config').then((i) => i.expoConfig),
 };
 
@@ -42,7 +44,7 @@ if (!isSubcommand && args['--help']) {
       {bold $} npx expo <command>
 
     {bold Available commands}
-      ${Object.keys(commands).join(', ')}
+      ${Object.keys(commands).sort().join(', ')}
 
     {bold Options}
       --version, -v   Version number

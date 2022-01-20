@@ -25,7 +25,7 @@ it('runs `npx expo --help`', async () => {
           [1m$[22m npx expo <command>
 
         [1mAvailable commands[22m
-          config
+          config, prebuild
 
         [1mOptions[22m
           --version, -v   Version number

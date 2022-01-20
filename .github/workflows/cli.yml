@@ -49,7 +49,10 @@ jobs:
       - name: Build CLI
         run: yarn prepare:cli
         working-directory: packages/expo
-      - name: Test CLI
+      - name: Unit Test CLI
+        run: yarn test:cli
+        working-directory: packages/expo
+      - name: E2E Test CLI
         run: yarn test:cli:e2e
         working-directory: packages/expo
       # - name: 🔔 Notify on Slack
