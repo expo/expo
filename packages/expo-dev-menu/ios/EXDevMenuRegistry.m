@@ -45,6 +45,7 @@
 + (void)registerWithInstance:(EXDevMenuInstance *)instance
 {
   EXDevMenuRegistry *registry = [EXDevMenuRegistry sharedInstance];
+  [registry.lookup setObject:instance forKey:instance.bridge];
   [registry.lookup setObject:instance forKey:instance.appBridge];
 }
 
@@ -54,7 +55,7 @@
   EXDevMenuInstance *instance = [registry.lookup objectForKey:bridge];
   
   if (instance == nil) {
-    
+    // uh oh
   }
   
   return instance;
@@ -63,7 +64,10 @@
 + (void)removeBridge:(RCTBridge *)bridge
 {
   EXDevMenuRegistry *registry = [EXDevMenuRegistry sharedInstance];
-  [registry.lookup removeObjectForKey:bridge];
+  EXDevMenuInstance *instance = [registry.lookup objectForKey:bridge];
+  
+  [registry.lookup removeObjectForKey:instance.bridge];
+  [registry.lookup removeObjectForKey:instance.appBridge];
 }
 
 @end
