@@ -28,7 +28,7 @@
     "expo-contacts": "~10.1.0",
     "expo-crypto": "~10.1.0",
     "expo-device": "~4.1.0",
-    "expo-file-system": "~13.1.0",
+    "expo-file-system": "~13.2.1",
     "expo-gl": "~11.1.0",
     "expo-google-sign-in": "~10.1.0",
     "expo-haptics": "~11.1.0",

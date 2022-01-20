@@ -64,7 +64,7 @@ PODS:
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
-  - EXFileSystem (13.1.1):
+  - EXFileSystem (13.2.1):
     - ExpoModulesCore
   - EXFirebaseAnalytics (6.0.0):
     - EXFirebaseCore
@@ -1284,7 +1284,7 @@ SPEC CHECKSUMS:
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFacebook: ab91b0eefa108009cbeebb9b947d2d29a10e123d
   EXFaceDetector: 0307e979c5876f5c45e07edb2742268f7f35e007
-  EXFileSystem: eb1082d5178aa381d20a625a766037b9c2576572
+  EXFileSystem: 3e84a5b91f1852110f6417de64de3efe4258b810
   EXFirebaseAnalytics: 27dbc5cb83c244d8404b2927676299f3e172470e
   EXFirebaseCore: 16f39b0ea94ce985a8f2e16cc796bf79bdcfa297
   EXFont: 1fb13af43dc517c01c0ff21a6e32f9f9bf2ea602
