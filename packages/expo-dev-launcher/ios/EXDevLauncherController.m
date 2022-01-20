@@ -173,6 +173,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [_appBridge invalidate];
   self.manifest = nil;
   self.manifestURL = nil;
+  
+  [EXDevMenuRegistry removeBridge:_appBridge];
 
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
@@ -357,6 +359,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   self.manifestURL = appUrl;
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
+  
+  
+  [EXDevMenuRegistry registerWithBridge:self.appBridge];
   
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{

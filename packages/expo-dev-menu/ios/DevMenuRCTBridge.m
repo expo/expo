@@ -17,6 +17,8 @@
  */
 - (RCTDevSettings *)devSettings
 {
+  // uncomment below to enable fast refresh for development builds of DevMenu
+    // return super.devSettings;
   return nil;
 }
 
