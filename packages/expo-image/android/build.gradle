@@ -95,3 +95,22 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 }
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.api.getDependencies().removeIf { it ->
+  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
+    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testApi', artifact)
+  configurations.all {
+    resolutionStrategy.force(artifact)
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue
