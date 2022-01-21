@@ -17,16 +17,16 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
 {
     [bridge moduleForClass:[RCTEventDispatcher class]];
     RCTEventDispatcher *eventDispatcher = [DevMenuREAEventDispatcher new];
-//#if RNVERSION >= 66
-//    RCTCallableJSModules *callableJSModules = [RCTCallableJSModules new];
-//    [bridge setValue:callableJSModules forKey:@"_callableJSModules"];
-//    [callableJSModules setBridge:bridge];
-//    [eventDispatcher setValue:callableJSModules forKey:@"_callableJSModules"];
-//    [eventDispatcher setValue:bridge forKey:@"_bridge"];
-//    [eventDispatcher initialize];
-//#else
-//#endif
+#if RNVERSION >= 66
+   RCTCallableJSModules *callableJSModules = [RCTCallableJSModules new];
+   [bridge setValue:callableJSModules forKey:@"_callableJSModules"];
+   [callableJSModules setBridge:bridge];
+   [eventDispatcher setValue:callableJSModules forKey:@"_callableJSModules"];
+   [eventDispatcher setValue:bridge forKey:@"_bridge"];
+   [eventDispatcher initialize];
+#else
   [eventDispatcher setBridge:bridge];
+#endif
 
     [bridge updateModuleWithInstance:eventDispatcher];
     _devmenu_bridge_reanimated = bridge;
