@@ -1843,8 +1843,6 @@ PODS:
     - ExpoModulesCore
   - EXCamera (12.1.0):
     - ExpoModulesCore
-  - EXClipboard (2.1.0):
-    - ExpoModulesCore
   - EXConstants (13.0.0):
     - ExpoModulesCore
   - EXContacts (10.1.0):
@@ -1916,6 +1914,8 @@ PODS:
   - Expo (44.0.0-beta.1):
     - ExpoModulesCore
   - ExpoCellular (4.1.0):
+    - ExpoModulesCore
+  - ExpoClipboard (2.1.0):
     - ExpoModulesCore
   - ExpoHaptics (11.1.0):
     - ExpoModulesCore
@@ -2824,7 +2824,6 @@ DEPENDENCIES:
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
-  - EXClipboard (from `../packages/expo-clipboard/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXCrypto (from `../packages/expo-crypto/ios`)
@@ -2855,6 +2854,7 @@ DEPENDENCIES:
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
+  - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - ExpoKeepAwake (from `../packages/expo-keep-awake/ios`)
@@ -3638,8 +3638,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-calendar/ios"
   EXCamera:
     :path: "../packages/expo-camera/ios"
-  EXClipboard:
-    :path: "../packages/expo-clipboard/ios"
   EXConstants:
     :path: "../packages/expo-constants/ios"
   EXContacts:
@@ -3696,6 +3694,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
+  ExpoClipboard:
+    :path: "../packages/expo-clipboard/ios"
   ExpoHaptics:
     :path: "../packages/expo-haptics/ios"
   ExpoImageManipulator:
@@ -4171,7 +4171,6 @@ SPEC CHECKSUMS:
   EXBrightness: 29e6e3bb38c3058404d87f65f9cfaab5d5c7cbf0
   EXCalendar: b821662d595ef8d5ae20c5285f4cfcc5e58ac68c
   EXCamera: bbc12f14b807c84f570fd2acd63159a4a9d23381
-  EXClipboard: 4d6ee6f9572ef999fc323e4b99c8d180e041ad33
   EXConstants: 5d18484e38e8eacef7695a82214b6ac90133dedf
   EXContacts: 6c1bab5a594d591ab08a992e494e52b7e19cb647
   EXCrypto: e3c0853c2a9ef885928f6227b967b9598132f727
@@ -4200,6 +4199,7 @@ SPEC CHECKSUMS:
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
+  ExpoClipboard: 49ded0e61313aea57df8c970a488323488dcd3a1
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
