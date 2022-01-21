@@ -33,7 +33,7 @@ export function MainScreen() {
 
   function onCopyUrlPress() {
     const { hostUrl } = buildInfo;
-    urlClipboard.onCopyPress({ hostUrl });
+    urlClipboard.onCopyPress(hostUrl);
   }
 
   function onCopyBuildInfoPress() {
@@ -159,6 +159,7 @@ export function MainScreen() {
         />
         <Divider />
         <SettingsRowSwitch
+          testID="local-dev-tools"
           label="Local dev tools"
           icon={<DebugIcon />}
           isEnabled={devSettings.isDebuggingRemotely}
@@ -166,6 +167,7 @@ export function MainScreen() {
         />
         <Divider />
         <SettingsRowSwitch
+          testID="fast-refresh"
           label="Fast refresh"
           icon={<RunIcon />}
           isEnabled={devSettings.isHotLoadingEnabled}
@@ -283,6 +285,7 @@ type SettingsRowSwitchProps = {
   description?: string;
   isEnabled?: boolean;
   setIsEnabled: (isEnabled: boolean) => void;
+  testID: string;
 };
 
 function SettingsRowSwitch({
@@ -291,6 +294,7 @@ function SettingsRowSwitch({
   icon,
   isEnabled,
   setIsEnabled,
+  testID,
 }: SettingsRowSwitchProps) {
   return (
     <View>
@@ -308,7 +312,11 @@ function SettingsRowSwitch({
         <Spacer.Horizontal size="flex" />
 
         <View style={{ width: 64, alignItems: 'flex-end' }}>
-          <Switch value={isEnabled} onChange={() => setIsEnabled(!isEnabled)} />
+          <Switch
+            testID={testID}
+            value={isEnabled}
+            onValueChange={() => setIsEnabled(!isEnabled)}
+          />
         </View>
       </Row>
 
