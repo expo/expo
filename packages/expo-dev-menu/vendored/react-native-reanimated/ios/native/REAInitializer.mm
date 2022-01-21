@@ -27,7 +27,6 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
 #else
     [eventDispatcher setBridge:bridge];
 #endif
-
     [bridge updateModuleWithInstance:eventDispatcher];
     _devmenu_bridge_reanimated = bridge;
     const auto runtimeInstaller = [bridge, runtimeInstallerToWrap](facebook::jsi::Runtime &runtime) {
