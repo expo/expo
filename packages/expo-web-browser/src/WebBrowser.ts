@@ -359,8 +359,8 @@ async function _openBrowserAndWaitAndroidAsync(
 ): Promise<WebBrowserResult> {
   const appStateChangedToActive = new Promise<void>((resolve) => {
     _onWebBrowserCloseAndroid = resolve;
-    AppState.addEventListener('change', _onAppStateChangeAndroid);
   });
+  const stateChangeSubscription = AppState.addEventListener('change', _onAppStateChangeAndroid);
 
   let result: WebBrowserResult = { type: WebBrowserResultType.CANCEL };
   let type: string | null = null;
@@ -368,7 +368,7 @@ async function _openBrowserAndWaitAndroidAsync(
   try {
     ({ type } = await openBrowserAsync(startUrl, browserParams));
   } catch (e) {
-    AppState.removeEventListener('change', _onAppStateChangeAndroid);
+    stateChangeSubscription.remove();
     _onWebBrowserCloseAndroid = null;
     throw e;
   }
@@ -378,7 +378,7 @@ async function _openBrowserAndWaitAndroidAsync(
     result = { type: WebBrowserResultType.DISMISS };
   }
 
-  AppState.removeEventListener('change', _onAppStateChangeAndroid);
+  stateChangeSubscription.remove();
   _onWebBrowserCloseAndroid = null;
   return result;
 }
