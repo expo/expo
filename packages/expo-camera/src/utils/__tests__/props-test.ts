@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { AutoFocus, CameraType, FlashMode, WhiteBalance } from '../../Camera.types';
 
 import { ensureNativeProps } from '../props';
 
@@ -9,10 +10,10 @@ describe(ensureNativeProps, () => {
 
     expect(
       ensureNativeProps({
-        type: 'front',
-        flashMode: 'torch',
-        autoFocus: 'auto',
-        whiteBalance: 'continuous',
+        type: CameraType.front,
+        flashMode: FlashMode.torch,
+        autoFocus: AutoFocus.auto,
+        whiteBalance: WhiteBalance.continuous,
         poster: './image.png',
         ratio: '1080p',
         useCamera2Api: true,
