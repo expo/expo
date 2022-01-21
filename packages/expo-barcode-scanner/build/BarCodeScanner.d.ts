@@ -142,7 +142,13 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
      */
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
     render(): JSX.Element;
+    /**
+     * @hidden
+     */
     onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent }: BarCodeEventCallbackArguments) => void;
+    /**
+     * @hidden
+     */
     convertNativeProps(props: BarCodeScannerProps): BarCodeScannerProps;
 }
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
