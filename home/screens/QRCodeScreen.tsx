@@ -1,6 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
+import { FlashMode } from 'expo-camera';
 import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -91,7 +92,7 @@ export default function BarCodeScreen(
           }}
           onBarCodeScanned={_handleBarCodeScanned}
           style={StyleSheet.absoluteFill}
-          flashMode={isLit ? 'torch' : 'off'}
+          flashMode={isLit ? FlashMode.torch : FlashMode.off}
         />
       ) : null}
 
