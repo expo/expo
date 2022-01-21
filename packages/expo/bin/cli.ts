@@ -28,14 +28,14 @@ const args = arg(
   }
 );
 
-if (args['--version']) {
+// Check if we are running `npx expo <subcommand>` or `npx expo`
+const isSubcommand = Boolean(commands[args._[0]]);
+
+if (!isSubcommand && (args['--version'] || args['-v'])) {
   // Version is added in the build script.
   console.log(process.env.__EXPO_VERSION);
   process.exit(0);
 }
-
-// Check if we are running `npx expo <subcommand>` or `npx expo`
-const isSubcommand = Boolean(commands[args._[0]]);
 
 // Handle `--help` flag
 if (!isSubcommand && args['--help']) {
