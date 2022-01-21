@@ -85,6 +85,9 @@ export class BarCodeScanner extends React.Component {
         const { onBarCodeScanned } = this.props;
         return (React.createElement(ExpoBarCodeScannerView, { ...nativeProps, onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) }));
     }
+    /**
+     * @hidden
+     */
     onObjectDetected = (callback) => ({ nativeEvent }) => {
         const { type } = nativeEvent;
         if (this.lastEvents[type] &&
@@ -99,6 +102,9 @@ export class BarCodeScanner extends React.Component {
             this.lastEvents[type] = JSON.stringify(nativeEvent);
         }
     };
+    /**
+     * @hidden
+     */
     convertNativeProps(props) {
         const nativeProps = {};
         for (const [key, value] of Object.entries(props)) {
