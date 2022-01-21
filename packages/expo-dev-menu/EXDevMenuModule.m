@@ -6,7 +6,7 @@
 //
 
 #import "EXDevMenuModule.h"
-#import "EXDevMenuInstanceRegistry.h"
+#import "EXDevMenuRegistry.h"
 
 @implementation EXDevMenuModule
 
@@ -17,7 +17,7 @@
 
 RCT_EXPORT_METHOD(getBuildInfoAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
 {
-  EXDevMenuInstance *instance = [EXDevMenuInstanceRegistry getInstanceForBridge:self.bridge];
+  EXDevMenuInstance *instance = [EXDevMenuRegistry getInstanceForBridge:self.bridge];
   NSDictionary *buildInfo = [instance getBuildInfo];
   resolve(buildInfo);
 })
