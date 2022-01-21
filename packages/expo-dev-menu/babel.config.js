@@ -11,6 +11,10 @@ module.exports = function (api) {
   api.cache(true);
 
   const gestureHandler = tryResolveModule('./vendored/react-native-gesture-handler/src/index.js');
+  const gestureHandlerJest = tryResolveModule(
+    './vendored/react-native-gesture-handler/src/jestSetup.js'
+  );
+
   const reanimated = tryResolveModule('./vendored/react-native-reanimated/src/Animated.js');
   const safeAreaContext = tryResolveModule(
     './vendored/react-native-safe-area-context/src/index.tsx'
@@ -18,6 +22,7 @@ module.exports = function (api) {
 
   const alias = {};
   if (gestureHandler) {
+    alias['react-native-gesture-handler/jestSetup'] = gestureHandlerJest;
     alias['react-native-gesture-handler'] = gestureHandler;
   }
 
