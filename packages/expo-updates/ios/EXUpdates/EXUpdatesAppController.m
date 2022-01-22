@@ -10,6 +10,7 @@
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <EXUpdates/EXUpdatesBuildData.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -113,7 +114,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     [launcher launchUpdateWithConfig:_config];
 
     if (_delegate) {
-      [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+      EX_WEAKIFY(self);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        EX_ENSURE_STRONGIFY(self);
+        [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+      });
     }
 
     return;
