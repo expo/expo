@@ -21,12 +21,6 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
       return false
     }
 
-    // if `EXUpdatesConfigEnabledKey` is false, disable the auto setup
-    let enabledValue = config[EXUpdatesConfigEnabledKey]
-    if let enabled = enabledValue as? NSNumber, enabled.boolValue == false {
-      return false
-    }
-
     // if `EXUpdatesAutoSetup` is false, disable the auto setup
     let enableAutoSetupValue = config[EXUpdatesConfigEnableAutoSetupKey]
     if let enableAutoSetup = enableAutoSetupValue as? NSNumber, enableAutoSetup.boolValue == false {
