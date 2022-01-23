@@ -65,7 +65,7 @@ module.exports = function remarkLinkRewrite(options) {
         }
 
         // force forward slash on non-posix systems
-        node.url = `/${newUrl.replaceAll('\\', '/')}`;
+        node.url = `/${newUrl.replace(/\\/g, '/')}`;
       }
     });
   };
