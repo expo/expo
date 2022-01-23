@@ -1,5 +1,5 @@
-const packageVersion = require('../package.json').version;
 const prevaledNavigationData = require('./navigation-data');
+const { LATEST_VERSION } = require('./versions');
 
 // Groups of sections: these groups are exclusively expressed below, there is no
 // representation of them in the filesystem!
@@ -568,7 +568,7 @@ module.exports = {
   eas: sortedEas,
   preview: sortedPreview,
   featurePreview: sortedFeaturePreview,
-  reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
+  reference: { ...sortedReference, latest: sortedReference[LATEST_VERSION] },
   hiddenSections,
   collapsedSections,
 };
