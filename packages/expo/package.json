@@ -87,7 +87,7 @@
     "js-yaml": "^3.13.1",
     "md5-file": "^3.2.3",
     "minipass": "2.3.5",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "ora": "3.4.0",
     "pretty-format": "^26.5.2",
     "prompts": "^2.3.2",
