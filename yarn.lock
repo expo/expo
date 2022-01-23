@@ -3938,10 +3938,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native@~0.64.12":
-  version "0.64.21"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.64.21.tgz#f45aaac377ae2b2195e03597d4fd9fe366b2fcb5"
-  integrity sha512-62eOyNblPNzhCcLczhGnyJpokMnRH+cnkFg/LdLhFEu04USqBPJPwa1q90d7Iv7llprOaUGaeGKOsNLrjMCWYw==
+"@types/react-native@~0.66.13":
+  version "0.66.13"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.66.13.tgz#90f0c828c6267af8648649f90c02c92fbb596d68"
+  integrity sha512-Yp8hiCvez9HdaSNx1xKMog8uzXEugk47nmfWvXLnyERchjcnaF4VZwi9NmZMU5ETrx7apN+aynBdC+64JM9o2g==
   dependencies:
     "@types/react" "*"
 
