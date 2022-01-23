@@ -1,4 +1,3 @@
-
 ---
 title: Using Bugsnag
 ---
