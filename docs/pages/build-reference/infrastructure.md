@@ -15,7 +15,10 @@ When selecting an image for the build you can use the full name provided below o
 - `default` alias will be assigned to the environment that most closely resembles the configuration used for Expo SDK development.
 - `latest` alias will be assigned to the image with the most up to date versions of the software.
 
-> **Note:** If you don't provide `image` in eas.json, your build is going to use the `default` image. There is one exception to this rule - if you have a managed project and you don't specify `image`, it will be chosen based on your Expo SDK version. E.g. SDK 42 and lower uses `macos-big-sur-11.4-xcode-12.5`, and SDK 43 uses `macos-big-sur-11.4-xcode-13.0`.
+> **Note:**
+>
+> - If you have a bare workflow project: your build is going to use the `default` image unless you provide `image` in **eas.json**.
+> - If you have a managed workflow project: your build is going to use an automatically chosen image, unless you provide `image` in **eas.json**.
 
 ## Android build server configurations
 
@@ -133,7 +136,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </details>
 
-#### Image `macos-big-sur-11.4-xcode-13.0` (alias `latest`)
+#### Image `macos-big-sur-11.4-xcode-13.0` (alias `latest`, `default`)
 
 <details><summary>Details</summary>
 
