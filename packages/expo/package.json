@@ -10,7 +10,7 @@
     "*.fx.web.js"
   ],
   "bin": {
-    "expo": "build/bin/cli.js"
+    "expo": "build-cli/bin/cli"
   },
   "files": [
     "android",
@@ -67,6 +67,7 @@
     "@expo/prebuild-config": "^3.0.16",
     "@expo/spawn-async": "1.5.0",
     "@expo/vector-icons": "^12.0.4",
+    "arg": "4.1.0",
     "babel-preset-expo": "~9.0.1",
     "cacache": "^15.3.0",
     "chalk": "^4.0.0",
@@ -122,8 +123,6 @@
     "@types/react-native": "~0.66.13",
     "@types/react-test-renderer": "^17.0.1",
     "@types/uuid": "^3.4.7",
-    "arg": "4.1.0",
-    "cross-env": "^7.0.3",
     "expo-module-scripts": "^2.0.0",
     "klaw-sync": "^6.0.0",
     "react": "17.0.2",
