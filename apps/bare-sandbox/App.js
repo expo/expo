@@ -1,23 +1,10 @@
-import * as DevMenu from 'expo-dev-menu';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-
-const Button = ({ label, onPress }) => (
-  <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-    <Text style={styles.buttonText}>{label}</Text>
-  </TouchableOpacity>
-);
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
-      <Button
-        label="Open Dev Menu"
-        onPress={() => {
-          DevMenu.openMenu();
-        }}
-      />
       <StatusBar style="auto" />
     </View>
   );

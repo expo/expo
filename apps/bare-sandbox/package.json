@@ -4,17 +4,17 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "android": "expo run:android",
+    "android": "react-native run-android",
     "ios": "expo run:ios",
     "start": "expo start --dev-client"
   },
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "expo": "~44.0.0-alpha.0",
-    "expo-dev-client": "~0.8.0",
     "expo-splash-screen": "~0.14.0",
     "expo-status-bar": "~1.2.0",
     "expo-system-ui": "1.1.0",
+    "expo-updates": "~0.11.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
@@ -33,7 +33,8 @@
   "expo-yarn-workspaces": {
     "symlinks": [
       "expo-constants",
-      "expo-modules-core"
+      "expo-modules-core",
+      "react-native-reanimated"
     ]
   },
   "expo": {
@@ -68,7 +69,6 @@
         "expo-font",
         "expo-gl",
         "expo-gl-cpp",
-        "expo-updates",
         "expo-google-sign-in",
         "expo-haptics",
         "expo-image-loader",
@@ -95,7 +95,6 @@
         "expo-speech",
         "expo-sqlite",
         "expo-store-review",
-        "expo-structured-headers",
         "expo-task-manager",
         "expo-tracking-transparency",
         "expo-video-thumbnails",
@@ -107,8 +106,5 @@
       ]
     }
   },
-  "private": true,
-  "plugins": [
-    "expo-dev-client"
-  ]
+  "private": true
 }

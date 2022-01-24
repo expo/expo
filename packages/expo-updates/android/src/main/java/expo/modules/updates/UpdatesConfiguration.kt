@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import expo.modules.updates.loader.Crypto
+import expo.modules.updates.loader.FileDownloader
 
 class UpdatesConfiguration private constructor (
   val isEnabled: Boolean,

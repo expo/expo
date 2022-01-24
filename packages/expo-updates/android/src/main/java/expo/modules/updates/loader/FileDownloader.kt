@@ -319,6 +319,7 @@ open class FileDownloader(private val client: OkHttpClient) {
               val hashHexString = String(Hex.encodeHex(hash)).toLowerCase(Locale.ROOT)
               val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
               if (expectedAssetHash != null && expectedAssetHash != hashHexString) {
+                Log.d(TAG, asset.relativePath + ":" + asset.)
                 callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashHexString"), asset)
                 return
               }

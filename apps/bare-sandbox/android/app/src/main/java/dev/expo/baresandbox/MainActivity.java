@@ -1,35 +1,22 @@
 package dev.expo.baresandbox;
 
-import android.content.Intent;
-import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
-import expo.modules.devlauncher.DevLauncherController;
-import expo.modules.devmenu.react.DevMenuAwareReactActivity;
-import expo.modules.splashscreen.SplashScreenImageResizeMode;
-import expo.modules.splashscreen.singletons.SplashScreen;
+import expo.modules.ReactActivityDelegateWrapper;
 
-
-public class MainActivity extends DevMenuAwareReactActivity {
-
+public class MainActivity extends ReactActivity {
   @Override
-  public void onNewIntent(Intent intent) {
-    if (DevLauncherController.tryToHandleIntent(this, intent)) {
-      return;
-    }
-    super.onNewIntent(intent);
-  }
-
-  // Added automatically by Expo Config
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    Intent intent = new Intent("onConfigurationChanged");
-    intent.putExtra("newConfig", newConfig);
-    sendBroadcast(intent);
+  protected void onCreate(Bundle savedInstanceState) {
+    // Set the theme to AppTheme BEFORE onCreate to support
+    // coloring the background, status bar, and navigation bar.
+    // This is required for expo-splash-screen.
+    setTheme(R.style.AppTheme);
+    super.onCreate(null);
   }
 
   /**
@@ -43,14 +30,28 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
-    return DevLauncherController.wrapReactActivityDelegate(this, () -> new ReactActivityDelegate(this, getMainComponentName()) {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(null);
-        // SplashScreen.show(...) has to be called after super.onCreate(...)
-        // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
-        SplashScreen.show(getPlainActivity(), SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
+    return new ReactActivityDelegateWrapper(this,
+      new ReactActivityDelegate(this, getMainComponentName())
+    );
+  }
+
+  /**
+   * Align the back button behavior with Android S
+   * where moving root activities to background instead of finishing activities.
+   * @see <a href="https://developer.android.com/reference/android/app/Activity#onBackPressed()">onBackPressed</a>
+   */
+  @Override
+  public void invokeDefaultOnBackPressed() {
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+      if (!moveTaskToBack(false)) {
+        // For non-root activities, use the default implementation to finish them.
+        super.invokeDefaultOnBackPressed();
       }
-    });
+      return;
+    }
+
+    // Use the default back button implementation on Android S
+    // because it's doing more than {@link Activity#moveTaskToBack} in fact.
+    super.invokeDefaultOnBackPressed();
   }
 }
