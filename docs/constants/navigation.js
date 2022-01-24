@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const { LATEST_VERSION } = require('./versions');
+const { LATEST_VERSION, VERSIONS } = require('./versions');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
@@ -34,11 +34,6 @@ const generalDirectories = fs
         ...easDirectories,
       ].includes(name)
   );
-/** All versioned API directories */
-const referenceDirectories = fs
-  .readdirSync(path.resolve(PAGES_DIR, 'versions'), { withFileTypes: true })
-  .filter(entity => entity.isDirectory())
-  .map(dir => dir.name);
 
 // --- Navigation ---
 
@@ -351,7 +346,7 @@ const featurePreview = [
   ]),
 ];
 
-const reference = referenceDirectories.reduce(
+const reference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
