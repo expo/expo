@@ -447,11 +447,12 @@ function pagesFromDir(dir) {
 
 /**
  * Create the page url using the absolute file path.
- *
- * @todo fix windows backslash issues
  */
 function pageUrl(file) {
-  return path.relative(path.resolve(PAGES_DIR, '../'), file).replace(path.extname(file), '');
+  return path
+    .relative(path.resolve(PAGES_DIR, '../'), file)
+    .replace(path.extname(file), '')
+    .replace(/\\/g, '/');
 }
 
 /**
