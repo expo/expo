@@ -5,7 +5,6 @@ import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
-import { hiddenSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { NavigationRoute, Url } from '~/types/common';
 
@@ -118,7 +117,7 @@ export default class DocumentationSidebar extends React.Component<Props> {
         )}
 
         {this.props.routes.map(categoryInfo => {
-          if (categoryIsHidden(categoryInfo.name)) {
+          if (categoryInfo.hidden) {
             return null;
           }
           return this.renderCategoryElements(categoryInfo);
@@ -126,8 +125,4 @@ export default class DocumentationSidebar extends React.Component<Props> {
       </nav>
     );
   }
-}
-
-function categoryIsHidden(categoryName: string): boolean {
-  return hiddenSections.includes(categoryName);
 }
