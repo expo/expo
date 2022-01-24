@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add unit tests for react app. ([#16005](https://github.com/expo/expo/pull/16005) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
 - Fix compatibility with react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
