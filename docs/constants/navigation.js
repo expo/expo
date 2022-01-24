@@ -373,6 +373,7 @@ module.exports = {
   eas,
   preview,
   featurePreview,
+  /** @type {any} */
   reference: { ...reference, latest: reference[LATEST_VERSION] },
   generalDirectories,
   startingDirectories,
