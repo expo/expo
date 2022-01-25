@@ -4,9 +4,9 @@ import {
   getPendingDeepLink,
   addDeepLinkListener,
   loadApp,
-} from '../../../native-modules/DevLauncherInternal';
-import { render, act, waitFor, fireEvent } from '../../../test-utils';
-import { DevSession } from '../../../types';
+} from '../../native-modules/DevLauncherInternal';
+import { render, act, waitFor, fireEvent } from '../../test-utils';
+import { DevSession } from '../../types';
 import { DeepLinkModal } from '../DeepLinkModal';
 
 const mockGetPendingDeepLink = getPendingDeepLink as jest.Mock;
