@@ -81,7 +81,7 @@ PODS:
     - GoogleSignIn (~> 5.0.2)
   - EXImage (0.2.0):
     - React-Core
-    - SDWebImage (~> 5.12.2)
+    - SDWebImage (~> 5.0)
     - SDWebImageSVGKitPlugin (~> 1.3)
     - SDWebImageWebPCoder (~> 0.8.4)
     - SVGKit (~> 2.1)
@@ -1313,7 +1313,7 @@ SPEC CHECKSUMS:
   EXGL: 95631064ed19b9fc8dfbedcc71c205961ae3c954
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
-  EXImage: a19c0dbf296779aeb667f691190c9bc6f2a3bf0e
+  EXImage: ee032fea95d6a21800d6678eb14d1face73236d6
   EXImageLoader: ad85d98d686b33a2cf3788d1e35c5156d3ffd2e0
   EXInAppPurchases: 9c65b5ed6313e3aa32a5b75e4bcbce19868d66b4
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
