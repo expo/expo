@@ -131,7 +131,6 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (AVAudioSessionPortDescription *)activeInput
 {
-    
   // If a current route exists for this recording, return the initial route input.
   AVAudioSessionRouteDescription *currentRoute = [[AVAudioSession sharedInstance] currentRoute];
   NSArray *inputsForRoute = currentRoute.inputs;
