@@ -764,8 +764,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
       ArrayList<Bundle> devices = new ArrayList();
       AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
-      for (int i = 0; i < audioDevices.length; i++) {
-        AudioDeviceInfo deviceInfo = audioDevices[i];
+      for (AudioDeviceInfo deviceInfo : audioDevices) {
         int type = deviceInfo.getType();
         if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
           final Bundle map = getMapFromDeviceInfo(deviceInfo);
