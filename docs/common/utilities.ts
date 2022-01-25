@@ -33,7 +33,7 @@ export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, leng
 };
 
 export const isVersionedUrl = (url: string) => {
-  return /https?:\/\/(.*)(\/versions\/.*)/.test(url);
+  return url.startsWith('/versions/') || /https?:\/\/(.*)(\/versions\/.*)/.test(url);
 };
 
 export const replaceVersionInUrl = (url: string, replaceWith: string) => {
