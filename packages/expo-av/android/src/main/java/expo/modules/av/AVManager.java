@@ -684,14 +684,12 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     int id = Integer.valueOf(uid);
     AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
-    for (int i = 0; i < audioDevices.length; i++) {
-      AudioDeviceInfo device = audioDevices[i];
+    for (AudioDeviceInfo device : audioDevices) {
       int deviceId = device.getId();
       if (deviceId == id) {
-        deviceInfo = device;
+        return device;
       }
     }
-    return deviceInfo;
   }
 
   private Bundle getMapFromDeviceInfo(AudioDeviceInfo deviceInfo) {
