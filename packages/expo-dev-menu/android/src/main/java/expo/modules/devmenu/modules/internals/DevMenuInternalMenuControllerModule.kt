@@ -113,7 +113,7 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     promise.resolve(map)
   }
 
-  override fun getBuildInfoAsync(promise: Promise) {
+  override fun getAppInfoAsync(promise: Promise) {
     val map = Arguments.createMap()
     val packageManager = reactContext.packageManager
     val packageName = reactContext.packageName

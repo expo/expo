@@ -22,6 +22,9 @@
 
 _This version does not introduce any user-facing changes._
 
+- Simplify dev-launcher / dev-menu relationship on iOS.
+
+
 ## 0.10.1 — 2022-01-17
 
 ### 🐛 Bug fixes
