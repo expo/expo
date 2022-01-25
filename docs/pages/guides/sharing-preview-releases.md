@@ -12,7 +12,7 @@ The typical means of distribution for a mobile app is through the Apple App Stor
 If you are using the Expo Managed workflow, you can share your application with your team through the Expo Go app. Expo Go is the easiest option to set up, doesn't require a paid Apple Developer account, and works the same on both platforms.  Your users will launch the application through Expo Go rather than from an app icon though, so if that experience is important to you, consider [Internal Distribution](#internal-distribution) or [TestFlight for iOS](#testflight) instead.
 
 1. Publish the latest version of your project to Expo's servers by running `expo publish`.
-2. [Invite your teammate](https://expo.dev/settings/members) to the Expo account that owns the project.
+2. [Invite your teammate](https://expo.dev/accounts/[account]/settings/members) to the Expo account that owns the project.
 3. Have them [download the Expo Go app](https://expo.dev/expo-go) onto their device.
 4. They'll be able to open your application from the Profile tab of their Expo Go app.
 
