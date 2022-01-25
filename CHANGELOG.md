@@ -834,6 +834,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
+- Require scopeKey in custom push notifications. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman)
 - **`expo-battery`**
   - Removed following types: `BatteryLevelUpdateListener `, `BatteryStateUpdateListener` and `PowerModeUpdateListener` as they were only wrapping one-argument events responses. Use event types explicitly instead: `BatteryLevelEvent `, `BatteryStateEvent` and `PowerModeEvent`. ([#12592](https://github.com/expo/expo/pull/12592) by [@Simek](https://github.com/simek)) ([#12592](https://github.com/expo/expo/pull/12592) by [@simek](https://github.com/simek))
 - **`expo-constants`**
