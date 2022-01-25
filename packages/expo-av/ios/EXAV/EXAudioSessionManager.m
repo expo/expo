@@ -124,7 +124,8 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   return [[AVAudioSession sharedInstance] availableInputs];
 }
 
-- (void)setActiveInput:(AVAudioSessionPortDescription *)activeInput {
+- (void)setActiveInput:(AVAudioSessionPortDescription *)activeInput
+{
   NSError *error;
   [[AVAudioSession sharedInstance] setPreferredInput:activeInput error:&error];
 }
