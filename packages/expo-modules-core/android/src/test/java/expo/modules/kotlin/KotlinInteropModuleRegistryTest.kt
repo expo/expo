@@ -79,7 +79,7 @@ class KotlinInteropModuleRegistryTest {
   @Test
   fun `should export constants`() {
     Truth.assertThat(interopModuleRegistry.exportedModulesConstants())
-      .containsExactly(
+      .containsAtLeast(
         "test-1", mapOf("c1" to 123, "c2" to "123"),
         "test-2", emptyMap<String, Any>()
       )
