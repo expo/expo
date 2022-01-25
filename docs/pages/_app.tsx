@@ -11,6 +11,7 @@ import { preprocessSentryError } from '~/common/sentry-utilities';
 import * as markdown from '~/common/translate-markdown';
 import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
+import { ApiVersionProvider } from '~/providers/api-version';
 
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-theme.css';
@@ -76,9 +77,11 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       {shouldLoadAnalytics && <DynamicLoadAnalytics id={googleAnalyticsId} />}
       <ThemeProvider>
-        <MDXProvider components={markdownComponents}>
-          <Component {...pageProps} />
-        </MDXProvider>
+        <ApiVersionProvider>
+          <MDXProvider components={markdownComponents}>
+            <Component {...pageProps} />
+          </MDXProvider>
+        </ApiVersionProvider>
       </ThemeProvider>
       <TrackPageView id={googleAnalyticsId} />
     </>
