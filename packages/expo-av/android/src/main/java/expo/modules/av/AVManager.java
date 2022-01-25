@@ -755,7 +755,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       final Bundle map = getMapFromDeviceInfo(deviceInfo);
       promise.resolve(map);
     } else {
-      promise.reject(null);
+      promise.reject("E_AUDIO_DEVICENOTFOUND", "Cannot get current input, AudioDeviceInfo not found.");
     }
   }
 
@@ -797,7 +797,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     if (success) {
       promise.resolve(success);
     } else {
-      promise.reject(null);
+      promise.reject("E_AUDIO_SETINPUTFAIL", "Could not set preferred device input.");
     }
   }
 
