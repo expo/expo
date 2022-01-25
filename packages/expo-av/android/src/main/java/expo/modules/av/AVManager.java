@@ -684,14 +684,12 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     int id = Integer.valueOf(uid);
     AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
-    for (int i = 0; i < audioDevices.length; i++) {
-      AudioDeviceInfo device = audioDevices[i];
+    for (AudioDeviceInfo device : audioDevices) {
       int deviceId = device.getId();
       if (deviceId == id) {
-        deviceInfo = device;
+        return device;
       }
     }
-    return deviceInfo;
   }
 
   private Bundle getMapFromDeviceInfo(AudioDeviceInfo deviceInfo) {
@@ -768,8 +766,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     } else {
       ArrayList<Bundle> devices = new ArrayList();
       AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
-      for (int i = 0; i < audioDevices.length; i++) {
-        AudioDeviceInfo deviceInfo = audioDevices[i];
+      for (AudioDeviceInfo deviceInfo : audioDevices) {
         int type = deviceInfo.getType();
         if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
           final Bundle map = getMapFromDeviceInfo(deviceInfo);
