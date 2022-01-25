@@ -1015,17 +1015,16 @@ EX_EXPORT_METHOD_AS(getCurrentInput,
                     getCurrentInput:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-    AVAudioSessionPortDescription *desc = [_kernelAudioSessionManagerDelegate activeInput];
-    if (desc) {
-        resolve(@{
-              @"name": desc.portName,
-              @"type": desc.portType,
-              @"uid": desc.UID,
-            });
-    } else {
-        reject(@"E_AUDIO_GETCURRENTINPUT", @"No input port found.", nil);
-    }
-
+  AVAudioSessionPortDescription *desc = [_kernelAudioSessionManagerDelegate activeInput];
+  if (desc) {
+    resolve(@{
+      @"name": desc.portName,
+      @"type": desc.portType,
+      @"uid": desc.UID,
+    });
+  } else {
+    reject(@"E_AUDIO_GETCURRENTINPUT", @"No input port found.", nil);
+  }
 }
 
 EX_EXPORT_METHOD_AS(setInput,
