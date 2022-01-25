@@ -135,8 +135,7 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
           <H3Code key={`${header}-props-header`}>
             <InlineCode>{header}</InlineCode>
           </H3Code>
-          <br />
-          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp?.comment} /> : null}
+          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : <br />}
         </>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
