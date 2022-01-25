@@ -250,7 +250,7 @@ object MediaLibraryUtils {
   }
 
   /**
-   * Checks, whenever an appplication represented by [context] contains specific [permission]
+   * Checks, whenever an application represented by [context] contains specific [permission]
    * in `AndroidManifest.xml`:
    *
    * ```xml
