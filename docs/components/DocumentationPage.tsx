@@ -2,7 +2,6 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
-import NProgress from 'nprogress';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
@@ -80,17 +79,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
       if (this.layoutRef.current) {
         window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
       }
-      NProgress.start();
     });
-
-    Router.events.on('routeChangeComplete', () => {
-      NProgress.done();
-    });
-
-    Router.events.on('routeChangeError', () => {
-      NProgress.done();
-    });
-
     window.addEventListener('resize', this.handleResize);
   }
 
