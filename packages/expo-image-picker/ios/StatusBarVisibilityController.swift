@@ -8,21 +8,25 @@
  */
 internal class StatusBarVisibilityController {
   private var shouldRestoreStatusBarVisibility = false
-  
-  func maybePreserveVisbilityAndHideStatusBar(_ shouldHideStatusBar: Bool) {
-    guard (shouldHideStatusBar && !UIApplication.shared.isStatusBarHidden) else { return }
-    
+
+  func maybePreserveVisibilityAndHideStatusBar(_ shouldHideStatusBar: Bool) {
+    guard shouldHideStatusBar && !UIApplication.shared.isStatusBarHidden else {
+      return
+    }
+
     self.shouldRestoreStatusBarVisibility = true
     self.setStatusBarHidden(true)
   }
-  
+
   func maybeRestoreStatusBarVisibility() {
-    guard (shouldRestoreStatusBarVisibility) else { return }
-    
+    guard shouldRestoreStatusBarVisibility else {
+      return
+    }
+
     self.shouldRestoreStatusBarVisibility = false
     self.setStatusBarHidden(false)
   }
-  
+
   /**
    Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
    that should be suppressable with -Wdeprecated-declarations, but is not.
@@ -31,9 +35,9 @@ internal class StatusBarVisibilityController {
    the setting doesn't have any effect and we need to set status bar like that.
   */
   private func setStatusBarHidden(_ hidden: Bool) {
-    let selector = NSSelectorFromString("setStatusBarHidden:withAnimation:");
+    let selector = NSSelectorFromString("setStatusBarHidden:withAnimation:")
     UIApplication.shared.perform(selector, with: hidden, with: false)
-    
+
 //    TODO: (@bbarthec) below is possible alternative
 //    let obj = X()
 //    let sel = #selector(obj.sayHiTo)

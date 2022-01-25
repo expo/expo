@@ -2,24 +2,22 @@
 
 import ExpoModulesCore
 
-internal enum Result {
-  case Success(Response)
-  case Failure(CodedError)
+internal enum AsyncResult {
+  case success(ImagePickerResponse)
+  case failure(Exception)
 }
 
-internal enum Response {
-  case Image(ImageInfo)
-  case Video(VideoInfo)
+internal enum ImagePickerResponse {
+  case image(ImageInfo)
+  case video(VideoInfo)
 
   var dictionary: [String: Any] {
     var result: [String: Any] = [:]
     switch self {
-    case .Video(let videoInfo):
+    case .video(let videoInfo):
       result = videoInfo.dictionary
-      break
-    case .Image(let imageImage):
+    case .image(let imageImage):
       result = imageImage.dictionary
-      break
     }
     result["cancelled"] = false
     return result
@@ -39,12 +37,12 @@ internal struct ImageInfo {
       "type": type,
       "uri": uri,
       "width": width,
-      "height": height,
+      "height": height
     ]
-    if (base64 != nil) {
+    if base64 != nil {
       result["base64"] = base64
     }
-    if (exif != nil) {
+    if exif != nil {
       result["exif"] = exif
     }
     return result
@@ -64,7 +62,7 @@ internal struct VideoInfo {
       "uri": uri,
       "width": width,
       "height": height,
-      "duration": duration,
+      "duration": duration
     ]
   }
 }

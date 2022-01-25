@@ -5,148 +5,186 @@ import MobileCoreServices
 import Photos
 
 internal struct MediaHandler {
-  internal let fileSystem: EXFileSystemInterface
-  internal let logger: EXLogManager
-  internal let pickingOptions: PickingOptions
-  
-  internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (Result) -> Void) {
-    let mediaType: String? = mediaInfo[UIImagePickerController.InfoKey.mediaType] as! String?
+  internal weak var fileSystem: EXFileSystemInterface?
+  internal weak var logger: EXLogManager?
+  internal let options: ImagePickerOptions
+
+  internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (AsyncResult) -> Void) {
+    let mediaType: String? = mediaInfo[UIImagePickerController.InfoKey.mediaType] as? String
     let imageType = kUTTypeImage as String
     let videoType = kUTTypeMovie as String
-  
-    switch (mediaType) {
+
+    switch mediaType {
     case imageType: return self.handleImage(mediaInfo: mediaInfo, completion: completion)
     case videoType: return self.handleVideo(mediaInfo: mediaInfo, completion: completion)
-    default: return completion(.Failure(UnhandledMediaTypeError(mediaType: mediaType)))
+    default: return completion(.failure(UnhandledMediaTypeException(mediaType)))
     }
   }
-  
-  // MARK: Image
-  
+
+  // MARK: - Image
+
   // TODO: convert to async/await syntax once we drop support for iOS 12
-  private func handleImage(mediaInfo: MediaInfo, completion: @escaping (Result) -> Void) {
-    let metadata = mediaInfo[.mediaMetadata] as! Dictionary<String, Any>?
-    // nil when taking photo with camera
-    let imageUrl = mediaInfo[.referenceURL] as! URL?
-
-    var image = mediaInfo[.originalImage] as! UIImage
-    image = image.fixOrientation()
-    image = pickingOptions.allowsEditing ? self.cropImage(image, to: mediaInfo[.cropRect] as! CGRect) : image
-
-    let data: Data?
-    let fileExtension: String
+  private func handleImage(mediaInfo: MediaInfo, completion: @escaping (AsyncResult) -> Void) {
     do {
-      (data, fileExtension) = try self.readImageData(image: image,
-                                                     url: imageUrl,
-                                                     metadata: metadata)
-    } catch let error as CodedError {
-      return completion(.Failure(error))
+      guard let image = ImageUtils.readImageFrom(mediaInfo: mediaInfo, shouldReadCroppedImage: options.allowsEditing) else {
+        return completion(.failure(FailedToReadImageException()))
+      }
+
+      let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
+                                                                               mediaInfo: mediaInfo,
+                                                                               options: options)
+
+      let targetUrl = try self.generateUrl(withFileExtension: fileExtension)
+
+      // no modification requested
+      let imageModified = options.allowsEditing || options.quality != nil
+      let fileWasCopied = !imageModified && ImageUtils.tryCopyingOriginalImageFrom(mediaInfo: mediaInfo, to: targetUrl)
+      if !fileWasCopied {
+        try ImageUtils.write(imageData: imageData, to: targetUrl)
+      }
+
+      let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
+                                                           orImageFileUrl: targetUrl,
+                                                           tryReadingFile: fileWasCopied,
+                                                           shouldReadBase64: self.options.base64)
+
+      ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, logger: self.logger, shouldReadExif: self.options.exif) { exif in
+        let result: ImagePickerResponse = .image(ImageInfo(uri: targetUrl.absoluteString,
+                                                           width: image.size.width,
+                                                           height: image.size.height,
+                                                           base64: base64,
+                                                           exif: exif))
+        completion(.success(result))
+      }
+    } catch let exception as Exception {
+      return completion(.failure(exception))
     } catch {
-      return completion(.Failure(UnexpectedError(error)))
+      return completion(.failure(UnexpectedException(error)))
     }
+  }
 
+  // MARK: - Video
 
-    let path = self.generateDestinationPath(withExtension: fileExtension)
-    let fileUrl = URL.init(fileURLWithPath: path)
-
-    var fileCopied = false
-    if (!pickingOptions.allowsEditing && pickingOptions.quality == nil) {
-      // no modifiation requested
-      fileCopied = self.tryCopyImage(mediaInfo: mediaInfo, path:path)
-    }
-
-    if (!fileCopied) {
-      do {
-        try data?.write(to: fileUrl, options: [.atomic])
-      } catch {
-        return completion(.Failure(FailedToWriteImageError(reason: error)))
-      }
-    }
-
-    let getImageDataToStringify: () throws -> Data = {
-      if (fileCopied) {
-        do {
-          let imageData = try Data.init(contentsOf: fileUrl)
-          return imageData
-        } catch {
-          throw FailedToReadImageDataError(reason: error)
-        }
-      }
-      if (data == nil) {
-        throw FailedToReadImageDataForBase64Error()
-      }
-      return data!
-    }
-
-    let base64: String?
+  // TODO: convert to async/await syntax once we drop support for iOS 12
+  func handleVideo(mediaInfo: MediaInfo, completion: (AsyncResult) -> Void) {
     do {
-      base64 = self.pickingOptions.base64 ? self.imageToBase64(imageData: try getImageDataToStringify()) : nil
-    } catch let error as CodedError {
-      return completion(.Failure(error))
-    } catch {
-      return completion(.Failure(UnexpectedError(error)))
-    }
-    
-    
-    let completionHandler: (_ exif: [String: Any]?) -> Void = { exif in
-      let result: Response = .Image(ImageInfo(uri: fileUrl.absoluteString,
-                                              width: image.size.width,
-                                              height: image.size.height,
-                                              base64: base64,
-                                              exif: exif))
-      completion(.Success(result))
-    }
-    
-    if (self.pickingOptions.exif) {
-      return self.readImageExif(mediaInfo: mediaInfo, completion: completionHandler)
-    }
-    
-    return completionHandler(nil)
-  }
-  
-  private func cropImage(_ image: UIImage, to: CGRect) -> UIImage {
-    let cgImage = image.cgImage!.cropping(to: to)!
-    return UIImage.init(cgImage: cgImage,
-                        scale: image.scale,
-                        orientation: image.imageOrientation)
-  }
-  
-  private func readImageData(image: UIImage,
-                             url: URL?,
-                             metadata: [String: Any]?) throws -> (data: Data?, fileExtension: String) {
-    let compressionQuality = self.pickingOptions.quality ?? DEFAULT_QUALITY
+      guard let pickedVideoUrl = VideoUtils.readVideoUrlFrom(mediaInfo: mediaInfo) else {
+        return completion(.failure(FailedToReadVideoException()))
+      }
 
-    switch (url?.absoluteString) {
+      let targetUrl = try self.generateUrl(withFileExtension: ".mov")
+
+      try VideoUtils.tryCopyingVideo(at: pickedVideoUrl, to: targetUrl)
+
+      guard let size = VideoUtils.readSizeFrom(url: targetUrl) else {
+        return completion(.failure(FailedToReadVideoSizeException()))
+      }
+
+      // If video was edited (the duration is affected) then read the duration from the original edited video.
+      // Otherwise read the duration from the target video file.
+      // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
+      let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
+      let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
+
+      let result: ImagePickerResponse = .video(VideoInfo(uri: targetUrl.absoluteString,
+                                                         width: size.width,
+                                                         height: size.height,
+                                                         duration: duration))
+      completion(.success(result))
+    } catch let exception as Exception {
+      return completion(.failure(exception))
+    } catch {
+      return completion(.failure(UnexpectedException(error)))
+    }
+  }
+
+  // MARK: - utils
+
+  private func generateUrl(withFileExtension: String) throws -> URL {
+    guard let fileSystem = self.fileSystem else {
+      throw FileSystemModuleNotFoundException()
+    }
+    let directory = fileSystem.cachesDirectory.appending("ImagePicker")
+    let path = fileSystem.generatePath(inDirectory: directory, withExtension: withFileExtension)
+    let url = URL(fileURLWithPath: path)
+    return url
+  }
+}
+
+private struct ImageUtils {
+  static func readImageFrom(mediaInfo: MediaInfo, shouldReadCroppedImage: Bool) -> UIImage? {
+    guard let originalImage = mediaInfo[.originalImage] as? UIImage,
+          let image = originalImage.fixOrientation()
+    else {
+      return nil
+    }
+
+    if !shouldReadCroppedImage {
+      return image
+    }
+
+    guard let cropRect = mediaInfo[.cropRect] as? CGRect,
+          let croppedImage = ImageUtils.crop(image: image, to: cropRect)
+    else {
+      return nil
+    }
+
+    return croppedImage
+  }
+
+  static func crop(image: UIImage, to: CGRect) -> UIImage? {
+    guard let cgImage = image.cgImage?.cropping(to: to) else {
+      return nil
+    }
+    return UIImage(cgImage: cgImage,
+                   scale: image.scale,
+                   orientation: image.imageOrientation)
+  }
+
+  static func readDataAndFileExtension(
+    image: UIImage,
+    mediaInfo: MediaInfo,
+    options: ImagePickerOptions
+  ) throws -> (imageData: Data?, fileExtension: String) {
+    let compressionQuality = options.quality ?? DEFAULT_QUALITY
+
+    // nil when an image is picked from camera
+    let referenceUrl = mediaInfo[.referenceURL] as? URL
+
+    switch referenceUrl?.absoluteString {
     case .some(let s) where s.contains("ext=PNG"):
       let data = image.pngData()
       return (data, ".png")
 
     case .some(let s) where s.contains("ext=BMP"):
-      if (self.pickingOptions.allowsEditing || self.pickingOptions.quality != nil) {
+      if options.allowsEditing || options.quality != nil {
         // switch to png if editing
         let data = image.pngData()
         return (data, ".png")
       }
-
       return (nil, ".bmp")
 
     case .some(let s) where s.contains("ext=GIF"):
-      let data = image.jpegData(compressionQuality: compressionQuality)
-      let imageDestination = CGImageDestinationCreateWithData(data as! CFMutableData, kUTTypeGIF, 1, nil)
-
-      guard imageDestination != nil else {
-        throw FailedToCreateGifError()
+      guard let data = image.jpegData(compressionQuality: compressionQuality) else {
+        throw FailedToReadImageDataException()
       }
 
-      var metadata = metadata ?? [:]
-      if (self.pickingOptions.quality != nil) {
-        metadata[kCGImageDestinationLossyCompressionQuality as String] = self.pickingOptions.quality
+      // swiftlint:disable:next force_cast
+      guard let imageDestination = CGImageDestinationCreateWithData(data as! CFMutableData, kUTTypeGIF, 1, nil),
+            let cgImage = image.cgImage
+      else {
+        throw FailedToCreateGifException()
       }
 
-      CGImageDestinationAddImage(imageDestination!, image.cgImage!, metadata as CFDictionary)
+      var metadata = mediaInfo[.mediaMetadata] as? [String: Any] ?? [:]
+      if options.quality != nil {
+        metadata[kCGImageDestinationLossyCompressionQuality as String] = options.quality
+      }
 
-      if (!CGImageDestinationFinalize(imageDestination!)) {
-        throw FailedToExportGifError()
+      CGImageDestinationAddImage(imageDestination, cgImage, metadata as CFDictionary)
+
+      if !CGImageDestinationFinalize(imageDestination) {
+        throw FailedToExportGifException()
       }
 
       return (data, ".gif")
@@ -156,38 +194,92 @@ internal struct MediaHandler {
       return (data, ".jpg")
     }
   }
-  
-  private func tryCopyImage(mediaInfo: MediaInfo, path: String) -> Bool {
-    guard let fromPath = (mediaInfo[UIImagePickerController.InfoKey.imageURL] as! URL?)?.path else {
+
+  /**
+   Tries to copy an image when no modification is requested and fallbacks to writing data from the memory into the file system
+
+   @return written data or `nil` if file was only copied in the file system
+   */
+  static func write(imageData: Data?, to: URL) throws {
+    do {
+      try imageData?.write(to: to, options: [.atomic])
+    } catch {
+      throw FailedToWriteImageException().causedBy(error)
+    }
+  }
+
+  /**
+   @returns `true` upon copying success and `false` otherwise
+   */
+  static func tryCopyingOriginalImageFrom(mediaInfo: MediaInfo, to: URL) -> Bool {
+    guard let from = mediaInfo[.imageURL] as? URL else {
       return false
     }
 
     do {
-      try FileManager.default.copyItem(atPath: fromPath, toPath: path)
+      try FileManager.default.copyItem(atPath: from.path, toPath: to.path)
       return true
     } catch {
       return false
     }
   }
-  
-  private func imageToBase64(imageData: Data) -> String {
-    return imageData.base64EncodedString(options:[])
+
+  /**
+   Reads base64 representation of the image data. If the data is `nil` fallbacks to reading the data from the url.
+   */
+  static func optionallyReadBase64From(
+    imageData: Data?,
+    orImageFileUrl url: URL,
+    tryReadingFile: Bool,
+    shouldReadBase64: Bool
+  ) throws -> String? {
+    if !shouldReadBase64 {
+      return nil
+    }
+
+    if tryReadingFile {
+      do {
+        let data = try Data(contentsOf: url)
+        return data.base64EncodedString()
+      } catch {
+        throw FailedToReadImageDataException()
+          .causedBy(error)
+      }
+    }
+
+    guard let data = imageData else {
+      throw FailedToReadImageDataForBase64Exception()
+    }
+
+    return data.base64EncodedString()
   }
-  
-  // TODO: convert to async/await syntax once we drop support for iOS 12
-  private func readImageExif(mediaInfo: MediaInfo, completion: @escaping ([String: Any]?) -> Void) {
-    let metadata = mediaInfo[.mediaMetadata] as! Dictionary<String, Any>?
-    
-    if (metadata != nil) {
-      let exif = self.readExifFrom(imageMetadata: metadata!)
+
+  static func optionallyReadExifFrom(
+    mediaInfo: MediaInfo,
+    logger: EXLogManager?,
+    shouldReadExif: Bool,
+    completion: @escaping (_ result: [String: Any]?) -> Void
+  ) {
+    if !shouldReadExif {
+      return completion(nil)
+    }
+
+    let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
+
+    if metadata != nil {
+      let exif = ImageUtils.readExifFrom(imageMetadata: metadata!)
       return completion(exif)
     }
-    
-    let imageUrl = mediaInfo[.referenceURL] as! URL
+
+    guard let imageUrl = mediaInfo[.referenceURL] as? URL else {
+      logger?.info("Could not fetch metadata for image")
+      return completion(nil)
+    }
+
     let assets = PHAsset.fetchAssets(withALAssetURLs: [imageUrl], options: nil)
 
     guard let asset = assets.firstObject else {
-      self.logger.info("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
+      logger?.info("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
       return completion(nil)
     }
 
@@ -195,23 +287,23 @@ internal struct MediaHandler {
     options.isNetworkAccessAllowed = true
     asset.requestContentEditingInput(with: options) { input, info in
       guard let imageUrl = input?.fullSizeImageURL,
-            let properties = CIImage.init(contentsOf: imageUrl)?.properties
+            let properties = CIImage(contentsOf: imageUrl)?.properties
       else {
-        self.logger.info("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
+        logger?.info("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
         return completion(nil)
       }
-      let exif = self.readExifFrom(imageMetadata:properties)
+      let exif = ImageUtils.readExifFrom(imageMetadata: properties)
       return completion(exif)
     }
   }
-  
-  private func readExifFrom(imageMetadata: [String: Any]) -> [String: Any] {
-    var exif = imageMetadata[kCGImagePropertyExifDictionary as String] as! [String: Any]? ?? [:]
+
+  static func readExifFrom(imageMetadata: [String: Any]) -> [String: Any] {
+    var exif: [String: Any] = imageMetadata[kCGImagePropertyExifDictionary as String] as? [String: Any] ?? [:]
 
     // Copy ["{GPS}"]["<tag>"] to ["GPS<tag>"]
-    let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as! [String: Any]?
-    if (gps != nil) {
-      gps!.forEach { (key, value) in
+    let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]
+    if gps != nil {
+      gps!.forEach { key, value in
         exif["GPD\(key)"] = value
       }
     }
@@ -219,57 +311,41 @@ internal struct MediaHandler {
     // Inject orientation into exif
     let orientationKey = kCGImagePropertyOrientation as String
     let orientationValue = imageMetadata[orientationKey]
-    if (orientationValue != nil) {
+    if orientationValue != nil {
       exif[orientationKey] = orientationValue
     }
 
     return exif
   }
+}
 
-  // MARK: Video
-
-  // TODO: convert to async/await syntax once we drop support for iOS 12
-  func handleVideo(mediaInfo: MediaInfo, completion: (Result) -> Void) {
-    guard let pickedVideoUrl = mediaInfo[.mediaURL] as! URL?
-                            ?? mediaInfo[.referenceURL] as! URL? else { return completion(.Failure(FailedToOpenVideoError())) }
-
-    let targetPath = self.generateDestinationPath(withExtension: ".mov")
-    let targetUrl: URL = URL.init(fileURLWithPath: targetPath)
-
+private struct VideoUtils {
+  static func tryCopyingVideo(at: URL, to: URL) throws {
     do {
       // we copy the file as `moveItem(at:,to:)` throws an error in iOS 13 due to missing permissions
-      try FileManager.default.copyItem(at: pickedVideoUrl, to: targetUrl)
+      try FileManager.default.copyItem(at: at, to: to)
     } catch {
-      return completion(.Failure(FailedToPickVideo(reason: error)))
+      throw FailedToPickVideoException()
+        .causedBy(error)
     }
-
-    // Adding information about asset
-    let asset = AVURLAsset.init(url: targetUrl)
-    guard let size: CGSize = asset.tracks(withMediaType: .video).first?.naturalSize else {
-      return completion(.Failure(FailedToReadVideoSize()))
-    }
-
-    // If video was edited (the duration is affected) then read the duration from the original edited video.
-    // Otherwise read the duration from the target video file.
-    // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
-    let videoAssetToReadDurationFrom = self.pickingOptions.allowsEditing ? AVURLAsset.init(url: pickedVideoUrl) : asset
-    let duration = self.readVideoAssetDuration(videoAssetToReadDurationFrom)
-
-    let result: Response = .Video(VideoInfo(uri: targetUrl.absoluteString,
-                                            width: size.width,
-                                            height: size.height,
-                                            duration: duration))
-    completion(.Success(result))
   }
 
-  private func readVideoAssetDuration(_ asset: AVURLAsset) -> Double {
-    return Double(asset.duration.value) / Double(asset.duration.timescale) * 1000 // miliseconds
+  /**
+   @returns duration in milliseconds
+   */
+  static func readDurationFrom(url: URL) -> Double {
+    let asset = AVURLAsset(url: url)
+    return Double(asset.duration.value) / Double(asset.duration.timescale) * 1_000
   }
-  
-  // MARK: utils
-  
-  private func generateDestinationPath(withExtension fileExtension: String) -> String {
-    let directory = self.fileSystem.cachesDirectory.appending("ImagePicker")
-    return self.fileSystem.generatePath(inDirectory: directory, withExtension: fileExtension)
+
+  static func readSizeFrom(url: URL) -> CGSize? {
+    let asset = AVURLAsset(url: url)
+    let size: CGSize? = asset.tracks(withMediaType: .video).first?.naturalSize
+    return size
+  }
+
+  static func readVideoUrlFrom(mediaInfo: MediaInfo) -> URL? {
+    return mediaInfo[.mediaURL] as? URL
+        ?? mediaInfo[.referenceURL] as? URL
   }
 }

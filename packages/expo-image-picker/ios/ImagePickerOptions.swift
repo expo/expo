@@ -5,34 +5,34 @@ import MobileCoreServices
 
 internal let DEFAULT_QUALITY = 0.2
 
-internal struct PickingOptions: Record {
+internal struct ImagePickerOptions: Record {
   @Field
   var allowsEditing: Bool = false
-  
+
   @Field
   var aspect: [Double]
-  
+
   @Field
   var quality: Double?
-  
+
   @Field
   var mediaTypes: MediaType = .images
-  
+
   @Field
   var exif: Bool
-  
+
   @Field
   var base64: Bool = false
 
   @Field
   var videoExportPreset: VideoExportPreset = .passthrough
-  
+
   @Field
   var videoQuality: VideoQuality = .typeHigh
-  
+
   @Field
   var videoMaxDuration: Double = 0
-  
+
   @Field
   var presentationStyle: PresentationStyle = .automatic
 
@@ -51,7 +51,7 @@ internal enum PresentationStyle: Int, EnumArgument {
   case popover = 7
   case none = -1
   case automatic = -2
-  
+
   func toPresentationStyle() -> UIModalPresentationStyle {
     switch self {
     case .fullScreen:
@@ -87,7 +87,7 @@ internal enum VideoQuality: Int, EnumArgument {
   case type640x480 = 3
   case typeIFrame1280x720 = 4
   case typeIFrame960x540 = 5
-  
+
   func toQualityType() -> UIImagePickerController.QualityType {
     switch self {
     case .typeHigh:
@@ -110,7 +110,7 @@ internal enum MediaType: String, EnumArgument {
   case all = "All"
   case videos = "Videos"
   case images = "Images"
-  
+
   func toArray() -> [String] {
     switch self {
     case .images:
@@ -135,7 +135,7 @@ internal enum VideoExportPreset: Int, EnumArgument {
   case h264_3840x2160 = 8
   case hevc_1920x1080 = 9
   case hevc_3840_2160 = 10
-  
+
   func toAVAssetExportPreset() -> String {
     switch self {
     case .passthrough:

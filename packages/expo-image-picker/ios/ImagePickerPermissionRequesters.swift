@@ -3,10 +3,53 @@
 import Photos
 import ExpoModulesCore
 
-// MARK: actual permissions requesters
+public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
+  static public func permissionType() -> String {
+    return "camera"
+  }
 
-public class MediaLibraryPermissionRequester : DefaultMediaLibraryPermissionRequester,
-                                               EXPermissionsRequester {
+  public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
+    // TODO: @bbarthec: don't we need to provide @strongify mechanism for closures retaining `self`?
+    AVCaptureDevice.requestAccess(for: AVMediaType.video) { _ in
+      resolve(self.getPermissions())
+    }
+  }
+
+  public func getPermissions() -> [AnyHashable: Any] {
+    var systemStatus: AVAuthorizationStatus
+    var status: EXPermissionStatus
+    let cameraUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCameraUsageDescription")
+    let microphoneUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription")
+    if cameraUsageDescription == nil || microphoneUsageDescription == nil {
+      EXFatal(EXErrorWithMessage("""
+      This app is missing either 'NSCameraUsageDescription' or 'NSMicrophoneUsageDescription', so audio/video services will fail. \
+      Ensure both of these keys exist in app's Info.plist.
+      """))
+      systemStatus = AVAuthorizationStatus.denied
+    } else {
+      systemStatus = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
+    }
+
+    switch systemStatus {
+    case .authorized:
+      status = EXPermissionStatusGranted
+    case .restricted,
+         .denied:
+      status = EXPermissionStatusDenied
+    case .notDetermined:
+      fallthrough
+    @unknown default:
+      status = EXPermissionStatusUndetermined
+    }
+
+    return [
+      "status": status.rawValue
+    ]
+  }
+}
+
+public class MediaLibraryPermissionRequester: DefaultMediaLibraryPermissionRequester,
+                                              EXPermissionsRequester {
   public static func permissionType() -> String {
     return "mediaLibrary"
   }
@@ -14,22 +57,22 @@ public class MediaLibraryPermissionRequester : DefaultMediaLibraryPermissionRequ
 
 public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermissionRequester,
                                                        EXPermissionsRequester {
-  public static func permissionType() -> String! {
+  public static func permissionType() -> String {
     return "mediaLibraryWriteOnly"
   }
-  
+
   @available(iOS 14, *)
   override internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.addOnly
   }
 }
 
-// MARK: permission requester shared implementation extracted to an extension (mixin pattern)
+// MARK: - Permission requesters shared implementation extracted to an extension (mixin pattern)
 
 /**
  * Dummy class just to prevent extending NSObject publicly/globally.
  */
-public class DefaultMediaLibraryPermissionRequester : NSObject {}
+public class DefaultMediaLibraryPermissionRequester: NSObject {}
 
 /**
  * This extension is adding default implmentation for EXPermissionsRequester that can be shared by many classe.
@@ -49,54 +92,45 @@ extension DefaultMediaLibraryPermissionRequester {
       PHPhotoLibrary.requestAuthorization(authorizationHandler)
     }
   }
-  
+
   @objc
-  public func getPermissions() -> [AnyHashable : Any] {
+  public func getPermissions() -> [AnyHashable: Any] {
     var authorizationStatus: PHAuthorizationStatus
     if #available(iOS 14.0, *) {
       authorizationStatus = PHPhotoLibrary.authorizationStatus(for: self.accessLevel())
     } else {
       authorizationStatus = PHPhotoLibrary.authorizationStatus()
     }
-    
+
     var status: EXPermissionStatus
     var scope: String
-    
-    switch (authorizationStatus) {
+
+    switch authorizationStatus {
     case .authorized:
       status = EXPermissionStatusGranted
       scope = "all"
-      break
     case .limited:
       status = EXPermissionStatusGranted
       scope = "limited"
-      break
     case .denied, .restricted:
       status = EXPermissionStatusDenied
       scope = "none"
-      break
     case .notDetermined:
-      status = EXPermissionStatusUndetermined
-      scope = "none"
-      break
+      fallthrough
     @unknown default:
       status = EXPermissionStatusUndetermined
       scope = "none"
-      break
     }
-    
+
     return [
-      // TODO: (@bbarthec): had to return status.rawValue, because otherwise this value is casted to string in Obj-C
       "status": status.rawValue,
-      "accessPrivileges": scope,
+      "accessPrivileges": scope
     ]
   }
-  
+
   @available(iOS 14, *)
   @objc
   internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.readWrite
   }
 }
-
-
