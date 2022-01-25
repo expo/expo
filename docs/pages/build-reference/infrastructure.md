@@ -150,7 +150,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </details>
 
-#### Image `macos-big-sur-11.4-xcode-12.5` (alias `default`)
+#### Image `macos-big-sur-11.4-xcode-12.5`
 
 <details><summary>Details</summary>
 
