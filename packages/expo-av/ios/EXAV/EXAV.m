@@ -1042,7 +1042,7 @@ EX_EXPORT_METHOD_AS(setInput,
         [_kernelAudioSessionManagerDelegate setActiveInput:preferredInput];
         resolve(nil);
     } else {
-        reject(@"E_AUDIO_SETINPUT_FAIL", @"Preferred input not found!", nil);
+        reject(@"E_AUDIO_SETINPUT_FAIL", [NSString stringWithFormat:@"Preferred input '%@' not found!", input], nil);
     }
 }
 
