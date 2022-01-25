@@ -1,45 +1,61 @@
 import * as React from 'react';
 import { NativeMethods } from 'react-native';
 import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackNativeSource } from './AV';
-import { ExponentVideoComponent, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState } from './Video.types';
-export { ExponentVideoComponent, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackNativeSource, };
-export declare const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export declare const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export declare const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export declare const FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export default class Video extends React.Component<VideoProps, VideoState> implements Playback {
-    static RESIZE_MODE_CONTAIN: ResizeMode;
-    static RESIZE_MODE_COVER: ResizeMode;
-    static RESIZE_MODE_STRETCH: ResizeMode;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT: number;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT: number;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS: number;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS: number;
-    static FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT: number;
-    static FULLSCREEN_UPDATE_PLAYER_DID_PRESENT: number;
-    static FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS: number;
-    static FULLSCREEN_UPDATE_PLAYER_DID_DISMISS: number;
+import { ExponentVideoComponent, VideoFullscreenUpdate, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState } from './Video.types';
+export { ExponentVideoComponent, VideoFullscreenUpdate, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackNativeSource, };
+declare class Video extends React.Component<VideoProps, VideoState> implements Playback {
     _nativeRef: React.RefObject<React.Component<VideoNativeProps, any, any> & NativeMethods>;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
     constructor(props: VideoProps);
+    /**
+     * @hidden
+     */
     setNativeProps(nativeProps: VideoNativeProps): void;
     _handleNewStatus: (status: AVPlaybackStatus) => void;
     _performOperationAndHandleStatusAsync: (operation: (tag: number) => Promise<AVPlaybackStatus>) => Promise<AVPlaybackStatus>;
     _setFullscreen: (value: boolean) => Promise<AVPlaybackStatus>;
+    /**
+     * This presents a fullscreen view of your video component on top of your app's UI. Note that even if `useNativeControls` is set to `false`,
+     * native controls will be visible in fullscreen mode.
+     * @return A `Promise` that is fulfilled with the `AVPlaybackStatus` of the video once the fullscreen player has finished presenting,
+     * or rejects if there was an error, or if this was called on an Android device.
+     */
     presentFullscreenPlayer: () => Promise<AVPlaybackStatus>;
-    presentIOSFullscreenPlayer: () => Promise<AVPlaybackStatus>;
+    /**
+     * @hidden note(simek): this method is not used or mentioned anywhere, let's hide it for now.
+     */
     presentFullscreenPlayerAsync: () => Promise<AVPlaybackStatus>;
+    /**
+     * This dismisses the fullscreen video view.
+     * @return A `Promise` that is fulfilled with the `AVPlaybackStatus` of the video once the fullscreen player has finished dismissing,
+     * or rejects if there was an error, or if this was called on an Android device.
+     */
     dismissFullscreenPlayer: () => Promise<AVPlaybackStatus>;
-    dismissIOSFullscreenPlayer: () => void;
+    /**
+     * @hidden
+     */
     getStatusAsync: () => Promise<AVPlaybackStatus>;
+    /**
+     * @hidden
+     */
     loadAsync: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, downloadFirst?: boolean) => Promise<AVPlaybackStatus>;
+    /**
+     * Equivalent to setting URI to null.
+     * @hidden
+     */
     unloadAsync: () => Promise<AVPlaybackStatus>;
+    /**
+     * Set status API, only available while `isLoaded = true`.
+     * @hidden
+     */
     setStatusAsync: (status: AVPlaybackStatusToSet) => Promise<AVPlaybackStatus>;
+    /**
+     * @hidden
+     */
     replayAsync: (status?: AVPlaybackStatusToSet) => Promise<AVPlaybackStatus>;
+    /**
+     * @hidden
+     */
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null): void;
     playAsync: () => Promise<AVPlaybackStatus>;
     playFromPositionAsync: (positionMillis: number, tolerances?: {
@@ -78,4 +94,5 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     _renderPoster: () => JSX.Element | null;
     render(): JSX.Element;
 }
+export default Video;
 //# sourceMappingURL=Video.d.ts.map

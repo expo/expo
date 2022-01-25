@@ -96,6 +96,9 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
+  AVPlaybackSource: '../av/#playback-api',
+  AVPlaybackStatus: '../av/#playback-status',
+  AVPlaybackStatusToSet: '../av/#default-initial--avplaybackstatustoset',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
@@ -146,6 +149,8 @@ export const resolveTypeName = ({
   value,
   queryType,
   operator,
+  objectType,
+  indexType,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   try {
     if (name) {
@@ -272,6 +277,8 @@ export const resolveTypeName = ({
             {index + 1 !== array.length && ' & '}
           </span>
         ));
+    } else if (type === 'indexedAccess') {
+      return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
     } else if (value === null) {
@@ -437,6 +444,12 @@ export const CommentTextBlock = ({
       {exampleText}
     </>
   );
+};
+
+export const getComponentName = (name?: string, children: PropData[] = []) => {
+  if (name && name !== 'default') return name;
+  const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
+  return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
 export const STYLES_OPTIONAL = css`
