@@ -5,7 +5,11 @@ import createElement from 'react-native-web/dist/exports/createElement';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import ExponentAV from './ExponentAV';
 import { addFullscreenListener } from './FullscreenUtils.web';
-import { VideoFullscreenUpdate, VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent } from './Video.types';
+import {
+  VideoFullscreenUpdate,
+  VideoFullscreenUpdateEvent,
+  VideoReadyForDisplayEvent,
+} from './Video.types';
 
 type ExponentVideoProps = {
   source: AVPlaybackNativeSource | null;
