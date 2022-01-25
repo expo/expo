@@ -36,6 +36,8 @@ export function ApiVersionProvider(props: Props) {
   }, []);
 
   useEffect(() => {
+    // Make sure the version is in sync on first load
+    onRouteChange(router.pathname);
     router.events.on('routeChangeStart', onRouteChange);
     return () => router.events.off('routeChangeStart', onRouteChange);
   }, []);

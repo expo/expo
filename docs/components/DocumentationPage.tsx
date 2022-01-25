@@ -18,7 +18,7 @@ import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 import navigation from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
-import { VERSIONS } from '~/constants/versions';
+import { withApiVersion } from '~/providers/api-version';
 import { NavigationRoute } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
@@ -56,8 +56,10 @@ type Props = {
   /** API Page NPM package name, exposed through context for various React components that consistently use the package name. */
   packageName?: string;
   tocVisible: boolean;
-  /* If the page should not show up in the Algolia Docsearch results */
+  /** If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
+  /** The current api version provided by `withApiVersion` HOC */
+  version?: string;
 };
 
 type State = {
@@ -65,7 +67,7 @@ type State = {
   isMobileSearchActive: boolean;
 };
 
-export default class DocumentationPage extends React.Component<Props, State> {
+class DocumentationPage extends React.Component<Props, State> {
   state = {
     isMenuActive: false,
     isMobileSearchActive: false,
@@ -91,18 +93,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
       window.scrollTo(0, 0);
     }
-  };
-
-  private handleSetVersion = (version: string) => {
-    let newPath = Utilities.replaceVersionInUrl(this.props.router.pathname, version);
-
-    if (!newPath.endsWith('/')) {
-      newPath += '/';
-    }
-
-    // note: we can do this without validating if the page exists or not.
-    // the error page will redirect users to the versioned-index page when a page doesn't exists.
-    Router.push(newPath);
   };
 
   private handleShowMenu = () => {
@@ -183,21 +173,12 @@ export default class DocumentationPage extends React.Component<Props, State> {
       return null;
     }
 
-    return this.isReferencePath() ? this.getVersion() : 'none';
-  };
-
-  private getVersion = () => {
-    let version = (this.props.router.asPath || this.props.router.pathname).split(`/`)[2];
-    if (!version || !VERSIONS.includes(version)) {
-      version = 'latest';
-    }
-    return version;
+    return this.isReferencePath() ? this.props.version! : 'none';
   };
 
   private getRoutes = (): NavigationRoute[] => {
     if (this.isReferencePath()) {
-      const version = this.getVersion();
-      return navigation.reference[version];
+      return navigation.reference[this.props.version!];
     } else {
       return navigation[this.getActiveTopLevelSection()];
     }
@@ -223,16 +204,12 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
-
-    const version = this.getVersion();
     const routes = this.getRoutes();
-
     const isReferencePath = this.isReferencePath();
 
     const headerElement = (
       <DocumentationHeader
         activeSection={this.getActiveTopLevelSection()}
-        version={version}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
         isAlgoliaSearchHidden={this.state.isMenuActive}
@@ -246,8 +223,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
       <DocumentationSidebar
         router={this.props.router}
         routes={routes}
-        version={version}
-        onSetVersion={this.handleSetVersion}
         isVersionSelectorHidden={!isReferencePath}
       />
     );
@@ -304,17 +279,19 @@ export default class DocumentationPage extends React.Component<Props, State> {
             content="https://docs.expo.dev/static/images/twitter.png"
           />
 
-          {(version === 'unversioned' || this.isPreviewPath()) && (
+          {(this.props.version === 'unversioned' || this.isPreviewPath()) && (
             <meta name="robots" content="noindex" />
           )}
-          {version !== 'unversioned' && <link rel="canonical" href={this.getCanonicalUrl()} />}
+          {this.props.version !== 'unversioned' && (
+            <link rel="canonical" href={this.getCanonicalUrl()} />
+          )}
         </Head>
 
         {!this.state.isMenuActive ? (
           <div css={STYLES_DOCUMENT}>
             <H1>{this.props.title}</H1>
             <DocumentationPageContext.Provider
-              value={{ version, packageName: this.props.packageName }}>
+              value={{ version: this.props.version, packageName: this.props.packageName }}>
               {this.props.children}
             </DocumentationPageContext.Provider>
             <DocumentationFooter
@@ -328,7 +305,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
             <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>
               <H1>{this.props.title}</H1>
               <DocumentationPageContext.Provider
-                value={{ version, packageName: this.props.packageName }}>
+                value={{ version: this.props.version, packageName: this.props.packageName }}>
                 {this.props.children}
               </DocumentationPageContext.Provider>
               <DocumentationFooter
@@ -341,8 +318,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
               <DocumentationSidebar
                 router={this.props.router}
                 routes={routes}
-                version={version}
-                onSetVersion={this.handleSetVersion}
                 isVersionSelectorHidden={!isReferencePath}
               />
             </div>
@@ -352,3 +327,5 @@ export default class DocumentationPage extends React.Component<Props, State> {
     );
   }
 }
+
+export default withApiVersion(DocumentationPage);
