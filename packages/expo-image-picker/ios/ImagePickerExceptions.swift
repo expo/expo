@@ -14,6 +14,12 @@ internal class FileSystemModuleNotFoundException: Exception {
   }
 }
 
+internal class LoggerMOduleNotFoundException: Exception {
+  override var reason: String {
+    "Logger module not found. Are you sure that Expo modules are properly linked?"
+  }
+}
+
 internal class MissingCameraPermissionException: Exception {
   override var reason: String {
     "Missing camera or camera roll permission"
@@ -38,19 +44,7 @@ internal class MaxDurationWhileEditingExceededException: Exception {
   }
 }
 
-internal class MissingFileSystemModuleException: Exception {
-  override var reason: String {
-    "No FileSystem module"
-  }
-}
-
-internal class MissingLoggerModuleException: Exception {
-  override var reason: String {
-    "No Logger module"
-  }
-}
-
-internal class UnhandledMediaTypeException: GenericException<String?> {
+internal class InvalidMediaTypeException: GenericException<String?> {
   override var reason: String {
     "Cannot handle '\(param ?? "nil")' media type"
   }

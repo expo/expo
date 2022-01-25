@@ -144,10 +144,10 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       return
     }
     guard let fileSystem = self.appContext?.fileSystem else {
-      return promise.reject(MissingFileSystemModuleException())
+      return promise.reject(FileSystemModuleNotFoundException())
     }
     guard let logger = self.appContext?.logger else {
-      return promise.reject(MissingLoggerModuleException())
+      return promise.reject(LoggerModuleNotFoundException())
     }
 
     // Cleanup the currently stored picking context

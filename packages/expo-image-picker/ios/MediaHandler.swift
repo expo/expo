@@ -17,7 +17,7 @@ internal struct MediaHandler {
     switch mediaType {
     case imageType: return self.handleImage(mediaInfo: mediaInfo, completion: completion)
     case videoType: return self.handleVideo(mediaInfo: mediaInfo, completion: completion)
-    default: return completion(.failure(UnhandledMediaTypeException(mediaType)))
+    default: return completion(.failure(InvalidMediaTypeException(mediaType)))
     }
   }
 
@@ -195,16 +195,12 @@ private struct ImageUtils {
     }
   }
 
-  /**
-   Tries to copy an image when no modification is requested and fallbacks to writing data from the memory into the file system
-
-   @return written data or `nil` if file was only copied in the file system
-   */
   static func write(imageData: Data?, to: URL) throws {
     do {
       try imageData?.write(to: to, options: [.atomic])
     } catch {
-      throw FailedToWriteImageException().causedBy(error)
+      throw FailedToWriteImageException()
+        .causedBy(error)
     }
   }
 
