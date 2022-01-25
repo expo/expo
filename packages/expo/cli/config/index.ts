@@ -4,10 +4,8 @@ import chalk from 'chalk';
 import { Command } from '../../bin/cli';
 import * as Log from '../log';
 import { assertArgs, getProjectRoot } from '../utils/args';
-import { logCmdError } from '../utils/errors';
-import { configAsync } from './configAsync';
 
-export const expoConfig: Command = (argv) => {
+export const expoConfig: Command = async (argv) => {
   const args = assertArgs(
     {
       // Types
@@ -43,6 +41,9 @@ export const expoConfig: Command = (argv) => {
       0
     );
   }
+
+  const { configAsync } = await import('./configAsync');
+  const { logCmdError } = await import('../utils/errors');
 
   return configAsync(getProjectRoot(args), {
     // Parsed options

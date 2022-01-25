@@ -4,11 +4,8 @@ import chalk from 'chalk';
 import { Command } from '../../bin/cli';
 import * as Log from '../log';
 import { assertArgs, getProjectRoot } from '../utils/args';
-import { logCmdError } from '../utils/errors';
-import { prebuildAsync } from './prebuildAsync';
-import { resolvePlatformOption, resolveSkipDependencyUpdate } from './resolveOptions';
 
-export const expoPrebuild: Command = (argv) => {
+export const expoPrebuild: Command = async (argv) => {
   const args = assertArgs(
     {
       // Types
@@ -52,6 +49,10 @@ export const expoPrebuild: Command = (argv) => {
       0
     );
   }
+
+  const { prebuildAsync } = await import('./prebuildAsync');
+  const { logCmdError } = await import('../utils/errors');
+  const { resolvePlatformOption, resolveSkipDependencyUpdate } = await import('./resolveOptions');
 
   return prebuildAsync(getProjectRoot(args), {
     // Parsed options
