@@ -12,8 +12,7 @@ import { isVersionedUrl, getVersionFromUrl, replaceVersionInUrl } from '~/common
 
 type Props = PropsWithChildren<object>;
 
-// TODO(cedric): remove the need of exporting this context
-export const apiVersionContext = createContext({
+const context = createContext({
   version: 'latest',
   setVersion: (newVersion: string) => console.error('ApiVersion context provider not found'),
 });
@@ -42,12 +41,27 @@ export function ApiVersionProvider(props: Props) {
   }, []);
 
   return (
-    <apiVersionContext.Provider value={{ version, setVersion: onVersionChange }}>
+    <context.Provider value={{ version, setVersion: onVersionChange }}>
       {props.children}
-    </apiVersionContext.Provider>
+    </context.Provider>
   );
 }
 
 export function useApiVersion() {
-  return useContext(apiVersionContext);
+  return useContext(context);
+}
+
+// TODO(cedric): remove the need for an HOC component
+export function withApiVersion<C extends object>(
+  Component: React.ComponentType<C & Partial<React.ContextType<typeof context>>>
+) {
+  const name = Component.displayName || Component.name || 'Anonymous';
+  const component = (props: C) => (
+    <context.Consumer>
+      {apiVersionProps => <Component {...apiVersionProps} {...props} />}
+    </context.Consumer>
+  );
+
+  component.displayName = `withApiVersion(${name})`;
+  return component;
 }

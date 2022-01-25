@@ -10,6 +10,7 @@ import { SlashShortcut } from '~/components/icons/SlashShortcut';
 import { X } from '~/components/icons/X';
 import * as Constants from '~/constants/theme';
 import { LATEST_VERSION } from '~/constants/versions';
+import { withApiVersion } from '~/providers/api-version';
 
 const STYLES_INPUT = css`
   display: flex;
@@ -104,7 +105,7 @@ const STYLES_INPUT_MOBILE = css`
 `;
 
 type Props = {
-  version: string;
+  version?: string;
   hiddenOnMobile?: boolean;
   style?: React.CSSProperties;
   closeSidebar?: () => void;
@@ -245,4 +246,4 @@ class AlgoliaSearch extends React.Component<Props> {
   }
 }
 
-export default AlgoliaSearch;
+export default withApiVersion(AlgoliaSearch);
