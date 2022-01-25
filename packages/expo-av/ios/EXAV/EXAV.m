@@ -1000,15 +1000,15 @@ EX_EXPORT_METHOD_AS(getAvailableInputs,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-    NSMutableArray *inputs = [NSMutableArray new];
-    for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
-        [inputs addObject: @{
-          @"name": desc.portName,
-          @"type": desc.portType,
-          @"uid": desc.UID,
-        }];
-    }
-    resolve(inputs);
+  NSMutableArray *inputs = [NSMutableArray new];
+  for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
+    [inputs addObject: @{
+      @"name": desc.portName,
+      @"type": desc.portType,
+      @"uid": desc.UID,
+    }];
+  }
+  resolve(inputs);
 }
 
 EX_EXPORT_METHOD_AS(getCurrentInput,
