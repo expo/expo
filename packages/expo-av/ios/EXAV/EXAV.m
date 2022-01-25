@@ -441,7 +441,7 @@ EX_EXPORT_MODULE(ExponentAV);
   // The "best practice" is to tear down and recreate the audio session, but we're choosing to no-op 
   // in order to be able to resume recording with the phone mic.
     
-    _mediaServicesReset = true;
+  _mediaServicesReset = true;
 }
 
 #pragma mark - Internal sound playback helper methods
