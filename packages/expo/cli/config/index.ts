@@ -42,6 +42,7 @@ export const expoConfig: Command = async (argv) => {
     );
   }
 
+  // Load modules after the help prompt so `npx expo config -h` shows as fast as possible.
   const { configAsync } = await import('./configAsync');
   const { logCmdError } = await import('../utils/errors');
 
