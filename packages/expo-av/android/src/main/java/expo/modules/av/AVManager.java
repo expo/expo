@@ -721,7 +721,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public void getCurrentInput(final Promise promise) {
     AudioDeviceInfo deviceInfo = null;
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P){
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current audio input is not supported on devices running Android version lower than Android 9.0");
+      return;
+    } else  {
 
       try {
         // getRoutedDevice() is the most reliable way to return the actual mic input, however it
@@ -748,11 +751,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
           }
         }
       }
-    } else {
-      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current input is unsupported on" +
-        " Android devices running SDK < 24.");
-      return;
     }
+
     if (deviceInfo != null) {
       final Bundle map = getMapFromDeviceInfo(deviceInfo);
       promise.resolve(map);
@@ -763,7 +763,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void getAvailableInputs(final Promise promise) {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M){
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting available inputs is not supported on devices running Android version lower than Android 6.0");
+    } else {
       ArrayList<Bundle> devices = new ArrayList();
       AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
       for (int i = 0; i < audioDevices.length; i++) {
@@ -775,9 +777,6 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
         }
       }
       promise.resolve(devices);
-    } else {
-      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting available inputs is unsupported on" +
-        " Android devices running SDK < 24.");
     }
   }
 
