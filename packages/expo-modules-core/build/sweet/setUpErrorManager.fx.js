@@ -1,8 +1,8 @@
-import Platform from '../Platform';
 import { EventEmitter } from '../EventEmitter';
+import Platform from '../Platform';
 import NativeErrorManager from './NativeErrorManager';
 if (__DEV__ && Platform.OS === 'android') {
-    const onNewException = 'SweetErrorManager.onNewException';
+    const onNewException = 'ExpoModulesCoreErrorManager.onNewException';
     const eventEmitter = new EventEmitter(NativeErrorManager);
     eventEmitter.addListener(onNewException, ({ message }) => {
         console.error(message);

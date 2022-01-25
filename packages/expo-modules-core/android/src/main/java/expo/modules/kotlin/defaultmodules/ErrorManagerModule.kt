@@ -5,11 +5,11 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-private const val onNewException = "SweetErrorManager.onNewException"
+private const val onNewException = "ExpoModulesCoreErrorManager.onNewException"
 
 class ErrorManagerModule : Module() {
   override fun definition() = ModuleDefinition {
-    name("SweetErrorManager")
+    name("ExpoModulesCoreErrorManager")
     events(onNewException)
   }
 

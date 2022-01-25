@@ -1,3 +1,3 @@
 import { NativeModulesProxy } from '..';
-export default NativeModulesProxy.SweetErrorManager;
+export default NativeModulesProxy.ExpoModulesCoreErrorManager;
 //# sourceMappingURL=NativeErrorManager.js.map

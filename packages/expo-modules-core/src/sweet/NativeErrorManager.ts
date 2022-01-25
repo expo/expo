@@ -1,2 +1,2 @@
 import { NativeModulesProxy } from '..';
-export default NativeModulesProxy.SweetErrorManager;
+export default NativeModulesProxy.ExpoModulesCoreErrorManager;
