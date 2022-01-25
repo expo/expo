@@ -125,7 +125,7 @@ When selecting an image for the build you can use the full name provided below o
 
 <details><summary>Details</summary>
 
-- macOS Big Sur 12.1
+- macOS Monterey 12.1
 - Xcode 13.2.1 (13C100)
 - Node.js 14.18.1
 - Yarn 1.22.10
