@@ -20,7 +20,7 @@
   - [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid)
   - [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)
   - [2.3. Web Quality Assurance](#23-web-quality-assurance)
-  - [2.4. Cherry-pick Versioned Code to `master`](#24-cherry-pick-versioned-code-to-master)
+  - [2.4. Cherry-pick Versioned Code to `main`](#24-cherry-pick-versioned-code-to-main)
   - [2.5. Publish demo apps](#25-publish-demo-apps)
   - [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages)
 - [Stage 3 - Expo Go](#stage-3---expo-go)
@@ -65,7 +65,7 @@
 
 **How:**
 
-- Create a new branch from `master`.
+- Create a new branch from `main`.
 - **iOS**:
   - Run `et remove-sdk --platform ios` to remove the oldest SDK version from iOS codebase and regenerate Pods.
   - Make sure Expo Go builds in Xcode as expected.
@@ -74,7 +74,7 @@
   - This script will print all references to the SDK version it just removed - check all of them and remove them if possible (remove legacy code).
   - Make sure Expo Go builds in Android Studio as expected.
 - Repeat **iOS** and **Android** specific steps if you want to delete more SDK versions.
-- Commit changes and create a pull request to `master` branch.
+- Commit changes and create a pull request to `main` branch.
 
 ## 0.2. Update vendored modules
 
@@ -88,7 +88,7 @@
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
 - Pay extra attention to messages and warnings printed along the way for each module. Sometimes these's need for some extra manual work to be done in the updated files.
 - Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
-- Make sure that each individual library update lands on `master` as a **separate commit** so that it's easy to revert later on if needed.
+- Make sure that each individual library update lands on `main` as a **separate commit** so that it's easy to revert later on if needed.
 
 - Finally, talk to @brentvatne or @tsapeta about any modules extracted from RN that we need to include community versions of.
 
@@ -127,7 +127,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - Go to `react-native-lab/react-native` submodule.
 - Coordinate with whoever did the React Native upgrade (if anyone) or Brent (@brentvatne) to create a new branch for new SDK in our `react-native` fork (`sdk-XX` typically, where `XX` is the major number of the SDK version).
 - Run `et update-react-native`. This expotools command copies `ReactAndroid` and `ReactCommon` folders from the submodule to the respective paths: `android/ReactAndroid` and `android/ReactCommon` and then executes `ReactAndroidCodeTransformer` that applies some Expo-specific code transformations.
-- Add your git changes from both `react-native-lab` and `android` folders and create a pull request to `master` branch.
+- Add your git changes from both `react-native-lab` and `android` folders and create a pull request to `main` branch.
 - Run `git tag -a 'sdk-XX.X.X' -m 'React Native X.Y.Z for Expo SDKXX'` (where `X.Y.Z` is the React Native version and `XX` is the major number of SDK version), to make a tag for the latest commit in your local repo.
 - Push the tag to the remote using `git push --tags`.
 
@@ -148,7 +148,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 | [0.6. Generate new mocks](#06-generate-new-mocks)             |
 | [0.7. Publishing next packages](#07-publishing-next-packages) |
 
-**Why:** We need to publish the unimodule packages to NPM so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release. We use the `next` tag so people using the modules in bare workflow projects right now do not get these prereleased versions! We do this from master before cutting the release branch so that the version number bumps land on master first.
+**Why:** We need to publish the unimodule packages to NPM so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release. We use the `next` tag so people using the modules in bare workflow projects right now do not get these prereleased versions! We do this from main before cutting the release branch so that the version number bumps land on main first.
 
 **How:**
 
@@ -162,7 +162,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 **How:**
 
 - Run `et merge-changelogs --cut-off`.
-- Review the entries, commit and push changes to master.
+- Review the entries, commit and push changes to main.
 
 ## 0.9. Publish `sdk-XX` project templates
 
@@ -178,12 +178,12 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - Update the native project files in bare templates based on the diffs on https://react-native-community.github.io/upgrade-helper/
 - Test these project templates - you don't have to use `expo init` at this point, just `expo start` them locally. You will need to set `"sdkVersion": "UNVERSIONED"` in `app.json` for managed templates to test them at this point.
 - Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `sdk-XX` and not `latest`. (If tagged as `latest` they will be used by default whenever anyone runs `expo init`.)
-- If everything works as expected, commit changes to master.
+- If everything works as expected, commit changes to main.
 - You can now `init` from templates by using the package name and tag, for example: `expo init --template expo-template-bare-typescript@sdk-40`.
 
 ## 0.10. Generate new SDK docs
 
-**Why:** We store separate versions of docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on master between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
+**Why:** We store separate versions of docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on main between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
 
 **How:**
 
@@ -192,7 +192,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.md` from `unversioned` to the new versioned schema file.
 - In the Expo CLI repo, inside of `packages/expo-cli`, run `yarn introspect md | pbcopy` to generate the updated Expo CLI documentation and copy it to your clipboard. Replace everything under the `<TerminalBlock ..>` in `docs/workflow/expo-cli.md` with it, and remove the junk included in your pasted output above the first heading and the "Done in .." bit at the end. Sanity check the diff.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
-- Commit and push changes to master.
+- Commit and push changes to main.
 
 # Stage 1 - Unversioned Quality Assurance and Versioning
 
@@ -204,7 +204,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 **Why:** Since we are about to start QA, cutting a branch ensures that we aren't testing and versioning code that is changing under our feet.
 
-**How:** After the SDK branch cutoff deadline, cut the `sdk-XX` branch from `master` and push it to the remote repo.
+**How:** After the SDK branch cutoff deadline, cut the `sdk-XX` branch from `main` and push it to the remote repo.
 
 ## 1.2. Unversioned Quality Assurance
 
@@ -217,7 +217,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 **How:**
 
 - Go through the [Quality Assurance](Quality%20Assurance.md) guide. Use `UNVERSIONED` as a `sdkVersion`.
-- Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` and then be cherry-picked to the `sdk-XX` branch (if it exists) before versioning.
+- Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `main` and then be cherry-picked to the `sdk-XX` branch (if it exists) before versioning.
 
 ## 1.3. Version code for the new SDK
 
@@ -265,7 +265,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 - On iOS, by default, Expo Go builds with only unversioned code. Make sure to switch the scheme to `Expo Go (versioned)` in Xcode before building the app for versioned QA.
 - Go through the [Quality Assurance](Quality%20Assurance.md) guide.
-- Commit any fixes to `master` and cherry-pick to the `sdk-XX` branch.
+- Commit any fixes to `main` and cherry-pick to the `sdk-XX` branch.
 
 ## 2.2. Standalone App Quality Assurance
 
@@ -309,7 +309,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Run `expo build:web`, `npx serve web-build` and then `open http://localhost:5000/`. Ensure the built version of the app loads successfully.
 - Finally, test deploying the app by running `npx now web-build`.
 
-## 2.4. Cherry-pick Versioned Code to `master`
+## 2.4. Cherry-pick Versioned Code to `main`
 
 | Prerequisites                                                                                                          |
 | ---------------------------------------------------------------------------------------------------------------------- |
@@ -317,11 +317,11 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 | [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                          |
 | [2.3. Web Quality Assurance](#23-web-quality-assurance)                                                                |
 
-**Why:** Most commits should flow in the `master` -> `sdk-XX` branch direction. Versioning is an exception to this because we explicitly want to version the set of code on the `sdk-XX` branch, but we want that versioned code on master for later releases.
+**Why:** Most commits should flow in the `main` -> `sdk-XX` branch direction. Versioning is an exception to this because we explicitly want to version the set of code on the `sdk-XX` branch, but we want that versioned code on main for later releases.
 
 **How:**
 
-- Cherry-pick all versioning commits from `sdk-XX` to `master`.
+- Cherry-pick all versioning commits from `sdk-XX` to `main`.
 
 ## 2.5. Publish demo apps
 
@@ -353,7 +353,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - From the main branch, run `et publish-packages` and publish all packages with changes.
 - From the main branch, run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
-- If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on master in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.
+- If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on main in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.
   - Note that **only** the patch version number can be bumped on the release branch; **do not** bump the minor version number of any package on the release branch.
 
 # Stage 3 - Expo Go
@@ -396,8 +396,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - **Android**:
   - Unlike for iOS, we will not submit the Android app to the store at this point. We just need to bump the version so we can do an APK build for distribution through Expo CLI.
-  - Bump the `versionCode` and `versionName` in android/app/build.gradle. Commit this to master and cherry-pick to the release branch. You might need to check the previous release branch to make sure the new `versionCode` is greater than the previous patch version, in case that commit never made it to master.
-  - The APK will be available as an artifact from the "Android Client" CI job. If no CI jobs are running on the release branch, you just need to open a PR from the release branch to master. (Don't merge it; it only exists to make CI jobs run.)
+  - Bump the `versionCode` and `versionName` in android/app/build.gradle. Commit this to main and cherry-pick to the release branch. You might need to check the previous release branch to make sure the new `versionCode` is greater than the previous patch version, in case that commit never made it to main.
+  - The APK will be available as an artifact from the "Android Client" CI job. If no CI jobs are running on the release branch, you just need to open a PR from the release branch to main. (Don't merge it; it only exists to make CI jobs run.)
   - Download the APK and do a quick smoke test: install it in your local emulator or on a device and open a project.
 
 ## 3.3. Make a simulator/emulator build
@@ -459,14 +459,14 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 **How:**
 
-- Publish a new version of `turtle-cli` [following this guide](https://github.com/expo/turtle/blob/master/CONTRIBUTING.md#publishing-a-release).
+- Publish a new version of `turtle-cli` [following this guide](https://github.com/expo/turtle/blob/main/CONTRIBUTING.md#publishing-a-release).
 - Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
 
 ## 5.2. Deploy new docs with beta version
 
 **Why:** Make the docs available to beta testers and discoverable through the version selector, but not the default.
 
-**How:** Merge the new SDK docs into master, but don't update the `version` in `package.json` yet. Instead, set the `betaVersion` field to the SDK version number, eg: `"betaVersion": "40.0.0"`.
+**How:** Merge the new SDK docs into main, but don't update the `version` in `package.json` yet. Instead, set the `betaVersion` field to the SDK version number, eg: `"betaVersion": "40.0.0"`.
 
 ## 5.3. Add related packages to versions endpoint
 
@@ -611,7 +611,7 @@ Publish a blog post that includes the following information:
 
 **How:**
 
-- Update the `version` field docs/package.json to match the new SDK version, delete the `betaVersion` field, and push to master.
+- Update the `version` field docs/package.json to match the new SDK version, delete the `betaVersion` field, and push to main.
 - Ensure that the new SDK version is visible in the API reference and is marked as latest.
 
 ## 6.6. Publish final project templates
@@ -623,7 +623,7 @@ Publish a blog post that includes the following information:
 - Update the templates to point to the final versions of the released packages.
 - Test these project templates in Expo Go or by building them (bare workflow) - you don't have to use `expo init` at this point, just `expo start` them locally.
 - Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `latest` and `sdk-xx` where `xx` is the major version for the SDK being released.
-- If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
+- If everything works as expected, commit changes to main and make sure to cherry-pick that commit to the release branch as well.
 
 ## 6.7. Press release
 
@@ -647,7 +647,7 @@ This should be ready to publish immediately after the previous step is finished!
 **How:**
 
 - Add the release notes to the versions endpoint: `et update-versions --sdkVersion XX.X.X --key releaseNoteUrl --value <url>` and `et promote-versions-to-prod`
-- Add the release notes URL to the `upgrading-expo-sdk-walkthrough` docs page, commit and push to master, and deploy docs again.
+- Add the release notes URL to the `upgrading-expo-sdk-walkthrough` docs page, commit and push to main, and deploy docs again.
 - Coordinate with Juwan (@FiberJW) / Jon (@jonsamp) to make sure the release notes get added to the expo.io homepage.
 
 # Stage 7 - Clean up

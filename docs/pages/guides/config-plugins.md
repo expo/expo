@@ -1081,7 +1081,7 @@ Please add the following to your Expo config
 ```
 
 [config-docs]: /versions/latest/config/app/
-[prebuild-config]: https://github.com/expo/expo-cli/tree/master/packages/prebuild-config#readme
+[prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
 [cli-prebuild]: /workflow/expo-cli/#eject
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum

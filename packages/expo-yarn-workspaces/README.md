@@ -53,7 +53,7 @@ module.exports = async function(env, argv) {
 };
 ```
 
-This returns a webpack config object that can be customized further - for all available options see: https://github.com/expo/expo-cli/tree/master/packages/webpack-config
+This returns a webpack config object that can be customized further - for all available options see: https://github.com/expo/expo-cli/tree/main/packages/webpack-config
 
 ### Configuration
 

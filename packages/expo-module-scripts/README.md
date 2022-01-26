@@ -71,7 +71,7 @@ Besides, running `yarn prepare` script will also synchronize optional files from
 
 ### 🔌 Config Plugin
 
-To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
+To create a [config plugin](https://github.com/expo/expo-cli/blob/main/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
 
 1. Create a `plugin` folder and write your plugin in TypeScript (recommended).
 2. Create an `app.plugin.js` file in the project root and write the plugin in pure Node.js-compliant JavaScript.
