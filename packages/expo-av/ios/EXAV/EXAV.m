@@ -1037,18 +1037,18 @@ EX_EXPORT_METHOD_AS(setInput,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-    AVAudioSessionPortDescription* preferredInput = nil;
-    for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
-      if ([desc.UID isEqualToString:input]) {
-          preferredInput = desc;
-      }
+  AVAudioSessionPortDescription* preferredInput = nil;
+  for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
+    if ([desc.UID isEqualToString:input]) {
+      preferredInput = desc;
     }
-    if (preferredInput != nil) {
-        [_kernelAudioSessionManagerDelegate setActiveInput:preferredInput];
-        resolve(nil);
-    } else {
-        reject(@"E_AUDIO_SETINPUT_FAIL", [NSString stringWithFormat:@"Preferred input '%@' not found!", input], nil);
-    }
+  }
+  if (preferredInput != nil) {
+    [_kernelAudioSessionManagerDelegate setActiveInput:preferredInput];
+    resolve(nil);
+  } else {
+    reject(@"E_AUDIO_SETINPUT_FAIL", [NSString stringWithFormat:@"Preferred input '%@' not found!", input], nil);
+  }
 }
 
 #pragma mark - Lifecycle
