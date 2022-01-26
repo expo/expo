@@ -8,7 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Prevent crashes by adding unimplemented `CALayer` initializer `init(layer:)`. ([#15843](https://github.com/expo/expo/pull/15843) by [@dillonhafer](https://github.com/dillonhafer))
 - Fix display issue on iOS when more than 2 colors are used without explicit locations. ([#15955](https://github.com/expo/expo/pull/15955) by [@kbrandwijk](https://github.com/kbrandwijk))
 
 ### 💡 Others
