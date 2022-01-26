@@ -4,10 +4,10 @@
 
 ### 🛠 Breaking changes
 
-- Video: Refactor fullscreen update class constants to separate `VideoFullscreenUpdate` enum. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
-- Video: Remove the cast of `ResizeMode` enum values to the class constants. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
-- Video: Remove deprecated `presentIOSFullscreenPlayer` and `dismissIOSFullscreenPlayer` component methods. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
-- Video: Remove deprecated `onIOSFullscreenUpdate` component prop. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove `Video` component's static constants `FULLSCREEN_UPDATE_PLAYER_WILL_RESENT`, `FULLSCREEN_UPDATE_PLAYER_DID_RESENT`, `FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`, `FULLSCREEN_UPDATE_PLAYER_DID_DISMISS` and replace them with new `VideoFullscreenUpdate` enum. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove `Video` component's static constants `RESIZE_MODE_CONTAIN`, `RESIZE_MODE_COVER`, `RESIZE_MODE_STRETCH`. Use `ResizeMode` enum values instead. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove deprecated `presentIOSFullscreenPlayer` and `dismissIOSFullscreenPlayer` method from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove deprecated `onIOSFullscreenUpdate` prop from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
