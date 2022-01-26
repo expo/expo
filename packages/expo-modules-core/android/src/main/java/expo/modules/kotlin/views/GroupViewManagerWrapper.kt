@@ -3,6 +3,7 @@ package expo.modules.kotlin.views
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
@@ -28,7 +29,14 @@ class GroupViewManagerWrapper(
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
     viewWrapperDelegate.getExportedCustomDirectEventTypeConstants()?.let {
       val directEvents = super.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
-      return directEvents + it
+      val builder = MapBuilder.builder<String, Any>()
+      directEvents.forEach { event ->
+        builder.put(event.key, event.value)
+      }
+      it.forEach { event ->
+        builder.put(event.key, event.value)
+      }
+      return builder.build()
     }
 
     return super.getExportedCustomDirectEventTypeConstants()
