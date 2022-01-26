@@ -14,7 +14,7 @@ import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { LogoutConfirmationModal } from '../components/redesign/LogoutConfirmationModal';
+import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
 import { useModalStack } from '../hooks/useModalStack';
 import { useUser, useUserActions } from '../hooks/useUser';

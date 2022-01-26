@@ -11,10 +11,10 @@ import {
 import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 
-import { useDevSessions } from '../../hooks/useDevSessions';
-import { useModalStack } from '../../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../../hooks/useRecentlyOpenedApps';
-import { loadApp } from '../../native-modules/DevLauncherInternal';
+import { useDevSessions } from '../hooks/useDevSessions';
+import { useModalStack } from '../hooks/useModalStack';
+import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
+import { loadApp } from '../native-modules/DevLauncherInternal';
 import { LoadAppErrorModal } from './LoadAppErrorModal';
 
 type DeepLinkModalProps = {

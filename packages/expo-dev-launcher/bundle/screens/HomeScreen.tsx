@@ -16,11 +16,11 @@ import {
 import * as React from 'react';
 import { ScrollView } from 'react-native';
 
-import { AppHeader } from '../components/redesign/AppHeader';
-import { DevServerExplainerModal } from '../components/redesign/DevServerExplainerModal';
-import { LoadAppErrorModal } from '../components/redesign/LoadAppErrorModal';
-import { PulseIndicator } from '../components/redesign/PulseIndicator';
-import { UrlDropdown } from '../components/redesign/UrlDropdown';
+import { AppHeader } from '../components/AppHeader';
+import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
+import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
+import { PulseIndicator } from '../components/PulseIndicator';
+import { UrlDropdown } from '../components/UrlDropdown';
 import { useBuildInfo } from '../hooks/useBuildInfo';
 import { useDevSessions } from '../hooks/useDevSessions';
 import { useModalStack } from '../hooks/useModalStack';

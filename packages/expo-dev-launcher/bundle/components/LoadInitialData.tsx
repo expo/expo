@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { getInitialData } from '../../functions/getInitialData';
+import { getInitialData } from '../functions/getInitialData';
 import { Splash } from './Splash';
 
 type LoadInitialDataProps = {

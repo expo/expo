@@ -3,17 +3,17 @@ import { darkNavigationTheme, lightNavigationTheme } from 'expo-dev-client-compo
 import * as React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 
-import { UserData } from '../../functions/getUserProfileAsync';
-import { BuildInfoProvider } from '../../hooks/useBuildInfo';
-import { DevMenuSettingsProvider } from '../../hooks/useDevMenuSettings';
-import { DevSessionsProvider } from '../../hooks/useDevSessions';
-import { ModalProvider } from '../../hooks/useModalStack';
-import { PendingDeepLinkProvider } from '../../hooks/usePendingDeepLink';
-import { RecentApp, RecentlyOpenedAppsProvider } from '../../hooks/useRecentlyOpenedApps';
-import { UserContextProvider } from '../../hooks/useUser';
-import { BuildInfo } from '../../native-modules/DevLauncherInternal';
-import { DevMenuSettingsType } from '../../native-modules/DevMenuInternal';
-import { DevSession } from '../../types';
+import { UserData } from '../functions/getUserProfileAsync';
+import { BuildInfoProvider } from '../hooks/useBuildInfo';
+import { DevMenuSettingsProvider } from '../hooks/useDevMenuSettings';
+import { DevSessionsProvider } from '../hooks/useDevSessions';
+import { ModalProvider } from '../hooks/useModalStack';
+import { PendingDeepLinkProvider } from '../hooks/usePendingDeepLink';
+import { RecentApp, RecentlyOpenedAppsProvider } from '../hooks/useRecentlyOpenedApps';
+import { UserContextProvider } from '../hooks/useUser';
+import { BuildInfo } from '../native-modules/DevLauncherInternal';
+import { DevMenuSettingsType } from '../native-modules/DevMenuInternal';
+import { DevSession } from '../types';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
