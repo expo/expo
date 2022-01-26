@@ -263,8 +263,11 @@ function RecentlyOpenedApps({ onAppPress }) {
                 <Row align="center" padding="medium">
                   <StatusIndicator size="small" status="success" />
                   <Spacer.Horizontal size="small" />
-                  <Button.Text color="default">{label}</Button.Text>
-                  <Spacer.Horizontal size="flex" />
+                  <View flex="1">
+                    <Button.Text color="default" numberOfLines={1}>
+                      {label}
+                    </Button.Text>
+                  </View>
                   <ChevronRightIcon />
                 </Row>
               </Button.ScaleOnPressContainer>
