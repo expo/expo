@@ -476,6 +476,7 @@ A static convenience method to construct and start a recording is also provided:
   - `isRecording` : a boolean describing if the `Recording` is currently recording.
   - `durationMillis` : the current duration of the recorded audio.
   - `metering` : a number that's the most recent reading of the loudness in dB. The value ranges from –160 dBFS, indicating minimum power, to 0 dBFS, indicating maximum power. Present or not based on Recording options. See `RecordingOptions` for more information.
+  - `mediaServicesDidReset` : (iOS only) a boolean indictating whether media services were reset during recording. This may occur if the active input ceases to be available during recording (example: airpods are the active input and they run out of batteries during recording.)
 
   After `stopAndUnloadAsync()` is called, the `status` will be as follows:
 
