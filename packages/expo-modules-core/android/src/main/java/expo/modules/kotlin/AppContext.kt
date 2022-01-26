@@ -15,6 +15,7 @@ import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
+import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
@@ -26,7 +27,10 @@ class AppContext(
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) {
-  val registry = ModuleRegistry(WeakReference(this)).register(modulesProvider)
+  val registry = ModuleRegistry(WeakReference(this)).apply {
+    register(ErrorManagerModule())
+    register(modulesProvider)
+  }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   init {
@@ -130,6 +134,9 @@ class AppContext(
 
   internal val callbackInvoker: EventEmitter?
     get() = legacyModule()
+
+  internal val errorManager: ErrorManagerModule?
+    get() = registry.getModule()
 
   fun onDestroy() {
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
