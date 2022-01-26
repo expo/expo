@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
   s.header_dir     = 'EXDevMenu'
 
   s.resource_bundles = { 'EXDevMenu' => [
+    'ios/assets',
     'assets/*.ios.js',
     'assets/dev-menu-packager-host',
     'assets/*.ttf'

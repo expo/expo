@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { BottomSheet } from '../components/redesign/BottomSheet';
+import { BottomSheet } from '../components/BottomSheet';
 import { hideMenu, subscribeToCloseEvents, subscribeToOpenEvents } from '../native-modules/DevMenu';
 
 const { onChange, cond, eq, call, Value } = Animated;
