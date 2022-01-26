@@ -37,7 +37,7 @@ describe('DocumentationFooter', () => {
 });
 
 describe('githubUrl', () => {
-  const EDIT_URL_PREFIX = 'https://github.com/expo/expo/edit/master/docs/pages';
+  const EDIT_URL_PREFIX = 'https://github.com/expo/expo/edit/main/docs/pages';
 
   test('non-versioned page', () => {
     expect(githubUrl('/guides')).toBe(EDIT_URL_PREFIX + '/guides.md');
