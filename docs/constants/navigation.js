@@ -449,10 +449,7 @@ function pagesFromDir(dir) {
  * Create the page url using the absolute file path.
  */
 function pageUrl(file) {
-  return path
-    .relative(path.resolve(PAGES_DIR, '../'), file)
-    .replace(path.extname(file), '')
-    .replace(/\\/g, '/');
+  return '/' + path.relative(PAGES_DIR, file).replace(path.extname(file), '').replace(/\\/g, '/');
 }
 
 /**
