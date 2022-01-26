@@ -119,8 +119,7 @@ const renderWithLink = (name: string, type?: string) => {
   ) : (
     <Link
       href={hardcodedTypeLinks[replacedName] || `#${replacedName.toLowerCase()}`}
-      key={`type-link-${replacedName}`}
-    >
+      key={`type-link-${replacedName}`}>
       {replacedName}
       {type === 'array' && '[]'}
     </Link>
