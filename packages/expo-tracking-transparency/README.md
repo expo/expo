@@ -6,7 +6,7 @@ For more information on Apple's new App Tracking Transparency framework, please 
 
 ## API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/tracking-transparency.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/tracking-transparency.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/tracking-transparency/)
 
 ## Installation in managed Expo projects

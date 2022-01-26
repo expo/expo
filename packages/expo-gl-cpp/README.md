@@ -4,7 +4,7 @@ C++ bindings for WebGL 2.0 used in Expo GL module
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/gl-view.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/gl-view.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/gl-view/)
 
 # Installation in managed Expo projects
@@ -17,7 +17,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ### Add the package to your npm dependencies
 
-Note: this should be used in conjunction with [expo-gl](https://github.com/expo/expo/tree/master/packages/expo-gl).
+Note: this should be used in conjunction with [expo-gl](https://github.com/expo/expo/tree/main/packages/expo-gl).
 
 ```
 expo install expo-gl-cpp

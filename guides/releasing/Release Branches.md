@@ -11,7 +11,7 @@
   - [Prelease Versions](#prelease-versions)
   - [Shortcomings](#shortcomings)
 
-The release process begins when we decide that Expo Go and the libraries on the master branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on master so that we can release at any time but we don’t release from master. Instead, we create a release branch.
+The release process begins when we decide that Expo Go and the libraries on the main branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on master so that we can release at any time but we don’t release from master. Instead, we create a release branch.
 
 The release branch is named `sdk-XX` and is based on master. The main purpose of the release branch is to release new versions of Expo Go and the SDK libraries; we use the release branch to build the Expo Go apps we submit to the app stores and to publish our JS libraries to npm.
 
@@ -45,7 +45,7 @@ Sometimes code on master will be significantly different than code on a release 
 
 ### It’s easier to write and test the fix on the release branch instead of master.
 
-It’s OK to write the fix on your local copy of the release branch if it’s easier to develop that way. If a tree falls in a forest and no one is around to hear it, does it make a sound? But when it comes time to send the commit for code review and push it to GitHub, commit it to the master branch first.
+It’s OK to write the fix on your local copy of the release branch if it’s easier to develop that way. If a tree falls in a forest and no one is around to hear it, does it make a sound? But when it comes time to send the commit for code review and push it to GitHub, commit it to the main branch first.
 
 Note that even with these edge cases, we always preserve the unidirectional commit invariant.
 

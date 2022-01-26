@@ -4,7 +4,7 @@ Provides access to the local file system on the device.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/filesystem.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/filesystem.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/filesystem/)
 
 # Installation in managed Expo projects

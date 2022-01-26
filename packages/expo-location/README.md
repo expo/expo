@@ -4,7 +4,7 @@ Allows reading geolocation information from the device. Your app can poll for th
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/location.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/location.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/location/)
 
 # Installation in managed Expo projects

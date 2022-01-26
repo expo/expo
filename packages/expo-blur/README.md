@@ -4,7 +4,7 @@ A component that renders a native blur view on iOS and falls back to a semi-tran
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/blur-view.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/blur-view.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/blur-view/)
 
 # Installation in managed Expo projects

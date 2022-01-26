@@ -4,7 +4,7 @@ Provides function that let you generate an image from video. This can be used fo
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/videothumbnails.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/videothumbnails.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/videothumbnails/)
 
 # Installation in managed Expo projects

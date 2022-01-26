@@ -4,7 +4,7 @@ Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/local-authentication.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/local-authentication.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/local-authentication/)
 
 # Installation in managed Expo projects

@@ -4,7 +4,7 @@ Provides GLView that acts as OpenGL ES render target and gives GL context object
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/gl-view.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/gl-view.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/gl-view/)
 
 # Installation in managed Expo projects
@@ -17,7 +17,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ### Install expo-gl-cpp
 
-expo-gl requires that you also install and configure [expo-gl-cpp](https://github.com/expo/expo/tree/master/packages/expo-gl-cpp).
+expo-gl requires that you also install and configure [expo-gl-cpp](https://github.com/expo/expo/tree/main/packages/expo-gl-cpp).
 
 ### Add the package to your npm dependencies
 

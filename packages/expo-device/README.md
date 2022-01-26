@@ -4,7 +4,7 @@ Provides specific information about the device running the application.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/device.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/device.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/device/)
 
 # Installation in managed Expo projects

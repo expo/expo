@@ -50,7 +50,7 @@ git config branch.autosetuprebase always
 
 ## Pull and rebase often
 
-Keep your master branch up to date. If you make your master branch use rebasing by default (see above), just run `git pull` on master.
+Keep your main branch up to date. If you make your main branch use rebasing by default (see above), just run `git pull` on master.
 
 Rebasing your feature branches often (`git rebase master`) also increases the likelihood your code works with master and decreases the likelihood of a large merge conflict instead of smaller ones.
 

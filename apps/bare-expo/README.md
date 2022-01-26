@@ -1,6 +1,6 @@
 # Bare Workflow
 
-Learn more about this project in [CONTRIBUTING.md](https://github.com/expo/expo/blob/master/CONTRIBUTING.md).
+Learn more about this project in [CONTRIBUTING.md](https://github.com/expo/expo/blob/main/CONTRIBUTING.md).
 
 ## Usage
 

@@ -4,7 +4,7 @@ Provides functions that let you manipulation images on the local file system, eg
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/imagemanipulator.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/imagemanipulator.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/imagemanipulator/)
 
 # Installation in managed Expo projects

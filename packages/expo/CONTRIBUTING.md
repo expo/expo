@@ -48,7 +48,7 @@ If you make changes to native code, update `test-suite` too.
 
 ## Continuous Integration
 
-When a PR to Universe or a commit to the master branch contains changes to the Expo SDK, CI will run the Expo SDK tests as well as the integration test suite. CI also runs the linter and TypeScript. We need to keep the CI status green. You are responsible for the code you write!
+When a PR to Universe or a commit to the main branch contains changes to the Expo SDK, CI will run the Expo SDK tests as well as the integration test suite. CI also runs the linter and TypeScript. We need to keep the CI status green. You are responsible for the code you write!
 
 ## Linting
 
