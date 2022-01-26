@@ -44,6 +44,13 @@ This package automatically adds the `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
+If you'd like to access asset location (latitude and longitude EXIF tags), you have to add `ACCESS_MEDIA_LOCATION` permission to the `AndroidManifest.xml`:
+
+```xml
+<!-- Add this to AndroidManifest.xml -->
+<uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+```
+
 Starting with Android 10, the concept of [scoped storage](https://developer.android.com/training/data-storage#scoped-storage) is introduced. Currently, to make `expo-media-library` working with that change, you have to add `android:requestLegacyExternalStorage="true"` to `AndroidManifest.xml`:
 
 ```xml
