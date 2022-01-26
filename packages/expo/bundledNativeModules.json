@@ -39,7 +39,7 @@
   "expo-crypto": "~10.1.1",
   "expo-dev-client": "~0.8.2",
   "expo-device": "~4.1.0",
-  "expo-document-picker": "~10.1.0",
+  "expo-document-picker": "~10.1.1",
   "expo-error-recovery": "~3.0.4",
   "expo-face-detector": "~11.1.1",
   "expo-facebook": "~12.1.0",

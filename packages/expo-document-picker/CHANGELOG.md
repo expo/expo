@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Pass iCloudContainerEnvironment to plugin. ([#15774](https://github.com/expo/expo/pull/15774) by [@wkozyra95](https://github.com/wkozyra95))
-
 ### 💡 Others
+
+## 10.1.1 — 2022-01-26
+
+### 🐛 Bug fixes
+
+- Pass iCloudContainerEnvironment to plugin. ([#15774](https://github.com/expo/expo/pull/15774) by [@wkozyra95](https://github.com/wkozyra95))
 
 ## 10.1.0 — 2021-12-03
 
