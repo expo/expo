@@ -16,6 +16,10 @@ it('runs `npx expo --version`', async () => {
   const results = await execute('--version');
   expect(results.stdout).toEqual(require('../../package.json').version);
 });
+it('runs `npx expo -v`', async () => {
+  const results = await execute('-v');
+  expect(results.stdout).toEqual(require('../../package.json').version);
+});
 
 it('runs `npx expo --help`', async () => {
   const results = await execute('--help');
@@ -25,7 +29,7 @@ it('runs `npx expo --help`', async () => {
           [1m$[22m npx expo <command>
 
         [1mAvailable commands[22m
-          config
+          config, prebuild
 
         [1mOptions[22m
           --version, -v   Version number

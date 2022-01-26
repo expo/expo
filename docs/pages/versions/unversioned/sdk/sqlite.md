@@ -1,6 +1,6 @@
 ---
 title: SQLite
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sqlite'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sqlite'
 packageName: 'expo-sqlite'
 ---
 

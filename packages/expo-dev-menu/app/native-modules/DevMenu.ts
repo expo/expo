@@ -66,12 +66,7 @@ export async function toggleFastRefreshAsync() {
 }
 
 export async function getDevSettingsAsync(): Promise<DevSettings> {
-  return {
-    isDebuggingRemotely: false,
-    isElementInspectorShown: false,
-    isHotLoadingEnabled: false,
-    isPerfMonitorShown: false,
-  };
+  return await DevMenu.getDevSettingsAsync();
 }
 
 export async function getBuildInfoAsync(): Promise<BuildInfo> {

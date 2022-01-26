@@ -17,7 +17,7 @@ Some features of this module are used by other modules under the hood. Here is a
 
 ## Installation
 
-For [managed](/introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](/introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
+For [managed](/introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](/introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/main/packages/expo-task-manager);
 
 ## Configuration for standalone apps
 

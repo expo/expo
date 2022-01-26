@@ -81,7 +81,7 @@ If you want to add first-class electron support to any of the Unimodules then yo
 
 Learn more about how to use Electron in their [docs][electron-docs].
 
-[expo-packages]: https://github.com/expo/expo/tree/master/packages
+[expo-packages]: https://github.com/expo/expo/tree/main/packages
 [electron]: https://electronjs.org/
 [electron-docs]: https://electronjs.org/docs/
 [electron-builder]: https://www.electron.build/

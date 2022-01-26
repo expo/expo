@@ -1,4 +1,4 @@
-import { CameraType, CapturedPicture, ImageSize, ImageType, WebCameraSettings, CameraPictureOptions } from './Camera.types';
+import { CameraType, CameraCapturedPicture, ImageSize, ImageType, WebCameraSettings, CameraPictureOptions } from './Camera.types';
 interface ConstrainLongRange {
     max?: number;
     min?: number;
@@ -23,7 +23,7 @@ export declare function getPreferredStreamDevice(preferredCameraType: CameraType
 export declare function getStreamDevice(preferredCameraType: CameraType, preferredWidth?: number | ConstrainLongRange, preferredHeight?: number | ConstrainLongRange): Promise<MediaStream>;
 export declare function isWebKit(): boolean;
 export declare function compareStreams(a: MediaStream | null, b: MediaStream | null): boolean;
-export declare function capture(video: HTMLVideoElement, settings: MediaTrackSettings, config: CameraPictureOptions): CapturedPicture;
+export declare function capture(video: HTMLVideoElement, settings: MediaTrackSettings, config: CameraPictureOptions): CameraCapturedPicture;
 export declare function syncTrackCapabilities(cameraType: CameraType, stream: MediaStream | null, settings?: WebCameraSettings): Promise<void>;
 export declare function stopMediaStream(stream: MediaStream | null): void;
 export declare function setVideoSource(video: HTMLVideoElement, stream: MediaStream | MediaSource | Blob | null): void;

@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/stale@v4
         with:
-          ascending: true
+          ascending: false
           operations-per-run: 300
           days-before-issue-stale: 60
           days-before-issue-close: 7
@@ -19,3 +19,4 @@ jobs:
           close-issue-message: "This issue was closed because it has been inactive for 7 days since being marked as stale. Please open a new issue if you believe you are encountering a related problem."
           days-before-pr-stale: -1
           days-before-pr-close: -1
+          enable-statistics: true

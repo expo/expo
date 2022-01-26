@@ -1,6 +1,6 @@
 ---
 title: Segment
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-analytics-segment'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-analytics-segment'
 packageName: 'expo-analytics-segment'
 ---
 

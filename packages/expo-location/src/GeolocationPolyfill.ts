@@ -11,12 +11,22 @@ type GeolocationOptions = {
   enableHighAccuracy?: boolean;
 };
 
+declare const global: any;
+
 // @needsAudit
 /**
  * Polyfills `navigator.geolocation` for interop with the core React Native and Web API approach to geolocation.
  */
 export function installWebGeolocationPolyfill(): void {
   if (Platform.OS !== 'web') {
+    // Make sure `window.navigator` is defined in the global scope.
+    if (!('window' in global)) {
+      global.window = global;
+    }
+    if (!('navigator' in global.window)) {
+      global.window.navigator = {};
+    }
+
     // @ts-ignore
     window.navigator.geolocation = {
       getCurrentPosition,

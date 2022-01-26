@@ -3,6 +3,7 @@
 @objc
 class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
+  static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
 
@@ -41,6 +42,10 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
    */
   public func sendCloseEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
+  }
+  
+  public func sendOpenEvent() {
+    bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
   // MARK: RCTBridgeDelegate

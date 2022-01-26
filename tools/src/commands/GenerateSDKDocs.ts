@@ -36,7 +36,7 @@ async function action(options) {
 
     console.log(`Updating ${chalk.cyan('react-native-website')} submodule...`);
 
-    await spawnAsync('git', ['checkout', 'master'], {
+    await spawnAsync('git', ['checkout', 'main'], {
       cwd: reactNativeWebsiteDir,
     });
 
@@ -80,7 +80,7 @@ async function action(options) {
         const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
         await transformFileAsync(apiFilePath, [
           {
-            find: /(sourceCodeUrl:.*?\/tree\/)(master)(\/packages[^\n]*)/,
+            find: /(sourceCodeUrl:.*?\/tree\/)(main)(\/packages[^\n]*)/,
             replaceWith: `$1sdk-${sdk.substring(0, 2)}$3`,
           },
         ]);

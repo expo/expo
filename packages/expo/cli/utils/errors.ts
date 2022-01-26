@@ -1,3 +1,5 @@
+import { exit } from '../log';
+
 const ERROR_PREFIX = 'Error: ';
 
 /**
@@ -17,4 +19,35 @@ export class CommandError extends Error {
 
     this.message = message || code;
   }
+}
+
+export class AbortCommandError extends CommandError {
+  constructor() {
+    super('ABORTED', 'Interactive prompt was cancelled.');
+  }
+}
+
+/**
+ * Used to end a CLI process without printing a stack trace in the Expo CLI. Should be used in favor of `process.exit`.
+ */
+export class SilentError extends CommandError {
+  constructor(messageOrError?: string | Error) {
+    const message =
+      (typeof messageOrError === 'string' ? messageOrError : messageOrError?.message) ??
+      'This error should fail silently in the CLI';
+    super('SILENT', message);
+    if (typeof messageOrError !== 'string') {
+      // forward the props of the incoming error for tests or processes outside of expo-cli that use expo cli internals.
+      this.stack = messageOrError?.stack ?? this.stack;
+      this.name = messageOrError?.name ?? this.name;
+    }
+  }
+}
+
+export function logCmdError(error: Error): never {
+  if (error instanceof AbortCommandError || error instanceof SilentError) {
+    // Do nothing, this is used for prompts or other cases that were custom logged.
+    process.exit(0);
+  }
+  exit(error.toString());
 }

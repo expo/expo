@@ -1,6 +1,6 @@
 ---
 title: Audio
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
 ---
 

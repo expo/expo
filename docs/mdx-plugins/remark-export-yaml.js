@@ -2,8 +2,8 @@ const yaml = require('js-yaml');
 const visit = require('unist-util-visit');
 
 /**
- * @typedef {import('mdast').Root} Root - https://github.com/syntax-tree/mdast#root
- * @typedef {import('mdast').YAML} Yaml - https://github.com/syntax-tree/mdast#yaml
+ * @typedef {import('@types/mdast').Root} Root - https://github.com/syntax-tree/mdast#root
+ * @typedef {import('@types/mdast').YAML} Yaml - https://github.com/syntax-tree/mdast#yaml
  */
 
 /**
@@ -21,7 +21,7 @@ module.exports = function remarkExportYaml(options = {}) {
   return tree => {
     let yamlTransformed = false;
 
-    /** @param {Yaml} node -  */
+    /** @param {Yaml} node */
     const visitor = node => {
       const data = yaml.load(node.value);
 

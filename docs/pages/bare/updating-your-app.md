@@ -11,7 +11,7 @@ In this guide, an **update** refers to a single, atomic update, which may consis
 
 If possible, we highly recommend starting with a boilerplate project that has the `expo-updates` library already installed. Running `expo init` and choosing either of the bare workflow templates will give you such a template.
 
-To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#installation).
+To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md#installation).
 
 Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
 

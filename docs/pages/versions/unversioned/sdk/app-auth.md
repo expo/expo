@@ -1,6 +1,6 @@
 ---
 title: AppAuth
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-app-auth'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-app-auth'
 packageName: 'expo-app-auth'
 ---
 

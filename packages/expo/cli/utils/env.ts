@@ -1,5 +1,7 @@
 import { boolish } from 'getenv';
 
+export const EXPO_NO_GIT_STATUS = boolish('EXPO_NO_GIT_STATUS', false);
+
 /** Enable profiling metrics */
 export const EXPO_PROFILE = boolish('EXPO_PROFILE', false);
 

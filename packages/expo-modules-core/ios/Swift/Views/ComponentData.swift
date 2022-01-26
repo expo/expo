@@ -1,13 +1,12 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-import React
 
 /**
  Custom component data extending `RCTComponentData`. Its main purpose is to handle event-based props (callbacks),
  but it also simplifies capturing the view config so we can omit some reflections that React Native executes.
  */
 @objc(EXComponentData)
-public final class ComponentData: RCTComponentData {
+public final class ComponentData: EXComponentDataCompatibleWrapper {
   /**
    Weak pointer to the holder of a module that the component data was created for.
    */
@@ -19,7 +18,7 @@ public final class ComponentData: RCTComponentData {
   @objc
   public init(viewModule: ViewModuleWrapper, managerClass: ViewModuleWrapper.Type, bridge: RCTBridge) {
     self.moduleHolder = viewModule.wrappedModuleHolder
-    super.init(managerClass: managerClass, bridge: bridge)
+    super.init(managerClass: managerClass, bridge: bridge, eventDispatcher: bridge.eventDispatcher())
   }
 
   // MARK: RCTComponentData

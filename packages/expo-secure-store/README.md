@@ -4,7 +4,7 @@ Provides a way to encrypt and securely store key–value pairs locally on the de
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/securestore.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/securestore.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/securestore/)
 
 # Installation in managed Expo projects

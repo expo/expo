@@ -1,8 +1,7 @@
 import { useWorker } from '@koale/useworker';
 import * as React from 'react';
 
-import { CameraPictureOptions } from './Camera';
-import { BarCodeScanningResult, MountErrorListener } from './Camera.types';
+import { BarCodeScanningResult, CameraPictureOptions, MountErrorListener } from './Camera.types';
 import { captureImageData } from './WebCameraUtils';
 
 const qrWorkerMethod = ({ data, width, height }: ImageData): any => {

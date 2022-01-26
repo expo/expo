@@ -120,7 +120,7 @@ Depending on the `resizeMode` you will get the following behavior:
 
 ### Bare workflow apps
 
-To setup and customize your splash screen in a bare app, refer to [this guide](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
+To setup and customize your splash screen in a bare app, refer to [this guide](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 ### Known issues
 

@@ -2,7 +2,7 @@
 title: Introduction
 ---
 
-This section of the documentation provides a preview of experimental new features that we're working on at Expo. It is not linked from the main documentation but it is also not particularly well hidden &mdash; if you want to find it, [you can](https://github.com/expo/expo/blob/master/docs/pages/preview/introduction.md). We just ask that you please keep the following in mind when exploring preview features:
+This section of the documentation provides a preview of experimental new features that we're working on at Expo. It is not linked from the main documentation but it is also not particularly well hidden &mdash; if you want to find it, [you can](https://github.com/expo/expo/tree/main/docs/pages/preview/introduction.md). We just ask that you please keep the following in mind when exploring preview features:
 
 1. 🚫 **Please don't produce blogs posts, YouTube videos, or other content covering the preview features.** Everything documented here is likely to change and the content will quickly go stale.
 2. 👀 **You probably should not depend on preview features in production** unless you are prepared to deal with the instability that may come with a rapidly evolving product offering.

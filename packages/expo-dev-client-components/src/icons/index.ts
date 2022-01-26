@@ -9,7 +9,7 @@ export * from './InspectElementIcon';
 export * from './PerformanceIcon';
 export * from './QuestionMarkIcon';
 export * from './RefreshIcon';
-export * from './RunIcon'
+export * from './RunIcon';
 export * from './SettingsFilledIcon';
 export * from './ShakeDeviceIcon';
 export * from './ShowMenuIcon';

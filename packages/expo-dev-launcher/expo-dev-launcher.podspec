@@ -58,6 +58,9 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
+    # `hermes_enabled` should be enabled for test integrations
+    test_spec.dependency 'React-hermes'
+    test_spec.dependency 'hermes-engine'
   end
   
   s.default_subspec = 'Main'
