@@ -81,7 +81,7 @@ If you don't need custom native code outside of the Expo SDK, head over to [our 
 
 If you need standalone apps as built by running `expo build:ios` or `expo build:android` for a supported SDK version, check out our docs on [using turtle-cli to build apps locally or on CI](https://docs.expo.dev/classic/turtle-cli).
 
-If you're still here, you need to build a standalone app with code currently on `master` or another unreleased branch. Make sure to follow the [Configure app.json](https://docs.expo.dev/classic/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
+If you're still here, you need to build a standalone app with code currently on `main` or another unreleased branch. Make sure to follow the [Configure app.json](https://docs.expo.dev/classic/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
 
 ### Android
 

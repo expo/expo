@@ -388,7 +388,7 @@ Thanks so much 👋
 
 [expo-packages]: https://github.com/expo/expo/tree/main/packages
 [nextjs]: https://nextjs.org/
-[next-adapter]: https://github.com/expo/expo-cli/tree/master/packages/next-adapter
+[next-adapter]: https://github.com/expo/expo-cli/tree/main/packages/next-adapter
 [next-docs]: https://nextjs.org/docs
 [custom-document]: https://nextjs.org/docs#custom-document
 [next-offline]: https://github.com/hanford/next-offline

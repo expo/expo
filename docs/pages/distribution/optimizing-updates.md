@@ -30,7 +30,7 @@ Below are a couple of general techniques that help reduce the size of updates. M
 
 Many images can be reduced by more than 30% in size if they haven't been previously optimized. One simple way to optimize images is to resize them to the dimensions your app actually uses; if your image dimensions are 4032x3024 but your app only needs to display a 400x300 image, downsizing your image with a good interpolation algorithm like bicubic sharpening will greatly reduce your image's size.
 
-Another way to optimize images is to re-encode them using an optimizer like [expo-optimize](https://github.com/expo/expo-cli/tree/master/packages/expo-optimize#-welcome-to-expo-optimize), which optimizes all compatible images in you Expo project:
+Another way to optimize images is to re-encode them using an optimizer like [expo-optimize](https://github.com/expo/expo-cli/tree/main/packages/expo-optimize#-welcome-to-expo-optimize), which optimizes all compatible images in you Expo project:
 
 ```
 npm install -g sharp-cli

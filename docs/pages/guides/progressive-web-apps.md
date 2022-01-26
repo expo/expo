@@ -44,7 +44,7 @@ If you need finer control on how the PWA is generated, you should eject the **we
 
 Icons are generated in Webpack using the [`expo-pwa`][expo-pwa] CLI. You can customize and override icon generation by using the `expo-pwa` CLI directly. [Learn more about `expo-pwa`][expo-pwa].
 
-[expo-pwa]: https://github.com/expo/expo-cli/tree/master/packages/pwa
+[expo-pwa]: https://github.com/expo/expo-cli/tree/main/packages/pwa
 
 ### Chrome
 
