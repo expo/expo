@@ -61,6 +61,11 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
+
+// Media services may reset if the active recording input is no longer available
+// during a recording session (i.e. airpods run out of batteries). We expose this property
+// to allow the client decide what to do in this case—to prompt the user to select another input
+// or tear down the recording session.
 @property (nonatomic, assign) BOOL mediaServicesDidReset;
 
 @property (nonatomic, assign) int audioRecorderDurationMillis;
