@@ -141,13 +141,6 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
   };
 
   /**
-   * @hidden note(simek): this method is not used or mentioned anywhere, let's hide it for now.
-   */
-  presentFullscreenPlayerAsync = async (): Promise<AVPlaybackStatus> => {
-    return await this.presentFullscreenPlayer();
-  };
-
-  /**
    * This dismisses the fullscreen video view.
    * @return A `Promise` that is fulfilled with the `AVPlaybackStatus` of the video once the fullscreen player has finished dismissing,
    * or rejects if there was an error, or if this was called on an Android device.
