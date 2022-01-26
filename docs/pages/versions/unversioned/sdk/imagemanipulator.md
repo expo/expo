@@ -1,6 +1,6 @@
 ---
 title: ImageManipulator
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-manipulator'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-image-manipulator'
 packageName: 'expo-image-manipulator'
 ---
 

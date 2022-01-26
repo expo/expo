@@ -1,6 +1,6 @@
 ---
 title: BlurView
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-blur'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-blur'
 packageName: 'expo-blur'
 ---
 

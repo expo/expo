@@ -1,6 +1,6 @@
 ---
 title: Speech
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-speech'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-speech'
 packageName: 'expo-speech'
 ---
 

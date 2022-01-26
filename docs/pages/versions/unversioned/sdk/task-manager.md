@@ -1,6 +1,6 @@
 ---
 title: TaskManager
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-task-manager'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-task-manager'
 packageName: 'expo-task-manager'
 ---
 

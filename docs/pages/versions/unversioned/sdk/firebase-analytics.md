@@ -1,6 +1,6 @@
 ---
 title: FirebaseAnalytics
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-analytics'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-firebase-analytics'
 packageName: 'expo-firebase-analytics'
 ---
 

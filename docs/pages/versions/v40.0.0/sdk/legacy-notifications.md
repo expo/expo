@@ -18,9 +18,9 @@ The `Notifications` API from **`expo`** provides access to remote notifications 
 
 ## Installation
 
-This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
+This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/main/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
-> 💡 Please note that the [new `expo-notifications` library](https://github.com/expo/expo/tree/master/packages/expo-notifications) has a different API from the legacy Notifications API explained on this page. This API is deprecated and will be removed in SDK 41. [Here's a guide to help make the transition to the new library as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
+> 💡 Please note that the [new `expo-notifications` library](https://github.com/expo/expo/tree/main/packages/expo-notifications) has a different API from the legacy Notifications API explained on this page. This API is deprecated and will be removed in SDK 41. [Here's a guide to help make the transition to the new library as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
 ## API
 

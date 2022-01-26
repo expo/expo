@@ -54,7 +54,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Notes
 
-- There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md) for the full list.
+- There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
 ## SDK 34
 
@@ -67,7 +67,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 #### Notes
 
 - You'll need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you'll need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
-- There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md) for the full list.
+- There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
 ## SDK 33
 
@@ -91,7 +91,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 #### Notes
 
 - You'll need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you'll need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
-- There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md) for the full list.
+- There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
 ## SDK 32
 
@@ -125,7 +125,7 @@ module.exports = function (api) {
 
 #### Notes
 
-- There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md) for the full list.
+- There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
 ## SDK 31
 
@@ -148,7 +148,7 @@ module.exports = function (api) {
 
 #### Notes
 
-- There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md#3100-partial-changelog) for the full list.
+- There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md#3100-partial-changelog) for the full list.
 
 ## SDK 30
 

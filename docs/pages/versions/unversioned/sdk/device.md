@@ -1,6 +1,6 @@
 ---
 title: Device
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-device'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-device'
 packageName: 'expo-device'
 ---
 

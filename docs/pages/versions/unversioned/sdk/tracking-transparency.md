@@ -1,6 +1,6 @@
 ---
 title: TrackingTransparency
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-tracking-transparency'
 packageName: 'expo-tracking-transparency'
 ---
 
@@ -33,7 +33,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-tracking-transparency` repository](https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-tracking-transparency` repository](https://github.com/expo/expo/tree/main/packages/expo-tracking-transparency#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

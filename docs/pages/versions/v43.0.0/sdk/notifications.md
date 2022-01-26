@@ -48,7 +48,7 @@ Learn how to configure notifications with the [app manifest `notification` prope
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/main/packages/expo-notifications#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

@@ -1,6 +1,6 @@
 ---
 title: LinearGradient
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-linear-gradient'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-linear-gradient'
 packageName: 'expo-linear-gradient'
 ---
 

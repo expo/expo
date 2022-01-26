@@ -1,6 +1,6 @@
 ---
 title: Location
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-location'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-location'
 packageName: 'expo-location'
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: FaceDetector
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-face-detector'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-face-detector'
 packageName: 'expo-face-detector'
 ---
 

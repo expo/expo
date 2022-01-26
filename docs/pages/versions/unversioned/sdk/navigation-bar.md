@@ -1,6 +1,6 @@
 ---
 title: NavigationBar
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-navigation-bar'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-navigation-bar'
 packageName: 'expo-navigation-bar'
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: FirebaseCore
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-core'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-firebase-core'
 packageName: 'expo-firebase-core'
 ---
 

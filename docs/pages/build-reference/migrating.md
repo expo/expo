@@ -76,7 +76,7 @@ Support for custom entry points is in progress and is coming soon.
 
 Classic builds had no knowledge of your repository set up, you could use a monorepo or birepo or trirepo, the service was entirely indifferent. As long as you were able to publish a bundle, that's all that was needed. EAS Build needs to be able to install all of your project dependencies and essentially set up your development environment inside of a worker, so in some cases that will require some additional configuration. Learn more: ["How to set up EAS Build with a monorepo"](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
 
-> Work is in progress to improve monorepo support for EAS Build managed projects. We recommend using [expo-yarn-workspaces](https://github.com/expo/expo/blob/master/packages/expo-yarn-workspaces/README.md).
+> Work is in progress to improve monorepo support for EAS Build managed projects. We recommend using [expo-yarn-workspaces](https://github.com/expo/expo/tree/main/packages/expo-yarn-workspaces/README.md).
 
 ### Environment variables used by your app need to be defined for EAS Build
 

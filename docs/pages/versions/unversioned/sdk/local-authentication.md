@@ -1,6 +1,6 @@
 ---
 title: LocalAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-local-authentication'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-local-authentication'
 packageName: 'expo-local-authentication'
 ---
 

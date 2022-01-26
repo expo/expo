@@ -1,6 +1,6 @@
 ---
 title: Clipboard
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-clipboard'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-clipboard'
 packageName: 'expo-clipboard'
 ---
 

@@ -1,7 +1,7 @@
 ---
 id: statusbar
 title: StatusBar
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-status-bar'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-status-bar'
 packageName: 'expo-status-bar'
 ---
 

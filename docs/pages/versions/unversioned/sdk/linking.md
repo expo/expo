@@ -1,6 +1,6 @@
 ---
 title: Linking
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-linking'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-linking'
 packageName: 'expo-linking'
 ---
 

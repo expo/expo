@@ -1,6 +1,6 @@
 ---
 title: AuthSession
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-auth-session'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-auth-session'
 packageName: 'expo-auth-session'
 ---
 

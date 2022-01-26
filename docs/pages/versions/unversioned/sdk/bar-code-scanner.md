@@ -1,6 +1,6 @@
 ---
 title: BarCodeScanner
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-barcode-scanner'
 packageName: 'expo-barcode-scanner'
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Checkbox
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-checkbox'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-checkbox'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

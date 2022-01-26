@@ -1,6 +1,6 @@
 ---
 title: Google
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-app-auth'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-google-app-auth'
 packageName: 'expo-google-app-auth'
 ---
 

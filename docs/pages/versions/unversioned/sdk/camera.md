@@ -1,6 +1,6 @@
 ---
 title: Camera
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-camera'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-camera'
 packageName: 'expo-camera'
 ---
 

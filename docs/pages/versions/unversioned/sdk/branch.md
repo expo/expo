@@ -1,6 +1,6 @@
 ---
 title: Branch
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-branch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-branch'
 packageName: 'expo-branch'
 ---
 

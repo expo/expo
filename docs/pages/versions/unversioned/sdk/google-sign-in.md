@@ -1,6 +1,6 @@
 ---
 title: GoogleSignIn
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-sign-in'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-google-sign-in'
 packageName: 'expo-google-sign-in'
 ---
 
@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/main/packages/expo-google-sign-in).
 
 ## Configuration
 

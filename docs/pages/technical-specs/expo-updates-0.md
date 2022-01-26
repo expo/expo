@@ -215,4 +215,4 @@ Expo Updates supports code signing the manifest. This also transitively signs th
 
 ## Client Library
 
-See the [reference client library](https://github.com/expo/expo/tree/master/packages/expo-updates)
+See the [reference client library](https://github.com/expo/expo/tree/main/packages/expo-updates)
