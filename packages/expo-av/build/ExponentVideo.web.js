@@ -2,7 +2,7 @@ import * as React from 'react';
 import createElement from 'react-native-web/dist/exports/createElement';
 import ExponentAV from './ExponentAV';
 import { addFullscreenListener } from './FullscreenUtils.web';
-import { VideoFullscreenUpdate } from './Video.types';
+import { VideoFullscreenUpdate, } from './Video.types';
 const Video = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
 export default class ExponentVideo extends React.Component {
     _video;
