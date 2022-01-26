@@ -4,7 +4,7 @@ Provides a wrapper around expo-app-auth for Google sign in.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/google.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/google.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/google/)
 
 # Installation

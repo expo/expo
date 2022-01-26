@@ -4,7 +4,7 @@ Scripts that autolink Expo modules.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/module-autolinking.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/module-autolinking.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/module-autolinking/)
 
 # Installation in managed Expo projects

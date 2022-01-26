@@ -7,7 +7,7 @@
 A changelog is a file which contains a curated, chronologically ordered list of notable changes for each version of a package.
 The main purpose of changelogs (in general) is to inform users and contributors about changes that have been made in subsequent versions. However, in the [`expo/expo`](https://github.com/expo/expo) repository, they have one more purpose — to help us decide how to bump the package version when we publish it (see [categories'](#categories) descriptions for more).
 
-Most of the packages inside [`packages`](https://github.com/expo/expo/tree/master/packages) directory have their own changelogs, and these changelogs should be updated each time a change is made to their package.
+Most of the packages inside [`packages`](https://github.com/expo/expo/tree/main/packages) directory have their own changelogs, and these changelogs should be updated each time a change is made to their package.
 
 ## Changelog entries
 
@@ -62,4 +62,4 @@ Changes can be grouped within several predefined categories (Markdown sections w
 
 - `et merge-changelogs`
 
-  This command is intented to be used by people doing a SDK release — it merges changelog entries from all SDK packages as of the previous SDK version and puts them into the root's [`CHANGELOG.md`](https://github.com/expo/expo/blob/master/CHANGELOG.md).
+  This command is intented to be used by people doing a SDK release — it merges changelog entries from all SDK packages as of the previous SDK version and puts them into the root's [`CHANGELOG.md`](https://github.com/expo/expo/blob/main/CHANGELOG.md).
