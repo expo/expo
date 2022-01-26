@@ -16,6 +16,11 @@ Object {
           "name": "EAS",
           "posts": Array [
             Object {
+              "href": "/eas/",
+              "name": "Expo Application Services",
+              "sidebarTitle": "Introduction",
+            },
+            Object {
               "href": "/eas/webhooks",
               "name": "Webhooks",
             },
