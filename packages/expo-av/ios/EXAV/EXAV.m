@@ -61,7 +61,7 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
-@property (nonatomic, assign) BOOL mediaServicesReset;
+@property (nonatomic, assign) BOOL mediaServicesDidReset;
 
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 @property (nonatomic, assign) int prevAudioRecorderDurationMillis;
@@ -101,7 +101,7 @@ EX_EXPORT_MODULE(ExponentAV);
     _audioRecorderDurationMillis = 0;
     _prevAudioRecorderDurationMillis = 0;
     _audioRecorderStartTimestamp = 0;
-    _mediaServicesReset = false;
+    _mediaServicesDidReset = false;
   }
   return self;
 }
@@ -441,7 +441,7 @@ EX_EXPORT_MODULE(ExponentAV);
   // The "best practice" is to tear down and recreate the audio session, but we're choosing to no-op 
   // in order to be able to resume recording with the phone mic.
     
-  _mediaServicesReset = true;
+  _mediaServicesDidReset = true;
 }
 
 #pragma mark - Internal sound playback helper methods
@@ -612,7 +612,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
       @"canRecord": @(YES),
       @"isRecording": @([_audioRecorder isRecording]),
       @"durationMillis": @(durationMillis),
-      @"mediaServicesReset": @(_mediaServicesReset),
+      @"mediaServicesDidReset": @(_mediaServicesDidReset),
     } mutableCopy];
 
     if (_audioRecorder.meteringEnabled) {
@@ -872,7 +872,7 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  _mediaServicesReset = false;
+  _mediaServicesDidReset = false;
   if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;

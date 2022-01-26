@@ -5,7 +5,7 @@ export declare type RecordingStatus = {
     durationMillis: number;
     metering?: number;
     uri?: string | null;
-    mediaServicesReset?: boolean;
+    mediaServicesDidReset?: boolean;
 };
 export declare type RecordingOptions = {
     isMeteringEnabled?: boolean;
