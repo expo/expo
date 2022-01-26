@@ -115,7 +115,7 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
     !hasConstantsManifest()
   ) {
     throw new Error(
-      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/master/packages/expo-constants/README.md`
+      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`
     );
   }
 

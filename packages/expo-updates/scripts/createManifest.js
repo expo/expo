@@ -55,7 +55,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   assets.forEach(function (asset) {
     if (!asset.fileHashes) {
       throw new Error(
-        'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#metroconfigjs for an example.'
+        'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/main/packages/expo-updates/README.md#metroconfigjs for an example.'
       );
     }
     filterPlatformAssetScales(platform, asset.scales).forEach(function (scale, index) {

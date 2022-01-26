@@ -1,4 +1,4 @@
-// https://github.com/expo/expo-cli/tree/master/packages/metro-config#readme
+// https://github.com/expo/expo-cli/tree/main/packages/metro-config#readme
 const { createExoticTransformer } = require('@expo/metro-config/transformer');
 
 module.exports = createExoticTransformer({

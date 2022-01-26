@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-module-scripts#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-module-scripts#readme",
   "dependencies": {
     "@babel/cli": "^7.1.2",
     "@expo/npm-proofread": "^1.0.1",

@@ -51,7 +51,7 @@ export function githubUrl(path: string) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/latest', '/versions/unversioned');
   }
 
-  return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
+  return `https://github.com/expo/expo/edit/main/docs/pages${pathAsMarkdown}`;
 }
 
 // Add any page in the /sdk/ section that is not an actual Expo API
