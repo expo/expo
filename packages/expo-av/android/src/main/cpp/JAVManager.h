@@ -14,30 +14,31 @@
 #include "JPlayerData.h"
 
 namespace expo {
-    namespace av {
+  namespace av {
 
-        namespace jni = facebook::jni;
+    namespace jni = facebook::jni;
 
-        class JAVManager : public jni::HybridClass<JAVManager> {
-        public:
-            static auto constexpr kJavaDescriptor = "Lexpo/modules/av/AVManager;";
-            static auto constexpr TAG = "JAVManager";
-            static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
-            static void registerNatives();
+    class JAVManager : public jni::HybridClass<JAVManager> {
+    public:
+      static auto constexpr kJavaDescriptor = "Lexpo/modules/av/AVManager;";
+      static auto constexpr TAG = "JAVManager";
 
-            void installJSIBindings(jlong jsRuntimePointer,
-                                    jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder);
+      static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 
-        private:
-            friend HybridBase;
-            jni::global_ref<JAVManager::javaobject> javaPart_;
+      static void registerNatives();
 
-            explicit JAVManager(jni::alias_ref<jhybridobject> jThis) :
-                    javaPart_(jni::make_global(jThis))
-            {}
+      void installJSIBindings(jlong jsRuntimePointer,
+                              jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder);
 
-            JPlayerData* getMediaPlayerById(int id);
-        };
+    private:
+      friend HybridBase;
+      jni::global_ref<JAVManager::javaobject> javaPart_;
 
-    } // namespace av
+      explicit JAVManager(jni::alias_ref<jhybridobject> jThis) :
+        javaPart_(jni::make_global(jThis)) {}
+
+      JPlayerData *getMediaPlayerById(int id);
+    };
+
+  } // namespace av
 } // namespace expo
