@@ -11,8 +11,7 @@ import {
 import * as React from 'react';
 import { TextInput as NativeTextInput, Platform } from 'react-native';
 
-import { validateUrl } from '../../functions/validateUrl';
-import { clientUrlScheme } from '../../native-modules/DevLauncherInternal';
+import { validateUrl } from '../functions/validateUrl';
 
 type UrlDropdownProps = {
   onSubmit: (url: string) => void;

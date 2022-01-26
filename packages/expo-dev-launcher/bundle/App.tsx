@@ -3,9 +3,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HomeFilledIcon, SettingsFilledIcon } from 'expo-dev-client-components';
 import * as React from 'react';
 
-import { AppProviders } from './components/redesign/AppProviders';
-import { LoadInitialData } from './components/redesign/LoadInitialData';
-import { Splash } from './components/redesign/Splash';
+import { AppProviders } from './components/AppProviders';
+import { LoadInitialData } from './components/LoadInitialData';
+import { Splash } from './components/Splash';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
