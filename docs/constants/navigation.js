@@ -252,7 +252,9 @@ const general = [
 ];
 
 const eas = [
-  makeSection('EAS', [makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/')]),
+  makeSection('EAS', [
+    makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/'),
+  ]),
   makeSection('EAS Build', [
     makeGroup(
       'Start Building',
@@ -449,8 +451,11 @@ function pagesFromDir(dir) {
  * Create the page url using the absolute file path.
  */
 function pageUrl(file) {
-  const relative = path.relative(PAGES_DIR, file).replace(path.extname(file), '').replace(/\\/g, '/');
-  return '/' + (relative.endsWith('index') ? relative.replace('/index', '/') : relative );
+  const relative = path
+    .relative(PAGES_DIR, file)
+    .replace(path.extname(file), '')
+    .replace(/\\/g, '/');
+  return '/' + (relative.endsWith('index') ? relative.replace('/index', '/') : relative);
 }
 
 /**
