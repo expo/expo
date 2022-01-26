@@ -97,7 +97,7 @@ PODS:
   - EXJSONUtils (0.2.0)
   - EXLocalAuthentication (12.1.0):
     - ExpoModulesCore
-  - EXLocation (14.0.0):
+  - EXLocation (14.1.0):
     - ExpoModulesCore
     - UMTaskManagerInterface
   - EXMailComposer (11.1.0):
@@ -219,11 +219,11 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.0.0):
+  - ExpoLinearGradient (11.1.0):
     - ExpoModulesCore
   - ExpoLocalization (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.6.1):
+  - ExpoModulesCore (0.7.0):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (12.1.0):
@@ -1315,19 +1315,19 @@ SPEC CHECKSUMS:
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
   EXImage: ee032fea95d6a21800d6678eb14d1face73236d6
-  EXImageLoader: 9539bfc5ad0fc36abf78c82c096f701b43e994d7
+  EXImageLoader: ad85d98d686b33a2cf3788d1e35c5156d3ffd2e0
   EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
   EXInAppPurchases: 9c65b5ed6313e3aa32a5b75e4bcbce19868d66b4
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
-  EXLocation: 1c6449f87b79f159e63d7ed9f881a77b53dba6f0
+  EXLocation: 2d5cf099880b0dc3bc72b64d71007c536e538790
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
   EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
   EXMediaLibrary: 92ad88fa1904ad703b636ce4818cd6d5c5ba653b
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
-  Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
+  Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
   expo-dev-launcher: 859ff87239fde76a2014c0a1d21d7d8bcbc6c840
   expo-dev-menu: 96c0a87ce8c2c522e17616285d5ec6a6aa7241f4
@@ -1337,9 +1337,9 @@ SPEC CHECKSUMS:
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
-  ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
+  ExpoLinearGradient: b933ca13c66e91da28d11b818406144103d3445d
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 98f874d20b96d4497eb8ff9df686f14384913a30
+  ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
@@ -1354,7 +1354,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 011f3d0dd2e9331a518b086d36a13909e7d5aeb7
   EXSQLite: 5b16cc6b280d3c024b0b1d76829dd2161a26acbe
   EXStoreReview: 6143555fc912a4a194300992cd297c3e5b521a8a
-  EXStructuredHeaders: 31387a5533a33e5b5195c9b90d57eff11c264b18
+  EXStructuredHeaders: 7469fed1192a7794be7093fb873798bdf10d5f6e
   EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
@@ -1438,8 +1438,8 @@ SPEC CHECKSUMS:
   SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
-  UMAppLoader: 671576daa3fd3017d4879a5f23fc0dd3b36422a8
-  UMTaskManagerInterface: 6f7150f9ec9bc6f2760eeae532a70de71ff951c1
+  UMAppLoader: fd7c70dca4bbb1769564022cb0b3e4ad440da3e6
+  UMTaskManagerInterface: a06f988b2a16a445d55944b090390c76d3be2407
   Yoga: e7dc4e71caba6472ff48ad7d234389b91dadc280
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 

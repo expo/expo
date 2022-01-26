@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Prevent crashes by adding unimplemented `CALayer` initializer `init(layer:)`. ([#15843](https://github.com/expo/expo/pull/15843) by [@dillonhafer](https://github.com/dillonhafer))
-
 ### 💡 Others
+
+## 11.1.0 — 2022-01-26
+
+### 🐛 Bug fixes
+
+- Prevent crashes by adding unimplemented `CALayer` initializer `init(layer:)`. ([#15843](https://github.com/expo/expo/pull/15843) by [@dillonhafer](https://github.com/dillonhafer))
 
 ## 11.0.0 — 2021-12-03
 

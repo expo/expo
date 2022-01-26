@@ -1893,7 +1893,7 @@ PODS:
   - EXJSONUtils/Tests (0.2.0)
   - EXLocalAuthentication (12.1.0):
     - ExpoModulesCore
-  - EXLocation (14.0.0):
+  - EXLocation (14.1.0):
     - ExpoModulesCore
     - UMTaskManagerInterface
   - EXMailComposer (11.1.0):
@@ -1924,14 +1924,14 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.0.0):
+  - ExpoLinearGradient (11.1.0):
     - ExpoModulesCore
   - ExpoLocalization (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.6.1):
+  - ExpoModulesCore (0.7.0):
     - React-Core
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.6.1):
+  - ExpoModulesCore/Tests (0.7.0):
     - Nimble
     - Quick
     - React-Core
@@ -4190,7 +4190,7 @@ SPEC CHECKSUMS:
   EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
-  EXLocation: 1c6449f87b79f159e63d7ed9f881a77b53dba6f0
+  EXLocation: 2d5cf099880b0dc3bc72b64d71007c536e538790
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
   EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
   EXMediaLibrary: 92ad88fa1904ad703b636ce4818cd6d5c5ba653b
@@ -4203,9 +4203,9 @@ SPEC CHECKSUMS:
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
-  ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
+  ExpoLinearGradient: b933ca13c66e91da28d11b818406144103d3445d
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 45811213bec1d07a6e3ab665293777385a943fcc
+  ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
