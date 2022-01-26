@@ -3,7 +3,7 @@ name: Test Suite Lint
 on:
   workflow_dispatch: {}
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - apps/test-suite/**
   pull_request:

@@ -7,7 +7,7 @@ on:
       - .github/workflows/development-client-e2e.yml
       - packages/expo-dev-*/**
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/development-client-e2e.yml
       - packages/expo-dev-*/**
