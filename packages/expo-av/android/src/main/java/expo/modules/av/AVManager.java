@@ -792,8 +792,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       success = mAudioRecorder.setPreferredDevice(deviceInfo);
 
     } else {
-      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Setting input is unsupported on" +
-        " Android devices running SDK < 24.");
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Setting input is not supported on devices running Android version lower than Android 9.0");
     }
     if (success) {
       promise.resolve(success);
