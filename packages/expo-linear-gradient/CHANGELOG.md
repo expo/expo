@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix display issue on iOS when more than 2 colors are used without explicit locations. ([#15955](https://github.com/expo/expo/pull/15955) by [@kbrandwijk](https://github.com/kbrandwijk))
-
 ### 💡 Others
+
+## 11.2.0 — 2022-01-26
+
+### 🐛 Bug fixes
+
+- Fix display issue on iOS when more than 2 colors are used without explicit locations. ([#15955](https://github.com/expo/expo/pull/15955) by [@kbrandwijk](https://github.com/kbrandwijk))
 
 ## 11.1.0 — 2022-01-26
 
