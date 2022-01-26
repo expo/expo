@@ -37,7 +37,7 @@ export default async function getPackagesToCheckAsync(options: ActionOptions) {
     });
   }
 
-  const sinceRef = options.since ?? 'master';
+  const sinceRef = options.since ?? 'main';
   const mergeBase = await safeGetMergeBaseAsync(sinceRef);
 
   if (!mergeBase) {

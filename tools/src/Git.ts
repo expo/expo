@@ -416,7 +416,7 @@ export class GitDirectory {
   static async shallowCloneAsync(
     directory: string,
     remoteUrl: string,
-    ref: string = 'master'
+    ref: string = 'main'
   ): Promise<GitDirectory> {
     const git = new GitDirectory(directory);
 

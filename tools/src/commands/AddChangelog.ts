@@ -189,7 +189,7 @@ export default (program: Command) => {
     )
     .option(
       '--no-pull-request',
-      'If changes were pushed directly to the master.',
+      'If changes were pushed directly to the main.',
       (value, previous) => {
         // we need to change how no-flag works in commander to be able to pass an array
         if (!value) {
