@@ -690,6 +690,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
         return device;
       }
     }
+    return null;
   }
 
   private Bundle getMapFromDeviceInfo(AudioDeviceInfo deviceInfo) {

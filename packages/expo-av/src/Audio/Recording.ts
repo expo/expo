@@ -247,7 +247,7 @@ export class Recording {
     return ExponentAV.setInput(inputUid);
   }
 
-  async startAsync(): Promise<RecordingStatus> { 
+  async startAsync(): Promise<RecordingStatus> {
     return this._performOperationAndHandleStatusAsync(() => ExponentAV.startAudioRecording());
   }
 
