@@ -59,7 +59,7 @@
   "expo-in-app-purchases": "~12.1.0",
   "expo-intent-launcher": "~10.1.1",
   "expo-keep-awake": "~10.0.1",
-  "expo-linear-gradient": "~11.1.0",
+  "expo-linear-gradient": "~11.2.0",
   "expo-linking": "~3.0.0",
   "expo-local-authentication": "~12.1.0",
   "expo-localization": "~12.0.0",

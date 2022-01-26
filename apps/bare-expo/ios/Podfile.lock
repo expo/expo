@@ -219,7 +219,7 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.1.0):
+  - ExpoLinearGradient (11.2.0):
     - ExpoModulesCore
   - ExpoLocalization (12.0.0):
     - ExpoModulesCore
@@ -1330,14 +1330,14 @@ SPEC CHECKSUMS:
   Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
   expo-dev-launcher: 859ff87239fde76a2014c0a1d21d7d8bcbc6c840
-  expo-dev-menu: 96c0a87ce8c2c522e17616285d5ec6a6aa7241f4
+  expo-dev-menu: 685edad09544cefc6d77eff4d7494e065bdb1cbf
   expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoClipboard: 49ded0e61313aea57df8c970a488323488dcd3a1
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
-  ExpoLinearGradient: b933ca13c66e91da28d11b818406144103d3445d
+  ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
   ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
