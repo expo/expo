@@ -1,6 +1,6 @@
 ---
 title: Haptics
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-haptics'
 packageName: 'expo-haptics'
 ---
 

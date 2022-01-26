@@ -91,7 +91,7 @@ Optionally you can set the project up manually (not recommended).
   export { default } from '@expo/next-adapter/document';
   ```
 
-- Create a **babel.config.js** and use [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo).
+- Create a **babel.config.js** and use [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
 
   - You can run `yarn next-expo -c` then select **babel.config.js**
   - Or you can You may have installed this earlier with `yarn add -D babel-preset-expo`
@@ -290,7 +290,7 @@ For more information run `yarn next-expo --help` (or `-h`)
 
 The adapter provides a Babel config [`@expo/next-adapter/babel`](https://github.com/expo/expo-cli/blob/master/packages/next-adapter/src/babel.ts) to simplify setup.
 
-- Always use the universal [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo)
+- Always use the universal [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo)
   - Provides React Native support for all platforms that Expo supports (web, iOS, Android)
 - When running in the browser, also use `next/babel` preset.
 
@@ -386,7 +386,7 @@ Thanks so much 👋
 
 <!-- Footer -->
 
-[expo-packages]: https://github.com/expo/expo/tree/master/packages
+[expo-packages]: https://github.com/expo/expo/tree/main/packages
 [nextjs]: https://nextjs.org/
 [next-adapter]: https://github.com/expo/expo-cli/tree/master/packages/next-adapter
 [next-docs]: https://nextjs.org/docs

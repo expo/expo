@@ -98,7 +98,7 @@ If your app asks for [system permissions](../versions/latest/sdk/permissions.md)
 },
 ```
 
-The full list of keys Expo provides by default can be seen [here](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/Supporting/Info.plist#L28-L45). Unlike with Android, on iOS it is not possible to filter the list of permissions an app may request at a native level. This means that by default, your app will ship with all of these default boilerplate strings embedded in the binary. You can provide any overrides you want in the `infoPlist` configuration. Because these strings are configured at the native level, they will only be published when you build a new binary with `expo build`.
+The full list of keys Expo provides by default can be seen [here](https://github.com/expo/expo/tree/main/exponent-view-template/ios/exponent-view-template/Supporting/Info.plist#L28-L45). Unlike with Android, on iOS it is not possible to filter the list of permissions an app may request at a native level. This means that by default, your app will ship with all of these default boilerplate strings embedded in the binary. You can provide any overrides you want in the `infoPlist` configuration. Because these strings are configured at the native level, they will only be published when you build a new binary with `expo build`.
 
 ## Localizing your iOS app
 

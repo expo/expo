@@ -1,6 +1,6 @@
 ---
 title: FacebookAds
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-facebook'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ads-facebook'
 packageName: 'expo-ads-facebook'
 ---
 
@@ -43,7 +43,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-ads-facebook` repository](https://github.com/expo/expo/tree/master/packages/expo-ads-facebook#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-ads-facebook` repository](https://github.com/expo/expo/tree/main/packages/expo-ads-facebook#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

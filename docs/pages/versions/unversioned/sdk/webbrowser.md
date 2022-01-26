@@ -1,6 +1,6 @@
 ---
 title: WebBrowser
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-web-browser'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-web-browser'
 packageName: 'expo-web-browser'
 ---
 

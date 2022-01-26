@@ -1,6 +1,6 @@
 ---
 title: VideoThumbnails
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails'
 packageName: 'expo-video-thumbnails'
 ---
 

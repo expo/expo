@@ -39,7 +39,7 @@ type Props = {
 };
 
 const getPackageLink = (packageNames: string) =>
-  `https://github.com/expo/expo/tree/master/packages/${packageNames.split(' ')[0]}`;
+  `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
 const InstallSection: React.FC<Props> = ({
   packageName,
