@@ -3,6 +3,7 @@
 const frontmatter = require('front-matter');
 const fs = require('fs');
 const path = require('path');
+const { URL } = require('url');
 
 const { LATEST_VERSION } = require('./versions');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
@@ -449,13 +450,13 @@ function pagesFromDir(dir) {
 
 /**
  * Create the page url using the absolute file path.
+ * This parses the URL, relatively from PAGES_DIR.
+ * It also strips the file extension, and name if its `index`.
  */
 function pageUrl(file) {
-  const relative = path
-    .relative(PAGES_DIR, file)
-    .replace(path.extname(file), '')
-    .replace(/\\/g, '/');
-  return '/' + (relative.endsWith('index') ? relative.replace('/index', '/') : relative);
+  const filePath = path.parse(file);
+  const { pathname } = new URL(path.relative(PAGES_DIR, file), 'https://docs.expo.dev');
+  return pathname.replace(filePath.base, filePath.name === 'index' ? '' : filePath.name);
 }
 
 /**
