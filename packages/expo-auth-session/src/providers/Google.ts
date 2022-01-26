@@ -79,7 +79,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    *   - _Standalone_: Automatically added, do nothing.
    *   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
    * - To test this you can:
-   *   1. Eject to bare: `expo prebuild` and run `yarn ios`
+   *   1. Prebuild to generate the native files: `expo prebuild` and run `yarn ios`
    *   2. Create a custom client: `expo client:ios`
    *   3. Build a production IPA: `expo build:ios`
    * - Whenever you change the values in `app.json` you'll need to rebuild the native app.
