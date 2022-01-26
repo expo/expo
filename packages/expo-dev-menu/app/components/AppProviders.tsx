@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { BottomSheetProvider } from '../../hooks/useBottomSheet';
-import { BuildInfoContextProvider, BuildInfoContextProviderProps } from '../../hooks/useBuildInfo';
+import { BottomSheetProvider } from '../hooks/useBottomSheet';
+import { BuildInfoContextProvider, BuildInfoContextProviderProps } from '../hooks/useBuildInfo';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;

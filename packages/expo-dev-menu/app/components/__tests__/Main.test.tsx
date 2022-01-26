@@ -12,7 +12,7 @@ import {
   reloadAsync,
 } from '../../native-modules/DevMenu';
 import { render, waitFor, fireEvent, act } from '../../test-utils';
-import { MainScreen } from '../MainScreen';
+import { Main } from '../Main';
 
 const mockGetBuildInfoAsync = getBuildInfoAsync as jest.Mock;
 const mockToggleDebugRemoteJSAsync = toggleDebugRemoteJSAsync as jest.Mock;
@@ -34,13 +34,13 @@ const mockFns: jest.Mock[] = [
   mockReloadAsync,
 ];
 
-describe('<MainScreen />', () => {
+describe('<Main />', () => {
   afterEach(() => {
     mockFns.forEach((fn) => fn.mockClear());
   });
 
   test('renders', async () => {
-    const { getByText } = render(<MainScreen />, { initialAppProviderProps: {} });
+    const { getByText } = render(<Main />, { initialAppProviderProps: {} });
     await waitFor(() => getByText(/go home/i));
   });
 
@@ -57,7 +57,7 @@ describe('<MainScreen />', () => {
     mockGetBuildInfoAsync.mockClear();
     mockGetBuildInfoAsync.mockResolvedValueOnce(fakeBuildInfo);
 
-    const { getByText, queryByText } = render(<MainScreen />);
+    const { getByText, queryByText } = render(<Main />);
 
     expect(getBuildInfoAsync).toHaveBeenCalledTimes(1);
 
@@ -75,7 +75,7 @@ describe('<MainScreen />', () => {
   });
 
   test('hooked up to devsettings fns', async () => {
-    const { getByText, getByTestId } = render(<MainScreen />);
+    const { getByText, getByTestId } = render(<Main />);
     await waitFor(() => getByText(/go home/i));
 
     expect(togglePerformanceMonitorAsync).toHaveBeenCalledTimes(0);
@@ -108,7 +108,7 @@ describe('<MainScreen />', () => {
     mockGetBuildInfoAsync.mockClear();
     mockGetBuildInfoAsync.mockResolvedValueOnce(fakeBuildInfo);
 
-    const { getByText } = render(<MainScreen />);
+    const { getByText } = render(<Main />);
     await waitFor(() => getByText(/go home/i));
 
     expect(copyToClipboardAsync).toHaveBeenCalledTimes(0);
@@ -132,7 +132,7 @@ describe('<MainScreen />', () => {
   });
 
   test('return to dev launcher and reload', async () => {
-    const { getByText } = render(<MainScreen />);
+    const { getByText } = render(<Main />);
     await waitFor(() => getByText(/go home/i));
 
     expect(navigateToLauncherAsync).toHaveBeenCalledTimes(0);
