@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `addEventListener` and `removeEventListener` only accept `'url'` as `type` param, rather than `string`
+
 ### 💡 Others
 
 ## 3.0.0 — 2021-12-03

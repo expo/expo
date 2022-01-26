@@ -56,7 +56,7 @@ export declare function parse(url: string): ParsedURL;
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
-export declare function addEventListener(type: string, handler: URLListener): void;
+export declare function addEventListener(type: 'url', handler: URLListener): void;
 /**
  * Remove a handler by passing the `url` event type and the handler.
  * @param type The only valid type is `'url'`.
@@ -64,7 +64,7 @@ export declare function addEventListener(type: string, handler: URLListener): vo
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
  */
-export declare function removeEventListener(type: string, handler: URLListener): void;
+export declare function removeEventListener(type: 'url', handler: URLListener): void;
 /**
  * Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`.
  * Parses the deep link information out of the URL used to open the experience initially.
