@@ -1,4 +1,35 @@
+import { JSONValue } from '@expo/json-file';
+import { AssertionError } from 'assert';
+import chalk from 'chalk';
+import { HTTPError, RequestError } from 'got/dist/source';
+
 import { exit } from '../log';
+import { EXPO_DEBUG } from './env';
+
+export class ApiV2Error extends RequestError {
+  readonly name = 'ApiV2Error';
+  readonly expoApiV2ErrorCode: string;
+  readonly expoApiV2ErrorDetails?: JSONValue;
+  readonly expoApiV2ErrorServerStack?: string;
+  readonly expoApiV2ErrorMetadata?: object;
+
+  constructor(
+    originalError: HTTPError,
+    response: {
+      message: string;
+      code: string;
+      stack?: string;
+      details?: JSONValue;
+      metadata?: object;
+    }
+  ) {
+    super(response.message, originalError, originalError.request);
+    this.expoApiV2ErrorCode = response.code;
+    this.expoApiV2ErrorDetails = response.details;
+    this.expoApiV2ErrorServerStack = response.stack;
+    this.expoApiV2ErrorMetadata = response.metadata;
+  }
+}
 
 const ERROR_PREFIX = 'Error: ';
 
@@ -48,6 +79,14 @@ export function logCmdError(error: Error): never {
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
     process.exit(0);
+  } else if (
+    error instanceof CommandError ||
+    error instanceof AssertionError ||
+    error instanceof ApiV2Error
+  ) {
+    // Print the stack trace in debug mode only.
+    exit(chalk.red(error.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(error.stack) : ''));
   }
-  exit(error.toString());
+
+  exit(chalk.red(error.toString()) + '\n' + chalk.gray(error.stack));
 }
