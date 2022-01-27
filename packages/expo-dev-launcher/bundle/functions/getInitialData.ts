@@ -1,4 +1,4 @@
-import { AppProvidersProps } from '../components/redesign/AppProviders';
+import { AppProvidersProps } from '../components/AppProviders';
 import { getBuildInfoAsync } from '../native-modules/DevLauncherInternal';
 import { getSettingsAsync } from '../native-modules/DevMenuInternal';
 import { getDevSessionsAsync } from './getDevSessionsAsync';
