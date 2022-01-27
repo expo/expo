@@ -13,6 +13,6 @@
     "packages/*"
   ],
   "devDependencies": {
-    "expo-yarn-workspaces": "^1.3.0"
+    "expo-yarn-workspaces": "^1.7.0"
   }
 }
