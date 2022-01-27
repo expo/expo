@@ -407,7 +407,7 @@ function makeGroup(name, children = [], href = '') {
  * @param {string} file
  */
 function makePage(file) {
-  const filePath = !path.isAbsolute(file) ? path.resolve(PAGES_DIR, file) : file;
+  const filePath = path.resolve(PAGES_DIR, file);
   const contents = fs.readFileSync(filePath, 'utf-8');
   const url = pageUrl(filePath);
   const data = frontmatter(contents).attributes;
