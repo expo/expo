@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { NextRouter } from 'next/router';
 import * as React from 'react';
 
-import DocumentationSidebarCollapsible from '~/components/DocumentationSidebarGroup';
+import DocumentationSidebarCollapsible from '~/components/DocumentationSidebarCollapsible';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
@@ -41,7 +41,6 @@ const renderTypes: Record<NavigationType, React.ComponentType<SidebarNodeProps> 
   page: null, // Pages are rendered inside groups and should not be rendered directly
 };
 
-// TODO(cedric): move navigation over to unist format and use type to select different "renderers"
 export default function DocumentationSidebar(props: SidebarProps) {
   return (
     <nav css={STYLES_SIDEBAR} data-sidebar>
