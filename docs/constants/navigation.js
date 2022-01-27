@@ -429,7 +429,7 @@ function makePage(file) {
   if (data.sidebar_title) {
     result.sidebarTitle = data.sidebar_title;
   }
-  // TODO(cedric): refactor sidebarTitle into metadata
+  // TODO(cedric): refactor hidden into `isHidden` and move it to metadata
   if (data.hidden) {
     result.hidden = data.hidden;
   }
