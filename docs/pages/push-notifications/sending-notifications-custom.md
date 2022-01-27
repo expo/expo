@@ -45,6 +45,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
     priority: 'normal',
     data: {
       experienceId: '@yourExpoUsername/yourProjectSlug',
+      scopeKey: '@yourExpoUsername/yourProjectSlug',
       title: "\uD83D\uDCE7 You've got mail",
       message: 'Hello world! \uD83C\uDF10',
     },
@@ -52,7 +53,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
 });
 ```
 
-**The `experienceId` field is required**, otherwise your notifications will not go through to your app. FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../versions/latest/sdk/notifications.md#firebaseremotemessage).
+**The `experienceId` and `scopeKey` fields are required**, otherwise your notifications will not go through to your app. FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../versions/latest/sdk/notifications.md#firebaseremotemessage).
 
 > FCM also provides some server-side libraries in a few languages you can use instead of raw `fetch` requests. [See here for more info](https://firebase.google.com/docs/cloud-messaging/send-message#node.js).
 
@@ -122,6 +123,7 @@ request.write(
       },
     },
     experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
+    scopeKey: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
   })
 );
 request.end();
@@ -153,6 +155,7 @@ The examples above show bare minimum notification requests, which aren't that ex
   },
   "body": { object of key-value pairs },
   "experienceId": "@yourExpoUsername/yourProjectSlug",
+  "scopeKey": "@yourExpoUsername/yourProjectSlug",
 }
 ```
 
@@ -165,6 +168,7 @@ The examples above show bare minimum notification requests, which aren't that ex
   "priority": "normal" || "high",
   "data": {
     "experienceId": "@yourExpoUsername/yourProjectSlug",
+    "scopeKey": "@yourExpoUsername/yourProjectSlug",
     "title": title of your message,
     "message": body of your message,
     "channelId": the android channel ID associated with this notification,
