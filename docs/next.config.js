@@ -5,8 +5,8 @@ const { join } = require('path');
 const semver = require('semver');
 const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
-const navigation = require('./constants/navigation-data');
-const versions = require('./constants/versions');
+const navigation = require('./constants/navigation');
+const { VERSIONS } = require('./constants/versions');
 const { version, betaVersion } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
@@ -129,7 +129,7 @@ module.exports = {
         ...navigation.startingDirectories,
         ...navigation.generalDirectories,
         ...navigation.easDirectories,
-        ...versions.VERSIONS.map(version => `versions/${version}`),
+        ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: navigation.previewDirectories,
