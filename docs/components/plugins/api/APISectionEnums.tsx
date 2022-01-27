@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
@@ -9,6 +11,8 @@ import { CommentTextBlock, mdInlineComponents } from '~/components/plugins/api/A
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
 };
+
+const STYLES_ENUM_VALUE = css({ color: theme.text.secondary, fontSize: '75%' });
 
 const sortByValue = (a: EnumValueData, b: EnumValueData) => {
   if (a.defaultValue && b.defaultValue) {
@@ -30,16 +34,22 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <UL>
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
         <LI key={enumValue.name}>
-          <InlineCode>
-            {name}.{enumValue.name}
-          </InlineCode>
+          <span css={{ fontSize: '120%' }}>
+            <InlineCode>{enumValue.name}</InlineCode>
+          </span>
+          {enumValue.comment ? (
+            <CommentTextBlock
+              comment={enumValue.comment}
+              components={mdInlineComponents}
+              withDash
+            />
+          ) : null}
+          <br />
           {enumValue?.defaultValue && (
-            <>
-              {' : '}
-              <InlineCode>{enumValue?.defaultValue}</InlineCode>
-            </>
+            <InlineCode customCss={STYLES_ENUM_VALUE}>
+              {name}.{enumValue.name} ＝ {enumValue?.defaultValue}
+            </InlineCode>
           )}
-          <CommentTextBlock comment={enumValue.comment} components={mdInlineComponents} withDash />
         </LI>
       ))}
     </UL>
