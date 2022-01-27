@@ -1,11 +1,16 @@
-import { ApiV2Error } from '../../errors';
+import { ApiV2Error } from '../../api';
 import { promptAsync } from '../../prompts';
 import { ensureActorHasUsername, showLoginPromptAsync } from '../actions';
 import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } from '../otp';
 import { Actor, loginAsync } from '../user';
 
 jest.mock('../../prompts');
-jest.mock('../../api');
+jest.mock('../../api', () => {
+  const { ApiV2Error } = jest.requireActual('../../api');
+  return {
+    ApiV2Error,
+  };
+});
 jest.mock('../otp');
 jest.mock('../user');
 

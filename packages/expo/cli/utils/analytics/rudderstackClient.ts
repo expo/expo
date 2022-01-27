@@ -3,6 +3,7 @@ import os from 'os';
 import { URL } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
+import { EXPO_LOCAL, EXPO_STAGING, EXPO_NO_TELEMETRY } from '../env';
 import UserSettings from '../user/UserSettings';
 
 const PLATFORM_TO_ANALYTICS_PLATFORM: { [platform: string]: string } = {
@@ -12,7 +13,7 @@ const PLATFORM_TO_ANALYTICS_PLATFORM: { [platform: string]: string } = {
 };
 
 let rudderstackClient: RudderAnalytics | null = null;
-let userIdentified = false;
+let identifier = false;
 let identifyData: {
   userId: string;
   deviceId: string;
@@ -20,26 +21,9 @@ let identifyData: {
 } | null = null;
 
 export async function initAsync(): Promise<void> {
-  // TODO: remove after some time
-  const amplitudeEnabled = await UserSettings.getAsync('amplitudeEnabled', null);
-  if (amplitudeEnabled !== null) {
-    await UserSettings.setAsync('analyticsEnabled', amplitudeEnabled);
-    await UserSettings.deleteKeyAsync('amplitudeEnabled');
-  }
-  const amplitudeDeviceId = await UserSettings.getAsync('amplitudeDeviceId', null);
-  if (amplitudeDeviceId !== null) {
-    await UserSettings.setAsync('analyticsDeviceId', amplitudeDeviceId);
-    await UserSettings.deleteKeyAsync('amplitudeDeviceId');
-  }
-  // TODO: cut here
-  if (process.env.DISABLE_EAS_ANALYTICS) {
-    await UserSettings.setAsync('analyticsEnabled', false);
-  }
-
-  const analyticsEnabled = await UserSettings.getAsync('analyticsEnabled', true);
-  if (analyticsEnabled) {
+  if (EXPO_NO_TELEMETRY) {
     const config =
-      process.env.EXPO_STAGING || process.env.EXPO_LOCAL
+      EXPO_STAGING || EXPO_LOCAL
         ? {
             // staging environment
             rudderstackWriteKey: '1wpX20Da4ltFGSXbPFYUL00Chb7',
@@ -74,7 +58,7 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
     traits,
   };
 
-  ensureUserIdentified();
+  ensureIdentified();
 }
 
 export async function flushAsync(): Promise<void> {
@@ -87,7 +71,7 @@ export function logEvent(name: string, properties: Record<string, any> = {}): vo
   if (!rudderstackClient) {
     return;
   }
-  ensureUserIdentified();
+  ensureIdentified();
 
   const { userId, deviceId } = identifyData ?? {};
   const commonEventProperties = { source_version: process.env.__EXPO_VERSION, source: 'expo' };
@@ -101,8 +85,8 @@ export function logEvent(name: string, properties: Record<string, any> = {}): vo
   });
 }
 
-function ensureUserIdentified(): void {
-  if (!rudderstackClient || userIdentified || !identifyData) {
+function ensureIdentified(): void {
+  if (!rudderstackClient || identifier || !identifyData) {
     return;
   }
 
@@ -111,7 +95,7 @@ function ensureUserIdentified(): void {
     anonymousId: identifyData.deviceId,
     traits: identifyData.traits,
   });
-  userIdentified = true;
+  identifier = true;
 }
 
 function getRudderStackContext(): Record<string, any> {
@@ -119,7 +103,7 @@ function getRudderStackContext(): Record<string, any> {
   return {
     os: { name: platform, version: os.release() },
     device: { type: platform, model: platform },
-    app: { name: 'expo', version: process.env.__EXPO_VERSION ?? undefined },
+    app: { name: 'expo', version: process.env.__EXPO_VERSION },
   };
 }
 

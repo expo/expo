@@ -16,3 +16,6 @@ export const EXPO_LOCAL = boolish('EXPO_LOCAL', false);
 
 /** Is running in non-interactive CI mode */
 export const CI = boolish('CI', false);
+
+/** Disable telemetry (analytics) */
+export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);

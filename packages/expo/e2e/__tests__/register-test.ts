@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import fs from 'fs/promises';
 
-import { execute, projectRoot } from './utils';
+import { execute, getLoadedModulesAsync, projectRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -13,6 +13,22 @@ beforeAll(async () => {
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
+});
+
+it('loads expected modules by default', async () => {
+  const modules = await getLoadedModulesAsync(`require('../../build-cli/cli/register');`);
+  expect(modules).toStrictEqual([
+    'node_modules/ansi-styles/index.js',
+    'node_modules/arg/index.js',
+    'node_modules/chalk/source/index.js',
+    'node_modules/chalk/source/util.js',
+    'node_modules/has-flag/index.js',
+    'node_modules/supports-color/index.js',
+    'packages/expo/build-cli/cli/log.js',
+    'packages/expo/build-cli/cli/register/index.js',
+    'packages/expo/build-cli/cli/utils/args.js',
+    'packages/expo/build-cli/cli/utils/errors.js',
+  ]);
 });
 
 it('runs `npx expo register --help`', async () => {
