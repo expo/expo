@@ -108,5 +108,5 @@ function getRudderStackContext(): Record<string, any> {
 }
 
 export enum AnalyticsEvent {
-  ACTION = 'action', // generic event type which is used to determine the 'daily active user' stat, include an `action: eas ${subcommand}` property inside of the event properties object
+  ACTION = 'action', // generic event type which is used to determine the 'daily active user' stat, include an `action: expo ${subcommand}` property inside of the event properties object
 }

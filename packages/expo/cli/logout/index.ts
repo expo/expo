@@ -21,7 +21,7 @@ export const expoLogout: Command = async (argv) => {
     Log.exit(
       chalk`
       {bold Description}
-        Logout of an Expo account
+        Log out of an Expo account
 
       {bold Usage}
         $ npx expo logout

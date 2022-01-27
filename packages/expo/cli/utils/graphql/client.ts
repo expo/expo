@@ -81,8 +81,8 @@ export async function withErrorHandlingAsync<T>(promise: Promise<OperationResult
     throw error;
   }
 
-  // Check for malfolmed response. This only checks the root query existence,
-  // It doesn't affect returning responses with empty resultset.
+  // Check for a malformed response. This only checks the root query's existence. It doesn't affect
+  // returning responses with an empty result set.
   if (!data) {
     throw new Error('Returned query result data is null!');
   }
