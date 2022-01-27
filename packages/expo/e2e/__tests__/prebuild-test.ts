@@ -19,7 +19,7 @@ const originalCI = process.env.CI;
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
 });
 
@@ -49,10 +49,10 @@ it('runs `npx expo prebuild --help`', async () => {
   const results = await execute('prebuild', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          [1mDescription[22m
+          Description
             Create native iOS and Android project files before building natively.
 
-          [1mUsage[22m
+          Usage
             $ npx expo prebuild <dir>
 
           <dir> is the directory of the Expo project.
