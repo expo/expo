@@ -76,10 +76,7 @@ export async function showLoginPromptAsync({
 
 /** Ensure the user is logged in, if not, prompt to login. */
 export async function ensureLoggedInAsync(): Promise<Actor> {
-  let user: Actor | undefined;
-  try {
-    user = await getUserAsync();
-  } catch {}
+  let user = await getUserAsync().catch(() => null);
 
   if (!user) {
     Log.warn(chalk.yellow`An Expo user account is required to proceed.`);

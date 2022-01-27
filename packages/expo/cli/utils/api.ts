@@ -73,23 +73,3 @@ export function getExpoApiBaseUrl(): string {
     return `https://api.expo.dev`;
   }
 }
-
-export function getExpoWebsiteBaseUrl(): string {
-  if (EXPO_STAGING) {
-    return `https://staging.expo.dev`;
-  } else if (EXPO_LOCAL) {
-    return `http://expo.test`;
-  } else {
-    return `https://expo.dev`;
-  }
-}
-
-export function getEASUpdateURL(projectId: string): string {
-  if (EXPO_STAGING) {
-    return new URL(projectId, `https://staging-u.expo.dev`).href;
-  } else if (EXPO_LOCAL) {
-    return new URL(`expo-updates/${projectId}`, `http://127.0.0.1:3000`).href;
-  } else {
-    return new URL(projectId, `https://u.expo.dev`).href;
-  }
-}

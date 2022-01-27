@@ -68,6 +68,7 @@ export async function confirmAsync(
   return value ?? null;
 }
 
+/** Select an option from a list of options. */
 export async function selectAsync<T>(
   message: string,
   choices: ExpoChoice<T>[],

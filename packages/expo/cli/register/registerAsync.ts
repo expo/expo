@@ -2,27 +2,31 @@ import openBrowserAsync from 'better-opn';
 
 import { CI } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { learnMore } from '../utils/link';
 import { ora } from '../utils/ora';
 
 export async function registerAsync() {
-  const REGISTRATION_URL = `https://expo.dev/signup`;
   if (CI) {
     throw new CommandError(
       'NON_INTERACTIVE',
-      `Cannot register an account in CI. Register an account at: ${REGISTRATION_URL}`
+      `Cannot register an account in CI. Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(
+        'https://docs.expo.dev/accounts/programmatic-access/'
+      )})`
     );
   }
 
-  const spinner = ora(`Opening ${REGISTRATION_URL}`).start();
+  const registrationUrl = `https://expo.dev/signup`;
+
+  const spinner = ora(`Opening ${registrationUrl}`).start();
   try {
-    const opened = openBrowserAsync(REGISTRATION_URL);
+    const opened = openBrowserAsync(registrationUrl);
 
     if (opened) {
-      spinner.succeed(`Opened ${REGISTRATION_URL}`);
+      spinner.succeed(`Opened ${registrationUrl}`);
     }
     return;
   } catch (error) {
-    spinner.fail(`Unable to open a web browser. Register an account at: ${REGISTRATION_URL}`);
+    spinner.fail(`Unable to open a web browser. Register an account at: ${registrationUrl}`);
     throw error;
   }
 }
