@@ -428,9 +428,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   [launcher launchUpdateWithConfig:_config];
 
   if (_delegate) {
-    [EXUpdatesUtils runBlockOnMainThread:^{
+    EX_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      EX_ENSURE_STRONGIFY(self);
       [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
-    }];
+    });
   }
 
   [_errorRecovery writeErrorOrExceptionToLog:error];
