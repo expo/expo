@@ -46,18 +46,12 @@ export async function getUserAsync(): Promise<Actor | undefined> {
   return currentUser;
 }
 
-export async function loginAsync({
-  username,
-  password,
-  otp,
-}: {
+export async function loginAsync(json: {
   username: string;
   password: string;
   otp?: string;
 }): Promise<void> {
-  const body = await apiClient
-    .post('auth/loginAsync', { json: { username, password, otp } })
-    .json();
+  const body = await apiClient.post('auth/loginAsync', { json }).json();
   const { sessionSecret } = (body as any).data;
   const result = await graphqlClient
     .query(
@@ -80,11 +74,13 @@ export async function loginAsync({
       }
     )
     .toPromise();
-  const { data } = result;
+  const {
+    data: { viewer },
+  } = result;
   await setSessionAsync({
     sessionSecret,
-    userId: data.viewer.id,
-    username: data.viewer.username,
+    userId: viewer.id,
+    username: viewer.username,
     currentConnection: 'Username-Password-Authentication',
   });
 }
