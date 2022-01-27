@@ -1199,7 +1199,7 @@ This should come from the user field of an
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -1365,7 +1365,7 @@ value depending on the state of the credential.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -1620,7 +1620,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -1926,7 +1926,7 @@ the user, since this remains the same for apps released by the same developer.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -2223,7 +2223,7 @@ from using
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -2515,7 +2515,7 @@ sign-out operation.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -6104,7 +6104,7 @@ This can be used to quickly create specific permission hooks in every module.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -6330,7 +6330,7 @@ This can be used to quickly create specific permission hooks in every module.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -6514,7 +6514,7 @@ This can be used to quickly create specific permission hooks in every module.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -6816,7 +6816,7 @@ the platform.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -8540,7 +8540,7 @@ exports[`APISection expo-pedometer 1`] = `
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -8797,7 +8797,7 @@ exports[`APISection expo-pedometer 1`] = `
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -9012,7 +9012,7 @@ a start date that is more than seven days in the past returns only the available
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -9162,7 +9162,7 @@ available on this device.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
@@ -9404,7 +9404,7 @@ provided with a single argument that is
         data-text="true"
       >
         <li
-          class="docs-list-item css-1t0kz9z-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
