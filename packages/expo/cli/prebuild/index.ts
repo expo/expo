@@ -4,11 +4,8 @@ import chalk from 'chalk';
 import { Command } from '../../bin/cli';
 import * as Log from '../log';
 import { assertArgs, getProjectRoot } from '../utils/args';
-import { logCmdError } from '../utils/errors';
-import { prebuildAsync } from './prebuildAsync';
-import { resolvePlatformOption, resolveSkipDependencyUpdate } from './resolveOptions';
 
-export const expoPrebuild: Command = (argv) => {
+export const expoPrebuild: Command = async (argv) => {
   const args = assertArgs(
     {
       // Types
@@ -52,6 +49,20 @@ export const expoPrebuild: Command = (argv) => {
       0
     );
   }
+
+  // Load modules after the help prompt so `npx expo prebuild -h` shows as fast as possible.
+  const [
+    // ./prebuildAsync
+    { prebuildAsync },
+    // ./resolveOptions
+    { resolvePlatformOption, resolveSkipDependencyUpdate },
+    // ../utils/errors
+    { logCmdError },
+  ] = await Promise.all([
+    import('./prebuildAsync'),
+    import('./resolveOptions'),
+    import('../utils/errors'),
+  ]);
 
   return prebuildAsync(getProjectRoot(args), {
     // Parsed options

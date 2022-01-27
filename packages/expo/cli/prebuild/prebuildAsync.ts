@@ -2,8 +2,6 @@ import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 
 import * as Log from '../log';
-import { installCocoaPodsAsync } from '../utils/cocoapods';
-import { maybeBailOnGitStatusAsync } from '../utils/git';
 import { installNodeDependenciesAsync, resolvePackageManager } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -55,6 +53,7 @@ export async function prebuildAsync(
   }
 ): Promise<PrebuildResults> {
   if (options.clean) {
+    const { maybeBailOnGitStatusAsync } = await import('../utils/git');
     // Clean the project folders...
     if (await maybeBailOnGitStatusAsync()) {
       return;
@@ -117,6 +116,8 @@ export async function prebuildAsync(
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+    const { installCocoaPodsAsync } = await import('../utils/cocoapods');
+
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {
     Log.debug('Skipped pod install');

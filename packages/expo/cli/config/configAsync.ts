@@ -1,6 +1,4 @@
 import { ExpoConfig, getConfig, ProjectConfig } from '@expo/config';
-import { compileModsAsync } from '@expo/config-plugins/build/plugins/mod-compiler';
-import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 import assert from 'assert';
 import util from 'util';
 
@@ -40,10 +38,15 @@ export async function configAsync(projectRoot: string, options: Options) {
   let config: ProjectConfig;
 
   if (options.type === 'prebuild') {
+    const { getPrebuildConfigAsync } = await import('@expo/prebuild-config');
+
     config = await profile(getPrebuildConfigAsync)(projectRoot, {
       platforms: ['ios', 'android'],
     });
   } else if (options.type === 'introspect') {
+    const { getPrebuildConfigAsync } = await import('@expo/prebuild-config');
+    const { compileModsAsync } = await import('@expo/config-plugins/build/plugins/mod-compiler');
+
     config = await profile(getPrebuildConfigAsync)(projectRoot, {
       platforms: ['ios', 'android'],
     });

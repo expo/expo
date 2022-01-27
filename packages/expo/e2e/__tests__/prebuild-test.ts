@@ -5,7 +5,14 @@ import fs from 'fs/promises';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { bin, execute, projectRoot, getRoot, setupTestProjectAsync } from './utils';
+import {
+  bin,
+  execute,
+  projectRoot,
+  getRoot,
+  setupTestProjectAsync,
+  getLoadedModulesAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -19,6 +26,23 @@ beforeAll(async () => {
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
+});
+
+it('loads expected modules by default', async () => {
+  const modules = await getLoadedModulesAsync(
+    `require('../../build-cli/cli/prebuild').expoPrebuild`
+  );
+  expect(modules).toStrictEqual([
+    'node_modules/ansi-styles/index.js',
+    'node_modules/arg/index.js',
+    'node_modules/chalk/source/index.js',
+    'node_modules/chalk/source/util.js',
+    'node_modules/has-flag/index.js',
+    'node_modules/supports-color/index.js',
+    'packages/expo/build-cli/cli/log.js',
+    'packages/expo/build-cli/cli/prebuild/index.js',
+    'packages/expo/build-cli/cli/utils/args.js',
+  ]);
 });
 
 it('runs `npx expo prebuild --help`', async () => {
