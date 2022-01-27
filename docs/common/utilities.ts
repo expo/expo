@@ -43,8 +43,7 @@ export const replaceVersionInUrl = (url: string, replaceWith: string) => {
 };
 
 export const getVersionFromUrl = (url: string) => {
-  const version = url.split('/')[2];
-  return version.includes('?') ? version.split('?', 2)[0] : version;
+  return new URL(url, 'https://docs.expo.dev').pathname.split('/')[2];
 };
 
 /**
