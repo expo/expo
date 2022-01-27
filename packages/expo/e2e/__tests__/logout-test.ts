@@ -7,7 +7,7 @@ const originalForceColor = process.env.FORCE_COLOR;
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
@@ -33,10 +33,10 @@ it('runs `npx expo logout --help`', async () => {
   const results = await execute('logout', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          [1mDescription[22m
-            Logout of an Expo account
+          Description
+            Log out of an Expo account
 
-          [1mUsage[22m
+          Usage
             $ npx expo logout
 
           Options

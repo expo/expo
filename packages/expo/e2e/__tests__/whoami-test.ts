@@ -7,7 +7,7 @@ import { execute, getLoadedModulesAsync, projectRoot } from './utils';
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
@@ -33,10 +33,10 @@ it('runs `npx expo whoami --help`', async () => {
   const results = await execute('whoami', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          [1mDescription[22m
+          Description
             Show the currently authenticated username
 
-          [1mUsage[22m
+          Usage
             $ npx expo whoami
 
           Options

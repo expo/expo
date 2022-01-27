@@ -7,7 +7,7 @@ const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
 });
 afterAll(() => {
@@ -35,10 +35,10 @@ it('runs `npx expo login --help`', async () => {
   const results = await execute('login', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          [1mDescription[22m
-            Login to an Expo account
+          Description
+            Log in to an Expo account
 
-          [1mUsage[22m
+          Usage
             $ npx expo login
 
           Options
