@@ -200,6 +200,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Removed `expo-payments-stripe`. Please use `@stripe/stripe-react-native` instead. ([#14382](https://github.com/expo/expo/pull/14382) by [@cruzach](https://github.com/cruzach))
 - Updated firebase to version 9.0.2, including support for compat libraries and new modular style. ([#14616](https://github.com/expo/expo/pull/14616) by [@sebastianwilczek](https://github.com/sebastianwilczek))
 - `navigator.geolocation` is no longer defined automatically as a side effect of the `expo` package. It previously provided a warning that you needed to install `expo-location`. ([#14441](https://github.com/expo/expo/pull/14441) by [@brentvatne](https://github.com/brentvatne)
+- Require scopeKey in custom push notifications. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman)
 - **`expo-ads-admob`**
   - Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 - **`expo-ads-facebook`**
@@ -834,7 +835,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
-- Require scopeKey in custom push notifications. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman)
 - **`expo-battery`**
   - Removed following types: `BatteryLevelUpdateListener `, `BatteryStateUpdateListener` and `PowerModeUpdateListener` as they were only wrapping one-argument events responses. Use event types explicitly instead: `BatteryLevelEvent `, `BatteryStateEvent` and `PowerModeEvent`. ([#12592](https://github.com/expo/expo/pull/12592) by [@Simek](https://github.com/simek)) ([#12592](https://github.com/expo/expo/pull/12592) by [@simek](https://github.com/simek))
 - **`expo-constants`**
