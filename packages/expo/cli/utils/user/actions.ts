@@ -1,7 +1,7 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
-import * as Log from '../../Log';
+import * as Log from '../../log';
 import { ApiV2Error, CommandError } from '../errors';
 import { learnMore } from '../link';
 import promptAsync, { Question } from '../prompts';

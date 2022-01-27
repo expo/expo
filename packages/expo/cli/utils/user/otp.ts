@@ -13,6 +13,7 @@ export enum UserSecondFactorDeviceMethod {
   SMS = 'sms',
 }
 
+/** Device properties for 2FA */
 export type SecondFactorDevice = {
   id: string;
   method: UserSecondFactorDeviceMethod;
