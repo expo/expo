@@ -239,7 +239,11 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   for (const pkg of packages) {
     process.stdout.write(` 🛠   Building ${pkg.name}...`);
     try {
-      await spawnAsync('./gradlew', [`:${pkg.name}:publish`], {
+      // TODO: Update to the actual action when we upgrade our react-native fork or expoview maven plugin
+      const gradleAction = ['ReactAndroid', 'expoview'].includes(pkg.name)
+        ? 'uploadArchives'
+        : 'publish';
+      await spawnAsync('./gradlew', [`:${pkg.name}:${gradleAction}`], {
         cwd: ANDROID_DIR,
       });
       readline.clearLine(process.stdout, 0);
