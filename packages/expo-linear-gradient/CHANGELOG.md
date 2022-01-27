@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Extract `react-native-web` internals into package to minimize bundler setup.
+
 ### 💡 Others
 
 ## 11.2.0 — 2022-01-26

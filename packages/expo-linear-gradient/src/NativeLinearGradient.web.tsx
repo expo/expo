@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { LayoutRectangle, View } from 'react-native';
-import normalizeColor from 'react-native-web/src/modules/normalizeColor';
 
 import { NativeLinearGradientPoint, NativeLinearGradientProps } from './NativeLinearGradient.types';
+import { normalizeColor } from './normalizeColor';
 
 export default function NativeLinearGradient({
   colors,
@@ -46,7 +46,7 @@ export default function NativeLinearGradient({
   }, [width, height, startPoint, endPoint]);
 
   const gradientColors = React.useMemo(() => {
-    return colors.map((color: number, index: number): string => {
+    return colors.map((color: number, index: number): string | void => {
       const hexColor = normalizeColor(color);
       let output = hexColor;
       if (locations && locations[index]) {
