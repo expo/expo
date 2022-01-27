@@ -1,0 +1,102 @@
+name: Updates e2e
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - .github/workflows/updates-e2e.yml
+      - packages/expo-json-utils/**
+      - packages/expo-manifests/**
+      - packages/expo-structured-headers/**
+      - packages/expo-updates-interface/**
+      - packages/expo-updates/**
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/updates-e2e.yml
+      - packages/expo-json-utils/**
+      - packages/expo-manifests/**
+      - packages/expo-structured-headers/**
+      - packages/expo-updates-interface/**
+      - packages/expo-updates/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: macos-11
+    # env:
+    #   NDK_ABI_FILTERS: x86_64
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          submodules: false
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --frozen-lockfile
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      # - uses: actions/cache@v2
+      #   id: cache-android-ndk
+      #   with:
+      #     path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+      #     key: ${{ runner.os }}-ndk-19.2.5345600
+      #     restore-keys: |
+      #       ${{ runner.os }}-ndk-
+      # - name: Install NDK
+      #   if: steps.cache-android-ndk.outputs.cache-hit != 'true'
+      #   run: |
+      #     sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+      - run: yarn global add expo-cli
+      - run: echo "$(yarn global bin)" >> $GITHUB_PATH
+      - name: Init new expo app
+        working-directory: ../
+        run: expo-cli init updates-e2e --name updates-e2e --yes
+      - name: Make Yarn resolve expo-updates dependencies locally
+        working-directory: ../updates-e2e
+        run: |
+          node -e " \
+            const pkg = require('./package.json'); \
+            pkg.resolutions = { \
+              ...pkg.resolutions, \
+              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+              'expo-manifests': 'file:../expo/packages/expo-manifests', \
+              'expo-structured-headers': 'file:../expo/packages/expo-structured-headers', \
+              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
+              'expo-updates': 'file:../expo/packages/expo-updates', \
+            }; \
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
+      - name: Add dependencies
+        working-directory: ../updates-e2e
+        run: yarn add file:../expo/packages/expo-updates
+      - name: Setup app.config.json
+        working-directory: ../updates-e2e
+        run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
+      - name: Prebuild
+        working-directory: ../updates-e2e
+        run: expo-cli prebuild
+      # - name: Bump `build tools`
+      #   working-directory: ../updates-e2e
+      #   run: sed -i -e 's/buildToolsVersion\ =\ \"29\..\..\"/buildToolsVersion\ = \"30\.0\.3\"/' ./android/build.gradle
+      # - name: Bump `android build tools`
+      #   working-directory: ../updates-e2e
+      #   run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
+      - name: Assemble release APK
+        env:
+          # ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        working-directory: ../updates-e2e/android
+        run: ./gradlew assembleRelease
