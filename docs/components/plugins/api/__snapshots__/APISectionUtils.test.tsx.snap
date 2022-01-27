@@ -38,7 +38,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       rel="noopener noreferrer"
     >
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
       >
         Install Referrer API
       </code>

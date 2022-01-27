@@ -2,10 +2,9 @@ import { css } from '@emotion/react';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { H2, H3, H3Code } from '~/components/plugins/Headings';
+import { H2, H3, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -30,7 +29,12 @@ export type APISectionPropsProps = {
 const UNKNOWN_VALUE = '...';
 
 const PROP_LIST_ELEMENT_STYLE = css`
-  padding: 0;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+`;
+
+const STYLES_DIVIDER = css`
+  margin-bottom: 1rem;
 `;
 
 const extractDefaultPropValue = (
@@ -102,7 +106,7 @@ export const renderProp = (
   defaultValue?: string,
   exposeInSidebar?: boolean
 ) => (
-  <LI key={`prop-entry-${name}`} customCss={exposeInSidebar ? PROP_LIST_ELEMENT_STYLE : undefined}>
+  <LI propType key={`prop-entry-${name}`} customCss={PROP_LIST_ELEMENT_STYLE}>
     {exposeInSidebar ? (
       <H3Code>
         <InlineCode>{name}</InlineCode>
@@ -121,6 +125,7 @@ export const renderProp = (
       ) : null}
     </P>
     <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
+    <hr css={STYLES_DIVIDER} />
   </LI>
 );
 

@@ -28,8 +28,9 @@ const STYLES_DOCUMENT = css`
   padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${theme.border.default};
-    border-bottom: 0px;
+    border: 0;
+    height: 0.01rem;
+    background-color: ${theme.border.default};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
