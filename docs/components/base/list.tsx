@@ -74,7 +74,7 @@ const STYLE_RETURN_LIST = css`
   margin-left: 0.25rem;
 
   ::marker {
-    color: ${theme.text.secondary};
+    color: ${theme.icon.secondary};
     font-size: 90%;
   }
 `;
