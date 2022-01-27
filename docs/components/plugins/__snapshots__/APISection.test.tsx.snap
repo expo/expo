@@ -4177,7 +4177,7 @@ OAuth 2.0 protocol
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationButtonStyle
           .
@@ -4204,7 +4204,7 @@ OAuth 2.0 protocol
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationButtonStyle
           .
@@ -4231,7 +4231,7 @@ OAuth 2.0 protocol
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationButtonStyle
           .
@@ -4337,7 +4337,7 @@ OAuth 2.0 protocol
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationButtonType
           .
@@ -4364,7 +4364,7 @@ OAuth 2.0 protocol
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationButtonType
           .
@@ -4394,7 +4394,7 @@ OAuth 2.0 protocol
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationButtonType
           .
@@ -4539,7 +4539,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationCredentialState
           .
@@ -4562,7 +4562,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationCredentialState
           .
@@ -4585,7 +4585,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationCredentialState
           .
@@ -4608,7 +4608,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationCredentialState
           .
@@ -4697,7 +4697,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationOperation
           .
@@ -4720,7 +4720,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationOperation
           .
@@ -4743,7 +4743,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationOperation
           .
@@ -4766,7 +4766,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationOperation
           .
@@ -4943,7 +4943,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationScope
           .
@@ -4966,7 +4966,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationScope
           .
@@ -5104,7 +5104,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationUserDetectionStatus
           .
@@ -5131,7 +5131,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationUserDetectionStatus
           .
@@ -5158,7 +5158,7 @@ for more details.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           AppleAuthenticationUserDetectionStatus
           .
@@ -8313,7 +8313,7 @@ For some types, they will represent the area used by the scanner.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           PermissionStatus
           .
@@ -8336,7 +8336,7 @@ For some types, they will represent the area used by the scanner.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           PermissionStatus
           .
@@ -8359,7 +8359,7 @@ For some types, they will represent the area used by the scanner.
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           PermissionStatus
           .
@@ -10247,7 +10247,7 @@ provided with a single argument that is
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           PermissionStatus
           .
@@ -10270,7 +10270,7 @@ provided with a single argument that is
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           PermissionStatus
           .
@@ -10293,7 +10293,7 @@ provided with a single argument that is
         </span>
         <br />
         <code
-          class="inline css-3rca64-STYLES_INLINE_CODE-renderEnum-InlineCode"
+          class="inline css-1nolcer-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
         >
           PermissionStatus
           .
