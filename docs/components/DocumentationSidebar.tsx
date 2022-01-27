@@ -32,6 +32,7 @@ type SidebarNodeProps = Pick<SidebarProps, 'router'> & {
   parentRoute?: NavigationRoute;
 };
 
+// TODO(cedric): move navigation over to unist format and use type to select different "renderers"
 export default function DocumentationSidebar(props: SidebarProps) {
   return (
     <nav css={STYLES_SIDEBAR} data-sidebar>
