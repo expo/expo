@@ -248,6 +248,8 @@ const general = [
     ]),
     makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
   ]),
+  // TODO(cedric): this group isn't visible in the current sidebar, check if we need to fix or remove it
+  makeGroup('Troubleshooting', pagesFromDir('troubleshooting')),
 ];
 
 const eas = [
