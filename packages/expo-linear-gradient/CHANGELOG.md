@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Extract `react-native-web` internals into package to minimize bundler setup.
+- Extract `react-native-web` internals into package to minimize bundler setup. ([#16098](https://github.com/expo/expo/pull/16098) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
