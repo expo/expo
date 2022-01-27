@@ -180,3 +180,18 @@ export async function setupTestProjectAsync(name: string, fixtureName: string): 
   expect(exp.sdkVersion).toBe('44.0.0');
   return projectRoot;
 }
+
+/** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly.   */
+export async function getLoadedModulesAsync(statement: string): Promise<string[]> {
+  const repoRoot = path.join(__dirname, '../../../../');
+  const results = await execa(
+    'node',
+    [
+      '-e',
+      [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join('\n'),
+    ],
+    { cwd: __dirname }
+  );
+  const loadedModules = JSON.parse(results.stdout.trim());
+  return loadedModules.map((value) => path.relative(repoRoot, value)).sort();
+}

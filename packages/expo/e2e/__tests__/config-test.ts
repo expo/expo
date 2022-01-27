@@ -2,7 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-import { execute, projectRoot, getRoot } from './utils';
+import { execute, projectRoot, getRoot, getLoadedModulesAsync } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
@@ -11,6 +11,21 @@ beforeAll(async () => {
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
+});
+
+it('loads expected modules by default', async () => {
+  const modules = await getLoadedModulesAsync(`require('../../build-cli/cli/config').expoConfig`);
+  expect(modules).toStrictEqual([
+    'node_modules/ansi-styles/index.js',
+    'node_modules/arg/index.js',
+    'node_modules/chalk/source/index.js',
+    'node_modules/chalk/source/util.js',
+    'node_modules/has-flag/index.js',
+    'node_modules/supports-color/index.js',
+    'packages/expo/build-cli/cli/config/index.js',
+    'packages/expo/build-cli/cli/log.js',
+    'packages/expo/build-cli/cli/utils/args.js',
+  ]);
 });
 
 it('runs `npx expo config --help`', async () => {
