@@ -29,7 +29,7 @@ it('runs `npx expo --help`', async () => {
           $ npx expo <command>
 
         Available commands
-          config, login, logout, prebuild, register, whoami
+          config, prebuild
 
         Options
           --version, -v   Version number
