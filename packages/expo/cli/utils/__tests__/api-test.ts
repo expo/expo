@@ -19,32 +19,30 @@ it('converts Expo APIv2 error to ApiV2Error', async () => {
       ],
     });
 
-  let error: Error | null = null;
+  expect.assertions(5);
+
   try {
     await apiClient.post('test');
-  } catch (e: any) {
-    error = e;
+  } catch (error: any) {
+    assert(error instanceof ApiV2Error);
+
+    expect(error.message).toEqual('hellomessage');
+    expect(error.expoApiV2ErrorCode).toEqual('TEST_CODE');
+    expect(error.expoApiV2ErrorDetails).toEqual({ who: 'world' });
+    expect(error.expoApiV2ErrorMetadata).toEqual({ an: 'object' });
+    expect(error.expoApiV2ErrorServerStack).toEqual('line 1: hello');
   }
-
-  expect(error).toBeInstanceOf(ApiV2Error);
-  assert(error instanceof ApiV2Error);
-
-  expect(error.message).toEqual('hellomessage');
-  expect(error.expoApiV2ErrorCode).toEqual('TEST_CODE');
-  expect(error.expoApiV2ErrorDetails).toEqual({ who: 'world' });
-  expect(error.expoApiV2ErrorMetadata).toEqual({ an: 'object' });
-  expect(error.expoApiV2ErrorServerStack).toEqual('line 1: hello');
 });
 
 it('does not convert non-APIv2 error to ApiV2Error', async () => {
   nock(getExpoApiBaseUrl()).post('/v2/test').reply(500, 'Something went wrong');
 
-  let error: Error | null = null;
+  expect.assertions(2);
+
   try {
     await apiClient.post('test');
-  } catch (e: any) {
-    error = e;
+  } catch (error: any) {
+    expect(error).toBeInstanceOf(RequestError);
+    expect(error).not.toBeInstanceOf(ApiV2Error);
   }
-  expect(error).toBeInstanceOf(RequestError);
-  expect(error).not.toBeInstanceOf(ApiV2Error);
 });
