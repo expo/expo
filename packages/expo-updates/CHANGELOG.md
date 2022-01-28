@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS launch crash when app.json `expo.updates.enabled` is false. ([#15997](https://github.com/expo/expo/pull/15997) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.5 — 2022-01-20
