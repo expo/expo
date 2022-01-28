@@ -31,13 +31,11 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
            with:
              node-version: 16.x
              cache: yarn
-         - uses: expo/expo-github-action@v6
+         - uses: expo/expo-github-action@v7
            with:
              expo-version: latest
              eas-version: latest
              token: ${{ secrets.EXPO_TOKEN }}
-             expo-cache: true
-             eas-cache: true
          - name: Install dependencies
            run: yarn install
          - name: Publish update
