@@ -9,17 +9,17 @@ on:
   #     - packages/expo-manifests/**
   #     - packages/expo-structured-headers/**
   #     - packages/expo-updates-interface/**
-      - packages/expo-updates/**
+  #     - packages/expo-updates/**
   #     - packages/expo/**
-  push:
-    branches: [main, 'sdk-*']
-    paths:
-      - .github/workflows/updates-e2e.yml
+  # push:
+  #   branches: [main, 'sdk-*']
+  #   paths:
+  #     - .github/workflows/updates-e2e.yml
   #     - packages/expo-json-utils/**
   #     - packages/expo-manifests/**
   #     - packages/expo-structured-headers/**
   #     - packages/expo-updates-interface/**
-      - packages/expo-updates/**
+  #     - packages/expo-updates/**
   #     - packages/expo/**
 
 concurrency:
@@ -58,7 +58,6 @@ jobs:
       - name: Add local expo-updates and dependencies
         working-directory: ../updates-e2e
         run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface
-        run: cat package.json
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
