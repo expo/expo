@@ -11,7 +11,6 @@ import { preprocessSentryError } from '~/common/sentry-utilities';
 import * as markdown from '~/common/translate-markdown';
 import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
-import { PageApiVersionProvider } from '~/providers/page-api-version';
 
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-theme.css';
