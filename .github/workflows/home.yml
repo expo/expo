@@ -2,11 +2,11 @@ name: Home app
 
 on:
   workflow_dispatch: {}
-  pull_request:
-    paths:
-      - .github/workflows/home.yml
-      - home/**
-      - yarn.lock
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/home.yml
+  #     - home/**
+  #     - yarn.lock
   push:
     branches: [main, 'sdk-*']
     paths:

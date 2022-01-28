@@ -2,15 +2,15 @@ name: Native Component List app
 
 on:
   workflow_dispatch: {}
-  pull_request:
-    paths:
-      - .github/workflows/native-component-list.yml
-      - apps/native-component-list/**
-      - packages/**
-      - yarn.lock
-      - '!packages/expo/cli/**'
-      - '!packages/expo/bin/**'
-      - '!packages/expo/e2e/**'
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/native-component-list.yml
+  #     - apps/native-component-list/**
+  #     - packages/**
+  #     - yarn.lock
+  #     - '!packages/expo/cli/**'
+  #     - '!packages/expo/bin/**'
+  #     - '!packages/expo/e2e/**'
   push:
     branches: [main]
     paths:

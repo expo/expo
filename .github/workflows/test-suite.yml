@@ -10,17 +10,17 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
-  pull_request:
-    paths:
-      - .github/workflows/test-suite.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/expo/cli/**'
-      - '!packages/expo/bin/**'
-      - '!packages/expo/e2e/**'
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/test-suite.yml
+  #     - apps/bare-expo/**
+  #     - apps/test-suite/**
+  #     - packages/**
+  #     - yarn.lock
+  #     # Ignore Expo CLI for now...
+  #     - '!packages/expo/cli/**'
+  #     - '!packages/expo/bin/**'
+  #     - '!packages/expo/e2e/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

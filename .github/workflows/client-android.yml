@@ -11,15 +11,15 @@ on:
         required: false
   schedule:
     - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
-  pull_request:
-    paths:
-      - .github/workflows/client-android.yml
-      - secrets/**
-      - android/**
-      - fastlane/**
-      - Gemfile.lock
-      - .ruby-version
-      - yarn.lock
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/client-android.yml
+  #     - secrets/**
+  #     - android/**
+  #     - fastlane/**
+  #     - Gemfile.lock
+  #     - .ruby-version
+  #     - yarn.lock
   push:
     branches: [main, sdk-*]
     paths:

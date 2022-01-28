@@ -7,11 +7,11 @@ on:
       - .github/workflows/cli.yml
       - packages/expo/**
       - yarn.lock
-  pull_request:
-    paths:
-      - .github/workflows/cli.yml
-      - packages/expo/**
-      - yarn.lock
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/cli.yml
+  #     - packages/expo/**
+  #     - yarn.lock
   schedule:
     - cron: 0 14 * * *
 
