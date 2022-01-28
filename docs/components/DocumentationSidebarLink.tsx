@@ -78,7 +78,7 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
 
   isSelected() {
     if (!this.props.router) {
-      console.log('[debug] isSelected bailed out, no url', this.props);
+      console.log('[debug] isSelected bailed out, no router', this.props);
       return false;
     }
 
