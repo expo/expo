@@ -172,12 +172,12 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       return null;
     }
 
-    return this.isReferencePath() ? this.props.version! : 'none';
+    return this.isReferencePath() ? this.props.version : 'none';
   };
 
   private getRoutes = (): NavigationRoute[] => {
     if (this.isReferencePath()) {
-      return navigation.reference[this.props.version!];
+      return navigation.reference[this.props.version];
     } else {
       return navigation[this.getActiveTopLevelSection()];
     }
