@@ -205,16 +205,16 @@ jobs:
         with:
           node-version: 16.x
           cache: npm
-      - name: Setup Expo
-        uses: expo/expo-github-action@v6
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v7
         with:
           expo-version: 5.x
-          expo-cache: true
+          eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Install dependencies
         run: npm ci
       - name: Build on EAS
-        run: npx eas-cli build --platform all --non-interactive
+        run: eas build --platform all --non-interactive
 ```
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.
