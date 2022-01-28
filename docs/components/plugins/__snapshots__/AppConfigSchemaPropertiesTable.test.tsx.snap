@@ -43,7 +43,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       name
                     </code>
@@ -136,7 +136,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       androidNavigationBar
                     </code>
@@ -243,7 +243,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       visible
                     </code>
@@ -336,7 +336,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       always
                     </code>
@@ -415,7 +415,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       backgroundColor
                     </code>
@@ -473,7 +473,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             6 character long hex color string, eg: 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
             >
               '#000000'
             </code>
@@ -505,7 +505,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       intentFilters
                     </code>
@@ -635,7 +635,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       autoVerify
                     </code>
@@ -714,7 +714,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       data
                     </code>
@@ -792,7 +792,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-nuv12a-STYLES_INLINE_CODE"
+                      class="inline css-vuokze-STYLES_INLINE_CODE-InlineCode"
                     >
                       host
                     </code>
