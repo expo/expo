@@ -75,7 +75,8 @@ jobs:
         working-directory: ../updates-e2e/android
         run: ./gradlew assembleRelease
       - name: Upload test APK artifact
+        working-directory: ../updates-e2e
         uses: actions/upload-artifact@v2
         with:
           name: updates-e2e-android-apk
-          path: ../updates-e2e/android/app/build/outputs/apk
+          path: android/app/build/outputs/apk
