@@ -142,7 +142,6 @@ dependencies {
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
   implementation 'commons-io:commons-io:1.4'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0' // to be removed once old sdks migrate to the com.github.CanHub:Android-Image-Cropper
   implementation 'com.github.CanHub:Android-Image-Cropper:1.1.1'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'
