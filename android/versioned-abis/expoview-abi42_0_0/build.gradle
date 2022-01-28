@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'de.undercouch.download'
 
