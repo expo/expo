@@ -1,7 +1,5 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-
-import * as Constants from '~/constants/theme';
+import { theme, typography } from '@expo/styleguide';
 
 export const globalTables = css`
   table {
@@ -41,7 +39,7 @@ export const globalTables = css`
   }
 
   th {
-    font-family: ${Constants.fontFamilies.bold};
+    font-family: ${typography.fontFaces.semiBold};
     font-weight: 400;
   }
 `;

@@ -1,7 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, palette } from '@expo/styleguide';
-
-import * as Constants from '~/constants/theme';
+import { theme, palette, typography } from '@expo/styleguide';
 
 export const globalExtras = css`
   img.wide-image {
@@ -37,13 +35,13 @@ export const globalExtras = css`
   details summary h3 {
     font-size: 1.2rem;
     font-weight: 500;
-    font-family: ${Constants.fonts.demi};
+    font-family: ${typography.fontFaces.medium};
     color: ${theme.text.default};
     display: inline-block;
   }
 
   details summary h4 {
-    font-family: ${Constants.fonts.demi};
+    font-family: ${typography.fontFaces.medium};
     color: ${theme.text.default};
     font-size: 1rem;
     font-weight: 500;
@@ -80,7 +78,7 @@ export const globalExtras = css`
     text-decoration: none;
     background: ${theme.button.primary.background};
     color: ${palette.dark.white};
-    font-family: ${Constants.fontFamilies.book};
+    font-family: ${typography.fontFaces.regular};
     font-size: 1rem;
     cursor: pointer;
     -webkit-appearance: none;
