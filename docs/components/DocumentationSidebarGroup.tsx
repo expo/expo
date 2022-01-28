@@ -6,7 +6,6 @@ import * as React from 'react';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
-import { collapsedSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { NavigationRoute } from '~/types/common';
 
@@ -59,7 +58,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
 
     // default to always open
     this.state = {
-      isOpen: collapsedSections.includes(props.info.name) ? isOpen : true,
+      isOpen: props.info.collapsed ? isOpen : true,
     };
   }
 

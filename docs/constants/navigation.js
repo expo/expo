@@ -5,20 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const { LATEST_VERSION } = require('./versions');
+const { LATEST_VERSION, VERSIONS } = require('./versions');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
-
-// TODO(cedric): refactor hidden and collapsed sections into properties of the groups
-
-/** These directories will not be placed in the sidebar, but will still be searchable */
-const hiddenSections = ['FAQ', 'Troubleshooting'];
-/** These sections will NOT be expanded by default in the sidebar */
-const collapsedSections = [
-  'Deprecated',
-  'Regulatory Compliance',
-  'UI Programming',
-  'Technical Specs',
-];
 
 // TODO(cedric): refactor docs to get rid of the directory lists
 
@@ -46,11 +34,6 @@ const generalDirectories = fs
         ...easDirectories,
       ].includes(name)
   );
-/** All versioned API directories */
-const referenceDirectories = fs
-  .readdirSync(path.resolve(PAGES_DIR, 'versions'), { withFileTypes: true })
-  .filter(entity => entity.isDirectory())
-  .map(dir => dir.name);
 
 // --- Navigation ---
 
@@ -220,34 +203,48 @@ const general = [
     makeGroup('Classic Services', sortAlphabetical(pagesFromDir('classic'))),
   ]),
   makeSection('UI Programming', [
-    makeGroup('UI Programming', [
-      makePage('ui-programming/image-background.md'),
-      makePage('ui-programming/implementing-a-checkbox.md'),
-      makePage('ui-programming/z-index.md'),
-      makePage('ui-programming/using-svgs.md'),
-      makePage('ui-programming/react-native-toast.md'),
-      makePage('ui-programming/react-native-styling-buttons.md'),
-    ]),
+    makeGroup(
+      'UI Programming',
+      [
+        makePage('ui-programming/image-background.md'),
+        makePage('ui-programming/implementing-a-checkbox.md'),
+        makePage('ui-programming/z-index.md'),
+        makePage('ui-programming/using-svgs.md'),
+        makePage('ui-programming/react-native-toast.md'),
+        makePage('ui-programming/react-native-styling-buttons.md'),
+      ],
+      { collapsed: true }
+    ),
   ]),
-  makeSection('Regulatory Compliance', [
-    makeGroup('Regulatory Compliance', sortAlphabetical(pagesFromDir('regulatory-compliance'))),
-  ]),
-  makeSection('Technical Specs', [
-    makeGroup('Technical Specs', [
-      makePage('technical-specs/expo-updates-0.md'),
-      makePage('technical-specs/expo-sfv-0.md'),
-    ]),
-  ]),
-  makeSection('Deprecated', [
-    makeGroup('ExpoKit', [
-      makePage('expokit/overview.md'),
-      makePage('expokit/eject.md'),
-      makePage('expokit/expokit.md'),
-      makePage('expokit/advanced-expokit-topics.md'),
-      makePage('expokit/universal-modules-and-expokit.md'),
-    ]),
-    makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
-  ]),
+  makeSection(
+    'Regulatory Compliance',
+    [makeGroup('Regulatory Compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')))],
+    { collapsed: true }
+  ),
+  makeSection(
+    'Technical Specs',
+    [
+      makeGroup('Technical Specs', [
+        makePage('technical-specs/expo-updates-0.md'),
+        makePage('technical-specs/expo-sfv-0.md'),
+      ]),
+    ],
+    { collapsed: true }
+  ),
+  makeSection(
+    'Deprecated',
+    [
+      makeGroup('ExpoKit', [
+        makePage('expokit/overview.md'),
+        makePage('expokit/eject.md'),
+        makePage('expokit/expokit.md'),
+        makePage('expokit/advanced-expokit-topics.md'),
+        makePage('expokit/universal-modules-and-expokit.md'),
+      ]),
+      makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
+    ],
+    { collapsed: true }
+  ),
 ];
 
 const eas = [
@@ -313,7 +310,7 @@ const preview = [
 ];
 
 const featurePreview = [
-  makeGroup('Feature Preview', [], './pages/feature-preview/'),
+  makeGroup('Feature Preview', [], { href: './pages/feature-preview/', hidden: true }),
   makeSection('Development Builds', [
     makeGroup('Development Builds', [
       makePage('development/introduction.md'),
@@ -349,7 +346,7 @@ const featurePreview = [
   ]),
 ];
 
-const reference = referenceDirectories.reduce(
+const reference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
@@ -381,20 +378,28 @@ module.exports = {
   previewDirectories,
   easDirectories,
   featurePreviewDirectories,
-  hiddenSections,
-  collapsedSections,
 };
 
 // --- MDX methods ---
 
-function makeSection(name, children = []) {
+/**
+ * @param {string} name
+ * @param {any[]} [children=[]]
+ * @param {Partial<import('~/types/common').NavigationRoute>} [overwrites={}]
+ */
+function makeSection(name, children = [], overwrites = {}) {
   // TODO(cedric): refactor node types to match unist
-  return { name, children };
+  return { name, children, ...overwrites };
 }
 
-function makeGroup(name, children = [], href = '') {
+/**
+ * @param {string} name
+ * @param {any[]} [children=[]]
+ * @param {Partial<import('~/types/common').NavigationRoute>} [overwrites={}]
+ */
+function makeGroup(name, children = [], overwrites = {}) {
   // TODO(cedric): refactor node types to match unist
-  return { name, href, posts: children };
+  return { name, posts: children, ...overwrites };
 }
 
 /**

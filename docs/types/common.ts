@@ -28,10 +28,11 @@ export type Url = {
 };
 
 export type NavigationRoute = {
-  as?: string;
-  hidden: boolean;
-  href: string;
   name: string;
+  href: string;
+  as?: string;
+  hidden?: boolean;
+  collapsed?: boolean;
   sidebarTitle?: string;
   weight?: number;
   children?: NavigationRoute[];
