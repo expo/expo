@@ -2,8 +2,9 @@ import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
-import DocumentationPageContext from '../DocumentationPageContext';
 import TerminalBlock from './TerminalBlock';
+
+import { usePageMetadata } from '~/providers/page-metadata';
 
 const STYLES_P = css`
   line-height: 1.8rem;
@@ -66,6 +67,6 @@ const InstallSection: React.FC<Props> = ({
 export default InstallSection;
 
 export const APIInstallSection: React.FC<Props> = props => {
-  const context = React.useContext(DocumentationPageContext);
-  return <InstallSection {...props} packageName={props.packageName ?? context.packageName} />;
+  const { packageName } = usePageMetadata();
+  return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
 };

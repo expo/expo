@@ -9,7 +9,6 @@ import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
-import DocumentationPageContext from '~/components/DocumentationPageContext';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationSidebarRight, {
   SidebarRightComponentType,
@@ -53,8 +52,6 @@ type Props = React.PropsWithChildren<{
   router: NextRouter;
   title: string;
   sourceCodeUrl?: string;
-  /** API Page NPM package name, exposed through context for various React components that consistently use the package name. */
-  packageName?: string;
   tocVisible: boolean;
   /** If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
@@ -289,10 +286,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         {!this.state.isMenuActive ? (
           <div css={STYLES_DOCUMENT}>
             <H1>{this.props.title}</H1>
-            <DocumentationPageContext.Provider
-              value={{ version: this.props.version, packageName: this.props.packageName }}>
-              {this.props.children}
-            </DocumentationPageContext.Provider>
+            {this.props.children}
             <DocumentationFooter
               router={this.props.router}
               title={this.props.title}
@@ -303,10 +297,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
           <div>
             <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>
               <H1>{this.props.title}</H1>
-              <DocumentationPageContext.Provider
-                value={{ version: this.props.version, packageName: this.props.packageName }}>
-                {this.props.children}
-              </DocumentationPageContext.Provider>
+              {this.props.children}
               <DocumentationFooter
                 router={this.props.router}
                 title={this.props.title}
