@@ -9,17 +9,17 @@ on:
   #     - packages/expo-manifests/**
   #     - packages/expo-structured-headers/**
   #     - packages/expo-updates-interface/**
-  #     - packages/expo-updates/**
+      - packages/expo-updates/**
   #     - packages/expo/**
-  # push:
-  #   branches: [main, 'sdk-*']
-  #   paths:
-  #     - .github/workflows/updates-e2e.yml
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/updates-e2e.yml
   #     - packages/expo-json-utils/**
   #     - packages/expo-manifests/**
   #     - packages/expo-structured-headers/**
   #     - packages/expo-updates-interface/**
-  #     - packages/expo-updates/**
+      - packages/expo-updates/**
   #     - packages/expo/**
 
 concurrency:
