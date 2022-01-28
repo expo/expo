@@ -201,7 +201,6 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const routes = this.getRoutes();
-    const isReferencePath = this.isReferencePath();
 
     const headerElement = (
       <DocumentationHeader
@@ -215,13 +214,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       />
     );
 
-    const sidebarElement = (
-      <DocumentationSidebar
-        router={this.props.router}
-        routes={routes}
-        isVersionSelectorHidden={!isReferencePath}
-      />
-    );
+    const sidebarElement = <DocumentationSidebar router={this.props.router} routes={routes} />;
 
     const handleContentScroll = (contentScrollPosition: number) => {
       window.requestAnimationFrame(() => {
@@ -305,11 +298,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
               />
             </div>
             <div css={HIDDEN_ON_DESKTOP}>
-              <DocumentationSidebar
-                router={this.props.router}
-                routes={routes}
-                isVersionSelectorHidden={!isReferencePath}
-              />
+              <DocumentationSidebar router={this.props.router} routes={routes} />
             </div>
           </div>
         )}

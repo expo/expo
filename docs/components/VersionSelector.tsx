@@ -53,7 +53,12 @@ type Props = {
 };
 
 const VersionSelector: React.FC<Props> = ({ style }) => {
-  const { version, setVersion } = usePageApiVersion();
+  const { version, hasVersion, setVersion } = usePageApiVersion();
+
+  // Don't render the version selector on non-versioned pages
+  if (!hasVersion) {
+    return null;
+  }
 
   return (
     <div css={STYLES_SELECT} style={style}>
