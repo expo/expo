@@ -26,7 +26,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
       NSLog("DevLauncher tries to handle uncaught exception: %@", exception)
       NSLog("Stack Trace: %@", exception.callStackSymbols)
       
-      EXDevLauncherUncaughtExceptionHandler.tryToSendExceptionToBundler(exception: exception)
+      EXDevLauncherUncaughtExceptionHandler.tryToSendExceptionToBundler(exception)
       EXDevLauncherUncaughtExceptionHandler.defaultHandler?(exception)
     }
   }
@@ -36,7 +36,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
   }
   
   
-  static func tryToSendExceptionToBundler(exception: NSException) {
+  static func tryToSendExceptionToBundler(_ exception: NSException) {
     let controller = EXDevLauncherController.sharedInstance()
     if (controller.isAppRunning()) {
       guard let url = getLogsUrl(controller) else {
@@ -51,7 +51,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
   }
   
   static func getLogsUrl(_ controller: EXDevLauncherController) -> URL? {
-    let logsUrlFromManifest = controller.appManifest()?.rawManifestJSON()["logsUrl"] as? String
+    let logsUrlFromManifest = controller.appManifest()?.rawManifestJSON()["logUrl"] as? String
     if (logsUrlFromManifest != nil) {
       return URL.init(string: logsUrlFromManifest!)
     }

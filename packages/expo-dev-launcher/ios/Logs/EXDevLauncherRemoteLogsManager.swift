@@ -13,7 +13,7 @@ class EXDevLauncherRemoteLogsManager {
       "level": "error",
       "body": [
         "message": exception.description,
-        "stact": exception.callStackSymbols.joined(separator: "\n")
+        "stack": exception.callStackSymbols.joined(separator: "\n")
       ],
       "includesStack": true
     ])
@@ -29,6 +29,7 @@ class EXDevLauncherRemoteLogsManager {
   
   func sendSync() {
     guard let data = try? JSONSerialization.data(withJSONObject: batch, options: []) else {
+      batch.removeAll()
       return
     }
     
@@ -45,7 +46,7 @@ class EXDevLauncherRemoteLogsManager {
     group.enter()
     URLSession.shared.dataTask(with: request) { data, response, error in
       group.leave()
-    }
-    group.wait()
+    }.resume()
+    group.wait(timeout: DispatchTime.now() + .seconds(2))
   }
 }
