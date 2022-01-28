@@ -44,8 +44,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (10.1.0):
     - ExpoModulesCore
-  - EXCrypto (10.1.1):
-    - ExpoModulesCore
   - EXDevice (4.1.0):
     - ExpoModulesCore
   - EXDocumentPicker (10.1.0):
@@ -211,6 +209,8 @@ PODS:
   - ExpoCellular (4.1.0):
     - ExpoModulesCore
   - ExpoClipboard (2.1.0):
+    - ExpoModulesCore
+  - ExpoCrypto (10.1.1):
     - ExpoModulesCore
   - ExpoHaptics (11.1.0):
     - ExpoModulesCore
@@ -802,7 +802,6 @@ DEPENDENCIES:
   - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
-  - EXCrypto (from `../../../packages/expo-crypto/ios`)
   - EXDevice (from `../../../packages/expo-device/ios`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
@@ -839,6 +838,7 @@ DEPENDENCIES:
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
+  - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
@@ -1003,9 +1003,6 @@ EXTERNAL SOURCES:
   EXContacts:
     inhibit_warnings: false
     :path: "../../../packages/expo-contacts/ios"
-  EXCrypto:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-crypto/ios"
   EXDevice:
     inhibit_warnings: false
     :path: "../../../packages/expo-device/ios"
@@ -1100,6 +1097,9 @@ EXTERNAL SOURCES:
   ExpoClipboard:
     inhibit_warnings: false
     :path: "../../../packages/expo-clipboard/ios"
+  ExpoCrypto:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-crypto/ios"
   ExpoHaptics:
     inhibit_warnings: false
     :path: "../../../packages/expo-haptics/ios"
@@ -1301,7 +1301,6 @@ SPEC CHECKSUMS:
   EXCamera: bbc12f14b807c84f570fd2acd63159a4a9d23381
   EXConstants: 5d18484e38e8eacef7695a82214b6ac90133dedf
   EXContacts: 6c1bab5a594d591ab08a992e494e52b7e19cb647
-  EXCrypto: e3c0853c2a9ef885928f6227b967b9598132f727
   EXDevice: 7de98d8f97088fad9c01e9a68abad07e501208b2
   EXDocumentPicker: 2989eda5975604203c86c66405a2c242053dcdc7
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
@@ -1334,6 +1333,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoClipboard: 49ded0e61313aea57df8c970a488323488dcd3a1
+  ExpoCrypto: 6e4cb4a1e74be91e4c6671ce03a4c79fb18959c5
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
