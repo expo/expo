@@ -14,7 +14,7 @@ export async function queryMyProjectsAsync(): Promise<any> {
 
 export async function queryDevSessionsAsync(installationID?: string): Promise<DevSession[]> {
   const data = await DevMenu.queryDevSessionsAsync(installationID);
-
+  
   try {
     return JSON.parse(data).data;
   } catch (err) {

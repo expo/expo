@@ -61,7 +61,6 @@ private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtoc
 @objc
 open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
-  lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
 
@@ -132,7 +131,6 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
     self.readAutoLaunchDisabledState()
-    self.expoSessionDelegate.restoreSession()
   }
 
   /**

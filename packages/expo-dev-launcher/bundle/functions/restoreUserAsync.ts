@@ -1,12 +1,13 @@
 import { apiClient } from '../apiClient';
-import { restoreSessionAsync } from '../native-modules/DevMenuInternal';
+import { restoreSessionAsync } from '../native-modules/DevLauncherInternal';
 import { getUserProfileAsync } from './getUserProfileAsync';
 
 export async function restoreUserAsync() {
   const session = await restoreSessionAsync();
 
   if (session) {
-    apiClient.setHeader('expo-session', session.sessionSecret);
+    // @ts-ignore
+    apiClient.setHeader('expo-session', session);
     const userData = await getUserProfileAsync();
     return userData;
   }

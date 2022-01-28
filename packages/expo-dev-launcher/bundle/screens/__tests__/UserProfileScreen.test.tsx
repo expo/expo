@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { getUserProfileAsync, UserAccount, UserData } from '../../functions/getUserProfileAsync';
 import { startAuthSessionAsync } from '../../functions/startAuthSessionAsync';
-import { setSessionAsync } from '../../native-modules/DevMenuInternal';
+import { setSessionAsync } from '../../native-modules/DevLauncherInternal';
 import { render, act, fireEvent, waitFor } from '../../test-utils';
 import { UserProfileScreen } from '../UserProfileScreen';
 
@@ -77,7 +77,7 @@ describe('<UserProfileScreen />', () => {
       await waitFor(() => getByText(fakeAccounts[0].owner.username));
 
       expect(setSessionAsync).toHaveBeenCalledTimes(1);
-      expect(setSessionAsync).toHaveBeenCalledWith({ sessionSecret });
+      expect(setSessionAsync).toHaveBeenCalledWith(sessionSecret);
       expect(getUserProfileAsync).toHaveBeenCalledTimes(1);
     });
   });
@@ -102,7 +102,7 @@ describe('<UserProfileScreen />', () => {
 
       await waitFor(() => getByText(fakeAccounts[0].owner.username));
       expect(setSessionAsync).toHaveBeenCalledTimes(1);
-      expect(setSessionAsync).toHaveBeenCalledWith({ sessionSecret: fakeSessionSecret });
+      expect(setSessionAsync).toHaveBeenCalledWith(fakeSessionSecret);
       expect(getUserProfileAsync).toHaveBeenCalledTimes(1);
     });
   });
