@@ -6,7 +6,7 @@ import { execute, projectRoot } from './utils';
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
@@ -25,18 +25,18 @@ it('runs `npx expo --help`', async () => {
   const results = await execute('--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-        [1mUsage[22m
-          [1m$[22m npx expo <command>
+        Usage
+          $ npx expo <command>
 
-        [1mAvailable commands[22m
+        Available commands
           config, prebuild
 
-        [1mOptions[22m
+        Options
           --version, -v   Version number
           --help, -h      Displays this message
 
         For more information run a command with the --help flag
-          [1m$[22m expo start --help
+          $ expo start --help
       "
   `);
 });

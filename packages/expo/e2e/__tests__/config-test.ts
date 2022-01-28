@@ -7,7 +7,7 @@ import { execute, projectRoot, getRoot, getLoadedModulesAsync } from './utils';
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
@@ -32,10 +32,10 @@ it('runs `npx expo config --help`', async () => {
   const results = await execute('config', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          [1mDescription[22m
+          Description
             Show the project config
 
-          [1mUsage[22m
+          Usage
             $ npx expo config <dir>
 
           <dir> is the directory of the Expo project.
