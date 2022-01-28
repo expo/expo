@@ -98,7 +98,7 @@ jobs:
       #   run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
       - name: Manually bump kotlin version (workaround)
         working-directory: ../updates-e2e
-        run: sed -i -r -e 's/(buildToolsVersion\ =\ \"[.[:digit:]]+\")/\1\nkotlinVersion\ =\ \"1\.6\.10\"/' ./android/build.gradle
+        run: sed -i -e 's/\(buildToolsVersion\ =\ \"[0-9.]*\"\)/\1\nkotlinVersion\ =\ \"1\.6\.10\"/' ./android/build.gradle
       - name: Copy App.js from test fixtures
         working-directory: ../updates-e2e
         run: cp ../expo/packages/expo-updates/.tests/e2e/__tests__/fixtures/App.js .
