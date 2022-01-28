@@ -119,14 +119,14 @@ export enum FaceDetectorMode {
 
 // @docsMissing
 export enum FaceDetectorLandmarks {
-  all = 1,
-  none = 2,
+  none = 1,
+  all = 2,
 }
 
 // @docsMissing
 export enum FaceDetectorClassifications {
-  all = 1,
-  none = 2,
+  none = 1,
+  all = 2,
 }
 
 // @needsAudit
