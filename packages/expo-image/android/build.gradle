@@ -7,7 +7,7 @@ def DEFAULT_OKHTTP_VERSION = '3.14.9'
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'kotlin-kapt'
 
 buildscript {

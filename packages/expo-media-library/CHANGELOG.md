@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Don't ask for `ACCESS_MEDIA_LOCATION` permission if it's not present in `AndroidManifest.xml`. ([#16034](https://github.com/expo/expo/pull/16034) by [@barthap](https://github.com/barthap))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
