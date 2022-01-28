@@ -63,9 +63,9 @@ jobs:
       #     sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - run: yarn global add expo-cli
       - run: echo "$(yarn global bin)" >> $GITHUB_PATH
-      - name: Init new expo app
+      - name: Init new expo app from local template
         working-directory: ../
-        run: expo-cli init updates-e2e --name updates-e2e --yes
+        run: expo-cli init updates-e2e --template=file:./expo/templates/expo-template-blank
       - name: Make Yarn resolve expo-updates dependencies locally
         working-directory: ../updates-e2e
         run: |
@@ -95,8 +95,16 @@ jobs:
       # - name: Bump `android build tools`
       #   working-directory: ../updates-e2e
       #   run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
+      - name: Copy App.js from test fixtures
+        working-directory: ../updates-e2e
+        run: cp ../expo/packages/expo-updates/.tests/e2e/__tests__/fixtures/App.js .
       - name: Assemble release APK
-        env:
-          # ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        # env:
+        #   ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         working-directory: ../updates-e2e/android
         run: ./gradlew assembleRelease
+      - name: Upload test APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: updates-e2e-android-apk
+          path: ../updates-e2e/android/app/build/outputs/apk
