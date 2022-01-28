@@ -5,20 +5,22 @@ on:
   pull_request:
     paths:
       - .github/workflows/updates-e2e.yml
-      - packages/expo-json-utils/**
-      - packages/expo-manifests/**
-      - packages/expo-structured-headers/**
-      - packages/expo-updates-interface/**
-      - packages/expo-updates/**
-  push:
-    branches: [main, 'sdk-*']
-    paths:
-      - .github/workflows/updates-e2e.yml
-      - packages/expo-json-utils/**
-      - packages/expo-manifests/**
-      - packages/expo-structured-headers/**
-      - packages/expo-updates-interface/**
-      - packages/expo-updates/**
+  #     - packages/expo-json-utils/**
+  #     - packages/expo-manifests/**
+  #     - packages/expo-structured-headers/**
+  #     - packages/expo-updates-interface/**
+  #     - packages/expo-updates/**
+  #     - packages/expo/**
+  # push:
+  #   branches: [main, 'sdk-*']
+  #   paths:
+  #     - .github/workflows/updates-e2e.yml
+  #     - packages/expo-json-utils/**
+  #     - packages/expo-manifests/**
+  #     - packages/expo-structured-headers/**
+  #     - packages/expo-updates-interface/**
+  #     - packages/expo-updates/**
+  #     - packages/expo/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -27,8 +29,6 @@ concurrency:
 jobs:
   android:
     runs-on: macos-11
-    # env:
-    #   NDK_ABI_FILTERS: x86_64
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -50,65 +50,28 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      # - uses: actions/cache@v2
-      #   id: cache-android-ndk
-      #   with:
-      #     path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
-      #     key: ${{ runner.os }}-ndk-19.2.5345600
-      #     restore-keys: |
-      #       ${{ runner.os }}-ndk-
-      # - name: Install NDK
-      #   if: steps.cache-android-ndk.outputs.cache-hit != 'true'
-      #   run: |
-      #     sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - run: yarn global add expo-cli
       - run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: Init new expo app from local template
         working-directory: ../
         run: expo-cli init updates-e2e --template=file:./expo/templates/expo-template-blank
-      - name: Make Yarn resolve expo-updates dependencies locally
+      - name: Add local expo-updates and dependencies
         working-directory: ../updates-e2e
-        run: |
-          node -e " \
-            const pkg = require('./package.json'); \
-            pkg.resolutions = { \
-              ...pkg.resolutions, \
-              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
-              'expo-manifests': 'file:../expo/packages/expo-manifests', \
-              'expo-structured-headers': 'file:../expo/packages/expo-structured-headers', \
-              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
-              'expo-updates': 'file:../expo/packages/expo-updates', \
-              'expo': 'file:../expo/packages/expo', \
-            }; \
-            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
-      - name: Add dependencies
-        working-directory: ../updates-e2e
-        run: yarn add file:../expo/packages/expo-updates
+        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface
+        run: cat package.json
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
       - name: Prebuild
         working-directory: ../updates-e2e
         run: expo-cli prebuild
-      # - name: Bump `build tools`
-      #   working-directory: ../updates-e2e
-      #   run: sed -i -e 's/buildToolsVersion\ =\ \"29\..\..\"/buildToolsVersion\ = \"30\.0\.3\"/' ./android/build.gradle
-      # - name: Bump `android build tools`
-      #   working-directory: ../updates-e2e
-      #   run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
+      # TODO: remove once the local template projects are using SDK 45 packages
       - name: Manually bump kotlin version (workaround)
         working-directory: ../updates-e2e
         run: sed -i -e 's/\(buildToolsVersion\ =\ \"[0-9.]*\"\)/\1\nkotlinVersion\ =\ \"1\.6\.10\"/' ./android/build.gradle
-      - name: Copy App.js from test fixtures
-        working-directory: ../updates-e2e
-        run: cp ../expo/packages/expo-updates/.tests/e2e/__tests__/fixtures/App.js .
+      # - name: Copy App.js from test fixtures
+      #   working-directory: ../updates-e2e
+      #   run: cp ../expo/packages/expo-updates/.tests/e2e/__tests__/fixtures/App.js .
       - name: Assemble release APK
-        # env:
-        #   ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         working-directory: ../updates-e2e/android
         run: ./gradlew assembleRelease
-      - name: Upload test APK artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: updates-e2e-android-apk
-          path: ../updates-e2e/android/app/build/outputs/apk
