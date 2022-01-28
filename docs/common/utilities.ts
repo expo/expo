@@ -33,7 +33,7 @@ export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, leng
 };
 
 export const isVersionedUrl = (url: string) => {
-  return url.startsWith('/versions/') || /https?:\/\/(.*)(\/versions\/.*)/.test(url);
+  return /https?:\/\/(.*)(\/versions\/.*)/.test(url);
 };
 
 export const replaceVersionInUrl = (url: string, replaceWith: string) => {
@@ -43,7 +43,7 @@ export const replaceVersionInUrl = (url: string, replaceWith: string) => {
 };
 
 export const getVersionFromUrl = (url: string) => {
-  return new URL(url, 'https://docs.expo.dev').pathname.split('/')[2];
+  return url.split('/')[2];
 };
 
 /**
