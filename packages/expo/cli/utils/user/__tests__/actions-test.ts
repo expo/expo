@@ -1,8 +1,8 @@
 import { ApiV2Error } from '../../api';
 import { promptAsync } from '../../prompts';
-import { ensureActorHasUsername, showLoginPromptAsync } from '../actions';
+import { showLoginPromptAsync } from '../actions';
 import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } from '../otp';
-import { Actor, loginAsync } from '../user';
+import { loginAsync } from '../user';
 
 jest.mock('../../prompts');
 jest.mock('../../api', () => {
@@ -23,32 +23,6 @@ beforeEach(() => {
   });
 
   asMock(loginAsync).mockReset();
-});
-
-const userStub: Actor = {
-  __typename: 'User',
-  id: 'userId',
-  username: 'username',
-  accounts: [],
-  isExpoAdmin: false,
-};
-
-const robotStub: Actor = {
-  __typename: 'Robot',
-  id: 'userId',
-  firstName: 'GLaDOS',
-  accounts: [],
-  isExpoAdmin: false,
-};
-
-describe('ensureActorHasUsername', () => {
-  it('returns username for user actors', () => {
-    expect(ensureActorHasUsername(userStub)).toBe(userStub.username);
-  });
-
-  it('throws for robot actors', () => {
-    expect(() => ensureActorHasUsername(robotStub)).toThrow('not supported for robot');
-  });
 });
 
 describe(showLoginPromptAsync, () => {

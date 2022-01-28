@@ -16,17 +16,19 @@ export async function registerAsync() {
   }
 
   const registrationUrl = `https://expo.dev/signup`;
-
+  const failedMessage = `Unable to open a web browser. Register an account at: ${registrationUrl}`;
   const spinner = ora(`Opening ${registrationUrl}`).start();
   try {
-    const opened = openBrowserAsync(registrationUrl);
+    const opened = await openBrowserAsync(registrationUrl);
 
     if (opened) {
       spinner.succeed(`Opened ${registrationUrl}`);
+    } else {
+      spinner.fail(failedMessage);
     }
     return;
   } catch (error) {
-    spinner.fail(`Unable to open a web browser. Register an account at: ${registrationUrl}`);
+    spinner.fail(failedMessage);
     throw error;
   }
 }

@@ -87,8 +87,6 @@ type Account = {
   appCount: Scalars['Int'];
   /** Build Jobs associated with this account */
   buildJobs: Array<BuildJob>;
-  /** (EAS Build) Builds associated with this account */
-  builds: Array<Build>;
   /**
    * Coalesced Build (EAS) or BuildJob (Classic) for all apps belonging to this account.
    * @deprecated Use activityTimelineProjectActivities with filterTypes instead

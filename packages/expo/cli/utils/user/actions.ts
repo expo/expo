@@ -3,7 +3,6 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { ApiV2Error } from '../api';
-import { CommandError } from '../errors';
 import { learnMore } from '../link';
 import promptAsync, { Question } from '../prompts';
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
@@ -86,11 +85,4 @@ export async function ensureLoggedInAsync(): Promise<Actor> {
 
   assert(user, 'User should be logged in');
   return user;
-}
-
-export function ensureActorHasUsername(user: Actor): string {
-  if (user.__typename === 'User') {
-    return user.username;
-  }
-  throw new CommandError('This action is not supported for robot users.');
 }

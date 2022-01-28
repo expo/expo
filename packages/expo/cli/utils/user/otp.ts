@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { apiClient } from '../api';
-import { AbortCommandError } from '../errors';
+import { AbortCommandError, CommandError } from '../errors';
 import { learnMore } from '../link';
 import { promptAsync, selectAsync } from '../prompts';
 import { loginAsync } from './user';
@@ -31,8 +31,8 @@ const nonInteractiveHelp = `Use the EXPO_TOKEN environment variable to authentic
 async function promptForOTPAsync(cancelBehavior: 'cancel' | 'menu'): Promise<string | null> {
   const enterMessage =
     cancelBehavior === 'cancel'
-      ? `press ${chalk.bold('Enter')} to cancel`
-      : `press ${chalk.bold('Enter')} for more options`;
+      ? chalk`press {bold Enter} to cancel`
+      : chalk`press {bold Enter} for more options`;
   const { otp } = await promptAsync(
     {
       type: 'text',
@@ -41,11 +41,7 @@ async function promptForOTPAsync(cancelBehavior: 'cancel' | 'menu'): Promise<str
     },
     { nonInteractiveHelp }
   );
-  if (!otp) {
-    return null;
-  }
-
-  return otp;
+  return otp || null;
 }
 
 /**
@@ -60,7 +56,7 @@ async function promptForBackupOTPAsync(
   const nonPrimarySecondFactorDevices = secondFactorDevices.filter((device) => !device.is_primary);
 
   if (nonPrimarySecondFactorDevices.length === 0) {
-    throw new Error(
+    throw new CommandError(
       'No other second-factor devices set up. Ensure you have set up and certified a backup device.'
     );
   }
