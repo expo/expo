@@ -22,9 +22,8 @@ export default function DocumentationElements(props: DocumentationElementsProps)
   return (
     <HeadingsContext.Provider value={manager}>
       <DocumentationPage
+        router={router}
         title={props.meta.title || ''}
-        url={router}
-        asPath={router.asPath}
         packageName={props.meta.packageName}
         sourceCodeUrl={props.meta.sourceCodeUrl}
         tocVisible={!props.meta.hideTOC}
