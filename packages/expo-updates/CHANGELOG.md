@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS launch crash when app.json `expo.updates.enabled` is false. ([#15997](https://github.com/expo/expo/pull/15997) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14`, `@expo/config` from `^6.0.6` to `^6.0.14` and `@expo/metro-config` from `~0.2.6` to `~0.3.7` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
