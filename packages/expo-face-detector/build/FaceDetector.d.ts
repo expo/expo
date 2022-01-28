@@ -109,12 +109,12 @@ export declare enum FaceDetectorMode {
     accurate = 2
 }
 export declare enum FaceDetectorLandmarks {
-    all = 1,
-    none = 2
+    none = 1,
+    all = 2
 }
 export declare enum FaceDetectorClassifications {
-    all = 1,
-    none = 2
+    none = 1,
+    all = 2
 }
 export declare type Image = {
     /**
