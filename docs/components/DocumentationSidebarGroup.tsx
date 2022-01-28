@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
+import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
@@ -7,7 +8,7 @@ import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
 import { collapsedSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
-import { NavigationRoute, Url } from '~/types/common';
+import { NavigationRoute } from '~/types/common';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -43,9 +44,8 @@ if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
 }
 
 type Props = {
-  asPath: string;
+  router: NextRouter;
   info: NavigationRoute;
-  url: Url;
 };
 
 export default class DocumentationSidebarGroup extends React.Component<Props, { isOpen: boolean }> {
@@ -86,7 +86,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
   private isChildRouteActive() {
     // Special case for "Get Started"
     if (this.props.info.name === 'Getting to know Expo') {
-      if (this.props.asPath.match(/\/versions\/[\w.]+\/$/)) {
+      if (this.props.router.asPath.match(/\/versions\/[\w.]+\/$/)) {
         return true;
       }
     }
@@ -97,8 +97,8 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
 
     const isSectionActive = (section: NavigationRoute) => {
       const linkUrl = stripVersionFromPath(section.as || section.href);
-      const pathname = stripVersionFromPath(this.props.url.pathname);
-      const asPath = stripVersionFromPath(this.props.asPath);
+      const pathname = stripVersionFromPath(this.props.router.pathname);
+      const asPath = stripVersionFromPath(this.props.router.asPath);
 
       if (
         linkUrl === pathname ||

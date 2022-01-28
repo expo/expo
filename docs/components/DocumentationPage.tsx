@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import some from 'lodash/some';
-import Router from 'next/router';
+import Router, { NextRouter } from 'next/router';
 import NProgress from 'nprogress';
 import * as React from 'react';
 
@@ -20,7 +20,7 @@ import { H1 } from '~/components/base/headings';
 import navigation from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { VERSIONS } from '~/constants/versions';
-import { NavigationRoute, Url } from '~/types/common';
+import { NavigationRoute } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
@@ -51,9 +51,8 @@ const HIDDEN_ON_DESKTOP = css`
 `;
 
 type Props = {
-  url: Url;
+  router: NextRouter;
   title: string;
-  asPath: string;
   sourceCodeUrl?: string;
   /** API Page NPM package name, exposed through context for various React components that consistently use the package name. */
   packageName?: string;
@@ -106,7 +105,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
   };
 
   private handleSetVersion = (version: string) => {
-    let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
+    let newPath = Utilities.replaceVersionInUrl(this.props.router.pathname, version);
 
     if (!newPath.endsWith('/')) {
       newPath += '/';
@@ -143,46 +142,50 @@ export default class DocumentationPage extends React.Component<Props, State> {
   };
 
   private isReferencePath = () => {
-    return this.props.url.pathname.startsWith('/versions');
+    return this.props.router.pathname.startsWith('/versions');
   };
 
   private isGeneralPath = () => {
     return some(navigation.generalDirectories, name =>
-      this.props.url.pathname.startsWith(`/${name}`)
+      this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
   private isGettingStartedPath = () => {
     return (
-      this.props.url.pathname === '/' ||
-      some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
+      this.props.router.pathname === '/' ||
+      some(navigation.startingDirectories, name =>
+        this.props.router.pathname.startsWith(`/${name}`)
+      )
     );
   };
 
   private isFeaturePreviewPath = () => {
     return some(navigation.featurePreviewDirectories, name =>
-      this.props.url.pathname.startsWith(`/${name}`)
+      this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
   private isPreviewPath = () => {
     return some(navigation.previewDirectories, name =>
-      this.props.url.pathname.startsWith(`/${name}`)
+      this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
   private isEasPath = () => {
-    return some(navigation.easDirectories, name => this.props.url.pathname.startsWith(`/${name}`));
+    return some(navigation.easDirectories, name =>
+      this.props.router.pathname.startsWith(`/${name}`)
+    );
   };
 
   private getCanonicalUrl = () => {
     if (this.isReferencePath()) {
       return `https://docs.expo.dev${Utilities.replaceVersionInUrl(
-        this.props.url.pathname,
+        this.props.router.pathname,
         'latest'
       )}`;
     } else {
-      return `https://docs.expo.dev${this.props.url.pathname}`;
+      return `https://docs.expo.dev${this.props.router.pathname}`;
     }
   };
 
@@ -195,7 +198,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
   };
 
   private getVersion = () => {
-    let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
+    let version = (this.props.router.asPath || this.props.router.pathname).split(`/`)[2];
     if (!version || !VERSIONS.includes(version)) {
       version = 'latest';
     }
@@ -252,8 +255,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
     const sidebarElement = (
       <DocumentationSidebar
-        url={this.props.url}
-        asPath={this.props.asPath}
+        router={this.props.router}
         routes={routes}
         version={version}
         onSetVersion={this.handleSetVersion}
@@ -327,9 +329,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
               {this.props.children}
             </DocumentationPageContext.Provider>
             <DocumentationFooter
+              router={this.props.router}
               title={this.props.title}
-              url={this.props.url}
-              asPath={this.props.asPath}
               sourceCodeUrl={this.props.sourceCodeUrl}
             />
           </div>
@@ -342,15 +343,14 @@ export default class DocumentationPage extends React.Component<Props, State> {
                 {this.props.children}
               </DocumentationPageContext.Provider>
               <DocumentationFooter
+                router={this.props.router}
                 title={this.props.title}
-                asPath={this.props.asPath}
                 sourceCodeUrl={this.props.sourceCodeUrl}
               />
             </div>
             <div css={HIDDEN_ON_DESKTOP}>
               <DocumentationSidebar
-                url={this.props.url}
-                asPath={this.props.asPath}
+                router={this.props.router}
                 routes={routes}
                 version={version}
                 onSetVersion={this.handleSetVersion}

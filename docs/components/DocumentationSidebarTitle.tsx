@@ -4,7 +4,6 @@ import * as React from 'react';
 
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
-import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -18,14 +17,8 @@ const STYLES_TITLE = css`
   padding-bottom: 0.25rem;
 `;
 
-type Props = {
-  url?: Url;
-  info: NavigationRoute;
-  asPath: string;
-};
+type Props = React.PropsWithChildren<object>;
 
-export default class DocumentationSidebarTitle extends React.Component<Props, any> {
-  render() {
-    return <div css={STYLES_TITLE}>{this.props.children}</div>;
-  }
+export default function DocumentationSidebarTitle(props: Props) {
+  return <div css={STYLES_TITLE}>{props.children}</div>;
 }
