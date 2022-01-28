@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
@@ -7,7 +8,7 @@ import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
 import { hiddenSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
-import { NavigationRoute, Url } from '~/types/common';
+import { NavigationRoute } from '~/types/common';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
@@ -49,8 +50,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
 }
 
 type Props = {
-  url: Url;
-  asPath: string;
+  router: NextRouter;
   isVersionSelectorHidden: boolean;
   routes: NavigationRoute[];
   version: string;
@@ -66,9 +66,8 @@ export default class DocumentationSidebar extends React.Component<Props> {
     return (
       <DocumentationSidebarLink
         key={`${category}-${info.name}`}
-        info={info}
-        url={this.props.url}
-        asPath={this.props.asPath}>
+        router={this.props.router}
+        info={info}>
         {info.sidebarTitle || info.name}
       </DocumentationSidebarLink>
     );
@@ -83,21 +82,16 @@ export default class DocumentationSidebar extends React.Component<Props> {
       return (
         <DocumentationSidebarGroup
           key={`group-${info.name}`}
-          url={this.props.url}
-          info={info}
-          asPath={this.props.asPath}>
+          router={this.props.router}
+          info={info}>
           {info.children.map(categoryInfo => this.renderCategoryElements(categoryInfo, info))}
         </DocumentationSidebarGroup>
       );
     }
 
     const titleElement = shouldSkipTitle(info, parentGroup) ? null : (
-      <DocumentationSidebarTitle
-        key={info.sidebarTitle ? info.sidebarTitle : info.name}
-        info={info}
-        url={this.props.url}
-        asPath={this.props.asPath}>
-        {info.sidebarTitle ? info.sidebarTitle : info.name}
+      <DocumentationSidebarTitle key={info.sidebarTitle || info.name}>
+        {info.sidebarTitle || info.name}
       </DocumentationSidebarTitle>
     );
 
