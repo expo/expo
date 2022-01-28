@@ -74,9 +74,10 @@ jobs:
       - name: Assemble release APK
         working-directory: ../updates-e2e/android
         run: ./gradlew assembleRelease
+      - name: Copy APK to working directory
+        run: cp -R ../updates-e2e/android/app/build/outputs/apk artifact
       - name: Upload test APK artifact
-        working-directory: ../updates-e2e
         uses: actions/upload-artifact@v2
         with:
           name: updates-e2e-android-apk
-          path: android/app/build/outputs/apk
+          path: artifact
