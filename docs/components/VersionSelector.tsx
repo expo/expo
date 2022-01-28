@@ -6,7 +6,7 @@ import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
 import ChevronDownIcon from '~/components/icons/ChevronDown';
 import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
-import { useApiVersion } from '~/providers/api-version';
+import { usePageApiVersion } from '~/providers/page-api-version';
 
 const STYLES_SELECT = css`
   position: relative;
@@ -53,7 +53,7 @@ type Props = {
 };
 
 const VersionSelector: React.FC<Props> = ({ style }) => {
-  const { version, setVersion } = useApiVersion();
+  const { version, setVersion } = usePageApiVersion();
 
   return (
     <div css={STYLES_SELECT} style={style}>
