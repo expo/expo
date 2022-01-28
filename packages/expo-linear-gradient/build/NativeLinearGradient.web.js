@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import normalizeColor from 'react-native-web/src/modules/normalizeColor';
+import { normalizeColor } from './normalizeColor';
 export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, ...props }) {
     const [layout, setLayout] = React.useState(null);
     const { width = 1, height = 1 } = layout ?? {};
