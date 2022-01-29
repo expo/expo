@@ -45,58 +45,64 @@ type TextComponentProps = HTMLAttributes<
 };
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
-  return function TextComponent(props: TextComponentProps) {
+  function TextComponent(props: TextComponentProps) {
     const { className, testID, size, weight, tag, theme, ...rest } = props;
+    const TextElementTag = tag ?? Element;
 
     function getSizeStyle() {
       if ((Element === TextElement.P || Element === TextElement.SPAN) && size === 'small') {
         return css(typography.body.callout);
       }
-
       return null;
     }
 
-    function getWeightStyle() {
-      switch (weight) {
-        case 'regular':
-          return css(typography.utility.weight.regular);
-        case 'medium':
-          return css(typography.utility.weight.medium);
-        case 'semiBold':
-          return css(typography.utility.weight.semiBold);
-        case 'black':
-          return css(typography.utility.weight.black);
-        default:
-          return null;
-      }
-    }
-
-    function getThemeStyle() {
-      switch (theme) {
-        case 'secondary':
-          return themeSecondary;
-        case 'success':
-          return themeSuccess;
-        case 'warning':
-          return themeWarning;
-        case 'error':
-          return themeError;
-        default:
-          return null;
-      }
-    }
-
-    const TextElementTag = tag ?? Element;
-
     return (
       <TextElementTag
-        css={[baseTextStyle, textStyle, getSizeStyle(), getWeightStyle(), getThemeStyle()]}
+        css={[
+          baseTextStyle,
+          textStyle,
+          getSizeStyle(),
+          getWeightStyle(weight),
+          getThemeStyle(theme),
+        ]}
         className={className}
         data-testid={testID}
         {...rest}
       />
     );
-  };
+  }
+  TextComponent.displayName = `Text(${Element})`;
+  return TextComponent;
+}
+
+function getWeightStyle(weight: TextComponentProps['weight']) {
+  switch (weight) {
+    case 'regular':
+      return css(typography.utility.weight.regular);
+    case 'medium':
+      return css(typography.utility.weight.medium);
+    case 'semiBold':
+      return css(typography.utility.weight.semiBold);
+    case 'black':
+      return css(typography.utility.weight.black);
+    default:
+      return null;
+  }
+}
+
+function getThemeStyle(theme: TextComponentProps['theme']) {
+  switch (theme) {
+    case 'secondary':
+      return themeSecondary;
+    case 'success':
+      return themeSuccess;
+    case 'warning':
+      return themeWarning;
+    case 'error':
+      return themeError;
+    default:
+      return null;
+  }
 }
 
 const baseTextStyle = css({
@@ -155,7 +161,9 @@ export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility
 export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
 export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
+
 export const A = (props: Omit<LinkProps, 'router'> & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
   return <Link css={[link, isStyled && css(typography.utility.anchor)]} {...rest} />;
 };
+A.displayName = 'Text(a)';
