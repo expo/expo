@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Updated `useWebQRScanner` to allow for `inversionAttempts` of QR codes with light foregrounds and dark backgrounds ([#16106](https://github.com/expo/expo/pull/16106) by [@rissois](https://github.com/rissois))
+- Update `useWebQRScanner` to allow scanning QR codes with inverted colors (light foreground and dark background). ([#16106](https://github.com/expo/expo/pull/16106) by [@rissois](https://github.com/rissois))
 
 ### 🐛 Bug fixes
 
