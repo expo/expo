@@ -66,6 +66,8 @@ EX_EXPORT_METHOD_AS(getThumbnail,
   NSURL *fileURL = [NSURL fileURLWithPath:newPath];
   NSString *filePath = [fileURL absoluteString];
 
+  CGImageRelease(imgRef);
+  
   resolve(@{
             @"uri" : filePath,
             @"width" : @(thumbnail.size.width),
