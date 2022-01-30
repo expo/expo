@@ -2,7 +2,7 @@ import { css, SerializedStyles } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import React, { HTMLAttributes } from 'react';
 
-import { Link, LinkProps } from '~/ui/components/Link';
+import { LinkBase, LinkProps } from '~/ui/components/Link';
 import { durations } from '~/ui/foundations/durations';
 
 export enum TextElement {
@@ -150,6 +150,6 @@ export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.p
 
 export const A = (props: Omit<LinkProps, 'router'> & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
-  return <Link css={[link, isStyled && css(typography.utility.anchor)]} {...rest} />;
+  return <LinkBase css={[link, isStyled && css(typography.utility.anchor)]} {...rest} />;
 };
 A.displayName = 'Text(a)';
