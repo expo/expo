@@ -23,7 +23,7 @@ export type LinkProps = React.PropsWithChildren<{
   ariaLabel?: string;
 }>;
 
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(props, ref) {
+export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(props, ref) {
   const { href, openInNewTab = false } = props;
   const relProp = props.target === '_blank' && !props.rel ? 'noopener' : props.rel;
 
