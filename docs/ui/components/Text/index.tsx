@@ -25,7 +25,6 @@ type TextComponentProps = HTMLAttributes<
   HTMLHeadingElement | HTMLParagraphElement | HTMLLIElement | HTMLUListElement | HTMLPreElement
 > & {
   testID?: string;
-  size?: 'small';
   weight?: 'regular' | 'medium' | 'semiBold' | 'black';
   theme?: 'secondary' | 'success' | 'warning' | 'error';
   tag?:
@@ -46,25 +45,12 @@ type TextComponentProps = HTMLAttributes<
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
-    const { className, testID, size, weight, tag, theme, ...rest } = props;
+    const { className, testID, weight, tag, theme, ...rest } = props;
     const TextElementTag = tag ?? Element;
-
-    function getSizeStyle() {
-      if ((Element === TextElement.P || Element === TextElement.SPAN) && size === 'small') {
-        return css(typography.body.callout);
-      }
-      return null;
-    }
 
     return (
       <TextElementTag
-        css={[
-          baseTextStyle,
-          textStyle,
-          getSizeStyle(),
-          getWeightStyle(weight),
-          getThemeStyle(theme),
-        ]}
+        css={[baseTextStyle, textStyle, getWeightStyle(weight), getThemeStyle(theme)]}
         className={className}
         data-testid={testID}
         {...rest}
