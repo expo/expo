@@ -1,11 +1,10 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
 import ChevronDownIcon from '~/components/icons/ChevronDown';
-import * as Constants from '~/constants/theme';
 import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
 
 const STYLES_SELECT = css`
@@ -30,7 +29,7 @@ const STYLES_SELECT_TEXT = css`
   align-items: center;
   flex: 1;
   justify-content: space-between;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   color: ${theme.text.default};
   font-size: 14px;
 `;

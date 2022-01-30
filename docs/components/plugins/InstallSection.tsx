@@ -1,11 +1,9 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
 import DocumentationPageContext from '../DocumentationPageContext';
 import TerminalBlock from './TerminalBlock';
-
-import * as Constants from '~/constants/theme';
 
 const STYLES_P = css`
   line-height: 1.8rem;
@@ -15,7 +13,7 @@ const STYLES_P = css`
 `;
 
 const STYLES_BOLD = css`
-  font-family: ${Constants.fonts.demi};
+  font-family: ${typography.fontFaces.medium};
   font-weight: 400;
   text-decoration: none;
   color: ${theme.link.default};
