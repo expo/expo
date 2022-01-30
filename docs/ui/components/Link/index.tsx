@@ -47,11 +47,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(props
         data-testid={props.testID}
         target={openInNewTab ? '_blank' : props.target}
         rel={openInNewTab ? 'noopener noreferrer' : relProp}
-        onMouseMove={props.onMouseMove}
-        onMouseEnter={props.onMouseEnter}
-        onMouseLeave={props.onMouseLeave}
-        onTouchStart={props.onTouchStart}
-        onKeyDown={onKeyDown}>
+      >
         {props.children}
       </a>
     </NextLink>
