@@ -60,10 +60,10 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(props
 
 const linkStyle = css({
   textDecoration: 'none',
-  transition: '200ms ease opacity',
   cursor: 'pointer',
   opacity: 1,
   ':hover': {
+    transition: durations.hover,
     opacity: 0.8,
   },
   ':visited': {
