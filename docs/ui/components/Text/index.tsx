@@ -129,12 +129,12 @@ const listStyle = css({
   marginLeft: '1.5rem',
 });
 
-export const H1 = createTextComponent(TextElement.H1, css(typography.headers.h1));
-export const H2 = createTextComponent(TextElement.H2, css(typography.headers.h2));
-export const H3 = createTextComponent(TextElement.H4, css(typography.headers.h3));
-export const H4 = createTextComponent(TextElement.H4, css(typography.headers.h4));
-export const H5 = createTextComponent(TextElement.H5, css(typography.headers.h5));
-export const H6 = createTextComponent(TextElement.H6, css(typography.headers.h6));
+export const H1 = createTextComponent(TextElement.H1, css(typography.headers.default.h1));
+export const H2 = createTextComponent(TextElement.H2, css(typography.headers.default.h2));
+export const H3 = createTextComponent(TextElement.H4, css(typography.headers.default.h3));
+export const H4 = createTextComponent(TextElement.H4, css(typography.headers.default.h4));
+export const H5 = createTextComponent(TextElement.H5, css(typography.headers.default.h5));
+export const H6 = createTextComponent(TextElement.H6, css(typography.headers.default.h6));
 export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
 export const CODE = createTextComponent(TextElement.CODE, css(typography.utility.inlineCode));
 export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
