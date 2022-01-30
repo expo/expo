@@ -55,7 +55,6 @@ type Props = {
 const VersionSelector: React.FC<Props> = ({ style }) => {
   const { version, hasVersion, setVersion } = usePageApiVersion();
 
-  // Don't render the version selector on non-versioned pages
   if (!hasVersion) {
     return null;
   }
@@ -67,9 +66,10 @@ const VersionSelector: React.FC<Props> = ({ style }) => {
         <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
       </label>
       {
-        // hidden links to help test-links spidering
-        VERSIONS.map(v => (
-          <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
+        // Add hidden links to create crawlable references to other SDK versions
+        // We can use JS to switch between them, while helping search bots find other SDK versions
+        VERSIONS.map(version => (
+          <a key={version} style={{ display: 'none' }} href={`/versions/${version}/`} />
         ))
       }
       <select
@@ -77,9 +77,9 @@ const VersionSelector: React.FC<Props> = ({ style }) => {
         css={STYLES_SELECT_ELEMENT}
         value={version}
         onChange={e => setVersion(e.target.value)}>
-        {VERSIONS.map(v => (
-          <option key={v} value={v}>
-            {Utilities.getUserFacingVersionString(v, LATEST_VERSION, BETA_VERSION)}
+        {VERSIONS.map(version => (
+          <option key={version} value={version}>
+            {Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}
           </option>
         ))}
       </select>
