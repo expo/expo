@@ -1,8 +1,6 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-swift': 'Swift',
@@ -52,7 +50,7 @@ const CodeSamplesCSS = css`
 
     span {
       color: ${theme.text.default};
-      font-family: ${Constants.fonts.mono};
+      font-family: ${typography.fontFaces.mono};
       font-size: 15px;
     }
   }

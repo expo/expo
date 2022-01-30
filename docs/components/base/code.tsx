@@ -1,13 +1,11 @@
 import { css } from '@emotion/react';
 import { SerializedStyles } from '@emotion/serialize';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
-
-import * as Constants from '~/constants/theme';
 
 installLanguages(Prism);
 
@@ -17,7 +15,7 @@ const attributes = {
 
 const STYLES_CODE_BLOCK = css`
   color: ${theme.text.default};
-  font-family: ${Constants.fontFamilies.mono};
+  font-family: ${typography.fontFaces.mono};
   font-size: 13px;
   line-height: 20px;
   white-space: inherit;
@@ -48,7 +46,7 @@ const STYLES_CODE_BLOCK = css`
 
 const STYLES_INLINE_CODE = css`
   color: ${theme.text.default};
-  font-family: ${Constants.fontFamilies.mono};
+  font-family: ${typography.fontFaces.mono};
   font-size: 0.825em;
   white-space: pre-wrap;
   display: inline;

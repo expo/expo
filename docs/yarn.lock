@@ -556,7 +556,7 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/styleguide@^3.0.0":
+"@expo/styleguide@^3.5.1":
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-3.5.1.tgz#20a35ab7a376572a3695a0d3e808dc8273ceaf0e"
   integrity sha512-TLJs7nvnpen3pWOQiLjf5x9SN6WOx7ORV5w9Q5mDn8EVBtBf/wuRzt8HdIVj0NOryAO2zC0vdD6xyojtVB4XYQ==

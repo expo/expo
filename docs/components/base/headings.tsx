@@ -1,10 +1,8 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
 import { h1, h2, h3, h4 } from './typography';
-
-import * as Constants from '~/constants/theme';
 
 const attributes = {
   'data-heading': true,
@@ -33,7 +31,7 @@ const STYLES_H2 = css`
 
   code {
     ${h2}
-    font-family: ${Constants.fontFamilies.mono};
+    font-family: ${typography.fontFaces.mono};
     padding: 1px 8px;
     border-radius: 4px;
   }
@@ -52,7 +50,7 @@ const STYLES_H3 = css`
 
   code {
     ${h3}
-    font-family: ${Constants.fontFamilies.mono};
+    font-family: ${typography.fontFaces.mono};
     padding: 1px 6px;
     border-radius: 4px;
   }
@@ -70,7 +68,7 @@ const STYLES_H4 = css`
 
   code {
     ${h4}
-    font-family: ${Constants.fontFamilies.mono};
+    font-family: ${typography.fontFaces.mono};
     padding: 1px 6px;
     border-radius: 4px;
   }

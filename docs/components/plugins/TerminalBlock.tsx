@@ -1,8 +1,6 @@
 import { css } from '@emotion/react';
-import { palette } from '@expo/styleguide';
+import { palette, typography } from '@expo/styleguide';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 const STYLES_PROMPT = css`
   background-color: ${palette.light.black};
@@ -16,7 +14,7 @@ const STYLES_PROMPT = css`
 
 const STYLES_LINE = css`
   white-space: nowrap;
-  font-family: ${Constants.fontFamilies.mono};
+  font-family: ${typography.fontFaces.mono};
   font-size: 13px;
   color: ${palette.dark.gray[900]};
   line-height: 160%;
@@ -29,7 +27,7 @@ const STYLES_LINE = css`
 const STYLES_COMMENT = css`
   user-select: none;
   white-space: nowrap;
-  font-family: ${Constants.fontFamilies.mono};
+  font-family: ${typography.fontFaces.mono};
   font-size: 13px;
   color: ${palette.dark.gray[600]};
   line-height: 150%;

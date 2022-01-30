@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
+import { typography } from '@expo/styleguide';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 const STYLES_DETAILS = css`
   margin-bottom: 0px;
@@ -9,7 +8,7 @@ const STYLES_DETAILS = css`
 
 const STYLES_SUMMARY = css`
   margin-bottom: 0px;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   font-weight: 400;
 `;
 

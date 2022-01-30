@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
 
@@ -118,7 +118,7 @@ export const globalReset = css`
   }
 
   body {
-    font-family: ${Constants.fonts.book};
+    font-family: ${typography.fontFaces.regular};
     text-rendering: optimizeLegibility;
     font-size: 16px;
   }

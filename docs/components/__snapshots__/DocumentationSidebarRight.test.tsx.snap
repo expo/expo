@@ -7,21 +7,21 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
     data-sidebar="true"
   >
     <a
-      class="css-19zpey5-paragraph-STYLES_LINK-STYLES_LINK_HEADER-DocumentationSidebarRightLink"
+      class="css-1xv10pi-paragraph-STYLES_LINK-STYLES_LINK_HEADER-DocumentationSidebarRightLink"
       href="#base-level-heading"
       style="padding-left: 0px;"
     >
       Base level heading
     </a>
     <a
-      class="css-3k76hs-paragraph-STYLES_LINK-DocumentationSidebarRightLink"
+      class="css-g9fncx-paragraph-STYLES_LINK-DocumentationSidebarRightLink"
       href="#level-3-subheading"
       style="padding-left: 16px;"
     >
       Level 3 subheading
     </a>
     <a
-      class="css-ds24np-paragraph-STYLES_LINK-STYLES_LINK_CODE-DocumentationSidebarRightLink"
+      class="css-1xrt3wy-paragraph-STYLES_LINK-STYLES_LINK_CODE-DocumentationSidebarRightLink"
       href="#code-heading-depth-1"
       style="padding-left: 16px;"
     >

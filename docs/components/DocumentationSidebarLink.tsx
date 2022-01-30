@@ -1,12 +1,11 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import NextLink from 'next/link';
 import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
-import * as Constants from '~/constants/theme';
 import { NavigationRoute } from '~/types/common';
 
 const STYLES_LINK = css`
@@ -18,7 +17,7 @@ const STYLES_ACTIVE = css`
   ${paragraph}
   font-size: 15px;
   line-height: 140%;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   color: ${theme.link.default};
   position: relative;
   left: -7px;
