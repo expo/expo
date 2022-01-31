@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { SNACK_URL } from '../../common/snack';
 
-import DocumentationPageContext from '~/components/DocumentationPageContext';
+import { PageMetadataContext } from '~/providers/page-metadata';
 
 type Props = {
   snackId?: string;
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default class SnackEmbed extends React.Component<Props> {
-  static contextType = DocumentationPageContext;
+  static contextType = PageMetadataContext;
 
   componentDidMount() {
     let script = document.getElementById('snack') as HTMLScriptElement;

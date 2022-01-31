@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { SNACK_URL, getSnackFiles } from '../../common/snack';
 
-import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { ExternalLink } from '~/components/icons/ExternalLink';
+import { PageApiVersionContext } from '~/providers/page-api-version';
 
 const DEFAULT_PLATFORM = 'android';
 const LATEST_VERSION = `v${require('../../package.json').version}`;
@@ -20,7 +20,7 @@ type Props = {
 };
 
 export default class SnackInline extends React.Component<Props> {
-  static contextType = DocumentationPageContext;
+  static contextType = PageApiVersionContext;
   contentRef = React.createRef<HTMLDivElement>();
 
   static defaultProps = {

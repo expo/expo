@@ -265,7 +265,6 @@ type Props = {
   isAlgoliaSearchHidden: boolean;
   isMenuActive: boolean;
   isMobileSearchActive: boolean;
-  version: string;
   activeSection?: string;
   onToggleSearch: () => void;
   onShowMenu: () => void;
@@ -336,7 +335,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
           <div css={STYLES_RIGHT}>
             {!this.props.isAlgoliaSearchHidden && (
               <div css={HEADER_RIGHT}>
-                <AlgoliaSearch version={this.props.version} hiddenOnMobile />
+                <AlgoliaSearch hiddenOnMobile />
                 <SelectTheme />
               </div>
             )}
@@ -361,11 +360,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
         </header>
         <header css={[STYLES_NAV, STYLES_MOBILE_NAV]}>
           {this.props.isMobileSearchActive ? (
-            <AlgoliaSearch
-              version={this.props.version}
-              hiddenOnMobile={false}
-              onToggleSearch={this.props.onToggleSearch}
-            />
+            <AlgoliaSearch hiddenOnMobile={false} onToggleSearch={this.props.onToggleSearch} />
           ) : (
             this.renderSectionLinks(false)
           )}

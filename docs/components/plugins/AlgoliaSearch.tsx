@@ -10,6 +10,7 @@ import { SlashShortcut } from '~/components/icons/SlashShortcut';
 import { X } from '~/components/icons/X';
 import * as Constants from '~/constants/theme';
 import { LATEST_VERSION } from '~/constants/versions';
+import { usePageApiVersion } from '~/providers/page-api-version';
 
 const STYLES_INPUT = css`
   display: flex;
@@ -112,7 +113,7 @@ type Props = {
 };
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
-class AlgoliaSearch extends React.Component<Props> {
+class AlgoliaSearchWithApiVersion extends React.Component<Props> {
   private searchRef = React.createRef<HTMLInputElement>();
   private docsearch: any;
   private hotshot: any;
@@ -245,4 +246,7 @@ class AlgoliaSearch extends React.Component<Props> {
   }
 }
 
-export default AlgoliaSearch;
+export default function AlgoliaSearch(props: Omit<Props, 'version'>) {
+  const { version } = usePageApiVersion();
+  return <AlgoliaSearchWithApiVersion {...props} version={version} />;
+}
