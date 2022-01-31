@@ -29,7 +29,7 @@ const tableWrapperStyle = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  borderRadius: borderRadius.large,
+  borderRadius: borderRadius.medium,
   overflow: 'hidden',
   marginBottom: '1rem',
 });

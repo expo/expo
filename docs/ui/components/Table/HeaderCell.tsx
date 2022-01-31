@@ -13,7 +13,7 @@ export const HeaderCell = ({ children, textAlign }: HeaderCellProps) => (
 );
 
 const tableHeadersCellStyle = css({
-  color: theme.text.secondary,
-  fontFamily: typography.fontFaces.regular,
+  color: theme.text.default,
+  fontFamily: typography.fontFaces.medium,
   verticalAlign: 'middle',
 });
