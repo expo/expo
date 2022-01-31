@@ -22,12 +22,15 @@ export enum TextElement {
   PRE = 'pre',
 }
 
+type TextWeight = keyof typeof typography.utility.weight;
+type TextTheme = keyof typeof theme.text;
+
 type TextComponentProps = HTMLAttributes<
   HTMLHeadingElement | HTMLParagraphElement | HTMLLIElement | HTMLUListElement | HTMLPreElement
 > & {
   testID?: string;
-  weight?: 'regular' | 'medium' | 'semiBold' | 'black';
-  theme?: 'secondary' | 'success' | 'warning' | 'error';
+  weight?: TextWeight;
+  theme?: TextTheme;
   tag?:
     | 'code'
     | 'h1'
@@ -46,12 +49,17 @@ type TextComponentProps = HTMLAttributes<
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
-    const { className, testID, weight, tag, theme, ...rest } = props;
+    const { className, testID, tag, weight: textWeight, theme: textTheme, ...rest } = props;
     const TextElementTag = tag ?? Element;
 
     return (
       <TextElementTag
-        css={[baseTextStyle, textStyle, getWeightStyle(weight), getThemeStyle(theme)]}
+        css={[
+          baseTextStyle,
+          textStyle,
+          textWeight && typography.utility.weight[textWeight],
+          textTheme && { color: theme.text[textTheme] },
+        ]}
         className={className}
         data-testid={testID}
         {...rest}
@@ -62,55 +70,9 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
   return TextComponent;
 }
 
-function getWeightStyle(weight: TextComponentProps['weight']) {
-  switch (weight) {
-    case 'regular':
-      return css(typography.utility.weight.regular);
-    case 'medium':
-      return css(typography.utility.weight.medium);
-    case 'semiBold':
-      return css(typography.utility.weight.semiBold);
-    case 'black':
-      return css(typography.utility.weight.black);
-    default:
-      return null;
-  }
-}
-
-function getThemeStyle(theme: TextComponentProps['theme']) {
-  switch (theme) {
-    case 'secondary':
-      return themeSecondary;
-    case 'success':
-      return themeSuccess;
-    case 'warning':
-      return themeWarning;
-    case 'error':
-      return themeError;
-    default:
-      return null;
-  }
-}
-
 const baseTextStyle = css({
   ...typography.body.paragraph,
   color: theme.text.default,
-});
-
-const themeSecondary = css({
-  color: theme.text.secondary,
-});
-
-const themeSuccess = css({
-  color: theme.text.success,
-});
-
-const themeWarning = css({
-  color: theme.text.warning,
-});
-
-const themeError = css({
-  color: theme.text.error,
 });
 
 const link = css({
