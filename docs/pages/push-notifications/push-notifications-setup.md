@@ -23,7 +23,7 @@ The following method takes care of all this for you, so feel free to copy/paste 
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */
-  if (Constants.isDevice) {
+  if (Device.isDevice) {
     /* @end */
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -64,7 +64,7 @@ registerForPushNotificationsAsync = async () => {
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */
-  if (Constants.isDevice) {
+  if (Device.isDevice) {
     /* @end */
     const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
     let finalStatus = existingStatus;

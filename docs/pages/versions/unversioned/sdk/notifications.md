@@ -174,7 +174,7 @@ Check out the Snack below to see Notifications in action, but be sure to use a p
 <SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions', 'expo-notifications']}>
 
 ```js
-import Constants from 'expo-constants';
+import Device from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
@@ -246,7 +246,7 @@ async function schedulePushNotification() {
 
 async function registerForPushNotificationsAsync() {
   let token;
-  if (Constants.isDevice) {
+  if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
@@ -431,7 +431,6 @@ Returns a `Promise` that resolves to an object with the following fields:
 #### Fetching the Expo push token and uploading it to a server
 
 ```ts
-import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 
 export async function registerForPushNotificationsAsync(userId: string) {
