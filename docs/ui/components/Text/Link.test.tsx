@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 
-import { LinkBase } from '.';
+import { LinkBase } from './Link';
 
 describe('Link', () => {
   test('renders <a> tag with correct external href', () => {

@@ -2,7 +2,8 @@ import { css, SerializedStyles } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import React, { HTMLAttributes } from 'react';
 
-import { LinkBase, LinkProps } from '~/ui/components/Link';
+import { LinkBase, LinkProps } from './Link';
+
 import { durations } from '~/ui/foundations/durations';
 
 export enum TextElement {
