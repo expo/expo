@@ -39,7 +39,7 @@ export default function App() {
         style={styles.video}
         source={{
           //Be careful this link is http, if your request configuration accepts only ssl, this video cannot be loaded. 
-          uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+          uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
         }}
         useNativeControls
         resizeMode="contain"
