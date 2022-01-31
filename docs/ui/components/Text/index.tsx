@@ -49,7 +49,7 @@ type TextComponentProps = HTMLAttributes<
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
-    const { className, testID, tag, weight: textWeight, theme: textTheme, ...rest } = props;
+    const { testID, tag, weight: textWeight, theme: textTheme, ...rest } = props;
     const TextElementTag = tag ?? Element;
 
     return (
@@ -60,7 +60,6 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
           textWeight && typography.utility.weight[textWeight],
           textTheme && { color: theme.text[textTheme] },
         ]}
-        className={className}
         data-testid={testID}
         {...rest}
       />
