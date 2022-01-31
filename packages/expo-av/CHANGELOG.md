@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove `INTERRUPTION_MODE_*` constants in favor of `InterruptionModeAndroid` and `InterruptionModeIOS` enums.
+- Remove `INTERRUPTION_MODE_*` constants in favor of `InterruptionModeAndroid` and `InterruptionModeIOS` enums. ([#16145](https://github.com/expo/expo/pull/16145) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
@@ -16,7 +16,7 @@
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
-- Add missing `AudioMode` type export.
+- Add missing `AudioMode` type export. ([#16145](https://github.com/expo/expo/pull/16145) by [@Simek](https://github.com/Simek))
 
 ## 10.2.0 — 2021-12-03
 
