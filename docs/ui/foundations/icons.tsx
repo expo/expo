@@ -1,4 +1,4 @@
-import { iconSize, palette, theme } from '@expo/styleguide';
+import { iconSize, theme } from '@expo/styleguide';
 import React from 'react';
 import { Clipboard } from 'react-feather';
 
@@ -13,25 +13,32 @@ export type IconProps = {
   height?: number | string;
 };
 
+// TODO(cedric): replace this file with direct @expo/styleguide imports once it has everything we need
 export {
   ChevronDownIcon,
   DiscordIcon,
+  DiscourseIcon,
   ErrorIcon,
-  InfoIcon,
-  WarningIcon,
   GithubIcon,
+  InfoIcon,
+  SparklesIcon,
   TwitterIcon,
+  WarningIcon,
 } from '@expo/styleguide';
 
-// TODO(cedric): check if we can move these to styleguide too
-
+// TODO(cedric): move to @expo/styleguide
 export const ClipboardIcon = (props: IconProps) => {
   const { size = iconSize.regular, color = theme.icon.default } = props;
   return <Clipboard size={size} color={color} />;
 };
 
+// TODO(cedric): move to @expo/styleguide
 export const SDKIcon = (props: IconProps) => {
-  const { size = iconSize.regular, stroke = theme.icon.default, fill = theme.palette.white } = props;
+  const {
+    size = iconSize.regular,
+    stroke = theme.icon.default,
+    fill = theme.palette.white,
+  } = props;
   return (
     <svg
       width={size}
@@ -148,50 +155,6 @@ export const SDKIcon = (props: IconProps) => {
         clipRule="evenodd"
         d="M14.8537 10.4247C14.9238 10.389 15.0082 10.3968 15.0705 10.4448L22.0444 15.8204C22.1104 15.8712 22.1387 15.9572 22.1159 16.0373L21.6356 17.7225C21.618 17.784 21.5725 17.8337 21.5128 17.8567C21.453 17.8796 21.386 17.8731 21.3317 17.8391L15.6008 14.2464L14.5029 21.3462C14.4932 21.4089 14.4549 21.4635 14.3991 21.4938C14.3434 21.5241 14.2767 21.5268 14.2188 21.5009L12.7155 20.8293C12.6377 20.7945 12.5897 20.7149 12.5954 20.6299L13.2141 11.3739C13.2189 11.3025 13.2608 11.2389 13.3245 11.2063L14.8537 10.4247ZM13.6126 11.5161L13.011 20.5155L14.1414 21.0205L15.2458 13.8786C15.2563 13.811 15.3001 13.7531 15.3623 13.7246C15.4246 13.6962 15.497 13.7009 15.555 13.7373L21.3184 17.3503L21.6866 16.0585L14.9241 10.8458L13.6126 11.5161Z"
         fill={stroke}
-      />
-    </svg>
-  );
-};
-
-export const FeatureIcon = (props: IconProps) => {
-  const { size = iconSize.regular, fill = theme.icon.default } = props;
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M11.443 9.91066L10.4314 12.5441C10.2719 12.9593 9.69026 12.9752 9.50834 12.5693L8.30526 9.88495C8.2521 9.76633 8.15482 9.67307 8.03406 9.62495L5.64331 8.67239C5.25209 8.51651 5.21702 7.9764 5.58481 7.77124L8.0775 6.38078C8.17156 6.32832 8.24616 6.24689 8.2902 6.14862L9.50834 3.43064C9.69026 3.02474 10.2719 3.04061 10.4314 3.45583L11.4561 6.12323C11.4998 6.23712 11.5837 6.33108 11.6919 6.38742L14.3351 7.76351C14.7194 7.96363 14.6846 8.52461 14.2784 8.67565L11.7355 9.62132C11.601 9.67133 11.4945 9.77671 11.443 9.91066Z"
-        fill={fill}
-      />
-      <path
-        d="M5.16224 4.9695L4.47605 6.65067C4.42134 6.78471 4.23351 6.79005 4.17127 6.65934L3.36241 4.96075C3.34385 4.92177 3.31088 4.89151 3.27045 4.87635L1.68189 4.28064C1.54709 4.23009 1.53547 4.04393 1.66293 3.97701L3.28433 3.12578C3.31623 3.10903 3.34185 3.0824 3.35734 3.04987L4.17127 1.34062C4.23351 1.20991 4.42134 1.21525 4.47605 1.34929L5.16664 3.04122C5.18208 3.07907 5.2109 3.10992 5.24761 3.12791L6.97564 3.97464C7.10848 4.03974 7.09699 4.23275 6.95737 4.28162L5.26149 4.87517C5.21642 4.89095 5.18029 4.92529 5.16224 4.9695Z"
-        fill={fill}
-      />
-      <path
-        d="M5.64153 13.2041L5.14514 14.594C5.0939 14.7375 4.89292 14.7427 4.83433 14.602L4.24838 13.1958C4.2317 13.1557 4.20006 13.1238 4.16019 13.1067L2.96641 12.595C2.84144 12.5415 2.82973 12.3689 2.94632 12.2989L4.17535 11.5615C4.20589 11.5432 4.22975 11.5156 4.24345 11.4827L4.83433 10.0646C4.89293 9.92397 5.0939 9.92917 5.14514 10.0726L5.6458 11.4745C5.65934 11.5124 5.68617 11.5442 5.72132 11.5638L7.02894 12.2961C7.15122 12.3646 7.13953 12.5442 7.00941 12.5963L5.73659 13.1054C5.69222 13.1231 5.6576 13.1591 5.64153 13.2041Z"
-        fill={fill}
-      />
-    </svg>
-  );
-};
-
-export const ForumsIcon = (props: IconProps) => {
-  const { size = iconSize.regular, fill = palette.dark.white } = props;
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M20 10C20 15.4022 15.7163 19.8039 10.3605 19.9937V20H0V10C0 4.47713 4.47715 0 10 0C15.5228 0 20 4.47713 20 10ZM16.2283 9.84906C16.2283 13.2059 13.5067 15.9272 10.1493 15.9272C9.24328 15.9272 8.38352 15.729 7.61107 15.3736L3.7882 16.1858L4.86945 12.8634C4.361 11.975 4.07039 10.946 4.07039 9.84906C4.07039 6.49222 6.79203 3.77096 10.1493 3.77096C13.5067 3.77096 16.2283 6.49222 16.2283 9.84906Z"
-        fill={fill}
       />
     </svg>
   );
