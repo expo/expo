@@ -2,7 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 import * as Server from './utils/server';
 
 const APK_PATH =
-  '/Users/eric/expo/updates-e2e/android/app/build/outputs/apk/release/app-release.apk';
+  '/Users/eric/Downloads/release/app-release.apk';
+  // TODO next: this apk failed because there was no embedded update, maybe try using SDK 44 template instead of local one
 
 const PACKAGE_NAME = 'dev.expo.updatese2e';
 const ACTIVITY_NAME = `${PACKAGE_NAME}/${PACKAGE_NAME}.MainActivity`;
