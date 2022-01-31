@@ -26,7 +26,7 @@ const BETA_VERSION = betaVersion ? `v${betaVersion}` : undefined;
  * It's caluclated from the `pages/versions` folder names, and uses the following sorting:
  *   - `unversioned`
  *   - `latest`
- *   - versions from new to old (e.g. 39, 38, 37)
+ *   - versions from new to old (e.g. v39.0.0, v38.0.0, v37.0.0)
  */
 const VERSIONS = versionDirectories
   .filter(dir => {
