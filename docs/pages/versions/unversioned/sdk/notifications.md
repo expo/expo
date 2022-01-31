@@ -431,7 +431,6 @@ Returns a `Promise` that resolves to an object with the following fields:
 #### Fetching the Expo push token and uploading it to a server
 
 ```ts
-import Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
 export async function registerForPushNotificationsAsync(userId: string) {
