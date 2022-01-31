@@ -31,7 +31,7 @@ export const ClipboardIcon = (props: IconProps) => {
 };
 
 export const SDKIcon = (props: IconProps) => {
-  const { size = iconSize.regular, stroke = theme.icon.default, fill = palette.dark.white } = props;
+  const { size = iconSize.regular, stroke = theme.icon.default, fill = theme.palette.white } = props;
   return (
     <svg
       width={size}
