@@ -1,5 +1,6 @@
 import * as Audio from './Audio';
 export { Audio };
+export { AudioMode, InterruptionModeAndroid, InterruptionModeIOS } from './Audio.types';
 export {
   default as Video,
   VideoProps,
