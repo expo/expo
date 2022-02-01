@@ -60,8 +60,8 @@ const iconStyle = css({
 const contentStyle = css({
   ...typography.body.paragraph,
   color: theme.text.default,
-  // Markdown adds unnecessary paragraphs within the callout component,
-  // we need to forcefully remove the bottom marging on the last (or only) paragraph
+  // Markdown adds paragraphs inside blockquotes, which is useful for multiline blockquotes.
+  // We need to forcefully remove the bottom margin on the last (or only) paragraph.
   'p:last-child': {
     marginBottom: '0 !important', // TODO(cedric): Find an alternative for important
   },

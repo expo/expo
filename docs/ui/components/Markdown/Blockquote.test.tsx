@@ -32,7 +32,7 @@ describe('Blockquote', () => {
     expect(getByText('Watch ❌ out')).toBeInTheDocument();
   });
 
-  // Markdown adds unnecessary paragraphs inside blockquotes.
+  // Markdown adds paragraphs inside blockquotes, which is useful for multiline blockquotes.
   // Test if the blockquote extracts the first emoji with paragraphs too.
   it('renders with emoji wrapped in paragraph', () => {
     const { getByTitle } = render(
