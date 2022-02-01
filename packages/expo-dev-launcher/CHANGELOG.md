@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix opening published projects on Android.
+
 ### 💡 Others
 
 ## 0.10.3 — 2022-02-01
