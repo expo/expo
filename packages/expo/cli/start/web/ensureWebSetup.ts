@@ -32,7 +32,7 @@ export async function ensureWebSupportSetupAsync(
     return false;
   }
   hasChecked = true;
-
+  Log.debug('Ensuring web support is setup');
   const result = await shouldSetupWebSupportAsync(projectRoot);
 
   if ('failureReason' in result) {

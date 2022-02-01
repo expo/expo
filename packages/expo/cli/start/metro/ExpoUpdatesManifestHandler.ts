@@ -6,33 +6,20 @@ import http from 'http';
 import nullthrows from 'nullthrows';
 import { parse } from 'url';
 import { v4 as uuidv4 } from 'uuid';
+
 import * as Log from '../../log';
-
-import { constructHostUriAsync, stripJSExtension } from '../serverUrl';
-import {
-  getBundleUrlAsync,
-  getExpoGoConfig,
-  getPackagerOptionsAsync,
-  stripPort,
-} from './ManifestHandler';
-import { resolveManifestAssets } from './ProjectAssets';
-import { resolveEntryPoint } from './resolveEntryPoint';
-import UserSettings from '../api/UserSettings';
+import { logEvent } from '../../utils/analytics/rudderstackClient';
+import { apiClient } from '../../utils/api';
+import { stripPort } from '../../utils/url';
+import { ensureLoggedInAsync } from '../../utils/user/actions';
+import { ANONYMOUS_USERNAME, getUserAsync } from '../../utils/user/user';
 import ProcessSettings from '../api/ProcessSettings';
-
-function getPlatformFromRequest(req: express.Request | http.IncomingMessage): 'android' | 'ios' {
-  const url = req.url ? parse(req.url, /* parseQueryString */ true) : null;
-  const platform = url?.query.platform || req.headers['expo-platform'];
-  if (!platform) {
-    throw new Error('Must specify expo-platform header or query parameter');
-  }
-
-  const stringifiedPlatform = String(platform);
-  if (!['android', 'ios'].includes(stringifiedPlatform)) {
-    throw new Error(`platform must be "android" or "ios". Recieved: "${platform}"`);
-  }
-  return stringifiedPlatform as 'android' | 'ios';
-}
+import UserSettings from '../api/UserSettings';
+import { constructHostUriAsync, stripJSExtension } from '../serverUrl';
+import { getBundleUrlAsync, getExpoGoConfig } from './ManifestHandler';
+import { getPlatformFromRequest } from './middleware';
+import { resolveManifestAssets } from './resolveAssets';
+import { resolveEntryPoint } from './resolveEntryPoint';
 
 /**
  * Whether an anonymous scope key should be used. It should be used when:
@@ -47,28 +34,25 @@ async function shouldUseAnonymousManifestAsync(
     return true;
   }
 
-  const currentSession = await UserManager.getSessionAsync();
-  if (!currentSession) {
-    return true;
-  }
-
-  return false;
+  return !(await getUserAsync());
 }
 
 async function getScopeKeyForProjectIdAsync(projectId: string): Promise<string> {
-  const user = await UserManager.ensureLoggedInAsync();
-  const project = await ApiV2.clientForUser(user).getAsync(
-    `projects/${encodeURIComponent(projectId)}`
-  );
-  return project.scopeKey;
+  await ensureLoggedInAsync();
+  const { data } = await apiClient.get(`projects/${encodeURIComponent(projectId)}`).json();
+  return data.scopeKey;
 }
 
 async function signManifestAsync(manifest: ExpoUpdatesManifest): Promise<string> {
-  const user = await UserManager.ensureLoggedInAsync();
-  const { signature } = await ApiV2.clientForUser(user).postAsync('manifest/eas/sign', {
-    manifest: manifest as any as JSONObject,
-  });
-  return signature;
+  await ensureLoggedInAsync();
+  const { data } = await apiClient
+    .post('manifest/eas/sign', {
+      json: {
+        manifest: manifest as any as JSONObject,
+      },
+    })
+    .json();
+  return data.signature;
 }
 
 export async function getManifestResponseAsync({
@@ -93,14 +77,15 @@ export async function getManifestResponseAsync({
   headers.set('content-type', 'application/json');
 
   const hostname = stripPort(host);
-  const [projectSettings, bundleUrlPackagerOpts] = await getPackagerOptionsAsync(projectRoot);
   const projectConfig = getConfig(projectRoot);
   const entryPoint = resolveEntryPoint(projectRoot, platform, projectConfig);
   const mainModuleName = stripJSExtension(entryPoint);
   const expoConfig = projectConfig.exp;
   const expoGoConfig = await getExpoGoConfig({
     projectRoot,
-    projectSettings,
+    packagerOpts: {
+      dev: ProcessSettings.isDevMode,
+    },
     mainModuleName,
     hostname,
   });
@@ -115,14 +100,11 @@ export async function getManifestResponseAsync({
   const bundleUrl = await getBundleUrlAsync({
     projectRoot,
     platform,
-    projectSettings,
-    bundleUrlPackagerOpts,
     mainModuleName,
     hostname,
   });
 
-  await resolveManifestAssets({
-    projectRoot,
+  await resolveManifestAssets(projectRoot, {
     manifest: expoConfig,
     async resolver(path) {
       return bundleUrl!.match(/^https?:\/\/.*?\//)![0] + 'assets/' + path;
@@ -201,7 +183,7 @@ export function getManifestHandler(projectRoot: string) {
       }
       res.end(JSON.stringify(body));
 
-      Analytics.logEvent('Serve Expo Updates Manifest', {
+      logEvent('Serve Expo Updates Manifest', {
         developerTool: ProcessSettings.developerTool,
         runtimeVersion: (body as any).runtimeVersion,
       });

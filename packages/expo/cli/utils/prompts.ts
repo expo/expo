@@ -13,11 +13,11 @@ export interface ExpoChoice<T> extends Choice {
 
 export { PromptType };
 
-type PromptOptions = { nonInteractiveHelp?: string } & Options;
+type PromptOptions = { nonInteractiveHelp?: string; isCancelable?: boolean } & Options;
 
 export default async function prompt(
   questions: Question | Question[],
-  { nonInteractiveHelp, ...options }: PromptOptions = {}
+  { nonInteractiveHelp, isCancelable, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
   if (CI && questions.length !== 0) {
@@ -35,18 +35,23 @@ export default async function prompt(
     }
     throw new CommandError('NON_INTERACTIVE', message);
   }
+
   pauseInteractions();
+  try {
+    const results = await prompts(questions, {
+      onCancel() {
+        if (isCancelable) {
+          return;
+        }
+        throw new AbortCommandError();
+      },
+      ...options,
+    });
 
-  const results = await prompts(questions, {
-    onCancel() {
-      throw new AbortCommandError();
-    },
-    ...options,
-  });
-
-  resumeInteractions();
-
-  return results;
+    return results;
+  } finally {
+    resumeInteractions();
+  }
 }
 
 export type NamelessQuestion = Omit<Question<'value'>, 'name' | 'type'>;
@@ -91,9 +96,7 @@ export function addInteractionListener(callback: InteractionCallback) {
 export function removeInteractionListener(callback: InteractionCallback) {
   const listenerIndex = listeners.findIndex((_callback) => _callback === callback);
   if (listenerIndex === -1) {
-    throw new Error(
-      'Logger.removeInteractionListener(): cannot remove an unregistered event listener.'
-    );
+    throw new Error('removeInteractionListener(): cannot remove an unregistered event listener.');
   }
   listeners.splice(listenerIndex, 1);
 }

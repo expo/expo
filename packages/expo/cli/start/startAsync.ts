@@ -1,10 +1,10 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
-import { UnifiedAnalytics } from 'xdl';
 
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
+import { logEvent } from '../utils/analytics/rudderstackClient';
 import StatusEventEmitter from '../utils/analytics/StatusEventEmitter';
 import { CI } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
@@ -13,18 +13,31 @@ import { getAllSpinners, ora } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { getProgressBar, setProgressBar } from '../utils/progress';
 import * as Android from './android/Android';
+import ProcessSettings from './api/ProcessSettings';
 import { validateDependenciesVersionsAsync } from './dependencies/validateDependenciesVersions';
 import * as Project from './devServer';
 import { printQRCode } from './interface/qr';
 import * as TerminalUI from './interface/TerminalUI';
 import * as Simulator from './ios/Simulator';
 import * as LoadingPageHandler from './metro/LoadingPageHandler';
-import { StartOptions } from './metro/startDevServerAsync';
+import { StartOptions } from './metro/MetroDevServer';
 import { Options, resolvePortsAsync } from './resolveOptions';
 import { constructDeepLinkAsync } from './serverUrl';
 import { ensureTypeScriptSetupAsync } from './typescript/ensureTypeScriptSetup';
 import { ensureWebSupportSetupAsync } from './web/ensureWebSetup';
 import * as Webpack from './webpack/Webpack';
+import * as WebpackDevServer from './webpack/WebpackDevServer';
+
+export function isDevClientPackageInstalled(projectRoot: string) {
+  try {
+    // we check if `expo-dev-launcher` is installed instead of `expo-dev-client`
+    // because someone could install only launcher.
+    resolveFrom(projectRoot, 'expo-dev-launcher');
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function startAsync(
   projectRoot: string,
@@ -71,12 +84,6 @@ export async function startAsync(
     track(projectRoot, exp);
   }
 
-  // Optionally open the developer tools UI.
-  // await profile(tryOpeningDevToolsAsync)(rootPath, {
-  //   exp,
-  //   options,
-  // });
-
   await profile(ensureTypeScriptSetupAsync)(projectRoot);
 
   if (!settings.webOnly) {
@@ -98,14 +105,14 @@ export async function startAsync(
       const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
       StatusEventEmitter.once('deviceLogReceive', () => {
         // Send the 'ready' event once the app is running in a device.
-        UnifiedAnalytics.logEvent('dev client start command', {
+        logEvent('dev client start command', {
           status: 'ready',
           platform,
           ...getDevClientProperties(projectRoot, exp),
         });
       });
 
-      UnifiedAnalytics.logEvent('dev client start command', {
+      logEvent('dev client start command', {
         status: 'started',
         platform,
         ...getDevClientProperties(projectRoot, exp),
@@ -115,24 +122,13 @@ export async function startAsync(
   await profile(Project.startAsync)(projectRoot, { ...startOptions, ...multiBundlerSettings, exp });
 
   // Send to option...
-  const url = await profile(constructDeepLinkAsync)(projectRoot).catch((error) => {
+  const url: string | null = await profile(constructDeepLinkAsync)(projectRoot).catch((error) => {
     // TODO: Maybe there's a better way to do this
     if (!options.devClient || error.code !== 'NO_DEV_CLIENT_SCHEME') {
       throw error;
     }
     return null;
   });
-
-  // if (options.sendTo) {
-  //   if (url) {
-  //     const recipient = await profile(sendTo.getRecipient)(options.sendTo);
-  //     if (recipient) {
-  //       await sendTo.sendUrlAsync(url, recipient);
-  //     }
-  //   } else {
-  //     Log.warn('Cannot send URL because the linking URI cannot be resolved');
-  //   }
-  // }
 
   // Open project on devices.
   await profile(openPlatformsAsync)(projectRoot, options, settings);
@@ -157,7 +153,7 @@ export async function startAsync(
     );
   }
   if (options.devClient) {
-    UnifiedAnalytics.logEvent('dev client start command', {
+    logEvent('dev client start command', {
       status: 'ready',
       ...getDevClientProperties(projectRoot, exp),
     });
@@ -165,16 +161,16 @@ export async function startAsync(
 }
 
 function track(projectRoot: string, exp: ExpoConfig) {
-  UnifiedAnalytics.logEvent('dev client start command', {
+  logEvent('dev client start command', {
     status: 'started',
     ...getDevClientProperties(projectRoot, exp),
   });
   installExitHooks(() => {
-    UnifiedAnalytics.logEvent('dev client start command', {
+    logEvent('dev client start command', {
       status: 'finished',
       ...getDevClientProperties(projectRoot, exp),
     });
-    UnifiedAnalytics.flush();
+    // UnifiedAnalytics.flush();
   });
 }
 
@@ -188,41 +184,23 @@ export function parseStartOptions(
     webpackPort: settings.webpackPort,
     nonInteractive: CI,
     platforms: exp.platforms ?? ['ios', 'android', 'web'],
+    maxWorkers: options.maxWorkers,
+    // reset: options.clear,
+    webOnly: settings.webOnly,
+    devClient: options.devClient,
+    isWebSocketsEnabled: !settings.webOnly || WebpackDevServer.isTargetingNative(),
   };
 
-  if (options.clear) {
-    startOpts.reset = true;
-  }
-
-  if (settings.webOnly) {
-    startOpts.webOnly = true;
-  }
-
-  if (options.maxWorkers) {
-    startOpts.maxWorkers = options.maxWorkers;
-  }
-
-  if (options.devClient) {
-    startOpts.devClient = true;
-  }
-
-  if (options.forceManifestType) {
-    startOpts.forceManifestType = options.forceManifestType;
-  } else {
+  if (!options.forceManifestType) {
     const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
     const updatesUrl = exp.updates?.url;
     const isEasUpdatesUrl = updatesUrl && easUpdatesUrlRegex.test(updatesUrl);
 
-    startOpts.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
-  }
-
-  if (!startOpts.webOnly || Webpack.isTargetingNative()) {
-    startOpts.isWebSocketsEnabled = true;
+    ProcessSettings.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
   }
 
   return startOpts;
 }
-
 async function openPlatformsAsync(
   projectRoot: string,
   options: Pick<Options, 'devClient' | 'ios' | 'android' | 'web'>,
@@ -232,10 +210,9 @@ async function openPlatformsAsync(
     (async () => {
       if (options.android) {
         if (settings.webOnly) {
-          return await Android.openWebProjectAsync({ projectRoot });
+          return await Android.openWebProjectAsync(projectRoot);
         } else {
-          return await Android.openProjectAsync({
-            projectRoot,
+          return await Android.openProjectAsync(projectRoot, {
             devClient: options.devClient ?? false,
           });
         }
@@ -245,10 +222,9 @@ async function openPlatformsAsync(
     (async () => {
       if (options.ios) {
         if (settings.webOnly) {
-          return await Simulator.openWebProjectAsync({ projectRoot, shouldPrompt: false });
+          return await Simulator.openWebProjectAsync(projectRoot, { shouldPrompt: false });
         } else {
-          return await Simulator.openProjectAsync({
-            projectRoot,
+          return await Simulator.openProjectAsync(projectRoot, {
             devClient: options.devClient ?? false,
             shouldPrompt: false,
           });

@@ -72,6 +72,7 @@
     "@expo/vector-icons": "^12.0.4",
     "@expo/dev-server": "0.1.103",
     "@expo/devcert": "^1.0.0",
+    "@expo/webpack-config": "0.16.16",
     "@urql/core": "2.3.1",
     "@urql/exchange-retry": "0.3.0",
     "arg": "4.1.0",
@@ -113,7 +114,9 @@
     "tempy": "^0.7.1",
     "terminal-link": "^2.1.1",
     "uuid": "^3.4.0",
-    "wrap-ansi": "^7.0.0"
+    "wrap-ansi": "^7.0.0",
+    "webpack": "4.43.0",
+    "webpack-dev-server": "3.11.0"
   },
   "optionalDependencies": {
     "expo-error-recovery": "~3.0.4"
@@ -144,6 +147,9 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-native": "0.66.4",
-    "taskr": "1.1.0"
+    "taskr": "1.1.0",
+    "@types/webpack": "4.41.18",
+    "@types/webpack-dev-server": "3.11.0",
+    "@expo/ngrok": "4.1.0"
   }
 }

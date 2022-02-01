@@ -8,10 +8,8 @@ import * as Log from '../log';
 // List of files that are being observed.
 const watchingFiles: string[] = [];
 
-/**
- * Get the babel configuration file for the project.
- */
-export function getProjectBabelConfigFile(projectRoot: string): string | undefined {
+/** Get the babel configuration file for the project. */
+function getProjectBabelConfigFile(projectRoot: string): string | undefined {
   return (
     resolveFrom.silent(projectRoot, './babel.config.js') ||
     resolveFrom.silent(projectRoot, './.babelrc') ||
@@ -27,10 +25,8 @@ export function watchBabelConfigForProject(projectRoot: string) {
   return configPath;
 }
 
-/**
- * Watch the babel configuration file and warn to reload the CLI if it changes.
- */
-export function watchBabelConfig(projectRoot: string, configPath: string): void {
+/** Watch the babel configuration file and warn to reload the CLI if it changes. */
+function watchBabelConfig(projectRoot: string, configPath: string): void {
   if (watchingFiles.includes(configPath)) {
     return;
   }

@@ -2,6 +2,7 @@ import bunyan from '@expo/bunyan';
 import path from 'path';
 
 import * as Log from '../log';
+import { EXPO_DEBUG } from '../utils/env';
 
 class ConsoleRawStream {
   write(record: any) {
@@ -18,14 +19,6 @@ class ConsoleRawStream {
     }
   }
 }
-
-export const LoadingEvent = {
-  START_LOADING: 'START_LOADING',
-  STOP_LOADING: 'STOP_LOADING',
-  START_PROGRESS_BAR: 'START_PROGRESS_BAR',
-  TICK_PROGRESS_BAR: 'TICK_PROGRESS_BAR',
-  STOP_PROGRESS_BAR: 'STOP_PROGRESS_BAR',
-};
 
 const logger = bunyan.createLogger({
   name: 'expo',
@@ -65,6 +58,26 @@ function _getLogger(projectRoot: string): bunyan {
       project: path.resolve(projectRoot),
     });
     _projectRootToLogger[projectRoot] = logger;
+
+    // const stream: bunyan.Stream = {
+    //   level: EXPO_DEBUG ? 'debug' : 'info',
+    //   stream: {
+    //     write(chunk: any) {
+    //       if (chunk.level === bunyan.INFO) {
+    //         Log.log(chunk.msg);
+    //       } else if (chunk.level === bunyan.WARN) {
+    //         Log.warn(chunk.msg);
+    //       } else if (chunk.level === bunyan.DEBUG) {
+    //         Log.debug(chunk.msg);
+    //       } else if (chunk.level >= bunyan.ERROR) {
+    //         Log.error(chunk.msg);
+    //       }
+    //     },
+    //   },
+    //   type: 'raw',
+    // };
+    // Logger.notifications.addStream(stream);
+    // Logger.global.addStream(stream);
   }
 
   return logger;

@@ -1,13 +1,13 @@
 import { ExpoConfig } from '@expo/config';
 import { BundleAssetWithFileHashes } from '@expo/dev-server';
-import fs from 'fs-extra';
-// TODO: NO LODASH
-import get from 'lodash/get';
-import set from 'lodash/set';
+import fs from 'fs/promises';
 import path from 'path';
 
 import * as Log from '../../log';
+import { fileExistsAsync } from '../../utils/dir';
 import { CommandError } from '../../utils/errors';
+import { get, set } from '../../utils/obj';
+import { isUrl } from '../../utils/url';
 import * as ExpoConfigSchema from './ExpoConfigSchema';
 
 type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
@@ -42,23 +42,24 @@ export async function resolveGoogleServicesFile(projectRoot: string, manifest: E
  * @param manifest
  * @returns Asset fields that the user has set like ["icon", "splash.image", ...]
  */
-async function getAssetFieldPathsForManifestAsync(manifest: ExpoConfig): Promise<string[]> {
+export async function getAssetFieldPathsForManifestAsync(manifest: ExpoConfig): Promise<string[]> {
   // String array like ["icon", "notification.icon", "loading.icon", "loading.backgroundImage", "ios.icon", ...]
   const sdkAssetFieldPaths = await ExpoConfigSchema.getAssetSchemasAsync(manifest.sdkVersion);
   return sdkAssetFieldPaths.filter((assetSchema) => get(manifest, assetSchema));
 }
 
-export async function resolveManifestAssets({
-  projectRoot,
-  manifest,
-  resolver,
-  strict = false,
-}: {
-  projectRoot: string;
-  manifest: ExpoConfig;
-  resolver: (assetPath: string) => Promise<string>;
-  strict?: boolean;
-}) {
+export async function resolveManifestAssets(
+  projectRoot: string,
+  {
+    manifest,
+    resolver,
+    strict = false,
+  }: {
+    manifest: ExpoConfig;
+    resolver: (assetPath: string) => Promise<string>;
+    strict?: boolean;
+  }
+) {
   try {
     // Asset fields that the user has set like ["icon", "splash.image"]
     const assetSchemas = await getAssetFieldPathsForManifestAsync(manifest);
@@ -66,17 +67,24 @@ export async function resolveManifestAssets({
     const urls = await Promise.all(
       assetSchemas.map(async (manifestField) => {
         const pathOrURL = get(manifest, manifestField);
-        if (/^https?:\/\//.test(pathOrURL)) {
-          // It's a remote URL
+        // URL
+        if (isUrl(pathOrURL)) {
           return pathOrURL;
-        } else if (fs.existsSync(path.resolve(projectRoot, pathOrURL))) {
-          return await resolver(pathOrURL);
-        } else {
-          const err: ManifestResolutionError = new Error('Could not resolve local asset.');
-          err.localAssetPath = pathOrURL;
-          err.manifestField = manifestField;
-          throw err;
         }
+
+        // File path
+        if (await fileExistsAsync(path.resolve(projectRoot, pathOrURL))) {
+          return await resolver(pathOrURL);
+        }
+
+        // Unknown
+        const err: ManifestResolutionError = new CommandError(
+          'MANIFEST_ASSET',
+          'Could not resolve local asset: ' + pathOrURL
+        );
+        err.localAssetPath = pathOrURL;
+        err.manifestField = manifestField;
+        throw err;
       })
     );
 
@@ -93,6 +101,9 @@ export async function resolveManifestAssets({
       logMethod(
         `Unable to resolve asset "${e.localAssetPath}" from "${e.manifestField}" in your app.json or app.config.js`
       );
+      if (strict) {
+        throw e;
+      }
     } else {
       logMethod(`Warning: Unable to resolve manifest assets. Icons might not work. ${e.message}.`);
     }

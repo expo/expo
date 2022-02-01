@@ -163,28 +163,28 @@ describe('getManifestResponseAsync', () => {
     // console.log(res.exp);
 
     // Values starting with EXPO_ or REACT_NATIVE_ get added to the env and exposed to expo-constants
-    expect(res.exp.env.EXPO_SOME_TEST_VALUE).toBe('true');
-    expect(res.exp.env.REACT_NATIVE_TEST_VALUE).toBe('true');
+    expect(res.manifest.env.EXPO_SOME_TEST_VALUE).toBe('true');
+    expect(res.manifest.env.REACT_NATIVE_TEST_VALUE).toBe('true');
     // This value is blacklisted
-    expect(res.exp.env.EXPO_APPLE_PASSWORD).not.toBeDefined();
+    expect(res.manifest.env.EXPO_APPLE_PASSWORD).not.toBeDefined();
     // Users should use app.config.js + extras now so test that it always works
-    expect((res.exp as any).extras.myExtra).toBe('123');
+    expect((res.manifest as any).extras.myExtra).toBe('123');
 
     // Ensure the bundle URL is built correctly
-    expect(res.exp.bundleUrl).toBe(
+    expect(res.manifest.bundleUrl).toBe(
       'http://127.0.0.1:80/index.bundle?platform=ios&dev=true&hot=false&minify=false'
     );
-    expect(res.exp.debuggerHost).toBe('127.0.0.1:80');
-    expect(res.exp.logUrl).toBe('http://127.0.0.1:80/logs');
-    expect(res.exp.hostUri).toBe('127.0.0.1:80');
+    expect(res.manifest.debuggerHost).toBe('127.0.0.1:80');
+    expect(res.manifest.logUrl).toBe('http://127.0.0.1:80/logs');
+    expect(res.manifest.hostUri).toBe('127.0.0.1:80');
 
-    expect(res.exp.mainModuleName).toBe('index');
-    expect(res.exp.packagerOpts).toBeDefined();
+    expect(res.manifest.mainModuleName).toBe('index');
+    expect(res.manifest.packagerOpts).toBeDefined();
     // Required for various tools
-    expect(res.exp.developer.projectRoot).toBe('/alpha');
+    expect(res.manifest.developer.projectRoot).toBe('/alpha');
 
     // ProjectAssets gathered URLs
-    expect((res.exp as any).iconUrl).toBe('http://127.0.0.1:80/assets/./icon.png');
-    expect(res.exp.splash.imageUrl).toBe('http://127.0.0.1:80/assets/./assets/splash.png');
+    expect((res.manifest as any).iconUrl).toBe('http://127.0.0.1:80/assets/./icon.png');
+    expect(res.manifest.splash.imageUrl).toBe('http://127.0.0.1:80/assets/./assets/splash.png');
   });
 });

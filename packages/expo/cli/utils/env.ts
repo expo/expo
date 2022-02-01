@@ -54,3 +54,5 @@ export const XDL_HOST = string('XDL_HOST', 'exp.host');
 export const XDL_SCHEME = string('XDL_SCHEME', 'https');
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
+
+// TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD

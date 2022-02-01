@@ -1,83 +1,59 @@
 import spawnAsync from '@expo/spawn-async';
-import axios, { AxiosRequestConfig, Canceler } from 'axios';
 import fs from 'fs-extra';
+import fetch from 'node-fetch';
 import path from 'path';
+import { Stream } from 'stream';
 import tar from 'tar';
+import { promisify } from 'util';
 
 import UserSettings from '../start/api/UserSettings';
+import * as Versions from '../start/api/Versions';
+import { CommandError } from './errors';
 
 const TIMER_DURATION = 30000;
-const TIMEOUT = 3600000;
 
 type ProgressCallback = (progressPercentage: number) => void;
-type RetryCallback = (cancel: Canceler) => void;
+const pipeline = promisify(Stream.pipeline);
 
 async function _downloadAsync(
   url: string,
   outputPath: string,
-  progressFunction?: ProgressCallback,
-  retryFunction?: RetryCallback
+  progressFunction?: ProgressCallback
 ) {
-  let promptShown = false;
-  let currentProgress = 0;
+  const res = await fetch(url, { timeout: TIMER_DURATION });
+  if (!res.ok) {
+    throw new CommandError(`Unexpected response: ${res.statusText}. From url: ${url}`);
+  }
+  const totalDownloadSize = res.headers.get('Content-Length');
+  const resourceSize = parseInt(totalDownloadSize, 10);
 
-  const { cancel, token } = axios.CancelToken.source();
+  /* Keep track of download progress */
+  res.body.on('readable', () => {
+    let chunk;
+    let recievedLength: number = 0;
+    let downloadProgressAsPercentage: number = 0;
 
-  let warningTimer = setTimeout(() => {
-    if (retryFunction) {
-      retryFunction(cancel);
+    while (null !== (chunk = res.body.read())) {
+      console.log(`Received ${chunk.length} bytes of data.`);
+      recievedLength += chunk.length;
+      console.log('recieved', recievedLength, 'of', resourceSize, 'bytes');
+
+      downloadProgressAsPercentage = Math.floor((recievedLength / resourceSize) * 100);
+      console.log('Download percentage:', downloadProgressAsPercentage, '%');
+      if (progressFunction) {
+        progressFunction(downloadProgressAsPercentage);
+      }
     }
-    promptShown = true;
-  }, TIMER_DURATION);
-
-  const tmpPath = `${outputPath}.download`;
-  const config: AxiosRequestConfig = {
-    timeout: TIMEOUT,
-    responseType: 'stream',
-    cancelToken: token,
-  };
-  const response = await axios(url, config);
-  await new Promise<void>((resolve) => {
-    const totalDownloadSize = response.data.headers['content-length'];
-    let downloadProgress = 0;
-    response.data
-      .on('data', (chunk: Buffer) => {
-        downloadProgress += chunk.length;
-        const roundedProgress = Math.floor((downloadProgress / totalDownloadSize) * 100);
-        if (currentProgress !== roundedProgress) {
-          currentProgress = roundedProgress;
-          clearTimeout(warningTimer);
-          if (!promptShown) {
-            warningTimer = setTimeout(() => {
-              if (retryFunction) {
-                retryFunction(cancel);
-              }
-              promptShown = true;
-            }, TIMER_DURATION);
-          }
-          if (progressFunction) {
-            progressFunction(roundedProgress);
-          }
-        }
-      })
-      .on('end', () => {
-        clearTimeout(warningTimer);
-        if (progressFunction && currentProgress !== 100) {
-          progressFunction(100);
-        }
-        resolve();
-      })
-      .pipe(fs.createWriteStream(tmpPath));
   });
-  await fs.rename(tmpPath, outputPath);
+
+  return pipeline(res.body, fs.createWriteStream(outputPath));
 }
 
 export async function downloadAppAsync(
   url: string,
   outputPath: string,
   { extract = false } = {},
-  progressFunction?: ProgressCallback,
-  retryFunction?: RetryCallback
+  progressFunction?: ProgressCallback
 ): Promise<void> {
   if (extract) {
     const dotExpoHomeDirectory = UserSettings.getDirectory();
@@ -86,7 +62,7 @@ export async function downloadAppAsync(
     await extractAsync(tmpPath, outputPath);
     fs.removeSync(tmpPath);
   } else {
-    await _downloadAsync(url, outputPath, progressFunction, retryFunction);
+    await _downloadAsync(url, outputPath, progressFunction);
   }
 }
 
@@ -105,4 +81,31 @@ export async function extractAsync(archive: string, dir: string): Promise<void> 
   // tar node module has previously had problems with big files, and seems to
   // be slower, so only use it as a backup.
   await tar.extract({ file: archive, cwd: dir });
+}
+
+function _apkCacheDirectory() {
+  const dotExpoHomeDirectory = UserSettings.getDirectory();
+  const dir = path.join(dotExpoHomeDirectory, 'android-apk-cache');
+  fs.mkdirpSync(dir);
+  return dir;
+}
+
+export async function downloadApkAsync(
+  url?: string,
+  downloadProgressCallback?: (roundedProgress: number) => void
+) {
+  if (!url) {
+    const versions = await Versions.getVersionsAsync();
+    url = versions.androidUrl;
+  }
+
+  const filename = path.parse(url).name;
+  const apkPath = path.join(_apkCacheDirectory(), `${filename}.apk`);
+
+  if (await fs.pathExists(apkPath)) {
+    return apkPath;
+  }
+
+  await downloadAppAsync(url, apkPath, undefined, downloadProgressCallback);
+  return apkPath;
 }

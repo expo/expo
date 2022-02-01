@@ -21,10 +21,11 @@ export function resolveEntryPoint(
   const platforms: string[] = [];
 
   const entry = getEntryPoint(projectRoot, ['./index'], platforms, projectConfig);
-  if (!entry)
+  if (!entry) {
     throw new CommandError(
       `The project entry file could not be resolved. Please either define it in the \`package.json\` (main), \`app.json\` (expo.entryPoint), create an \`index.js\`, or install the \`expo\` package.`
     );
+  }
 
   return path.relative(projectRoot, entry);
 }

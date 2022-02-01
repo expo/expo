@@ -9,7 +9,7 @@
 import plist from '@expo/plist';
 import type * as net from 'net';
 
-import { parsePlistBuffer } from '../../../../../utils/parseBinaryPlistAsync';
+import { parsePlistBuffer } from '../../../../../../utils/plist';
 
 const BPLIST_MAGIC = Buffer.from('bplist00');
 

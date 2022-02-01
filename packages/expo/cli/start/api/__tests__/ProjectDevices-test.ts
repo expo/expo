@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import * as ProjectSettings from '../ProjectSettings';
+import * as ProjectDevices from '../ProjectDevices';
 
 describe('devices info', () => {
   let projectRoot: string;
@@ -11,7 +11,7 @@ describe('devices info', () => {
   });
 
   afterEach(async () => {
-    await ProjectSettings.setDevicesInfoAsync(projectRoot, { devices: [] });
+    await ProjectDevices.setDevicesInfoAsync(projectRoot, { devices: [] });
   });
 
   afterAll(() => {
@@ -21,7 +21,7 @@ describe('devices info', () => {
   });
 
   it('should persist device info to disk', async () => {
-    await ProjectSettings.saveDevicesAsync(projectRoot, 'test-device-id');
+    await ProjectDevices.saveDevicesAsync(projectRoot, 'test-device-id');
 
     const file = path.join(projectRoot, '.expo', 'devices.json');
     expect(fs.existsSync(file)).toBe(true);
@@ -32,8 +32,8 @@ describe('devices info', () => {
   });
 
   it('should save an array of devices', async () => {
-    await ProjectSettings.saveDevicesAsync(projectRoot, ['device-id-1', 'device-id-2']);
-    const { devices } = await ProjectSettings.getDevicesInfoAsync(projectRoot);
+    await ProjectDevices.saveDevicesAsync(projectRoot, ['device-id-1', 'device-id-2']);
+    const { devices } = await ProjectDevices.getDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(2);
     expect(devices.some((device) => device.installationId === 'device-id-1')).toBe(true);
     expect(devices.some((device) => device.installationId === 'device-id-2')).toBe(true);
@@ -44,8 +44,8 @@ describe('devices info', () => {
     for (let i = 0; i < 11; i++) {
       deviceIds.push(`device-id-${i}`);
     }
-    await ProjectSettings.saveDevicesAsync(projectRoot, deviceIds);
-    const { devices } = await ProjectSettings.getDevicesInfoAsync(projectRoot);
+    await ProjectDevices.saveDevicesAsync(projectRoot, deviceIds);
+    const { devices } = await ProjectDevices.getDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(10);
   });
 
@@ -58,12 +58,12 @@ describe('devices info', () => {
     for (let i = 0; i < 9; i++) {
       devicesInfo.push({ installationId: `device-id-${i}`, lastUsed: earlierTime });
     }
-    await ProjectSettings.setDevicesInfoAsync(projectRoot, {
+    await ProjectDevices.setDevicesInfoAsync(projectRoot, {
       devices: devicesInfo,
     });
 
-    await ProjectSettings.saveDevicesAsync(projectRoot, 'newest-device');
-    const { devices } = await ProjectSettings.getDevicesInfoAsync(projectRoot);
+    await ProjectDevices.saveDevicesAsync(projectRoot, 'newest-device');
+    const { devices } = await ProjectDevices.getDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(10);
     expect(devices[0].installationId).toBe('newest-device');
     expect(devices.some((device) => device.installationId === 'oldest-device')).toBe(false);
@@ -72,11 +72,11 @@ describe('devices info', () => {
   it('should remove any devices last used before 30 days ago', async () => {
     const currentTime = new Date().getTime();
     const time30DaysAnd1SecondAgo = currentTime - 30 * 24 * 60 * 60 * 1000 - 1000;
-    await ProjectSettings.setDevicesInfoAsync(projectRoot, {
+    await ProjectDevices.setDevicesInfoAsync(projectRoot, {
       devices: [{ installationId: 'very-old-device-id', lastUsed: time30DaysAnd1SecondAgo }],
     });
-    await ProjectSettings.saveDevicesAsync(projectRoot, 'new-device-id');
-    const { devices } = await ProjectSettings.getDevicesInfoAsync(projectRoot);
+    await ProjectDevices.saveDevicesAsync(projectRoot, 'new-device-id');
+    const { devices } = await ProjectDevices.getDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(1);
     expect(devices[0].installationId).toBe('new-device-id');
   });
@@ -84,14 +84,14 @@ describe('devices info', () => {
   it('should remove old devices when reading for the first time from disk', async () => {
     const currentTime = new Date().getTime();
     const time30DaysAnd1SecondAgo = currentTime - 30 * 24 * 60 * 60 * 1000 - 1000;
-    await ProjectSettings.setDevicesInfoAsync(projectRoot, {
+    await ProjectDevices.setDevicesInfoAsync(projectRoot, {
       devices: [
         { installationId: 'very-old-device-id', lastUsed: time30DaysAnd1SecondAgo },
         { installationId: 'new-device-id', lastUsed: currentTime },
       ],
     });
     // use readDeviceInfoAsync to bypass memoized devices and read from disk
-    const { devices } = await ProjectSettings.readDevicesInfoAsync(projectRoot);
+    const { devices } = await ProjectDevices.readDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(1);
     expect(devices[0].installationId).toBe('new-device-id');
   });

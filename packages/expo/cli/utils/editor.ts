@@ -11,11 +11,8 @@ export function guessEditor() {
   }
 }
 
-export async function openInEditorAsync(
-  path: string,
-  options: { editor?: string } = {}
-): Promise<boolean> {
-  const editor = options.editor ? editors.getEditor(options.editor) : guessEditor();
+export async function openInEditorAsync(path: string, inputEditor?: string): Promise<boolean> {
+  const editor = inputEditor ? editors.getEditor(inputEditor) : guessEditor();
 
   Log.debug(`Opening ${path} in ${editor.name} (bin: ${editor.binary}, id: ${editor.id})`);
   if (editor) {
@@ -25,11 +22,11 @@ export async function openInEditorAsync(
     } catch {}
   }
 
-  if (options.editor) {
+  if (inputEditor) {
     Log.error(
-      `Could not resolve editor from environment variable $EXPO_EDITOR="${options.editor}". Trying again with system default.`
+      `Could not resolve editor from environment variable $EXPO_EDITOR="${inputEditor}". Trying again with system default.`
     );
-    return openInEditorAsync(path, {});
+    return openInEditorAsync(path);
   }
 
   Log.error(

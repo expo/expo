@@ -7,21 +7,23 @@ import chalk from 'chalk';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
-import prompts from 'prompts';
+import ProgressBar from 'progress';
 import semver from 'semver';
 
 import * as Log from '../../log';
+import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { delayAsync } from '../../utils/delay';
 import { downloadAppAsync } from '../../utils/downloadAppAsync';
 import { learnMore } from '../../utils/link';
+import { logNewSection } from '../../utils/ora';
 import { profile } from '../../utils/profile';
-import { confirmAsync } from '../../utils/prompts';
+import { setProgressBar } from '../../utils/progress';
+import { confirmAsync, promptAsync } from '../../utils/prompts';
 import UserSettings from '../api/UserSettings';
 import * as Versions from '../api/Versions';
-import { LoadingEvent, Logger } from '../logger';
 import { constructDeepLinkAsync, constructLoadingUrlAsync } from '../serverUrl';
 import { isDevClientPackageInstalled } from '../startAsync';
-import * as Webpack from '../webpack/Webpack';
+import * as WebpackDevServer from '../webpack/WebpackDevServer';
 import * as BundleIdentifier from './BundleIdentifier';
 import * as CoreSimulator from './CoreSimulator';
 import * as SimControl from './SimControl';
@@ -491,27 +493,33 @@ export async function installExpoOnSimulatorAsync({
     }, INSTALL_WARNING_TIMEOUT);
   };
 
-  Logger.notifications.info(
-    { code: LoadingEvent.START_PROGRESS_BAR },
-    'Downloading the Expo Go app [:bar] :percent :etas'
-  );
-
+  const bar = new ProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
+    width: 64,
+    total: 100,
+    clear: true,
+    complete: '=',
+    incomplete: ' ',
+  });
+  setProgressBar(bar);
   warningTimer = setWarningTimer();
 
   const dir = await _downloadSimulatorAppAsync(url, (progress) => {
-    Logger.notifications.info({ code: LoadingEvent.TICK_PROGRESS_BAR }, progress);
+    if (bar) {
+      bar.tick(1, progress);
+    }
   });
 
-  Logger.notifications.info({ code: LoadingEvent.STOP_PROGRESS_BAR });
-
+  bar.terminate();
+  setProgressBar(null);
   const message = version
     ? `Installing Expo Go ${version} on ${simulator.name}`
     : `Installing Expo Go on ${simulator.name}`;
-  Logger.notifications.info({ code: LoadingEvent.START_LOADING }, message);
+
+  const ora = logNewSection(message);
   warningTimer = setWarningTimer();
 
   const result = await SimControl.installAsync({ udid: simulator.udid, dir });
-  Logger.notifications.info({ code: LoadingEvent.STOP_LOADING });
+  ora.stop();
 
   clearTimeout(warningTimer);
   return result;
@@ -664,7 +672,7 @@ async function openUrlInSimulatorSafeAsync({
     };
   }
 
-  Analytics.logEvent('Open Url on Device', {
+  logEvent('Open Url on Device', {
     platform: 'ios',
   });
 
@@ -788,23 +796,24 @@ async function _constructDeepLinkAsync(
   }
 }
 
-export async function openProjectAsync({
-  projectRoot,
-  shouldPrompt,
-  devClient,
-  udid,
-  scheme,
-  skipNativeLogs,
-  applicationId,
-}: {
-  projectRoot: string;
-  shouldPrompt?: boolean;
-  devClient?: boolean;
-  scheme?: string;
-  udid?: string;
-  skipNativeLogs?: boolean;
-  applicationId?: string;
-}): Promise<
+export async function openProjectAsync(
+  projectRoot: string,
+  {
+    shouldPrompt,
+    devClient,
+    udid,
+    scheme,
+    skipNativeLogs,
+    applicationId,
+  }: {
+    shouldPrompt?: boolean;
+    devClient?: boolean;
+    scheme?: string;
+    udid?: string;
+    skipNativeLogs?: boolean;
+    applicationId?: string;
+  }
+): Promise<
   | { success: true; url: string; udid: string; bundleIdentifier: string }
   | { success: false; error: string }
 > {
@@ -923,13 +932,14 @@ export async function streamLogsAsync({
   }
 }
 
-export async function openWebProjectAsync({
-  projectRoot,
-  shouldPrompt,
-}: {
-  shouldPrompt: boolean;
-  projectRoot: string;
-}): Promise<{ success: true; url: string } | { success: false; error: string }> {
+export async function openWebProjectAsync(
+  projectRoot: string,
+  {
+    shouldPrompt,
+  }: {
+    shouldPrompt?: boolean;
+  } = {}
+): Promise<{ success: true; url: string } | { success: false; error: string }> {
   if (!(await isSimulatorInstalledAsync())) {
     return {
       success: false,
@@ -937,7 +947,7 @@ export async function openWebProjectAsync({
     };
   }
 
-  const projectUrl = await Webpack.getUrlAsync(projectRoot);
+  const projectUrl = WebpackDevServer.getDevServerUrl();
   if (projectUrl === null) {
     return {
       success: false,
@@ -965,7 +975,7 @@ export async function openWebProjectAsync({
     activateSimulatorWindowAsync();
     return { success: true, url: projectUrl };
   }
-  return { success: result.success, error: result.msg };
+  return { success: false, error: result.msg };
 }
 
 /**
@@ -1005,24 +1015,29 @@ async function promptForDeviceAsync(
   // TODO: provide an option to add or download more simulators
   // TODO: Add support for physical devices too.
 
-  const { value } = await prompts({
-    type: 'autocomplete',
-    name: 'value',
-    limit: 11,
-    message: 'Select a simulator',
-    choices: devices.map((item) => {
-      const isActive = item.state === 'Booted';
-      const format = isActive ? chalk.bold : (text: string) => text;
-      return {
-        title: `${format(item.name)} ${chalk.dim(`(${item.osVersion})`)}`,
-        value: item.udid,
-      };
-    }),
-    suggest: (input: any, choices: any) => {
-      const regex = new RegExp(input, 'i');
-      return choices.filter((choice: any) => regex.test(choice.title));
+  const { value } = await promptAsync(
+    {
+      type: 'autocomplete',
+      name: 'value',
+      limit: 11,
+      message: 'Select a simulator',
+      choices: devices.map((item) => {
+        const isActive = item.state === 'Booted';
+        const format = isActive ? chalk.bold : (text: string) => text;
+        return {
+          title: `${format(item.name)} ${chalk.dim(`(${item.osVersion})`)}`,
+          value: item.udid,
+        };
+      }),
+      suggest: (input: any, choices: any) => {
+        const regex = new RegExp(input, 'i');
+        return choices.filter((choice: any) => regex.test(choice.title));
+      },
     },
-  });
+    {
+      isCancelable: true,
+    }
+  );
 
   return value;
 }

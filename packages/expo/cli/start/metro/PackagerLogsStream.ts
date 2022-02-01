@@ -3,8 +3,13 @@ import { JSONObject } from '@expo/json-file';
 import chalk from 'chalk';
 import path from 'path';
 import { EXPO_DEBUG } from '../../utils/env';
+import ProgressBar from 'progress';
 
 import { getLogger, LogFields } from '../logger';
+import { setProgressBar } from '../../utils/progress';
+import StatusEventEmitter from '../../utils/analytics/StatusEventEmitter';
+
+import * as Log from '../../log';
 
 type BuildEventType =
   | 'METRO_INITIALIZE_STARTED'
@@ -152,76 +157,35 @@ type ReportableEvent =
       error: MetroError;
     };
 
-type StartBuildBundleCallback = (props: {
-  chunk: LogRecord;
-  bundleDetails: BundleDetails | null;
-}) => void;
-type ProgressBuildBundleCallback = (props: {
-  progress: number;
-  start: Date | null;
-  chunk: any;
-  bundleDetails: BundleDetails | null;
-}) => void;
-type FinishBuildBundleCallback = (props: {
-  error: string | null;
-  start: Date;
-  end: Date;
-  chunk: MetroLogRecord;
-  bundleDetails: BundleDetails | null;
-}) => void;
-
 export default class PackagerLogsStream {
-  _projectRoot: string;
-  _getCurrentOpenProjectId: () => any;
-  _updateLogs: (updater: LogUpdater) => void;
+  getCurrentOpenProjectId: () => any;
+  updateLogs: (updater: LogUpdater) => void;
   _logsToAdd: LogRecord[] = [];
   _bundleBuildChunkID: string | null = null;
-  _onStartBuildBundle?: StartBuildBundleCallback;
-  _onProgressBuildBundle?: ProgressBuildBundleCallback;
-  _onFinishBuildBundle?: FinishBuildBundleCallback;
   _bundleBuildStart: Date | null = null;
-  _getSnippetForError?: (error: MetroError) => string | null;
 
-  constructor({
-    projectRoot,
-    getCurrentOpenProjectId,
-    updateLogs,
-    onStartBuildBundle,
-    onProgressBuildBundle,
-    onFinishBuildBundle,
-    getSnippetForError,
-  }: {
-    projectRoot: string;
-    getCurrentOpenProjectId?: () => any;
-    updateLogs: (updater: LogUpdater) => void;
-    onStartBuildBundle?: StartBuildBundleCallback;
-    onProgressBuildBundle?: ProgressBuildBundleCallback;
-    onFinishBuildBundle?: FinishBuildBundleCallback;
-    getSnippetForError?: (error: MetroError) => string | null;
-  }) {
-    this._projectRoot = projectRoot;
-    this._getCurrentOpenProjectId = getCurrentOpenProjectId || (() => 1);
-    this._updateLogs = updateLogs;
+  constructor(
+    public projectRoot: string,
+    {
+      getCurrentOpenProjectId,
+      updateLogs,
+    }: {
+      getCurrentOpenProjectId?: () => any;
+      updateLogs: (updater: LogUpdater) => void;
+    }
+  ) {
+    this.getCurrentOpenProjectId = getCurrentOpenProjectId || (() => 1);
+    this.updateLogs = updateLogs;
 
-    // Optional properties in case the consumer wants to handle updates on
-    // its own, eg: for a progress bar
-    this._onStartBuildBundle = onStartBuildBundle;
-    this._onProgressBuildBundle = onProgressBuildBundle;
-    this._onFinishBuildBundle = onFinishBuildBundle;
-
-    // Optional function for creating custom code frame snippet
-    // (e.g. with terminal colors) from a syntax error.
-    this._getSnippetForError = getSnippetForError;
-
-    this._attachLoggerStream();
+    this.attachLoggerStream();
   }
 
   projectId?: number;
 
-  _attachLoggerStream() {
-    this.projectId = this._getCurrentOpenProjectId();
+  attachLoggerStream() {
+    this.projectId = this.getCurrentOpenProjectId();
 
-    getLogger(this._projectRoot).addStream({
+    getLogger(this.projectRoot).addStream({
       stream: {
         write: this._handleChunk.bind(this),
       },
@@ -232,7 +196,7 @@ export default class PackagerLogsStream {
   _handleChunk(chunk: LogRecord) {
     if (chunk.tag !== 'metro' && chunk.tag !== 'expo') {
       return;
-    } else if (this._getCurrentOpenProjectId() !== this.projectId) {
+    } else if (this.getCurrentOpenProjectId() !== this.projectId) {
       // TODO: We should be confident that we are properly unsubscribing
       // from the stream rather than doing a defensive check like this.
       return;
@@ -371,6 +335,8 @@ export default class PackagerLogsStream {
     return '';
   }
 
+  bar?: ProgressBar;
+
   private _handleNewBundleTransformStarted(
     chunk: MetroLogRecord,
     bundleDetails: BundleDetails | null
@@ -384,11 +350,17 @@ export default class PackagerLogsStream {
 
     chunk.msg = 'Building JavaScript bundle';
 
-    if (this._onStartBuildBundle) {
-      this._onStartBuildBundle({ chunk, bundleDetails });
-    } else {
-      this._enqueueAppendLogChunk(chunk);
-    }
+    // TODO: Unify with commands/utils/progress.ts
+    const platform = PackagerLogsStream.getPlatformTagForBuildDetails(bundleDetails);
+    this.bar = new ProgressBar(`${platform}Bundling JavaScript [:bar] :percent`, {
+      width: 64,
+      total: 100,
+      clear: true,
+      complete: '=',
+      incomplete: ' ',
+    });
+
+    setProgressBar(this.bar);
   }
 
   private _handleUpdateBundleTransformProgress(
@@ -430,46 +402,43 @@ export default class PackagerLogsStream {
       progressChunk.id = this._bundleBuildChunkID;
     }
 
-    if (this._onProgressBuildBundle) {
-      this._onProgressBuildBundle({
-        progress: percentProgress,
-        start: this._bundleBuildStart,
-        chunk: progressChunk,
-        bundleDetails,
-      });
+    // Update progress bar...
+    if (this.bar && !this.bar.complete) {
+      const ticks = percentProgress - this.bar.curr;
 
-      if (bundleComplete) {
-        if (this._onFinishBuildBundle && this._bundleBuildStart) {
-          const error = msg.type === 'bundle_build_failed' ? 'Build failed' : null;
-          this._onFinishBuildBundle({
-            error,
-            start: this._bundleBuildStart,
-            end: new Date(),
-            chunk: progressChunk,
-            bundleDetails,
-          });
-        }
-        this._bundleBuildStart = null;
-        this._bundleBuildChunkID = null;
+      if (ticks > 0) {
+        this.bar.tick(ticks);
       }
-    } else {
-      this._updateLogs((logs) => {
-        if (!logs || !logs.length) {
-          return [];
+    }
+
+    if (bundleComplete) {
+      if (this._bundleBuildStart) {
+        if (this.bar && !this.bar.complete) {
+          this.bar.tick(100 - this.bar.curr);
         }
 
-        logs.forEach((log) => {
-          if (log.id === this._bundleBuildChunkID) {
-            log.msg = progressChunk.msg;
+        if (this.bar) {
+          setProgressBar(null);
+          this.bar.terminate();
+          this.bar = null;
+
+          const platform = PackagerLogsStream.getPlatformTagForBuildDetails(bundleDetails);
+          const start = this._bundleBuildStart;
+          const end = new Date();
+          const totalBuildTimeMs = end.getTime() - start.getTime();
+          const durationSuffix = chalk.gray(` ${totalBuildTimeMs}ms`);
+
+          const error = msg.type === 'bundle_build_failed' ? 'Build failed' : null;
+          if (error) {
+            Log.log(chalk.red(`${platform}Bundling failed` + durationSuffix));
+          } else {
+            Log.log(chalk.green(`${platform}Bundling complete` + durationSuffix));
+            StatusEventEmitter.emit('bundleBuildFinish', { totalBuildTimeMs });
           }
-        });
-
-        if (bundleComplete) {
-          this._bundleBuildChunkID = null;
         }
-
-        return [...logs];
-      });
+      }
+      this._bundleBuildStart = null;
+      this._bundleBuildChunkID = null;
     }
   }
 
@@ -483,7 +452,7 @@ export default class PackagerLogsStream {
       return null;
     }
     const moduleName = match[1];
-    const relativePath = path.relative(this._projectRoot, originModulePath);
+    const relativePath = path.relative(this.projectRoot, originModulePath);
 
     const DOCS_PAGE_URL =
       'https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries';
@@ -509,7 +478,7 @@ export default class PackagerLogsStream {
 
     message = chalk.red(message);
 
-    const snippet = this._getSnippetForError?.(error) || error.snippet;
+    const snippet = error.snippet;
     if (snippet) {
       message += `\n${snippet}`;
     }
@@ -539,7 +508,7 @@ export default class PackagerLogsStream {
   }
 
   _enqueueFlushLogsToAdd = () => {
-    this._updateLogs((logs) => {
+    this.updateLogs((logs) => {
       if (this._logsToAdd.length === 0) {
         return logs;
       }

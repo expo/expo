@@ -16,7 +16,6 @@ export type UserSettingsData = {
   accessToken?: string;
   auth?: UserData | null;
   ignoreBundledBinaries?: string[];
-  openDevToolsAtStartup?: boolean;
   PATH?: string;
   sendTo?: string;
   uuid?: string;

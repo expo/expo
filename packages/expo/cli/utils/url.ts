@@ -1,5 +1,6 @@
 import dns from 'dns';
 import fetch from 'node-fetch';
+import { URL } from 'url';
 
 export function isUrlAvailableAsync(url: string): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
@@ -10,11 +11,7 @@ export function isUrlAvailableAsync(url: string): Promise<boolean> {
 }
 
 export function isUrl(str: string) {
-  if (!str.startsWith('http://') && !str.startsWith('https://')) {
-    return false;
-  }
-
-  return true;
+  return !!/^https?:\/\//.test(str);
 }
 
 export async function isUrlOk(url: string): Promise<boolean> {
@@ -24,4 +21,11 @@ export async function isUrlOk(url: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export function stripPort(host: string | undefined): string | undefined {
+  if (!host) {
+    return host;
+  }
+  return new URL('/', `http://${host}`).hostname;
 }

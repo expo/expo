@@ -1,9 +1,9 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
-import { ApiV2 } from 'xdl';
 
 import * as Log from '../../log';
+import { apiClient } from '../../utils/api';
 import { CommandError } from '../../utils/errors';
 
 interface NativeModule {
@@ -43,7 +43,6 @@ export async function getBundledNativeModulesAsync(
 async function getBundledNativeModulesFromApiAsync(
   sdkVersion: string
 ): Promise<BundledNativeModules> {
-  const client = ApiV2.clientForUser();
   /**
    * The endpoint returns the list of bundled native modules for a given SDK version.
    * The data is populated by the `et sync-bundled-native-modules` script from expo/expo repo.
@@ -63,11 +62,12 @@ async function getBundledNativeModulesFromApiAsync(
    *   ...
    * ]
    */
-  const list = await client.getAsync(`sdks/${sdkVersion}/native-modules`);
-  if (list.length === 0) {
-    throw new Error('The bundled native module list from www is empty');
+  const { data } = await apiClient.get(`sdks/${sdkVersion}/native-modules`).json();
+
+  if (!data.length) {
+    throw new CommandError('VERSIONS', 'The bundled native module list from www is empty');
   }
-  return fromBundledNativeModuleList(list);
+  return fromBundledNativeModuleList(data);
 }
 
 /**

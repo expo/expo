@@ -15,6 +15,8 @@ export type Actor = NonNullable<CurrentUserQuery['meActor']>;
 
 let currentUser: Actor | undefined;
 
+export const ANONYMOUS_USERNAME = 'anonymous';
+
 /**
  * Resolve the name of the actor, either normal user or robot user.
  * This should be used whenever the "current user" needs to be displayed.
@@ -27,7 +29,7 @@ export function getActorDisplayName(user?: Actor): string {
     case 'Robot':
       return user.firstName ? `${user.firstName} (robot)` : 'robot';
     default:
-      return 'anonymous';
+      return ANONYMOUS_USERNAME;
   }
 }
 
@@ -51,8 +53,9 @@ export async function loginAsync(json: {
   password: string;
   otp?: string;
 }): Promise<void> {
-  const body = await apiClient.post('auth/loginAsync', { json }).json();
-  const { sessionSecret } = (body as any).data;
+  const {
+    data: { sessionSecret },
+  } = await apiClient.post('auth/loginAsync', { json }).json();
   const result = await graphqlClient
     .query(
       gql`

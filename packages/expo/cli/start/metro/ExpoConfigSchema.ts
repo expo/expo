@@ -4,10 +4,10 @@ import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
+import { apiClient } from '../../utils/api';
 import { EXPO_UNIVERSE_DIR, LOCAL_XDL_SCHEMA } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { Cache } from '../api/Cache';
-import ApiV2 from './ApiV2';
 
 export type Schema = any;
 export type AssetSchema = {
@@ -81,7 +81,10 @@ async function getConfigurationSchemaAsync(sdkVersion: string): Promise<JSONObje
   if (!schemaCaches.hasOwnProperty(sdkVersion)) {
     schemaCaches[sdkVersion] = new Cache({
       getAsync() {
-        return new ApiV2().getAsync(`project/configuration/schema/${sdkVersion}`);
+        return apiClient
+          .get(`project/configuration/schema/${sdkVersion}`)
+          .json<{ data: JSONObject }>()
+          .then(({ data }) => data);
       },
       filename: `schema-${sdkVersion}.json`,
       ttlMilliseconds: 0,

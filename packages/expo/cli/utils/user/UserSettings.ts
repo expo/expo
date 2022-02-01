@@ -27,6 +27,7 @@ const SETTINGS_FILE_PATH = path.join(getConfigDirectory(), 'user-settings.json')
 
 export type UserSettingsData = {
   analyticsDeviceId?: string;
+  ignoreBundledBinaries?: string[];
 };
 
 const UserSettings = new JsonFile<UserSettingsData>(SETTINGS_FILE_PATH, {

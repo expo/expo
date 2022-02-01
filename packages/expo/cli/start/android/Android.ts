@@ -4,13 +4,24 @@ import * as osascript from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import child_process, { execFileSync } from 'child_process';
-import trim from 'lodash/trim';
 import os from 'os';
-import prompts from 'prompts';
+import ProgressBar from 'progress';
 import semver from 'semver';
 
-import * as ProjectSettings from '../api/ProjectSettings';
-import * as Webpack from '../webpack/Webpack';
+import * as Log from '../../log';
+import { logEvent } from '../../utils/analytics/rudderstackClient';
+import { downloadApkAsync } from '../../utils/downloadAppAsync';
+import { CommandError } from '../../utils/errors';
+import { learnMore } from '../../utils/link';
+import { logNewSection } from '../../utils/ora';
+import { setProgressBar } from '../../utils/progress';
+import { confirmAsync, promptAsync } from '../../utils/prompts';
+import * as Binaries from '../../utils/vendoredBinary';
+import * as Versions from '../api/Versions';
+import { getNativeDevServerPort } from '../devServer';
+import * as UrlUtils from '../serverUrl';
+import { isDevClientPackageInstalled } from '../startAsync';
+import * as WebpackDevServer from '../webpack/WebpackDevServer';
 
 export type Device = {
   pid?: string;
@@ -72,7 +83,8 @@ async function getEmulatorsAsync(): Promise<Device[]> {
  */
 async function getAbdNameForEmulatorIdAsync(emulatorId: string): Promise<string | null> {
   return (
-    trim(await getAdbOutputAsync(['-s', emulatorId, 'emu', 'avd', 'name']))
+    (await getAdbOutputAsync(['-s', emulatorId, 'emu', 'avd', 'name']))
+      .trim()
       .split(/\r?\n/)
       .shift() ?? null
   );
@@ -124,7 +136,7 @@ async function isBootAnimationCompleteAsync(pid?: string): Promise<boolean> {
 }
 
 async function startEmulatorAsync(device: Pick<Device, 'name'>): Promise<Device> {
-  Logger.global.info(`\u203A Opening emulator ${chalk.bold(device.name)}`);
+  Log.log(`\u203A Opening emulator ${chalk.bold(device.name)}`);
 
   // Start a process to open an emulator
   const emulatorProcess = child_process.spawn(
@@ -260,10 +272,10 @@ export function isPlatformSupported(): boolean {
 async function adbAlreadyRunning(adb: string): Promise<boolean> {
   try {
     const result = await spawnAsync(adb, ['start-server']);
-    const lines = trim(result.stderr).split(/\r?\n/);
+    const lines = result.stderr.trim().split(/\r?\n/);
     return lines.includes('* daemon started successfully') === false;
   } catch (e) {
-    let errorMessage = trim(e.stderr || e.stdout);
+    let errorMessage = (e.stderr || e.stdout).trim();
     if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
       errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
     }
@@ -281,9 +293,7 @@ export async function getAdbOutputAsync(args: string[]): Promise<string> {
     _isAdbOwner = alreadyRunning === false;
   }
 
-  if (Env.isDebug()) {
-    Logger.global.info([adb, ...args].join(' '));
-  }
+  Log.debug([adb, ...args].join(' '));
   try {
     const result = await spawnAsync(adb, args);
     return result.output.join('\n');
@@ -377,7 +387,7 @@ async function getExpoVersionAsync(device: Device): Promise<string | null> {
 }
 
 async function isClientOutdatedAsync(device: Device, sdkVersion?: string): Promise<boolean> {
-  const versions = await Versions.versionsAsync();
+  const versions = await Versions.getVersionsAsync();
   const clientForSdk = await getClientForSDK(sdkVersion);
   const latestVersionForSdk = clientForSdk?.version ?? versions.androidVersion;
   const installedVersion = await getExpoVersionAsync(device);
@@ -399,33 +409,42 @@ export async function installExpoAsync({
       clearTimeout(warningTimer);
     }
     return setTimeout(() => {
-      Logger.global.info('');
-      Logger.global.info(
+      Log.log('');
+      Log.log(
         'This download is taking longer than expected. You can also try downloading the clients from the website at https://expo.dev/tools'
       );
     }, INSTALL_WARNING_TIMEOUT);
   };
 
-  Logger.notifications.info(
-    { code: LoadingEvent.START_PROGRESS_BAR },
-    'Downloading the Expo Go app [:bar] :percent :etas'
-  );
+  const bar = new ProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
+    width: 64,
+    total: 100,
+    clear: true,
+    complete: '=',
+    incomplete: ' ',
+  });
+  // TODO: Auto track progress bars
+  setProgressBar(bar);
 
   warningTimer = setWarningTimer();
   const path = await downloadApkAsync(url, (progress) => {
-    Logger.notifications.info({ code: LoadingEvent.TICK_PROGRESS_BAR }, progress);
+    if (bar) {
+      bar.tick(1, progress);
+    }
   });
 
-  Logger.notifications.info({ code: LoadingEvent.STOP_PROGRESS_BAR });
+  bar.terminate();
+  setProgressBar(null);
 
   const message = version
     ? `Installing Expo Go ${version} on ${device.name}`
     : `Installing Expo Go on ${device.name}`;
 
-  Logger.notifications.info({ code: LoadingEvent.START_LOADING }, message);
+  const ora = logNewSection(message);
+
   warningTimer = setWarningTimer();
   const result = await installOnDeviceAsync(device, { binaryPath: path });
-  Logger.notifications.info({ code: LoadingEvent.STOP_LOADING });
+  ora.stop();
 
   clearTimeout(warningTimer);
   return result;
@@ -451,7 +470,7 @@ export async function isDeviceBootedAsync({
 }
 
 export async function uninstallExpoAsync(device: Device): Promise<string | undefined> {
-  Logger.global.info('Uninstalling Expo Go from Android device.');
+  Log.log('Uninstalling Expo Go from Android device.');
 
   // we need to check if its installed, else we might bump into "Failure [DELETE_FAILED_INTERNAL_ERROR]"
   const isInstalled = await _isExpoInstalledAsync(device);
@@ -462,7 +481,7 @@ export async function uninstallExpoAsync(device: Device): Promise<string | undef
   try {
     return await getAdbOutputAsync(adbPidArgs(device.pid, 'uninstall', 'host.exp.exponent'));
   } catch (e) {
-    Logger.global.error(
+    Log.error(
       'Could not uninstall Expo Go from your device, please uninstall Expo Go manually and try again.'
     );
     throw e;
@@ -493,7 +512,7 @@ export async function upgradeExpoAsync({
     await uninstallExpoAsync(device);
     await installExpoAsync({ device, url, version });
     if (_lastUrl) {
-      Logger.global.info(`\u203A Opening ${_lastUrl} in Expo.`);
+      Log.log(`\u203A Opening ${_lastUrl} in Expo.`);
       await getAdbOutputAsync([
         'shell',
         'am',
@@ -508,7 +527,7 @@ export async function upgradeExpoAsync({
 
     return true;
   } catch (e) {
-    Logger.global.error(e.message);
+    Log.error(e.message);
     return false;
   }
 }
@@ -623,7 +642,10 @@ export async function openAppAsync(
 
   // App is not installed or main activity cannot be found
   if (openProject.match(/Error: Activity class .* does not exist./g)) {
-    throw new XDLError('APP_NOT_INSTALLED', openProject.substring(openProject.indexOf('Error: ')));
+    throw new CommandError(
+      'APP_NOT_INSTALLED',
+      openProject.substring(openProject.indexOf('Error: '))
+    );
   }
 
   await activateEmulatorWindowAsync(device);
@@ -647,7 +669,7 @@ export async function attemptToStartEmulatorOrAssertAsync(device: Device): Promi
 }
 
 function logUnauthorized(device: Device) {
-  Logger.global.warn(
+  Log.warn(
     `\nThis computer is not authorized for developing on ${chalk.bold(device.name)}. ${chalk.dim(
       learnMore('https://expo.fyi/authorize-android-device')
     )}`
@@ -688,7 +710,7 @@ async function openUrlAsync({
   if (!bootedDevice) {
     return;
   }
-  Logger.global.info(`\u203A Opening ${chalk.underline(url)} on ${chalk.bold(bootedDevice.name)}`);
+  Log.log(`\u203A Opening ${chalk.underline(url)} on ${chalk.bold(bootedDevice.name)}`);
 
   await activateEmulatorWindowAsync(bootedDevice);
 
@@ -729,7 +751,7 @@ async function openUrlAsync({
       ) {
         // Only prompt once per device, per run.
         hasPromptedToUpgrade[promptKey] = true;
-        const confirm = await Prompts.confirmAsync({
+        const confirm = await confirmAsync({
           initial: true,
           message: `Expo Go on ${device.name} (${device.type}) is outdated, would you like to upgrade?`,
         });
@@ -765,7 +787,7 @@ async function openUrlAsync({
       // TODO: Bring the emulator window to the front.
     }
 
-    Analytics.logEvent('Open Url on Device', {
+    logEvent('Open Url on Device', {
       platform: 'android',
       installedExpo,
     });
@@ -780,7 +802,7 @@ async function getClientForSDK(sdkVersionString?: string) {
     return null;
   }
 
-  const sdkVersion = (await Versions.sdkVersionsAsync())[sdkVersionString];
+  const sdkVersion = (await Versions.getVersionsAsync())[sdkVersionString];
   if (!sdkVersion) {
     return null;
   }
@@ -836,23 +858,24 @@ async function constructDeepLinkAsync(
   }
 }
 
-export async function openProjectAsync({
-  projectRoot,
-  shouldPrompt,
-  devClient = false,
-  device,
-  scheme,
-  applicationId,
-  launchActivity,
-}: {
-  projectRoot: string;
-  shouldPrompt?: boolean;
-  devClient?: boolean;
-  device?: Device;
-  scheme?: string;
-  applicationId?: string | null;
-  launchActivity?: string;
-}): Promise<{ success: true; url: string } | { success: false; error: Error | string }> {
+export async function openProjectAsync(
+  projectRoot: string,
+  {
+    shouldPrompt,
+    devClient = false,
+    device,
+    scheme,
+    applicationId,
+    launchActivity,
+  }: {
+    shouldPrompt?: boolean;
+    devClient?: boolean;
+    device?: Device;
+    scheme?: string;
+    applicationId?: string | null;
+    launchActivity?: string;
+  }
+): Promise<{ success: true; url: string } | { success: false; error: Error | string }> {
   await startAdbReverseAsync(projectRoot);
 
   const projectUrl = await constructDeepLinkAsync(projectRoot, scheme, devClient);
@@ -900,7 +923,7 @@ export async function openProjectAsync({
       });
     } catch (error) {
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${device.name}".`;
-      if (error instanceof XDLError && error.code === 'APP_NOT_INSTALLED') {
+      if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
         errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
           `expo run:android -d ${device.name}`
         )}`;
@@ -937,17 +960,18 @@ export async function openProjectAsync({
     return { success: false, error: e };
   }
 }
-export async function openWebProjectAsync({
-  projectRoot,
-  shouldPrompt,
-}: {
-  projectRoot: string;
-  shouldPrompt?: boolean;
-}): Promise<{ success: true; url: string } | { success: false; error: string }> {
+export async function openWebProjectAsync(
+  projectRoot: string,
+  {
+    shouldPrompt,
+  }: {
+    shouldPrompt?: boolean;
+  } = {}
+): Promise<{ success: true; url: string } | { success: false; error: string }> {
   try {
     await startAdbReverseAsync(projectRoot);
 
-    const projectUrl = await Webpack.getUrlAsync(projectRoot);
+    const projectUrl = WebpackDevServer.getDevServerUrl();
     if (projectUrl === null) {
       return {
         success: false,
@@ -971,14 +995,15 @@ export async function openWebProjectAsync({
 }
 
 // Adb reverse
-export async function startAdbReverseAsync(projectRoot: string): Promise<boolean> {
-  const packagerInfo = await ProjectSettings.readPackagerInfoAsync(projectRoot);
+async function getAdbReversePortsAsync(projectRoot: string): Promise<number[]> {
   const expRc = await readExpRcAsync(projectRoot);
   const userDefinedAdbReversePorts = expRc.extraAdbReversePorts || [];
 
-  const adbReversePorts = [packagerInfo.packagerPort, ...userDefinedAdbReversePorts].filter(
-    Boolean
-  );
+  return [getNativeDevServerPort(), ...userDefinedAdbReversePorts].filter(Boolean);
+}
+
+export async function startAdbReverseAsync(projectRoot: string): Promise<boolean> {
+  const adbReversePorts = await getAdbReversePortsAsync(projectRoot);
 
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
@@ -993,13 +1018,7 @@ export async function startAdbReverseAsync(projectRoot: string): Promise<boolean
 }
 
 export async function stopAdbReverseAsync(projectRoot: string): Promise<void> {
-  const packagerInfo = await ProjectSettings.readPackagerInfoAsync(projectRoot);
-  const expRc = await readExpRcAsync(projectRoot);
-  const userDefinedAdbReversePorts = expRc.extraAdbReversePorts || [];
-
-  const adbReversePorts = [packagerInfo.packagerPort, ...userDefinedAdbReversePorts].filter(
-    Boolean
-  );
+  const adbReversePorts = await getAdbReversePortsAsync(projectRoot);
 
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
@@ -1018,7 +1037,7 @@ async function adbReverse({ device, port }: { device: Device; port: number }): P
     await getAdbOutputAsync(adbPidArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`));
     return true;
   } catch (e) {
-    Logger.global.warn(`Couldn't adb reverse: ${e.message}`);
+    Log.warn(`Couldn't adb reverse: ${e.message}`);
     return false;
   }
 }
@@ -1039,7 +1058,7 @@ async function adbReverseRemove({
     return true;
   } catch (e) {
     // Don't send this to warn because we call this preemptively sometimes
-    Logger.global.debug(`Couldn't adb reverse remove: ${e.message}`);
+    Log.debug(`Couldn't adb reverse remove: ${e.message}`);
     return false;
   }
 }
@@ -1051,34 +1070,6 @@ function adbPidArgs(pid: Device['pid'], ...options: string[]): string[] {
   }
   return args.concat(options);
 }
-
-type DPIConstraint = {
-  dpi: 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
-  sizeMultiplier: number;
-};
-
-const splashScreenDPIConstraints: readonly DPIConstraint[] = [
-  {
-    dpi: 'mdpi',
-    sizeMultiplier: 1,
-  },
-  {
-    dpi: 'hdpi',
-    sizeMultiplier: 1.5,
-  },
-  {
-    dpi: 'xhdpi',
-    sizeMultiplier: 2,
-  },
-  {
-    dpi: 'xxhdpi',
-    sizeMultiplier: 3,
-  },
-  {
-    dpi: 'xxxhdpi',
-    sizeMultiplier: 4,
-  },
-];
 
 export async function maybeStopAdbDaemonAsync() {
   if (_isAdbOwner !== true) {
@@ -1110,30 +1101,29 @@ function nameStyleForDevice(device: Device) {
 export async function promptForDeviceAsync(devices: Device[]): Promise<Device | null> {
   // TODO: provide an option to add or download more simulators
 
-  // Pause interactions on the TerminalUI
-  Prompts.pauseInteractions();
-
-  const { value } = await prompts({
-    type: 'autocomplete',
-    name: 'value',
-    limit: 11,
-    message: 'Select a device/emulator',
-    choices: devices.map((item) => {
-      const format = nameStyleForDevice(item);
-      const type = item.isAuthorized ? item.type : 'unauthorized';
-      return {
-        title: `${format(item.name)} ${chalk.dim(`(${type})`)}`,
-        value: item.name,
-      };
-    }),
-    suggest: (input: any, choices: any) => {
-      const regex = new RegExp(input, 'i');
-      return choices.filter((choice: any) => regex.test(choice.title));
+  const { value } = await promptAsync(
+    {
+      type: 'autocomplete',
+      name: 'value',
+      limit: 11,
+      message: 'Select a device/emulator',
+      choices: devices.map((item) => {
+        const format = nameStyleForDevice(item);
+        const type = item.isAuthorized ? item.type : 'unauthorized';
+        return {
+          title: `${format(item.name)} ${chalk.dim(`(${type})`)}`,
+          value: item.name,
+        };
+      }),
+      suggest: (input: any, choices: any) => {
+        const regex = new RegExp(input, 'i');
+        return choices.filter((choice: any) => regex.test(choice.title));
+      },
     },
-  });
-
-  // Resume interactions on the TerminalUI
-  Prompts.resumeInteractions();
+    {
+      isCancelable: true,
+    }
+  );
 
   const device = value ? devices.find(({ name }) => name === value)! : null;
 
@@ -1160,17 +1150,10 @@ export enum DeviceABI {
 }
 
 type DeviceProperties = Record<string, string>;
-const deviceProperties: Record<string, DeviceProperties> = {};
 
-const PROP_SDK_VERSION = 'ro.build.version.release';
 // Can sometimes be null
-const PROP_API_VERSION = 'ro.build.version.sdk';
 // http://developer.android.com/ndk/guides/abis.html
-const PROP_CPU_NAME = 'ro.product.cpu.abi';
-const PROP_CPU_ABILIST_NAME = 'ro.product.cpu.abilist';
 const PROP_BOOT_ANIMATION_STATE = 'init.svc.bootanim';
-
-const LOWEST_SUPPORTED_EXPO_API_VERSION = 21;
 
 async function getPropertyDataForDeviceAsync(
   device: Pick<Device, 'pid'>,

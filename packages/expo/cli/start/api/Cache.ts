@@ -3,6 +3,7 @@ import os from 'os';
 import path from 'path';
 
 import { SKIP_CACHE, XDG_CACHE_HOME } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
 
 /**
  * A Cache is used to wrap a fallible or expensive function and to memoize its results on disk
@@ -125,9 +126,15 @@ export class Cache<T> {
       return fromCache;
     } else {
       if (failedRefresh) {
-        throw new Error(`Unable to perform cache refresh for ${this.filename}: ${failedRefresh}`);
+        throw new CommandError(
+          'JSON_CACHE',
+          `Unable to perform cache refresh for ${this.filename}: ${failedRefresh}`
+        );
       } else {
-        throw new Error(`Unable to read ${this.filename}. ${this.readError || ''}`);
+        throw new CommandError(
+          'JSON_CACHE',
+          `Unable to read ${this.filename}. ${this.readError || ''}`
+        );
       }
     }
   }

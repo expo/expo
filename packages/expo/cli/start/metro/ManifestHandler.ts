@@ -4,12 +4,18 @@ import chalk from 'chalk';
 import express from 'express';
 import http from 'http';
 import os from 'os';
-import { parse, resolve, URL } from 'url';
+import { parse, resolve } from 'url';
 
 import * as Log from '../../log';
+import { logEvent } from '../../utils/analytics/rudderstackClient';
+import { apiClient } from '../../utils/api';
 import { learnMore } from '../../utils/link';
+import { stripPort } from '../../utils/url';
+import { ensureLoggedInAsync } from '../../utils/user/actions';
+import { ANONYMOUS_USERNAME, getActorDisplayName, getUserAsync } from '../../utils/user/user';
 import ProcessSettings from '../api/ProcessSettings';
-import * as ProjectSettings from '../api/ProjectSettings';
+import * as ProjectDevices from '../api/ProjectDevices';
+import UserSettings from '../api/UserSettings';
 import {
   constructBundleQueryParams,
   constructBundleUrlAsync,
@@ -18,21 +24,19 @@ import {
   constructLogUrlAsync,
   stripJSExtension,
 } from '../serverUrl';
-import * as Webpack from '../webpack/Webpack';
-import { resolveGoogleServicesFile, resolveManifestAssets } from './ProjectAssets';
+import * as WebpackDevServer from '../webpack/WebpackDevServer';
+import { getPlatformFromLegacyRequest } from './middleware';
+import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
-import UserSettings from '../api/UserSettings';
 
 interface HostInfo {
   host: string;
-  server: 'xdl';
+  server: 'expo';
   serverVersion: string;
   serverDriver: string | null;
   serverOS: NodeJS.Platform;
   serverOSVersion: string;
 }
-
-type PackagerOptions = ProjectSettings.ProjectSettings;
 
 type CachedSignedManifest =
   | {
@@ -44,52 +48,14 @@ type CachedSignedManifest =
       signedManifest: string;
     };
 
-const _cachedSignedManifest: CachedSignedManifest = {
+const cachedSignedManifest: CachedSignedManifest = {
   manifestString: null,
   signedManifest: null,
 };
 
-const blacklistedEnvironmentVariables = new Set([
-  'EXPO_APPLE_PASSWORD',
-  'EXPO_ANDROID_KEY_PASSWORD',
-  'EXPO_ANDROID_KEYSTORE_PASSWORD',
-  'EXPO_IOS_DIST_P12_PASSWORD',
-  'EXPO_IOS_PUSH_P12_PASSWORD',
-  'EXPO_CLI_PASSWORD',
-]);
-
-function shouldExposeEnvironmentVariableInManifest(key: string) {
-  if (blacklistedEnvironmentVariables.has(key.toUpperCase())) {
-    return false;
-  }
-  return key.startsWith('REACT_NATIVE_') || key.startsWith('EXPO_');
-}
-
-export function stripPort(host: string | undefined): string | undefined {
-  if (!host) {
-    return host;
-  }
-  return new URL('/', `http://${host}`).hostname;
-}
-
-export async function getPackagerOptionsAsync(
-  projectRoot: string
-): Promise<[ProjectSettings.ProjectSettings, PackagerOptions]> {
-  // Get packager opts and then copy into bundleUrlPackagerOpts
-  const projectSettings = await ProjectSettings.readAsync(projectRoot);
-  const bundleUrlPackagerOpts = JSON.parse(JSON.stringify(projectSettings));
-  bundleUrlPackagerOpts.urlType = 'http';
-  if (bundleUrlPackagerOpts.hostType === 'redirect') {
-    bundleUrlPackagerOpts.hostType = 'tunnel';
-  }
-  return [projectSettings, bundleUrlPackagerOpts];
-}
-
 export async function getBundleUrlAsync({
   projectRoot,
   platform,
-  projectSettings,
-  bundleUrlPackagerOpts,
   mainModuleName,
   hostname,
 }: {
@@ -97,20 +63,45 @@ export async function getBundleUrlAsync({
   hostname?: string;
   mainModuleName: string;
   projectRoot: string;
-  projectSettings: PackagerOptions;
-  bundleUrlPackagerOpts: PackagerOptions;
 }): Promise<string> {
-  const queryParams = constructBundleQueryParams(projectSettings);
+  const queryParams = constructBundleQueryParams({
+    dev: ProcessSettings.isDevMode,
+    minify: ProcessSettings.minify,
+    // strict: bundleUrlPackagerOpts.strict,
+  });
 
   const path = `/${encodeURI(mainModuleName)}.bundle?platform=${encodeURIComponent(
     platform
   )}&${queryParams}`;
 
-  return (await constructBundleUrlAsync(projectRoot, bundleUrlPackagerOpts, hostname)) + path;
+  return (
+    (await constructBundleUrlAsync(
+      projectRoot,
+      {
+        hostType: ProcessSettings.hostType,
+        // hostType: ProcessSettings.hostType === 'redirect' ? 'tunnel' : ProcessSettings.hostType,
+        scheme: ProcessSettings.scheme,
+        lanType: ProcessSettings.lanType,
+        minify: ProcessSettings.minify,
+        dev: ProcessSettings.isDevMode,
+        urlType: 'http',
+
+        // urlType: ??
+        // strict: ??
+      },
+      hostname
+    )) + path
+  );
 }
 
-function getPlatformFromRequest(headers: http.IncomingHttpHeaders): string {
-  return (headers['exponent-platform'] || 'ios').toString();
+function shouldContinue(req: express.Request | http.IncomingMessage) {
+  return (
+    !req.url ||
+    !['/', '/manifest', '/index.exp'].includes(
+      // Strip the query params
+      parse(req.url).pathname || req.url
+    )
+  );
 }
 
 export function getManifestHandler(projectRoot: string) {
@@ -120,23 +111,16 @@ export function getManifestHandler(projectRoot: string) {
     next: (err?: Error) => void
   ) => {
     // Only support `/`, `/manifest`, `/index.exp` for the manifest middleware.
-    if (
-      !req.url ||
-      !['/', '/manifest', '/index.exp'].includes(
-        // Strip the query params
-        parse(req.url).pathname || req.url
-      )
-    ) {
-      next();
-      return;
+    if (shouldContinue(req)) {
+      return next();
     }
 
     try {
-      const { manifestString, exp, hostInfo } = await getManifestResponseFromHeadersAsync({
+      const { manifestString, manifest, hostInfo } = await getManifestResponseFromHeadersAsync(
         projectRoot,
-        headers: req.headers,
-      });
-      const sdkVersion = exp.sdkVersion ?? null;
+        req
+      );
+      const sdkVersion = manifest.sdkVersion ?? null;
 
       // Send the response
       res.setHeader('Exponent-Server', JSON.stringify(hostInfo));
@@ -144,7 +128,7 @@ export function getManifestHandler(projectRoot: string) {
       res.end(manifestString);
 
       // Log analytics
-      Analytics.logEvent('Serve Manifest', {
+      logEvent('Serve Manifest', {
         developerTool: ProcessSettings.developerTool,
         sdkVersion,
       });
@@ -159,38 +143,41 @@ export function getManifestHandler(projectRoot: string) {
       );
     }
 
-    try {
-      const deviceIds = req.headers['expo-dev-client-id'];
-      if (deviceIds) {
-        await ProjectSettings.saveDevicesAsync(projectRoot, deviceIds);
-      }
-    } catch (e) {
-      Log.error(e.stack);
+    const deviceIds = req.headers['expo-dev-client-id'];
+    if (deviceIds) {
+      await ProjectDevices.saveDevicesAsync(projectRoot, deviceIds).catch((e) =>
+        Log.error(e.stack)
+      );
     }
   };
 }
 
-async function getManifestResponseFromHeadersAsync({
-  projectRoot,
-  headers,
-}: {
-  projectRoot: string;
-  headers: http.IncomingHttpHeaders;
-}): Promise<{ exp: ExpoConfig; manifestString: string; hostInfo: HostInfo }> {
+async function getManifestResponseFromHeadersAsync(
+  projectRoot: string,
+  req: express.Request | http.IncomingMessage
+): Promise<{ manifest: ExpoConfig; manifestString: string; hostInfo: HostInfo }> {
   // Read from headers
-  const platform = getPlatformFromRequest(headers);
-  const acceptSignature = headers['exponent-accept-signature'];
-  return getManifestResponseAsync({ projectRoot, host: headers.host, platform, acceptSignature });
+  const platform = getPlatformFromLegacyRequest(req);
+  const acceptSignature = req.headers['exponent-accept-signature'];
+  return getManifestResponseAsync({
+    projectRoot,
+    host: req.headers.host,
+    platform,
+    acceptSignature,
+  });
 }
 
 export async function getExpoGoConfig({
   projectRoot,
-  projectSettings,
+  packagerOpts,
   mainModuleName,
   hostname,
 }: {
   projectRoot: string;
-  projectSettings: ProjectSettings.ProjectSettings;
+  packagerOpts: {
+    // Required for dev client.
+    dev: boolean;
+  };
   mainModuleName: string;
   hostname: string | undefined;
 }): Promise<ExpoGoConfig> {
@@ -199,11 +186,12 @@ export async function getExpoGoConfig({
     constructLogUrlAsync(projectRoot, hostname),
   ]);
   return {
+    // Required for Expo Go to function.
     developer: {
       tool: ProcessSettings.developerTool,
       projectRoot,
     },
-    packagerOpts: projectSettings,
+    packagerOpts,
     mainModuleName,
     // Add this string to make Flipper register React Native / Metro as "running".
     // Can be tested by running:
@@ -225,7 +213,7 @@ export async function getManifestResponseAsync({
   platform: string;
   host?: string;
   acceptSignature?: string | string[];
-}): Promise<{ exp: ExpoAppManifest; manifestString: string; hostInfo: HostInfo }> {
+}): Promise<{ manifest: ExpoAppManifest; manifestString: string; hostInfo: HostInfo }> {
   // Read the config
   const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   // Opt towards newest functionality when expo isn't installed.
@@ -241,17 +229,18 @@ export async function getManifestResponseAsync({
   // NOTE(Bacon): Webpack is currently hardcoded to index.bundle on native
   // in the future (TODO) we should move this logic into a Webpack plugin and use
   // a generated file name like we do on web.
-  if (Webpack.isTargetingNative()) {
+  if (WebpackDevServer.isTargetingNative()) {
     entryPoint = 'index.js';
   }
   const mainModuleName = stripJSExtension(entryPoint);
   // Gather packager and host info
   const hostInfo = await createHostInfoAsync();
-  const [projectSettings, bundleUrlPackagerOpts] = await getPackagerOptionsAsync(projectRoot);
   // Create the manifest and set fields within it
   const expoGoConfig = await getExpoGoConfig({
     projectRoot,
-    projectSettings,
+    packagerOpts: {
+      dev: ProcessSettings.isDevMode,
+    },
     mainModuleName,
     hostname,
   });
@@ -261,28 +250,20 @@ export async function getManifestResponseAsync({
     ...expoGoConfig,
     hostUri,
   };
-  // Adding the env variables to the Expo manifest is unsafe.
-  // This feature is deprecated in SDK 41 forward.
-  if (manifest.sdkVersion) {
-    manifest.env = getManifestEnvironment();
-  }
 
   // Add URLs to the manifest
   manifest.bundleUrl = await getBundleUrlAsync({
     projectRoot,
     platform,
-    projectSettings,
-    bundleUrlPackagerOpts,
     mainModuleName,
     hostname,
   });
 
   // Resolve all assets and set them on the manifest as URLs
-  await resolveManifestAssets({
-    projectRoot,
+  await resolveManifestAssets(projectRoot, {
     manifest,
     async resolver(path) {
-      if (Webpack.isTargetingNative()) {
+      if (WebpackDevServer.isTargetingNative()) {
         // When using our custom dev server, just do assets normally
         // without the `assets/` subpath redirect.
         return resolve(manifest.bundleUrl!.match(/^https?:\/\/.*?\//)![0], path);
@@ -294,9 +275,29 @@ export async function getManifestResponseAsync({
   await resolveGoogleServicesFile(projectRoot, manifest);
 
   // Create the final string
-  let manifestString;
+  const manifestString = await fetchComputedManifestStringAsync(projectRoot, {
+    manifest,
+    hostInfo,
+    acceptSignature,
+  });
+
+  return {
+    manifestString,
+    manifest,
+    hostInfo,
+  };
+}
+
+async function fetchComputedManifestStringAsync(
+  projectRoot: string,
+  {
+    manifest,
+    hostInfo,
+    acceptSignature,
+  }: { manifest: ExpoAppManifest; hostInfo: HostInfo; acceptSignature: string | string[] }
+) {
   try {
-    manifestString = await getManifestStringAsync(manifest, hostInfo.host, acceptSignature);
+    return await getManifestStringAsync(manifest, hostInfo.host, acceptSignature);
   } catch (error) {
     if (error.code === 'UNAUTHORIZED_ERROR' && manifest.owner) {
       // Don't have permissions for siging, warn and enable offline mode.
@@ -309,7 +310,7 @@ export async function getManifestResponseAsync({
           learnMore('https://docs.expo.dev/versions/latest/config/app/#owner')
       );
       ProcessSettings.isOffline = true;
-      manifestString = await getManifestStringAsync(manifest, hostInfo.host, acceptSignature);
+      return await getManifestStringAsync(manifest, hostInfo.host, acceptSignature);
     } else if (error.code === 'ENOTFOUND') {
       // Got a DNS error, i.e. can't access exp.host, warn and enable offline mode.
       addSigningDisabledWarning(
@@ -319,17 +320,11 @@ export async function getManifestResponseAsync({
         }.`
       );
       ProcessSettings.isOffline = true;
-      manifestString = await getManifestStringAsync(manifest, hostInfo.host, acceptSignature);
+      return await getManifestStringAsync(manifest, hostInfo.host, acceptSignature);
     } else {
       throw error;
     }
   }
-
-  return {
-    manifestString,
-    exp: manifest,
-    hostInfo,
-  };
 }
 
 const addSigningDisabledWarning = (() => {
@@ -342,21 +337,12 @@ const addSigningDisabledWarning = (() => {
   };
 })();
 
-function getManifestEnvironment(): Record<string, any> {
-  return Object.keys(process.env).reduce<Record<string, any>>((prev, key) => {
-    if (shouldExposeEnvironmentVariableInManifest(key)) {
-      prev[key] = process.env[key];
-    }
-    return prev;
-  }, {});
-}
-
 async function getManifestStringAsync(
   manifest: ExpoAppManifest,
   hostUUID: string,
   acceptSignature?: string | string[]
 ): Promise<string> {
-  const currentSession = await UserManager.getSessionAsync();
+  const currentSession = await getUserAsync();
   if (!currentSession || ProcessSettings.isOffline) {
     manifest.id = `@${ANONYMOUS_USERNAME}/${manifest.slug}-${hostUUID}`;
   }
@@ -365,17 +351,18 @@ async function getManifestStringAsync(
   } else if (!currentSession || ProcessSettings.isOffline) {
     return getUnsignedManifestString(manifest);
   } else {
-    return await getSignedManifestStringAsync(manifest, currentSession);
+    return await getSignedManifestStringAsync(manifest);
   }
 }
 
+// Passed to Expo Go and registered as telemetry.
+// TODO: it's unclear why we don't just send it from the CLI.
 async function createHostInfoAsync(): Promise<HostInfo> {
   const host = await UserSettings.getAnonymousIdentifierAsync();
 
   return {
     host,
-    // TODO: Do we keep this?
-    server: 'xdl',
+    server: 'expo',
     serverVersion: process.env.__EXPO_VERSION,
     serverDriver: ProcessSettings.developerTool,
     serverOS: os.platform(),
@@ -383,27 +370,28 @@ async function createHostInfoAsync(): Promise<HostInfo> {
   };
 }
 
-export async function getSignedManifestStringAsync(
-  manifest: Partial<ExpoAppManifest>,
-  // NOTE: we currently ignore the currentSession that is passed in, see the note below about analytics.
-  currentSession: { sessionSecret?: string; accessToken?: string }
-) {
+export async function getSignedManifestStringAsync(manifest: Partial<ExpoAppManifest>) {
   const manifestString = JSON.stringify(manifest);
-  if (_cachedSignedManifest.manifestString === manifestString) {
-    return _cachedSignedManifest.signedManifest;
+  if (cachedSignedManifest.manifestString === manifestString) {
+    return cachedSignedManifest.signedManifest;
   }
-  // WARNING: Removing the following line will regress analytics, see: https://github.com/expo/expo-cli/pull/2357
-  // TODO: make this more obvious from code
-  const user = await UserManager.ensureLoggedInAsync();
-  const { response } = await ApiV2.clientForUser(user).postAsync('manifest/sign', {
-    args: {
-      remoteUsername: manifest.owner ?? (await UserManager.getCurrentUsernameAsync()),
-      remotePackageName: manifest.slug,
-    },
-    manifest: manifest as JSONObject,
-  });
-  _cachedSignedManifest.manifestString = manifestString;
-  _cachedSignedManifest.signedManifest = response;
+  // TODO: Test -- if the format is incorrect, then Expo Go will crash without any extra info.
+  await ensureLoggedInAsync();
+  const { data } = await apiClient
+    .post('manifest/sign', {
+      json: {
+        args: {
+          remoteUsername: manifest.owner ?? getActorDisplayName(await getUserAsync()),
+          remotePackageName: manifest.slug,
+        },
+        manifest: manifest as JSONObject,
+      },
+    })
+    .json();
+
+  const response = data.response;
+  cachedSignedManifest.manifestString = manifestString;
+  cachedSignedManifest.signedManifest = response;
   return response;
 }
 

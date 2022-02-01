@@ -1,9 +1,10 @@
 import { ExpoConfig } from '@expo/config-types';
-import path from 'path';
 import semver from 'semver';
-import { CommandError } from '../../utils/errors';
+
+import { apiClient } from '../../utils/api';
 import { EXPO_BETA } from '../../utils/env';
-import ApiV2 from './ApiV2';
+import { CommandError } from '../../utils/errors';
+import { pickBy } from '../../utils/obj';
 import { Cache } from './Cache';
 
 export type SDKVersion = {
@@ -42,13 +43,16 @@ type Versions = {
   turtleSdkVersions: TurtleSDKVersionsOld;
 };
 
+/** Get versions from remote endpoint. */
 export async function getVersionsAsync(options?: { skipCache?: boolean }): Promise<Versions> {
-  const api = new ApiV2();
   const versionCache = new Cache({
-    getAsync: () => api.getAsync('versions/latest'),
+    getAsync: () =>
+      apiClient
+        .get('versions/latest')
+        .json<{ data: Versions }>()
+        .then(({ data }) => data),
     filename: 'versions.json',
     ttlMilliseconds: 0,
-    bootstrapFile: path.join(__dirname, '../caches/versions.json'),
   });
 
   // Clear cache when opting in to beta because things can change quickly in beta
@@ -157,16 +161,4 @@ export async function getLastSupportedMajorVersionAsync(): Promise<number> {
   const supportedVersions = pickBy(sdkVersions, (v) => !v.isDeprecated);
   const versionNumbers = Object.keys(supportedVersions).map((version) => semver.major(version));
   return Math.min(...versionNumbers);
-}
-
-function pickBy<T>(
-  obj: { [key: string]: T },
-  predicate: (value: T, key: string) => boolean | undefined
-) {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    if (predicate(value, key)) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as { [key: string]: T });
 }

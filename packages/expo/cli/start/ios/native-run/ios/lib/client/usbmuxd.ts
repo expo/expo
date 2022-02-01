@@ -9,7 +9,7 @@ import plist from '@expo/plist';
 import Debug from 'debug';
 import * as net from 'net';
 
-import { parsePlistBuffer } from '../../../../../utils/parseBinaryPlistAsync';
+import { parsePlistBuffer } from '../../../../../../utils/plist';
 import { UsbmuxProtocolClient } from '../protocol/usbmux';
 import { ResponseError, ServiceClient } from './client';
 

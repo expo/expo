@@ -41,10 +41,12 @@ export async function validateDependenciesVersionsAsync(
   const incorrectDeps = findIncorrectDependencies(packageVersions, bundledNativeModules);
 
   if (incorrectDeps.length > 0) {
-    Log.warn('Some dependencies are incompatible with the installed expo package version:');
+    Log.warn(
+      chalk.yellow('Some dependencies are incompatible with the installed expo package version:')
+    );
     incorrectDeps.forEach(({ packageName, expectedVersionOrRange, actualVersion }) => {
       Log.warn(
-        ` - ${chalk.underline(packageName)} - expected version: ${chalk.underline(
+        chalk.yellow` - ${chalk.underline(packageName)} - expected version: ${chalk.underline(
           expectedVersionOrRange
         )} - actual version installed: ${chalk.underline(actualVersion)}`
       );
@@ -56,13 +58,15 @@ export async function validateDependenciesVersionsAsync(
     //   );
     // } else {
     Log.warn(
-      'Your project may not work correctly until you install the correct versions of the packages.\n' +
-        `To install the correct versions of these packages, please run: ${chalk.inverse(
-          'expo doctor --fix-dependencies'
-        )},\n` +
-        `or install individual packages by running ${chalk.inverse(
-          'expo install [package-name ...]'
-        )}`
+      chalk.yellow(
+        'Your project may not work correctly until you install the correct versions of the packages.\n' +
+          `To install the correct versions of these packages, please run: ${chalk.inverse(
+            'expo doctor --fix-dependencies'
+          )},\n` +
+          `or install individual packages by running ${chalk.inverse(
+            'expo install [package-name ...]'
+          )}`
+      )
     );
     // }
 

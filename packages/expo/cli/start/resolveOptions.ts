@@ -19,26 +19,25 @@ export type Options = {
   host: 'localhost' | 'lan' | 'tunnel';
 };
 
-export async function persistOptionsAsync(projectRoot: string, options: Options) {
+export async function persistOptionsAsync(options: Options) {
   // Set process settings...
   const ProcessSettings = await import('./api/ProcessSettings').then((m) => m.default);
   ProcessSettings.isOffline = options.offline;
-
-  // Persist
-  const ProjectSettings = await import('./api/ProjectSettings');
-  await ProjectSettings.setAsync(projectRoot, {
-    hostType: options.host,
-    scheme: options.scheme,
-    devClient: options.devClient,
-    dev: options.dev,
-    minify: options.minify,
-    https: options.https,
-  });
+  ProcessSettings.devClient = options.devClient;
+  ProcessSettings.https = options.https;
+  ProcessSettings.isDevMode = !!options.dev;
+  ProcessSettings.resetDevServer = !!options.clear;
+  ProcessSettings.forceManifestType = options.forceManifestType;
+  ProcessSettings.hostType = options.host;
+  ProcessSettings.scheme = options.scheme;
+  ProcessSettings.minify = options.minify;
 }
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
   const forceManifestType = args['--force-manifest-type'];
-  assert.match(forceManifestType, /^(classic|expo-updates)$/);
+  if (forceManifestType) {
+    assert.match(forceManifestType, /^(classic|expo-updates)$/);
+  }
   const host = resolveHostType({
     host: args['--host'],
     offline: args['--offline'],
@@ -107,6 +106,7 @@ export async function resolveSchemeAsync(
   }
 }
 
+/** Resolve and assert host type options. */
 export function resolveHostType(options: {
   host?: string;
   offline?: boolean;
@@ -134,6 +134,7 @@ export function resolveHostType(options: {
   return 'lan';
 }
 
+/** Resolve the port options for all supported bundlers. */
 export async function resolvePortsAsync(
   projectRoot: string,
   options: Pick<Options, 'port' | 'devClient'>,
@@ -146,7 +147,7 @@ export async function resolvePortsAsync(
   if (settings.webOnly) {
     const webpackPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
-      fallbackPort: Webpack.DEFAULT_PORT,
+      fallbackPort: Webpack.WEB_PORT,
     });
     if (!webpackPort) {
       throw new AbortCommandError();

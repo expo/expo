@@ -1,6 +1,6 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
-import Joi from 'joi';
+import chalk from 'chalk';
 import os from 'os';
 import QueryString from 'querystring';
 import url from 'url';
@@ -9,13 +9,25 @@ import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import { getIpAddressAsync } from '../utils/ip';
 import ProcessSettings from './api/ProcessSettings';
-import * as ProjectSettings from './api/ProjectSettings';
+import { getNativeDevServerPort } from './devServer';
+import { getNgrokInfo } from './ngrok/ngrokServer';
 
-interface URLOptions extends Omit<ProjectSettings.ProjectSettings, 'urlRandomness'> {
+export interface URLOptions {
+  /** URL scheme to use when opening apps in custom runtimes. */
+  scheme: string | null;
+  /** Type of dev server host to use. */
+  hostType: 'localhost' | 'lan' | 'tunnel';
+  /** Lan type to use in the dev server. */
+  lanType: 'ip' | 'hostname';
+  /** Should instruct the bundler to create minified bundles. */
+  minify: boolean;
+
+  dev?: boolean;
   urlType: null | 'exp' | 'http' | 'no-protocol' | 'redirect' | 'custom';
+  strict?: boolean;
 }
 
-interface MetroQueryOptions {
+export interface MetroQueryOptions {
   dev?: boolean;
   strict?: boolean;
   minify?: boolean;
@@ -34,8 +46,7 @@ export async function constructDeepLinkAsync(
   opts?: Partial<URLOptions>,
   requestHostname?: string
 ): Promise<string> {
-  const { devClient } = await ProjectSettings.readAsync(projectRoot);
-  if (devClient) {
+  if (ProcessSettings.devClient) {
     return constructDevClientUrlAsync(projectRoot, opts, requestHostname);
   } else {
     return constructManifestUrlAsync(projectRoot, opts, requestHostname);
@@ -59,11 +70,10 @@ export async function constructDevClientUrlAsync(
   if (opts?.scheme) {
     _scheme = opts?.scheme;
   } else {
-    const { scheme } = await ProjectSettings.readAsync(projectRoot);
-    if (!scheme || typeof scheme !== 'string') {
+    if (!ProcessSettings.scheme || typeof ProcessSettings.scheme !== 'string') {
       throw new CommandError('NO_DEV_CLIENT_SCHEME', 'No scheme specified for development client');
     }
-    _scheme = scheme;
+    _scheme = ProcessSettings.scheme;
   }
   const protocol = resolveProtocol(projectRoot, { scheme: _scheme, urlType: 'custom' });
   const manifestUrl = await constructManifestUrlAsync(
@@ -195,63 +205,63 @@ export function constructBundleQueryParams(opts: MetroQueryOptions): string {
   return QueryString.stringify(queryParams);
 }
 
-export async function constructWebAppUrlAsync(
-  projectRoot: string,
-  options: { hostType?: 'localhost' | 'lan' | 'tunnel' } = {}
-): Promise<string | null> {
-  const packagerInfo = await ProjectSettings.readPackagerInfoAsync(projectRoot);
-  if (!packagerInfo.webpackServerPort) {
-    return null;
-  }
-
-  const { https, hostType } = await ProjectSettings.readAsync(projectRoot);
-  const host = (options.hostType ?? hostType) === 'localhost' ? 'localhost' : getIpAddressAsync();
-
-  let urlType = 'http';
-  if (https === true) {
-    urlType = 'https';
-  }
-
-  return `${urlType}://${host}:${packagerInfo.webpackServerPort}`;
-}
-
 function assertValidOptions(opts: Partial<URLOptions>): URLOptions {
-  const schema = Joi.object().keys({
-    devClient: Joi.boolean().optional(),
-    scheme: Joi.string().optional().allow(null),
-    // Replaced by `scheme`
-    urlType: Joi.any().valid('exp', 'http', 'redirect', 'no-protocol').allow(null),
-    lanType: Joi.any().valid('ip', 'hostname'),
-    hostType: Joi.any().valid('localhost', 'lan', 'tunnel'),
-    dev: Joi.boolean(),
-    strict: Joi.boolean(),
-    minify: Joi.boolean(),
-    https: Joi.boolean().optional(),
-    urlRandomness: Joi.string().optional().allow(null),
-  });
-
-  const { error } = schema.validate(opts);
-  if (error) {
-    throw new CommandError('INVALID_OPTIONS', error.toString());
+  if (opts.scheme && typeof opts.scheme !== 'string') {
+    throw new CommandError('INVALID_OPTIONS', `"scheme" must be a string if specified`);
   }
+
+  const optionalEnums: [string, string[]][] = [
+    ['urlType', [null, 'exp', 'http', 'redirect', 'no-protocol']],
+    ['lanType', ['ip', 'hostname']],
+    ['hostType', ['localhost', 'lan', 'tunnel']],
+  ];
+
+  for (const [key, values] of optionalEnums) {
+    if (opts[key] && !values.includes(opts[key])) {
+      throw new CommandError(
+        'INVALID_OPTIONS',
+        `"${key}" must be one of: ${values.join(', ')} if specified`
+      );
+    }
+  }
+
+  for (const key of ['devClient', 'dev', 'strict', 'minify', 'https']) {
+    if (opts[key] !== undefined && typeof opts[key] !== 'boolean') {
+      throw new CommandError('INVALID_OPTIONS', `"${key}" must be a boolean if specified`);
+    }
+  }
+
+  Object.keys(opts).forEach((key) => {
+    if (
+      ![
+        'devClient',
+        'scheme',
+        'urlType',
+        'lanType',
+        'hostType',
+        'dev',
+        'strict',
+        'minify',
+        'https',
+      ].includes(key)
+    ) {
+      throw new CommandError('INVALID_OPTIONS', `"${key}" is not a valid option`);
+    }
+  });
 
   return opts as URLOptions;
 }
 
-async function ensureOptionsAsync(
-  projectRoot: string,
-  opts: Partial<URLOptions> | null
-): Promise<URLOptions> {
-  if (opts) {
-    assertValidOptions(opts);
-  }
-
-  const defaultOpts = await ProjectSettings.readAsync(projectRoot);
-  if (!opts) {
-    return { urlType: null, ...defaultOpts };
-  }
-  const optionsWithDefaults = { ...defaultOpts, ...opts };
-  return assertValidOptions(optionsWithDefaults);
+async function ensureOptionsAsync(opts: Partial<URLOptions> | null): Promise<URLOptions> {
+  return assertValidOptions({
+    urlType: null,
+    hostType: ProcessSettings.hostType,
+    scheme: ProcessSettings.scheme,
+    minify: ProcessSettings.minify,
+    lanType: ProcessSettings.lanType,
+    dev: ProcessSettings.isDevMode,
+    ...opts,
+  });
 }
 
 function resolveProtocol(
@@ -297,9 +307,7 @@ export async function constructUrlAsync(
   isPackager: boolean,
   requestHostname?: string
 ): Promise<string> {
-  const opts = await ensureOptionsAsync(projectRoot, incomingOpts);
-
-  const packagerInfo = await ProjectSettings.readPackagerInfoAsync(projectRoot);
+  const opts = await ensureOptionsAsync(incomingOpts);
 
   let protocol = resolveProtocol(projectRoot, opts);
 
@@ -323,7 +331,7 @@ export async function constructUrlAsync(
     }
   } else if (opts.hostType === 'localhost' || requestHostname === 'localhost') {
     hostname = '127.0.0.1';
-    port = packagerInfo.packagerPort;
+    port = getNativeDevServerPort();
   } else if (opts.hostType === 'lan' || ProcessSettings.isOffline) {
     if (process.env.EXPO_PACKAGER_HOSTNAME) {
       hostname = process.env.EXPO_PACKAGER_HOSTNAME.trim();
@@ -339,13 +347,17 @@ export async function constructUrlAsync(
       // Some old versions of OSX work with hostname but not local ip address.
       hostname = os.hostname();
     }
-    port = packagerInfo.packagerPort;
+    port = getNativeDevServerPort();
   } else {
-    const ngrokUrl = packagerInfo.packagerNgrokUrl;
-    if (!ngrokUrl || typeof ngrokUrl !== 'string') {
-      // TODO: if you start with --tunnel flag then this warning will always
-      // show up right before the tunnel starts...
-      Log.warn('Tunnel URL not found (it might not be ready yet), falling back to LAN URL.');
+    const ngrokUrl = getNgrokInfo()?.url;
+    if (ngrokUrl) {
+      const pnu = url.parse(ngrokUrl);
+      hostname = pnu.hostname;
+      port = pnu.port;
+    } else {
+      Log.warn(
+        chalk.yellow('Tunnel URL not found (it might not be ready yet), falling back to LAN URL.')
+      );
 
       return constructUrlAsync(
         projectRoot,
@@ -353,11 +365,6 @@ export async function constructUrlAsync(
         isPackager,
         requestHostname
       );
-    } else {
-      //   ProjectUtils.clearNotification(projectRoot, 'tunnel-url-not-found');
-      const pnu = url.parse(ngrokUrl);
-      hostname = pnu.hostname;
-      port = pnu.port;
     }
   }
 

@@ -1,13 +1,16 @@
 import { readExpRcAsync } from '@expo/config';
 import * as path from 'path';
+import slugify from 'slugify';
 
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
+import { getActorDisplayName, getUserAsync } from '../../utils/user/user';
 import * as Android from '../android/Android';
 import * as ProjectSettings from '../api/ProjectSettings';
 import UserSettings from '../api/UserSettings';
-import * as UrlUtils from './ngrokUrl';
+import { getNativeDevServerPort } from '../devServer';
+import * as NgrokServer from './ngrokServer';
 import { NgrokOptions, resolveNgrokAsync } from './resolveNgrok';
 
 const NGROK_CONFIG = {
@@ -16,23 +19,34 @@ const NGROK_CONFIG = {
   domain: 'exp.direct',
 };
 
+const TUNNEL_TIMEOUT = 10 * 1000;
+
 function getNgrokConfigPath() {
   return path.join(UserSettings.getDirectory(), 'ngrok.yml');
 }
 
+function randomIdentifier(length: number = 6): string {
+  const alphabet = '23456789qwertyuipasdfghjkzxcvbnm';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const j = Math.floor(Math.random() * alphabet.length);
+    const c = alphabet.substr(j, 1);
+    result += c;
+  }
+  return result;
+}
+
 async function getProjectRandomnessAsync(projectRoot: string) {
-  const ps = await ProjectSettings.readAsync(projectRoot);
-  const randomness = ps.urlRandomness;
+  const { urlRandomness: randomness } = await ProjectSettings.readAsync(projectRoot);
   if (randomness) {
     return randomness;
-  } else {
-    return resetProjectRandomnessAsync(projectRoot);
   }
+  return await resetProjectRandomnessAsync(projectRoot);
 }
 
 async function resetProjectRandomnessAsync(projectRoot: string) {
-  const randomness = UrlUtils.someRandomness();
-  ProjectSettings.setAsync(projectRoot, { urlRandomness: randomness });
+  const randomness = [randomIdentifier(2), randomIdentifier(3)].join('-');
+  await ProjectSettings.setAsync(projectRoot, { urlRandomness: randomness });
   return randomness;
 }
 
@@ -88,23 +102,21 @@ async function connectToNgrokAsync(
   }
 }
 
-const TUNNEL_TIMEOUT = 10 * 1000;
-
-export async function startTunnelsAsync(
+export async function startTunnelAsync(
   projectRoot: string,
   options: { autoInstall?: boolean } = {}
 ): Promise<void> {
   const ngrok = await resolveNgrokAsync(projectRoot, options);
-  const username = (await UserManager.getCurrentUsernameAsync()) || ANONYMOUS_USERNAME;
-  const { packagerPort, ngrokPid } = await ProjectSettings.readPackagerInfoAsync(projectRoot);
-  if (!packagerPort) {
+  // TODO: Maybe assert no robot users?
+  const username = getActorDisplayName(await getUserAsync());
+  const devServerPort = getNativeDevServerPort();
+  if (!devServerPort) {
     throw new CommandError(
-      'NO_PACKAGER_PORT',
-      `No dev server found for project at ${projectRoot}.`
+      'NO_DEV_SERVER',
+      `No Metro dev server found for project at: ${projectRoot}`
     );
   }
-
-  await stopTunnelsAsync(projectRoot);
+  await stopTunnelAsync(projectRoot);
   if (await Android.startAdbReverseAsync(projectRoot)) {
     Log.log(
       'Successfully ran `adb reverse`. Localhost URLs should work on the connected Android device.'
@@ -134,29 +146,29 @@ export async function startTunnelsAsync(
           return [
             ...extra,
             randomness,
-            UrlUtils.domainify(username),
-            UrlUtils.domainify(packageShortName),
+            slugify(username),
+            slugify(packageShortName),
             NGROK_CONFIG.domain,
           ].join('.');
         };
 
       // Custom dev server will share the port across expo and metro dev servers,
       // this means we only need one ngrok URL.
-      const packagerNgrokUrl = await connectToNgrokAsync(
+      const serverUrl = await connectToNgrokAsync(
         projectRoot,
         ngrok,
         {
           authtoken: NGROK_CONFIG.authToken,
-          port: packagerPort,
+          port: devServerPort,
           proto: 'http',
         },
         createResolver(),
-        ngrokPid
+        NgrokServer.getNgrokInfo()?.pid
       );
 
-      await ProjectSettings.setPackagerInfoAsync(projectRoot, {
-        packagerNgrokUrl,
-        ngrokPid: ngrok.getActiveProcess().pid,
+      NgrokServer.setNgrokInfo({
+        url: serverUrl,
+        pid: ngrok.getActiveProcess().pid,
       });
 
       startedTunnelsSuccessfully = true;
@@ -166,7 +178,7 @@ export async function startTunnelsAsync(
   ]);
 }
 
-export async function stopTunnelsAsync(projectRoot: string): Promise<void> {
+export async function stopTunnelAsync(projectRoot: string): Promise<void> {
   const ngrok = await resolveNgrokAsync(projectRoot, { shouldPrompt: false }).catch(() => null);
   if (!ngrok) {
     return;
@@ -175,7 +187,7 @@ export async function stopTunnelsAsync(projectRoot: string): Promise<void> {
   // This will kill all ngrok tunnels in the process.
   // We'll need to change this if we ever support more than one project
   // open at a time in XDE.
-  const { ngrokPid } = await ProjectSettings.readPackagerInfoAsync(projectRoot);
+  const ngrokPid = NgrokServer.getNgrokInfo()?.pid;
   const ngrokProcess = ngrok.getActiveProcess();
   const ngrokProcessPid = ngrokProcess ? ngrokProcess.pid : null;
   if (ngrokPid && ngrokPid !== ngrokProcessPid) {
@@ -189,10 +201,7 @@ export async function stopTunnelsAsync(projectRoot: string): Promise<void> {
     // Ngrok is running from the current process. Kill using ngrok api.
     await ngrok.kill();
   }
-  await ProjectSettings.setPackagerInfoAsync(projectRoot, {
-    packagerNgrokUrl: null,
-    ngrokPid: null,
-  });
+  NgrokServer.setNgrokInfo(null);
   await Android.stopAdbReverseAsync(projectRoot);
 }
 
