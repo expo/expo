@@ -311,6 +311,14 @@ Represents an authorization response error: [Section 5.2][s52].
 Often times providers will fail to return the proper error message for a given error code.
 This error method will add the missing description for more context on what went wrong.
 
+### `GoogleAuthRequest`
+
+Extends [`AuthRequest`](#authrequest) and accepts [`GoogleAuthRequestConfig`](#googleauthrequestconfig) in the constructor.
+
+### `FacebookAuthRequest`
+
+Extends [`AuthRequest`](#authrequest) and accepts [`FacebookAuthRequest`](#facebookauthrequest) in the constructor.
+
 ## Types
 
 ### `AuthSessionResult`
