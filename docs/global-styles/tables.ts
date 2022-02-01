@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 
+// TODO(cedric): move these global table styles to ui/components/Table
 export const globalTables = css`
   table {
     margin-bottom: 1rem;

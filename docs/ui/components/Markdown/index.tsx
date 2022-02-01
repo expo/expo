@@ -1,7 +1,8 @@
 import { css, CSSObject } from '@emotion/react';
-import { typography, theme } from '@expo/styleguide';
+import { typography } from '@expo/styleguide';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H1, H2, H4, H5, CODE, P, BOLD, UL, OL, LI } from '~/ui/components/Text';
 
 type Config = ConfigStyles & {
@@ -101,25 +102,23 @@ const markdownStyles: Record<string, Config | null> = {
     },
   },
   table: {
-    Component: 'table',
+    Component: Table,
     style: {
       margin: '16px 0px 32px 0px',
       borderCollapse: 'collapse',
     },
   },
+  thead: {
+    Component: TableHead,
+  },
+  tr: {
+    Component: Row,
+  },
   th: {
-    Component: 'th',
-    css: typography.body.headline,
-    style: {
-      border: `1px solid ${theme.border.default}`,
-      padding: '12px',
-      verticalAlign: 'middle',
-    },
+    Component: HeaderCell,
   },
   td: {
-    Component: 'td',
-    css: typography.body.paragraph,
-    style: { padding: '12px', border: `1px solid ${theme.border.default}` },
+    Component: Cell,
   },
 };
 
