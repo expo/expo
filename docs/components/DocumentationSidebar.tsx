@@ -24,7 +24,7 @@ const STYLES_SECTION_CATEGORY = css`
 
 type SidebarProps = {
   router: NextRouter;
-  routes: NavigationRoute[];
+  routes?: NavigationRoute[];
 };
 
 type SidebarNodeProps = Pick<SidebarProps, 'router'> & {
@@ -38,15 +38,15 @@ const renderTypes: Record<NavigationType, React.ComponentType<SidebarNodeProps> 
   page: null, // Pages are rendered inside groups and should not be rendered directly
 };
 
-export default function DocumentationSidebar(props: SidebarProps) {
+export default function DocumentationSidebar({ router, routes = [] }: SidebarProps) {
   return (
     <nav css={STYLES_SIDEBAR} data-sidebar>
       <VersionSelector />
-      {props.routes.map(route => {
+      {routes.map(route => {
         const Component = renderTypes[route.type];
         return (
           !!Component && (
-            <Component key={`${route.type}-${route.name}`} router={props.router} route={route} />
+            <Component key={`${route.type}-${route.name}`} router={router} route={route} />
           )
         );
       })}
