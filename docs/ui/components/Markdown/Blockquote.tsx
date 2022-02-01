@@ -1,75 +1,72 @@
 import emojiRegex from 'emoji-regex';
-import React, { ReactNode, ReactElement, ComponentProps } from 'react';
+import React, { ReactNode, ComponentProps, isValidElement } from 'react';
 
-import { Callout, CalloutType } from '~/ui/components/Callout';
+import { Callout } from '~/ui/components/Callout';
 
 export const Blockquote = ({ children, ...rest }: ComponentProps<typeof Callout>) => {
-  const { icon, childrenWithoutIcon } = emojiFromChildren(children);
-  const type = emojiType[icon] || 'info';
-
+  const { emoji, childrenWithoutEmoji } = separateEmojiFromChild(children);
+  const type = emoji ? emojiType[emoji] : undefined;
+  const icon = type ? undefined : emoji;
   return (
     <Callout type={type} icon={icon} {...rest}>
-      {childrenWithoutIcon}
+      {childrenWithoutEmoji}
     </Callout>
   );
 };
 
-const emojiType: Record<string, CalloutType> = {
+const emojiType: Record<string, ComponentProps<typeof Callout>['type']> = {
   '⚠️': 'warning',
+  '❌': 'error',
 };
 
-function emojiFromChildren(children: ReactNode) {
-  let icon: string = '';
-  const childrenWithoutIcon = React.Children.map(children, child => {
-    if (!isElement(child)) {
-      return child;
+function separateEmojiFromChild(children: ReactNode) {
+  let emoji: string | undefined;
+  const childrenWithoutEmoji = React.Children.map(children, child => {
+    // Abort if we found the first emoji already
+    if (emoji) return child;
+    // If the children is passed as string, extract emoji from string
+    if (typeof child === 'string') {
+      emoji = getEmojiFromChild(child);
+      return emoji ? removeEmojiFromChild(emoji, child) : child;
     }
-
-    const emoji = getChildEmoji(child.props.children);
-    if (emoji) {
-      icon = emoji;
-      return {
-        ...child,
-        props: {
-          ...child.props,
-          children: removeChildEmoji(emoji, child.props.children),
-        },
-      };
+    // If the children is passed with wrapping P component, extract emoji from children
+    if (isValidElement(child)) {
+      emoji = getEmojiFromChild(child.props.children);
+      if (emoji) {
+        return {
+          ...child,
+          props: {
+            ...child.props,
+            children: removeEmojiFromChild(emoji, child.props.children),
+          },
+        };
+      }
     }
-
     return child;
   });
 
-  return { icon, childrenWithoutIcon: childrenWithoutIcon || children };
+  return { emoji, childrenWithoutEmoji: childrenWithoutEmoji || children };
 }
 
-function isElement(element: ReactNode): element is ReactElement {
-  return !!(element as ReactElement)?.props;
-}
-
-function first<T>(children: T | T[]): T {
-  return Array.isArray(children) ? children[0] : children;
-}
-
-function getChildEmoji(children: ReactNode) {
-  const child = first(children);
+function getEmojiFromChild(children: ReactNode) {
+  const child = Array.isArray(children) ? children[0] : children;
 
   if (typeof child === 'string') {
     const emojiCapture = child.match(emojiRegex());
-
     if (emojiCapture && emojiCapture.length) {
       return emojiCapture[0];
     }
   }
 }
 
-function removeChildEmoji(emoji: string, children: string[]) {
-  const child = first(children);
-  const modifiedChild = child.replace(emoji, '');
-
-  if (Array.isArray(children)) {
-    return [modifiedChild, ...children.slice(1)];
-  } else {
-    return modifiedChild;
+function removeEmojiFromChild(emoji: string, children: ReactNode | ReactNode[]) {
+  if (typeof children === 'string') {
+    return children.replace(emoji, '');
   }
+
+  if (Array.isArray(children) && typeof children[0] === 'string') {
+    return [children[0].replace(emoji, ''), ...children.slice(1)];
+  }
+
+  return children;
 }
