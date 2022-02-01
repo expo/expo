@@ -2,7 +2,6 @@ import { css } from '@emotion/react';
 import { borderRadius, iconSize, theme } from '@expo/styleguide';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
-import { P } from '~/ui/components/Text';
 import { IconProps, ErrorIcon, InfoIcon, WarningIcon } from '~/ui/foundations/icons';
 
 export type CalloutType = 'info' | 'warning' | 'error';
@@ -16,11 +15,7 @@ export const Callout = ({ type = 'info', icon, children, ...rest }: CalloutProps
   const Icon = icon || getCalloutIcon(type);
   return (
     <div css={[containerStyle, getCalloutColor(type)]} {...rest}>
-      <div css={iconStyle}>
-        <P style={{ color: theme.icon.default }}>
-          <Icon size={iconSize.small} />
-        </P>
-      </div>
+      <i css={iconStyle}>{typeof icon === 'string' ? icon : <Icon size={iconSize.small} />}</i>
       <div css={contentStyle}>{children}</div>
     </div>
   );
@@ -57,6 +52,7 @@ const containerStyle = css({
 });
 
 const iconStyle = css({
+  fontStyle: 'normal',
   marginRight: '0.5rem',
   userSelect: 'none',
 });
