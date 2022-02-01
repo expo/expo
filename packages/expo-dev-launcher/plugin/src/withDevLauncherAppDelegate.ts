@@ -223,7 +223,7 @@ function removeDevMenuInit(appDelegate: string): string {
 function addDeepLinkHandler(appDelegate: string): string {
   if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
     appDelegate = appDelegate.replace(
-      'return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];',
+      'return [RCTLinkingManager application:application openURL:url options:options];',
       DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK
     );
   }
@@ -340,7 +340,7 @@ See the expo-dev-client installation instructions to modify your AppDelegate man
 
   if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
     appDelegate = appDelegate.replace(
-      'return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];',
+      'return [RCTLinkingManager application:application openURL:url options:options];',
       DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK
     );
   }
