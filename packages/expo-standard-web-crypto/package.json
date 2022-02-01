@@ -34,7 +34,7 @@
     "expo-random": "~12.1.0"
   },
   "peerDependencies": {
-    "expo-random": "12.1.1"
+    "expo-random": "12.1.2"
   },
   "peerDependenciesMeta": {
     "expo-random": {

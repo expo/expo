@@ -1,6 +1,6 @@
 {
   "name": "expo-mail-composer",
-  "version": "11.1.0",
+  "version": "11.1.1",
   "description": "Provides an API to compose mails using OS specific UI",
   "main": "build/MailComposer.js",
   "types": "build/MailComposer.d.ts",

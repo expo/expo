@@ -1,6 +1,6 @@
 {
   "name": "expo-app-auth",
-  "version": "11.1.0",
+  "version": "11.1.1",
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "main": "build/AppAuth.js",
   "types": "build/AppAuth.d.ts",

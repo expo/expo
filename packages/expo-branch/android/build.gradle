@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '5.1.0'
+version = '5.1.1'
 
 import groovy.json.JsonSlurper
 
@@ -66,7 +66,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 12
-    versionName '5.1.0'
+    versionName '5.1.1'
 
     buildConfigField("String", "RNBRANCH_VERSION", "\"${getNpmVersion()}\"")
   }

@@ -1,6 +1,6 @@
 {
   "name": "expo-task-manager",
-  "version": "10.1.0",
+  "version": "10.1.1",
   "description": "Expo module that provides support for tasks that can run in the background.",
   "main": "build/TaskManager.js",
   "types": "build/TaskManager.d.ts",
@@ -35,7 +35,7 @@
   "dependencies": {
     "@expo/config-plugins": "^4.0.2",
     "unimodules-app-loader": "~3.0.0",
-    "unimodules-task-manager-interface": "7.1.0"
+    "unimodules-task-manager-interface": "7.1.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
