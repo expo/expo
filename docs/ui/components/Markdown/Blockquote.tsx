@@ -27,20 +27,20 @@ function separateEmojiFromChild(children: ReactNode) {
     // If the children is passed as string, extract emoji from string
     if (typeof child === 'string') {
       emoji = getEmojiFromChild(child);
-      return emoji ? removeEmojiFromChild(emoji, child) : child;
+      return !emoji ? child : removeEmojiFromChild(emoji, child);
     }
     // If the children is passed with wrapping P component, extract emoji from children
     if (isValidElement(child)) {
       emoji = getEmojiFromChild(child.props.children);
-      if (emoji) {
-        return {
-          ...child,
-          props: {
-            ...child.props,
-            children: removeEmojiFromChild(emoji, child.props.children),
-          },
-        };
-      }
+      return !emoji
+        ? child
+        : {
+            ...child,
+            props: {
+              ...child.props,
+              children: removeEmojiFromChild(emoji, child.props.children),
+            },
+          };
     }
     return child;
   });

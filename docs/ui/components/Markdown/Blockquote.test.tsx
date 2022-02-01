@@ -42,4 +42,14 @@ describe('Blockquote', () => {
     );
     expect(getByTitle('Warning-icon')).toBeInTheDocument();
   });
+
+  it('renders with multiple emoji wrapped in multiple paragraph', () => {
+    const { getByTitle } = render(
+      <Blockquote>
+        <P>❌ Watch out</P>
+        <P>⚠️ Careful</P>
+      </Blockquote>
+    );
+    expect(getByTitle('Error-icon')).toBeInTheDocument();
+  });
 });
