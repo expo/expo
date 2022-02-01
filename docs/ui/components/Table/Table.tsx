@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme, borderRadius } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 
-import { TableHead } from './TableHead';
+import { TableHeaders } from './TableHeaders';
 import { TextAlign } from './types';
 
 type TableProps = PropsWithChildren<{
@@ -10,12 +10,12 @@ type TableProps = PropsWithChildren<{
   headersAlign?: TextAlign[];
 }>;
 
-export const Table = ({ children, headers = [], headersAlign = [] }: TableProps) => (
+export const Table = ({ children, headers = [], headersAlign }: TableProps) => (
   <div css={tableWrapperStyle}>
     <table css={tableStyle}>
       {headers.length ? (
         <>
-          <TableHead headers={headers} headersAlign={headersAlign} />
+          <TableHeaders headers={headers} headersAlign={headersAlign} />
           <tbody>{children}</tbody>
         </>
       ) : (
