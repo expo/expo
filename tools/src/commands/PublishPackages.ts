@@ -67,7 +67,7 @@ export default (program: Command) => {
     /* debug options */
     .option(
       '-S, --skip-repo-checks',
-      'Skips checking whether the command is run on master branch and there are no unstaged changes.',
+      'Skips checking whether the command is run on main branch and there are no unstaged changes.',
       false
     )
     .option(

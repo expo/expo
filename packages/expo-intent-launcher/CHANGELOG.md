@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Re-enable passing custom action string to `startActivityAsync`. ([#15671](https://github.com/expo/expo/pull/15671) by [@Simek](https://github.com/Simek))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 10.1.1 — 2022-01-26
+
+### 🐛 Bug fixes
+
+- Re-enable passing custom action string to `startActivityAsync`. ([#15671](https://github.com/expo/expo/pull/15671) by [@Simek](https://github.com/Simek))
 
 ## 10.1.0 — 2021-12-03
 
@@ -67,6 +73,6 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
-```
+``````
 
 ```

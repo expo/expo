@@ -1,6 +1,6 @@
 ---
 title: Crypto
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-crypto'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-crypto'
 packageName: 'expo-crypto'
 ---
 

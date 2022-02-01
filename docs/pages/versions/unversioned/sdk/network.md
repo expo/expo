@@ -1,6 +1,6 @@
 ---
 title: Network
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-network'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-network'
 packageName: 'expo-network'
 ---
 

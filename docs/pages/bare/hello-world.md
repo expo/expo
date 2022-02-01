@@ -26,7 +26,7 @@ Bare template projects come with `expo` installed and configured, so you're read
 
 ## Install an Expo SDK package
 
-We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/master/packages/expo-web-browser), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
+We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/main/packages/expo-web-browser), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
 
 ```sh
 expo install expo-web-browser
@@ -53,7 +53,7 @@ export default function App() {
 }
 ```
 
-This will not yet work because we haven't linked the native code that powers it. To do this, we need to follow the instructions in the [`expo-web-browser` README](https://github.com/expo/expo/tree/master/packages/expo-web-browser) to configure it for iOS and Android. Let's do it.
+This will not yet work because we haven't linked the native code that powers it. To do this, we need to follow the instructions in the [`expo-web-browser` README](https://github.com/expo/expo/tree/main/packages/expo-web-browser) to configure it for iOS and Android. Let's do it.
 
 ### iOS configuration
 

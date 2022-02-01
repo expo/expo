@@ -31,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@expo/spawn-async": "^1.5.0",
     "commander": "^8.3.0",

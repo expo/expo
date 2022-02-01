@@ -18,7 +18,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-loader",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-image-loader",
   "dependencies": {},
   "devDependencies": {},
   "peerDependencies": {

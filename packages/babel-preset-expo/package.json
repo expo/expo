@@ -33,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-preset-expo#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/babel-preset-expo#readme",
   "eslintConfig": {
     "extends": "universe/node"
   },

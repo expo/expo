@@ -1,13 +1,13 @@
 import { css } from '@emotion/react';
+import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
-import { hiddenSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
-import { NavigationRoute, Url } from '~/types/common';
+import { NavigationRoute } from '~/types/common';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
@@ -21,14 +21,6 @@ const STYLES_SIDEBAR = css`
 const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 24px;
 `;
-
-function shouldSkipCategory(info: NavigationRoute) {
-  if (info.name === 'Feature Preview') {
-    return true;
-  }
-
-  return false;
-}
 
 function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
   if (info.name === parentGroup?.name) {
@@ -49,12 +41,8 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
 }
 
 type Props = {
-  url: Url;
-  asPath: string;
-  isVersionSelectorHidden: boolean;
+  router: NextRouter;
   routes: NavigationRoute[];
-  version: string;
-  onSetVersion: (value: string) => void;
 };
 
 export default class DocumentationSidebar extends React.Component<Props> {
@@ -66,16 +54,15 @@ export default class DocumentationSidebar extends React.Component<Props> {
     return (
       <DocumentationSidebarLink
         key={`${category}-${info.name}`}
-        info={info}
-        url={this.props.url}
-        asPath={this.props.asPath}>
+        router={this.props.router}
+        info={info}>
         {info.sidebarTitle || info.name}
       </DocumentationSidebarLink>
     );
   };
 
   private renderCategoryElements = (info: NavigationRoute, parentGroup?: NavigationRoute) => {
-    if (shouldSkipCategory(info)) {
+    if (info.hidden) {
       return null;
     }
 
@@ -83,21 +70,16 @@ export default class DocumentationSidebar extends React.Component<Props> {
       return (
         <DocumentationSidebarGroup
           key={`group-${info.name}`}
-          url={this.props.url}
-          info={info}
-          asPath={this.props.asPath}>
+          router={this.props.router}
+          info={info}>
           {info.children.map(categoryInfo => this.renderCategoryElements(categoryInfo, info))}
         </DocumentationSidebarGroup>
       );
     }
 
     const titleElement = shouldSkipTitle(info, parentGroup) ? null : (
-      <DocumentationSidebarTitle
-        key={info.sidebarTitle ? info.sidebarTitle : info.name}
-        info={info}
-        url={this.props.url}
-        asPath={this.props.asPath}>
-        {info.sidebarTitle ? info.sidebarTitle : info.name}
+      <DocumentationSidebarTitle key={info.sidebarTitle || info.name}>
+        {info.sidebarTitle || info.name}
       </DocumentationSidebarTitle>
     );
 
@@ -121,12 +103,9 @@ export default class DocumentationSidebar extends React.Component<Props> {
 
     return (
       <nav css={STYLES_SIDEBAR} {...customDataAttributes}>
-        {!this.props.isVersionSelectorHidden && (
-          <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
-        )}
-
+        <VersionSelector />
         {this.props.routes.map(categoryInfo => {
-          if (categoryIsHidden(categoryInfo.name)) {
+          if (categoryInfo.hidden) {
             return null;
           }
           return this.renderCategoryElements(categoryInfo);
@@ -134,8 +113,4 @@ export default class DocumentationSidebar extends React.Component<Props> {
       </nav>
     );
   }
-}
-
-function categoryIsHidden(categoryName: string): boolean {
-  return hiddenSections.includes(categoryName);
 }

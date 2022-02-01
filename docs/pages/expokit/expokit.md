@@ -126,7 +126,7 @@ If upgrading from SDK 32 or below:
      require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
      use_unimodules!
    ```
-   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/master/packages/react-native-unimodules).
+   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/main/packages/react-native-unimodules).
 3. Upgrade CocoaPods to some version higher or equal 1.6. (At the moment of writing the latest version is 1.7.1, we have tested it works. You will probably need to run `gem update cocoapods`, but the exact command will depend on your setup.)
 4. Change the whole `post_install` block at the bottom of the `Podfile` to
 
@@ -183,8 +183,8 @@ If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` cl
 
 If you have never made any edits to your Expo-generated `AppDelegate` files, then you can just replace them with these new template files:
 
-- [AppDelegate.h](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.h)
-- [AppDelegate.m](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.m)
+- [AppDelegate.h](https://github.com/expo/expo/tree/main/exponent-view-template/ios/exponent-view-template/AppDelegate.h)
+- [AppDelegate.m](https://github.com/expo/expo/tree/main/exponent-view-template/ios/exponent-view-template/AppDelegate.m)
 
 If you override any `AppDelegate` methods to add custom behavior, you'll need to either refactor your `AppDelegate` to subclass `EXStandaloneAppDelegate` and call `super` methods when necessary, or start with the new template files above and add your custom logic again (be sure to keep the calls to `super` methods).
 

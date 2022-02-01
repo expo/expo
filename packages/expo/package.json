@@ -56,7 +56,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@expo/config": "^6.0.15",
@@ -78,8 +78,8 @@
     "expo-file-system": "~13.2.0",
     "expo-font": "~10.0.4",
     "expo-keep-awake": "~10.0.1",
-    "expo-modules-autolinking": "0.5.5",
-    "expo-modules-core": "0.6.1",
+    "expo-modules-autolinking": "0.6.0",
+    "expo-modules-core": "0.7.0",
     "fbemitter": "^2.1.1",
     "form-data": "^2.3.2",
     "fs-extra": "9.0.0",

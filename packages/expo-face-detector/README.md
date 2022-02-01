@@ -4,7 +4,7 @@ Lets you use the power of MLKit (https://firebase.google.com/docs/ml-kit/detect-
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/facedetector.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/facedetector.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/facedetector/)
 
 # Installation in managed Expo projects

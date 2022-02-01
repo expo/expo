@@ -1,20 +1,23 @@
 import { render } from '@testing-library/react';
+import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import DocumentationFooter, { githubUrl } from './DocumentationFooter';
 
+const mockRouter = (router: Partial<NextRouter>): NextRouter => ({ ...Router, ...router });
+
 describe('DocumentationFooter', () => {
   test('displays default links', () => {
-    const { container } = render(
-      <DocumentationFooter asPath="/" url={{ pathname: '/example/' }} title="test-title" />
-    );
+    const router = mockRouter({ asPath: '/', pathname: '/example/' });
+    const { container } = render(<DocumentationFooter router={router} title="test-title" />);
 
     expect(container).toHaveTextContent('Ask a question on the forums');
     expect(container).toHaveTextContent('Edit this page');
   });
 
   test('displays forums link with tag', () => {
-    const { container } = render(<DocumentationFooter asPath="/sdk/" title="test-title" />);
+    const router = mockRouter({ asPath: '/sdk/', pathname: '' });
+    const { container } = render(<DocumentationFooter router={router} title="test-title" />);
 
     expect(container).toHaveTextContent(
       'Get help from the community and ask questions about test-title'
@@ -22,14 +25,16 @@ describe('DocumentationFooter', () => {
   });
 
   test('displays issues link', () => {
-    const { container } = render(<DocumentationFooter asPath="/sdk/" title="test-title" />);
+    const router = mockRouter({ asPath: '/sdk/', pathname: '' });
+    const { container } = render(<DocumentationFooter router={router} title="test-title" />);
 
     expect(container).toHaveTextContent('View open bug reports for test-title');
   });
 
   test('displays source code link', () => {
+    const router = mockRouter({ asPath: '/sdk/', pathname: '' });
     const { container } = render(
-      <DocumentationFooter asPath="/sdk/" title="test-title" sourceCodeUrl="/" />
+      <DocumentationFooter router={router} title="test-title" sourceCodeUrl="/" />
     );
 
     expect(container).toHaveTextContent('View source code for test-title');
@@ -37,7 +42,7 @@ describe('DocumentationFooter', () => {
 });
 
 describe('githubUrl', () => {
-  const EDIT_URL_PREFIX = 'https://github.com/expo/expo/edit/master/docs/pages';
+  const EDIT_URL_PREFIX = 'https://github.com/expo/expo/edit/main/docs/pages';
 
   test('non-versioned page', () => {
     expect(githubUrl('/guides')).toBe(EDIT_URL_PREFIX + '/guides.md');

@@ -5,14 +5,21 @@ import fs from 'fs/promises';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { bin, execute, projectRoot, getRoot, setupTestProjectAsync } from './utils';
+import {
+  bin,
+  execute,
+  projectRoot,
+  getRoot,
+  setupTestProjectAsync,
+  getLoadedModulesAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
 });
 
@@ -21,14 +28,31 @@ afterAll(() => {
   process.env.CI = originalCI;
 });
 
+it('loads expected modules by default', async () => {
+  const modules = await getLoadedModulesAsync(
+    `require('../../build-cli/cli/prebuild').expoPrebuild`
+  );
+  expect(modules).toStrictEqual([
+    'node_modules/ansi-styles/index.js',
+    'node_modules/arg/index.js',
+    'node_modules/chalk/source/index.js',
+    'node_modules/chalk/source/util.js',
+    'node_modules/has-flag/index.js',
+    'node_modules/supports-color/index.js',
+    'packages/expo/build-cli/cli/log.js',
+    'packages/expo/build-cli/cli/prebuild/index.js',
+    'packages/expo/build-cli/cli/utils/args.js',
+  ]);
+});
+
 it('runs `npx expo prebuild --help`', async () => {
   const results = await execute('prebuild', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          [1mDescription[22m
+          Description
             Create native iOS and Android project files before building natively.
 
-          [1mUsage[22m
+          Usage
             $ npx expo prebuild <dir>
 
           <dir> is the directory of the Expo project.

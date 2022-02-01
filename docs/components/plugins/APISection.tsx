@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
-import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
@@ -12,6 +11,7 @@ import APISectionMethods from '~/components/plugins/api/APISectionMethods';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import { TypeDocKind, getComponentName } from '~/components/plugins/api/APISectionUtils';
+import { usePageApiVersion } from '~/providers/page-api-version';
 
 const LATEST_VERSION = `v${require('~/package.json').version}`;
 
@@ -176,7 +176,7 @@ const renderAPI = (
 };
 
 const APISection = ({ packageName, apiName, forceVersion, strictTypes = false }: Props) => {
-  const { version } = useContext(DocumentationPageContext);
+  const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);

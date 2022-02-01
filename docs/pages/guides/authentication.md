@@ -23,7 +23,7 @@ Here are some **important rules** that apply to all authentication providers:
 ## Guides
 
 **AuthSession** can be used for any OAuth or OpenID Connect provider, we've assembled guides for using the most requested services!
-If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/master/docs/pages/guides/authentication.md) or [vote on canny](https://expo.canny.io/feature-requests).
+If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/main/docs/pages/guides/authentication.md) or [vote on canny](https://expo.canny.io/feature-requests).
 
 <SocialGrid>
   <SocialGridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} href="#identityserver-4" image="/static/images/sdk/auth-session/identity4.png" />

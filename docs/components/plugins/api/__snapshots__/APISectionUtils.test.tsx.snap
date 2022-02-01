@@ -3,7 +3,7 @@
 exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 <div>
   <p
-    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+    class="css-101h856-paragraph-STYLES_PARAGRAPH"
     data-text="true"
   >
     This is the basic comment.
@@ -23,11 +23,11 @@ exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <p
-    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+    class="css-101h856-paragraph-STYLES_PARAGRAPH"
     data-text="true"
   >
     <strong
-      class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+      class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
     >
       Android only.
     </strong>
@@ -38,7 +38,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       rel="noopener noreferrer"
     >
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         Install Referrer API
       </code>
@@ -47,7 +47,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
   <h4
-    class="css-1j2s5xo-h4-h4-STYLES_H4"
+    class="css-838f5l-h4-h4-STYLES_H4"
     data-heading="true"
   >
     Example
@@ -58,7 +58,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       data-text="true"
     >
       <code
-        class="css-13ek3hw-STYLES_CODE_BLOCK"
+        class="css-149nz3h-STYLES_CODE_BLOCK"
       >
         <span
           class="token keyword"

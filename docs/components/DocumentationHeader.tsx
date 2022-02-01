@@ -8,6 +8,7 @@ import {
   ThemeAutoIcon,
   ChevronDownIcon,
   shadows,
+  typography,
 } from '@expo/styleguide';
 import Link from 'next/link';
 import * as React from 'react';
@@ -37,7 +38,7 @@ const STYLES_TITLE_TEXT = css`
   white-space: nowrap;
   padding-left: 8px;
   font-size: 1.2rem;
-  font-family: ${Constants.fonts.bold};
+  font-family: ${typography.fontFaces.semiBold};
   color: ${theme.text.default};
 `;
 
@@ -153,7 +154,7 @@ const STYLES_MENU_BUTTON = css`
 
 const SECTION_LINK = css`
   text-decoration: none;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   cursor: pointer;
 
   padding: 0 16px;
@@ -264,7 +265,6 @@ type Props = {
   isAlgoliaSearchHidden: boolean;
   isMenuActive: boolean;
   isMobileSearchActive: boolean;
-  version: string;
   activeSection?: string;
   onToggleSearch: () => void;
   onShowMenu: () => void;
@@ -335,7 +335,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
           <div css={STYLES_RIGHT}>
             {!this.props.isAlgoliaSearchHidden && (
               <div css={HEADER_RIGHT}>
-                <AlgoliaSearch version={this.props.version} hiddenOnMobile />
+                <AlgoliaSearch hiddenOnMobile />
                 <SelectTheme />
               </div>
             )}
@@ -360,11 +360,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
         </header>
         <header css={[STYLES_NAV, STYLES_MOBILE_NAV]}>
           {this.props.isMobileSearchActive ? (
-            <AlgoliaSearch
-              version={this.props.version}
-              hiddenOnMobile={false}
-              onToggleSearch={this.props.onToggleSearch}
-            />
+            <AlgoliaSearch hiddenOnMobile={false} onToggleSearch={this.props.onToggleSearch} />
           ) : (
             this.renderSectionLinks(false)
           )}
