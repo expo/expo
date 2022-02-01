@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, theme } from '@expo/styleguide';
+import { borderRadius, iconSize, theme, typography } from '@expo/styleguide';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
 import { IconProps, ErrorIcon, InfoIcon, WarningIcon } from '~/ui/foundations/icons';
@@ -57,9 +57,11 @@ const iconStyle = css({
   userSelect: 'none',
 });
 
-// Markdown adds unnecessary paragraphs within the callout component,
-// we need to forcefully remove the bottom marging on the last (or only) paragraph
 const contentStyle = css({
+  ...typography.body.paragraph,
+  color: theme.text.default,
+  // Markdown adds unnecessary paragraphs within the callout component,
+  // we need to forcefully remove the bottom marging on the last (or only) paragraph
   'p:last-child': {
     marginBottom: '0 !important', // TODO(cedric): Find an alternative for important
   },
