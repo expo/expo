@@ -245,7 +245,11 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
 + (NSString *)getMimeType:(NSString *)fileExtension{
   NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
   NSString *mimeType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
-  return mimeType;
+  if (mimeType != nil) {
+    return mimeType;
+  } else {
+    return @"application/octet-stream";
+  }
 }
 
 @end
