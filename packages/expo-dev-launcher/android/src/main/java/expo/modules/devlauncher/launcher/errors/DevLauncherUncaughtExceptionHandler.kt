@@ -2,9 +2,11 @@ package expo.modules.devlauncher.launcher.errors
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
+import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.concurrent.schedule
@@ -53,6 +55,8 @@ class DevLauncherUncaughtExceptionHandler(
 
     exceptionWasReported = true
     Log.e("DevLauncher", "DevLauncher tries to handle uncaught exception.", exception)
+    tryToSaveException(exception)
+
     applicationHolder.get()?.let {
       DevLauncherErrorActivity.showFatalError(
         it,
@@ -83,5 +87,11 @@ class DevLauncherUncaughtExceptionHandler(
         exitProcess(0)
       }
     }
+  }
+
+  private fun tryToSaveException(exception: Throwable) {
+    val context = DevLauncherKoinContext.app.koin.getOrNull<Context>() ?: return
+    val errorRegistry = DevLauncherErrorRegistry(context)
+    errorRegistry.storeException(exception)
   }
 }

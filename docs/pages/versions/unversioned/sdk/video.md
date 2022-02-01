@@ -1,6 +1,6 @@
 ---
 title: Video
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
 ---
 
@@ -38,7 +38,7 @@ export default function App() {
         ref={video}
         style={styles.video}
         source={{
-          uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+          uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
         }}
         useNativeControls
         resizeMode="contain"

@@ -1,7 +1,7 @@
 # Expo Test Suite
 
 Hi! This is what will make Expo never break ever. 🙏
-Learn more about this project in [CONTRIBUTING.md](https://github.com/expo/expo/blob/master/CONTRIBUTING.md).
+Learn more about this project in [CONTRIBUTING.md](https://github.com/expo/expo/blob/main/CONTRIBUTING.md).
 
 ## Running in the browser
 

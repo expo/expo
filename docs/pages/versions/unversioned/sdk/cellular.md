@@ -1,6 +1,6 @@
 ---
 title: Cellular
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-cellular'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-cellular'
 packageName: 'expo-cellular'
 ---
 

@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.7.0 — 2022-01-26
+
+### 🎉 New features
+
 - Allow accessing `RCTBridge` from the modules on iOS. ([#15816](https://github.com/expo/expo/pull/15816) by [@tsapeta](https://github.com/tsapeta))
 - Added support for native callbacks through the view props in Sweet API on iOS. ([#15731](https://github.com/expo/expo/pull/15731) by [@tsapeta](https://github.com/tsapeta))
 - Added support for native callbacks through the view props in Sweet API on Android. ([#15743](https://github.com/expo/expo/pull/15743) by [@lukmccall](https://github.com/lukmccall))
@@ -21,8 +29,7 @@
 
 - It's no longer possible to directly call methods from the `ModuleDefinition` in the `ViewManagers` on Android. ([#15741](https://github.com/expo/expo/pull/15741) by [@lukmccall](https://github.com/lukmccall))
 - Fix compatibility with react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 0.6.4 — 2022-01-05
 

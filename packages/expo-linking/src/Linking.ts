@@ -257,7 +257,7 @@ export function parse(url: string): ParsedURL {
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
-export function addEventListener(type: string, handler: URLListener): void {
+export function addEventListener(type: 'url', handler: URLListener): void {
   NativeLinking.addEventListener(type, handler);
 }
 
@@ -268,7 +268,7 @@ export function addEventListener(type: string, handler: URLListener): void {
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
  */
-export function removeEventListener(type: string, handler: URLListener): void {
+export function removeEventListener(type: 'url', handler: URLListener): void {
   NativeLinking.removeEventListener(type, handler);
 }
 

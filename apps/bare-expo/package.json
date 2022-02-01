@@ -126,7 +126,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/react": "~17.0.21",
-    "@types/react-native": "~0.64.12",
+    "@types/react-native": "~0.66.13",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-preset-expo": "~9.0.0",
     "detox": "^19.4.1",

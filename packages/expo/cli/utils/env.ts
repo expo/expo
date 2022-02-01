@@ -1,5 +1,6 @@
 import { boolish, string, int } from 'getenv';
 
+/** Skip warning users about a dirty git status */
 export const EXPO_NO_GIT_STATUS = boolish('EXPO_NO_GIT_STATUS', false);
 
 /** Enable profiling metrics */
@@ -7,18 +8,27 @@ export const EXPO_PROFILE = boolish('EXPO_PROFILE', false);
 
 /** Enable debug logging */
 export const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
-export const EXPO_LOCAL = boolish('EXPO_LOCAL', false);
-export const EXPO_STAGING = boolish('EXPO_STAGING', false);
+
 /** Enable the beta version of Expo (TODO: Should this just be in the beta version of expo releases?) */
 export const EXPO_BETA = boolish('EXPO_BETA', false);
+
+/** Enable staging API environment */
+export const EXPO_STAGING = boolish('EXPO_STAGING', false);
+
+/** Enable local API environment */
+export const EXPO_LOCAL = boolish('EXPO_LOCAL', false);
 
 /** Is running in non-interactive CI mode */
 export const CI = boolish('CI', false);
 
 /** Disable auto web setup */
 export const EXPO_NO_WEB_SETUP = boolish('EXPO_NO_WEB_SETUP', false);
+
 /** Disable auto TypeScript setup */
 export const EXPO_NO_TYPESCRIPT_SETUP = boolish('EXPO_NO_TYPESCRIPT_SETUP', false);
+
+/** Disable telemetry (analytics) */
+export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
 
 /** Expo automated authentication token for use in CI environments */
 export const EXPO_TOKEN = process.env.EXPO_TOKEN ?? null;
@@ -36,7 +46,6 @@ export const XDG_CACHE_HOME = string('XDG_CACHE_HOME', '');
 export const SKIP_CACHE = boolish('SKIP_CACHE', false);
 
 // TODO: Rename to EXPO_API_PORT or something...
-
 export const XDL_PORT = int('XDL_PORT', 0);
 
 /** Defaults to `exp.host` */

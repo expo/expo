@@ -11,6 +11,11 @@ const commands: { [command: string]: () => Promise<Command> } = {
   start: () => import('../cli/start').then((i) => i.expoStart),
   prebuild: () => import('../cli/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../cli/config').then((i) => i.expoConfig),
+  // Auth
+  login: () => import('../cli/login').then((i) => i.expoLogin),
+  logout: () => import('../cli/logout').then((i) => i.expoLogout),
+  register: () => import('../cli/register').then((i) => i.expoRegister),
+  whoami: () => import('../cli/whoami').then((i) => i.expoWhoami),
 };
 
 const args = arg(

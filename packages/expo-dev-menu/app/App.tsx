@@ -1,15 +1,12 @@
 import React from 'react';
 
-import { AppProviders } from './components/redesign/AppProviders';
-import { BottomSheetContainer } from './components/redesign/BottomSheetContainer';
-import { MainScreen } from './screens/MainScreen';
+import { AppProviders } from './components/AppProviders';
+import { Main } from './components/Main';
 
 export function App() {
   return (
     <AppProviders>
-      <BottomSheetContainer>
-        <MainScreen />
-      </BottomSheetContainer>
+      <Main />
     </AppProviders>
   );
 }

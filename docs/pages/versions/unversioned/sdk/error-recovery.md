@@ -1,6 +1,6 @@
 ---
 title: ErrorRecovery
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-error-recovery'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-error-recovery'
 packageName: 'expo-error-recovery'
 ---
 

@@ -20,7 +20,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-processing",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-processing",
   "dependencies": {
     "expo-gl": "11.1.1"
   },

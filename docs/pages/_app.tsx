@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { TrackPageView } from '~/common/analytics';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import * as markdown from '~/common/translate-markdown';
+import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 
 import 'react-diff-view/style/index.css';
@@ -52,6 +53,7 @@ export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric)
 function App({ Component, pageProps }: AppProps) {
   const googleAnalyticsId = 'UA-107832480-3';
   const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState(false);
+  useNProgress();
 
   useEffect(() => {
     setShouldLoadAnalytics(true);
