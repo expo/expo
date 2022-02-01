@@ -2,7 +2,7 @@ import { css, CSSObject } from '@emotion/react';
 import { typography } from '@expo/styleguide';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
-import { Cell, HeaderCell, Row, Table } from '~/ui/components/Table';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H1, H2, H4, H5, CODE, P, BOLD, UL, OL, LI } from '~/ui/components/Text';
 
 type Config = ConfigStyles & {
@@ -107,6 +107,9 @@ const markdownStyles: Record<string, Config | null> = {
       margin: '16px 0px 32px 0px',
       borderCollapse: 'collapse',
     },
+  },
+  thead: {
+    Component: TableHead,
   },
   tr: {
     Component: Row,
