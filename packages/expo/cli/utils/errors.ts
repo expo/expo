@@ -1,3 +1,6 @@
+import { AssertionError } from 'assert';
+import chalk from 'chalk';
+
 import { exit } from '../log';
 
 const ERROR_PREFIX = 'Error: ';
@@ -48,6 +51,17 @@ export function logCmdError(error: Error): never {
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
     process.exit(0);
+  } else if (
+    error instanceof CommandError ||
+    error instanceof AssertionError ||
+    error.name === 'ApiV2Error'
+  ) {
+    // Print the stack trace in debug mode only.
+    exit(
+      chalk.red(error.toString()) +
+        (require('./env').EXPO_DEBUG ? '\n' + chalk.gray(error.stack) : '')
+    );
   }
-  exit(error.toString());
+
+  exit(chalk.red(error.toString()) + '\n' + chalk.gray(error.stack));
 }

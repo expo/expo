@@ -1,4 +1,4 @@
-import prompts, { Options, PromptObject, PromptType } from 'prompts';
+import prompts, { Options, Choice, PromptObject, PromptType } from 'prompts';
 
 import { CI } from './env';
 import { AbortCommandError, CommandError } from './errors';
@@ -7,17 +7,22 @@ export type Question<V extends string = string> = PromptObject<V> & {
   optionsPerPage?: number;
 };
 
+export interface ExpoChoice<T> extends Choice {
+  value: T;
+}
+
 export { PromptType };
 
 type PromptOptions = { nonInteractiveHelp?: string } & Options;
 
+// TODO: rename to `promptAsync`
 export default function prompt(
   questions: Question | Question[],
   { nonInteractiveHelp, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
   if (CI && questions.length !== 0) {
-    let message = `Input is required, but Expo CLI is in non-interactive mode.\n`;
+    let message = `Input is required, but 'npx expo' is in non-interactive mode.\n`;
     if (nonInteractiveHelp) {
       message += nonInteractiveHelp;
     } else {
@@ -62,3 +67,23 @@ export async function confirmAsync(
   );
   return value ?? null;
 }
+
+/** Select an option from a list of options. */
+export async function selectAsync<T>(
+  message: string,
+  choices: ExpoChoice<T>[],
+  options?: PromptOptions
+): Promise<T> {
+  const { value } = await prompt(
+    {
+      message,
+      choices,
+      name: 'value',
+      type: 'select',
+    },
+    options
+  );
+  return value ?? null;
+}
+
+export const promptAsync = prompt;
