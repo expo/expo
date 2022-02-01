@@ -42,7 +42,7 @@ This can be a really frustrating scenario, since it gives you very little inform
 - Reproduce the crash (either using your production app, or the Expo Go app)
 - **Find an associated JavaScript crash report**: Check your JavaScript error reporting service (such as Sentry).
 - **Find an associated iOS crash report**: If your iOS app is on TestFlight or the App Store, you can use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode. If not, refer to their ["Diagnosing Issues Using Crash Reports and Device Logs" guide](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs).
-- **Find an associated Android crash report**If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run `adb logcat` to view the streaming logs. The `adb` (Android Debug Bridge) program is part of the Android SDK; an alternative to installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
+- **Find an associated Android crash report**: If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run `adb logcat` to view the streaming logs. The `adb` (Android Debug Bridge) program is part of the Android SDK; an alternative to installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
 
 With that information, you should be able to identify where the error is coming from, or at least search the internet for possible causes & solutions.
 
