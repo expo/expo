@@ -58,7 +58,7 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
   ensureIdentified();
 }
 
-export function logEvent(name: string, properties: Record<string, any> = {}): void {
+export function logEvent(event: string, properties: Record<string, any> = {}): void {
   if (EXPO_NO_TELEMETRY) {
     return;
   }
@@ -69,7 +69,7 @@ export function logEvent(name: string, properties: Record<string, any> = {}): vo
 
   const identity = { userId: userId ?? undefined, anonymousId: deviceId ?? uuidv4() };
   getClient().track({
-    event: name,
+    event,
     properties: { ...properties, ...commonEventProperties },
     ...identity,
     context: getContext(),
