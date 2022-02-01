@@ -25,7 +25,7 @@ function getClient(): RudderAnalytics {
   }
 
   client = new RudderAnalytics(
-    EXPO_STAGING || EXPO_LOCAL ? '1wpX20Da4ltFGSXbPFYUL00Chb7' : '1wpXLFxmujq86etH6G6cc90hPcC',
+    EXPO_STAGING || EXPO_LOCAL ? '24TKICqYKilXM480mA7ktgVDdea' : '24TKR7CQAaGgIrLTgu3Fp4OdOkI', // expo unified
     'https://cdp.expo.dev/v1/batch',
     {
       flushInterval: 300,
