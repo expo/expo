@@ -27,7 +27,10 @@ export type Url = {
   pathname: string;
 };
 
+export type NavigationType = 'section' | 'group' | 'page';
+
 export type NavigationRoute = {
+  type: NavigationType;
   name: string;
   href: string;
   as?: string;
@@ -36,5 +39,4 @@ export type NavigationRoute = {
   sidebarTitle?: string;
   weight?: number;
   children?: NavigationRoute[];
-  posts?: NavigationRoute[];
 };
