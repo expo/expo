@@ -4,7 +4,7 @@ import React, { ComponentType, PropsWithChildren } from 'react';
 
 import { IconProps, ErrorIcon, InfoIcon, WarningIcon } from '~/ui/foundations/icons';
 
-export type CalloutType = 'info' | 'warning' | 'error';
+type CalloutType = 'info' | 'warning' | 'error';
 
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
@@ -15,7 +15,9 @@ export const Callout = ({ type = 'info', icon, children, ...rest }: CalloutProps
   const Icon = icon || getCalloutIcon(type);
   return (
     <div css={[containerStyle, getCalloutColor(type)]} {...rest}>
-      <i css={iconStyle}>{typeof icon === 'string' ? icon : <Icon size={iconSize.small} />}</i>
+      <i css={iconStyle}>
+        {typeof icon === 'string' ? icon : <Icon data-testid="icon" size={iconSize.small} />}
+      </i>
       <div css={contentStyle}>{children}</div>
     </div>
   );
@@ -57,9 +59,11 @@ const iconStyle = css({
   userSelect: 'none',
 });
 
+// Markdown adds unnecessary paragraphs within the callout component,
+// we need to forcefully remove the bottom marging on the last (or only) paragraph
 const contentStyle = css({
   'p:last-child': {
-    marginBottom: '0 !important', // TODO(cedric): Find an alternative for this
+    marginBottom: '0 !important', // TODO(cedric): Find an alternative for important
   },
 });
 
