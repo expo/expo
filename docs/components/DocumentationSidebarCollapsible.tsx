@@ -46,7 +46,11 @@ type Props = {
   info: NavigationRoute;
 };
 
-export default class DocumentationSidebarGroup extends React.Component<Props, { isOpen: boolean }> {
+type State = {
+  isOpen: boolean;
+};
+
+export default class DocumentationSidebarCollapsible extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -109,7 +113,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
 
     let posts: NavigationRoute[] = [];
     sections?.forEach(section => {
-      posts = [...posts, ...(section?.posts ?? [])];
+      posts = [...posts, ...(section?.children ?? [])];
     });
 
     posts.forEach(isSectionActive);
