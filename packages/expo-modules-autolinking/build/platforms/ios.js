@@ -13,7 +13,7 @@ async function findPodspecFile(revision) {
     if ((_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPath()) {
         return revision.config.iosPodspecPath();
     }
-    const [podspecFile] = await (0, fast_glob_1.default)('{*/,}*.podspec', {
+    const [podspecFile] = await (0, fast_glob_1.default)('*/*.podspec', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });

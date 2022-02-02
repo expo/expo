@@ -10,7 +10,7 @@ async function findPodspecFile(revision: PackageRevision): Promise<string | unde
     return revision.config.iosPodspecPath();
   }
 
-  const [podspecFile] = await glob('{*/,}*.podspec', {
+  const [podspecFile] = await glob('*/*.podspec', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
