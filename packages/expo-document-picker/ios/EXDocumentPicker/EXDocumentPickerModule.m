@@ -186,14 +186,26 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
     
   NSString *extension = [url pathExtension];
   NSString *mimeType = [EXDocumentPickerModule getMimeType:extension];
+  NSString *name = [url lastPathComponent];
+  NSString *uri = [newUrl absoluteString];
   
-  _resolve(@{
-             @"type": @"success",
-             @"uri": [newUrl absoluteString],
-             @"name": [url lastPathComponent],
-             @"size": @(fileSize),
-             @"mimeType": mimeType
-             });
+  if (mimeType != nil) {
+    _resolve(@{
+               @"type": @"success",
+               @"uri":uri,
+               @"name": name,
+               @"size": @(fileSize),
+               @"mimeType": mimeType
+               });
+  } else {
+    _resolve(@{
+               @"type": @"success",
+               @"uri":uri,
+               @"name": name,
+               @"size": @(fileSize)
+               });
+  }
+
   _resolve = nil;
   _reject = nil;
 }
@@ -245,11 +257,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
 + (NSString *)getMimeType:(NSString *)fileExtension{
   NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
   NSString *mimeType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
-  if (mimeType != nil) {
-    return mimeType;
-  } else {
-    return @"application/octet-stream";
-  }
+  return mimeType;
 }
 
 @end
