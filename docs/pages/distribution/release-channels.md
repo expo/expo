@@ -19,7 +19,7 @@ Publish your release by running:
 
 with the Expo CLI. Your users can see this release in the Expo Go app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-channel>`. If you do not specify a channel, you will publish to the `default` channel.
 
-A release channel name can only contain lowercase letters, numbers and special characters . _ and -.
+A release channel name can only contain lowercase letters, numbers and special characters `.`, `_` and `-`.
 
 ## Build with Channels
 
