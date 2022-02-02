@@ -18,7 +18,7 @@ const enableEsbuild = !!process.env.USE_ESBUILD;
 logInfo(
   enableEsbuild
     ? 'Using esbuild for MDX files, USE_ESBUILD set to true'
-    : 'Using babel for MDX files, USE_ESBUILD not set',
+    : 'Using babel for MDX files, USE_ESBUILD not set'
 );
 
 // Prepare the latest version by copying the actual exact latest version
