@@ -58,7 +58,9 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     window.rootViewController!.view = rootView
     window.makeKeyAndVisible()
 
-    self.cleanup()
+    // it is purposeful that we don't clean up saved properties here, because we may initialize
+    // several React instances over a single app lifetime and we want them all to have the same
+    // initial properties
   }
 
   // MARK: Internals
@@ -72,17 +74,5 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
       fatalError("Cannot find the current window.")
     }
     return window!
-  }
-
-  /**
-   Cleanup unused resources after `RCTBridge` created.
-   We should keep `bridgeDelegate` alive because it's a wrapper of `RCTBridgeDelegate` from `AppDelegate` and somehow bridge may access it after.
-   */
-  private func cleanup() {
-    self.reactDelegate = nil
-    self.launchOptions = nil
-    self.deferredRootView = nil
-    self.rootViewModuleName = nil
-    self.rootViewInitialProperties = nil
   }
 }
