@@ -29,3 +29,29 @@ export function stripPort(host: string | undefined): string | undefined {
   }
   return new URL('/', `http://${host}`).hostname;
 }
+
+export function isHttps(urlString: string): boolean {
+  return validateUrl(urlString, { protocols: ['https'] });
+}
+
+export function validateUrl(
+  urlString: string,
+  { protocols, requireProtocol }: { protocols?: string[]; requireProtocol?: boolean }
+) {
+  const url = require('url');
+  try {
+    // eslint-disable-next-line
+    new url.URL(urlString);
+    const parsed = url.parse(urlString);
+    if (!parsed.protocol && !requireProtocol) {
+      return true;
+    }
+    return protocols
+      ? parsed.protocol
+        ? protocols.map((x) => `${x.toLowerCase()}:`).includes(parsed.protocol)
+        : false
+      : true;
+  } catch (err) {
+    return false;
+  }
+}

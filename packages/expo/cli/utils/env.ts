@@ -22,10 +22,10 @@ export const EXPO_LOCAL = boolish('EXPO_LOCAL', false);
 export const CI = boolish('CI', false);
 
 /** Disable auto web setup */
-export const EXPO_NO_WEB_SETUP = boolish('EXPO_NO_WEB_SETUP', false);
+export const EXPO_NO_WEB_SETUP = () => boolish('EXPO_NO_WEB_SETUP', false);
 
 /** Disable auto TypeScript setup */
-export const EXPO_NO_TYPESCRIPT_SETUP = boolish('EXPO_NO_TYPESCRIPT_SETUP', false);
+export const EXPO_NO_TYPESCRIPT_SETUP = () => boolish('EXPO_NO_TYPESCRIPT_SETUP', false);
 
 /** Disable telemetry (analytics) */
 export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
@@ -39,12 +39,6 @@ export const LOCAL_XDL_SCHEMA = boolish('LOCAL_XDL_SCHEMA', false);
 /** local directory to the universe repo for testing locally */
 export const EXPO_UNIVERSE_DIR = string('EXPO_UNIVERSE_DIR', '');
 
-/** TODO: No idea what this does */
-export const XDG_CACHE_HOME = string('XDG_CACHE_HOME', '');
-
-/** Disables json cache */
-export const SKIP_CACHE = boolish('SKIP_CACHE', false);
-
 // TODO: Rename to EXPO_API_PORT or something...
 export const XDL_PORT = int('XDL_PORT', 0);
 
@@ -52,6 +46,15 @@ export const XDL_PORT = int('XDL_PORT', 0);
 export const XDL_HOST = string('XDL_HOST', 'exp.host');
 
 export const XDL_SCHEME = string('XDL_SCHEME', 'https');
+
+/** Disable all API caches. Does not disable bundler caches. */
+export const EXPO_NO_CACHE = () => boolish('EXPO_NO_CACHE', false);
+
+/** @deprecated Default Webpack host string */
+export const WEB_HOST = string('WEB_HOST', '0.0.0.0');
+
+/** @deprecated Default Webpack port string */
+export const WEB_PORT = int('WEB_PORT', 19006);
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 

@@ -10,7 +10,7 @@ import WebpackDevServer from 'webpack-dev-server';
 
 import * as Log from '../../log';
 import { fileExistsAsync } from '../../utils/dir';
-import { getIpAddressAsync } from '../../utils/ip';
+import { getIpAddress } from '../../utils/ip';
 import { getLogger } from '../logger';
 import * as ExpoUpdatesManifestHandler from '../metro/ExpoUpdatesManifestHandler';
 import * as ManifestHandler from '../metro/ManifestHandler';
@@ -49,7 +49,7 @@ export type StartWebpackOptions = {
   forceManifestType: 'classic' | 'expo-updates';
 };
 
-let devServerResults: WebpackDevServerResults | null = null;
+let instance: WebpackDevServerResults | null = null;
 
 // A custom message websocket broadcaster used to send messages to a React Native runtime.
 let customMessageSocketBroadcaster:
@@ -106,15 +106,15 @@ export async function startAsync(
 
   server.close = (callback?: (err?: Error) => void) => {
     return originalClose((err?: Error) => {
-      devServerResults = null;
+      instance = null;
       callback?.(err);
     });
   };
 
-  const _host = getIpAddressAsync();
+  const _host = getIpAddress();
   const protocol = https ? 'https' : 'http';
 
-  devServerResults = {
+  instance = {
     // Server instance
     server,
     // URL Info
@@ -130,15 +130,15 @@ export async function startAsync(
     },
   };
 
-  return devServerResults;
+  return instance;
 }
 
 export async function stopAsync(): Promise<void> {
   await new Promise<void>((res) => {
-    if (devServerResults?.server) {
+    if (instance?.server) {
       Log.log('\u203A Stopping Webpack server');
-      devServerResults.server?.close(() => {
-        devServerResults = null;
+      instance.server?.close(() => {
+        instance = null;
         res();
       });
     } else {
@@ -151,10 +151,10 @@ export async function stopAsync(): Promise<void> {
  * Get the URL for the running instance of Webpack dev server.
  */
 export function getDevServerUrl(options: { hostType?: 'localhost' } = {}): string | null {
-  if (!devServerResults?.location) {
+  if (!instance?.location) {
     return null;
   }
-  const { location } = devServerResults;
+  const { location } = instance;
   if (options.hostType === 'localhost') {
     return `${location.protocol}://localhost:${location.port}`;
   }
@@ -171,7 +171,7 @@ function applyEnvironmentVariables(config: WebpackConfiguration): WebpackConfigu
   // has errors that aren't caught in development mode.
   // Related: https://github.com/expo/expo-cli/issues/614
   if (isDebugModeEnabled() && config.mode === 'production') {
-    console.log(chalk.bgYellow.black('Bundling the project in debug mode.'));
+    Log.log(chalk.bgYellow.black('Bundling the project in debug mode.'));
 
     const output = config.output || {};
     const optimization = config.optimization || {};
@@ -215,7 +215,7 @@ export async function loadConfigAsync(
   const env = {
     projectRoot,
     pwa: !!options.isImageEditingEnabled,
-    logger: getLogger(projectRoot),
+    logger: getLogger(),
     mode: options.mode,
     https: options.https,
   };
@@ -251,11 +251,11 @@ export function isTargetingNative() {
 }
 
 export function getInstance() {
-  return devServerResults;
+  return instance;
 }
 
 export async function broadcastMessage(message: 'reload' | string, data?: any) {
-  if (!devServerResults?.server || !(devServerResults?.server instanceof WebpackDevServer)) {
+  if (!instance?.server || !(instance?.server instanceof WebpackDevServer)) {
     return;
   }
 
@@ -277,7 +277,7 @@ export async function broadcastMessage(message: 'reload' | string, data?: any) {
   // For now, just manually convert the value so our CLI interface can be unified.
   const hackyConvertedMessage = message === 'reload' ? 'content-changed' : message;
 
-  devServerResults.server.sockWrite(devServerResults.server.sockets, hackyConvertedMessage, data);
+  instance.server.sockWrite(instance.server.sockets, hackyConvertedMessage, data);
 }
 
 async function createNativeDevServerMiddleware(
@@ -295,7 +295,7 @@ async function createNativeDevServerMiddleware(
   const { createDevServerMiddleware } = await import('@expo/dev-server');
 
   const nativeMiddleware = createDevServerMiddleware({
-    logger: getLogger(projectRoot),
+    logger: getLogger(),
     port,
     watchFolders: [projectRoot],
   });

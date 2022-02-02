@@ -19,6 +19,7 @@ type ManifestResolutionError = Error & {
   manifestField?: string;
 };
 
+/** Inline the contents of each platform's `googleServicesFile` so runtimes can access them. */
 export async function resolveGoogleServicesFile(projectRoot: string, manifest: ExpoConfig) {
   if (manifest.android?.googleServicesFile) {
     const contents = await fs.readFile(
@@ -48,16 +49,15 @@ export async function getAssetFieldPathsForManifestAsync(manifest: ExpoConfig): 
   return sdkAssetFieldPaths.filter((assetSchema) => get(manifest, assetSchema));
 }
 
+/** Resolve all assets in the app.json inline. */
 export async function resolveManifestAssets(
   projectRoot: string,
   {
     manifest,
     resolver,
-    strict = false,
   }: {
     manifest: ExpoConfig;
     resolver: (assetPath: string) => Promise<string>;
-    strict?: boolean;
   }
 ) {
   try {
@@ -93,23 +93,12 @@ export async function resolveManifestAssets(
       set(manifest, `${manifestField}Url`, urls[index])
     );
   } catch (e) {
-    let logMethod = Log.warn;
-    if (strict) {
-      logMethod = Log.error;
-    }
     if (e.localAssetPath) {
-      logMethod(
+      Log.warn(
         `Unable to resolve asset "${e.localAssetPath}" from "${e.manifestField}" in your app.json or app.config.js`
       );
-      if (strict) {
-        throw e;
-      }
     } else {
-      logMethod(`Warning: Unable to resolve manifest assets. Icons might not work. ${e.message}.`);
-    }
-
-    if (strict) {
-      throw new CommandError('Resolving assets failed.');
+      Log.warn(`Warning: Unable to resolve manifest assets. Icons might not work. ${e.message}.`);
     }
   }
 }

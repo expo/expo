@@ -1,31 +1,21 @@
 import { ExpoConfig } from '@expo/config';
-import axios from 'axios';
 import fs from 'fs-extra';
 import { vol } from 'memfs';
+import nock from 'nock';
 import path from 'path';
 
+import { getExpoApiBaseUrl } from '../../../utils/fetch-api';
+import { getAccessToken } from '../../../utils/user/sessionStorage';
 import UserSettings from '../../api/UserSettings';
 import * as ManifestHandler from '../ManifestHandler';
 
 const actualFs = jest.requireActual('fs') as typeof fs;
+
 jest.mock('fs');
 jest.mock('axios');
-
-jest.mock('../../User', () => {
-  // const user = jest.requireActual('../../User');
-  return {
-    // ...user,
-    ANONYMOUS_USERNAME: 'anonymous',
-    getSessionAsync() {
-      return null;
-    },
-    ensureLoggedInAsync: () => ({
-      sessionSecret: 'SECRET',
-    }),
-  };
-});
-jest.mock('../../project/ExpSchema', () => {
-  // const user = jest.requireActual('../../User');
+jest.mock('../../../utils/user/sessionStorage');
+jest.mock('../../../utils/user/user');
+jest.mock('../ExpoConfigSchema', () => {
   return {
     getAssetSchemasAsync() {
       return ['icon', 'splash.image'];
@@ -47,56 +37,51 @@ const mockSignedManifestResponse = JSON.stringify({
   version: '1.0.0',
 });
 
+const asMock = (fn: any): jest.Mock => fn as jest.Mock;
+
+beforeEach(() => {
+  asMock(getAccessToken).mockReset();
+});
+
 describe('getSignedManifestStringAsync', () => {
   it('calls the server API to sign a manifest', async () => {
-    const requestFunction = axios.request as jest.MockedFunction<typeof axios.request>;
-    requestFunction.mockReturnValueOnce(
-      Promise.resolve({
-        status: 200,
-        data: { data: { response: mockSignedManifestResponse } },
+    asMock(getAccessToken).mockReturnValue('my-access-token');
+
+    const scope = nock(getExpoApiBaseUrl())
+      .post('/v2/manifest/sign', {
+        args: {
+          remotePackageName: 'hello-world',
+          remoteUsername: 'ownername',
+        },
+        manifest: {
+          name: 'Hello',
+          owner: 'ownername',
+          platforms: ['ios'],
+          slug: 'hello-world',
+          version: '1.0.0',
+        },
       })
-    );
-    const manifestString = await ManifestHandler.getSignedManifestStringAsync(mockManifest, {
-      sessionSecret: 'SECRET',
-    });
+      .matchHeader(
+        'authorization',
+        (val) => val.length === 1 && val[0] === 'Bearer my-access-token'
+      )
+      .reply(200, { data: { response: mockSignedManifestResponse } });
+
+    const manifestString = await ManifestHandler.getSignedManifestStringAsync(mockManifest);
     expect(manifestString).toBe(mockSignedManifestResponse);
-    expect(requestFunction.mock.calls[0][0]).toMatchInlineSnapshot(`
-      Object {
-        "data": Object {
-          "args": Object {
-            "remotePackageName": "hello-world",
-            "remoteUsername": "ownername",
-          },
-          "manifest": Object {
-            "name": "Hello",
-            "owner": "ownername",
-            "platforms": Array [
-              "ios",
-            ],
-            "slug": "hello-world",
-            "version": "1.0.0",
-          },
-        },
-        "headers": Object {
-          "Expo-Session": "SECRET",
-          "Exponent-Client": "xdl",
-        },
-        "maxBodyLength": 104857600,
-        "maxContentLength": 104857600,
-        "method": "post",
-        "url": "https://exp.host/--/api/v2/manifest/sign",
-      }
-    `);
+    expect(scope.isDone()).toBe(true);
   });
 });
 
 describe('getUnsignedManifestString', () => {
   it('returns a stringified manifest with the same shape a server-signed manifest', () => {
+    asMock(getAccessToken).mockReturnValue('my-access-token');
+
     expect(ManifestHandler.getUnsignedManifestString(mockManifest)).toMatchSnapshot();
   });
 });
 
-describe('getManifestResponseAsync', () => {
+describe(ManifestHandler.getManifestResponseAsync, () => {
   beforeAll(() => {
     fs.removeSync(UserSettings.userSettingsFile());
   });
@@ -119,7 +104,7 @@ describe('getManifestResponseAsync', () => {
           icon: './icon.png',
           splash: { image: './assets/splash.png' },
           version: '0.1.0',
-          sdkVersion: '38.0.0',
+          sdkVersion: '44.0.0',
           slug: 'testing-123',
           extras: { myExtra: '123' },
         },
@@ -153,14 +138,11 @@ describe('getManifestResponseAsync', () => {
     process.env.REACT_NATIVE_TEST_VALUE = 'true';
     process.env.EXPO_APPLE_PASSWORD = 'my-password';
 
-    const res = await ManifestHandler.getManifestResponseAsync({
-      projectRoot: '/alpha',
+    const res = await ManifestHandler.getManifestResponseAsync('/alpha', {
       host: '127.0.0.1:19000',
       platform: 'ios',
       acceptSignature: 'true',
     });
-
-    // console.log(res.exp);
 
     // Values starting with EXPO_ or REACT_NATIVE_ get added to the env and exposed to expo-constants
     expect(res.manifest.env.EXPO_SOME_TEST_VALUE).toBe('true');
@@ -179,7 +161,8 @@ describe('getManifestResponseAsync', () => {
     expect(res.manifest.hostUri).toBe('127.0.0.1:80');
 
     expect(res.manifest.mainModuleName).toBe('index');
-    expect(res.manifest.packagerOpts).toBeDefined();
+    // Required for Expo Go.
+    expect(res.manifest.packagerOpts?.dev).toBe(true);
     // Required for various tools
     expect(res.manifest.developer.projectRoot).toBe('/alpha');
 

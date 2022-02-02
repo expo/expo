@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import { parse } from 'url';
 
-/** Extract the  */
+/** Extract the runtime platform from the server request.  */
 export function getPlatformFromRequest(
   req: express.Request | http.IncomingMessage
 ): 'android' | 'ios' {

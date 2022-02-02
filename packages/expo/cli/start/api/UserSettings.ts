@@ -4,10 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EXPO_TOKEN } from '../../utils/env';
-
-// import { UserData } from './Auth';
-
 type UserData = any;
 
 export type UserSettingsData = {
@@ -17,14 +13,11 @@ export type UserSettingsData = {
   auth?: UserData | null;
   ignoreBundledBinaries?: string[];
   PATH?: string;
-  sendTo?: string;
   uuid?: string;
 };
 
-const SETTINGS_FILE_NAME = 'state.json';
-
 function userSettingsFile(): string {
-  return path.join(getDirectory(), SETTINGS_FILE_NAME);
+  return path.join(getDirectory(), 'state.json');
 }
 
 function userSettingsJsonFile(): JsonFile<UserSettingsData> {
@@ -59,17 +52,11 @@ async function getAnonymousIdentifierAsync(): Promise<string> {
   return id;
 }
 
-function accessToken(): string | null {
-  return EXPO_TOKEN;
-}
-
 const UserSettings = Object.assign(userSettingsJsonFile(), {
   getDirectory,
   userSettingsFile,
   userSettingsJsonFile,
-  accessToken,
   getAnonymousIdentifierAsync,
-  SETTINGS_FILE_NAME,
 });
 
 export default UserSettings;

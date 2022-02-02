@@ -1,8 +1,6 @@
 import bunyan from '@expo/bunyan';
-import path from 'path';
 
 import * as Log from '../log';
-import { EXPO_DEBUG } from '../utils/env';
 
 class ConsoleRawStream {
   write(record: any) {
@@ -42,46 +40,7 @@ export const Logger = {
   child: (options: object) => logger.child(options),
   notifications: logger.child({ type: 'notifications' }),
   global: logger.child({ type: 'global' }),
-  DEBUG: bunyan.DEBUG,
-  INFO: bunyan.INFO,
-  WARN: bunyan.WARN,
-  ERROR: bunyan.ERROR,
 };
-
-const _projectRootToLogger: { [projectRoot: string]: bunyan } = {};
-
-function _getLogger(projectRoot: string): bunyan {
-  let logger = _projectRootToLogger[projectRoot];
-  if (!logger) {
-    logger = Logger.child({
-      type: 'project',
-      project: path.resolve(projectRoot),
-    });
-    _projectRootToLogger[projectRoot] = logger;
-
-    // const stream: bunyan.Stream = {
-    //   level: EXPO_DEBUG ? 'debug' : 'info',
-    //   stream: {
-    //     write(chunk: any) {
-    //       if (chunk.level === bunyan.INFO) {
-    //         Log.log(chunk.msg);
-    //       } else if (chunk.level === bunyan.WARN) {
-    //         Log.warn(chunk.msg);
-    //       } else if (chunk.level === bunyan.DEBUG) {
-    //         Log.debug(chunk.msg);
-    //       } else if (chunk.level >= bunyan.ERROR) {
-    //         Log.error(chunk.msg);
-    //       }
-    //     },
-    //   },
-    //   type: 'raw',
-    // };
-    // Logger.notifications.addStream(stream);
-    // Logger.global.addStream(stream);
-  }
-
-  return logger;
-}
 
 export type LogTag = 'expo' | 'metro' | 'device';
 export type LogFields = {
@@ -96,6 +55,15 @@ export type LogFields = {
   _expoEventType?: 'TUNNEL_READY';
 };
 
-export function getLogger(projectRoot: string): bunyan {
-  return _getLogger(projectRoot);
+let _logger: bunyan | undefined;
+
+export function getLogger(): bunyan {
+  if (!_logger) {
+    _logger = Logger.child({
+      type: 'project',
+      // project: path.resolve(projectRoot),
+    });
+  }
+
+  return _logger;
 }

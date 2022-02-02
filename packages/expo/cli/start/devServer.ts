@@ -2,7 +2,7 @@ import { ExpoConfig, getConfig } from '@expo/config';
 
 import * as Log from '../log';
 import { logEvent } from '../utils/analytics/rudderstackClient';
-import * as Android from './android/Android';
+import * as AndroidDeviceBridge from './android/AndroidDeviceBridge';
 import ProcessSettings from './api/ProcessSettings';
 import { startDevSessionAsync, stopDevSession } from './api/startDevSession';
 import * as MetroDevServer from './metro/MetroDevServer';
@@ -22,16 +22,9 @@ export function getNativeDevServerPort() {
 
 export async function startAsync(
   projectRoot: string,
-  {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
-    ...options
-  }: Pick<
-    MetroDevServer.StartOptions,
-    'webOnly' | 'webpackPort' | 'maxWorkers' | 'devClient' | 'metroPort'
-  > & {
-    exp?: ExpoConfig;
-  } = {}
+  options: Pick<MetroDevServer.StartOptions, 'webOnly' | 'webpackPort' | 'metroPort'> = {}
 ): Promise<ExpoConfig> {
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   logEvent('Start Project', {
     developerTool: ProcessSettings.developerTool,
     sdkVersion: exp.sdkVersion ?? null,
@@ -88,7 +81,7 @@ async function stopInternalAsync(projectRoot: string): Promise<void> {
         });
       }
     },
-    await Android.maybeStopAdbDaemonAsync(),
+    await AndroidDeviceBridge.stopAdbDaemonAsync(),
   ]);
 }
 

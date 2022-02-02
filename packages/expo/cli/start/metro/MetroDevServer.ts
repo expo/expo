@@ -28,6 +28,30 @@ export type StartOptions = {
   platforms?: ExpoConfig['platforms'];
 };
 
+/** Default port to use for apps running in Expo Go. */
+const EXPO_GO_METRO_PORT = 19000;
+
+/** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
+const DEV_CLIENT_METRO_PORT = 8081;
+
+type DevServerInstance = {
+  /** Metro dev server instance. */
+  server: http.Server;
+  /** Dev server URL location properties. */
+  location: {
+    url: string;
+    port: number;
+    protocol: 'http' | 'https';
+    host?: string;
+  };
+  /** Additional middleware that's attached to the `server`. */
+  middleware: any;
+  /** Message socket for communicating with the native runtime. */
+  messageSocket: MessageSocket;
+};
+
+let instance: DevServerInstance | null = null;
+
 /**
  * Sends a message over web sockets to any connected device,
  * does nothing when the dev server is not running.
@@ -37,51 +61,39 @@ export type StartOptions = {
  */
 export function broadcastMessage(
   method: 'reload' | 'devMenu' | 'sendDevCommand',
-  params?: Record<string, any> | undefined
+  params?: Record<string, any>
 ) {
-  if (metroDevServerInstance?.messageSocket) {
-    metroDevServerInstance.messageSocket.broadcast(method, params);
-  }
+  instance?.messageSocket?.broadcast?.(method, params);
 }
 
-async function resolvePortAsync(
-  startOptions: Pick<StartOptions, 'metroPort' | 'devClient'>
-): Promise<number> {
-  if (startOptions.metroPort != null) {
-    // If the manually defined port is busy then an error should be thrown
-    return startOptions.metroPort;
-  } else {
-    return startOptions.devClient
-      ? Number(process.env.RCT_METRO_PORT) || 8081
-      : await getFreePortAsync(startOptions.metroPort || 19000);
-  }
-}
+/** Get the running dev server instance. */
 export function getInstance() {
-  return metroDevServerInstance;
+  return instance;
 }
 
+/** Start the Metro dev server using settings defined in the start command. */
 export async function startAsync(
   projectRoot: string,
-  startOptions: Pick<StartOptions, 'metroPort' | 'devClient' | 'maxWorkers'>
-): Promise<{
-  server: http.Server;
-  middleware: any;
-  location: {
-    url: string;
-    port: number;
-    protocol: 'http' | 'https';
-    host?: string;
-  };
-  messageSocket: MessageSocket;
-}> {
+  startOptions: Pick<StartOptions, 'metroPort'>
+): Promise<DevServerInstance> {
   await attachLogger(projectRoot);
 
-  const port = await resolvePortAsync(startOptions);
+  const useExpoUpdatesManifest = ProcessSettings.forceManifestType === 'expo-updates';
+
+  const port =
+    // If the manually defined port is busy then an error should be thrown...
+    startOptions.metroPort ??
+    // Otherwise use the default port based on the runtime target.
+    (ProcessSettings.devClient
+      ? // Don't check if the port is busy if we're using the dev client since most clients are hardcoded to 8081.
+        Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
+      : // Otherwise (running in Expo Go) use a free port that falls back on the classic 19000 port.
+        await getFreePortAsync(startOptions.metroPort || EXPO_GO_METRO_PORT));
 
   const options: MetroDevServerOptions = {
     port,
-    logger: getLogger(projectRoot),
-    maxWorkers: startOptions.maxWorkers,
+    logger: getLogger(),
+    maxWorkers: ProcessSettings.maxMetroWorkers,
     resetCache: ProcessSettings.resetDevServer,
     // Use the unversioned metro config.
     // TODO: Deprecate this property when expo-cli goes away.
@@ -89,8 +101,6 @@ export async function startAsync(
   };
 
   const { server, middleware, messageSocket } = await runMetroDevServerAsync(projectRoot, options);
-
-  const useExpoUpdatesManifest = ProcessSettings.forceManifestType === 'expo-updates';
 
   const manifestMiddleware = useExpoUpdatesManifest
     ? ExpoUpdatesManifestHandler.getManifestHandler(projectRoot)
@@ -105,7 +115,7 @@ export async function startAsync(
 
   middleware.use(LoadingPageHandler.getLoadingPageHandler(projectRoot));
 
-  metroDevServerInstance = {
+  instance = {
     server,
     location: {
       // The port is the main thing we want to send back.
@@ -119,25 +129,14 @@ export async function startAsync(
     middleware,
     messageSocket,
   };
-  return metroDevServerInstance;
+  return instance;
 }
 
-let metroDevServerInstance: {
-  server: http.Server;
-  location: {
-    url: string;
-    port: number;
-    protocol: 'http' | 'https';
-    host?: string;
-  };
-  middleware: any;
-  messageSocket: MessageSocket;
-} | null = null;
-
+/** Stop the running dev server instance. */
 export async function stopAsync() {
   return new Promise<void>((resolve, reject) => {
-    if (metroDevServerInstance?.server) {
-      metroDevServerInstance.server.close((error) => {
+    if (instance?.server) {
+      instance.server.close((error) => {
         if (error) {
           reject(error);
         } else {

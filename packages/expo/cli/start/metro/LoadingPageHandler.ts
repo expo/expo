@@ -6,7 +6,7 @@ import http from 'http';
 import { resolve } from 'path';
 import { parse } from 'url';
 
-import { constructDevClientUrlAsync, constructManifestUrlAsync } from '../serverUrl';
+import { constructDevClientUrl, constructManifestUrl } from '../serverUrl';
 
 export const LoadingEndpoint = '/_expo/loading';
 export const DeepLinkEndpoint = '/_expo/link';
@@ -72,7 +72,7 @@ async function loadingEndpointHandler(
   res.end(content);
 }
 
-async function deeplinkEndpointHandler(
+function deeplinkEndpointHandler(
   projectRoot: string,
   req: express.Request | http.IncomingMessage,
   res: express.Response | http.ServerResponse
@@ -80,12 +80,12 @@ async function deeplinkEndpointHandler(
   const { query } = parse(req.url!, true);
   const isDevClient = query['choice'] === 'expo-dev-client';
   if (isDevClient) {
-    const projectUrl = await constructDevClientUrlAsync(projectRoot, {
+    const projectUrl = constructDevClientUrl({
       hostType: 'localhost',
     });
     res.setHeader('Location', projectUrl);
   } else {
-    const projectUrl = await constructManifestUrlAsync(projectRoot, {
+    const projectUrl = constructManifestUrl({
       hostType: 'localhost',
     });
     res.setHeader('Location', projectUrl);
@@ -119,7 +119,7 @@ export function getLoadingPageHandler(projectRoot: string) {
           await loadingEndpointHandler(projectRoot, req, noCacheMiddleware(res));
           break;
         case DeepLinkEndpoint:
-          await deeplinkEndpointHandler(projectRoot, req, noCacheMiddleware(res));
+          deeplinkEndpointHandler(projectRoot, req, noCacheMiddleware(res));
           break;
         default:
           next();

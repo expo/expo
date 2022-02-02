@@ -3,32 +3,34 @@ import chalk from 'chalk';
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
 import { CI } from '../../utils/env';
-import { logCmdError } from '../../utils/errors';
+import { AbortCommandError, logCmdError } from '../../utils/errors';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import * as Android from '../android/Android';
+import ProcessSettings from '../api/ProcessSettings';
 import * as Project from '../devServer';
-import * as Simulator from '../ios/Simulator';
-import { ensureWebSupportSetupAsync } from '../web/ensureWebSetup';
+import { ensureWebSupportSetupAsync } from '../doctor/web/ensureWebSetup';
+import * as Apple from '../ios/Apple';
 import * as Webpack from '../webpack/Webpack';
 import * as WebpackDevServer from '../webpack/WebpackDevServer';
-import { printHelp, printUsage, StartOptions } from './commandsTable';
+import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import {
   openJsInspectorAsync,
   openMoreToolsAsync,
-  printDevServerInfoAsync,
+  printDevServerInfo,
   reloadApp,
   toggleDevMenu,
 } from './interactiveActions';
 
-// import { loginOrRegisterIfLoggedOutAsync } from '../auth/accounts';
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const CTRL_L = '\u000C';
 
-const BLT = `\u203A`;
-
-export async function startAsync(projectRoot: string, options: StartOptions) {
+export async function startAsync(
+  projectRoot: string,
+  options: Pick<StartOptions, 'isWebSocketsEnabled' | 'webOnly' | 'platforms'>
+) {
   const { stdin } = process;
+
   const startWaitingForCommand = () => {
     if (!stdin.setRawMode) {
       Log.warn('Non-interactive terminal, keyboard commands are disabled.');
@@ -50,36 +52,15 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
     stdin.resume();
   };
 
-  startWaitingForCommand();
-
-  addInteractionListener(({ pause }) => {
-    if (pause) {
-      stopWaitingForCommand();
-    } else {
-      startWaitingForCommand();
-    }
-  });
-
-  // setInteractiveAuthenticationCallback(async () => {
-  //   stopWaitingForCommand();
-  //   try {
-  //     return await loginOrRegisterIfLoggedOutAsync();
-  //   } finally {
-  //     startWaitingForCommand();
-  //   }
-  // });
-
-  await printDevServerInfoAsync(projectRoot, options);
-
-  async function handleKeypress(key: string) {
+  const handleKeypress = async (key: string) => {
     try {
       await handleKeypressAsync(key);
     } catch (err) {
       await logCmdError(err);
     }
-  }
+  };
 
-  async function handleKeypressAsync(key: string) {
+  const handleKeypressAsync = async (key: string) => {
     // Auxillary commands all escape.
     switch (key) {
       case CTRL_C:
@@ -112,17 +93,19 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
     }
     const { platforms = ['ios', 'android', 'web'] } = options;
 
+    const handleOpenError = (e: Error) => {
+      if (!(e instanceof AbortCommandError)) {
+        Log.error(e.toString());
+      }
+    };
     switch (key) {
       case 'A':
       case 'a':
         if (options.webOnly && !WebpackDevServer.isTargetingNative()) {
           Log.log(`${BLT} Opening the web project in Chrome on Android...`);
-          const results = await Android.openWebProjectAsync(projectRoot, {
+          await Android.openWebProjectAsync(projectRoot, {
             shouldPrompt,
-          });
-          if (!results.success) {
-            Log.error(results.error);
-          }
+          }).catch(handleOpenError);
         } else {
           const isDisabled = !platforms.includes('android');
           if (isDisabled) {
@@ -133,12 +116,14 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
           }
 
           Log.log(`${BLT} Opening on Android...`);
-          const results = await Android.openProjectAsync(projectRoot, {
-            shouldPrompt,
-            devClient: options.devClient ?? false,
-          });
-          if (!results.success && results.error !== 'escaped') {
-            Log.error(typeof results.error === 'string' ? results.error : results.error.message);
+          if (ProcessSettings.devClient) {
+            await Android.openProjectInDevClientAsync(projectRoot, {
+              shouldPrompt,
+            }).catch(handleOpenError);
+          } else {
+            await Android.openProjectInExpoGoAsync(projectRoot, { shouldPrompt }).catch(
+              handleOpenError
+            );
           }
         }
         printHelp();
@@ -147,12 +132,9 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
       case 'i':
         if (options.webOnly && !WebpackDevServer.isTargetingNative()) {
           Log.log(`${BLT} Opening the web project in Safari on iOS...`);
-          const results = await Simulator.openWebProjectAsync(projectRoot, {
+          await Apple.openWebProjectAsync(projectRoot, {
             shouldPrompt,
-          });
-          if (!results.success) {
-            Log.error(results.error);
-          }
+          }).catch(handleOpenError);
         } else {
           const isDisabled = !platforms.includes('ios');
           if (isDisabled) {
@@ -162,12 +144,15 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
             break;
           }
           Log.log(`${BLT} Opening on iOS...`);
-          const results = await Simulator.openProjectAsync(projectRoot, {
-            shouldPrompt,
-            devClient: options.devClient ?? false,
-          });
-          if (!results.success && results.error !== 'escaped') {
-            Log.error(results.error);
+
+          if (ProcessSettings.devClient) {
+            await Apple.openProjectInDevClientAsync(projectRoot, {
+              shouldPrompt,
+            }).catch(handleOpenError);
+          } else {
+            await Apple.openProjectInExpoGoAsync(projectRoot, { shouldPrompt }).catch(
+              handleOpenError
+            );
           }
         }
         printHelp();
@@ -201,7 +186,7 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
           Log.debug('Starting up webpack dev server');
           await Project.startAsync(projectRoot, { webOnly: true });
           // When this is the first time webpack is started, reprint the connection info.
-          await printDevServerInfoAsync(projectRoot, options);
+          printDevServerInfo(options);
         }
 
         Log.log(`${BLT} Open in the web browser...`);
@@ -211,7 +196,7 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
       }
       case 'c':
         Log.clear();
-        return await printDevServerInfoAsync(projectRoot, options);
+        return printDevServerInfo(options);
       case 'j':
         return await openJsInspectorAsync();
       case 'r':
@@ -220,5 +205,19 @@ export async function startAsync(projectRoot: string, options: StartOptions) {
         Log.log(`${BLT} Opening the editor...`);
         return await openInEditorAsync(projectRoot, process.env.EXPO_EDITOR);
     }
-  }
+  };
+
+  // Start...
+
+  printDevServerInfo(options);
+
+  addInteractionListener(({ pause }) => {
+    if (pause) {
+      stopWaitingForCommand();
+    } else {
+      startWaitingForCommand();
+    }
+  });
+
+  startWaitingForCommand();
 }

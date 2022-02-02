@@ -60,8 +60,7 @@ describe('ExpoUpdatesManifestHandler', () => {
     });
 
     it(`returns a minimal expected manifest`, async () => {
-      const res = await ExpoUpdatesManifestHandler.getManifestResponseAsync({
-        projectRoot: '/alpha',
+      const res = await ExpoUpdatesManifestHandler.getManifestResponseAsync('/alpha', {
         host: '127.0.0.1:19000',
         platform: 'ios',
         acceptSignature: false,
@@ -117,14 +116,7 @@ describe('ExpoUpdatesManifestHandler', () => {
           expoGo: {
             developer: { tool: 'expo-cli', projectRoot: '/alpha' },
             packagerOpts: {
-              scheme: null,
-              hostType: 'lan',
-              lanType: 'ip',
-              devClient: false,
               dev: true,
-              minify: false,
-              urlRandomness: null,
-              https: false,
             },
             mainModuleName: 'index',
             debuggerHost: '127.0.0.1:80',

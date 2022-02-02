@@ -2,7 +2,7 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import * as Log from '../../log';
-import { ApiV2Error } from '../api';
+import { ApiV2Error } from '../fetch-api';
 import { learnMore } from '../link';
 import promptAsync, { Question } from '../prompts';
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';

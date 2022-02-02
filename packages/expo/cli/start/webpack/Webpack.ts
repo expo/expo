@@ -1,8 +1,8 @@
 import openBrowserAsync from 'better-opn';
 import chalk from 'chalk';
-import getenv from 'getenv';
 
 import * as Log from '../../log';
+import { WEB_HOST, WEB_PORT } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { choosePortAsync } from '../../utils/port';
 import ProcessSettings from '../api/ProcessSettings';
@@ -46,14 +46,11 @@ export async function startAsync(
   });
 }
 
-export async function openAsync(
-  projectRoot: string,
-  options?: StartWebpackCLIOptions
-): Promise<void> {
+export async function openAsync(projectRoot: string, options?: StartWebpackCLIOptions) {
   if (!ExpoWebpackDevServer.getInstance().server) {
     await startAsync(projectRoot, options);
   }
-  await openProjectAsync();
+  return await openProjectAsync();
 }
 
 async function getAvailablePortAsync(
@@ -78,23 +75,11 @@ async function getAvailablePortAsync(
   }
 }
 
-async function openProjectAsync(): Promise<
-  { success: true; url: string } | { success: false; error: Error }
-> {
-  try {
-    const WebpackDevServer = await import('../webpack/WebpackDevServer');
-    const url = WebpackDevServer.getDevServerUrl({ hostType: 'localhost' });
-    if (!url) {
-      throw new CommandError('Webpack Dev Server is not running');
-    }
-    openBrowserAsync(url);
-    return { success: true, url };
-  } catch (e) {
-    Log.error(`Couldn't start project on web: ${e.message}`);
-    return { success: false, error: e };
+async function openProjectAsync(): Promise<{ url: string }> {
+  const url = ExpoWebpackDevServer.getDevServerUrl({ hostType: 'localhost' });
+  if (!url) {
+    throw new CommandError('Webpack Dev Server is not running');
   }
+  openBrowserAsync(url);
+  return { url };
 }
-
-export const WEB_HOST = getenv.string('WEB_HOST', '0.0.0.0');
-
-export const WEB_PORT = getenv.int('WEB_PORT', 19006);

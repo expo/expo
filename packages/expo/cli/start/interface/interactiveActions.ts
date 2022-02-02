@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as Log from '../../log';
 import { learnMore } from '../../utils/link';
 import { selectAsync } from '../../utils/prompts';
-import * as Project from '../devServer';
+import { getNativeDevServerPort } from '../devServer';
 import * as MetroDevServer from '../metro/MetroDevServer';
 import * as UrlUtils from '../serverUrl';
 import * as WebpackDevServer from '../webpack/WebpackDevServer';
@@ -14,7 +14,7 @@ import { printQRCode } from './qr';
 
 export async function openJsInspectorAsync() {
   Log.log(`Opening JavaScript inspector in the browser...`);
-  const port = Project.getNativeDevServerPort();
+  const port = getNativeDevServerPort();
   assert(port, 'Metro dev server is not running');
   const metroServerOrigin = `http://localhost:${port}`;
   const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
@@ -31,17 +31,15 @@ export async function openJsInspectorAsync() {
   }
 }
 
-export async function printDevServerInfoAsync(
-  projectRoot: string,
+export function printDevServerInfo(
   options: Pick<StartOptions, 'webOnly' | 'isWebSocketsEnabled' | 'platforms'>
 ) {
   if (!options.webOnly) {
     try {
-      const url = await UrlUtils.constructDeepLinkAsync(projectRoot);
+      const url = UrlUtils.constructDeepLink();
 
       printQRCode(url);
       Log.log(printItem(`Metro waiting on ${chalk.underline(url)}`));
-      // Log.newLine();
       // TODO: if development build, change this message!
       Log.log(printItem(`Scan the QR code above with Expo Go (Android) or the Camera app (iOS)`));
     } catch (error) {
@@ -49,7 +47,7 @@ export async function printDevServerInfoAsync(
       if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
         throw error;
       } else {
-        const serverUrl = await UrlUtils.constructManifestUrlAsync(projectRoot, {
+        const serverUrl = UrlUtils.constructManifestUrl({
           urlType: 'http',
         });
         Log.log(printItem(`Metro waiting on ${chalk.underline(serverUrl)}`));
@@ -67,7 +65,7 @@ export async function printDevServerInfoAsync(
     );
   }
 
-  await printUsage(options, { verbose: false });
+  printUsage(options, { verbose: false });
   printHelp();
   Log.log();
 }

@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 
 import * as Log from '../../log';
 import * as Analytics from '../analytics/rudderstackClient';
-import { apiClient } from '../api';
+import { fetch } from '../fetch-api';
 import { graphqlClient } from '../graphql/client';
 import { CurrentUserQuery } from '../graphql/generated';
 import { UserQuery } from '../graphql/queries/UserQuery';
@@ -53,9 +53,13 @@ export async function loginAsync(json: {
   password: string;
   otp?: string;
 }): Promise<void> {
+  const res = await fetch('/auth/loginAsync', {
+    method: 'POST',
+    body: JSON.stringify(json),
+  });
   const {
     data: { sessionSecret },
-  } = await apiClient.post('auth/loginAsync', { json }).json();
+  } = await res.json();
   const result = await graphqlClient
     .query(
       gql`

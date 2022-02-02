@@ -31,6 +31,8 @@ interface ProcessSettings {
   lanType: 'ip' | 'hostname';
   /** Should instruct the bundler to create minified bundles. */
   minify: boolean;
+  /** Max amount of workers (threads) to use with Metro bundler, defaults to undefined for max workers. */
+  maxMetroWorkers?: number;
 }
 
 function getAPI(): ApiConfig {
@@ -68,6 +70,7 @@ const settings: ProcessSettings = {
   hostType: 'lan',
   lanType: 'ip',
   minify: false,
+  maxMetroWorkers: undefined,
 };
 
 export default settings;

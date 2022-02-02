@@ -1,4 +1,3 @@
-import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import os from 'os';
@@ -7,7 +6,7 @@ import url from 'url';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
-import { getIpAddressAsync } from '../utils/ip';
+import { getIpAddress } from '../utils/ip';
 import ProcessSettings from './api/ProcessSettings';
 import { getNativeDevServerPort } from './devServer';
 import { getNgrokInfo } from './ngrok/ngrokServer';
@@ -24,48 +23,42 @@ export interface URLOptions {
 
   dev?: boolean;
   urlType: null | 'exp' | 'http' | 'no-protocol' | 'redirect' | 'custom';
-  strict?: boolean;
 }
 
 export interface MetroQueryOptions {
   dev?: boolean;
-  strict?: boolean;
   minify?: boolean;
 }
 
-export async function constructBundleUrlAsync(
-  projectRoot: string,
-  opts: Partial<URLOptions>,
-  requestHostname?: string
-) {
-  return await constructUrlAsync(projectRoot, opts, true, requestHostname);
-}
+export const constructBundleUrl = (opts: Partial<URLOptions>, requestHostname?: string) =>
+  constructUrl(opts, true, requestHostname);
 
-export async function constructDeepLinkAsync(
-  projectRoot: string,
-  opts?: Partial<URLOptions>,
-  requestHostname?: string
-): Promise<string> {
+export const constructManifestUrl = (opts?: Partial<URLOptions>, requestHostname?: string) =>
+  constructUrl(opts ?? null, false, requestHostname);
+
+export const constructLogUrl = (requestHostname?: string) =>
+  `${constructUrl({ urlType: 'http' }, false, requestHostname)}/logs`;
+
+export const constructLoadingUrl = (platform: 'ios' | 'android', requestHostname?: string) =>
+  `${constructUrl({ urlType: 'http' }, false, requestHostname)}/_expo/loading?platform=${platform}`;
+
+export const constructSourceMapUrl = (entryPoint: string, requestHostname?: string) =>
+  constructUrlWithExtension(entryPoint, 'map', requestHostname);
+
+const createRedirectUrl = (url: string) => `https://exp.host/--/to-exp/${encodeURIComponent(url)}`;
+
+export const constructDebuggerHost = (requestHostname?: string) =>
+  constructUrl({ urlType: 'no-protocol' }, true, requestHostname);
+
+export function constructDeepLink(opts?: Partial<URLOptions>, requestHostname?: string): string {
   if (ProcessSettings.devClient) {
-    return constructDevClientUrlAsync(projectRoot, opts, requestHostname);
+    return constructDevClientUrl(opts, requestHostname);
   } else {
-    return constructManifestUrlAsync(projectRoot, opts, requestHostname);
+    return constructManifestUrl(opts, requestHostname);
   }
 }
 
-export async function constructManifestUrlAsync(
-  projectRoot: string,
-  opts?: Partial<URLOptions>,
-  requestHostname?: string
-) {
-  return await constructUrlAsync(projectRoot, opts ?? null, false, requestHostname);
-}
-
-export async function constructDevClientUrlAsync(
-  projectRoot: string,
-  opts?: Partial<URLOptions>,
-  requestHostname?: string
-) {
+export function constructDevClientUrl(opts?: Partial<URLOptions>, requestHostname?: string) {
   let _scheme: string;
   if (opts?.scheme) {
     _scheme = opts?.scheme;
@@ -75,21 +68,14 @@ export async function constructDevClientUrlAsync(
     }
     _scheme = ProcessSettings.scheme;
   }
-  const protocol = resolveProtocol(projectRoot, { scheme: _scheme, urlType: 'custom' });
-  const manifestUrl = await constructManifestUrlAsync(
-    projectRoot,
-    { ...opts, urlType: 'http' },
-    requestHostname
-  );
+  const protocol = resolveProtocol({ scheme: _scheme, urlType: 'custom' });
+  const manifestUrl = constructManifestUrl({ ...opts, urlType: 'http' }, requestHostname);
   return `${protocol}://expo-development-client/?url=${encodeURIComponent(manifestUrl)}`;
 }
 
 // gets the base manifest URL and removes the scheme
-export async function constructHostUriAsync(
-  projectRoot: string,
-  requestHostname?: string
-): Promise<string> {
-  const urlString = await constructUrlAsync(projectRoot, null, false, requestHostname);
+export function constructHostUri(requestHostname?: string): string {
+  const urlString = constructUrl(null, false, requestHostname);
   // we need to use node's legacy urlObject api since the newer one doesn't like empty protocols
   const urlObj = url.parse(urlString);
   urlObj.protocol = '';
@@ -97,25 +83,7 @@ export async function constructHostUriAsync(
   return url.format(urlObj);
 }
 
-export async function constructLogUrlAsync(
-  projectRoot: string,
-  requestHostname?: string
-): Promise<string> {
-  const baseUrl = await constructUrlAsync(projectRoot, { urlType: 'http' }, false, requestHostname);
-  return `${baseUrl}/logs`;
-}
-
-export async function constructLoadingUrlAsync(
-  projectRoot: string,
-  platform: 'ios' | 'android',
-  requestHostname?: string
-): Promise<string> {
-  const baseUrl = await constructUrlAsync(projectRoot, { urlType: 'http' }, false, requestHostname);
-  return `${baseUrl}/_expo/loading?platform=${platform}`;
-}
-
-export async function constructUrlWithExtensionAsync(
-  projectRoot: string,
+export function constructUrlWithExtension(
   entryPoint: string,
   ext: string,
   requestHostname?: string,
@@ -126,8 +94,7 @@ export async function constructUrlWithExtensionAsync(
     minify: true,
   };
   metroQueryOptions = metroQueryOptions || defaultOpts;
-  let bundleUrl = await constructBundleUrlAsync(
-    projectRoot,
+  let bundleUrl = constructBundleUrl(
     {
       hostType: 'localhost',
       urlType: 'http',
@@ -142,60 +109,11 @@ export async function constructUrlWithExtensionAsync(
   return `${bundleUrl}?${queryParams}`;
 }
 
-export async function constructPublishUrlAsync(
-  projectRoot: string,
-  entryPoint: string,
-  requestHostname?: string,
-  metroQueryOptions?: MetroQueryOptions
-): Promise<string> {
-  return await constructUrlWithExtensionAsync(
-    projectRoot,
-    entryPoint,
-    'bundle',
-    requestHostname,
-    metroQueryOptions
-  );
-}
-
-export async function constructSourceMapUrlAsync(
-  projectRoot: string,
-  entryPoint: string,
-  requestHostname?: string
-): Promise<string> {
-  return await constructUrlWithExtensionAsync(projectRoot, entryPoint, 'map', requestHostname);
-}
-
-export async function constructAssetsUrlAsync(
-  projectRoot: string,
-  entryPoint: string,
-  requestHostname?: string
-): Promise<string> {
-  return await constructUrlWithExtensionAsync(projectRoot, entryPoint, 'assets', requestHostname);
-}
-
-export async function constructDebuggerHostAsync(
-  projectRoot: string,
-  requestHostname?: string
-): Promise<string> {
-  return await constructUrlAsync(
-    projectRoot,
-    {
-      urlType: 'no-protocol',
-    },
-    true,
-    requestHostname
-  );
-}
-
 export function constructBundleQueryParams(opts: MetroQueryOptions): string {
   const queryParams: Record<string, boolean | string> = {
     dev: !!opts.dev,
     hot: false,
   };
-
-  if ('strict' in opts) {
-    queryParams.strict = !!opts.strict;
-  }
 
   if ('minify' in opts) {
     // TODO: Maybe default this to true if dev is false
@@ -205,111 +123,14 @@ export function constructBundleQueryParams(opts: MetroQueryOptions): string {
   return QueryString.stringify(queryParams);
 }
 
-function assertValidOptions(opts: Partial<URLOptions>): URLOptions {
-  if (opts.scheme && typeof opts.scheme !== 'string') {
-    throw new CommandError('INVALID_OPTIONS', `"scheme" must be a string if specified`);
-  }
-
-  const optionalEnums: [string, string[]][] = [
-    ['urlType', [null, 'exp', 'http', 'redirect', 'no-protocol']],
-    ['lanType', ['ip', 'hostname']],
-    ['hostType', ['localhost', 'lan', 'tunnel']],
-  ];
-
-  for (const [key, values] of optionalEnums) {
-    if (opts[key] && !values.includes(opts[key])) {
-      throw new CommandError(
-        'INVALID_OPTIONS',
-        `"${key}" must be one of: ${values.join(', ')} if specified`
-      );
-    }
-  }
-
-  for (const key of ['devClient', 'dev', 'strict', 'minify', 'https']) {
-    if (opts[key] !== undefined && typeof opts[key] !== 'boolean') {
-      throw new CommandError('INVALID_OPTIONS', `"${key}" must be a boolean if specified`);
-    }
-  }
-
-  Object.keys(opts).forEach((key) => {
-    if (
-      ![
-        'devClient',
-        'scheme',
-        'urlType',
-        'lanType',
-        'hostType',
-        'dev',
-        'strict',
-        'minify',
-        'https',
-      ].includes(key)
-    ) {
-      throw new CommandError('INVALID_OPTIONS', `"${key}" is not a valid option`);
-    }
-  });
-
-  return opts as URLOptions;
-}
-
-async function ensureOptionsAsync(opts: Partial<URLOptions> | null): Promise<URLOptions> {
-  return assertValidOptions({
-    urlType: null,
-    hostType: ProcessSettings.hostType,
-    scheme: ProcessSettings.scheme,
-    minify: ProcessSettings.minify,
-    lanType: ProcessSettings.lanType,
-    dev: ProcessSettings.isDevMode,
-    ...opts,
-  });
-}
-
-function resolveProtocol(
-  projectRoot: string,
-  { urlType, ...options }: Pick<URLOptions, 'urlType' | 'scheme'>
-): string | null {
-  if (urlType === 'http') {
-    return 'http';
-  } else if (urlType === 'no-protocol') {
-    return null;
-  } else if (urlType === 'custom') {
-    return options.scheme;
-  }
-  let protocol = 'exp';
-
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-
-  // We only use these values from the config
-  const { scheme, detach } = exp;
-
-  if (detach) {
-    // Normalize schemes and filter invalid schemes.
-    const schemes = (Array.isArray(scheme) ? scheme : [scheme]).filter(
-      (scheme: any) => typeof scheme === 'string' && !!scheme
-    );
-    // Get the first valid scheme.
-    const firstScheme = schemes[0];
-    if (firstScheme) {
-      protocol = firstScheme;
-    } else if (detach.scheme) {
-      // must keep this fallback in place for older projects
-      // and those detached with an older version of xdl
-      protocol = detach.scheme;
-    }
-  }
-
-  return protocol;
-}
-
-export async function constructUrlAsync(
-  projectRoot: string,
+export function constructUrl(
   incomingOpts: Partial<URLOptions> | null,
   isPackager: boolean,
   requestHostname?: string
-): Promise<string> {
-  const opts = await ensureOptionsAsync(incomingOpts);
+): string {
+  const opts = resolveOptions(incomingOpts);
 
-  let protocol = resolveProtocol(projectRoot, opts);
+  let protocol = resolveProtocol(opts);
 
   let hostname;
   let port;
@@ -333,6 +154,7 @@ export async function constructUrlAsync(
     hostname = '127.0.0.1';
     port = getNativeDevServerPort();
   } else if (opts.hostType === 'lan' || ProcessSettings.isOffline) {
+    // TODO: Drop EXPO_PACKAGER_HOSTNAME and REACT_NATIVE_PACKAGER_HOSTNAME
     if (process.env.EXPO_PACKAGER_HOSTNAME) {
       hostname = process.env.EXPO_PACKAGER_HOSTNAME.trim();
     } else if (process.env.REACT_NATIVE_PACKAGER_HOSTNAME) {
@@ -341,7 +163,7 @@ export async function constructUrlAsync(
       if (requestHostname) {
         hostname = requestHostname;
       } else {
-        hostname = getIpAddressAsync();
+        hostname = getIpAddress();
       }
     } else {
       // Some old versions of OSX work with hostname but not local ip address.
@@ -359,26 +181,17 @@ export async function constructUrlAsync(
         chalk.yellow('Tunnel URL not found (it might not be ready yet), falling back to LAN URL.')
       );
 
-      return constructUrlAsync(
-        projectRoot,
-        { ...opts, hostType: 'lan' },
-        isPackager,
-        requestHostname
-      );
+      return constructUrl({ ...opts, hostType: 'lan' }, isPackager, requestHostname);
     }
   }
 
   const url_ = joinURLComponents({ protocol, hostname, port });
 
   if (opts.urlType === 'redirect') {
-    return createRedirectURL(url_);
+    return createRedirectUrl(url_);
   }
 
   return url_;
-}
-
-function createRedirectURL(url: string): string {
-  return `https://exp.host/--/to-exp/${encodeURIComponent(url)}`;
 }
 
 function joinURLComponents({
@@ -405,27 +218,67 @@ export function stripJSExtension(entryPoint: string): string {
   return entryPoint.replace(/\.js$/, '');
 }
 
-export function isHttps(urlString: string): boolean {
-  return isURL(urlString, { protocols: ['https'] });
+function resolveOptions(opts: Partial<URLOptions> | null): URLOptions {
+  return assertValidOptions({
+    urlType: null,
+    hostType: ProcessSettings.hostType,
+    scheme: ProcessSettings.scheme,
+    minify: ProcessSettings.minify,
+    lanType: ProcessSettings.lanType,
+    dev: ProcessSettings.isDevMode,
+    ...opts,
+  });
 }
 
-export function isURL(
-  urlString: string,
-  { protocols, requireProtocol }: { protocols?: string[]; requireProtocol?: boolean }
-) {
-  try {
-    // eslint-disable-next-line
-    new url.URL(urlString);
-    const parsed = url.parse(urlString);
-    if (!parsed.protocol && !requireProtocol) {
-      return true;
-    }
-    return protocols
-      ? parsed.protocol
-        ? protocols.map((x) => `${x.toLowerCase()}:`).includes(parsed.protocol)
-        : false
-      : true;
-  } catch (err) {
-    return false;
+function resolveProtocol({
+  urlType,
+  ...options
+}: Pick<URLOptions, 'urlType' | 'scheme'>): string | null {
+  if (urlType === 'http') {
+    return 'http';
+  } else if (urlType === 'no-protocol') {
+    return null;
+  } else if (urlType === 'custom') {
+    return options.scheme;
   }
+  return 'exp';
+}
+
+function assertValidOptions(opts: Partial<URLOptions>): URLOptions {
+  if (opts.scheme && typeof opts.scheme !== 'string') {
+    throw new CommandError('INVALID_OPTIONS', `"scheme" must be a string if specified`);
+  }
+
+  const optionalEnums: [string, string[]][] = [
+    ['urlType', [null, 'exp', 'http', 'redirect', 'no-protocol']],
+    ['lanType', ['ip', 'hostname']],
+    ['hostType', ['localhost', 'lan', 'tunnel']],
+  ];
+
+  for (const [key, values] of optionalEnums) {
+    if (opts[key] && !values.includes(opts[key])) {
+      throw new CommandError(
+        'INVALID_OPTIONS',
+        `"${key}" must be one of: ${values.join(', ')} if specified`
+      );
+    }
+  }
+
+  for (const key of ['devClient', 'dev', 'minify', 'https']) {
+    if (opts[key] !== undefined && typeof opts[key] !== 'boolean') {
+      throw new CommandError('INVALID_OPTIONS', `"${key}" must be a boolean if specified`);
+    }
+  }
+
+  Object.keys(opts).forEach((key) => {
+    if (
+      !['devClient', 'scheme', 'urlType', 'lanType', 'hostType', 'dev', 'minify', 'https'].includes(
+        key
+      )
+    ) {
+      throw new CommandError('INVALID_OPTIONS', `"${key}" is not a valid option`);
+    }
+  });
+
+  return opts as URLOptions;
 }

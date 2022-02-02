@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PackagerLogsStream formats a Metro internal error 1`] = `
+"node_modules/react-native/Libraries/NewAppScreen/components/logo.png: Cannot read property 'length' of undefined
+TypeError: Cannot read property 'length' of undefined
+    at applyAssetDataPlugins (/app/node_modules/metro/src/Assets.js:182:25)
+    at getAssetData (/app/node_modules/metro/src/Assets.js:178:16)
+    at async Object.transform (/app/node_modules/metro-transform-worker/src/utils/assetTransformer.js:30:16)
+    at async transformAsset (/app/node_modules/metro-transform-worker/src/index.js:371:18)
+    at async Object.transform (/app/node_modules/metro-transform-worker/src/index.js:559:14)"
+`;
+
+exports[`PackagerLogsStream formats an application code syntax error 1`] = `
+"SyntaxError: /app/App.js: Unexpected token (5:0)
+
+  3 | import { StyleSheet, Text, View } from 'react-native';
+  4 |
+> 5 | >
+    | ^
+  6 | export default function App() {
+  7 |   return (
+  8 |     <View style={styles.container}>"
+`;

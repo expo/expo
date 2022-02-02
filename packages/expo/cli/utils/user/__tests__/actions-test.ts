@@ -1,12 +1,12 @@
-import { ApiV2Error } from '../../api';
+import { ApiV2Error } from '../../fetch-api';
 import { promptAsync } from '../../prompts';
 import { showLoginPromptAsync } from '../actions';
 import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } from '../otp';
 import { loginAsync } from '../user';
 
 jest.mock('../../prompts');
-jest.mock('../../api', () => {
-  const { ApiV2Error } = jest.requireActual('../../api');
+jest.mock('../../fetch-api', () => {
+  const { ApiV2Error } = jest.requireActual('../../fetch-api');
   return {
     ApiV2Error,
   };
@@ -35,7 +35,7 @@ describe(showLoginPromptAsync, () => {
       });
     asMock(loginAsync)
       .mockImplementationOnce(async () => {
-        throw new ApiV2Error({ code: 'testcode', request: {} } as any, {
+        throw new ApiV2Error({
           message: 'An OTP is required',
           code: 'ONE_TIME_PASSWORD_REQUIRED',
           metadata: {

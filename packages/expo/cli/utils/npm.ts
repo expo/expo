@@ -3,6 +3,7 @@ import { JSONValue } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs';
+import fetch from 'node-fetch';
 import path from 'path';
 import slugify from 'slugify';
 import { Stream } from 'stream';
@@ -17,6 +18,7 @@ import { FileSystemCache } from './fetch-cache/FileSystemCache';
 import createFetchWithCache from './fetch-cache/fetch';
 
 const cachedFetch = createFetchWithCache(
+  fetch,
   new FileSystemCache({
     cacheDirectory: getCacheFilePath(),
     // Time to live. How long (in ms) responses remain cached before being automatically ejected. If undefined, responses are never automatically ejected from the cache.

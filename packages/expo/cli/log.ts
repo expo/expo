@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 export function time(label?: string): void {
   console.time(label);
 }
@@ -11,7 +13,7 @@ export function error(...message: string[]): void {
 }
 
 export function warn(...message: string[]): void {
-  console.warn(...message);
+  console.warn(...message.map((value) => chalk.yellow(value)));
 }
 
 export function log(...message: string[]): void {

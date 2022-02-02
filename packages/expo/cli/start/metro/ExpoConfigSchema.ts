@@ -4,10 +4,9 @@ import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
-import { apiClient } from '../../utils/api';
 import { EXPO_UNIVERSE_DIR, LOCAL_XDL_SCHEMA } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { Cache } from '../api/Cache';
+import { createCachedFetch } from '../../utils/fetch-api';
 
 export type Schema = any;
 export type AssetSchema = {
@@ -16,7 +15,6 @@ export type AssetSchema = {
 };
 
 const schemaJson: { [sdkVersion: string]: Schema } = {};
-const schemaCaches: { [version: string]: Cache<JSONObject> } = {};
 
 // TODO: Maybe move json-schema-deref-sync out of api (1.58MB -- lodash)
 // https://packagephobia.com/result?p=json-schema-deref-sync
@@ -77,20 +75,14 @@ async function getSchemaJSONAsync(sdkVersion: string): Promise<{ schema: Schema 
   return schemaJson[sdkVersion];
 }
 
-async function getConfigurationSchemaAsync(sdkVersion: string): Promise<JSONObject> {
-  if (!schemaCaches.hasOwnProperty(sdkVersion)) {
-    schemaCaches[sdkVersion] = new Cache({
-      getAsync() {
-        return apiClient
-          .get(`project/configuration/schema/${sdkVersion}`)
-          .json<{ data: JSONObject }>()
-          .then(({ data }) => data);
-      },
-      filename: `schema-${sdkVersion}.json`,
-      ttlMilliseconds: 0,
-      bootstrapFile: path.join(__dirname, `../caches/schema-${sdkVersion}.json`),
-    });
-  }
+const fetch = createCachedFetch({
+  cacheDirectory: 'schema-cache',
+  // We'll use a 1 week cache for versions so older versions get flushed out eventually.
+  ttl: 1000 * 60 * 60 * 24 * 7,
+});
 
-  return await schemaCaches[sdkVersion].getAsync();
+async function getConfigurationSchemaAsync(sdkVersion: string): Promise<JSONObject> {
+  const response = await fetch(`/project/configuration/schema/${sdkVersion}`);
+  const { data } = await response.json();
+  return data;
 }

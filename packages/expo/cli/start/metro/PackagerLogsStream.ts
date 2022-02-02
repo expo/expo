@@ -158,7 +158,6 @@ type ReportableEvent =
     };
 
 export default class PackagerLogsStream {
-  getCurrentOpenProjectId: () => any;
   updateLogs: (updater: LogUpdater) => void;
   _logsToAdd: LogRecord[] = [];
   _bundleBuildChunkID: string | null = null;
@@ -167,14 +166,11 @@ export default class PackagerLogsStream {
   constructor(
     public projectRoot: string,
     {
-      getCurrentOpenProjectId,
       updateLogs,
     }: {
-      getCurrentOpenProjectId?: () => any;
       updateLogs: (updater: LogUpdater) => void;
     }
   ) {
-    this.getCurrentOpenProjectId = getCurrentOpenProjectId || (() => 1);
     this.updateLogs = updateLogs;
 
     this.attachLoggerStream();
@@ -182,10 +178,14 @@ export default class PackagerLogsStream {
 
   projectId?: number;
 
+  getCurrentOpenProjectId() {
+    return 1;
+  }
+
   attachLoggerStream() {
     this.projectId = this.getCurrentOpenProjectId();
 
-    getLogger(this.projectRoot).addStream({
+    getLogger().addStream({
       stream: {
         write: this._handleChunk.bind(this),
       },
@@ -202,8 +202,8 @@ export default class PackagerLogsStream {
       return;
     }
 
-    chunk = this._maybeParseMsgJSON(chunk);
-    chunk = this._cleanUpNodeErrors(chunk);
+    chunk = this.maybeParseMsgJSON(chunk);
+    chunk = this.cleanUpNodeErrors(chunk);
     if (chunk.tag === 'metro') {
       this._handleMetroEvent(chunk);
     } else if (typeof chunk.msg === 'string' && chunk.msg.match(/\w/) && chunk.msg[0] !== '{') {
@@ -519,7 +519,7 @@ export default class PackagerLogsStream {
     });
   };
 
-  _maybeParseMsgJSON(chunk: LogRecord) {
+  private maybeParseMsgJSON(chunk: LogRecord) {
     try {
       const parsedMsg = JSON.parse(chunk.msg);
       chunk.msg = parsedMsg;
@@ -530,26 +530,31 @@ export default class PackagerLogsStream {
     return chunk;
   }
 
-  _cleanUpNodeErrors = (chunk: LogRecord) => {
+  private cleanUpNodeErrors = (chunk: LogRecord) => {
     if (typeof chunk.msg !== 'string') {
       return chunk;
     }
 
-    if (chunk.msg.match(/\(node:.\d*\)/)) {
-      // Example: (node:13817) UnhandledPromiseRejectionWarning: Unhandled promise rejection (rejection id: 1): SyntaxError: SyntaxError /Users/brent/universe/apps/new-project-template/main.js: Unexpected token (10:6)
-      // The first part of this is totally useless, so let's remove it.
-      if (chunk.msg.match(/UnhandledPromiseRejectionWarning/)) {
-        chunk.msg = chunk.msg.replace(/\(node:.*\(rejection .*\):/, '');
-        if (chunk.msg.match(/SyntaxError: SyntaxError/)) {
-          chunk.msg = chunk.msg.replace('SyntaxError: ', '');
-        }
-      } else if (chunk.msg.match(/DeprecationWarning/)) {
-        chunk.msg = '';
-      }
-    }
+    chunk.msg = sanitizeNodeErrors(chunk.msg);
 
     return chunk;
   };
+}
+
+function sanitizeNodeErrors(msg: string): string {
+  if (msg.match(/\(node:.\d*\)/)) {
+    // Example: (node:13817) UnhandledPromiseRejectionWarning: Unhandled promise rejection (rejection id: 1): SyntaxError: SyntaxError /Users/brent/universe/apps/new-project-template/main.js: Unexpected token (10:6)
+    // The first part of this is totally useless, so let's remove it.
+    if (msg.match(/UnhandledPromiseRejectionWarning/)) {
+      msg = msg.replace(/\(node:.*\(rejection .*\):/, '');
+      if (msg.match(/SyntaxError: SyntaxError/)) {
+        return msg.replace('SyntaxError: ', '');
+      }
+    } else if (msg.match(/DeprecationWarning/)) {
+      return '';
+    }
+  }
+  return msg;
 }
 
 const NODE_STDLIB_MODULES = [

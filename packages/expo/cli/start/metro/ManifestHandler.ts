@@ -8,7 +8,7 @@ import { parse, resolve } from 'url';
 
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import { apiClient } from '../../utils/api';
+import { fetch } from '../../utils/fetch-api';
 import { learnMore } from '../../utils/link';
 import { stripPort } from '../../utils/url';
 import { ensureLoggedInAsync } from '../../utils/user/actions';
@@ -18,10 +18,10 @@ import * as ProjectDevices from '../api/ProjectDevices';
 import UserSettings from '../api/UserSettings';
 import {
   constructBundleQueryParams,
-  constructBundleUrlAsync,
-  constructDebuggerHostAsync,
-  constructHostUriAsync,
-  constructLogUrlAsync,
+  constructBundleUrl,
+  constructDebuggerHost,
+  constructHostUri,
+  constructLogUrl,
   stripJSExtension,
 } from '../serverUrl';
 import * as WebpackDevServer from '../webpack/WebpackDevServer';
@@ -53,8 +53,7 @@ const cachedSignedManifest: CachedSignedManifest = {
   signedManifest: null,
 };
 
-export async function getBundleUrlAsync({
-  projectRoot,
+export function getBundleUrl({
   platform,
   mainModuleName,
   hostname,
@@ -62,12 +61,10 @@ export async function getBundleUrlAsync({
   platform: string;
   hostname?: string;
   mainModuleName: string;
-  projectRoot: string;
-}): Promise<string> {
+}): string {
   const queryParams = constructBundleQueryParams({
     dev: ProcessSettings.isDevMode,
     minify: ProcessSettings.minify,
-    // strict: bundleUrlPackagerOpts.strict,
   });
 
   const path = `/${encodeURI(mainModuleName)}.bundle?platform=${encodeURIComponent(
@@ -75,8 +72,7 @@ export async function getBundleUrlAsync({
   )}&${queryParams}`;
 
   return (
-    (await constructBundleUrlAsync(
-      projectRoot,
+    constructBundleUrl(
       {
         hostType: ProcessSettings.hostType,
         // hostType: ProcessSettings.hostType === 'redirect' ? 'tunnel' : ProcessSettings.hostType,
@@ -87,10 +83,9 @@ export async function getBundleUrlAsync({
         urlType: 'http',
 
         // urlType: ??
-        // strict: ??
       },
       hostname
-    )) + path
+    ) + path
   );
 }
 
@@ -159,15 +154,14 @@ async function getManifestResponseFromHeadersAsync(
   // Read from headers
   const platform = getPlatformFromLegacyRequest(req);
   const acceptSignature = req.headers['exponent-accept-signature'];
-  return getManifestResponseAsync({
-    projectRoot,
+  return getManifestResponseAsync(projectRoot, {
     host: req.headers.host,
     platform,
     acceptSignature,
   });
 }
 
-export async function getExpoGoConfig({
+export function getExpoGoConfig({
   projectRoot,
   packagerOpts,
   mainModuleName,
@@ -180,11 +174,9 @@ export async function getExpoGoConfig({
   };
   mainModuleName: string;
   hostname: string | undefined;
-}): Promise<ExpoGoConfig> {
-  const [debuggerHost, logUrl] = await Promise.all([
-    constructDebuggerHostAsync(projectRoot, hostname),
-    constructLogUrlAsync(projectRoot, hostname),
-  ]);
+}): ExpoGoConfig {
+  const debuggerHost = constructDebuggerHost(hostname);
+  const logUrl = constructLogUrl(hostname);
   return {
     // Required for Expo Go to function.
     developer: {
@@ -203,17 +195,18 @@ export async function getExpoGoConfig({
   };
 }
 
-export async function getManifestResponseAsync({
-  projectRoot,
-  host,
-  platform,
-  acceptSignature,
-}: {
-  projectRoot: string;
-  platform: string;
-  host?: string;
-  acceptSignature?: string | string[];
-}): Promise<{ manifest: ExpoAppManifest; manifestString: string; hostInfo: HostInfo }> {
+export async function getManifestResponseAsync(
+  projectRoot: string,
+  {
+    host,
+    platform,
+    acceptSignature,
+  }: {
+    platform: string;
+    host?: string;
+    acceptSignature?: string | string[];
+  }
+): Promise<{ manifest: ExpoAppManifest; manifestString: string; hostInfo: HostInfo }> {
   // Read the config
   const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   // Opt towards newest functionality when expo isn't installed.
@@ -236,7 +229,7 @@ export async function getManifestResponseAsync({
   // Gather packager and host info
   const hostInfo = await createHostInfoAsync();
   // Create the manifest and set fields within it
-  const expoGoConfig = await getExpoGoConfig({
+  const expoGoConfig = getExpoGoConfig({
     projectRoot,
     packagerOpts: {
       dev: ProcessSettings.isDevMode,
@@ -244,7 +237,7 @@ export async function getManifestResponseAsync({
     mainModuleName,
     hostname,
   });
-  const hostUri = await constructHostUriAsync(projectRoot, hostname);
+  const hostUri = constructHostUri(hostname);
   const manifest: ExpoAppManifest = {
     ...(projectConfig.exp as ExpoAppManifest),
     ...expoGoConfig,
@@ -252,8 +245,7 @@ export async function getManifestResponseAsync({
   };
 
   // Add URLs to the manifest
-  manifest.bundleUrl = await getBundleUrlAsync({
-    projectRoot,
+  manifest.bundleUrl = getBundleUrl({
     platform,
     mainModuleName,
     hostname,
@@ -375,19 +367,18 @@ export async function getSignedManifestStringAsync(manifest: Partial<ExpoAppMani
   if (cachedSignedManifest.manifestString === manifestString) {
     return cachedSignedManifest.signedManifest;
   }
-  // TODO: Test -- if the format is incorrect, then Expo Go will crash without any extra info.
   await ensureLoggedInAsync();
-  const { data } = await apiClient
-    .post('manifest/sign', {
-      json: {
-        args: {
-          remoteUsername: manifest.owner ?? getActorDisplayName(await getUserAsync()),
-          remotePackageName: manifest.slug,
-        },
-        manifest: manifest as JSONObject,
+  const res = await fetch('/manifest/sign', {
+    method: 'POST',
+    body: JSON.stringify({
+      args: {
+        remoteUsername: manifest.owner ?? getActorDisplayName(await getUserAsync()),
+        remotePackageName: manifest.slug,
       },
-    })
-    .json();
+      manifest: manifest as JSONObject,
+    }),
+  });
+  const { data } = await res.json();
 
   const response = data.response;
   cachedSignedManifest.manifestString = manifestString;

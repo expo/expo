@@ -1,6 +1,8 @@
 import assert from 'assert';
 
+import { WEB_PORT } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
+import { resolvePortAsync } from '../utils/port';
 
 export type Options = {
   forceManifestType: 'classic' | 'expo-updates';
@@ -31,6 +33,7 @@ export async function persistOptionsAsync(options: Options) {
   ProcessSettings.hostType = options.host;
   ProcessSettings.scheme = options.scheme;
   ProcessSettings.minify = options.minify;
+  ProcessSettings.maxMetroWorkers = options.maxWorkers;
 }
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
@@ -78,7 +81,6 @@ export async function resolveSchemeAsync(
   projectRoot: string,
   options: { scheme?: string; devClient?: boolean }
 ): Promise<string | null> {
-  const { getOptionalDevClientSchemeAsync } = await import('../utils/scheme');
   const resolveFrom = await import('resolve-from').then((m) => m.default);
 
   const isDevClientPackageInstalled = (() => {
@@ -95,10 +97,9 @@ export async function resolveSchemeAsync(
   if (typeof options.scheme === 'string') {
     // Use the custom scheme
     return options.scheme ?? null;
-  } else if (options.devClient) {
+  } else if (options.devClient || isDevClientPackageInstalled) {
+    const { getOptionalDevClientSchemeAsync } = await import('../utils/scheme');
     // Attempt to find the scheme or warn the user how to setup a custom scheme
-    return await getOptionalDevClientSchemeAsync(projectRoot);
-  } else if (!options.devClient && isDevClientPackageInstalled) {
     return await getOptionalDevClientSchemeAsync(projectRoot);
   } else {
     // Ensure this is reset when users don't use `--scheme`, `--dev-client` and don't have the `expo-dev-client` package installed.
@@ -137,17 +138,15 @@ export function resolveHostType(options: {
 /** Resolve the port options for all supported bundlers. */
 export async function resolvePortsAsync(
   projectRoot: string,
-  options: Pick<Options, 'port' | 'devClient'>,
+  options: Partial<Pick<Options, 'port' | 'devClient'>>,
   settings: { webOnly?: boolean }
 ) {
-  const { resolvePortAsync } = await import('../utils/port');
-  const Webpack = await import('./webpack/Webpack');
-
   const multiBundlerSettings: { webpackPort?: number; metroPort?: number } = {};
+
   if (settings.webOnly) {
     const webpackPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
-      fallbackPort: Webpack.WEB_PORT,
+      fallbackPort: WEB_PORT,
     });
     if (!webpackPort) {
       throw new AbortCommandError();

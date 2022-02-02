@@ -1,22 +1,21 @@
 import { ExpoUpdatesManifest, getConfig } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
-import { JSONObject } from '@expo/json-file';
+import assert from 'assert';
 import express from 'express';
 import http from 'http';
-import nullthrows from 'nullthrows';
 import { parse } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import { apiClient } from '../../utils/api';
+import { fetch } from '../../utils/fetch-api';
 import { stripPort } from '../../utils/url';
 import { ensureLoggedInAsync } from '../../utils/user/actions';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../utils/user/user';
 import ProcessSettings from '../api/ProcessSettings';
 import UserSettings from '../api/UserSettings';
-import { constructHostUriAsync, stripJSExtension } from '../serverUrl';
-import { getBundleUrlAsync, getExpoGoConfig } from './ManifestHandler';
+import { constructHostUri, stripJSExtension } from '../serverUrl';
+import { getBundleUrl, getExpoGoConfig } from './ManifestHandler';
 import { getPlatformFromRequest } from './middleware';
 import { resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
@@ -39,33 +38,37 @@ async function shouldUseAnonymousManifestAsync(
 
 async function getScopeKeyForProjectIdAsync(projectId: string): Promise<string> {
   await ensureLoggedInAsync();
-  const { data } = await apiClient.get(`projects/${encodeURIComponent(projectId)}`).json();
+  const response = await fetch(`/projects/${encodeURIComponent(projectId)}`, {
+    method: 'GET',
+  });
+  const { data } = await response.json();
   return data.scopeKey;
 }
 
 async function signManifestAsync(manifest: ExpoUpdatesManifest): Promise<string> {
   await ensureLoggedInAsync();
-  const { data } = await apiClient
-    .post('manifest/eas/sign', {
-      json: {
-        manifest: manifest as any as JSONObject,
-      },
-    })
-    .json();
-  return data.signature;
+  const response = await fetch(`/manifest/eas/sign`, {
+    method: 'POST',
+    body: JSON.stringify({
+      manifest,
+    }),
+  });
+  const json = await response.json();
+  return json.data.signature;
 }
 
-export async function getManifestResponseAsync({
-  projectRoot,
-  platform,
-  host,
-  acceptSignature,
-}: {
-  projectRoot: string;
-  platform: 'android' | 'ios';
-  host?: string;
-  acceptSignature: boolean;
-}): Promise<{
+export async function getManifestResponseAsync(
+  projectRoot: string,
+  {
+    platform,
+    host,
+    acceptSignature,
+  }: {
+    platform: 'android' | 'ios';
+    host?: string;
+    acceptSignature: boolean;
+  }
+): Promise<{
   body: ExpoUpdatesManifest;
   headers: Map<string, number | string | readonly string[]>;
 }> {
@@ -81,7 +84,7 @@ export async function getManifestResponseAsync({
   const entryPoint = resolveEntryPoint(projectRoot, platform, projectConfig);
   const mainModuleName = stripJSExtension(entryPoint);
   const expoConfig = projectConfig.exp;
-  const expoGoConfig = await getExpoGoConfig({
+  const expoGoConfig = getExpoGoConfig({
     projectRoot,
     packagerOpts: {
       dev: ProcessSettings.isDevMode,
@@ -90,15 +93,14 @@ export async function getManifestResponseAsync({
     hostname,
   });
 
-  const hostUri = await constructHostUriAsync(projectRoot, hostname);
+  const hostUri = constructHostUri(hostname);
 
   const runtimeVersion = Updates.getRuntimeVersion(
     { ...expoConfig, runtimeVersion: expoConfig.runtimeVersion ?? { policy: 'sdkVersion' } },
     platform
   );
 
-  const bundleUrl = await getBundleUrlAsync({
-    projectRoot,
+  const bundleUrl = getBundleUrl({
     platform,
     mainModuleName,
     hostname,
@@ -114,9 +116,12 @@ export async function getManifestResponseAsync({
   const easProjectId = expoConfig.extra?.eas?.projectId;
   const shouldUseAnonymousManifest = await shouldUseAnonymousManifestAsync(easProjectId);
   const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
+  if (!shouldUseAnonymousManifest) {
+    assert(easProjectId);
+  }
   const scopeKey = shouldUseAnonymousManifest
     ? `@${ANONYMOUS_USERNAME}/${expoConfig.slug}-${userAnonymousIdentifier}`
-    : await getScopeKeyForProjectIdAsync(nullthrows(easProjectId));
+    : await getScopeKeyForProjectIdAsync(easProjectId);
 
   const expoUpdatesManifest = {
     id: uuidv4(),
@@ -172,8 +177,7 @@ export function getManifestHandler(projectRoot: string) {
     }
 
     try {
-      const { body, headers } = await getManifestResponseAsync({
-        projectRoot,
+      const { body, headers } = await getManifestResponseAsync(projectRoot, {
         host: req.headers.host,
         platform: getPlatformFromRequest(req),
         acceptSignature: !!req.headers['expo-accept-signature'],

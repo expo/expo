@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getUnsignedManifestString returns a stringified manifest with the same shape a server-signed manifest 1`] = `"{\\"manifestString\\":\\"{\\\\\\"name\\\\\\":\\\\\\"Hello\\\\\\",\\\\\\"slug\\\\\\":\\\\\\"hello-world\\\\\\",\\\\\\"owner\\\\\\":\\\\\\"ownername\\\\\\",\\\\\\"version\\\\\\":\\\\\\"1.0.0\\\\\\",\\\\\\"platforms\\\\\\":[\\\\\\"ios\\\\\\"]}\\",\\"signature\\":\\"UNSIGNED\\"}"`;

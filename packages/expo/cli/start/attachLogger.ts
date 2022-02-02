@@ -3,18 +3,10 @@ import chalk from 'chalk';
 
 import * as Log from '../log';
 import StatusEventEmitter from '../utils/analytics/StatusEventEmitter';
+import { findLastIndex } from '../utils/array';
 import { EXPO_DEBUG } from '../utils/env';
 import { getLogger } from './logger';
 import PackagerLogsStream, { LogRecord, LogUpdater } from './metro/PackagerLogsStream';
-
-function findLastIndex<T>(array: T[], predicate: (item: T) => boolean) {
-  for (let i = array.length - 1; i >= 0; i--) {
-    if (predicate(array[i])) {
-      return i;
-    }
-  }
-  return -1;
-}
 
 /**
  * Given a line from a metro stack trace, this can attempt to extract
@@ -162,7 +154,7 @@ export async function attachLogger(projectRoot: string) {
   });
 
   // needed for validation logging to function
-  getLogger(projectRoot).addStream({
+  getLogger().addStream({
     stream: {
       write(chunk: LogRecord) {
         if (chunk.tag === 'device') {
@@ -177,26 +169,3 @@ export async function attachLogger(projectRoot: string) {
     type: 'raw',
   });
 }
-
-// export function _registerLogs() {
-//   const stream: bunyan.Stream = {
-//     level: EXPO_DEBUG ? 'debug' : 'info',
-//     stream: {
-//       write: (chunk: any) => {
-//         if (chunk.level === bunyan.INFO) {
-//           Log.log(chunk.msg);
-//         } else if (chunk.level === bunyan.WARN) {
-//           Log.warn(chunk.msg);
-//         } else if (chunk.level === bunyan.DEBUG) {
-//           Log.debug(chunk.msg);
-//         } else if (chunk.level >= bunyan.ERROR) {
-//           Log.error(chunk.msg);
-//         }
-//       },
-//     },
-//     type: 'raw',
-//   };
-
-//   Logger.notifications.addStream(stream);
-//   Logger.global.addStream(stream);
-// }
