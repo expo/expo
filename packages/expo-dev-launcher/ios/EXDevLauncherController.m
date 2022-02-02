@@ -38,7 +38,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-  #define DEV_LAUNCHER_URL "http://10.0.0.226:8090/index.bundle?platform=ios&dev=true&minify=false"
+//  #define DEV_LAUNCHER_URL "http://10.0.0.226:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 

@@ -2,7 +2,6 @@
 
 #import "EXDevLauncherController.h"
 #import <React/RCTBridge.h>
-#import <SafariServices/SafariServices.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
