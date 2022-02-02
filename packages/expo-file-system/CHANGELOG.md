@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed failing download on Android when using createDownloadResumable(), because of an invalid Range header. ([#15934](https://github.com/expo/expo/pull/15934) by [@johanpoirier](https://github.com/johanpoirier))
+
 ### 💡 Others
 
 ## 13.2.0 — 2021-12-22
