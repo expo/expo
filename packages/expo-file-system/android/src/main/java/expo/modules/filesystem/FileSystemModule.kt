@@ -1012,7 +1012,7 @@ open class FileSystemModule(
         return
       }
       val requestBuilder = Request.Builder()
-      resumeData.let {
+      resumeData?.let {
         requestBuilder.addHeader("Range", "bytes=$it-")
       }
       if (options.containsKey(HEADER_KEY)) {
