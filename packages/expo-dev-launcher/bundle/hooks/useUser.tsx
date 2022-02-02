@@ -4,7 +4,7 @@ import { apiClient } from '../apiClient';
 import { getUserProfileAsync, UserAccount, UserData } from '../functions/getUserProfileAsync';
 import { restoreUserAsync } from '../functions/restoreUserAsync';
 import { startAuthSessionAsync } from '../functions/startAuthSessionAsync';
-import { setSessionAsync } from '../native-modules/DevLauncherInternal';
+import { setSessionAsync } from '../native-modules/DevLauncherAuth';
 import { useIsMounted } from './useIsMounted';
 
 type UserContext = {

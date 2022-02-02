@@ -30,6 +30,7 @@ jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
 });
 
 jest.mock('./bundle/native-modules/DevLauncherInternal');
+jest.mock('./bundle/native-modules/DevLauncherAuth');
 jest.mock('./bundle/native-modules/DevMenuInternal');
 jest.mock('./bundle/native-modules/DevMenu');
 

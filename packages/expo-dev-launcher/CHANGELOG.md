@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Move unrelated dev-menu functions into dev-launcher.
+
 ## 0.10.1 — 2022-01-17
 
 ### 🐛 Bug fixes

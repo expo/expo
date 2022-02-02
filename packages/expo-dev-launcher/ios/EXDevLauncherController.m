@@ -15,6 +15,7 @@
 #import "EXDevLauncherLoadingView.h"
 #import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
+#import "EXDevLauncherAuth.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -94,8 +95,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
-   
-   return modules;
+  [modules addObject:[EXDevLauncherAuth new]];
+  
+  return modules;
 }
 
 + (NSString * _Nullable)version {

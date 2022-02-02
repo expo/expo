@@ -1,5 +1,5 @@
 import { apiClient } from '../apiClient';
-import { restoreSessionAsync } from '../native-modules/DevLauncherInternal';
+import { restoreSessionAsync } from '../native-modules/DevLauncherAuth';
 import { getUserProfileAsync } from './getUserProfileAsync';
 
 export async function restoreUserAsync() {

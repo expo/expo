@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { getUserProfileAsync, UserAccount, UserData } from '../../functions/getUserProfileAsync';
 import { startAuthSessionAsync } from '../../functions/startAuthSessionAsync';
-import { setSessionAsync } from '../../native-modules/DevLauncherInternal';
+import { setSessionAsync } from '../../native-modules/DevLauncherAuth';
 import { render, act, fireEvent, waitFor } from '../../test-utils';
 import { UserProfileScreen } from '../UserProfileScreen';
 
