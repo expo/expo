@@ -32,6 +32,8 @@ logInfo(`Copied latest Expo SDK version from v${version}`);
 module.exports = {
   trailingSlash: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  // Next 11 does not support ESLint v8, enable it when we upgrade to 12
+  eslint: { ignoreDuringBuilds: true },
   // Keep using webpack 4, webpack 5 causes some issues. See: https://github.com/expo/expo/pull/12794
   webpack5: false,
   webpack: (config, options) => {
