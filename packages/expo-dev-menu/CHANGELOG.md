@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- Simplify dev-launcher / dev-menu relationship on iOS.
+- Simplify dev-launcher / dev-menu relationship on iOS. ([#16067](https://github.com/expo/expo/pull/16067) by [@ajsmth](https://github.com/ajsmth))
 
 ## 0.9.3 — 2022-02-01
 
