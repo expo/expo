@@ -25,12 +25,10 @@ const enableEsbuild = !!process.env.USE_ESBUILD;
 console.log(enableEsbuild ? 'Using esbuild for MDX files' : 'Using babel for MDX files');
 
 module.exports = {
-  // future: {
-  //   webpack5: true,
-  // },
   trailingSlash: true,
-  // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  // Keep using webpack 4, webpack 5 causes some issues. See: https://github.com/expo/expo/pull/12794
+  webpack5: false,
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
