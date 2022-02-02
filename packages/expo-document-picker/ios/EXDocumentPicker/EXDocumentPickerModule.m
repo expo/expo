@@ -192,7 +192,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   if (mimeType != nil) {
     _resolve(@{
                @"type": @"success",
-               @"uri":uri,
+               @"uri": uri,
                @"name": name,
                @"size": @(fileSize),
                @"mimeType": mimeType
@@ -200,7 +200,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   } else {
     _resolve(@{
                @"type": @"success",
-               @"uri":uri,
+               @"uri": uri,
                @"name": name,
                @"size": @(fileSize)
                });
