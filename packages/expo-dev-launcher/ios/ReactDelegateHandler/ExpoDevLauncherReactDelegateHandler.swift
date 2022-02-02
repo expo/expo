@@ -6,7 +6,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   private weak var reactDelegate: ExpoReactDelegate?
   private var bridgeDelegate: RCTBridgeDelegate?
   private var launchOptions: [AnyHashable : Any]?
-  private var deferredRootView: DeferredRCTRootView?
+  private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable : Any]?
   private lazy var shouldEnableAutoSetup: Bool = {
@@ -29,13 +29,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     self.launchOptions = launchOptions
 
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
-    return DeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: self.launchOptions)
+    return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: self.launchOptions)
   }
 
   public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
-    self.deferredRootView = DeferredRCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
+    self.deferredRootView = EXDevLauncherDeferredRCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
     return self.deferredRootView
   }
 
