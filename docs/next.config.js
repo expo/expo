@@ -28,6 +28,7 @@ removeSync(latest);
 copySync(vLatest, latest);
 logInfo(`Copied latest Expo SDK version from v${version}`);
 
+/** @type {import('next').NextConfig}  */
 module.exports = {
   trailingSlash: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
