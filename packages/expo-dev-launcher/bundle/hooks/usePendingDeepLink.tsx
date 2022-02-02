@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { DeepLinkModal } from '../components/redesign/DeepLinkModal';
+import { DeepLinkModal } from '../components/DeepLinkModal';
 import { useModalStack } from '../hooks/useModalStack';
 import { addDeepLinkListener, getPendingDeepLink } from '../native-modules/DevLauncherInternal';
 

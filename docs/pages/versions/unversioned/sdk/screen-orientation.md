@@ -1,6 +1,6 @@
 ---
 title: ScreenOrientation
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-screen-orientation'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-screen-orientation'
 packageName: 'expo-screen-orientation'
 ---
 

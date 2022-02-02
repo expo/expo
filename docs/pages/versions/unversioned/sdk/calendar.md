@@ -1,6 +1,6 @@
 ---
 title: Calendar
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-calendar'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-calendar'
 packageName: 'expo-calendar'
 ---
 

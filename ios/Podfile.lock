@@ -1843,13 +1843,9 @@ PODS:
     - ExpoModulesCore
   - EXCamera (12.1.0):
     - ExpoModulesCore
-  - EXClipboard (2.1.0):
-    - ExpoModulesCore
   - EXConstants (13.0.0):
     - ExpoModulesCore
   - EXContacts (10.1.0):
-    - ExpoModulesCore
-  - EXCrypto (10.1.1):
     - ExpoModulesCore
   - EXDevice (4.1.0):
     - ExpoModulesCore
@@ -1895,7 +1891,7 @@ PODS:
   - EXJSONUtils/Tests (0.2.0)
   - EXLocalAuthentication (12.1.0):
     - ExpoModulesCore
-  - EXLocation (14.0.0):
+  - EXLocation (14.1.0):
     - ExpoModulesCore
     - UMTaskManagerInterface
   - EXMailComposer (11.1.0):
@@ -1917,6 +1913,10 @@ PODS:
     - ExpoModulesCore
   - ExpoCellular (4.1.0):
     - ExpoModulesCore
+  - ExpoClipboard (2.1.0):
+    - ExpoModulesCore
+  - ExpoCrypto (10.1.1):
+    - ExpoModulesCore
   - ExpoHaptics (11.1.0):
     - ExpoModulesCore
   - ExpoImageManipulator (10.2.0):
@@ -1924,14 +1924,14 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.0.0):
+  - ExpoLinearGradient (11.2.0):
     - ExpoModulesCore
   - ExpoLocalization (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.6.1):
+  - ExpoModulesCore (0.7.0):
     - React-Core
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.6.1):
+  - ExpoModulesCore/Tests (0.7.0):
     - Nimble
     - Quick
     - React-Core
@@ -2824,10 +2824,8 @@ DEPENDENCIES:
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
-  - EXClipboard (from `../packages/expo-clipboard/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
-  - EXCrypto (from `../packages/expo-crypto/ios`)
   - EXDevice (from `../packages/expo-device/ios`)
   - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../packages/expo-error-recovery/ios`)
@@ -2855,6 +2853,8 @@ DEPENDENCIES:
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
+  - ExpoClipboard (from `../packages/expo-clipboard/ios`)
+  - ExpoCrypto (from `../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - ExpoKeepAwake (from `../packages/expo-keep-awake/ios`)
@@ -3638,14 +3638,10 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-calendar/ios"
   EXCamera:
     :path: "../packages/expo-camera/ios"
-  EXClipboard:
-    :path: "../packages/expo-clipboard/ios"
   EXConstants:
     :path: "../packages/expo-constants/ios"
   EXContacts:
     :path: "../packages/expo-contacts/ios"
-  EXCrypto:
-    :path: "../packages/expo-crypto/ios"
   EXDevice:
     :path: "../packages/expo-device/ios"
   EXDocumentPicker:
@@ -3696,6 +3692,10 @@ EXTERNAL SOURCES:
     :path: "../packages/expo/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
+  ExpoClipboard:
+    :path: "../packages/expo-clipboard/ios"
+  ExpoCrypto:
+    :path: "../packages/expo-crypto/ios"
   ExpoHaptics:
     :path: "../packages/expo-haptics/ios"
   ExpoImageManipulator:
@@ -4171,10 +4171,8 @@ SPEC CHECKSUMS:
   EXBrightness: 29e6e3bb38c3058404d87f65f9cfaab5d5c7cbf0
   EXCalendar: b821662d595ef8d5ae20c5285f4cfcc5e58ac68c
   EXCamera: bbc12f14b807c84f570fd2acd63159a4a9d23381
-  EXClipboard: 4d6ee6f9572ef999fc323e4b99c8d180e041ad33
   EXConstants: 5d18484e38e8eacef7695a82214b6ac90133dedf
   EXContacts: 6c1bab5a594d591ab08a992e494e52b7e19cb647
-  EXCrypto: e3c0853c2a9ef885928f6227b967b9598132f727
   EXDevice: 7de98d8f97088fad9c01e9a68abad07e501208b2
   EXDocumentPicker: 2989eda5975604203c86c66405a2c242053dcdc7
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
@@ -4187,25 +4185,27 @@ SPEC CHECKSUMS:
   EXGL: 95631064ed19b9fc8dfbedcc71c205961ae3c954
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
-  EXImageLoader: 9539bfc5ad0fc36abf78c82c096f701b43e994d7
+  EXImageLoader: ad85d98d686b33a2cf3788d1e35c5156d3ffd2e0
   EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
-  EXLocation: 1c6449f87b79f159e63d7ed9f881a77b53dba6f0
+  EXLocation: 2d5cf099880b0dc3bc72b64d71007c536e538790
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
   EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
   EXMediaLibrary: 92ad88fa1904ad703b636ce4818cd6d5c5ba653b
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
-  Expo: dcd13c848d84cf058c81b1a4289ac3a7891f61b4
+  Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
+  ExpoClipboard: 49ded0e61313aea57df8c970a488323488dcd3a1
+  ExpoCrypto: 6e4cb4a1e74be91e4c6671ce03a4c79fb18959c5
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
-  ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
+  ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 98f874d20b96d4497eb8ff9df686f14384913a30
+  ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
@@ -4220,7 +4220,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 011f3d0dd2e9331a518b086d36a13909e7d5aeb7
   EXSQLite: 5b16cc6b280d3c024b0b1d76829dd2161a26acbe
   EXStoreReview: 6143555fc912a4a194300992cd297c3e5b521a8a
-  EXStructuredHeaders: 31387a5533a33e5b5195c9b90d57eff11c264b18
+  EXStructuredHeaders: 7469fed1192a7794be7093fb873798bdf10d5f6e
   EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
   EXUpdates: be270fbdfcd531a8086504c7edecd1e9e7e29f0d
@@ -4299,11 +4299,11 @@ SPEC CHECKSUMS:
   stripe-react-native: a5fcf07b49f1208bdc939e31a07320b35a88209f
   StripeCore: 91ea038ac0abbb72f11014044dfd1e5d39089714
   StripeUICore: 7edf64b24c9c178bfd97e988f2cffdbb7a7628b0
-  UMAppLoader: 671576daa3fd3017d4879a5f23fc0dd3b36422a8
-  UMTaskManagerInterface: 6f7150f9ec9bc6f2760eeae532a70de71ff951c1
+  UMAppLoader: fd7c70dca4bbb1769564022cb0b3e4ad440da3e6
+  UMTaskManagerInterface: a06f988b2a16a445d55944b090390c76d3be2407
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: cb2f28921ed6d8cb6fcbcdde41be7a058f1558d4
+PODFILE CHECKSUM: fe12df20c65765b89a1ff91df5c8ae644d695e2b
 
 COCOAPODS: 1.11.2

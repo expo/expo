@@ -11,3 +11,5 @@ Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links
 - **EAS Build**: Compile and sign Android/iOS apps with custom native code in the cloud. [Learn more](/build/introduction.md).
 
 - **EAS Submit**: Upload your app to the Apple App Store or Google Play Store from the cloud with one CLI command. [Learn more](/submit/introduction.md).
+
+- **EAS Update** (preview): Address small bugs and push quick fixes directly to end-users. [Learn more](/eas-update/introduction.md).

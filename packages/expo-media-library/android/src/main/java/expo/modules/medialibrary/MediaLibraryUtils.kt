@@ -3,11 +3,13 @@ package expo.modules.medialibrary
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import android.webkit.MimeTypeMap
 import expo.modules.core.Promise
 import expo.modules.core.utilities.ifNull
@@ -234,4 +236,27 @@ object MediaLibraryUtils {
   @Deprecated("It uses deprecated Android method under the hood. See implementation for details.")
   fun getEnvDirectoryForAssetType(mimeType: String?, useCameraDir: Boolean): File =
     Environment.getExternalStoragePublicDirectory(getRelativePathForAssetType(mimeType, useCameraDir))
+
+  private fun getManifestPermissions(context: Context): Set<String> {
+    val pm: PackageManager = context.packageManager
+    return try {
+      val packageInfo = pm.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+      packageInfo.requestedPermissions?.toSet() ?: emptySet()
+    } catch (e: PackageManager.NameNotFoundException) {
+      Log.e("expo-media-library", "Failed to list AndroidManifest.xml permissions")
+      e.printStackTrace()
+      emptySet()
+    }
+  }
+
+  /**
+   * Checks, whenever an application represented by [context] contains specific [permission]
+   * in `AndroidManifest.xml`:
+   *
+   * ```xml
+   *  <uses-permission android:name="<<PERMISSION STRING HERE>>" />
+   *  ```
+   */
+  fun hasManifestPermission(context: Context, permission: String): Boolean =
+    getManifestPermissions(context).contains(permission)
 }

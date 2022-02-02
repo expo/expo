@@ -37,6 +37,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-blur': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-calendar': ['Calendar.ts'],
+  'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
   'expo-checkbox': ['Checkbox.ts'],
   'expo-clipboard': ['Clipboard.ts'],

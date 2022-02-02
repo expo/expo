@@ -155,6 +155,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   @discardableResult
   public func openMenu() -> Bool {
+    appInstance.sendOpenEvent()
     return openMenu(nil)
   }
 

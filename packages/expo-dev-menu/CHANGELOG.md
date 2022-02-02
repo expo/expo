@@ -6,9 +6,30 @@
 
 ### 🎉 New features
 
+- Add unit tests for react app. ([#16005](https://github.com/expo/expo/pull/16005) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
+- Fix compatibility with react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
+- Fix Android crash when using Hermes on react-native 0.67. ([#16099](https://github.com/expo/expo/pull/16099) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 0.9.3 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 0.9.2 — 2022-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.1 — 2022-01-17
+
+### 🐛 Bug fixes
+
+- Fix: release build won't install on Android 12. ([#15429](https://github.com/expo/expo/pull/15429) by [@zhigang1992](https://github.com/zhigang1992))
 
 ## 0.9.0 — 2021-12-22
 

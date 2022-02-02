@@ -1,6 +1,6 @@
 ---
 title: Location
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-location'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-location'
 packageName: 'expo-location'
 ---
 
@@ -51,7 +51,7 @@ If you're using the iOS or Android Emulators, ensure that [Location is enabled](
 import React, { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
 /* @hide */
-import Constants from 'expo-constants';
+import Device from 'expo-device';
 /* @end */
 import * as Location from 'expo-location';
 
@@ -62,7 +62,7 @@ export default function App() {
   useEffect(() => {
     (async () => {
       /* @hide */
-      if (Platform.OS === 'android' && !Constants.isDevice) {
+      if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
           'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
         );

@@ -4,8 +4,15 @@ import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIc
 import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import Octicons from '@expo/vector-icons/build/Octicons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { BarCodeScanningResult, Camera, PermissionStatus } from 'expo-camera';
-import { AutoFocus, CameraType, FlashMode, WhiteBalance } from 'expo-camera/build/Camera.types';
+import {
+  AutoFocus,
+  BarCodeScanningResult,
+  Camera,
+  CameraType,
+  FlashMode,
+  PermissionStatus,
+  WhiteBalance,
+} from 'expo-camera';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import React from 'react';
@@ -87,12 +94,12 @@ interface State {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default class CameraScreen extends React.Component<{}, State> {
   readonly state: State = {
-    flash: 'off',
+    flash: FlashMode.off,
     zoom: 0,
-    autoFocus: 'on',
+    autoFocus: AutoFocus.on,
     type: CameraType.back,
     depth: 0,
-    whiteBalance: 'auto',
+    whiteBalance: WhiteBalance.auto,
     ratio: '16:9',
     ratios: [],
     barcodeScanning: false,
@@ -340,10 +347,10 @@ export default class CameraScreen extends React.Component<{}, State> {
         style={styles.camera}
         onCameraReady={this.collectPictureSizes}
         type={this.state.type}
-        flashMode={this.state.flash}
-        autoFocus={this.state.autoFocus}
+        flashMode={FlashMode[this.state.flash]}
+        autoFocus={AutoFocus[this.state.autoFocus]}
         zoom={this.state.zoom}
-        whiteBalance={this.state.whiteBalance}
+        whiteBalance={WhiteBalance[this.state.whiteBalance]}
         ratio={this.state.ratio}
         pictureSize={this.state.pictureSize}
         onMountError={this.handleMountError}

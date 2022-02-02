@@ -1,6 +1,6 @@
 ---
 title: SplashScreen
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-splash-screen'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-splash-screen'
 packageName: 'expo-splash-screen'
 ---
 

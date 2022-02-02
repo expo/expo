@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeLinkingOptionsAsync = exports.projectPackageJsonPath = void 0;
+exports.resolveSearchPathsAsync = exports.mergeLinkingOptionsAsync = exports.projectPackageJsonPath = void 0;
 const find_up_1 = __importDefault(require("find-up"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -42,6 +42,7 @@ async function resolveSearchPathsAsync(searchPaths, cwd) {
         ? searchPaths.map((searchPath) => path_1.default.resolve(cwd, searchPath))
         : await findDefaultPathsAsync(cwd);
 }
+exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
 /**
  * Looks up for workspace's `node_modules` paths.
  */

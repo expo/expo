@@ -31,7 +31,7 @@ Snacks can also be embedded as "live" code previews, like the [React Native docs
 
 <br />
 
-It's also possible to format the code however you like on your website and send the code to run on Snack when requested by the user. See [SnackInline](https://github.com/expo/expo/blob/master/docs/components/plugins/SnackInline.tsx) for how we implement this in the Expo documentation.
+It's also possible to format the code however you like on your website and send the code to run on Snack when requested by the user. See [SnackInline](https://github.com/expo/expo/tree/main/docs/components/plugins/SnackInline.tsx) for how we implement this in the Expo documentation.
 
 <SnackInline>
 

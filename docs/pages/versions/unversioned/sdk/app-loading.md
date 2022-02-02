@@ -1,6 +1,6 @@
 ---
 title: AppLoading
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-app-loading'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-app-loading'
 packageName: 'expo-app-loading'
 ---
 

@@ -188,7 +188,7 @@ A conformant client library MUST also include any header (key, value) pairs incl
 
 ## Asset Response
 
-An asset located at a particular URL MUST NOT be changed or removed since client libraries may fetch assets for any update at any time.
+An asset located at a particular URL MUST NOT be changed or removed since client libraries may fetch assets for any update at any time. A conformant client MUST verify that the hex-encoded SHA-256 hash of the asset matches the `hash` field for the asset from the manifest.
 
 ### Asset Response Headers
 
@@ -209,10 +209,10 @@ cache-control: public, max-age=31536000, immutable
 
 Assets SHOULD be capable of being served with [Gzip](https://www.gnu.org/software/gzip/) and [Brotli](https://github.com/google/brotli) compression.
 
-### Code Signing
+## Code Signing
 
 Expo Updates supports code signing the manifest. This also transitively signs the assets since their hashes are present in the manifest and verified by a conformant client. A conformant client MAY request the manifest be signed using a private key, and then MUST verify the signature of the manifest using the corresponding code signing certificate before it is used or any corresponding assets are downloaded. The client MUST verify that the signing certificate is either a self-signed, trusted root certificate or is in a certificate chain signed by a trusted root certificate. In either case, the root certificate MUST be embedded in the application or device's operating system.
 
 ## Client Library
 
-See the [reference client library](https://github.com/expo/expo/tree/master/packages/expo-updates)
+See the [reference client library](https://github.com/expo/expo/tree/main/packages/expo-updates)

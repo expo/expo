@@ -5,6 +5,7 @@
     <activity
       android:name=".DevMenuActivity"
       android:theme="@style/Theme.AppCompat.Transparent.NoActionBar"
+      android:exported="true"
       android:launchMode="singleTask">
     <intent-filter>
       <action android:name="android.intent.action.VIEW"/>

@@ -31,7 +31,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/html-elements",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/html-elements",
   "jest": {
     "preset": "expo-module-scripts/enzyme"
   },

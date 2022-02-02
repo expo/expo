@@ -16,7 +16,7 @@ on:
       - Gemfile.lock
       - .ruby-version
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
       - ios/**

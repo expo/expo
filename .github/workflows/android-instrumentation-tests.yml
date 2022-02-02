@@ -3,7 +3,7 @@ name: Android Instrumentation Tests
 on:
   workflow_dispatch: {}
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/android-instrumentation-tests.yml
       - 'fastlane/**'

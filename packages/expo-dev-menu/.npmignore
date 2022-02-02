@@ -7,5 +7,6 @@ __mocks__
 __tests__
 
 /babel.config.js
+/metro.config.js
 /android/src/androidTest/
 /android/src/test/

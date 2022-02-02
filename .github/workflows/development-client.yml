@@ -9,7 +9,7 @@ on:
   #     - .github/workflows/development-client.yml
   #     - packages/expo-dev-*/**
   # push:
-  #   branches: [master]
+  #   branches: [main]
   #   paths:
   #     - .github/workflows/development-client.yml
   #     - packages/expo-dev-*/**

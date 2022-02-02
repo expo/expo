@@ -2,25 +2,40 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-import { execute, projectRoot, getRoot } from './utils';
+import { execute, projectRoot, getRoot, getLoadedModulesAsync } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
-  process.env.FORCE_COLOR = '1';
+  process.env.FORCE_COLOR = '0';
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
+});
+
+it('loads expected modules by default', async () => {
+  const modules = await getLoadedModulesAsync(`require('../../build-cli/cli/config').expoConfig`);
+  expect(modules).toStrictEqual([
+    'node_modules/ansi-styles/index.js',
+    'node_modules/arg/index.js',
+    'node_modules/chalk/source/index.js',
+    'node_modules/chalk/source/util.js',
+    'node_modules/has-flag/index.js',
+    'node_modules/supports-color/index.js',
+    'packages/expo/build-cli/cli/config/index.js',
+    'packages/expo/build-cli/cli/log.js',
+    'packages/expo/build-cli/cli/utils/args.js',
+  ]);
 });
 
 it('runs `npx expo config --help`', async () => {
   const results = await execute('config', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          [1mDescription[22m
+          Description
             Show the project config
 
-          [1mUsage[22m
+          Usage
             $ npx expo config <dir>
 
           <dir> is the directory of the Expo project.
@@ -44,9 +59,7 @@ it('runs `npx expo config --json`', async () => {
   await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
-  const results = await execute(projectName, 'config', '--json');
-
-  console.log(results);
+  const results = await execute('config', projectName, '--json');
   // @ts-ignore
   const exp = JSON.parse(results.stdout);
 

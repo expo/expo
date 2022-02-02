@@ -2,7 +2,7 @@ import groovy.json.JsonSlurper
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -25,7 +25,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 9
-    versionName "0.10.0"
+    versionName "0.10.1"
   }
 
   lintOptions {
@@ -159,3 +159,30 @@ def getRNVersion() {
       patch
   )
 }
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.implementation.getDependencies().removeIf { it ->
+  if (it.group == 'com.squareup.okhttp3' && it.name == 'okhttp') {
+    okhttpPinnedArtifacts.add(it)
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testImplementation', artifact)
+  configurations.all { conf ->
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+      def requested = details.requested
+      // Only to pin old okhttp in compile phase because mockwebserver requires okhttp4
+      if (conf.name.contains('Compile')) {
+        if (requested.group == artifact.group && requested.name == artifact.name) {
+          details.useVersion artifact.version
+        }
+      }
+    }
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue

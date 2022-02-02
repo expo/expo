@@ -1,13 +1,13 @@
-def DEFAULT_COMPILE_SDK_VERSION = 28
-def DEFAULT_BUILD_TOOLS_VERSION = '28.0.3'
-def DEFAULT_MIN_SDK_VERSION = 16
-def DEFAULT_TARGET_SDK_VERSION = 28
+def DEFAULT_COMPILE_SDK_VERSION = 30
+def DEFAULT_BUILD_TOOLS_VERSION = '30.0.2'
+def DEFAULT_MIN_SDK_VERSION = 21
+def DEFAULT_TARGET_SDK_VERSION = 30
 
 def DEFAULT_OKHTTP_VERSION = '3.14.9'
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'kotlin-kapt'
 
 buildscript {
@@ -26,7 +26,7 @@ buildscript {
       jcenter()
     }
     dependencies {
-      classpath 'com.android.tools.build:gradle:3.4.1'
+      classpath 'com.android.tools.build:gradle:4.2.2'
       classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
     }
   }
@@ -95,3 +95,22 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 }
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.api.getDependencies().removeIf { it ->
+  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
+    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testApi', artifact)
+  configurations.all {
+    resolutionStrategy.force(artifact)
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue

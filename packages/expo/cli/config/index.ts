@@ -4,9 +4,8 @@ import chalk from 'chalk';
 import { Command } from '../../bin/cli';
 import * as Log from '../log';
 import { assertArgs, getProjectRoot } from '../utils/args';
-import { configAsync } from './configAsync';
 
-export const expoConfig: Command = (argv) => {
+export const expoConfig: Command = async (argv) => {
   const args = assertArgs(
     {
       // Types
@@ -43,12 +42,18 @@ export const expoConfig: Command = (argv) => {
     );
   }
 
+  // Load modules after the help prompt so `npx expo config -h` shows as fast as possible.
+  const [
+    // ./configAsync
+    { configAsync },
+    // ../utils/errors
+    { logCmdError },
+  ] = await Promise.all([import('./configAsync'), import('../utils/errors')]);
+
   return configAsync(getProjectRoot(args), {
     // Parsed options
     full: args['--full'],
     json: args['--json'],
     type: args['--type'],
-  }).catch((err) => {
-    Log.exit(err);
-  });
+  }).catch(logCmdError);
 };

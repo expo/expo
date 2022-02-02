@@ -7,7 +7,8 @@ import java.lang.ref.WeakReference
 class ModuleRegistry(
   private val appContext: WeakReference<AppContext>
 ) : Iterable<ModuleHolder> {
-  private val registry = mutableMapOf<String, ModuleHolder>()
+  @PublishedApi
+  internal val registry = mutableMapOf<String, ModuleHolder>()
 
   fun register(module: Module) {
     val holder = ModuleHolder(module)
@@ -26,6 +27,10 @@ class ModuleRegistry(
   fun hasModule(name: String): Boolean = registry.containsKey(name)
 
   fun getModule(name: String): Module? = registry[name]?.module
+
+  inline fun <reified T> getModule(): T? {
+    return registry.values.find { it.module is T }?.module as? T
+  }
 
   fun getModuleHolder(name: String): ModuleHolder? = registry[name]
 

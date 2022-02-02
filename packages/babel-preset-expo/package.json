@@ -33,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-preset-expo#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/babel-preset-expo#readme",
   "eslintConfig": {
     "extends": "universe/node"
   },
@@ -50,7 +50,7 @@
     "@babel/preset-env": "^7.12.9",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-react-native-web": "~0.17.1",
-    "metro-react-native-babel-preset": "~0.64.0"
+    "metro-react-native-babel-preset": "~0.66.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
