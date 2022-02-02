@@ -14,9 +14,21 @@ Let's go over the whole process of creating an SVG to presenting it in a Expo pr
 
 Once we have a vector created inside a design program, like Figma, Illustrator, or Sketch, find the "export" menu and specify "SVG" as the export type. This will create an SVG file we can view in a code editor. Alternatively, these programs often allow right clicking on an element, then copying it as an SVG.
 
-## Converting an SVG for React Native
+## Converting SVG files using a Babel transformer
 
-Now, it's time to convert our SVG to be compatible with React. [React-SVGR](https://react-svgr.com/playground/?native=true) is a great tool to accomplish this. It takes an SVG as input then can transform it into another format, including a format that works with React.
+[React Native SVG transformer](https://github.com/kristerkari/react-native-svg-transformer) allows compile-time transformation to make SVG files compatible with React.
+
+Follow the installation steps to configure your Expo project to use this workflow. After your project is properly configured, you'll be able to use your local SVG files like this:
+
+```javascript
+import Logo from "./assets/logo.svg";
+
+<Logo width={120} height={40} />
+```
+
+## Converting individual SVG files for React Native
+
+If you don't want to change your project configuration, you can alternatively use a tool such as [React-SVGR](https://react-svgr.com/playground/?native=true) to convert your SVG files. It takes an SVG as input then can transform it into another format, including a format that works with React.
 
 Paste the SVG contents from the exported SVG file into [React-SVGR](https://react-svgr.com/playground/?native=true) and make sure the "native" checkbox is ticked. It will provide output that we can copy and paste into our project.
 
