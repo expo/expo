@@ -28,7 +28,7 @@ import Logo from "./assets/logo.svg";
 
 ## Converting individual SVG files for React Native
 
-If you don't want to change your project configuration, you can alternatively use a tool such as [React-SVGR](https://react-svgr.com/playground/?native=true) to convert your SVG files. It takes an SVG as input then can transform it into another format, including a format that works with React.
+Alternatively, [React-SVGR](https://react-svgr.com/playground/?native=true) is a great tool to convert individual SVG files. It takes an SVG as input then can transform it into another format, including a format that works with React.
 
 Paste the SVG contents from the exported SVG file into [React-SVGR](https://react-svgr.com/playground/?native=true) and make sure the "native" checkbox is ticked. It will provide output that we can copy and paste into our project.
 
