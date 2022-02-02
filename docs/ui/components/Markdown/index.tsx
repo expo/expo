@@ -2,6 +2,8 @@ import { css, CSSObject } from '@emotion/react';
 import { typography } from '@expo/styleguide';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
+import { Blockquote } from './Blockquote';
+
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H1, H2, H4, H5, CODE, P, BOLD, UL, OL, LI } from '~/ui/components/Text';
 
@@ -72,8 +74,7 @@ const markdownStyles: Record<string, Config | null> = {
     style: { margin: `2ch 0` },
   },
   blockquote: {
-    Component: 'div',
-    css: typography.body.blockquote,
+    Component: Blockquote,
   },
   img: {
     Component: 'img',
