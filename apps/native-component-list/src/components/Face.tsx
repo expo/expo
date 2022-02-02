@@ -1,4 +1,4 @@
-import { FaceFeature } from 'expo-face-detector';
+import { FaceFeature, Point } from 'expo-face-detector';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -9,7 +9,7 @@ export const scaledFace =
   ({ faceID, bounds, rollAngle, yawAngle }: FaceFeature) =>
     (
       <View
-        key={faceID}
+        key={`face-${faceID || yawAngle}`}
         style={[
           styles.face,
           {
@@ -31,7 +31,7 @@ export const scaledFace =
     );
 
 export const scaledLandmarks = (scale: number) => (face: FaceFeature) => {
-  const renderLandmark = (position?: { x: number; y: number }) =>
+  const renderLandmark = (position?: Point) =>
     position && (
       <View
         key={`${position?.x ?? 'no-x'}${position?.y ?? 'no-y'}`}
@@ -46,7 +46,7 @@ export const scaledLandmarks = (scale: number) => (face: FaceFeature) => {
     );
   console.log('landmark', face);
   return (
-    <View key={`landmarks-${face.faceID}`}>
+    <View key={`landmarks-${face.faceID || face.yawAngle}`}>
       {renderLandmark(face.leftEyePosition)}
       {renderLandmark(face.rightEyePosition)}
       {renderLandmark(face.leftEarPosition)}

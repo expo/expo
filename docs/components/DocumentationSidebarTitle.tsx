@@ -1,9 +1,8 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
 import { paragraph } from '~/components/base/typography';
-import * as Constants from '~/constants/theme';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -12,7 +11,7 @@ const STYLES_TITLE = css`
   position: relative;
   margin-bottom: 12px;
   text-decoration: none;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   border-bottom: 1px solid ${theme.border.default};
   padding-bottom: 0.25rem;
 `;

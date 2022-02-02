@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Update `useWebQRScanner` to allow scanning QR codes with inverted colors (light foreground and dark background). ([#16106](https://github.com/expo/expo/pull/16106) by [@rissois](https://github.com/rissois))
+
 ### 🐛 Bug fixes
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))

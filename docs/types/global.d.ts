@@ -1,3 +1,4 @@
+/// <reference types="@emotion/jest" />
 interface Window {
   __NEXT_DATA__: any;
   NProgress: any;

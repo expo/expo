@@ -8,10 +8,19 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.10.3 — 2022-02-01
+
+### 🐛 Bug fixes
+
 - Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Fix regression in deep linking configuration. ([#16125](https://github.com/expo/expo/pull/16125) by [@ajsmth](https://github.com/ajsmth))
 
-### 💡 Others
+## 0.10.2 — 2022-01-18
+
+_This version does not introduce any user-facing changes._
 
 - Move unrelated dev-menu functions into dev-launcher.
 

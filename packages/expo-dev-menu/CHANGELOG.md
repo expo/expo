@@ -11,12 +11,21 @@
 ### 🐛 Bug fixes
 
 - Fix compatibility with react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Fix Android crash when using Hermes on react-native 0.67. ([#16099](https://github.com/expo/expo/pull/16099) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Move unrelated dev-menu functions into dev-launcher.
+
+## 0.9.3 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 0.9.2 — 2022-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 0.9.1 — 2022-01-17
 

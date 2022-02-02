@@ -1,10 +1,8 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-
-import * as Constants from '~/constants/theme';
+import { theme, typography } from '@expo/styleguide';
 
 export const h1 = css`
-  font-family: ${Constants.fonts.bold};
+  font-family: ${typography.fontFaces.semiBold};
   color: ${theme.text.default};
   font-size: 48px;
   line-height: 120%;
@@ -13,7 +11,7 @@ export const h1 = css`
 `;
 
 export const h2 = css`
-  font-family: ${Constants.fonts.demi};
+  font-family: ${typography.fontFaces.medium};
   color: ${theme.text.default};
   font-size: 30px;
   line-height: 130%;
@@ -22,7 +20,7 @@ export const h2 = css`
 `;
 
 export const h3 = css`
-  font-family: ${Constants.fonts.demi};
+  font-family: ${typography.fontFaces.medium};
   color: ${theme.text.default};
   font-size: 24px;
   line-height: 130%;
@@ -31,7 +29,7 @@ export const h3 = css`
 `;
 
 export const h4 = css`
-  font-family: ${Constants.fonts.bold};
+  font-family: ${typography.fontFaces.semiBold};
   color: ${theme.text.default};
   font-size: 18px;
   line-height: 140%;
@@ -40,7 +38,7 @@ export const h4 = css`
 `;
 
 export const paragraph = css`
-  font-family: ${Constants.fontFamilies.book};
+  font-family: ${typography.fontFaces.regular};
   color: ${theme.text.default};
   font-weight: 400;
   font-size: 16px;

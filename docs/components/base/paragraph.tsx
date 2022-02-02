@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
 import * as React from 'react';
 
@@ -26,7 +26,7 @@ export const P: React.FC = ({ children }) => (
 const STYLES_BOLD_PARAGRAPH = css`
   ${paragraph}
   font-size: inherit;
-  font-family: ${Constants.fontFamilies.bold};
+  font-family: ${typography.fontFaces.semiBold};
   font-weight: 500;
 `;
 

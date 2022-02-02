@@ -1,12 +1,11 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
-import * as Constants from '~/constants/theme';
 import { NavigationRoute } from '~/types/common';
 
 const STYLES_TITLE = css`
@@ -18,7 +17,7 @@ const STYLES_TITLE = css`
   position: relative;
   margin-bottom: 16px;
   text-decoration: none;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   user-select: none;
   background: ${theme.background.tertiary};
   padding: 8px 16px;
@@ -47,7 +46,11 @@ type Props = {
   info: NavigationRoute;
 };
 
-export default class DocumentationSidebarGroup extends React.Component<Props, { isOpen: boolean }> {
+type State = {
+  isOpen: boolean;
+};
+
+export default class DocumentationSidebarCollapsible extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -110,7 +113,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
 
     let posts: NavigationRoute[] = [];
     sections?.forEach(section => {
-      posts = [...posts, ...(section?.posts ?? [])];
+      posts = [...posts, ...(section?.children ?? [])];
     });
 
     posts.forEach(isSectionActive);
