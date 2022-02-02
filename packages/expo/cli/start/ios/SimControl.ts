@@ -6,7 +6,6 @@ import path from 'path';
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
 import { profile } from '../../utils/profile';
-import * as AppleDevice from './AppleDevice';
 import * as CoreSimulator from './CoreSimulator';
 import { waitForActionAsync } from './utils/waitForActionAsync';
 
@@ -290,19 +289,6 @@ export async function listSimulatorDevicesAsync() {
  * Get a list of all connected devices.
  */
 export async function listDevicesAsync(): Promise<XCTraceDevice[]> {
-  if (AppleDevice.isEnabled()) {
-    const results = await AppleDevice.getConnectedDevices();
-    // TODO: Add support for osType (ipad, watchos, etc)
-    return results.map((device) => ({
-      // TODO: Better name
-      name: device.DeviceName ?? device.ProductType ?? 'unknown ios device',
-      model: device.ProductType,
-      osVersion: device.ProductVersion,
-      deviceType: 'device',
-      udid: device.UniqueDeviceID,
-    }));
-  }
-
   const { output } = await xcrunAsync(['xctrace', 'list', 'devices']);
 
   const text = output.join('');
