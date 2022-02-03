@@ -9,14 +9,14 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable : Any]?
-  private lazy var shouldEnableAutoSetup: Bool = {
-    if (!EXAppDefines.APP_DEBUG) {
+  public static var shouldEnableAutoSetup: Bool = {
+    if !EXAppDefines.APP_DEBUG {
       return false
     }
 
     // Backward compatible if main AppDelegate already has expo-dev-launcher setup,
     // we just skip in this case.
-    if (EXDevLauncherController.sharedInstance().isStarted) {
+    if EXDevLauncherController.sharedInstance().isStarted {
       return false
     }
 
@@ -24,6 +24,10 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   }()
 
   public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
+    if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
+      return nil
+    }
+
     self.reactDelegate = reactDelegate
     self.bridgeDelegate = EXRCTBridgeDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
     self.launchOptions = launchOptions
@@ -33,6 +37,10 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   }
 
   public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
+    if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
+      return nil
+    }
+
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
     self.deferredRootView = EXDevLauncherDeferredRCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
