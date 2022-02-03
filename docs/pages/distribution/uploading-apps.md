@@ -51,9 +51,11 @@ To upload your Android app to Google Play, run `eas submit -p android`. [Learn m
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
 
+### Using EAS CLI
+
 To upload your iOS app to TestFlight, run `eas submit -p ios`. [Learn more about this command](/submit/ios.md), and [how to use it with `expo build:ios`](/submit/classic-builds.md) if you are not using [EAS Build](/build/introduction.md) yet.
 
-### Manually uploading your app
+### Manually uploading your app (without EAS CLI)
 
 > This approach only works on macOS. If you don't have access to a macOS device, use EAS Submit.
 
