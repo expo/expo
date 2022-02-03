@@ -1,10 +1,6 @@
 import { getUserStatePath } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
 
-type UserSettingsData = {
-  auth?: SessionData;
-};
-
 type SessionData = {
   sessionSecret: string;
 
@@ -16,7 +12,11 @@ type SessionData = {
 
 export function getSession(): SessionData | null {
   try {
-    return JsonFile.read<UserSettingsData>(getUserStatePath())?.auth ?? null;
+    return (
+      JsonFile.read<{
+        auth?: SessionData;
+      }>(getUserStatePath())?.auth ?? null
+    );
   } catch (error: any) {
     if (error.code === 'ENOENT') {
       return null;

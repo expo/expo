@@ -2,10 +2,10 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import * as Log from '../../log';
-import { apiClient } from '../api';
-import { AbortCommandError, CommandError } from '../errors';
-import { learnMore } from '../link';
-import { promptAsync, selectAsync } from '../prompts';
+import { AbortCommandError, CommandError } from '../../utils/errors';
+import { learnMore } from '../../utils/link';
+import { promptAsync, selectAsync } from '../../utils/prompts';
+import { fetchAsync } from '../rest/client';
 import { loginAsync } from './user';
 
 export enum UserSecondFactorDeviceMethod {
@@ -100,15 +100,14 @@ async function promptForBackupOTPAsync(
 
   const device = smsNonPrimarySecondFactorDevices[selectedValue];
 
-  await apiClient
-    .post('auth/send-sms-otp', {
-      json: {
-        username,
-        password,
-        secondFactorDeviceID: device.id,
-      },
-    })
-    .json();
+  await fetchAsync('/auth/send-sms-otp', {
+    method: 'POST',
+    body: JSON.stringify({
+      username,
+      password,
+      secondFactorDeviceID: device.id,
+    }),
+  });
 
   return await promptForOTPAsync('cancel');
 }
