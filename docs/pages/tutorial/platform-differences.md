@@ -59,7 +59,7 @@ export default function App() {
   };
 
   let openShareDialogAsync = async () => {
-    if (!(await Sharing.isAvailableAsync())) {
+    if (Platform.OS === 'web') {
       /* @info Give the user a link to the website that the file is uploaded to */
       alert(`The image is available for sharing at: ${selectedImage.remoteUri}`);/* @end */
 
