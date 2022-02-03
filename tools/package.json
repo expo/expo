@@ -83,7 +83,7 @@
     "xcode": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
+    "@babel/core": "^7.16.0",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
     "@types/connect": "^3.4.35",
@@ -101,8 +101,8 @@
     "@types/source-map-support": "^0.5.4",
     "@types/uuid": "^3.4.4",
     "@types/ws": "^7.4.7",
-    "babel-preset-expo": "^8.1.0",
-    "expo-module-scripts": "^1.2.0",
+    "babel-preset-expo": "^9.0.2",
+    "expo-module-scripts": "^2.0.0",
     "prettier": "^2.3.1",
     "typescript": "~4.4.4"
   }
