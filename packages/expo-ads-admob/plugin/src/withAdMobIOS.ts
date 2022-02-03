@@ -1,10 +1,8 @@
-import { ConfigPlugin, withInfoPlist } from '@expo/config-plugins';
-// TODO: export from config-plugins proper
-import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
+import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-export const withAdMobIOS: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+export const withAdMobIOS: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     config.modResults = setAdMobConfig(config, config.modResults);
     return config;
   });
@@ -41,3 +39,18 @@ function setAdMobConfig(config: Pick<ExpoConfig, 'ios'>, infoPlist: InfoPlist): 
   infoPlist = setGoogleMobileAdsAppId(config, infoPlist);
   return infoPlist;
 }
+
+const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
+
+export const withUserTrackingPermission: ConfigPlugin<
+  {
+    userTrackingPermission?: string;
+  } | void
+> = (config, { userTrackingPermission } = {}) => {
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSUserTrackingUsageDescription =
+    userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
+
+  return config;
+};

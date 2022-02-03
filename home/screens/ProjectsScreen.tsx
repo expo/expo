@@ -1,8 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
-import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
+import { Alert, AppState, Clipboard, Linking, Platform, StyleSheet, View } from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Config from '../api/Config';
@@ -17,12 +16,14 @@ import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import ThemedStatusBar from '../components/ThemedStatusBar';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import HistoryActions from '../redux/HistoryActions';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
+import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -60,13 +61,13 @@ export default function ProjectsScreen(props: NavigationProps) {
 
   const dispatch = useDispatch();
   const { recentHistory, allHistory, isAuthenticated } = useSelector(
-    React.useCallback(data => {
+    React.useCallback((data) => {
       const { history } = data.history;
 
       return {
-        recentHistory: history.take(10),
-        allHistory: history,
-        isAuthenticated: data.session?.sessionSecret,
+        recentHistory: history.take(10) as HistoryList,
+        allHistory: history as HistoryList,
+        isAuthenticated: isUserAuthenticated(data.session),
       };
     }, [])
   );
@@ -83,7 +84,7 @@ export default function ProjectsScreen(props: NavigationProps) {
 }
 
 class ProjectsView extends React.Component<Props, State> {
-  private _projectPolling?: number;
+  private _projectPolling?: ReturnType<typeof setInterval>;
 
   state: State = {
     projects: [],
@@ -94,13 +95,17 @@ class ProjectsView extends React.Component<Props, State> {
   componentDidMount() {
     AppState.addEventListener('change', this._maybeResumePollingFromAppState);
     Connectivity.addListener(this._updateConnectivity);
-    this._startPollingForProjects();
+
+    // @evanbacon: Without this setTimeout, the state doesn't update correctly and the "Recently in Development" items don't load for 10 seconds.
+    setTimeout(() => {
+      this._startPollingForProjects();
+    }, 1);
 
     // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
     // find a way to move this listener up to the root of the app in order to ensure
     // that it has been registered regardless of whether we have been on the project
     // screen in the home app
-    addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
+    addListenerWithNativeCallback('ExponentKernel.showQRReader', async () => {
       // @ts-ignore
       this.props.navigation.navigate('QRCode');
       return { success: true };
@@ -173,7 +178,7 @@ class ProjectsView extends React.Component<Props, State> {
       // Fix this lint warning when converting to hooks
       // eslint-disable-next-line
       this.setState(({ projects }) => ({
-        projects: projects.filter(p => p.source === 'snack'),
+        projects: projects.filter((p) => p.source === 'snack'),
       }));
     }
   }
@@ -193,12 +198,14 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _startPollingForProjects = async () => {
-    this._handleRefreshAsync();
+    this._fetchProjectsAsync();
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 
   private _stopPollingForProjects = async () => {
-    clearInterval(this._projectPolling);
+    if (this._projectPolling) {
+      clearInterval(this._projectPolling);
+    }
     this._projectPolling = undefined;
   };
 
@@ -223,7 +230,7 @@ class ProjectsView extends React.Component<Props, State> {
     try {
       await Promise.all([
         this._fetchProjectsAsync(),
-        new Promise(resolve => setTimeout(resolve, 1000)),
+        new Promise((resolve) => setTimeout(resolve, 1000)),
       ]);
     } catch (e) {
       // not sure what to do here, maybe nothing?
@@ -271,8 +278,12 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _renderRecentHistoryItems = () => {
-    const extractUsername = manifestUrl => {
-      const username = manifestUrl.match(/@.*?\//)[0];
+    const extractUsername = (manifestUrl: string) => {
+      const usernameMatches = manifestUrl.match(/@.*?\//);
+      if (!usernameMatches) {
+        return null;
+      }
+      const username = usernameMatches[0];
       if (!username) {
         return null;
       } else {
@@ -285,17 +296,27 @@ class ProjectsView extends React.Component<Props, State> {
       const username = project.manifestUrl.includes(`exp://${Config.api.host}`)
         ? extractUsername(project.manifestUrl)
         : undefined;
-      let releaseChannel = project.manifest?.releaseChannel;
+      let releaseChannel =
+        project.manifest && 'releaseChannel' in project.manifest
+          ? project.manifest.releaseChannel
+          : null;
       releaseChannel = releaseChannel === 'default' ? undefined : releaseChannel;
       return (
         <ProjectListItem
           key={project.manifestUrl}
           url={project.manifestUrl}
-          image={project.manifest?.iconUrl}
-          title={project.manifest?.name}
+          image={
+            // TODO(wschurman): audit for new manifests
+            project.manifest && 'iconUrl' in project.manifest ? project.manifest.iconUrl : undefined
+          }
+          title={
+            // TODO(wschurman): audit for new manifests
+            project.manifest && 'name' in project.manifest ? project.manifest.name : undefined
+          }
           subtitle={username || project.manifestUrl}
-          username={username}
-          releaseChannel={releaseChannel}
+          username={username ?? undefined}
+          releaseChannel={releaseChannel ?? undefined}
+          onPress={() => Linking.openURL(project.url)}
           last={i === this.props.recentHistory.count() - 1}
         />
       );

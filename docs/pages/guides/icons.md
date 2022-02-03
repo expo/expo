@@ -8,10 +8,11 @@ As trendy as it is these days, not every app has to use emoji for all icons 😳
 
 ## @expo/vector-icons
 
-This library is installed by default on the template project that get through `expo init` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using the [@expo/vector-icons directory](https://expo.github.io/vector-icons/).
+This library is installed by default on the template project that get through `expo init` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using [icons.expo.fyi](https://icons.expo.fyi).
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
+<!-- prettier-ignore -->
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -21,8 +22,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <Ionicons name="md-checkmark-circle" size={32} color="green" />
-      /* @end */
+      <Ionicons name="md-checkmark-circle" size={32} color="green" />/* @end */
+
     </View>
   );
 }
@@ -71,7 +72,7 @@ export default class CustomIconExample extends React.Component {
 
 ### createIconSetFromFontello
 
-Convenience method to create a custom font based on a [Fontello](http://fontello.com/) config file. Don't forget to import the font as described above and drop the `config.json` somewhere convenient in your project, using `Font.loadAsync`.
+Convenience method to create a custom font based on a [Fontello](http://fontello.com/) config file. Don't forget to import the font as described above and drop the **config.json** somewhere convenient in your project, using `Font.loadAsync`.
 
 ```javascript
 // Once your custom font has been loaded...
@@ -83,7 +84,7 @@ const Icon = createIconSetFromFontello(fontelloConfig, 'fontello', 'fontello.ttf
 
 ### createIconSetFromIcoMoon
 
-Convenience method to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. Don't forget to import the font as described above and drop the `config.json` somewhere convenient in your project, using `Font.loadAsync`.
+Convenience method to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. Don't forget to import the font as described above and drop the **config.json** somewhere convenient in your project, using `Font.loadAsync`.
 
 <SnackInline
 label='Icomoon Icons'
@@ -93,6 +94,7 @@ files={{
   }}
 dependencies={['@expo/vector-icons', 'expo-font', 'expo-app-loading']}>
 
+<!-- prettier-ignore -->
 ```jsx
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
@@ -118,8 +120,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <Icon name="pacman" size={50} color="red" />
-      /* @end */
+      <Icon name="pacman" size={50} color="red" />/* @end */
+
     </View>
   );
 }
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-Let's assume that our `SlackIcon` class is located in `my-project/components/SlackIcon.js`, and our icon images are in `my-project/assets/images`, in order to refer to the image we use require and include the relative path. You can provide versions of your icon at various pixel densities and the appropriate image will be automatically used for you. In this example, we actually have `slack-icon@2x.png` and `slack-icon@3x.png`, so if I view this on an iPhone 6s the image I will see is `slack-icon@3x.png`. More on this in the [Images guide in the react-native documentation](https://reactnative.dev/docs/images.html#static-image-resources).
+Let's assume that our `SlackIcon` class is located in `my-project/components/SlackIcon.js`, and our icon images are in `my-project/assets/images`, in order to refer to the image we use require and include the relative path. You can provide versions of your icon at various pixel densities and the appropriate image will be automatically used for you. In this example, we actually have `slack-icon@2x.png` and `slack-icon@3x.png`, so if I view this on an iPhone 6s the image I will see is `slack-icon@3x.png`. More on this in the [Images guide in the react-native documentation](https://reactnative.dev/docs/images#static-image-resources).
 
 We also set the `fadeDuration` (an Android specific property) to `0` because we usually want the icon to appear immediately rather than fade in over several hundred milliseconds.
 
@@ -186,6 +188,7 @@ A convenience component for creating buttons with an icon on the left side.
 
 <SnackInline label='Icon Button Component' dependencies={['@expo/vector-icons']}>
 
+<!-- prettier-ignore -->
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -201,10 +204,11 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>
-        /* @end */ Login with Facebook /* @info */
-      </FontAwesome.Button>
-      /* @end */
+      <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>/* @end */
+      
+        Login with Facebook
+      /* @info */</FontAwesome.Button>/* @end */
+
     </View>
   );
 }
@@ -224,13 +228,13 @@ const styles = StyleSheet.create({
 
 ### Properties
 
-Any [`Text`](http://reactnative.dev/docs/text.html), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight.html) or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback.html) property in addition to these:
+Any [`Text`](http://reactnative.dev/docs/text), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight) or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback) property in addition to these:
 
 | Prop                  | Description                                                                                                                                       | Default               |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
 | **`color`**           | Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.                                                     | `white`               |
 | **`size`**            | Icon size.                                                                                                                                        | `20`                  |
-| **`iconStyle`**       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | \`{marginRight: 10}\` |
+| **`iconStyle`**       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | `{marginRight: 10}` |
 | **`backgroundColor`** | Background color of the button.                                                                                                                   | `#007AFF`             |
 | **`borderRadius`**    | Border radius of the button, set to `0` to disable.                                                                                               | `5`                   |
 | **`onPress`**         | A function called when the button is pressed.                                                                                                     | _None_                |

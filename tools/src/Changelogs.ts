@@ -47,11 +47,35 @@ export type InsertOptions = Partial<{
  * Enum with changelog sections that are commonly used by us.
  */
 export enum ChangeType {
+  /**
+   * Upgrading vendored libs.
+   */
   LIBRARY_UPGRADES = '📚 3rd party library updates',
+
+  /**
+   * Changes in the API that may require users to change their code.
+   */
   BREAKING_CHANGES = '🛠 Breaking changes',
+
+  /**
+   * New features and non-breaking changes in the API.
+   */
   NEW_FEATURES = '🎉 New features',
+
+  /**
+   * Bug fixes and inconsistencies with the documentation.
+   */
   BUG_FIXES = '🐛 Bug fixes',
+
+  /**
+   * Changes that users should be aware of as they cause behavior changes in corner cases.
+   */
   NOTICES = '⚠️ Notices',
+
+  /**
+   * Anything that doesn't apply to other types.
+   */
+  OTHERS = '💡 Others',
 }
 
 /**
@@ -83,6 +107,21 @@ const GROUP_LIST_ITEM_DEPTH = 0;
 export class Changelog {
   filePath: string;
   tokens: Markdown.Tokens | null = null;
+
+  static textToChangelogEntry(text: string): Required<ChangelogEntry> {
+    const pullRequests = execAll(
+      /\[#\d+\]\(https?:\/\/github\.com\/expo\/expo\/pull\/(\d+)\)/g,
+      text,
+      1
+    );
+    const authors = execAll(/\[@\w+\]\(https?:\/\/github\.com\/([^/)]+)\)/g, text, 1);
+
+    return {
+      message: text.trim(),
+      pullRequests: pullRequests.map((match) => parseInt(match, 10)),
+      authors,
+    };
+  }
 
   constructor(filePath: string) {
     this.filePath = filePath;
@@ -182,7 +221,7 @@ export class Changelog {
           const text = item.tokens.find(Markdown.isTextToken)?.text ?? item.text;
 
           changes.totalCount++;
-          versions[currentVersion][currentSection].push(textToChangelogEntry(text));
+          versions[currentVersion][currentSection].push(Changelog.textToChangelogEntry(text));
         }
       }
     }
@@ -298,7 +337,12 @@ export class Changelog {
    */
   async cutOffAsync(
     version: string,
-    types: string[] = [ChangeType.BREAKING_CHANGES, ChangeType.NEW_FEATURES, ChangeType.BUG_FIXES]
+    types: string[] = [
+      ChangeType.BREAKING_CHANGES,
+      ChangeType.NEW_FEATURES,
+      ChangeType.BUG_FIXES,
+      ChangeType.OTHERS,
+    ]
   ): Promise<void> {
     const tokens = await this.getTokensAsync();
     const firstVersionHeadingIndex = tokens.findIndex((token) => isVersionToken(token));
@@ -450,7 +494,11 @@ export function getChangeEntryLabel(entry: ChangelogEntry): string {
       .join(', ');
 
     const pullRequestInformations = `${pullRequestsStr} by ${authorsStr}`.trim();
-    return `${entry.message} (${pullRequestInformations})`;
+    if (entry.message.includes(pullRequestInformations)) {
+      return entry.message;
+    } else {
+      return `${entry.message} (${pullRequestInformations})`;
+    }
   }
   return entry.message;
 }
@@ -460,19 +508,4 @@ export function getChangeEntryLabel(entry: ChangelogEntry): string {
  */
 function getGroupLabel(groupName: string): string {
   return `**\`${groupName}\`**`;
-}
-
-function textToChangelogEntry(text: string): ChangelogEntry {
-  const pullRequests = execAll(
-    /\[#\d+\]\(https?:\/\/github\.com\/expo\/expo\/pull\/(\d+)\)/g,
-    text,
-    1
-  );
-  const authors = execAll(/\[@\w+\]\(https?:\/\/github\.com\/([^/)]+)\)/g, text, 1);
-
-  return {
-    message: text.trim(),
-    pullRequests: pullRequests.map((match) => parseInt(match, 10)),
-    authors,
-  };
 }

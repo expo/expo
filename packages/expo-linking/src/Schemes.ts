@@ -1,5 +1,7 @@
-import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'expo-modules-core';
+
+const LINKING_GUIDE_URL = `https://docs.expo.io/guides/linking/`;
 
 export function hasCustomScheme(): boolean {
   if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
@@ -14,7 +16,11 @@ export function hasCustomScheme(): boolean {
   return false;
 }
 
-function getSchemes(config: { scheme?: string | string[] }): string[] {
+type SchemeConfig = {
+  scheme?: string | string[];
+};
+
+function getSchemes(config: SchemeConfig | null | undefined): string[] {
   if (config) {
     if (Array.isArray(config.scheme)) {
       const validate = (value: any): value is string => {
@@ -57,17 +63,20 @@ export function collectManifestSchemes(): string[] {
   // They'll be added when we drop support for `expo build` or decide
   // to have them only work with `eas build`.
   const platformManifest =
-    Platform.select({
-      ios: Constants.manifest?.ios,
-      android: Constants.manifest?.android,
+    (Platform.select<any>({
+      ios: Constants.manifest?.ios ?? Constants.manifest2?.extra?.expoClient?.ios,
+      android: Constants.manifest?.android ?? Constants.manifest2?.extra?.expoClient?.android,
       web: {},
-    }) ?? {};
+    }) as SchemeConfig) ?? {};
 
-  const schemes = getSchemes(Constants.manifest as any);
+  const schemes = getSchemes(Constants.manifest ?? Constants.manifest2?.extra?.expoClient);
 
   // Add the detached scheme after the manifest scheme for legacy ExpoKit support.
   if (Constants.manifest?.detach?.scheme) {
     schemes.push(Constants.manifest.detach.scheme);
+  }
+  if (Constants.manifest2?.extra?.expoClient?.detach?.scheme) {
+    schemes.push(Constants.manifest2.extra.expoClient.detach.scheme);
   }
 
   // Add the unimplemented platform schemes last.
@@ -81,25 +90,32 @@ function getNativeAppIdScheme(): string | null {
   // The native app id has been added to builds for a long time to support Google Sign-In.
   return (
     Platform.select({
-      ios: Constants.manifest?.ios?.bundleIdentifier,
+      ios:
+        Constants.manifest?.ios?.bundleIdentifier ??
+        Constants.manifest2?.extra?.expoClient?.ios?.bundleIdentifier,
       // TODO: This may change to android.applicationId in the future.
-      android: Constants.manifest?.android?.package,
+      android:
+        Constants.manifest?.android?.package ??
+        Constants.manifest2?.extra?.expoClient?.android?.package,
     }) ?? null
   );
 }
 
 export function hasConstantsManifest(): boolean {
   // Ensure the user has linked the expo-constants manifest in bare workflow.
-  return !!Object.keys(Constants.manifest ?? {}).length;
+  return (
+    !!Object.keys(Constants.manifest ?? {}).length ||
+    !!Object.keys(Constants.manifest2 ?? {}).length
+  );
 }
 
-export function resolveScheme(props: { scheme?: string }): string {
+export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): string {
   if (
     Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
     !hasConstantsManifest()
   ) {
     throw new Error(
-      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/master/packages/expo-constants/README.md`
+      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`
     );
   }
 
@@ -107,13 +123,13 @@ export function resolveScheme(props: { scheme?: string }): string {
   const nativeAppId = getNativeAppIdScheme();
 
   if (!manifestSchemes.length) {
-    if (__DEV__) {
-      // Assert a config warning if no scheme is setup yet.
+    if (__DEV__ && !props.isSilent) {
+      // Assert a config warning if no scheme is setup yet. `isSilent` is used for warnings, but we'll ignore it for exceptions.
       console.warn(
-        `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for production apps, if it's left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`
+        `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for production apps, if it's left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Learn more: ${LINKING_GUIDE_URL}`
       );
-    } else {
-      // Throw in production, use the __DEV__ flag so users can test this functionality with `expo start --no-dev`
+    } else if (!__DEV__ || Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
+      // Throw in production or when not in store client. Use the __DEV__ flag so users can test this functionality with `expo start --no-dev`,
       throw new Error(
         'Cannot make a deep link into a standalone app with no custom scheme defined'
       );
@@ -133,20 +149,20 @@ export function resolveScheme(props: { scheme?: string }): string {
     return 'exp';
   }
 
-  const schemes = [...manifestSchemes, nativeAppId];
+  const schemes = [...manifestSchemes, nativeAppId].filter(Boolean);
 
   if (props.scheme) {
     if (__DEV__) {
       // Bare workflow development assertion about the provided scheme matching the Expo config.
-      if (schemes.includes(props.scheme)) {
+      if (!schemes.includes(props.scheme) && !props.isSilent) {
         // TODO: Will this cause issues for things like Facebook or Google that use `reversed-client-id://` or `fb<FBID>:/`?
         // Traditionally these APIs don't use the Linking API directly.
         console.warn(
           `The provided Linking scheme '${
             props.scheme
-          }' does not appear in the list of possible URI schemes in your Expo config. Expected one of: ${schemes.join(
-            ', '
-          )}.`
+          }' does not appear in the list of possible URI schemes in your Expo config. Expected one of: ${schemes
+            .map((scheme) => `'${scheme}'`)
+            .join(', ')}`
         );
       }
     }
@@ -159,11 +175,11 @@ export function resolveScheme(props: { scheme?: string }): string {
   // be using one of defined schemes.
 
   // If the native app id is the only scheme,
-  if (!!nativeAppId && !manifestSchemes.length) {
+  if (!!nativeAppId && !manifestSchemes.length && !props.isSilent) {
     // Assert a config warning if no scheme is setup yet.
     // This warning only applies to managed workflow EAS apps, as bare workflow
     console.warn(
-      `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this warning. Using native app identifier as the scheme '${nativeAppId}'. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`
+      `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this warning. Using native app identifier as the scheme '${nativeAppId}'. Learn more: ${LINKING_GUIDE_URL}`
     );
     return nativeAppId;
   }
@@ -175,11 +191,11 @@ export function resolveScheme(props: { scheme?: string }): string {
   const [scheme, ...extraSchemes] = manifestSchemes;
 
   if (!scheme) {
-    const errorMessage = `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this error. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`;
+    const errorMessage = `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this error. Learn more: ${LINKING_GUIDE_URL}`;
     // Throw in production, use the __DEV__ flag so users can test this functionality with `expo start --no-dev`
     throw new Error(errorMessage);
   }
-  if (extraSchemes.length) {
+  if (extraSchemes.length && !props.isSilent) {
     console.warn(
       `Linking found multiple possible URI schemes in your Expo config.\nUsing '${scheme}'. Ignoring: ${[
         ...extraSchemes,

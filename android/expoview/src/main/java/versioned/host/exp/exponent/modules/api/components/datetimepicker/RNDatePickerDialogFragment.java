@@ -66,47 +66,33 @@ public class RNDatePickerDialogFragment extends DialogFragment {
       display = RNDatePickerDisplay.valueOf(args.getString(RNConstants.ARG_DISPLAY).toUpperCase(Locale.US));
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      switch (display) {
-        case CALENDAR:
-        case SPINNER:
-          String resourceName = display == RNDatePickerDisplay.CALENDAR
-                  ? "ReactAndroidCalendarDatePickerDialog"
-                  : "ReactAndroidSpinnerDatePickerDialog";
-          return new RNDismissableDatePickerDialog(
-                  activityContext,
-                  activityContext.getResources().getIdentifier(
-                          resourceName,
-                          "style",
-                          activityContext.getPackageName()),
-                  onDateSetListener,
-                  year,
-                  month,
-                  day,
-                  display
-          );
-        default:
-          return new RNDismissableDatePickerDialog(
-                  activityContext,
-                  onDateSetListener,
-                  year,
-                  month,
-                  day,
-                  display
-          );
-      }
-    } else {
-      DatePickerDialog dialog = new RNDismissableDatePickerDialog(activityContext, onDateSetListener, year, month, day, display);
-      switch (display) {
-        case CALENDAR:
-          dialog.getDatePicker().setCalendarViewShown(true);
-          dialog.getDatePicker().setSpinnersShown(false);
-          break;
-        case SPINNER:
-          dialog.getDatePicker().setCalendarViewShown(false);
-          break;
-      }
-      return dialog;
+    switch (display) {
+      case CALENDAR:
+      case SPINNER:
+        String resourceName = display == RNDatePickerDisplay.CALENDAR
+                ? "CalendarDatePickerDialog"
+                : "SpinnerDatePickerDialog";
+        return new RNDismissableDatePickerDialog(
+                activityContext,
+                activityContext.getResources().getIdentifier(
+                        resourceName,
+                        "style",
+                        activityContext.getPackageName()),
+                onDateSetListener,
+                year,
+                month,
+                day,
+                display
+        );
+      default:
+        return new RNDismissableDatePickerDialog(
+                activityContext,
+                onDateSetListener,
+                year,
+                month,
+                day,
+                display
+        );
     }
   }
 

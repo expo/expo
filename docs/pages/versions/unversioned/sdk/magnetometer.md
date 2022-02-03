@@ -1,9 +1,10 @@
 ---
 title: Magnetometer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
+packageName: 'expo-sensors'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -13,7 +14,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-sensors" />
+<APIInstallSection />
 
 ## Usage
 
@@ -154,7 +155,7 @@ Subscribe for updates to the Magnetometer.
 
 - **listener (_function_)** -- A callback that is invoked when an
   Magnetometer update is available. When invoked, the listener is
-  provided a single argumument that is an object containing keys x, y,
+  provided a single argument that is an object containing keys x, y,
   z.
 
 #### Returns

@@ -1,13 +1,13 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Platform } from '@unimodules/core';
-import { usePermissions } from '@use-expo/permissions';
 import * as Contacts from 'expo-contacts';
-import * as Permissions from 'expo-permissions';
+import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import HeaderContainerRight from '../../components/HeaderContainerRight';
+import HeaderIconButton from '../../components/HeaderIconButton';
+import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
 import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
@@ -23,8 +23,26 @@ type Props = {
 const CONTACT_PAGE_SIZE = 500;
 
 export default function ContactsScreen({ navigation }: Props) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Contacts',
+      headerRight: () => (
+        <HeaderContainerRight>
+          <HeaderIconButton
+            disabled={Platform.select({ web: true, default: false })}
+            name="md-add"
+            onPress={() => {
+              const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
+              ContactUtils.presentNewContactFormAsync({ contact: randomContact });
+            }}
+          />
+        </HeaderContainerRight>
+      ),
+    });
+  }, [navigation]);
+
   const [isAvailable, error] = useResolvedValue(Contacts.isAvailableAsync);
-  const [permission] = usePermissions(Permissions.CONTACTS, { ask: true });
+  const [permission] = usePermissions(Contacts.requestPermissionsAsync);
 
   const warning = React.useMemo(() => {
     if (error) {
@@ -33,9 +51,9 @@ export default function ContactsScreen({ navigation }: Props) {
       return 'Checking availability...';
     } else if (isAvailable === false) {
       return 'Contacts API is not available on this platform.';
-    } else if (permission?.status === 'denied') {
+    } else if (!permission) {
       return 'Contacts permission has not been granted for this app. Grant permission in the Settings app to continue.';
-    } else if (permission?.status === 'granted') {
+    } else if (permission) {
       return null;
     }
     return 'Pending user permission...';
@@ -129,21 +147,3 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 });
-
-ContactsScreen.navigationOptions = () => {
-  return {
-    title: 'Contacts',
-    headerRight: () => (
-      <HeaderContainerRight>
-        <HeaderIconButton
-          disabled={Platform.select({ web: true, default: false })}
-          name="md-add"
-          onPress={() => {
-            const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
-            ContactUtils.presentNewContactFormAsync({ contact: randomContact });
-          }}
-        />
-      </HeaderContainerRight>
-    ),
-  };
-};

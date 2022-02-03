@@ -22,7 +22,7 @@ class Connectivity {
 
     try {
       const netInfo = await NetInfo.fetch();
-      this._isAvailable = netInfo.isConnected;
+      this._isAvailable = netInfo.isConnected ?? false;
     } catch (e) {
       this._isAvailable = false;
       console.warn(`Uncaught error when fetching connectivity status: ${e}`);
@@ -32,8 +32,8 @@ class Connectivity {
   }
 
   _handleConnectivityChange = (netInfo: NetInfoState) => {
-    this._isAvailable = netInfo.isConnected;
-    this._listeners.forEach(listener => {
+    this._isAvailable = netInfo.isConnected ?? false;
+    this._listeners.forEach((listener) => {
       listener(this._isAvailable);
     });
   };

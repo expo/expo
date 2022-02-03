@@ -1,5 +1,5 @@
-#import <UMCore/UMViewManager.h>
+#import <ExpoModulesCore/EXViewManager.h>
 #import <UIKit/UIKit.h>
 
-@interface EXNativeMediaViewManager : UMViewManager
+@interface EXNativeMediaViewManager : EXViewManager
 @end

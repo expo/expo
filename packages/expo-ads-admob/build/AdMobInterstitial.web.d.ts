@@ -1,4 +1,3 @@
-import * as React from 'react';
-export default class AdMobInterstitial extends React.Component<object> {
-    render(): JSX.Element;
-}
+declare const AdMobInterstitial: () => JSX.Element;
+export default AdMobInterstitial;
+//# sourceMappingURL=AdMobInterstitial.web.d.ts.map

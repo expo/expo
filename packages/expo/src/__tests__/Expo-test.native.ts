@@ -116,6 +116,13 @@ describe(`Expo APIs`, () => {
   }
 });
 
+jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+  __esModule: true,
+  default() {
+    return { bundleLoadedFromServer: true, url: 'http://localhost:8081/' };
+  },
+}));
+
 describe(`importing Expo`, () => {
   beforeAll(() => {
     jest.resetModules();
@@ -126,7 +133,7 @@ describe(`importing Expo`, () => {
   });
 
   it(`throws a clear error in bare React Native`, () => {
-    const clearPropertiesInPlace = aThing => {
+    const clearPropertiesInPlace = (aThing) => {
       const propertyNames = Object.keys(aThing);
       for (const propertyName of propertyNames) {
         if (!bareReactNativeModulesNames.includes(propertyName)) {
@@ -141,14 +148,14 @@ describe(`importing Expo`, () => {
     };
     // Clear all the native modules as a way to simulate running outside of Expo
     const { NativeModules } = require('react-native');
-    const { NativeModulesProxy } = require('@unimodules/react-native-adapter');
+    const { NativeModulesProxy } = require('expo-modules-core');
     clearPropertiesInPlace(NativeModules);
     clearPropertiesInPlace(NativeModulesProxy);
 
     // Silence "No native module found" warnings raised in CRNA and expo-constants
     const warn = console.warn;
 
-    global.console.warn = str => {
+    global.console.warn = (str) => {
       const tst = (str || '') + '';
       if (!tst.includes('No native')) {
         warn.apply(console, [str]);

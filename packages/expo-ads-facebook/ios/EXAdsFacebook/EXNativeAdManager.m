@@ -2,15 +2,15 @@
 #import <EXAdsFacebook/EXNativeAdView.h>
 
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
-#import <UMCore/UMUtilities.h>
-#import <UMCore/UMUIManager.h>
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXUIManager.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 @class EXAdManagerDelegate;
 
 @interface EXNativeAdManager ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSString*, FBNativeAdsManager*> *adsManagers;
 @property (nonatomic, strong) NSMutableDictionary<NSString*, EXAdManagerDelegate*> *adsManagersDelegates;
 
@@ -58,7 +58,7 @@
 
 @implementation EXNativeAdManager
 
-UM_EXPORT_MODULE(CTKNativeAdManager)
+EX_EXPORT_MODULE(CTKNativeAdManager)
 
 - (instancetype)init
 {
@@ -75,7 +75,7 @@ UM_EXPORT_MODULE(CTKNativeAdManager)
   return @"CTKNativeAd";
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -85,15 +85,15 @@ UM_EXPORT_MODULE(CTKNativeAdManager)
   return @[@"CTKNativeAdsManagersChanged", @"CTKNativeAdManagerErrored", @"onAdLoaded"];
 }
 
-UM_EXPORT_METHOD_AS(registerViewsForInteraction,
+EX_EXPORT_METHOD_AS(registerViewsForInteraction,
                     registerViewsForInteraction:(NSNumber *)nativeAdViewTag
                     mediaViewTag:(NSNumber *)mediaViewTag
                     adIconViewTag:(NSNumber *)adIconViewTag
                     clickableViewsTags:(NSArray *)tags
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
-  id<UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
+  id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
   [uiManager executeUIBlock:^(NSDictionary<id,UIView *> * viewRegistry) {
     UIView *mediaView = nil;
     UIView *adIconView = nil;
@@ -149,11 +149,11 @@ UM_EXPORT_METHOD_AS(registerViewsForInteraction,
   }];
 }
 
-UM_EXPORT_METHOD_AS(init,
+EX_EXPORT_METHOD_AS(init,
                     init:(NSString *)placementId
                     withAdsToRequest:(NSNumber *)adsToRequest
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   FBNativeAdsManager *adsManager = [[FBNativeAdsManager alloc] initWithPlacementID:placementId
                                                                 forNumAdsRequested:[adsToRequest intValue]];
@@ -162,7 +162,7 @@ UM_EXPORT_METHOD_AS(init,
   _adsManagersDelegates[placementId] = delegate;
   [adsManager setDelegate:delegate];
 
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     [adsManager loadAds];
   }];
 
@@ -170,11 +170,11 @@ UM_EXPORT_METHOD_AS(init,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setMediaCachePolicy,
+EX_EXPORT_METHOD_AS(setMediaCachePolicy,
                     setMediaCachePolicy:(NSString *)placementId
                     cachePolicy:(NSString *)cachePolicy
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   FBNativeAdsCachePolicy policy = [@{
                                      @"none": @(FBNativeAdsCachePolicyNone),
@@ -184,10 +184,10 @@ UM_EXPORT_METHOD_AS(setMediaCachePolicy,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(disableAutoRefresh,
+EX_EXPORT_METHOD_AS(disableAutoRefresh,
                     disableAutoRefresh:(NSString*)placementId
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [_adsManagers[placementId] disableAutoRefresh];
   resolve(nil);
@@ -201,12 +201,12 @@ UM_EXPORT_METHOD_AS(disableAutoRefresh,
     [adsManagersState setValue:@([adManager isValid]) forKey:key];
   }];
 
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)] sendEventWithName:@"CTKNativeAdsManagersChanged" body:adsManagersState];
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)] sendEventWithName:@"CTKNativeAdsManagersChanged" body:adsManagersState];
 }
 
 - (void)nativeAdForPlacementId:(NSString *)placementId failedToLoadWithError:(NSError *)error
 {
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)] sendEventWithName:@"CTKNativeAdManagerErrored" body:@{
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)] sendEventWithName:@"CTKNativeAdManagerErrored" body:@{
     @"placementId": placementId,
     @"error": @{
         @"message": error.localizedDescription ?: error.description,
@@ -220,7 +220,7 @@ UM_EXPORT_METHOD_AS(disableAutoRefresh,
   return [[EXNativeAdView alloc] initWithModuleRegistry:_moduleRegistry];
 }
 
-UM_VIEW_PROPERTY(adsManager, NSString *, EXNativeAdView)
+EX_VIEW_PROPERTY(adsManager, NSString *, EXNativeAdView)
 {
   [view setNativeAd:[_adsManagers[value] nextNativeAd]];
 }

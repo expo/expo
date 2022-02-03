@@ -11,8 +11,8 @@ import {
   Workflow,
   getJobsForWorkflowRunAsync,
 } from '../GitHubActions';
-import { deepCloneObject, retryAsync } from '../Utils';
 import logger from '../Logger';
+import { deepCloneObject, retryAsync } from '../Utils';
 
 type CommandOptions = {
   ref?: string;
@@ -51,7 +51,7 @@ const CUSTOM_WORKFLOWS = {
     },
   },
   'shell-app-ios-upload': {
-    name: 'iOS Shell App (with Upload to S3)',
+    name: 'iOS Shell App (with newest SDK version and Upload to S3)',
     baseWorkflowSlug: 'shell-app-ios',
     inputs: {
       upload: 'upload',

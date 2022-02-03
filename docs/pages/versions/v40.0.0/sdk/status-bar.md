@@ -53,24 +53,6 @@ export default class App extends React.Component {
 import { StatusBar } from 'expo-status-bar';
 ```
 
-**[Components](#components)**
-
-- [`StatusBar`](#statusbar)
-
-**[Methods](#methods)**
-
-- [`setStatusBarBackgroundColor(backgroundColor, animated)`](#setstatusbarbackgroundcolorbackgroundcolor-animated)
-- [`setStatusBarHidden(hidden, animation)`](#setstatusbarhiddenhidden-animation)
-- [`setStatusBarNetworkActivityIndicatorVisible(visible)`](#setstatusbarnetworkactivityindicatorvisiblevisible)
-- [`setStatusBarStyle(style)`](#setstatusbarstylestyle)
-- [`setStatusBarTranslucent(translucent)`](#setstatusbartranslucenttranslucent)
-
-**[Types](#types)**
-
-- [`StatusBarAnimation`](#statusbaranimation)
-- [`StatusBarProps`](#statusbarprops)
-- [`StatusBarStyle`](#statusbarstyle)
-
 ## Components
 
 ### `StatusBar`
@@ -87,7 +69,7 @@ You will likely have multiple `StatusBar` components mounted in the same app at 
 - **networkActivityIndicatorVisible (_boolean_)** - If the network activity indicator should be visible. _[iOS only]_
 - **hideTransitionAnimation (_[StatusBarAnimation](#statusbaranimation)_)** - The transition effect when showing and hiding the status bar. Defaults to `'fade'`. _[iOS only]_
 - **backgroundColor (_string_)** - The background color of the status bar. _[Android only]_
-- **translucent (_boolean_)** - Whether the app can draw under the status bar. When `true`, content will be rendered under the status bar. This is always `true` on iOS and cannot be changed. On Android, the default is also `true` unless you have explicitly configured the `androidStatusBar.translucent` key in `app.json` to `false`. _[Android only]_
+- **translucent (_boolean_)** - Whether the app can draw under the status bar. When `true`, content will be rendered under the status bar. This is always `true` on iOS and cannot be changed. On Android, the default is also `true` unless you have explicitly configured the `androidStatusBar.translucent` key in **app.json** to `false`. _[Android only]_
 
 ## Methods
 

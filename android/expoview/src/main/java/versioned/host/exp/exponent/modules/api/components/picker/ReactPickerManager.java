@@ -8,24 +8,31 @@
 package versioned.host.exp.exponent.modules.api.components.picker;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.*;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+
+import java.util.Map;
+
 import javax.annotation.Nullable;
-import android.graphics.PorterDuff;
-import android.graphics.Color;
+import host.exp.expoview.R;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the
@@ -34,7 +41,38 @@ import android.graphics.Color;
  * {@link ReactDialogPickerManager} components. These are merged back on the JS side into one
  * React component.
  */
-public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> {
+public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, ReactPickerShadowNode> {
+  private static final ReadableArray EMPTY_ARRAY = Arguments.createArray();
+
+  private static final int FOCUS_PICKER = 1;
+  private static final int BLUR_PICKER = 2;
+
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
+        .put(
+            "topSelect",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onSelect", "captured", "onSelectCapture")))
+        .put(
+            "topFocus",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+        .put(
+            "topBlur",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+        .build();
+  }
+
+  @Override
+  public @Nullable Map<String, Integer> getCommandsMap() {
+    return MapBuilder.of("focus", FOCUS_PICKER, "blur", BLUR_PICKER);
+  }
 
   @ReactProp(name = "items")
   public void setItems(ReactPicker view, @Nullable ReadableArray items) {
@@ -73,9 +111,33 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
     view.setStagedSelection(selected);
   }
 
-  @ReactProp(name = "dropdownIconColor") 
-  public void setDropdownIconColor(ReactPicker view, @Nullable String color) {
-    view.getBackground().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
+  @ReactProp(name = ViewProps.BACKGROUND_COLOR)
+  @Override
+  public void setBackgroundColor(ReactPicker view, @Nullable int color) {
+    view.setBackgroundColor(color);
+  }
+
+  @ReactProp(name = "dropdownIconColor")
+  public void setDropdownIconColor(ReactPicker view, @Nullable int color) {
+    view.setDropdownIconColor(color);
+  }
+
+  @ReactProp(name = "dropdownIconRippleColor")
+  public void setDropdownIconRippleColor(ReactPicker view, @Nullable int color) {
+    view.setDropdownIconRippleColor(color);
+  }
+
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = 1)
+  public void setNumberOfLines(ReactPicker view, int numberOfLines) {
+    ReactPickerAdapter adapter = (ReactPickerAdapter) view.getAdapter();
+    if (adapter == null) {
+      adapter = new ReactPickerAdapter(view.getContext(), EMPTY_ARRAY);
+      adapter.setPrimaryTextColor(view.getPrimaryColor());
+      adapter.setNumberOfLines(numberOfLines);
+      view.setAdapter(adapter);
+    } else {
+      adapter.setNumberOfLines(numberOfLines);
+    }
   }
 
   @Override
@@ -88,14 +150,54 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
   protected void addEventEmitters(
       final ThemedReactContext reactContext,
       final ReactPicker picker) {
-    picker.setOnSelectListener(
-            new PickerEventEmitter(
-                    picker,
-                    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
+    final PickerEventEmitter eventEmitter = new PickerEventEmitter(
+        picker,
+        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher());
+    picker.setOnSelectListener(eventEmitter);
+    picker.setOnFocusListener(eventEmitter);
+  }
+
+  @Override
+  public void receiveCommand(@NonNull ReactPicker root, int commandId, @androidx.annotation.Nullable ReadableArray args) {
+    switch (commandId) {
+      case FOCUS_PICKER:
+        root.performClick();
+        break;
+      case BLUR_PICKER:
+        root.clearFocus();
+        break;
+    }
+  }
+
+  @Override
+  public void receiveCommand(@NonNull ReactPicker root, String commandId, @androidx.annotation.Nullable ReadableArray args) {
+    switch (commandId) {
+      case "focus":
+        root.performClick();
+        break;
+      case "blur":
+        root.clearFocus();
+        break;
+    }
+  }
+
+  @Override
+  public ReactPickerShadowNode createShadowNodeInstance() {
+    return new ReactPickerShadowNode();
+  }
+
+  @Override
+  public Class<? extends ReactPickerShadowNode> getShadowNodeClass() {
+    return ReactPickerShadowNode.class;
+  }
+
+  @Override
+  public void updateExtraData(ReactPicker root, Object extraData) {
   }
 
   private static class ReactPickerAdapter extends BaseAdapter {
     private final LayoutInflater mInflater;
+    private int mNumberOfLines = 1;
     private @Nullable Integer mPrimaryTextColor;
     private @Nullable ReadableArray mItems;
 
@@ -141,20 +243,71 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
 
     private View getView(int position, View convertView, ViewGroup parent, boolean isDropdown) {
       ReadableMap item = getItem(position);
+      @Nullable ReadableMap style = null;
+      boolean enabled = true;
+
+      if (item.hasKey("style")) {
+        style = item.getMap("style");
+      }
 
       if (convertView == null) {
         int layoutResId = isDropdown
-            ? android.R.layout.simple_spinner_dropdown_item
-            : android.R.layout.simple_spinner_item;
+              ? R.layout.simple_spinner_dropdown_item
+              : R.layout.simple_spinner_item;
         convertView = mInflater.inflate(layoutResId, parent, false);
       }
 
-      TextView textView = (TextView) convertView;
+      if (item.hasKey("enabled")) {
+        enabled = item.getBoolean("enabled");
+      }
+
+      convertView.setEnabled(enabled);
+      // Seems counter intuitive, but this makes the specific item not clickable when enable={false}
+      convertView.setClickable(!enabled);
+      
+      final TextView textView = (TextView) convertView;
       textView.setText(item.getString("label"));
+      textView.setMaxLines(mNumberOfLines);
+
+      if (style != null) {
+        if (style.hasKey("backgroundColor") && !style.isNull("backgroundColor")) {
+          convertView.setBackgroundColor(style.getInt("backgroundColor"));
+        } else {
+          convertView.setBackgroundColor(Color.TRANSPARENT);
+        }
+        
+        if (style.hasKey("color") && !style.isNull("color")) {
+          textView.setTextColor(style.getInt("color"));
+        }
+
+        if (style.hasKey("fontSize") && !style.isNull("fontSize")) {
+          textView.setTextSize((float)style.getDouble("fontSize"));
+        }
+        
+        if (style.hasKey("fontFamily") && !style.isNull("fontFamily")) {
+          Typeface face = Typeface.create(style.getString("fontFamily"), Typeface.NORMAL);
+          textView.setTypeface(face);
+        }
+      }
+
       if (!isDropdown && mPrimaryTextColor != null) {
         textView.setTextColor(mPrimaryTextColor);
       } else if (item.hasKey("color") && !item.isNull("color")) {
         textView.setTextColor(item.getInt("color"));
+      }
+
+      if (item.hasKey("fontFamily") && !item.isNull("fontFamily")) {
+        Typeface face = Typeface.create(item.getString("fontFamily"), Typeface.NORMAL);
+        textView.setTypeface(face);
+      }
+
+      boolean isRTL = I18nUtil.getInstance().isRTL(convertView.getContext());
+      if (isRTL) {
+        convertView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        convertView.setTextDirection(View.TEXT_DIRECTION_RTL);
+      } else {
+        convertView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        convertView.setTextDirection(View.TEXT_DIRECTION_LTR);
       }
 
       return convertView;
@@ -164,9 +317,14 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
       mPrimaryTextColor = primaryTextColor;
       notifyDataSetChanged();
     }
+
+    public void setNumberOfLines(int numberOfLines) {
+      mNumberOfLines = numberOfLines;
+      notifyDataSetChanged();
+    }
   }
 
-  private static class PickerEventEmitter implements ReactPicker.OnSelectListener {
+  private static class PickerEventEmitter implements ReactPicker.OnSelectListener, ReactPicker.OnFocusListener {
 
     private final ReactPicker mReactPicker;
     private final EventDispatcher mEventDispatcher;
@@ -180,6 +338,16 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
     public void onItemSelected(int position) {
       mEventDispatcher.dispatchEvent( new PickerItemSelectEvent(
               mReactPicker.getId(), position));
+    }
+
+    @Override
+    public void onPickerBlur() {
+      mEventDispatcher.dispatchEvent( new PickerBlurEvent(mReactPicker.getId()));
+    }
+
+    @Override
+    public void onPickerFocus() {
+      mEventDispatcher.dispatchEvent( new PickerFocusEvent(mReactPicker.getId()));
     }
   }
 }

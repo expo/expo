@@ -12,3 +12,4 @@ export declare function getFileExtension(url: string): string;
  * to tell the OS to open the URLs in the the Expo client.
  */
 export declare function getManifestBaseUrl(manifestUrl: string): string;
+//# sourceMappingURL=AssetUris.d.ts.map

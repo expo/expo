@@ -7,7 +7,7 @@ import { waitFor } from './helpers';
 
 export const name = 'Speech';
 
-const longTextToSpeak = 'One ring to rule them all.';
+// const longTextToSpeak = 'One ring to rule them all.';
 const shortTextToSpeak = 'Hi!';
 
 // Some of the tests consistently fail on Android:
@@ -141,7 +141,7 @@ export function test(t) {
 
         t.expect(voices.length).toBeGreaterThan(0);
 
-        t.expect(voices.map(voice => voice.language)).toContain('en-US');
+        t.expect(voices.map((voice) => voice.language)).toContain('en-US');
       });
     });
   });

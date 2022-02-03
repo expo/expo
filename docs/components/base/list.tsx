@@ -1,9 +1,9 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { SerializedStyles } from '@emotion/serialize';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { paragraph } from './typography';
-
-import * as Constants from '~/constants/theme';
 
 const attributes = {
   'data-text': true,
@@ -20,8 +20,17 @@ const STYLES_UNORDERED_LIST = css`
   }
 `;
 
-export const UL: React.FC = ({ children }) => (
-  <ul {...attributes} css={STYLES_UNORDERED_LIST}>
+const STYLES_NO_LIST_STYLE = css`
+  list-style: none;
+  margin-left: 0;
+`;
+
+type ULProps = {
+  hideBullets?: boolean;
+};
+
+export const UL: React.FC<ULProps> = ({ children, hideBullets }) => (
+  <ul {...attributes} css={[STYLES_UNORDERED_LIST, hideBullets && STYLES_NO_LIST_STYLE]}>
     {children}
   </ul>
 );
@@ -51,7 +60,7 @@ const STYLES_LIST_ITEM = css`
     line-height: 0;
     margin: 0 0.5rem 0 -1rem;
     position: relative;
-    color: ${Constants.colors.black80};
+    color: ${theme.text.default};
   }
 
   > div {
@@ -59,9 +68,40 @@ const STYLES_LIST_ITEM = css`
   }
 `;
 
-export const LI: React.FC = ({ children }) => {
+const STYLE_RETURN_LIST = css`
+  list-style-type: '⮑';
+  padding-left: 0.5rem;
+  margin-left: 0.25rem;
+
+  ::marker {
+    color: ${theme.icon.secondary};
+    font-size: 90%;
+  }
+`;
+
+const STYLE_PROP_LIST = css`
+  ::marker {
+    color: ${theme.text.secondary};
+    font-size: 125%;
+  }
+`;
+
+type LIProps = {
+  returnType?: boolean;
+  propType?: boolean;
+  customCss?: SerializedStyles;
+};
+
+export const LI: React.FC<LIProps> = ({ children, returnType, propType, customCss }) => {
   return (
-    <li css={STYLES_LIST_ITEM} className="docs-list-item">
+    <li
+      css={[
+        STYLES_LIST_ITEM,
+        returnType && STYLE_RETURN_LIST,
+        propType && STYLE_PROP_LIST,
+        customCss,
+      ]}
+      className="docs-list-item">
       {children}
     </li>
   );

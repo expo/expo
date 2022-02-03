@@ -1,8 +1,12 @@
-import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
-import { createInfoPlistPlugin } from '@expo/config-plugins/build/plugins/ios-plugins';
+import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-export const withBranchIOS = createInfoPlistPlugin(setBranchApiKey, 'withBranchIOS');
+export const withBranchIOS: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults = setBranchApiKey(config, config.modResults);
+    return config;
+  });
+};
 
 export function getBranchApiKey(config: Pick<ExpoConfig, 'ios'>) {
   return config.ios?.config?.branch?.apiKey ?? null;

@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from '@unimodules/core';
-export default NativeModulesProxy.ExpoUpdates || {};
+import { NativeModulesProxy } from 'expo-modules-core';
+export default NativeModulesProxy.ExpoUpdates ?? {};
 //# sourceMappingURL=ExpoUpdates.js.map

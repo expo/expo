@@ -6,7 +6,7 @@ this module to get safe access to the native Firebase App.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/firebase-core.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/firebase-core.md)
 
 # Installation in managed Expo projects
 
@@ -14,7 +14,7 @@ For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 
 ### Add the package to your npm dependencies
 

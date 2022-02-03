@@ -6,7 +6,7 @@ import { Page, Section } from '../components/Page';
 
 export default function AlertExample() {
   const showPrompt = () => {
-    Alert.prompt('Enter a value', undefined, text => console.log(`You entered ${text}`));
+    Alert.prompt('Enter a value', undefined, (text) => console.log(`You entered ${text}`));
   };
 
   const showAlert = () => {

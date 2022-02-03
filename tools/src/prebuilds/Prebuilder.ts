@@ -19,8 +19,6 @@ const PODS_DIR = path.join(IOS_DIR, 'Pods');
 // We will be increasing this list slowly. Once all are enabled,
 // find a better way to ignore some packages that shouldn't be prebuilt (like interfaces).
 export const PACKAGES_TO_PREBUILD = [
-  '@unimodules/core',
-  '@unimodules/react-native-adapter',
   // 'expo-ads-admob',
   // 'expo-ads-facebook',
   // 'expo-analytics-amplitude',
@@ -28,7 +26,7 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-app-auth',
   // 'expo-apple-authentication',
   // 'expo-application',
-  'expo-av',
+  // 'expo-av',
   // 'expo-background-fetch',
   'expo-barcode-scanner',
   // 'expo-battery',
@@ -45,7 +43,7 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-document-picker',
   // 'expo-error-recovery',
   'expo-face-detector',
-  // 'expo-facebook',
+  'expo-facebook',
   'expo-file-system',
   // 'expo-firebase-analytics',
   // 'expo-firebase-core',
@@ -78,8 +76,9 @@ export const PACKAGES_TO_PREBUILD = [
   'expo-splash-screen',
   // 'expo-sqlite',
   // 'expo-store-review',
+  'expo-structured-headers',
   // 'expo-task-manager',
-  'expo-updates',
+  // 'expo-updates',
   // 'expo-video-thumbnails',
   // 'expo-web-browser',
   // 'unimodules-app-loader',
@@ -219,6 +218,7 @@ async function findFrameworkForProjectAsync(projectName: string): Promise<string
   const searchNames = new Set([
     projectName,
     projectName.replace(/\/+/, ''), // Firebase/MLVision -> FirebaseMLVision
+    projectName.replace(/\/+.*$/, ''), // FacebookSDK/* -> FacebookSDK
   ]);
 
   for (const name of searchNames) {

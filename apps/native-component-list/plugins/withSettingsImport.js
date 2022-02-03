@@ -1,7 +1,7 @@
 const { withSettingsGradle } = require('@expo/config-plugins');
 
 const withSettingsImport = (config, { packageName, packagePath }) => {
-  return withSettingsGradle(config, config => {
+  return withSettingsGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       if (!config.modResults.contents.includes(`:${packageName}`)) {
         config.modResults.contents += `

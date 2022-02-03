@@ -5,7 +5,7 @@ declare const _default: {
     readonly manufacturer: null;
     readonly modelName: string | null;
     readonly deviceYearClass: null;
-    readonly totalMemory: null;
+    readonly totalMemory: number | null;
     readonly supportedCpuArchitectures: string[] | null;
     readonly osName: string;
     readonly osVersion: string;
@@ -16,3 +16,4 @@ declare const _default: {
     isRootedExperimentalAsync(): Promise<boolean>;
 };
 export default _default;
+//# sourceMappingURL=ExpoDevice.web.d.ts.map

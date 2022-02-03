@@ -1,10 +1,10 @@
-import path from 'path';
 import fs from 'fs-extra';
+import path from 'path';
 import semver from 'semver';
 
-import { arrayize, spawnAsync } from '../Utils';
-import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
 import { Podspec } from '../CocoaPods';
+import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
+import { arrayize, spawnAsync } from '../Utils';
 import {
   ProjectSpec,
   ProjectSpecDependency,
@@ -14,6 +14,7 @@ import {
 
 const PODS_DIR = path.join(IOS_DIR, 'Pods');
 const PODS_PUBLIC_HEADERS_DIR = path.join(PODS_DIR, 'Headers', 'Public');
+const PODS_PRIVATE_HEADERS_DIR = path.join(PODS_DIR, 'Headers', 'Private');
 const PLATFORMS_MAPPING: Record<string, ProjectSpecPlatform> = {
   ios: 'iOS',
   osx: 'macOS',
@@ -109,7 +110,7 @@ export async function createSpecFromPodspecAsync(
               CFBundleIdentifier: bundleId,
               CFBundleName: podspec.name,
               CFBundleShortVersionString: podspec.version,
-              CFBundleVersion: semver.major(podspec.version),
+              CFBundleVersion: String(semver.major(podspec.version)),
             },
             podspec.info_plist ?? {}
           ),
@@ -165,13 +166,17 @@ function constructHeaderSearchPaths(dependencies: string[]): string {
     'glog',
   ]);
 
-  // Should we add private headers too?
-  return (
-    '$(inherited) ' +
-    [...podsToSearchForHeaders]
-      .map((podName) => '"' + path.join(PODS_PUBLIC_HEADERS_DIR, podName) + '"')
-      .join(' ')
-  ).trim();
+  function headerSearchPathsForDir(dir: string): string {
+    return [...podsToSearchForHeaders]
+      .map((podName) => '"' + path.join(dir, podName) + '"')
+      .join(' ');
+  }
+
+  return [
+    '$(inherited)',
+    headerSearchPathsForDir(PODS_PUBLIC_HEADERS_DIR),
+    headerSearchPathsForDir(PODS_PRIVATE_HEADERS_DIR),
+  ].join(' ');
 }
 
 /**

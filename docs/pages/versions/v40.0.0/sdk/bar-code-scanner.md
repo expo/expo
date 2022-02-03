@@ -9,7 +9,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-barcode-scanner`** provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/4166' }} />
+<PlatformsSection android emulator ios simulator />
 
 > **Note:** Only one active BarCodeScanner preview is supported currently. When using navigation, the best practice is to unmount any previously rendered BarCodeScanner component so the following screens can use `<BarCodeScanner />` without issues.
 
@@ -126,6 +126,24 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 - **onBarCodeScanned (_function_)** -- A callback that is invoked when a bar code has been successfully scanned. The callback is provided with an [BarCodeScanner.BarCodeScannerResult](#barcodescannerbarcodescannerresult).
 
 ## Methods
+
+### `BarCodeScanner.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing the camera.
+
+On iOS this will require apps to specify the `NSCameraUsageDescription` entry in the **Info.plist**
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `BarCodeScanner.getPermissionsAsync()`
+
+Checks user's permissions for accessing the camera.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `BarCodeScanner.scanFromURLAsync(url, barCodeTypes)`
 

@@ -1,67 +1,124 @@
 export interface AmplitudeTrackingOptions {
     disableAdid?: boolean;
+    /**
+     * Disable tracking of the device's carrier.
+     */
     disableCarrier?: boolean;
+    /**
+     * Disable tracking of the user's city.
+     */
     disableCity?: boolean;
+    /**
+     * Disable tracking of the user's country.
+     */
     disableCountry?: boolean;
+    /**
+     * Disable tracking of the device brand.
+     */
     disableDeviceBrand?: boolean;
+    /**
+     * Disable tracking of the device manufacturer.
+     */
     disableDeviceManufacturer?: boolean;
+    /**
+     * Disable tracking of the device model.
+     */
     disableDeviceModel?: boolean;
+    /**
+     * Disable tracking of the user's DMA.
+     */
     disableDMA?: boolean;
+    /**
+     * Disable tracking of the user's IDFV.
+     */
     disableIDFV?: boolean;
+    /**
+     * Disable tracking of the user's IP address.
+     */
     disableIPAddress?: boolean;
+    /**
+     * Disable tracking of the device's language.
+     */
     disableLanguage?: boolean;
+    /**
+     * Disable tracking of the user's current latitude and longitude coordinates.
+     */
     disableLatLng?: boolean;
+    /**
+     * Disable tracking of the device's OS name.
+     */
     disableOSName?: boolean;
+    /**
+     * Disable tracking of the device's OS version.
+     */
     disableOSVersion?: boolean;
+    /**
+     * Disable tracking of the device's platform.
+     */
     disablePlatform?: boolean;
+    /**
+     * Disable tracking of the user's region.
+     */
     disableRegion?: boolean;
+    /**
+     * Disable tracking of the app version the user is on for your app.
+     */
     disableVersionName?: boolean;
 }
+/**
+ * Initializes Amplitude with your Amplitude API key. If you're having trouble finding your API key,
+ * see [step 4 of these instructions](https://amplitude.zendesk.com/hc/en-us/articles/207108137-Introduction-Getting-Started#getting-started).
+ * @param apiKey Your Amplitude application's API key.
+ */
 export declare function initializeAsync(apiKey: string): Promise<void>;
-export declare function setUserIdAsync(userId: string): Promise<void>;
-export declare function setUserPropertiesAsync(userProperties: {
-    [name: string]: any;
-}): Promise<void>;
+/**
+ * Assign a user ID to the current user. If you don't have a system for user IDs you don't need to
+ * call this. See [this page](https://amplitude.zendesk.com/hc/en-us/articles/206404628-Step-2-Assign-User-IDs-and-Identify-your-Users)
+ * for details.
+ * @param userId User ID for the current user. Can be set to `null` (e.g. when the user is logging out).
+ */
+export declare function setUserIdAsync(userId: string | null): Promise<void>;
+/**
+ * Set properties for the current user. See [here for details](https://amplitude.zendesk.com/hc/en-us/articles/207108327-Step-4-Set-User-Properties-and-Event-Properties).
+ * @param userProperties A map of custom properties.
+ */
+export declare function setUserPropertiesAsync(userProperties: Record<string, any>): Promise<void>;
+/**
+ * Clear properties set by [`setUserPropertiesAsync()`](#amplitudesetuserpropertiesasyncuserproperties).
+ */
 export declare function clearUserPropertiesAsync(): Promise<void>;
+/**
+ * Log an event to Amplitude. For more information about what kind of events to track,
+ * [see here](https://amplitude.zendesk.com/hc/en-us/articles/206404698-Step-3-Track-Events-and-Understand-the-Actions-Users-Take).
+ * @param eventName The event name.
+ */
 export declare function logEventAsync(eventName: string): Promise<void>;
-export declare function logEventWithPropertiesAsync(eventName: string, properties: {
-    [name: string]: any;
-}): Promise<void>;
+/**
+ * Log an event to Amplitude with custom properties. For more information about what kind of events
+ * to track, [see here](https://amplitude.zendesk.com/hc/en-us/articles/206404698-Step-3-Track-Events-and-Understand-the-Actions-Users-Take).
+ * @param eventName The event name.
+ * @param properties A map of custom properties.
+ */
+export declare function logEventWithPropertiesAsync(eventName: string, properties: Record<string, any>): Promise<void>;
+/**
+ * Add the current user to a group. For more information, see here for [iOS](https://github.com/amplitude/Amplitude-iOS#setting-groups)
+ * and see here for [Android](https://github.com/amplitude/Amplitude-Android#setting-groups).
+ * @param groupType The group name, e.g. "sports".
+ * @param groupNames An array of group names, e.g. ["tennis", "soccer"].
+ * > **Note:** The iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We
+ * only support an array of strings. Just use an array with one element if you only want one group
+ * name.
+ */
 export declare function setGroupAsync(groupType: string, groupNames: string[]): Promise<void>;
+/**
+ * By default, the Amplitude SDK will track several user properties such as carrier and city. You
+ * can use this method to customize and disable individual fields.
+ * > **Note:** These configurations will prevent default properties from being tracked on newly
+ * created projects, where data has not yet been sent. Please contact [platform@amplitude.com](mailto:platform@amplitude.com)
+ * if you would like default properties blocked (moving forward) on projects with existing data.
+ * @param options Options object for what should not be tracked. The table below describes what
+ * properties the object may contain. All properties are expected to be booleans. For example,
+ * passing `disableCarrier: true` disables tracking the device's carrier.
+ */
 export declare function setTrackingOptionsAsync(options: AmplitudeTrackingOptions): Promise<void>;
-/**
- * @deprecated Use initializeAsync instead
- */
-export declare function initialize(apiKey: string): Promise<void>;
-/**
- * @deprecated Use setUserIdAsync instead
- */
-export declare function setUserId(userId: string): Promise<void>;
-/**
- * @deprecated Use setUserPropertiesAsync instead
- */
-export declare function setUserProperties(userProperties: {
-    [name: string]: any;
-}): Promise<void>;
-/**
- * @deprecated Use clearUserPropertiesAsync instead
- */
-export declare function clearUserProperties(): Promise<void>;
-/**
- * @deprecated Use logEventAsync instead
- */
-export declare function logEvent(eventName: string): Promise<void>;
-/**
- * @deprecated Use logEventWithPropertiesAsync instead
- */
-export declare function logEventWithProperties(eventName: string, properties: {
-    [name: string]: any;
-}): Promise<void>;
-/**
- * @deprecated Use setGroupAsync instead
- */
-export declare function setGroup(groupType: string, groupNames: string[]): Promise<void>;
-/**
- * @deprecated Use setTrackingOptionsAsync instead
- */
-export declare function setTrackingOptions(options: AmplitudeTrackingOptions): Promise<void>;
+//# sourceMappingURL=Amplitude.d.ts.map

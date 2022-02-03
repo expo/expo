@@ -196,7 +196,7 @@
         return _alignmentBaseline;
     }
 
-    UIView* parent = self.superview;
+    RNSVGPlatformView* parent = self.superview;
     while (parent != nil) {
         if ([parent isKindOfClass:[RNSVGText class]]) {
             RNSVGText* node = (RNSVGText*)parent;
@@ -221,7 +221,7 @@
         return _baselineShift;
     }
 
-    UIView* parent = [self superview];
+    RNSVGPlatformView* parent = [self superview];
     while (parent != nil) {
         if ([parent isKindOfClass:[RNSVGText class]]) {
             RNSVGText* node = (RNSVGText*)parent;
@@ -271,7 +271,7 @@
     RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
     NSArray* font = [gc getFontContext];
     RNSVGText* node = self;
-    UIView* parent = [self superview];
+    RNSVGPlatformView* parent = [self superview];
     for (NSInteger i = [font count] - 1; i >= 0; i--) {
         RNSVGFontData* fontData = [font objectAtIndex:i];
         if (![parent isKindOfClass:[RNSVGText class]] ||
@@ -291,7 +291,7 @@
         return cachedAdvance;
     }
     CGFloat advance = 0;
-    for (UIView *node in self.subviews) {
+    for (RNSVGView *node in self.subviews) {
         if ([node isKindOfClass:[RNSVGText class]]) {
             RNSVGText *text = (RNSVGText*)node;
             advance += [text getSubtreeTextChunksTotalAdvance];

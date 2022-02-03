@@ -18,10 +18,7 @@ export default {
   },
   async getCellularGenerationAsync(): Promise<CellularGeneration> {
     const connection =
-      navigator['connection'] ||
-      navigator['mozConnection'] ||
-      navigator['webkitConnection'] ||
-      null;
+      navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
     if (connection !== null) {
       switch (connection.effectiveType) {
         case 'slow-2g':
@@ -37,5 +34,21 @@ export default {
     } else {
       return CellularGeneration.UNKNOWN;
     }
+  },
+
+  async allowsVoipAsync(): Promise<boolean | null> {
+    return null;
+  },
+  async getIsoCountryCodeAsync(): Promise<string | null> {
+    return null;
+  },
+  async getCarrierNameAsync(): Promise<string | null> {
+    return null;
+  },
+  async getMobileCountryCodeAsync(): Promise<string | null> {
+    return null;
+  },
+  async getMobileNetworkCodeAsync(): Promise<string | null> {
+    return null;
   },
 };

@@ -15,7 +15,7 @@
 #import <EXNotifications/EXNotificationCenterDelegate.h>
 #endif
 
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <GoogleMaps/GoogleMaps.h>
 
@@ -113,11 +113,11 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 {
 #if __has_include(<EXNotifications/EXNotificationCenterDelegate.h>)
   if (![UNUserNotificationCenter currentNotificationCenter].delegate) {
-    UMLogWarn(@"UNUserNotificationCenter delegates should be set by EXNotificationCenterDelegate.");
+    EXLogWarn(@"UNUserNotificationCenter delegates should be set by EXNotificationCenterDelegate.");
   }
 
   // Register EXUserNotificationManager as a delegate of EXNotificationCenterDelegate
-  id<EXNotificationCenterDelegate> notificationCenterDelegate = (id<EXNotificationCenterDelegate>) [UMModuleRegistryProvider getSingletonModuleForClass:[EXNotificationCenterDelegate class]];
+  id<EXNotificationCenterDelegate> notificationCenterDelegate = (id<EXNotificationCenterDelegate>) [EXModuleRegistryProvider getSingletonModuleForClass:[EXNotificationCenterDelegate class]];
   [notificationCenterDelegate addDelegate:(id<EXNotificationsDelegate>)[EXKernel sharedInstance].serviceRegistry.notificationsManager];
 #else
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:(id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager];
@@ -182,8 +182,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
         [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
         return YES;
       } else {
-        [application openURL:webpageURL options:@{} completionHandler:nil];
-        return YES;
+        if (![path isEqualToString:@"/expo-go"]) {
+          [application openURL:webpageURL options:@{} completionHandler:nil];
+          return YES;
+        }
       }
     }
   }

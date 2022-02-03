@@ -41,9 +41,9 @@
 - (void)setOptions:(nonnull NSDictionary *)options;
 
 /**
- *  Called by UMTaskService to inform the consumer that the associated task is ready to be executed.
+ *  Called by UMTaskService to inform the consumer that the associated task is ready to be executed with accompanying data.
  */
-- (void)didBecomeReadyToExecute;
+- (void)didBecomeReadyToExecuteWithData:(nullable NSDictionary *)data;
 
 /**
  *  Called right after the task has been unregistered.

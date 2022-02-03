@@ -1,11 +1,12 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme, typography } from '@expo/styleguide';
 import NextLink from 'next/link';
+import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
-import * as Constants from '~/constants/theme';
-import { NavigationRoute, Url } from '~/types/common';
+import { NavigationRoute } from '~/types/common';
 
 const STYLES_LINK = css`
   display: block;
@@ -16,33 +17,33 @@ const STYLES_ACTIVE = css`
   ${paragraph}
   font-size: 15px;
   line-height: 140%;
-  font-family: ${Constants.fontFamilies.demi};
-  color: ${Constants.colors.expoLighter};
+  font-family: ${typography.fontFaces.medium};
+  color: ${theme.link.default};
   position: relative;
   left: -7px;
 
   :visited {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 `;
 
 const STYLES_DEFAULT = css`
   ${paragraph}
-  color: ${Constants.colors.black80};
+  color: ${theme.text.default};
   line-height: 140%;
-  transition: 200ms ease color;
+  transition: 50ms ease color;
   font-size: 15px;
 
   :visited {
-    color: ${Constants.colors.black60};
+    color: ${theme.text.default};
   }
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 `;
 
@@ -56,7 +57,7 @@ const STYLES_ACTIVE_BULLET = css`
   min-width: 6px;
   height: 6px;
   width: 6px;
-  background-color: ${Constants.expoColors.primary[500]};
+  background-color: ${theme.link.default};
   border-radius: 4px;
   position: relative;
   left: -12px;
@@ -64,9 +65,8 @@ const STYLES_ACTIVE_BULLET = css`
 `;
 
 type Props = {
-  url: Url;
+  router: NextRouter;
   info: NavigationRoute;
-  asPath: string;
 };
 
 export default class DocumentationSidebarLink extends React.Component<Props> {
@@ -76,14 +76,14 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
   }
 
   isSelected() {
-    if (!this.props.url) {
-      console.log('[debug] isSelected bailed out, no url', this.props);
+    if (!this.props.router) {
+      console.log('[debug] isSelected bailed out, no router', this.props);
       return false;
     }
 
     // Special case for root url
     if (this.props.info.name === 'Introduction') {
-      const { asPath } = this.props;
+      const { asPath } = this.props.router;
       if (asPath.match(/\/versions\/[\w.]+\/$/) || asPath === '/versions/latest/') {
         return true;
       }
@@ -91,8 +91,8 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
 
     const linkUrl = stripVersionFromPath(this.props.info.as || this.props.info.href);
     if (
-      linkUrl === stripVersionFromPath(this.props.url.pathname) ||
-      linkUrl === stripVersionFromPath(this.props.asPath)
+      linkUrl === stripVersionFromPath(this.props.router.pathname) ||
+      linkUrl === stripVersionFromPath(this.props.router.asPath)
     ) {
       return true;
     }
@@ -100,7 +100,15 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
     return false;
   }
 
+  isHidden() {
+    return this.props.info.hidden;
+  }
+
   render() {
+    if (this.isHidden()) {
+      return null;
+    }
+
     const customDataAttributes = this.isSelected()
       ? {
           'data-sidebar-anchor-selected': true,

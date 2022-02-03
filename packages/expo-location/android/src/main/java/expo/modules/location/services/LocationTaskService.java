@@ -20,8 +20,8 @@ import android.util.Log;
 public class LocationTaskService extends Service {
   private static final String TAG = "LocationTaskService";
   private static int sServiceId = 481756;
-
   private String mChannelId;
+  private String killService = "false";
   private Context mParentContext;
   private int mServiceId = sServiceId++;
   private final IBinder mBinder = new ServiceBinder();
@@ -60,6 +60,17 @@ public class LocationTaskService extends Service {
   public void stop() {
     stopForeground(true);
     stopSelf();
+  }
+
+  @Override
+  public void onTaskRemoved(Intent rootIntent) {
+    Bundle extras = rootIntent.getExtras();
+    extras.getString("killService");
+    
+    if(killService == "true"){
+      super.onTaskRemoved(rootIntent);
+      stop();
+    }
   }
 
   public void startForeground(Bundle serviceOptions) {

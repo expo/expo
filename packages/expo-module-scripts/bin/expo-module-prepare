@@ -2,7 +2,6 @@
 
 set -eo pipefail
 
-
 script_dir="$(dirname "$0")"
 
 export EXPO_NONINTERACTIVE=1
@@ -12,8 +11,8 @@ echo "Configuring module"
 "$script_dir/expo-module-configure"
 "$script_dir/expo-module-build"
 
-if [[ -d "$(pwd)/plugin" ]]; then 
+if [[ -d plugin ]]; then 
   echo "Configuring plugin"
-  "$script_dir/expo-module-clean" "plugin"
-  "$script_dir/expo-module-build" "plugin"
+  "$script_dir/expo-module-clean" plugin
+  "$script_dir/expo-module-build" plugin
 fi

@@ -2,14 +2,14 @@
 
 #import <EXSQLite/EXSQLite.h>
 
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #import <sqlite3.h>
 
 @interface EXSQLite ()
 
 @property (nonatomic, copy) NSMutableDictionary *cachedDatabases;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
@@ -22,9 +22,9 @@
   return dispatch_get_main_queue();
 }
 
-UM_EXPORT_MODULE(ExponentSQLite);
+EX_EXPORT_MODULE(ExponentSQLite);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   cachedDatabases = [NSMutableDictionary dictionary];
@@ -32,9 +32,9 @@ UM_EXPORT_MODULE(ExponentSQLite);
 
 - (NSString *)pathForDatabaseName:(NSString *)name
 {
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
-    UMLogError(@"No FileSystem module.");
+    EXLogError(@"No FileSystem module.");
     return nil;
   }
   NSString *directory = [fileSystem.documentDirectory stringByAppendingPathComponent:@"SQLite"];
@@ -64,12 +64,12 @@ UM_EXPORT_MODULE(ExponentSQLite);
   return cachedDB;
 }
 
-UM_EXPORT_METHOD_AS(exec,
+EX_EXPORT_METHOD_AS(exec,
                     exec:(NSString *)dbName
                  queries:(NSArray *)sqlQueries
                 readOnly:(BOOL)readOnly
-                resolver:(UMPromiseResolveBlock)resolve
-                rejecter:(UMPromiseRejectBlock)reject)
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject)
 {
   @synchronized(self) {
     NSValue *databasePointer = [self openDatabase:dbName];
@@ -89,10 +89,10 @@ UM_EXPORT_METHOD_AS(exec,
   }
 }
 
-UM_EXPORT_METHOD_AS(close,
+EX_EXPORT_METHOD_AS(close,
                     close:(NSString *)dbName
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   @synchronized(self) {
     [cachedDatabases removeObjectForKey:dbName];

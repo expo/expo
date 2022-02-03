@@ -1,0 +1,1 @@
+{"version":3,"file":"LocalAssets.web.js","sourceRoot":"","sources":["../src/LocalAssets.web.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,gBAAgB,CAAC,IAAY,EAAE,IAAmB;IAChE,cAAc;IACd,OAAO,IAAI,CAAC;AACd,CAAC","sourcesContent":["export function getLocalAssetUri(hash: string, type: string | null): string | null {\n  // noop on web\n  return null;\n}\n"]}

@@ -21,7 +21,7 @@ export function parseAddress({
   street: string;
 }) {
   const address = [street, city, region, postalCode, country]
-    .filter(item => item !== '')
+    .filter((item) => item !== '')
     .join(', ');
   return address;
 }
@@ -85,7 +85,6 @@ export async function getGroupWithNameAsync(
 export async function cloneAsync(contactId: string) {
   const contact = await Contacts.getContactByIdAsync(contactId);
   if (contact) {
-    // @ts-ignore
     await Contacts.addContactAsync(contact);
   }
 }
@@ -93,8 +92,7 @@ export async function cloneAsync(contactId: string) {
 export async function ensureGroupAsync(groupName: string) {
   const group = await getGroupWithNameAsync(groupName);
   if (!group) {
-    const groupId = await Contacts.createGroupAsync(groupName);
-    return groupId;
+    return await Contacts.createGroupAsync(groupName);
   }
   return group.id;
 }
@@ -103,10 +101,9 @@ export async function deleteGroupWithNameAsync(groupName: string) {
   try {
     const group = await getGroupWithNameAsync(groupName);
     if (group) {
-      Contacts.removeGroupAsync(group.id!);
+      await Contacts.removeGroupAsync(group.id!);
     }
   } catch ({ message }) {
-    // tslint:disable-next-line no-console
     console.error(message);
   }
 }
@@ -117,10 +114,9 @@ export async function removeAllChildrenFromGroupWithNameAsync(groupName: string)
 
     const { data: contacts } = await Contacts.getContactsAsync({ groupId });
     await Promise.all(
-      contacts.map(contact => Contacts.removeContactFromGroupAsync(contact.id, groupId!))
+      contacts.map((contact) => Contacts.removeContactFromGroupAsync(contact.id, groupId!))
     );
   } catch ({ message }) {
-    // tslint:disable-next-line no-console
     console.error(message);
   }
 }
@@ -129,7 +125,7 @@ export async function debugAddFirstContactToGroupAsync() {
   const groupId = await ensureGroupAsync('Expo Contacts');
   const { data: contacts } = await Contacts.getContactsAsync({ pageSize: 1 });
   const contact = contacts[0];
-  Contacts.addExistingContactToGroupAsync(contact.id, groupId!);
+  await Contacts.addExistingContactToGroupAsync(contact.id, groupId!);
 }
 
 export function presentNewContactFormAsync({

@@ -1,6 +1,6 @@
 {
   "name": "expo-clipboard",
-  "version": "1.0.1",
+  "version": "2.1.0",
   "description": "ExpoClipboard standalone module",
   "main": "build/Clipboard.js",
   "types": "build/Clipboard.d.ts",
@@ -28,13 +28,13 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/clipboard",
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/clipboard",
+  "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   },
   "jest": {
     "preset": "expo-module-scripts/universal"

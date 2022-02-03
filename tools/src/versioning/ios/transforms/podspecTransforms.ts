@@ -11,7 +11,7 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       },
       {
         // Prefixes dependencies listed in the podspecs
-        replace: /(\.dependency\s+["'])(Yoga|React\-|ReactCommon|RCT|FB)([^"']*["'])/g,
+        replace: /(\.dependency\s+["'])(Yoga|React\-|ReactCommon|RCT|FB)(?!-Folly)([^"']*["'])/g,
         with: `$1${versionName}$2$3`,
       },
       {
@@ -39,6 +39,20 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: `"${versionName}AccessibilityResources"`,
       },
       {
+        // Hide Hermes headers from public headers because clang modoules does not support c++
+        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
+        paths: 'React-Core.podspec',
+        replace: /(s.subspec\s+"Hermes".*$)/mg,
+        with: '$1\n    ss.private_header_files = "ReactCommon/hermes/executor/*.h", "ReactCommon/hermes/inspector/*.h", "ReactCommon/hermes/inspector/chrome/*.h", "ReactCommon/hermes/inspector/detail/*.h"',
+      },
+      {
+        // DEFINES_MODULE for swift integration
+        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
+        paths: 'ReactCommon.podspec',
+        replace: /("USE_HEADERMAP" => "YES",)/g,
+        with: '$1 "DEFINES_MODULE" => "YES",',
+      },
+      {
         // Fixes HEADER_SEARCH_PATHS
         paths: ['React-Core.podspec', 'ReactCommon.podspec'],
         replace: /(Headers\/Private\/)(React-Core)/g,
@@ -57,8 +71,8 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       {
         // Unprefixes inner directory for source_files
         paths: 'Yoga.podspec',
-        replace: /\{(Yoga),(YGEnums),(YGMacros),(YGValue)\}/g,
-        with: `{${versionName}$1,${versionName}$2,${versionName}$3,${versionName}$4}`,
+        replace: /\{(Yoga),(YGEnums),(YGMacros),(YGNode),(YGStyle),(YGValue)\}/g,
+        with: `{${versionName}$1,${versionName}$2,${versionName}$3,${versionName}$4,${versionName}$5,${versionName}$6}`,
       },
 
       // FBReactNativeSpec
@@ -67,6 +81,12 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         paths: 'FBReactNativeSpec.podspec',
         replace: /(\/Libraries\/)(FBReactNativeSpec)/g,
         with: `$1${versionName}$2`,
+      },
+      {
+        // Disable codegen from build phase script
+        paths: 'FBReactNativeSpec.podspec',
+        replace: /(use_react_native_codegen!)/g,
+        with: '# $1',
       },
     ],
   };

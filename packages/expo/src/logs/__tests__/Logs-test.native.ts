@@ -1,5 +1,5 @@
 jest.mock('../RemoteConsole', () => ({
-  createRemoteConsole: jest.fn(originalConsole => {
+  createRemoteConsole: jest.fn((originalConsole) => {
     const remoteConsole = Object.create(originalConsole);
     remoteConsole.__isRemote = true;
     return remoteConsole;

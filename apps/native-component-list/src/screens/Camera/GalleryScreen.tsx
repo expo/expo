@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
@@ -27,7 +27,7 @@ function useLoadedPhotos() {
   React.useEffect(() => {
     let isMounted = true;
     if (Platform.OS !== 'web') {
-      FileSystem.readDirectoryAsync(PHOTOS_DIR).then(photos => {
+      FileSystem.readDirectoryAsync(PHOTOS_DIR).then((photos) => {
         if (isMounted) {
           setPhotos(photos);
         }
@@ -58,7 +58,7 @@ class LoadedGalleryScreen extends React.Component<
       if (isSelected) {
         selected.push(uri);
       } else {
-        selected = selected.filter(item => item !== uri);
+        selected = selected.filter((item) => item !== uri);
       }
       return { selected };
     });
@@ -74,7 +74,7 @@ class LoadedGalleryScreen extends React.Component<
         throw new Error('Denied MEDIA_LIBRARY permissions!');
       }
 
-      const promises = photos.map(photoUri => {
+      const promises = photos.map((photoUri) => {
         return MediaLibrary.createAssetAsync(photoUri);
       });
 
@@ -115,7 +115,6 @@ class LoadedGalleryScreen extends React.Component<
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
     backgroundColor: 'white',
   },
   navbar: {

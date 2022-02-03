@@ -1,13 +1,13 @@
 name: "\U0001F64B Feature Request"
-about: 'Want us to add something to Expo?'
-issue_body: false
-inputs:
-  - type: description
+description: 'Want us to add something to Expo?'
+body:
+  - type: markdown
     attributes:
       value: Thanks for helping us make Expo even better! 😀 Unfortunately, this is not the right place for feature requests. Please find and upvote your feature (or create a new one) at https://expo.canny.io instead.
   - type: dropdown
     attributes:
       label: Do you understand that any feature requests opened in the core Expo repository will be closed?
+      options:
+        - 'Yes'
+    validations:
       required: true
-      choices:
-        - Yes

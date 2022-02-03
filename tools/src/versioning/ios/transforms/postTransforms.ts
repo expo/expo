@@ -84,9 +84,27 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}NSData+EXFileSystem.h`,
       },
       {
-        paths: `${versionName}EXNotifications`,
-        replace: new RegExp(`NSDictionary\\+${versionName}EXNotificationsVerifyingClass\\.h`, 'g'),
-        with: `${versionName}NSDictionary+EXNotificationsVerifyingClass.h`,
+        paths: [
+          `${versionName}EXNotifications`,
+          `${versionName}EXUpdates`,
+          `${versionName}EXJSONUtils`,
+        ],
+        replace: new RegExp(
+          `NSDictionary\\+${versionName}(EXNotificationsVerifyingClass|EXJSONUtils)\\.h`,
+          'g'
+        ),
+        with: `${versionName}NSDictionary+$1.h`,
+      },
+      {
+        paths: [`${versionName}EXNotifications`, `${versionName}EXAppState`],
+        replace: new RegExp(`EXModuleRegistryHolder${versionName}React`, 'g'),
+        with: 'EXModuleRegistryHolderReact',
+      },
+      {
+        // Versioned ExpoKit has to use versioned modules provider
+        paths: 'EXVersionManager.mm',
+        replace: /@"(ExpoModulesProvider)"/,
+        with: `@"${versionName}$1"`,
       },
 
       // react-native-maps
@@ -119,13 +137,8 @@ export function postTransforms(versionName: string): TransformPipeline {
       },
       {
         paths: 'RNSVGTSpan.m',
-        replace: /\b(TopAlignedLabel\s*\*\s*label)\b/gi,
+        replace: new RegExp(`\\b(${versionName}RNSVGTopAlignedLabel\\s*\\*\\s*label)\\b`, 'gi'),
         with: 'static $1',
-      },
-      {
-        paths: 'RNSVGTSpan.m',
-        replace: /\b(TopAlignedLabel)\b/gi,
-        with: `${versionName}$1`,
       },
       {
         paths: 'RNSVGMarker.m',
@@ -165,21 +178,21 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /MessageHandlerName = @"ABI\d+_\d+_\d+ReactNativeWebView";/,
         with: `MessageHandlerName = @"ReactNativeWebView";`,
       },
+      {
+        paths: 'EXVersionManager.mm',
+        replace: /\[(RNCWebView)/,
+        with: `[${versionName}$1`,
+      },
 
       // react-native-reanimated
       {
-        paths: 'REATransitionAnimation.m',
-        replace: /(SimAnimationDragCoefficient)\(/g,
-        with: `${versionName}$1(`,
-      },
-      {
-        paths: 'Reanimated',
+        paths: 'EXVersionManager.mm',
         replace: /(_bridge_reanimated)/g,
         with: `${versionName}$1`,
       },
       {
         paths: 'EXVersionManager.mm',
-        replace: /(_bridge_reanimated)/g,
+        replace: /\b(REA)/g,
         with: `${versionName}$1`,
       },
       {

@@ -2,10 +2,8 @@ package expo.modules.screencapture
 
 import android.Manifest.permission
 import android.content.Context
-import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.database.ContentObserver
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,13 +11,12 @@ import android.provider.MediaStore
 import android.util.Log
 
 import androidx.core.content.ContextCompat
-import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.interfaces.services.EventEmitter
-import org.unimodules.core.interfaces.services.UIManager
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.UIManager
 
 import java.lang.Exception
 

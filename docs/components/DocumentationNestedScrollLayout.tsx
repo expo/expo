@@ -1,15 +1,15 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
-import { Global, css } from '@emotion/core';
+import { Global, css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
-// NOTE(jim): Global styles if and only if this component is used.
 const STYLES_GLOBAL = css`
-  body {
-    background: ${Constants.colors.white};
+  html {
+    background: ${theme.background.default};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -21,18 +21,18 @@ const STYLES_GLOBAL = css`
 
       /* Track */
       ::-webkit-scrollbar-track {
-        background: ${Constants.expoColors.semantic.background};
+        background: ${theme.background.default};
       }
 
       /* Handle */
       ::-webkit-scrollbar-thumb {
-        background: ${Constants.expoColors.gray[200]};
+        background: ${theme.background.tertiary};
         border-radius: 10px;
       }
 
       /* Handle on hover */
       ::-webkit-scrollbar-thumb:hover {
-        background: ${Constants.expoColors.gray[300]};
+        background: ${theme.background.quaternary};
       }
     }
   }
@@ -43,9 +43,8 @@ const STYLES_CONTAINER = css`
   height: 100vh;
   overflow: hidden;
   margin: 0 auto 0 auto;
-  border-left: 1px solid ${Constants.expoColors.semantic.border};
-  border-right: 1px solid ${Constants.expoColors.semantic.border};
-  background: #f9f9f9;
+  border-right: 1px solid ${theme.border.default};
+  background: ${theme.background.default};
 
   display: flex;
   align-items: center;
@@ -64,12 +63,11 @@ const STYLES_CONTAINER = css`
 `;
 
 const STYLES_HEADER = css`
-  background: #fff;
   flex-shrink: 0;
   width: 100%;
 
   @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
+    border-bottom: 1px solid ${theme.border.default};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -105,7 +103,7 @@ const STYLES_SIDEBAR = css`
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
-  background: ${Constants.expoColors.semantic.background};
+  background: ${theme.background.screen};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
@@ -117,16 +115,16 @@ const STYLES_SIDEBAR = css`
 `;
 
 const STYLES_LEFT = css`
-  border-right: 1px solid ${Constants.expoColors.semantic.border};
+  border-right: 1px solid ${theme.border.default};
 `;
 
 const STYLES_RIGHT = css`
-  border-left: 1px solid ${Constants.expoColors.semantic.border};
-  background-color: ${Constants.expoColors.white};
+  border-left: 1px solid ${theme.border.default};
+  background-color: ${theme.background.default};
 `;
 
 const STYLES_CENTER = css`
-  background: ${Constants.expoColors.white};
+  background: ${theme.background.default};
   min-width: 5%;
   width: 100%;
   height: 100%;
@@ -156,19 +154,19 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Track */
   ::-webkit-scrollbar-track {
-    background: ${Constants.expoColors.semantic.background};
+    background: transparent;
     cursor: pointer;
   }
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${Constants.expoColors.gray[200]};
+    background: ${theme.background.tertiary};
     border-radius: 10px;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${Constants.expoColors.gray[300]};
+    background: ${theme.background.quaternary};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {

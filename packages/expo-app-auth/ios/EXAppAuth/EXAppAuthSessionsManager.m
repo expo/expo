@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXAppAuth/EXAppAuthSessionsManager.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXAppAuthSessionsManager ()
 
@@ -11,7 +11,7 @@
 
 @implementation EXAppAuthSessionsManager
 
-UM_REGISTER_SINGLETON_MODULE(AppAuthSessionsManager)
+EX_REGISTER_SINGLETON_MODULE(AppAuthSessionsManager)
 
 - (instancetype)init
 {

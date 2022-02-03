@@ -1,73 +1,49 @@
 import {
   ConfigPlugin,
+  createRunOncePlugin,
+  ExportedConfigWithProps,
+  WarningAggregator,
   withDangerousMod,
   withMainActivity,
-  WarningAggregator,
-  ExportedConfigWithProps,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
+import semver from 'semver';
+
+import { InstallationPage } from './constants';
+import { resolveExpoUpdatesVersion } from './resolveExpoUpdatesVersion';
+import { addLines, replaceLine } from './utils';
+import { withDevLauncherAppDelegate } from './withDevLauncherAppDelegate';
+
+const pkg = require('expo-dev-launcher/package.json');
 
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
-const DEV_LAUNCHER_ON_NEW_INTENT = `
-  @Override
-  public void onNewIntent(Intent intent) {
-      if (DevLauncherController.tryToHandleIntent(this, intent)) {
-         return;
-      }
-      super.onNewIntent(intent);
-  }
-`;
-const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactActivityDelegate(this, () -> $1);`;
+const DEV_LAUNCHER_UPDATES_ANDROID_IMPORT = 'expo.modules.updates.UpdatesDevLauncherController';
+const DEV_LAUNCHER_ON_NEW_INTENT = [
+  '',
+  '  @Override',
+  '  public void onNewIntent(Intent intent) {',
+  '    super.onNewIntent(intent);',
+  '  }',
+  '',
+].join('\n');
+const DEV_LAUNCHER_HANDLE_INTENT = [
+  '    if (DevLauncherController.tryToHandleIntent(this, intent)) {',
+  '      return;',
+  '    }',
+].join('\n');
+const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = (activityDelegateDeclaration: string) =>
+  `DevLauncherController.wrapReactActivityDelegate(this, () -> ${activityDelegateDeclaration})`;
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
+const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
+      DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
+    }`;
+const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
+  'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
-const DEV_LAUNCHER_POD_IMPORT =
-  "pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug";
-const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_ENABLED)
-return [[EXDevLauncherController sharedInstance] sourceUrl];
-#else
-return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-#endif`;
-const DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
-return true;
-}
-#endif
-return [RCTLinkingManager application:application openURL:url options:options];`;
-const DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT = `
-#if defined(EX_DEV_LAUNCHER_ENABLED)
-#include <EXDevLauncher/EXDevLauncherController.h>
-#endif`;
-const DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE = `
-#if defined(EX_DEV_LAUNCHER_ENABLED)
-@implementation AppDelegate (EXDevLauncherControllerDelegate)
-
-- (void)devLauncherController:(EXDevLauncherController *)developmentClientController
-      didStartWithSuccess:(BOOL)success
-{
-developmentClientController.appBridge = [self initializeReactNativeApp];
-EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-[splashScreenService showSplashScreenFor:self.window.rootViewController];
-}
-
-@end
-#endif
-`;
-const DEV_LAUNCHER_APP_DELEGATE_INIT = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-      EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
-      [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
-    #else
-      [self initializeReactNativeApp];
-    #endif`;
-
-const DEV_LAUNCHER_APP_DELEGATE_BRIDGE = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-  NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];
-#else
-  NSDictionary *launchOptions = self.launchOptions;
-#endif
-
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX =
+  /import ['"](?:expo-dev-client|expo-dev-launcher)['"]/;
 
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
@@ -77,24 +53,32 @@ async function saveFileAsync(path: string, content: string): Promise<void> {
   return fs.promises.writeFile(path, content, 'utf8');
 }
 
-function addLines(content: string, find: string | RegExp, offset: number, toAdd: string[]) {
-  const lines = content.split('\n');
-
-  let lineIndex = lines.findIndex(line => line.match(find));
-
-  for (const newLine of toAdd) {
-    if (!content.includes(newLine)) {
-      lines.splice(lineIndex + offset, 0, newLine);
-      lineIndex++;
+function findClosingBracketMatchIndex(str: string, pos: number) {
+  if (str[pos] !== '(') {
+    throw new Error("No '(' at index " + pos);
+  }
+  let depth = 1;
+  for (let i = pos + 1; i < str.length; i++) {
+    switch (str[i]) {
+      case '(':
+        depth++;
+        break;
+      case ')':
+        if (--depth === 0) {
+          return i;
+        }
+        break;
     }
   }
-
-  return lines.join('\n');
+  return -1; // No matching closing parenthesis
 }
+
+const replaceBetween = (origin: string, startIndex: number, endIndex: number, insertion: string) =>
+  `${origin.substring(0, startIndex)}${insertion}${origin.substring(endIndex)}`;
 
 function addJavaImports(javaSource: string, javaImports: string[]): string {
   const lines = javaSource.split('\n');
-  const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;$/));
+  const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;$/));
   for (const javaImport of javaImports) {
     if (!javaSource.includes(javaImport)) {
       const importStatement = `import ${javaImport};`;
@@ -122,9 +106,10 @@ async function editMainApplication(
     const mainApplication = action(await readFileAsync(mainApplicationPath));
     return await saveFileAsync(mainApplicationPath, mainApplication);
   } catch (e) {
-    WarningAggregator.addWarningIOS(
-      'ios-devMenu',
-      `Couldn't modified MainApplication.java - ${e}.`
+    WarningAggregator.addWarningAndroid(
+      'expo-dev-launcher',
+      `Couldn't modify MainApplication.java - ${e}.
+See the expo-dev-client installation instructions to modify your MainApplication.java manually: ${InstallationPage}`
     );
   }
 }
@@ -133,41 +118,61 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
   const podfilePath = path.join(config.modRequest.platformProjectRoot, 'Podfile');
   try {
     const podfile = action(await readFileAsync(podfilePath));
-
     return await saveFileAsync(podfilePath, podfile);
   } catch (e) {
-    WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
+    WarningAggregator.addWarningIOS(
+      'expo-dev-launcher',
+      `Couldn't modify AppDelegate.m - ${e}.
+See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${InstallationPage}`
+    );
   }
 }
 
-async function editAppDelegate(
-  config: ExportedConfigWithProps,
-  action: (appDelegate: string) => string
-) {
-  const appDelegatePath = path.join(
-    config.modRequest.platformProjectRoot,
-    config.modRequest.projectName!,
-    'AppDelegate.m'
-  );
-
+async function editIndex(config: ExportedConfigWithProps, action: (index: string) => string) {
+  const indexPath = path.join(config.modRequest.projectRoot, 'index.js');
   try {
-    const appDelegate = action(await readFileAsync(appDelegatePath));
-    return await saveFileAsync(appDelegatePath, appDelegate);
+    const index = action(await readFileAsync(indexPath));
+    return await saveFileAsync(indexPath, index);
   } catch (e) {
-    WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
+    WarningAggregator.addWarningIOS(
+      'expo-dev-launcher',
+      `Couldn't modify index.js - ${e}.
+See the expo-dev-client installation instructions to modify your index.js manually: ${InstallationPage}`
+    );
   }
 }
 
-const withDevLauncherApplication: ConfigPlugin = config => {
+const withDevLauncherApplication: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
-      await editMainApplication(config, mainApplication => {
+    async (config) => {
+      await editMainApplication(config, (mainApplication) => {
         mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_ANDROID_IMPORT]);
 
-        mainApplication = addLines(mainApplication, 'super.onCreate()', 1, [
+        mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
           `    ${DEV_LAUNCHER_ANDROID_INIT}`,
         ]);
+
+        let expoUpdatesVersion;
+        try {
+          expoUpdatesVersion = resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+        } catch (e) {
+          WarningAggregator.addWarningAndroid(
+            'expo-dev-launcher',
+            `Failed to check compatibility with expo-updates - ${e}`
+          );
+        }
+        if (expoUpdatesVersion && semver.gt(expoUpdatesVersion, '0.6.0')) {
+          mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
+          mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+            `    ${DEV_LAUNCHER_UPDATES_ANDROID_INIT}`,
+          ]);
+          mainApplication = replaceLine(
+            mainApplication,
+            'return BuildConfig.DEBUG;',
+            `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`
+          );
+        }
 
         return mainApplication;
       });
@@ -176,35 +181,61 @@ const withDevLauncherApplication: ConfigPlugin = config => {
   ]);
 };
 
-const withDevLauncherActivity: ConfigPlugin = config => {
-  return withMainActivity(config, config => {
+export function modifyJavaMainActivity(content: string): string {
+  content = addJavaImports(content, [DEV_LAUNCHER_ANDROID_IMPORT, 'android.content.Intent']);
+
+  if (!content.includes('onNewIntent')) {
+    const lines = content.split('\n');
+    const onCreateIndex = lines.findIndex((line) => line.includes('public class MainActivity'));
+
+    lines.splice(onCreateIndex + 1, 0, DEV_LAUNCHER_ON_NEW_INTENT);
+
+    content = lines.join('\n');
+  }
+  if (!content.includes(DEV_LAUNCHER_HANDLE_INTENT)) {
+    content = addLines(content, /super\.onNewIntent\(intent\)/, 0, [DEV_LAUNCHER_HANDLE_INTENT]);
+  }
+
+  if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
+    const activityDelegateMatches = Array.from(
+      content.matchAll(/new ReactActivityDelegate(Wrapper)/g)
+    );
+
+    if (activityDelegateMatches.length !== 1) {
+      WarningAggregator.addWarningAndroid(
+        'expo-dev-launcher',
+        `Failed to wrap 'ReactActivityDelegate'
+See the expo-dev-client installation instructions to modify your MainActivity.java manually: ${InstallationPage}`
+      );
+      return content;
+    }
+
+    const activityDelegateMatch = activityDelegateMatches[0];
+    const matchIndex = activityDelegateMatch.index!;
+    const openingBracketIndex = matchIndex + activityDelegateMatch[0].length; // next character after `new ReactActivityDelegateWrapper`
+
+    const closingBracketIndex = findClosingBracketMatchIndex(content, openingBracketIndex);
+    const reactActivityDelegateDeclaration = content.substring(matchIndex, closingBracketIndex + 1);
+
+    content = replaceBetween(
+      content,
+      matchIndex,
+      closingBracketIndex + 1,
+      DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE(reactActivityDelegateDeclaration)
+    );
+  }
+  return content;
+}
+
+const withDevLauncherActivity: ConfigPlugin = (config) => {
+  return withMainActivity(config, (config) => {
     if (config.modResults.language === 'java') {
-      let content = addJavaImports(config.modResults.contents, [
-        DEV_LAUNCHER_ANDROID_IMPORT,
-        'android.content.Intent',
-      ]);
-
-      if (!content.includes(DEV_LAUNCHER_ON_NEW_INTENT)) {
-        const lines = content.split('\n');
-        const onCreateIndex = lines.findIndex(line => line.includes('public class MainActivity'));
-
-        lines.splice(onCreateIndex + 1, 0, DEV_LAUNCHER_ON_NEW_INTENT);
-
-        content = lines.join('\n');
-      }
-
-      if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
-        content = content.replace(
-          /(new ReactActivityDelegate(.*|\s)*});$/m,
-          DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE
-        );
-      }
-
-      config.modResults.contents = content;
+      config.modResults.contents = modifyJavaMainActivity(config.modResults.contents);
     } else {
       WarningAggregator.addWarningAndroid(
-        'android-devLauncher',
-        `Cannot automatically configure MainActivity if it's not java`
+        'expo-dev-launcher',
+        `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${InstallationPage}`
       );
     }
 
@@ -212,13 +243,27 @@ const withDevLauncherActivity: ConfigPlugin = config => {
   });
 };
 
-const withDevLauncherPodfile: ConfigPlugin = config => {
+const withDevLauncherPodfile: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
-      await editPodfile(config, podfile => {
-        podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
-        podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
+    async (config) => {
+      await editPodfile(config, (podfile) => {
+        // replace all iOS versions below 12
+        podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '12.0'");
+        // Match both variations of Ruby config:
+        // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
+        // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug
+        if (
+          !podfile.match(
+            /pod ['"]expo-dev-launcher['"],\s?path: ['"][^'"]*node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/
+          )
+        ) {
+          const packagePath = path.dirname(require.resolve('expo-dev-launcher/package.json'));
+          const relativePath = path.relative(config.modRequest.platformProjectRoot, packagePath);
+          podfile = addLines(podfile, 'use_react_native', 0, [
+            `  pod 'expo-dev-launcher', path: '${relativePath}', :configurations => :debug`,
+          ]);
+        }
         return podfile;
       });
       return config;
@@ -226,63 +271,33 @@ const withDevLauncherPodfile: ConfigPlugin = config => {
   ]);
 };
 
-const withDevLauncherAppDelegate: ConfigPlugin = config => {
-  return withDangerousMod(config, [
-    'ios',
-    async config => {
-      await editAppDelegate(config, appDelegate => {
-        if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT)) {
-          const lines = appDelegate.split('\n');
-          lines.splice(1, 0, DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT);
+const withErrorHandling: ConfigPlugin = (config) => {
+  const injectErrorHandlers = async (config: ExportedConfigWithProps) => {
+    await editIndex(config, (index) => {
+      if (!DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX.test(index)) {
+        index = `import 'expo-dev-client';\n\n${index}`;
+      }
+      return index;
+    });
+    return config;
+  };
 
-          appDelegate = lines.join('\n');
-        }
+  // We need to run the same task twice to ensure it will work on both platforms,
+  // because if someone runs `expo run:ios`, it will trigger only dangerous mode for that specific platform.
+  // Note: after the first execution, the second one won't change anything.
+  config = withDangerousMod(config, ['android', injectErrorHandlers]);
+  config = withDangerousMod(config, ['ios', injectErrorHandlers]);
 
-        if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_INIT)) {
-          appDelegate = appDelegate.replace(
-            /(didFinishLaunchingWithOptions([^}])*)\[self initializeReactNativeApp\];(([^}])*})/,
-            `$1${DEV_LAUNCHER_APP_DELEGATE_INIT}$3`
-          );
-        }
-
-        if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_BRIDGE)) {
-          appDelegate = appDelegate.replace(
-            'RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];',
-            DEV_LAUNCHER_APP_DELEGATE_BRIDGE
-          );
-        }
-
-        if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL)) {
-          appDelegate = appDelegate.replace(
-            'return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];',
-            DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL
-          );
-        }
-
-        if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
-          appDelegate = appDelegate.replace(
-            'return [RCTLinkingManager application:application openURL:url options:options];',
-            DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK
-          );
-        }
-
-        if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE)) {
-          appDelegate += DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE;
-        }
-
-        return appDelegate;
-      });
-
-      return config;
-    },
-  ]);
+  return config;
 };
+
 const withDevLauncher = (config: ExpoConfig) => {
   config = withDevLauncherActivity(config);
   config = withDevLauncherApplication(config);
   config = withDevLauncherPodfile(config);
   config = withDevLauncherAppDelegate(config);
+  config = withErrorHandling(config);
   return config;
 };
 
-export default withDevLauncher;
+export default createRunOncePlugin(withDevLauncher, pkg.name, pkg.version);

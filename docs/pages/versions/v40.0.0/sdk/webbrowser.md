@@ -31,7 +31,7 @@ export default function App() {
   const [result, setResult] = useState(null);
 
   const _handlePressButtonAsync = async () => {
-    let result = await WebBrowser.openBrowserAsync('https://expo.io');
+    let result = await WebBrowser.openBrowserAsync('https://expo.dev');
     setResult(result);
   };
   return (
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 
 ### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../workflow/linking.md#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../guides/linking.md#handling-links-into-your-app).
 
 ## API
 
@@ -130,8 +130,8 @@ How this works on web:
 🚨 On mobile web, Chrome and Safari will block any call to [`window.open()`][d-windowopen] which takes too long to fire after a user interaction. This method must be invoked immediately after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
 
 [d-windowopen]: https://developer.mozilla.org/en-US/docs/Web/API/Window/open
-[d-appstate]: https://docs.expo.io/versions/latest/react-native/appstate/
-[d-linking]: https://docs.expo.io/versions/latest/sdk/linking/
+[d-appstate]: /versions/latest/react-native/appstate/
+[d-linking]: /versions/latest/sdk/linking/
 
 #### Arguments
 

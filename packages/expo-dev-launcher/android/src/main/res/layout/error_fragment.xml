@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+
+  tools:context="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity">
+
+  <LinearLayout
+    android:id="@+id/error_main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_above="@id/error_footer"
+    android:layout_marginTop="32dp"
+    android:orientation="vertical"
+    android:paddingLeft="18dp"
+    android:paddingRight="18dp"
+
+    android:weightSum="1">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:tag="DevLauncherErrorScreen"
+      android:text="@string/dev_launcher_error_header"
+      android:textColor="@color/dev_launcher_primary"
+      android:textSize="22sp"
+      android:textStyle="bold" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:text="@string/dev_launcher_error_details"
+      android:textColor="@color/dev_launcher_primary"
+      android:textSize="14sp" />
+
+    <TextView
+      android:id="@+id/errorDetails"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="22dp"
+      android:textColor="@color/dev_launcher_primary"
+      android:textSize="16sp"
+      android:textStyle="bold" />
+
+    <ListView
+      android:id="@+id/error_stack"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:divider="@null"
+      android:dividerHeight="0dp" />
+  </LinearLayout>
+
+
+  <LinearLayout
+    android:id="@+id/error_footer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@color/dev_launcher_white"
+      android:orientation="vertical"
+      android:paddingHorizontal="16dp"
+      android:paddingVertical="16dp">
+
+      <Button
+        android:id="@+id/reloadButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/dev_launcher_primary"
+        android:text="@string/dev_launcher_reload"
+        android:textAllCaps="false"
+        android:textColor="@color/dev_launcher_white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+      <Button
+        android:id="@+id/homeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/dev_launcher_secondaryBackgroundColor"
+        android:text="@string/dev_launcher_go_to_home"
+        android:textAllCaps="false"
+        android:textColor="@color/dev_launcher_primary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+  </LinearLayout>
+
+
+</RelativeLayout>

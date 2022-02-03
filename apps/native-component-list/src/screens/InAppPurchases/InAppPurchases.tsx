@@ -8,6 +8,8 @@ import {
   IAPResponseCode,
   purchaseItemAsync,
   setPurchaseListener,
+  IAPItemDetails,
+  InAppPurchase,
 } from 'expo-in-app-purchases';
 import React from 'react';
 import {
@@ -64,10 +66,11 @@ export default class InAppPurchases extends React.Component<any, any> {
     // Set purchase listener
     setPurchaseListener(({ responseCode, results, errorCode }) => {
       if (responseCode === IAPResponseCode.OK) {
-        for (const purchase of results) {
+        for (const purchase of results!) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
-            finishTransactionAsync(purchase, true);
+            // `gas` is the only consumable product, the rest are subscriptions.
+            finishTransactionAsync(purchase, purchase.productId === 'gas');
           }
         }
       } else if (responseCode === IAPResponseCode.USER_CANCELED) {
@@ -85,13 +88,13 @@ export default class InAppPurchases extends React.Component<any, any> {
   }
 
   async queryPurchaseHistory() {
-    const { responseCode, results } = await getPurchaseHistoryAsync(true);
+    const { responseCode, results } = await getPurchaseHistoryAsync({ useGooglePlayCache: false });
     if (responseCode === IAPResponseCode.OK) {
       this.setState({ history: results });
     }
   }
 
-  renderItem(item: any) {
+  renderItem(item: IAPItemDetails) {
     return (
       <View key={item.productId}>
         <Text style={styles.itemTitle}>{item.title}</Text>
@@ -109,7 +112,7 @@ export default class InAppPurchases extends React.Component<any, any> {
     );
   }
 
-  renderHistoryRecord(record: any) {
+  renderHistoryRecord(record: InAppPurchase) {
     const key = Platform.OS === 'android' ? record.purchaseToken : record.orderId;
     return (
       <View key={key}>
@@ -123,6 +126,18 @@ export default class InAppPurchases extends React.Component<any, any> {
         {Platform.OS === 'ios' ? <Text>Original Order ID: {record.originalOrderId}</Text> : null}
         {Platform.OS === 'ios' ? (
           <Text>Original Purchase Time: {record.originalPurchaseTime}</Text>
+        ) : null}
+        {record.productId === 'gold_monthly' ? (
+          <Button
+            title="Upgrade to yearly"
+            onPress={() => purchaseItemAsync('gold_yearly', record.purchaseToken)}
+          />
+        ) : null}
+        {record.productId === 'gold_yearly' ? (
+          <Button
+            title="Downgrade to monthly"
+            onPress={() => purchaseItemAsync('gold_monthly', record.purchaseToken)}
+          />
         ) : null}
       </View>
     );
@@ -139,12 +154,12 @@ export default class InAppPurchases extends React.Component<any, any> {
         <SafeAreaView style={styles.container}>
           <Text style={styles.titleText}>In App Store</Text>
         </SafeAreaView>
-        {this.state.items.map(item => this.renderItem(item))}
+        {this.state.items.map((item) => this.renderItem(item))}
         <Text style={styles.itemTitle}>History</Text>
         <View style={styles.buttonContainer}>
           <Button title="Query History" onPress={() => this.queryPurchaseHistory()} />
         </View>
-        {this.state.history.map(historyRecord => this.renderHistoryRecord(historyRecord))}
+        {this.state.history.map((historyRecord) => this.renderHistoryRecord(historyRecord))}
         <View style={styles.buttonContainer}>
           <Button title="Update Response Code" onPress={() => this.getBillingResult()} />
         </View>

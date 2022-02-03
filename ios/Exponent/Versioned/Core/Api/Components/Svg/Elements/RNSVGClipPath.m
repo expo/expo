@@ -19,9 +19,9 @@
 
 - (BOOL)isSimpleClipPath
 {
-    NSArray<UIView*> *children = self.subviews;
+    NSArray<RNSVGView*> *children = self.subviews;
     if (children.count == 1) {
-        UIView* child = children[0];
+        RNSVGView* child = children[0];
         if ([child class] != [RNSVGGroup class]) {
             return true;
         }

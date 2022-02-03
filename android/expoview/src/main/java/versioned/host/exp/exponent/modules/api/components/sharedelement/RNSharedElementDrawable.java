@@ -1,6 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.sharedelement;
 
-import android.util.Log;
+// import android.util.Log;
 import android.view.View;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -18,7 +18,6 @@ import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
-import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.drawee.generic.RoundingParams;
 
@@ -41,7 +40,7 @@ class RNSharedElementDrawable extends Drawable {
     }
   }
 
-  static private String LOG_TAG = "RNSharedElementDrawable";
+  // static final private String LOG_TAG = "RNSharedElementDrawable";
 
   private RNSharedElementContent mContent = null;
   private RNSharedElementStyle mStyle = null;
@@ -88,25 +87,17 @@ class RNSharedElementDrawable extends Drawable {
       switch (viewType) {
         case REACTIMAGEVIEW:
         case IMAGEVIEW:
-          if ((mStyle.compare(style) &
+          //Log.d(LOG_TAG, "drawableChanged, viewType: " + viewType + ", changes: " + mStyle.compare(style));
+          invalidated = (mStyle.compare(style) &
                   (RNSharedElementStyle.PROP_BORDER
                           | RNSharedElementStyle.PROP_BACKGROUND_COLOR
-                          | RNSharedElementStyle.PROP_SCALETYPE)) != 0) {
-            //Log.d(LOG_TAG, "drawableChanged, viewType: " + viewType + ", changes: " + mStyle.compare(style));
-            invalidated = true;
-          } else {
-            invalidated = false;
-          }
+                          | RNSharedElementStyle.PROP_SCALETYPE)) != 0;
           break;
         case PLAIN:
-          if ((mStyle.compare(style) &
+          //Log.d(LOG_TAG, "drawableChanged, viewType: " + viewType + ", changes: " + mStyle.compare(style));
+          invalidated = (mStyle.compare(style) &
                   (RNSharedElementStyle.PROP_BORDER
-                          | RNSharedElementStyle.PROP_BACKGROUND_COLOR)) != 0) {
-            //Log.d(LOG_TAG, "drawableChanged, viewType: " + viewType + ", changes: " + mStyle.compare(style));
-            invalidated = true;
-          } else {
-            invalidated = false;
-          }
+                          | RNSharedElementStyle.PROP_BACKGROUND_COLOR)) != 0;
           break;
         case GENERIC:
           // nop
@@ -118,7 +109,7 @@ class RNSharedElementDrawable extends Drawable {
     // Update position
     mPosition = position;
 
-    // Invalidate if neccessary
+    // Invalidate if necessary
     if (invalidated) {
       invalidateSelf();
     }
@@ -236,7 +227,6 @@ class RNSharedElementDrawable extends Drawable {
 
     ReactImageView imageView = (ReactImageView) mContent.view;
     RNSharedElementStyle style = mStyle;
-    DraweeController controller = imageView.getController();
     GenericDraweeHierarchy hierarchy = imageView.getHierarchy();
     Drawable drawable = hierarchy.getTopLevelDrawable();
 
@@ -315,8 +305,8 @@ class RNSharedElementDrawable extends Drawable {
     drawable.setColor(style.backgroundColor);
 
     // Set border
-    float borderColorRGB = (float) ((int) style.borderColor & 0x00FFFFFF);
-    float borderColorAlpha = (float) ((int) style.borderColor >>> 24);
+    float borderColorRGB = (float) (style.borderColor & 0x00FFFFFF);
+    float borderColorAlpha = (float) (style.borderColor >>> 24);
     drawable.setBorderStyle(style.borderStyle);
     for (int i = 0; i < 4; i++) {
       drawable.setBorderColor(i, borderColorRGB, borderColorAlpha);

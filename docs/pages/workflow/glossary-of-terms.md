@@ -4,7 +4,7 @@ title: Glossary of terms
 
 ### app.json
 
-`app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json / app.config.js"](configuration.md)
+**app.json** is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json / app.config.js"](configuration.md)
 
 ### create-react-native-app
 
@@ -13,6 +13,14 @@ Formerly the React Native equivalent of [create-react-app](https://github.com/fa
 ### detach
 
 The term "detach" was previously used in Expo to mean [ejecting](#eject) your app to use [ExpoKit](#expokit).
+
+### EAS
+
+[Expo Application Services (EAS)](/eas/index.md) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction.md) and [EAS Submit](/submit/introduction.md).
+
+### EAS CLI
+
+The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Read more](eas-cli.md). -->
 
 ### eject
 
@@ -47,7 +55,7 @@ Expo Developer Tools is a web browser based UI included in [Expo CLI](#expo-cli)
 
 ### Expo SDK
 
-The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/). [Find it on Github](https://github.com/expo/expo-sdk).
+The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/). [Find it on GitHub](https://github.com/expo/expo-sdk).
 
 ### ExpoKit
 
@@ -75,9 +83,9 @@ The React Native ecosystem has thousands of libraries. Without a purpose-built t
 
 [npm](https://www.npmjs.com/) is a package manager for JavaScript and the registry where the packages are stored. An alternative package manager, which we use internally at Expo, is [yarn](#yarn).
 
-### Over the Air updates
+### Updates
 
-Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Over the Air (OTA) updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.md).
+Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.md).
 
 ### Package Manager
 
@@ -85,7 +93,7 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 ### Publish
 
-We use the word "publish" as a synonym for "deploy". When you publish an app, it becomes available at a persistent URL from Expo Go, or in the case of [Standalone apps](#standalone-app), it updates the app [over the air](#over-the-air-updates).
+We use the word "publish" as a synonym for "deploy". When you publish an app, it becomes available at a persistent URL from Expo Go, or in the case of [Standalone apps](#standalone-app), it updates the app.
 
 ### React Native
 
@@ -101,11 +109,11 @@ An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to
 
 ### Slug
 
-We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.io/@community/native-component-list) app lives at https://expo.io/@community/native-component-list and the slug is native-component-list.
+We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
 
 ### Snack
 
-[Snack](https://snack.expo.io/) is an in-browser development environment where you can build Expo [experiences](#experience) without installing any tools on your phone or computer.
+[Snack](https://snack.expo.dev/) is an in-browser development environment where you can build Expo [experiences](#experience) without installing any tools on your phone or computer.
 
 ### Standalone app
 

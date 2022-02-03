@@ -1,19 +1,21 @@
 ---
 title: Checkbox
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-checkbox'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-checkbox'
+packageName: 'expo-checkbox'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-checkbox`** provides an component to provide a `boolean` input element on Android and Web.
+**`expo-checkbox`** provides a basic `boolean` input element for all platforms. If you are looking for a more flexible checkbox component, please see the [guide to implementing your own checkbox](/ui-programming/implementing-a-checkbox.md).
 
-<PlatformsSection android emulator web />
+<PlatformsSection android emulator web ios simulator />
 
 ## Installation
 
-<InstallSection packageName="expo-checkbox" />
+<APIInstallSection hideBareInstructions />
 
 ## Usage
 
@@ -77,36 +79,4 @@ const styles = StyleSheet.create({
 import Checkbox from 'expo-checkbox';
 ```
 
-## Static Methods
-
-### `Checkbox.isAvailableAsync(): Promise<boolean>`
-
-Determines whether the checkbox is available.
-
-#### Returns
-
-Returns a promise that resolves to a `Boolean`, indicating whether the checkbox is available on this device.
-
-## Props
-
-The checkbox component inherits all [view props](../react-native/view.md#props).
-
-### `value`
-
-**(_boolean_)** Value indicating if the checkbox should be rendered as checked or not.
-
-### `disabled`
-
-**(_boolean_)** If the checkbox is disabled, making it opaque and uncheckable.
-
-### `color`
-
-**(_string_)** The tint or color of the checkbox. This overrides the disabled opaque style.
-
-### `onChange`
-
-**(_function_)** Callback that is invoked when the user presses the checkbox. The callback is provided with event containing the checkbox change, `{ nativeEvent: { target, value } }`.
-
-### `onValueChange`
-
-**(_function_)** Callback that is invoked when the user presses the checkbox. The callback is provided with a `boolean` indicating the new checked state of the checkbox.
+<APISection packageName="expo-checkbox" apiName="Checkbox" />

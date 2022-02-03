@@ -1,10 +1,11 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { podInstallAsync } from '../CocoaPods';
 import { EXPO_DIR, IOS_DIR } from '../Constants';
 import { iosAppVersionAsync } from '../ProjectVersions';
 import { spawnAsync } from '../Utils';
-import { ClientBuilder, Platform } from './types';
+import { ClientBuilder, ClientBuildFlavor, Platform } from './types';
 
 export default class IosClientBuilder implements ClientBuilder {
   platform: Platform = 'ios';
@@ -16,7 +17,7 @@ export default class IosClientBuilder implements ClientBuilder {
       'Build',
       'Products',
       'Release-iphonesimulator',
-      'Exponent.app'
+      'Expo Go.app'
     );
   }
 
@@ -28,8 +29,13 @@ export default class IosClientBuilder implements ClientBuilder {
     return await iosAppVersionAsync();
   }
 
-  async buildAsync() {
-    await spawnAsync('fastlane', ['ios', 'create_simulator_build'], { stdio: 'inherit' });
+  async buildAsync(flavor: ClientBuildFlavor = ClientBuildFlavor.VERSIONED) {
+    await podInstallAsync(IOS_DIR, {
+      stdio: 'inherit',
+    });
+    await spawnAsync('fastlane', ['ios', 'create_simulator_build', `flavor:${flavor}`], {
+      stdio: 'inherit',
+    });
   }
 
   async uploadBuildAsync(s3Client, appVersion: string) {

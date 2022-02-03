@@ -48,7 +48,9 @@ Gets the user agent string which would be included in requests sent by a web vie
 
 ### `Constants.installationId`
 
-An identifier that is unique to this particular device and installation of the Expo Go app.
+> ⚠️ **This property is deprecated and will be removed in SDK 44. Please implement it on your own using `expo-application`'s [`androidId`](application.md#applicationandroidid) on Android and a storage API such as [`expo-secure-store`](securestore.md) on iOS and `localStorage` on Web.**
+
+An identifier that is unique to this particular device and whose lifetime is at least as long as the installation of the app.
 
 ### `Constants.isDevice`
 
@@ -56,15 +58,15 @@ An identifier that is unique to this particular device and installation of the E
 
 ### `Constants.manifest`
 
-The [manifest](../../../workflow/how-expo-works.md#expo-manifest) object for the app.
+The [manifest](../../../guides/how-expo-works.md#expo-manifest) object for the app.
 
 ### `Constants.nativeAppVersion`
 
-The `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set by `version` in app.json on Android at the time the native app was built.
+The **Info.plist** value for `CFBundleShortVersionString` on iOS and the version name set by `version` in app.json on Android at the time the native app was built.
 
 ### `Constants.nativeBuildVersion`
 
-The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built.
+The **Info.plist** value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in **app.json** in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built.
 
 ### `Constants.platform`
 
@@ -72,10 +74,10 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
 
   - `buildNumber`
 
-    The build number specified in the embedded `Info.plist` value for `CFBundleVersion` in this app.
-    In a standalone app, you can set this with the `ios.buildNumber` value in `app.json`. This
+    The build number specified in the embedded **Info.plist** value for `CFBundleVersion` in this app.
+    In a standalone app, you can set this with the `ios.buildNumber` value in **app.json**. This
     may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
-    can be updated over the air, whereas this value will never change for a given native binary.
+    can be updated, whereas this value will never change for a given native binary.
     The value is set to `null` in case you run your app in Expo Go.
 
   - `platform`

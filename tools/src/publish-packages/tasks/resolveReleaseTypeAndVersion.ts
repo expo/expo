@@ -26,19 +26,26 @@ export const resolveReleaseTypeAndVersion = new Task<TaskArgs>(
         highestReleaseTypeReducer,
         ReleaseType.PATCH
       );
+      const allVersions = pkgView?.versions ?? [];
 
       // Make it a prerelease version if `--prerelease` was passed and assign to the state.
       state.releaseType = prerelease
         ? (('pre' + highestReleaseType) as ReleaseType)
         : highestReleaseType;
 
-      // Calculate version to should bump to.
-      state.releaseVersion = resolveSuggestedVersion(
-        pkg.packageVersion,
-        pkgView?.versions ?? [],
-        state.releaseType,
-        prerelease
-      );
+      // If the version to bump is not published yet, then we do want to use it instead,
+      // no matter which release type is suggested.
+      if (allVersions.includes(pkg.packageVersion)) {
+        // Calculate version that we should bump to.
+        state.releaseVersion = resolveSuggestedVersion(
+          pkg.packageVersion,
+          allVersions,
+          state.releaseType,
+          prerelease
+        );
+      } else {
+        state.releaseVersion = pkg.packageVersion;
+      }
     }
   }
 );
@@ -46,19 +53,12 @@ export const resolveReleaseTypeAndVersion = new Task<TaskArgs>(
 /**
  * Returns suggested version based on given current version, already published versions and suggested release type.
  */
-function resolveSuggestedVersion(
+export function resolveSuggestedVersion(
   versionToBump: string,
   otherVersions: string[],
   releaseType: ReleaseType,
   prereleaseIdentifier?: string | null
 ): string {
-  // If the version to bump is not published yet, then we do want to use it instead,
-  // no matter which release type is suggested.
-  // TODO: do we need to make an exception for prerelease versions?
-  if (!otherVersions.includes(versionToBump) && semver.valid(versionToBump)) {
-    return versionToBump;
-  }
-
   const targetPrereleaseIdentifier = prereleaseIdentifier ?? getPrereleaseIdentifier(versionToBump);
 
   // Higher version might have already been published from another place,
@@ -76,7 +76,7 @@ function resolveSuggestedVersion(
   return semver.inc(
     highestSatisfyingVersion ?? versionToBump,
     releaseType,
-    targetPrereleaseIdentifier
+    targetPrereleaseIdentifier ?? undefined
   ) as string;
 }
 

@@ -1,29 +1,22 @@
 import {
   ConfigPlugin,
+  createRunOncePlugin,
+  ExportedConfigWithProps,
+  WarningAggregator,
   withDangerousMod,
   withMainActivity,
-  WarningAggregator,
-  ExportedConfigWithProps,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
 
+import { InstallationPage } from './constants';
+import { withDevMenuAppDelegate } from './withDevMenuAppDelegate';
+
+const pkg = require('expo-dev-menu/package.json');
+
 const DEV_MENU_ANDROID_IMPORT = 'expo.modules.devmenu.react.DevMenuAwareReactActivity';
 const DEV_MENU_ACTIVITY_CLASS = 'public class MainActivity extends DevMenuAwareReactActivity {';
-
-const DEV_MENU_POD_IMPORT =
-  "pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug";
-
-const DEV_MENU_IOS_IMPORT = `
-#if defined(EX_DEV_MENU_ENABLED)
-@import EXDevMenu;
-#endif`;
-
-const DEV_MENU_IOS_INIT = `
-#if defined(EX_DEV_MENU_ENABLED)
-  [DevMenuManager configureWithBridge:bridge];
-#endif`;
 
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
@@ -35,7 +28,7 @@ async function saveFileAsync(path: string, content: string): Promise<void> {
 
 function addJavaImports(javaSource: string, javaImports: string[]): string {
   const lines = javaSource.split('\n');
-  const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;$/));
+  const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;$/));
   for (const javaImport of javaImports) {
     if (!javaSource.includes(javaImport)) {
       const importStatement = `import ${javaImport};`;
@@ -48,7 +41,7 @@ function addJavaImports(javaSource: string, javaImports: string[]): string {
 function addLines(content: string, find: string | RegExp, offset: number, toAdd: string[]) {
   const lines = content.split('\n');
 
-  let lineIndex = lines.findIndex(line => line.match(find));
+  let lineIndex = lines.findIndex((line) => line.match(find));
 
   for (const newLine of toAdd) {
     if (!content.includes(newLine)) {
@@ -67,30 +60,16 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
 
     return await saveFileAsync(podfilePath, podfile);
   } catch (e) {
-    WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
+    WarningAggregator.addWarningIOS(
+      'expo-dev-menu',
+      `Couldn't modified AppDelegate.m - ${e}. 
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${InstallationPage}`
+    );
   }
 }
 
-async function editAppDelegate(
-  config: ExportedConfigWithProps,
-  action: (appDelegate: string) => string
-) {
-  const appDelegatePath = path.join(
-    config.modRequest.platformProjectRoot,
-    config.modRequest.projectName!,
-    'AppDelegate.m'
-  );
-
-  try {
-    const appDelegate = action(await readFileAsync(appDelegatePath));
-    return await saveFileAsync(appDelegatePath, appDelegate);
-  } catch (e) {
-    WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
-  }
-}
-
-const withDevMenuActivity: ConfigPlugin = config => {
-  return withMainActivity(config, config => {
+const withDevMenuActivity: ConfigPlugin = (config) => {
+  return withMainActivity(config, (config) => {
     if (config.modResults.language === 'java') {
       let content = config.modResults.contents;
       content = addJavaImports(content, [DEV_MENU_ANDROID_IMPORT]);
@@ -101,8 +80,9 @@ const withDevMenuActivity: ConfigPlugin = config => {
       config.modResults.contents = content;
     } else {
       WarningAggregator.addWarningAndroid(
-        'android-devMenu',
-        `Cannot automatically configure MainActivity if it's not java`
+        'expo-dev-menu',
+        `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${InstallationPage}`
       );
     }
 
@@ -110,52 +90,28 @@ const withDevMenuActivity: ConfigPlugin = config => {
   });
 };
 
-const withDevMenuPodfile: ConfigPlugin = config => {
+const withDevMenuPodfile: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
-      await editPodfile(config, podfile => {
+    async (config) => {
+      await editPodfile(config, (podfile) => {
         podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
-        podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_MENU_POD_IMPORT}`]);
+        // Match both variations of Ruby config:
+        // unknown: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug
+        // Rubocop: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', configurations: :debug
+        if (
+          !podfile.match(
+            /pod ['"]expo-dev-menu['"],\s?path: ['"][^'"]*node_modules\/expo-dev-menu['"],\s?:?configurations:?\s(?:=>\s)?:debug/
+          )
+        ) {
+          const packagePath = path.dirname(require.resolve('expo-dev-menu/package.json'));
+          const relativePath = path.relative(config.modRequest.platformProjectRoot, packagePath);
+          podfile = addLines(podfile, 'use_react_native', 0, [
+            `  pod 'expo-dev-menu', path: '${relativePath}', :configurations => :debug`,
+          ]);
+        }
         return podfile;
       });
-      return config;
-    },
-  ]);
-};
-
-const withDevMenuAppDelegate: ConfigPlugin = config => {
-  return withDangerousMod(config, [
-    'ios',
-    async config => {
-      await editAppDelegate(config, appDelegate => {
-        if (!appDelegate.includes(DEV_MENU_IOS_IMPORT)) {
-          const lines = appDelegate.split('\n');
-          lines.splice(1, 0, DEV_MENU_IOS_IMPORT);
-
-          appDelegate = lines.join('\n');
-        }
-
-        if (!appDelegate.includes(DEV_MENU_IOS_INIT)) {
-          const lines = appDelegate.split('\n');
-
-          const initializeReactNativeAppIndex = lines.findIndex(line =>
-            line.includes('- (RCTBridge *)initializeReactNativeApp')
-          );
-
-          const rootViewControllerIndex = lines.findIndex(
-            (line, index) =>
-              initializeReactNativeAppIndex < index && line.includes('rootViewController')
-          );
-
-          lines.splice(rootViewControllerIndex - 1, 0, DEV_MENU_IOS_INIT);
-
-          appDelegate = lines.join('\n');
-        }
-
-        return appDelegate;
-      });
-
       return config;
     },
   ]);
@@ -168,4 +124,4 @@ const withDevMenu = (config: ExpoConfig) => {
   return config;
 };
 
-export default withDevMenu;
+export default createRunOncePlugin(withDevMenu, pkg.name, pkg.version);

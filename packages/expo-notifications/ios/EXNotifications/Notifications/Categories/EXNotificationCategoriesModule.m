@@ -5,12 +5,12 @@
 
 @implementation EXNotificationCategoriesModule
 
-UM_EXPORT_MODULE(ExpoNotificationCategoriesModule);
+EX_EXPORT_MODULE(ExpoNotificationCategoriesModule);
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
-                 getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
+                 getNotificationCategoriesAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
@@ -21,11 +21,54 @@ UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
+EX_EXPORT_METHOD_AS(setNotificationCategoryAsync,
                  setNotificationCategoryWithCategoryId:(NSString *)categoryId
                  actions:(NSArray *)actions
                  options:(NSDictionary *)options
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+                 resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
+{
+  UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:categoryId
+                                                                                     actions:actions
+                                                                                     options:options];
+  
+  [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy] ?: [[NSMutableSet alloc] init];
+    for (UNNotificationCategory *category in newCategories) {
+      if ([category.identifier isEqualToString:newCategory.identifier]) {
+        [newCategories removeObject:category];
+        break;
+      }
+    }
+    [newCategories addObject:newCategory];
+    [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
+    resolve([self serializeCategory:newCategory]);
+  }];
+}
+
+EX_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
+                 deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
+                 resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
+{
+  [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    BOOL didDelete = NO;
+    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
+    for (UNNotificationCategory *category in newCategories) {
+      if ([category.identifier isEqualToString:categoryId]) {
+        [newCategories removeObject:category];
+        didDelete = YES;
+        break;
+      }
+    }
+    [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
+    resolve(@(didDelete));
+  }];
+}
+
+# pragma mark- Internal
+
++ (UNNotificationCategory *)createCategoryWithId:(NSString*)categoryId
+                                         actions:(NSArray *)actions
+                                         options:(NSDictionary *)options
 {
   NSArray<NSString *> *intentIdentifiers = options[@"intentIdentifiers"];
   NSString *previewPlaceholder = options[@"previewPlaceholder"];
@@ -56,42 +99,10 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
                                                intentIdentifiers:intentIdentifiers
                                                          options:categoryOptions];
   }
-  [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
-    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy] ?: [[NSMutableSet alloc] init];
-    for (UNNotificationCategory *category in newCategories) {
-      if ([category.identifier isEqualToString:newCategory.identifier]) {
-        [newCategories removeObject:category];
-        break;
-      }
-    }
-    [newCategories addObject:newCategory];
-    [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
-    resolve([self serializeCategory:newCategory]);
-  }];
+  return newCategory;
 }
 
-UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
-                 deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
-{
-  [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
-    BOOL didDelete = NO;
-    NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
-    for (UNNotificationCategory *category in newCategories) {
-      if ([category.identifier isEqualToString:categoryId]) {
-        [newCategories removeObject:category];
-        didDelete = YES;
-        break;
-      }
-    }
-    [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
-    resolve(@(didDelete));
-  }];
-}
-
-# pragma mark- Internal
-
-- (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
++ (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
 {
   NSString *identifier = params[@"identifier"];
   NSString *buttonTitle = params[@"buttonTitle"];
@@ -118,7 +129,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return [UNNotificationAction actionWithIdentifier:identifier title:buttonTitle options:options];
 }
 
-- (UNNotificationCategoryOptions )parseNotificationCategoryOptionsFromParams:(NSDictionary *)params
++ (UNNotificationCategoryOptions )parseNotificationCategoryOptionsFromParams:(NSDictionary *)params
 {
   UNNotificationCategoryOptions options = UNNotificationCategoryOptionNone;
   if ([params[@"customDismissAction"] boolValue]) {

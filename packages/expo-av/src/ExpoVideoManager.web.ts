@@ -1,5 +1,6 @@
 import { AVPlaybackStatus } from './AV';
 import ExponentAV from './ExponentAV';
+import { requestFullscreen, exitFullscreen } from './FullscreenUtils.web';
 
 export default {
   get name(): string {
@@ -23,9 +24,9 @@ export default {
     isFullScreenEnabled: boolean
   ): Promise<AVPlaybackStatus> {
     if (isFullScreenEnabled) {
-      await element.requestFullscreen();
+      await requestFullscreen(element);
     } else {
-      await document.exitFullscreen();
+      await exitFullscreen(element);
     }
     return ExponentAV.getStatusForVideo(element);
   },

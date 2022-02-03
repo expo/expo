@@ -1,33 +1,33 @@
 #import <EXAdsFacebook/EXInterstitialAdManager.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 
 @interface EXInterstitialAdManager () <FBInterstitialAdDelegate>
 
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 @property (nonatomic, strong) FBInterstitialAd *interstitialAd;
 @property (nonatomic, strong) UIViewController *adViewController;
 @property (nonatomic) bool didClick;
 @property (nonatomic) bool isBackground;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXInterstitialAdManager
 
-UM_EXPORT_MODULE(CTKInterstitialAdManager)
+EX_EXPORT_MODULE(CTKInterstitialAdManager)
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(showAd,
+EX_EXPORT_METHOD_AS(showAd,
                     showAd:(NSString *)placementId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_resolve != nil || _reject != nil) {
     reject(@"E_NO_CONCURRENT", @"Only one `showAd` can be called at once", nil);
@@ -43,7 +43,7 @@ UM_EXPORT_METHOD_AS(showAd,
   
   _interstitialAd = [[FBInterstitialAd alloc] initWithPlacementID:placementId];
   _interstitialAd.delegate = self;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     [self->_interstitialAd loadAd];
   }];
 }
@@ -52,7 +52,7 @@ UM_EXPORT_METHOD_AS(showAd,
 
 - (void)interstitialAdDidLoad:(__unused FBInterstitialAd *)interstitialAd
 {
-  [_interstitialAd showAdFromRootViewController:[[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController]];
+  [_interstitialAd showAdFromRootViewController:[[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController]];
 }
 
 - (void)interstitialAd:(FBInterstitialAd *)interstitialAd didFailWithError:(NSError *)error
@@ -79,7 +79,7 @@ UM_EXPORT_METHOD_AS(showAd,
   _isBackground = false;
   
   if (_adViewController) {
-    [[[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController] presentViewController:_adViewController animated:NO completion:nil];
+    [[[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController] presentViewController:_adViewController animated:NO completion:nil];
     _adViewController = nil;
   }
 }
@@ -89,7 +89,7 @@ UM_EXPORT_METHOD_AS(showAd,
   _isBackground = true;
   
   if (_interstitialAd) {
-    _adViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController];
+    _adViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
     [_adViewController dismissViewControllerAnimated:NO completion:nil];
   }
 }

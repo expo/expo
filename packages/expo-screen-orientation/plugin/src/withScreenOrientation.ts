@@ -1,13 +1,11 @@
-import {
-  ConfigPlugin,
-  createRunOncePlugin,
-  IOSConfig,
-  withDangerousMod,
-} from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
+import { ExpoConfig } from '@expo/config-types';
 import assert from 'assert';
-import * as fs from 'fs-extra';
 
 const pkg = require('expo-screen-orientation/package.json');
+
+// This value must match the `EXDefaultScreenOrientationMask` string used in `expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m` (do not change).
+export const INITIAL_ORIENTATION_KEY = 'EXDefaultScreenOrientationMask';
 
 const OrientationLock = {
   DEFAULT: 'UIInterfaceOrientationMaskAllButUpsideDown',
@@ -20,29 +18,41 @@ const OrientationLock = {
   LANDSCAPE_RIGHT: 'UIInterfaceOrientationMaskLandscapeRight',
 };
 
-export function modifyObjcAppDelegate(contents: string, mask: string): string {
-  // Add import
-  if (!contents.includes('#import <EXScreenOrientation/EXScreenOrientationViewController.h>')) {
-    contents = contents.replace(
-      /#import "AppDelegate.h"/g,
-      `#import "AppDelegate.h"
-#import <EXScreenOrientation/EXScreenOrientationViewController.h>`
-    );
-  }
+type OrientationMasks = keyof typeof OrientationLock;
 
-  // Change View Controller
-  if (!contents.includes('[EXScreenOrientationViewController alloc]')) {
-    contents = contents.replace(
-      /UIViewController\s?\*\s?rootViewController\s?=\s?\[UIViewController new\];/g,
-      `UIViewController *rootViewController = [[EXScreenOrientationViewController alloc] initWithDefaultScreenOrientationMask:${mask}];`
-    );
-  }
-  return contents;
+// `initialOrientation` is not public in expo config yet, we just use it as an internal type.
+interface ExpoConfigWithInitialOrientation extends ExpoConfig {
+  initialOrientation?: OrientationMasks;
 }
 
-const withScreenOrientationViewController: ConfigPlugin<{
-  initialOrientation?: keyof typeof OrientationLock;
-} | void> = (config, { initialOrientation = 'DEFAULT' } = {}) => {
+const withScreenOrientationViewController: ConfigPlugin<
+  {
+    initialOrientation?: keyof typeof OrientationLock;
+  } | void
+> = (config, { initialOrientation = 'DEFAULT' } = {}) => {
+  config = withInfoPlist(config, (config) => {
+    const extendedConfig = {
+      ...config,
+      initialOrientation,
+    };
+    config.modResults = setInitialOrientation(extendedConfig, config.modResults);
+    return config;
+  });
+  return config;
+};
+
+export function getInitialOrientation(
+  config: Pick<ExpoConfigWithInitialOrientation, 'initialOrientation'>
+): OrientationMasks {
+  return config.initialOrientation ?? 'DEFAULT';
+}
+
+export function setInitialOrientation(
+  config: Pick<ExpoConfigWithInitialOrientation, 'initialOrientation'>,
+  infoPlist: InfoPlist
+): InfoPlist {
+  const initialOrientation = getInitialOrientation(config);
+
   assert(
     initialOrientation in OrientationLock,
     `Invalid initial orientation "${initialOrientation}" expected one of: ${Object.keys(
@@ -50,24 +60,12 @@ const withScreenOrientationViewController: ConfigPlugin<{
     ).join(', ')}`
   );
 
-  return withDangerousMod(config, [
-    'ios',
-    async config => {
-      const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
-      let contents = await fs.readFile(fileInfo.path, 'utf-8');
-      if (fileInfo.language === 'objc') {
-        contents = modifyObjcAppDelegate(contents, OrientationLock[initialOrientation]);
-      } else {
-        // TODO: Support Swift
-        throw new Error(
-          `Cannot append screen orientation view controller to AppDelegate of language "${fileInfo.language}"`
-        );
-      }
-      await fs.writeFile(fileInfo.path, contents);
-
-      return config;
-    },
-  ]);
-};
+  if (initialOrientation === 'DEFAULT') {
+    delete infoPlist[INITIAL_ORIENTATION_KEY];
+  } else {
+    infoPlist[INITIAL_ORIENTATION_KEY] = OrientationLock[initialOrientation];
+  }
+  return infoPlist;
+}
 
 export default createRunOncePlugin(withScreenOrientationViewController, pkg.name, pkg.version);

@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "0.3.0",
+  "version": "0.9.1",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -10,14 +10,14 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && ./scripts/reset-dev-menu-packager-host.sh",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "start": "./scripts/start.sh",
-    "bundle:dev:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev true --bundle-output assets/EXDevMenuApp.ios.js",
-    "bundle:prod:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js",
-    "bundle:dev:android": "react-native bundle --entry-file app/index.ts --platform android --dev true --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res",
-    "bundle:prod:android": "react-native bundle --entry-file app/index.ts --platform android --dev false --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res"
+    "bundle:dev:ios": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform ios --dev true --bundle-output assets/EXDevMenuApp.ios.js",
+    "bundle:prod:ios": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js  --assets-dest ios",
+    "bundle:dev:android": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform android --dev true --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res",
+    "bundle:prod:android": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform android --dev false --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res"
   },
   "keywords": [
     "expo",
@@ -36,23 +36,39 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io",
+  "homepage": "https://docs.expo.dev",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@testing-library/react-native",
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect",
+      "./setupTests.ts"
+    ],
+    "transformIgnorePatterns": []  
   },
   "dependencies": {
-    "expo-dev-menu-interface": "0.1.2"
-  },
-  "peerDependencies": {
-    "react-native": ">=0.62.0"
+    "@expo/config-plugins": "^4.0.14",
+    "expo-dev-menu-interface": "0.5.1"
   },
   "devDependencies": {
-    "@react-navigation/core": "5.10.0",
-    "@react-navigation/native": "5.5.1",
-    "@react-navigation/stack": "5.4.1",
-    "babel-plugin-module-resolver": "^4.0.0",
-    "expo-module-scripts": "~1.2.0",
-    "react": "16.13.1",
-    "react-native": "0.63.2"
+    "@apollo/client": "^3.4.10",
+    "@babel/preset-typescript": "^7.7.4",
+    "@react-navigation/core": "5.15.1",
+    "@react-navigation/native": "5.9.2",
+    "@react-navigation/stack": "5.14.2",
+    "@testing-library/jest-native": "^4.0.4",
+    "@testing-library/react-native": "^8.0.0",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-preset-expo": "~9.0.0",
+    "expo-dev-client-components": "1.0.0",
+    "expo-module-scripts": "^2.0.0",
+    "fuse.js": "^6.4.6",
+    "graphql": "^15.3.0",
+    "graphql-tag": "^2.10.1",
+    "react": "17.0.2",
+    "react-native": "0.66.4",
+    "url": "^0.11.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

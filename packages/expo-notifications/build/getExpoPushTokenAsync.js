@@ -1,6 +1,6 @@
-import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
+import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
@@ -8,9 +8,15 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
 export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
-    const experienceId = options.experienceId || (Constants.manifest && Constants.manifest.id);
-    if (!experienceId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId found. If it can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself.");
+    const experienceId = options.experienceId ||
+        Constants.manifest?.originalFullName ||
+        Constants.manifest2?.extra?.expoClient?.originalFullName ||
+        Constants.manifest?.id;
+    const projectId = options.projectId ||
+        Constants.manifest2?.extra?.eas?.projectId ||
+        Constants.manifest?.projectId;
+    if (!experienceId && !projectId) {
+        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself.");
     }
     const applicationId = options.applicationId || Application.applicationId;
     if (!applicationId) {
@@ -22,11 +28,11 @@ export default async function getExpoPushTokenAsync(options = {}) {
     const url = options.url ?? `${baseUrl}push/getExpoPushToken`;
     const body = {
         type,
-        deviceId,
+        deviceId: deviceId.toLowerCase(),
         development,
-        experienceId,
         appId: applicationId,
         deviceToken: getDeviceToken(devicePushToken),
+        ...(projectId ? { projectId } : { experienceId }),
     };
     const response = await fetch(url, {
         method: 'POST',
@@ -34,7 +40,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
             'content-type': 'application/json',
         },
         body: JSON.stringify(body),
-    }).catch(error => {
+    }).catch((error) => {
         throw new CodedError('ERR_NOTIFICATIONS_NETWORK_ERROR', `Error encountered while fetching Expo token: ${error}.`);
     });
     if (!response.ok) {

@@ -1,39 +1,67 @@
-import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
-export { PermissionStatus };
 export class BarCodeScanner extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.lastEvents = {};
-        this.lastEventsTimes = {};
-        this.onObjectDetected = (callback) => ({ nativeEvent, }) => {
-            const { type } = nativeEvent;
-            if (this.lastEvents[type] &&
-                this.lastEventsTimes[type] &&
-                JSON.stringify(nativeEvent) === this.lastEvents[type] &&
-                Date.now() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS) {
-                return;
-            }
-            if (callback) {
-                callback(nativeEvent);
-                this.lastEventsTimes[type] = new Date();
-                this.lastEvents[type] = JSON.stringify(nativeEvent);
-            }
-        };
-    }
+    lastEvents = {};
+    lastEventsTimes = {};
+    static Constants = {
+        BarCodeType,
+        Type,
+    };
+    static ConversionTables = {
+        type: Type,
+    };
+    static defaultProps = {
+        type: Type.back,
+        barCodeTypes: Object.values(BarCodeType),
+    };
+    // @needsAudit
+    /**
+     * Checks user's permissions for accessing the camera.
+     * @return Return a promise that fulfills to an object of type [`PermissionResponse`](#permissionresponse).
+     */
     static async getPermissionsAsync() {
         return ExpoBarCodeScannerModule.getPermissionsAsync();
     }
+    // @needsAudit
+    /**
+     * Asks the user to grant permissions for accessing the camera.
+     *
+     * On iOS this will require apps to specify the `NSCameraUsageDescription` entry in the `Info.plist`.
+     * @return Return a promise that fulfills to an object of type [`PermissionResponse`](#permissionresponse).
+     */
     static async requestPermissionsAsync() {
         return ExpoBarCodeScannerModule.requestPermissionsAsync();
     }
+    // @needsAudit
+    /**
+     * Check or request permissions for the barcode scanner.
+     * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = BarCodeScanner.usePermissions();
+     * ```
+     */
+    static usePermissions = createPermissionHook({
+        getMethod: BarCodeScanner.getPermissionsAsync,
+        requestMethod: BarCodeScanner.requestPermissionsAsync,
+    });
+    // @needsAudit
+    /**
+     * Scan bar codes from the image given by the URL.
+     * @param url URL to get the image from.
+     * @param barCodeTypes An array of bar code types. Defaults to all supported bar code types on
+     * the platform.
+     * > __Note:__ Only QR codes are supported on iOS.
+     * @return A possibly empty array of objects of the `BarCodeScannerResult` shape, where the type
+     * refers to the bar code type that was scanned and the data is the information encoded in the bar
+     * code.
+     */
     static async scanFromURLAsync(url, barCodeTypes = Object.values(BarCodeType)) {
         if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
             throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
@@ -55,29 +83,41 @@ export class BarCodeScanner extends React.Component {
     render() {
         const nativeProps = this.convertNativeProps(this.props);
         const { onBarCodeScanned } = this.props;
-        return (React.createElement(ExpoBarCodeScannerView, Object.assign({}, nativeProps, { onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) })));
+        return (React.createElement(ExpoBarCodeScannerView, { ...nativeProps, onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) }));
     }
-    convertNativeProps(props) {
-        const newProps = mapValues(props, this.convertProp);
-        return newProps;
-    }
-    convertProp(value, key) {
-        if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
-            return BarCodeScanner.ConversionTables[key][value];
+    /**
+     * @hidden
+     */
+    onObjectDetected = (callback) => ({ nativeEvent }) => {
+        const { type } = nativeEvent;
+        if (this.lastEvents[type] &&
+            this.lastEventsTimes[type] &&
+            JSON.stringify(nativeEvent) === this.lastEvents[type] &&
+            Date.now() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS) {
+            return;
         }
-        return value;
+        if (callback) {
+            callback(nativeEvent);
+            this.lastEventsTimes[type] = new Date();
+            this.lastEvents[type] = JSON.stringify(nativeEvent);
+        }
+    };
+    /**
+     * @hidden
+     */
+    convertNativeProps(props) {
+        const nativeProps = {};
+        for (const [key, value] of Object.entries(props)) {
+            if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
+                nativeProps[key] = BarCodeScanner.ConversionTables[key][value];
+            }
+            else {
+                nativeProps[key] = value;
+            }
+        }
+        return nativeProps;
     }
 }
-BarCodeScanner.Constants = {
-    BarCodeType,
-    Type,
-};
-BarCodeScanner.ConversionTables = {
-    type: Type,
-};
-BarCodeScanner.defaultProps = {
-    type: Type.back,
-    barCodeTypes: Object.values(BarCodeType),
-};
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;
+export { PermissionStatus };
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, usePermissions, scanFromURLAsync, } = BarCodeScanner;
 //# sourceMappingURL=BarCodeScanner.js.map

@@ -1,10 +1,10 @@
-import { requireNativeViewManager } from '@unimodules/core';
-import * as React from 'react';
-import { View } from 'react-native';
+import { requireNativeViewManager } from 'expo-modules-core';
+import React from 'react';
+import { View, ViewProps } from 'react-native';
 
 type AppEvent = { [eventName: string]: any };
 
-type PropsType = React.ComponentProps<typeof View> & {
+type PropsType = ViewProps & {
   /**
    * AdMob iOS library banner size constants
    * (https://developers.google.com/admob/ios/banner)
@@ -33,7 +33,7 @@ type PropsType = React.ComponentProps<typeof View> & {
   /**
    * Additional request params added to underlying request for the ad.
    */
-  additionalRequestParams?: { [key: string]: string };
+  additionalRequestParams?: Record<string, string>;
   /**
    * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
    * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
@@ -58,8 +58,6 @@ type StateType = {
   style: { width?: number; height?: number };
 };
 
-let _hasWarnedAboutTestDeviceID = false;
-
 export default class PublisherBanner extends React.Component<PropsType, StateType> {
   static defaultProps = { bannerSize: 'smartBannerPortrait' };
 
@@ -75,17 +73,11 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
 
   render() {
-    const additionalRequestParams: { [key: string]: string } = {
+    const additionalRequestParams: Record<string, string> = {
       ...this.props.additionalRequestParams,
     };
     if (!this.props.servePersonalizedAds) {
       additionalRequestParams.npa = '1';
-    }
-    if ((this.props as any).testDeviceID && !_hasWarnedAboutTestDeviceID) {
-      console.warn(
-        'The `testDeviceID` prop of PublisherBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.'
-      );
-      _hasWarnedAboutTestDeviceID = true;
     }
     return (
       <View style={this.props.style}>

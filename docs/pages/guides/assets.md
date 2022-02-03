@@ -4,7 +4,7 @@ title: Assets
 
 Images, fonts, videos, sounds, any other file that your app depends on that is not JavaScript is considered to be an _asset_. Just as on the web, assets are fetched or streamed over HTTP on demand. This is different from your typical mobile app, where assets are bundled with your application binary.
 
-However, there is a distinction in Expo between an asset that you use with the `require` syntax because they are available at build time on your local filesystem, eg: `<Image source={require('./assets/images/example.png')} />`, and web images that you refer to by a web URL, eg: `<Image source={{uri: 'http://yourwebsite.com/logo.png'}} />`. We can make no guarantees about the availability of the images that you refer to with a web URI because we don't manage those assets. Additionally, we don't have the same amount of information about arbitrary web URIs: when your assets are available on the local filesystem, the packager is able to read some metadata (width, height, for example) and pass that through to your app, so you actually don't need to specify a width and height, for example. When specifying a remote web URL, you will need to explicitly specify a width and height, or it will default to 0x0. Lastly, as you will see later, caching behaviour is different in both cases.
+However, there is a distinction in Expo between an asset that you use with the `require` syntax because they are available at build time on your local filesystem, eg: `<Image source={require('./assets/images/example.png')} />`, and web images that you refer to by a web URL, eg: `<Image source={{uri: 'https://example.com/logo.png'}} />`. We can make no guarantees about the availability of the images that you refer to with a web URI because we don't manage those assets. Additionally, we don't have the same amount of information about arbitrary web URIs: when your assets are available on the local filesystem, the bundler is able to read some metadata (width, height, for example) and pass that through to your app, so you actually don't need to specify a width and height, for example. When specifying a remote web URL, you will need to explicitly specify a width and height, or it will default to 0x0. Lastly, as you will see later, caching behavior is different in both cases.
 
 The following is an explanation of the former type of assets: those that you have on your filesystem at build time. In the latter case, it is assumed that you are familiar with how to upload an image to somewhere on the web where it can be accessed by any web or mobile app.
 
@@ -30,11 +30,15 @@ Images often take up the most space out of the assets in an Expo project. Optimi
 
 - `--save`: Backup a copy of each file with a `.orig` extension.
 - `--quality=N`: Compress the images to a certain integer quality N between 1 and 100 inclusive (defaults to 60).
-- `--include="[pattern]"`: Only optimize assets that match this glob pattern (defaults to `assetBundlePatterns` field in `app.json`)
+- `--include="[pattern]"`: Only optimize assets that match this glob pattern (defaults to `assetBundlePatterns` field in **app.json**)
 - `--exclude="[pattern]"`: Exclude assets that match this glob pattern.
 
 Note: glob patterns are always relative to the project root regardless of where the command is called from.
 
 ### Fonts
 
-Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@expo/vector-icons](icons.md#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
+Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behavior with the icon-font-powered [@expo/vector-icons](icons.md#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
+
+### Caching
+
+Read about this in [Asset Caching](../../guides/preloading-and-caching-assets.md).

@@ -10,26 +10,25 @@ const configFile = path.resolve(__dirname, '../native.js');
 it(`has a React Native config`, () => {
   expect(
     () =>
-      new eslint.CLIEngine({
+      new eslint.ESLint({
         baseConfig: getBaseConfig(),
-        configFile,
+        overrideConfigFile: configFile,
         useEslintrc: false,
       })
   ).not.toThrow();
 });
 
 it(`lints with the React Native config`, async () => {
-  const report = await lintAsync(
+  const results = await lintAsync(
     {
       baseConfig: getBaseConfig(),
-      configFile,
+      overrideConfigFile: configFile,
       fix: true,
       ignore: false,
       useEslintrc: false,
     },
     ['__tests__/fixtures/*all*', '__tests__/fixtures/*native*']
   );
-  const { results } = report;
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);
     delete result.filePath;
@@ -38,7 +37,7 @@ it(`lints with the React Native config`, async () => {
 }, 20000);
 
 it(`doesn't conflict with Prettier`, async () => {
-  const { success, message } = await checkPrettierRulesAsync(configFile);
+  const { success, message } = await checkPrettierRulesAsync(configFile, 'native');
   expect(success).toMatchSnapshot('success');
   expect(message).toMatchSnapshot('message');
 }, 10000);

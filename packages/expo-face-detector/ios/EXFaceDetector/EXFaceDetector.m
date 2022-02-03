@@ -6,26 +6,27 @@
 //
 
 #import <EXFaceDetector/EXFaceDetector.h>
-#import <Firebase/Firebase.h>
+#import <MLKitFaceDetection/MLKitFaceDetection.h>
 
 @implementation EXFaceDetector
 {
-  FIRVisionFaceDetector *detector;
+  MLKFaceDetector *detector;
 }
 
--(instancetype) initWithOptions:(FIRVisionFaceDetectorOptions *)options
+- (instancetype)initWithOptions:(MLKFaceDetectorOptions *)options
 {
   self = [super init];
   detector = [EXFaceDetector detectorForOptions:options];
   return self;
 }
 
--(void) detectFromImage:(UIImage*)image completionListener:(void(^)(NSArray<FIRVisionFace *> * _Nullable faces, NSError* error)) completion
+- (void)detectFromImage:(UIImage*)image
+     completionListener:(void(^)(NSArray<MLKFace *> * _Nullable faces, NSError* error)) completion
 {
   if(image) {
     if(image.CGImage) {
-      FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-      [self detectFromFIRImage:visionImage completionListener:completion];
+      MLKVisionImage *visionImage = [[MLKVisionImage alloc] initWithImage:image];
+      [self detectFromMLKImage:visionImage completionListener:completion];
     } else {
       completion(nil, [NSError errorWithDomain:@"faceDetector" code:0 userInfo:@{
                                                                                  @"error": @"Image's CGImage must not be nil!"
@@ -38,30 +39,33 @@
   }
 }
 
--(void) detectFromBuffer:(CMSampleBufferRef)buffer metadata:(FIRVisionImageMetadata *)metadata completionListener:(void(^)(NSArray<FIRVisionFace *> * _Nullable faces, NSError *error))completion
+- (void)detectFromBuffer:(CMSampleBufferRef)buffer
+            orientation:(UIImageOrientation)orientation
+     completionListener:(void(^)(NSArray<MLKFace *> * _Nullable faces, NSError *error))completion
 {
-  if(buffer != nil) {
-    FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithBuffer:buffer];
-    visionImage.metadata = metadata;
-    [self detectFromFIRImage:visionImage completionListener:completion];
+  if (buffer != nil) {
+    MLKVisionImage *visionImage = [[MLKVisionImage alloc] initWithBuffer:buffer];
+    visionImage.orientation = orientation;
+    [self detectFromMLKImage:visionImage completionListener:completion];
   } else {
-    completion(nil, [NSError errorWithDomain:@"faceDetector" code:0 userInfo:@{
-                                                                               @"error": @"Image must not be nil!"
-                                                                               }]);
+    completion(nil, [NSError errorWithDomain:@"faceDetector"
+                                        code:0
+                                    userInfo:@{ @"error": @"Image must not be nil!" }]);
   }
 }
 
--(void) detectFromFIRImage:(FIRVisionImage *)image completionListener:(void(^)(NSArray<FIRVisionFace *> * _Nullable faces, NSError *error))completion
+- (void)detectFromMLKImage:(MLKVisionImage *)image
+       completionListener:(void(^)(NSArray<MLKFace *> * _Nullable faces, NSError *error))completion
 {
   if(image != nil) {
     [detector processImage:image
-                completion:^(NSArray<FIRVisionFace *> *faces,
+                completion:^(NSArray<MLKFace *> *faces,
                              NSError *error) {
                   if (error != nil) {
                     completion(nil, error);
                   } else if (faces != nil) {
-                    NSMutableArray<FIRVisionFace *> *encodedFaces = [NSMutableArray arrayWithCapacity:[faces count]];
-                    [faces enumerateObjectsUsingBlock:^(FIRVisionFace * _Nonnull face, NSUInteger idx, BOOL * _Nonnull stop) {
+                    NSMutableArray<MLKFace *> *encodedFaces = [NSMutableArray arrayWithCapacity:[faces count]];
+                    [faces enumerateObjectsUsingBlock:^(MLKFace * _Nonnull face, NSUInteger idx, BOOL * _Nonnull stop) {
                       [encodedFaces addObject:face];
                     }];
                     completion(encodedFaces, nil);
@@ -74,8 +78,8 @@
   }
 }
 
-+ (FIRVisionFaceDetector *)detectorForOptions:(FIRVisionFaceDetectorOptions *)options
++ (MLKFaceDetector *)detectorForOptions:(MLKFaceDetectorOptions *)options
 {
-  return [[FIRVision vision] faceDetectorWithOptions:options];
+  return [MLKFaceDetector faceDetectorWithOptions:options];
 }
 @end

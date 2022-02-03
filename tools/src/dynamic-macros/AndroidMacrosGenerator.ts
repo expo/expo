@@ -1,6 +1,6 @@
-import path from 'path';
-import fs from 'fs-extra';
 import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
 import * as Directories from '../Directories';
 
@@ -45,15 +45,18 @@ export async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
   const isLocalManifestEmpty =
     !macros.BUILD_MACHINE_KERNEL_MANIFEST || macros.BUILD_MACHINE_KERNEL_MANIFEST === '';
 
-  if (isLocalManifestEmpty) {
+  let versionUsed = 'local';
+  if (process.env.USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
+    macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DOGFOODING_PUBLISHED_KERNEL_MANIFEST;
+    versionUsed = 'doogfooding';
+  } else if (isLocalManifestEmpty) {
     macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DEV_PUBLISHED_KERNEL_MANIFEST;
+    versionUsed = 'published dev';
   }
-
-  console.log(
-    `Using ${chalk.yellow(isLocalManifestEmpty ? 'published dev' : 'local')} version of Expo Home.`
-  );
+  console.log(`Using ${chalk.yellow(versionUsed)} version of Expo Home.`);
 
   delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
+  delete macros['DOGFOODING_PUBLISHED_KERNEL_MANIFEST'];
 
   const definitions = Object.entries(macros).map(
     ([name, value]) =>

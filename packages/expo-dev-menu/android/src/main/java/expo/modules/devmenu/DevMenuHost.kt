@@ -3,17 +3,20 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.JSIModulePackage
+import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevServerHelper
+import com.facebook.react.jscexecutor.JSCExecutorFactory
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
+import com.facebook.soloader.SoLoader
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
-import expo.modules.devmenu.safearea.MockedSafeAreaPackage
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
-
 /**
  * Class that represents react host used by dev menu.
  */
@@ -24,8 +27,12 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     DevMenuPackage(),
     getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
     getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
-    MockedSafeAreaPackage()
+    getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
   )
+
+  override fun getJSIModulePackage(): JSIModulePackage {
+    return getVendoredJNIPackage("com.swmansion.reanimated.ReanimatedJSIModulePackage")
+  }
 
   override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
 
@@ -34,6 +41,14 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
   override fun getJSMainModuleName() = "index"
 
   fun getContext(): Context = super.getApplication()
+
+  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
+    SoLoader.init(application.applicationContext, /* native exopackage */ false)
+    if (SoLoader.getLibraryPath("libjsc.so") != null) {
+      return JSCExecutorFactory(application.packageName, AndroidInfoHelpers.getFriendlyDeviceName())
+    }
+    return HermesExecutorFactory()
+  }
 
   override fun createReactInstanceManager(): ReactInstanceManager {
     val reactInstanceManager = super.createReactInstanceManager()

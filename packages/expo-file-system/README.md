@@ -4,20 +4,20 @@ Provides access to the local file system on the device.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/filesystem.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/filesystem.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/filesystem/)
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/filesystem/).
+For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/filesystem/).
 
 # Installation in bare React Native projects
 
-For bare React Native projects, this package is included in [`react-native-unimodules`](https://github.com/expo/expo/tree/master/packages/react-native-unimodules). Please refer to those installation instructions to install this package.
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 
 ## Installation in bare iOS React Native project
 
-Apart from following [those steps](#installation-in-bare-react-native-projects), make sure your `AppDelegate` extends `UMAppDelegateWrapper` as shown [here](https://gist.github.com/lukmccall/d2b97b2dde0d1aa04a245a369ffdd153).
+No additional set up necessary.
 
 ## Installation in bare Android React Native project
 

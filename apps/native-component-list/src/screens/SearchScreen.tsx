@@ -88,7 +88,7 @@ export default () => (
             backButton={Platform.OS === 'android'}>
             <SearchBar
               initialValue={route?.params?.q ?? ''}
-              onChangeQuery={q => navigation.setParams({ q })}
+              onChangeQuery={(q) => navigation.setParams({ q })}
               underlineColorAndroid="#fff"
               tintColor={Colors.tintColor}
             />

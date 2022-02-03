@@ -149,7 +149,7 @@ interpolate(config);
 
 Interpolates the value before updating the property, e.g. mapping 0-1 to 0-10.
 
-See `AnimatedInterpolation.js`
+See **AnimatedInterpolation.js**
 
 **Parameters:**
 
@@ -180,7 +180,7 @@ Typically only used internally, but could be used by a custom Animation class.
 
 | Name      | Type      | Required | Description         |
 | --------- | --------- | -------- | ------------------- |
-| animation | Animation | Yes      | See `Animation.js`. |
+| animation | Animation | Yes      | See **Animation.js**. |
 | callback  | function  | Yes      | Callback function.  |
 
 ---
@@ -207,4 +207,4 @@ Typically only used internally.
 
 | Name     | Type         | Required | Description           |
 | -------- | ------------ | -------- | --------------------- |
-| tracking | AnimatedNode | Yes      | See `AnimatedNode.js` |
+| tracking | AnimatedNode | Yes      | See **AnimatedNode.js** |

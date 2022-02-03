@@ -2,11 +2,21 @@ name: Development Client
 
 on:
   workflow_dispatch: {}
-  pull_request:
-    branches: [master]
-    paths:
-      - .github/workflows/development-client.yml
-      - packages/expo-dev-*/**
+  # This task will fail due to migration to `expo-modules-core`.
+  # We temporary disable it.
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/development-client.yml
+  #     - packages/expo-dev-*/**
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - .github/workflows/development-client.yml
+  #     - packages/expo-dev-*/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   android:
@@ -19,14 +29,14 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
@@ -42,21 +52,43 @@ jobs:
       - name: Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - run: yarn global add expo-cli
       - run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init development-client-android-test --name development-client-android-test --yes
+      - name: Make Yarn resolve expo-dev-client dependencies locally
+        working-directory: ../development-client-android-test
+        run: |
+          node -e " \
+            const pkg = require('./package.json'); \
+            pkg.resolutions = { \
+              ...pkg.resolutions, \
+              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
+              'expo-updates': 'file:../expo/packages/expo-updates', \
+              'expo-manifests': 'file:../expo/packages/expo-manifests', \
+              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+            }; \
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-android-test
-        run: yarn add file:../expo/packages/expo-dev-menu file:../expo/packages/expo-dev-menu-interface file:../expo/packages/expo-dev-launcher
+        run: yarn add file:../expo/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
-        run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-menu\",\"expo-dev-launcher\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
+        run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Eject
         working-directory: ../development-client-android-test
         run: expo-cli eject
+      - name: Bump `build tools`
+        working-directory: ../development-client-android-test
+        run: sed -i -e 's/buildToolsVersion\ =\ \"29\..\..\"/buildToolsVersion\ = \"30\.0\.3\"/' ./android/build.gradle
+      - name: Bump `android build tools`
+        working-directory: ../development-client-android-test
+        run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
       - name: Build debug
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
@@ -64,7 +96,7 @@ jobs:
         run: ./gradlew assembleDebug
 
   ios:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -73,7 +105,7 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -85,12 +117,28 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init development-client-ios-test --name development-client-ios-test --yes
+      - name: Make Yarn resolve expo-dev-client dependencies locally
+        working-directory: ../development-client-ios-test
+        run: |
+          node -e " \
+            const pkg = require('./package.json'); \
+            pkg.resolutions = { \
+              ...pkg.resolutions, \
+              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
+              'expo-updates': 'file:../expo/packages/expo-updates', \
+              'expo-manifests': 'file:../expo/packages/expo-manifests', \
+              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+            }; \
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-ios-test
-        run: yarn add file:../expo/packages/expo-dev-menu file:../expo/packages/expo-dev-menu-interface file:../expo/packages/expo-dev-launcher
+        run: yarn add file:../expo/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
-        run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-menu\",\"expo-dev-launcher\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
+        run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Eject
         working-directory: ../development-client-ios-test
         run: expo-cli eject

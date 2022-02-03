@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo/src/Updat
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
+The `expo-updates` library by Expo allows you to programmatically control and respond to new updates made available to your app.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -32,7 +32,7 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) If `expo-updates` is enabled, this is the [manifest](../../../workflow/how-expo-works.md#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../../guides/how-expo-works.md#expo-development-server) object for the update that's currently running.
 
 In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 
@@ -73,7 +73,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
 - **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.fetchUpdateAsync()`
 
@@ -88,7 +88,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
 - **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.addListener(eventListener)`
 

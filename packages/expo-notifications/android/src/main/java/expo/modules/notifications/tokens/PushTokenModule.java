@@ -8,11 +8,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 import androidx.annotation.NonNull;
 import expo.modules.notifications.tokens.interfaces.PushTokenListener;

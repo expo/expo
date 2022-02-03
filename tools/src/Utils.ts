@@ -77,7 +77,7 @@ export async function retryAsync<T = any>(
   interval: number,
   limit: number,
   callback: () => T | Promise<T>
-): Promise<T> {
+): Promise<T | undefined> {
   return new Promise((resolve) => {
     let count = 0;
 

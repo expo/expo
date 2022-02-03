@@ -138,17 +138,38 @@ export default class PrintScreen extends React.Component<{}, State> {
           <html>
             <head>
               <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+              <style>
+                @page { 
+                  margin: 50px;
+                }
+                h1 {
+                  font-size: 50px;
+                  font-family: Helvetica Neue;
+                  font-weight: normal;
+                }
+                h2 {
+                  font-size: 50px;
+                  break-inside: avoid;
+                }
+              </style>
             </head>
             <body style="text-align: center;">
-              <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
-                Hello Expo!
-              </h1>
+              <h1>Hello Expo!</h1>
               <img
                 src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
                 style="width: 90vw;" />
+              ${new Array(9)
+                .fill(0)
+                .map(() => `<h2>This wraps to the next line when it's too long</h2>`)}
             </body>
           </html>
         `,
+        margins: {
+          left: 50,
+          top: 50,
+          right: 50,
+          bottom: 50,
+        },
       });
 
       Alert.alert('Successfully printed to PDF', 'Do you want to print this file to the printer?', [

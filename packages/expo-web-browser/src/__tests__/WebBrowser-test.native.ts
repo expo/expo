@@ -31,3 +31,20 @@ it(`dismissBrowser returns nothing`, () => {
   expect(closeResult).toBeUndefined();
   expect(ExpoWebBrowser.dismissBrowser).toHaveBeenCalledTimes(1);
 });
+
+it(`openAuthSessionAsync allows subsequent attempts if the browser never opens`, async () => {
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('No matching activity!'));
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('Current activity not found!'));
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('No package manager!'));
+  const pageUrl = 'http://expo.io';
+  const redirectUrl = 'exp://expo.io';
+  await expect(WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl)).rejects.toThrowError(
+    'No matching activity!'
+  );
+  await expect(WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl)).rejects.toThrowError(
+    'Current activity not found!'
+  );
+  await expect(WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl)).rejects.toThrowError(
+    'No package manager!'
+  );
+});

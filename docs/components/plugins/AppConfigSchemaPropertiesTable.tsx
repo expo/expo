@@ -1,9 +1,9 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import MDX from '@mdx-js/runtime';
 import * as React from 'react';
 
 import * as components from '~/common/translate-markdown';
-import { expoColors } from '~/constants/theme';
 
 const STYLES_TABLE = css`
   font-size: 1rem;
@@ -11,7 +11,7 @@ const STYLES_TABLE = css`
 `;
 
 const STYLES_HEAD = css`
-  background-color: ${expoColors.gray[100]};
+  background-color: ${theme.background.tertiary};
 `;
 
 const STYLES_DESCRIPTION_CELL = css`
@@ -50,6 +50,10 @@ type FormattedProperty = {
   name: string;
   description: string;
   nestingLevel: number;
+};
+
+type AppConfigSchemaProps = {
+  schema: Record<string, Property>;
 };
 
 export function formatSchema(rawSchema: [string, Property][]) {
@@ -129,46 +133,42 @@ export function createDescription(propertyEntry: [string, Property]) {
   return propertyDescription;
 }
 
-export default class AppConfigSchemaPropertiesTable extends React.Component<{
-  schema: Record<string, Property>;
-}> {
-  render() {
-    const rawSchema = Object.entries(this.props.schema);
-    const formattedSchema = formatSchema(rawSchema);
+const AppConfigSchemaPropertiesTable = ({ schema }: AppConfigSchemaProps) => {
+  const rawSchema = Object.entries(schema);
+  const formattedSchema = formatSchema(rawSchema);
 
-    return (
-      <table css={STYLES_TABLE}>
-        <thead css={STYLES_HEAD}>
-          <tr>
-            <td>Property</td>
-            <td>Description</td>
+  return (
+    <table css={STYLES_TABLE}>
+      <thead css={STYLES_HEAD}>
+        <tr>
+          <td>Property</td>
+          <td>Description</td>
+        </tr>
+      </thead>
+      <tbody>
+        {formattedSchema.map(({ name, description, nestingLevel }, index) => (
+          <tr key={index}>
+            <td>
+              <div
+                data-testid={name}
+                style={{
+                  marginLeft: `${nestingLevel * 32}px`,
+                  display: nestingLevel ? 'list-item' : 'block',
+                  listStyleType: nestingLevel % 2 ? 'default' : 'circle',
+                  width: 'fit-content',
+                  overflowX: 'visible',
+                }}>
+                <MDX components={components}>{name}</MDX>
+              </div>
+            </td>
+            <td css={STYLES_DESCRIPTION_CELL}>
+              <MDX components={components}>{description}</MDX>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {formattedSchema.map((property, index) => {
-            return (
-              <tr key={index}>
-                <td>
-                  <div
-                    data-testid={property.name}
-                    style={{
-                      marginLeft: `${property.nestingLevel * 32}px`,
-                      display: property.nestingLevel ? 'list-item' : 'block',
-                      listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
-                      width: 'fit-content',
-                      overflowX: 'visible',
-                    }}>
-                    <MDX components={components}>{property.name}</MDX>
-                  </div>
-                </td>
-                <td css={STYLES_DESCRIPTION_CELL}>
-                  <MDX components={components}>{property.description}</MDX>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  }
-}
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+export default AppConfigSchemaPropertiesTable;

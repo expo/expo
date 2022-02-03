@@ -1,8 +1,16 @@
-import Clipboard from '../Clipboard';
+import * as Clipboard from '../Clipboard';
+
 describe('Clipboard', () => {
-  it('does not log deprecation notice', () => {
-    const consoleSpy = jest.spyOn(console, 'error');
-    Clipboard.setString('Dumbledore');
-    expect(consoleSpy).toHaveBeenCalledTimes(0);
+  it('getStringAsync', () => {
+    expect(Clipboard.getStringAsync).toBeDefined();
+  });
+  it('setString', () => {
+    expect(Clipboard.setString).toBeDefined();
+  });
+  it('addClipboardListener', () => {
+    expect(Clipboard.addClipboardListener).toBeDefined();
+  });
+  it('removeClipboardListener', () => {
+    expect(Clipboard.removeClipboardListener).toBeDefined();
   });
 });

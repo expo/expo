@@ -4,8 +4,8 @@ import android.app.Notification;
 import android.content.Context;
 import android.util.Log;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.errors.CodedRuntimeException;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.errors.CodedRuntimeException;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.badge.interfaces.BadgeManager;

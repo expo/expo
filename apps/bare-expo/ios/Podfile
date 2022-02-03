@@ -6,23 +6,36 @@ platform :ios, '12.0'
 inhibit_all_warnings!
 
 # Import the auto-linking packages
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+
+require 'json'
+podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
 abstract_target 'BareExpoMain' do
-  # Auto-linking
-  use_unimodules!
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+
+  use_expo_modules!(
+    tests: [
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+    ],
+  )
 
   config = use_native_modules!
 
-  use_react_native!(path: config['reactNativePath'])
-
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', configurations: :debug
-  pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', configurations: :debug
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
+  )
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|
+    # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
+    react_native_post_install(installer) if installer.pods_project
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
@@ -38,12 +51,24 @@ abstract_target 'BareExpoMain' do
     end
   end
 
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
+
   target 'BareExpo' do
     # Enables Flipper.
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    use_flipper!('Flipper' => '~> 0.62.0') # should match the version of your Flipper client app
+
+    # Uncomment to opt-in to using Flipper
     # Note that we don't call `flipper_post_install`.
     # It causes problems with cocoapods. We add the FB_SONARKIT_ENABLED manually instead.
+
+    # if !ENV['CI']
+    #   use_flipper!({ 'Flipper-Folly' => '2.5.3', 'Flipper' => '0.87.0', 'Flipper-RSocket' => '1.3.1' })
+    # end
   end
 
   target 'BareExpoDetox' do
@@ -51,5 +76,8 @@ abstract_target 'BareExpoMain' do
 
   target 'BareExpoTests' do
     inherit! :search_paths
+
+    pod 'Quick', :podspec => './../../../ios/Quick.podspec'
+    pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

@@ -2,11 +2,11 @@ package expo.modules.gl;
 
 import android.graphics.SurfaceTexture;
 
-import org.unimodules.interfaces.camera.CameraViewInterface;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+
+import expo.modules.interfaces.camera.CameraViewInterface;
 
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES30.GL_ACTIVE_TEXTURE;

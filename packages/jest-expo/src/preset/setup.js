@@ -95,7 +95,7 @@ for (const moduleName of Object.keys(expoModules)) {
   });
 }
 
-mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName => {
+mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach((viewManagerName) => {
   Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
     get: () => ({
       NativeProps: {},
@@ -153,10 +153,10 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
 jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
-  ignoreLogs: patterns => {
+  ignoreLogs: (patterns) => {
     // Do nothing.
   },
-  ignoreAllLogs: value => {
+  ignoreAllLogs: (value) => {
     // Do nothing.
   },
   install: () => {
@@ -168,9 +168,9 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
 }));
 
 try {
-  jest.mock('@unimodules/react-native-adapter', () => {
-    const ReactNativeAdapter = jest.requireActual('@unimodules/react-native-adapter');
-    const { NativeModulesProxy } = ReactNativeAdapter;
+  jest.mock('expo-modules-core', () => {
+    const ExpoModulesCore = jest.requireActual('expo-modules-core');
+    const { NativeModulesProxy } = ExpoModulesCore;
 
     // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
     // into the native proxy module. We're not really interested in checking whether the underlying
@@ -188,7 +188,7 @@ try {
       }
     }
 
-    return ReactNativeAdapter;
+    return ExpoModulesCore;
   });
 } catch (error) {
   // Allow this module to be optional for bare-workflow

@@ -33,5 +33,10 @@ declare const _default: {
     getAvailablePictureSizes(ratio: string, camera: ExponentCameraRef): Promise<string[]>;
     getPermissionsAsync(): Promise<PermissionResponse>;
     requestPermissionsAsync(): Promise<PermissionResponse>;
+    getCameraPermissionsAsync(): Promise<PermissionResponse>;
+    requestCameraPermissionsAsync(): Promise<PermissionResponse>;
+    getMicrophonePermissionsAsync(): Promise<PermissionResponse>;
+    requestMicrophonePermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExponentCameraManager.web.d.ts.map

@@ -1,35 +1,44 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '10.1.0'
+version = '11.1.1'
 
-// Simple helper that allows the root project to override versions declared by this library.
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+  }
 }
 
-//Upload android library to maven with javadoc and android sources
-configurations {
-  deployerJars
-}
-
-//Creating sources with comments
+// Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
   from android.sourceSets.main.java.srcDirs
 }
 
-//Put the androidSources and javadoc to the artifacts
-artifacts {
-  archives androidSourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      configuration = configurations.deployerJars
-      repository(url: mavenLocal().url)
+afterEvaluate {
+  publishing {
+    publications {
+      release(MavenPublication) {
+        from components.release
+        // Add additional sourcesJar to artifacts
+        artifact(androidSourcesJar)
+      }
+    }
+    repositories {
+      maven {
+        url = mavenLocal().url
+      }
     }
   }
 }
@@ -37,11 +46,16 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 31
-    versionName "10.1.0"
+    versionName "11.1.1"
   }
 
   sourceSets.main {
@@ -53,16 +67,9 @@ android {
   }
 }
 
-if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-} else {
-  throw new GradleException(
-      "'unimodules-core.gradle' was not found in the usual React Native dependency location. " +
-          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
-}
-
 dependencies {
-  unimodule 'expo-gl-cpp'
-  unimodule 'unimodules-core'
-  unimodule 'unimodules-camera-interface'
+  implementation project(':expo-gl-cpp')
+  implementation project(':expo-modules-core')
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 }

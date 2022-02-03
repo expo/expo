@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-notificat
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -15,11 +16,11 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
 - 🔁 schedule a notification repeating in some time interval (or a calendar date match on iOS),
-- 1️⃣ get and set application badge icon number,
+- 💯 get and set application badge icon number,
 - 📲 fetch a native device push token so you can send push notifications with FCM and APNS,
 - 😎 fetch an Expo push token so you can send push notifications with Expo,
 - 📬 listen to incoming notifications,
-- 👆 listen to interactions with notifications (tapping or dismissing),
+- 👆 listen to interactions with notifications,
 - 🎛 handle notifications when the app is in foreground,
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
 - 🗂 create, update, delete Android notification channels,
@@ -35,7 +36,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ### Android
 
-Open your `app.json` and add the following inside of the "expo" field:
+Open your **app.json** and add the following inside of the "expo" field:
 
 ```
 {
@@ -50,6 +51,8 @@ Open your `app.json` and add the following inside of the "expo" field:
 ```
 
 On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
+
+Unless you're still running your project in the Expo Go app, Firebase Cloud Messaging is required for all [managed](../../../push-notifications/sending-notifications.md) and [bare workflow](../../../push-notifications/sending-notifications-custom.md) Android apps made with Expo. To set up your Expo Android app to get push notifications using your own FCM credentials, [follow this guide closely](../../../push-notifications/using-fcm.md).
 
 ## Common gotchas / known issues
 
@@ -159,7 +162,7 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<img src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
+<ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
 
 </p>
 </details>
@@ -206,8 +209,8 @@ export default function App() {
     });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-      Notifications.removeNotificationSubscription(responseListener);
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
@@ -279,11 +282,11 @@ async function registerForPushNotificationsAsync() {
 
 </SnackInline>
 
-> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom `app.json` files.
+> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because **app.json** needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom **app.json** files.
 
 ## Custom notification icon and colors (Android only)
 
-Setting a default icon and color for all of your app's notifications is almost too easy. In the managed workflow, just set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in `app.json`, and rebuild your app! In the bare workflow, you'll need to follow [these instructions](https://github.com/expo/expo/tree/master/packages/expo-notifications#configure-for-android).
+Setting a default icon and color for all of your app's notifications is almost too easy. In the managed workflow, just set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in **app.json**, and rebuild your app! In the bare workflow, you'll need to follow [these instructions](https://github.com/expo/expo/tree/main/packages/expo-notifications#configure-for-android).
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
@@ -317,10 +320,10 @@ Returns an Expo token that can be used to send a push notification to this devic
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
+- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from **app.json**](../config/app.md#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
-- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.io/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
-- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.io/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
+- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
+- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
 
 #### Returns
 
@@ -659,7 +662,7 @@ Calling this function checks current permissions settings related to notificatio
 
 #### Returns
 
-It returns a `Promise` resolving to an object representing permission settings (`NotificationPermissionsStatus`).
+It returns a `Promise` resolving to an object representing permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)). On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
 
 #### Examples
 
@@ -704,7 +707,7 @@ Each option corresponds to a different native platform authorization option (a l
 
 #### Returns
 
-It returns a `Promise` resolving to an object representing permission settings (`NotificationPermissionsStatus`).
+It returns a `Promise` resolving to an object representing permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)). On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
 
 #### Examples
 
@@ -724,6 +727,16 @@ export function requestPermissionsAsync() {
   });
 }
 ```
+
+### Interpreting the iOS permissions response
+
+On iOS, permissions for sending notifications are a little more granular than they are on Android. Because of this, you should rely on the `NotificationPermissionsStatus`'s `ios.status` field, instead of the root `status` field. This value will be one of the following, accessible under `Notifications.IosAuthorizationStatus`:
+
+- `NOT_DETERMINED`: The user hasn't yet made a choice about whether the app is allowed to schedule notifications
+- `DENIED`: The app isn't authorized to schedule or receive notifications
+- `AUTHORIZED`: The app is authorized to schedule or receive notifications
+- `PROVISIONAL`: The application is provisionally authorized to post noninterruptive user notifications
+- `EPHEMERAL`: The app is authorized to schedule or receive notifications for a limited amount of time
 
 ## Managing application badge icon
 
@@ -1098,7 +1111,7 @@ A `Promise` resolving once the channel group is removed (or if there was no chan
 
 Notification categories allow you to create interactive push notifications, so that a user can respond directly to the incoming notification either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<img width="50%" src="/static/images/sdk/notifications/categories.png" style={{width: 800}} alt="image of notification categories on iOS and Android"/>
+<ImageSpotlight src="/static/images/sdk/notifications/categories.png" style={{maxWidth: 800}} alt="image of notification categories on iOS and Android"/>
 
 On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
 
@@ -1364,6 +1377,7 @@ export type NotificationTrigger =
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
+  | WeeklyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1447,6 +1461,19 @@ A trigger related to a daily notification. This is an Android-only type, the sam
 ```ts
 export interface DailyNotificationTrigger {
   type: 'daily';
+  hour: number;
+  minute: number;
+}
+```
+
+### `WeeklyNotificationTrigger`
+
+A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
   hour: number;
   minute: number;
 }
@@ -1827,6 +1854,35 @@ export interface NotificationAction {
     isDestructive?: boolean;
     isAuthenticationRequired?: boolean;
     opensAppToForeground?: boolean;
+  };
+}
+```
+
+#### `NotificationPermissionsStatus`
+
+```ts
+export interface NotificationPermissionsStatus {
+  status: 'granted' | 'undetermined' | 'denied'; // on iOS, you should check `ios.status`
+  granted: boolean;
+  expires: 'never' | number;
+  canAskAgain: boolean;
+  android?: {
+    importance: number;
+    interruptionFilter?: number;
+  };
+  ios?: {
+    status: IosAuthorizationStatus;
+    allowsDisplayInNotificationCenter: boolean | null;
+    allowsDisplayOnLockScreen: boolean | null;
+    allowsDisplayInCarPlay: boolean | null;
+    allowsAlert: boolean | null;
+    allowsBadge: boolean | null;
+    allowsSound: boolean | null;
+    allowsCriticalAlerts?: boolean | null;
+    alertStyle: IosAlertStyle;
+    allowsPreviews?: IosAllowsPreviews;
+    providesAppNotificationSettings?: boolean;
+    allowsAnnouncements?: boolean | null;
   };
 }
 ```

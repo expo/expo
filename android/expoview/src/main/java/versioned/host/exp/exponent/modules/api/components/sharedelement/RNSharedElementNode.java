@@ -29,15 +29,15 @@ abstract class RetryRunnable implements Runnable {
 }
 
 class RNSharedElementNode {
-  static private String LOG_TAG = "RNSharedElementNode";
+  static private final String LOG_TAG = "RNSharedElementNode";
 
-  private Context mContext;
-  private int mReactTag;
+  private final Context mContext;
+  private final int mReactTag;
   private View mView;
   private View mAncestorView;
-  private boolean mIsParent;
+  private final boolean mIsParent;
   private ReadableMap mStyleConfig;
-  private RNSharedElementStyle mResolveStyle;
+  private final RNSharedElementStyle mResolveStyle;
   private View mResolvedView;
   private int mRefCount;
   private int mHideRefCount;
@@ -150,7 +150,7 @@ class RNSharedElementNode {
       if (childCount == 1) {
         view = ((ViewGroup) mView).getChildAt(0);
       } else if (childCount <= 0) {
-        Log.d(LOG_TAG, "Child for parent doesnt exist");
+        Log.d(LOG_TAG, "Child for parent doesn't exist");
         return null;
       }
     }
@@ -163,7 +163,7 @@ class RNSharedElementNode {
       callback.invoke(mStyleCache, this);
       return;
     }
-    if (mStyleCallbacks == null) mStyleCallbacks = new ArrayList<Callback>();
+    if (mStyleCallbacks == null) mStyleCallbacks = new ArrayList<>();
     mStyleCallbacks.add(callback);
     if (!fetchInitialStyle()) {
       startRetryLoop();
@@ -181,34 +181,16 @@ class RNSharedElementNode {
     int width = view.getWidth();
     int height = view.getHeight();
     if (width == 0 && height == 0) return false;
-    Matrix transform = RNSharedElementStyle.getAbsoluteViewTransform(view, true);
-    Matrix ancestorTransform = RNSharedElementStyle.getAbsoluteViewTransform(mAncestorView, true);
+    Matrix transform = RNSharedElementStyle.getAbsoluteViewTransform(view);
+    Matrix ancestorTransform = RNSharedElementStyle.getAbsoluteViewTransform(mAncestorView);
     if ((transform == null) || (ancestorTransform == null)) return false;
     Rect frame = new Rect(left, top, left + width, top + height);
 
-    // Get absolute position on screen (left/top)
-    int[] location = new int[2];
-    view.getLocationOnScreen(location);
-    left = location[0];
-    top = location[1];
-
-    // In case the view has a scale transform applied, the calculate
-    // the correct visual width & height of the view
-    float[] f = new float[9];
-    transform.getValues(f);
-    float scaleX = f[Matrix.MSCALE_X];
-    float scaleY = f[Matrix.MSCALE_Y];
-    width = (int) ((float) width * scaleX);
-    height = (int) ((float) height * scaleY);
-
-    // Create absolute layout rect
-    Rect layout = new Rect(left, top, left + width, top + height);
-
     // Create style
     RNSharedElementStyle style = new RNSharedElementStyle(mStyleConfig, mContext);
-    style.layout = layout;
+    RNSharedElementStyle.getLayoutOnScreen(view, style.layout);
     style.frame = frame;
-    style.transform = transform;
+    RNSharedElementStyle.getLayoutOnScreen(mAncestorView, style.ancestorLayout);
     style.ancestorTransform = ancestorTransform;
 
     // Get opacity
@@ -238,7 +220,7 @@ class RNSharedElementNode {
       callback.invoke(mContentCache, this);
       return;
     }
-    if (mContentCallbacks == null) mContentCallbacks = new ArrayList<Callback>();
+    if (mContentCallbacks == null) mContentCallbacks = new ArrayList<>();
     mContentCallbacks.add(callback);
     if (!fetchInitialContent()) {
       startRetryLoop();
@@ -288,7 +270,7 @@ class RNSharedElementNode {
     //Log.d(LOG_TAG, "Starting retry loop...");
 
     mRetryHandler = new Handler();
-    final long startTime = System.nanoTime();
+    // final long startTime = System.nanoTime();
     mRetryHandler.postDelayed(new RetryRunnable() {
 
       @Override

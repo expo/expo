@@ -6,13 +6,15 @@ The following resources are useful for learning Expo and some of the projects th
 
 ## Expo Blog
 
-- [Exposition](https://blog.expo.io/) - our official blog, where we post release notes every month and other Expo related content at random intervals.
+- [Exposition](https://blog.expo.dev/) - our official blog, where we post release notes every month and other Expo related content at random intervals.
 
 ## Courses using Expo
 
 - [Stanford CS 47SI Cross-Platform Mobile Development](https://web.stanford.edu/class/cs47si/) (free)
+- [University of Helsinki - Full Stack Open](https://fullstackopen.com/en/part10) (free)
 - [React Europe - Introduction to React Native Workshop videos on YouTube](https://www.youtube.com/playlist?list=PLCC436JpVnK2RFms3NG9ubPToWCNbMLbT) (free)
 - [Udacity - React Nanodegree](https://www.udacity.com/course/react-nanodegree--nd019) (paid)
+
 
 ## React Native
 

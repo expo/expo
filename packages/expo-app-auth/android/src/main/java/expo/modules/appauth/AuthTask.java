@@ -2,7 +2,7 @@ package expo.modules.appauth;
 
 import net.openid.appauth.AuthorizationException;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 public class AuthTask {
   private Promise mPromise;

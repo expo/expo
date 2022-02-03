@@ -1,6 +1,5 @@
-import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
 
-import { setTestDeviceIDAsync } from './AdMob';
 import AdMobNativeModule from './ExpoAdsAdMobInterstitialManager';
 
 const moduleName = 'AdMobInterstitial';
@@ -38,25 +37,17 @@ export default {
 
     await AdMobNativeModule.setAdUnitID(id);
   },
-
-  /** @deprecated Test device IDs are now set globally. Use `AdMob.setTestDeviceIDAsync` instead. */
-  async setTestDeviceID(id: string): Promise<void> {
-    console.warn(
-      'AdMobInterstitial.setTestDeviceID is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.'
-    );
-    await setTestDeviceIDAsync(id);
-  },
   async requestAdAsync(
     options: {
       servePersonalizedAds?: boolean;
-      additionalRequestParams?: { [key: string]: string };
+      additionalRequestParams?: Record<string, string>;
     } = {}
   ): Promise<void> {
     if (!AdMobNativeModule.requestAd) {
       throw new UnavailabilityError(moduleName, 'requestAdAsync');
     }
 
-    const params: { [key: string]: string } = {
+    const params: Record<string, string> = {
       ...options.additionalRequestParams,
     };
     if (!options.servePersonalizedAds) {

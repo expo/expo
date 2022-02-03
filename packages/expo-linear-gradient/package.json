@@ -1,6 +1,6 @@
 {
   "name": "expo-linear-gradient",
-  "version": "9.0.0",
+  "version": "11.2.0",
   "description": "Provides a React component that renders a gradient view.",
   "main": "build/LinearGradient.js",
   "types": "build/LinearGradient.d.ts",
@@ -32,15 +32,11 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/linear-gradient/",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/linear-gradient/",
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
-  "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo": "*"
   }
 }

@@ -70,13 +70,13 @@ The `ExpoPushToken` will never "expire" but if one of your users uninstalls the 
 
 ### Push notifications work in development, but not after I build the app
 
-This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/distribution/app-signing/#push-notification-keys.md) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `expo credentials:manager`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
+This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `expo credentials:manager`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
 
-Expo abstracts the majority of credential management away so that you can focus on building your app, but if you want to understand it on a deeper level, read our [guide to app signing](/distribution/app-signing.md).
+Expo abstracts the majority of credential management away so that you can focus on building your app, but if you want to understand it on a deeper level, read our [guide to app signing](/app-signing/app-credentials.md).
 
 ### Push notifications _occasionally_ stop coming through on Android
 
-This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](https://docs.expo.io/push-notifications/sending-notifications/#message-request-format):
+This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](/push-notifications/sending-notifications/#message-request-format):
 
 - `default`: manually mapped to the default priority documented by Apple and Google
 - `high`: mapped to the high priority level documented by Apple and Google
@@ -112,3 +112,11 @@ Finally, the push notification services from Apple, Google, etc... make a best e
 ### My notification icon on Android is a grey or white square
 
 This indicates an issue with the image asset you're providing. The image should be all white with a transparent background (this is required and enforced by Google, not Expo). [See here for more information](https://clevertap.com/blog/fixing-notification-icon-for-android-lollipop-and-above/).
+
+### I'm getting back an error message when I send a notification
+
+Check the `details` property of the returned push ticket or receipt for more information which you can use to debug further. [Read here for common error code responses and their associated solutions](/push-notifications/sending-notifications.md#errors).
+
+### I want to play a custom sound when I send a notification
+
+The Expo push notification service currently doesn't support custom sounds. You will need to use APNs and FCM directly with the native device tokens received from `expo-notifications` in standalone apps.

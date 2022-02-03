@@ -15,7 +15,7 @@
 #import "EXUserNotificationCenter.h"
 #import "EXDeviceInstallationUUIDService.h"
 
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 @interface EXKernelServiceRegistry ()
 
@@ -151,7 +151,7 @@
     // EXVersionManagers pass these modules to scoped modules as an initializer argument
     //
     // New modules should access singleton modules via the module registry.
-    // New singleton modules should register themselves in UMModuleRegistryProvider's set
+    // New singleton modules should register themselves in EXModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
                                   self.cachedResourceManager,
@@ -166,7 +166,7 @@
                                   self.notificationCenter,
                                   self.deviceInstallationUUIDService
                                   ];
-    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[UMModuleRegistryProvider singletonModules] allObjects]];
+    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;

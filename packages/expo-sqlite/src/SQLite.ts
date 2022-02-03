@@ -1,13 +1,20 @@
 import './polyfillNextTick';
 
 import customOpenDatabase from '@expo/websql/custom';
-import { NativeModulesProxy } from '@unimodules/core';
-import zipObject from 'lodash/zipObject';
+import { NativeModulesProxy } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import { Query, SQLiteCallback, ResultSet, ResultSetError, WebSQLDatabase } from './SQLite.types';
+import { Query, ResultSet, ResultSetError, SQLiteCallback, WebSQLDatabase } from './SQLite.types';
 
 const { ExponentSQLite } = NativeModulesProxy;
+
+function zipObject(keys: string[], values: any[]) {
+  const result = {};
+  for (let i = 0; i < keys.length; i++) {
+    result[keys[i]] = values[i];
+  }
+  return result;
+}
 
 class SQLiteDatabase {
   _name: string;
@@ -23,10 +30,10 @@ class SQLiteDatabase {
     }
 
     ExponentSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then(
-      nativeResultSets => {
+      (nativeResultSets) => {
         callback(null, nativeResultSets.map(_deserializeResultSet));
       },
-      error => {
+      (error) => {
         // TODO: make the native API consistently reject with an error, not a string or other type
         callback(error instanceof Error ? error : new Error(error));
       }
@@ -54,7 +61,7 @@ function _deserializeResultSet(nativeResult): ResultSet | ResultSetError {
   return {
     insertId,
     rowsAffected,
-    rows: rows.map(row => zipObject(columns, row)),
+    rows: rows.map((row) => zipObject(columns, row)),
   };
 }
 
@@ -80,6 +87,20 @@ function addExecMethod(db: any): WebSQLDatabase {
   return db;
 }
 
+// @needsAudit @docsMissing
+/**
+ * Open a database, creating it if it doesn't exist, and return a `Database` object. On disk,
+ * the database will be created under the app's [documents directory](../filesystem), i.e.
+ * `${FileSystem.documentDirectory}/SQLite/${name}`.
+ * > The `version`, `description` and `size` arguments are ignored, but are accepted by the function
+ * for compatibility with the WebSQL specification.
+ * @param name Name of the database file to open.
+ * @param version
+ * @param description
+ * @param size
+ * @param callback
+ * @return
+ */
 export function openDatabase(
   name: string,
   version: string = '1.0',

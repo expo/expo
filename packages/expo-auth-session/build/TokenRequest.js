@@ -16,16 +16,6 @@ export function getCurrentTimeInSeconds() {
  * [Section 5.1](https://tools.ietf.org/html/rfc6749#section-5.1)
  */
 export class TokenResponse {
-    constructor(response) {
-        this.accessToken = response.accessToken;
-        this.tokenType = response.tokenType ?? 'bearer';
-        this.expiresIn = response.expiresIn;
-        this.refreshToken = response.refreshToken;
-        this.scope = response.scope;
-        this.state = response.state;
-        this.idToken = response.idToken;
-        this.issuedAt = response.issuedAt ?? getCurrentTimeInSeconds();
-    }
     /**
      * Determines whether a token refresh request must be made to refresh the tokens
      *
@@ -59,13 +49,28 @@ export class TokenResponse {
             scope: params.scope,
             state: params.state,
             idToken: params.id_token,
-            // @ts-ignore: Expected specific string
             tokenType: params.token_type,
-            // @ts-ignore: Expected number
             expiresIn: params.expires_in,
-            // @ts-ignore: Expected number
             issuedAt: params.issued_at,
         });
+    }
+    accessToken;
+    tokenType;
+    expiresIn;
+    refreshToken;
+    scope;
+    state;
+    idToken;
+    issuedAt;
+    constructor(response) {
+        this.accessToken = response.accessToken;
+        this.tokenType = response.tokenType ?? 'bearer';
+        this.expiresIn = response.expiresIn;
+        this.refreshToken = response.refreshToken;
+        this.scope = response.scope;
+        this.state = response.state;
+        this.idToken = response.idToken;
+        this.issuedAt = response.issuedAt ?? getCurrentTimeInSeconds();
     }
     applyResponseConfig(response) {
         this.accessToken = response.accessToken ?? this.accessToken;
@@ -107,6 +112,7 @@ export class TokenResponse {
     }
 }
 class Request {
+    request;
     constructor(request) {
         this.request = request;
     }
@@ -124,6 +130,11 @@ class Request {
  * A generic token request.
  */
 class TokenRequest extends Request {
+    grantType;
+    clientId;
+    clientSecret;
+    scopes;
+    extraParams;
     constructor(request, grantType) {
         super(request);
         this.grantType = grantType;
@@ -194,6 +205,8 @@ class TokenRequest extends Request {
  * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
 export class AccessTokenRequest extends TokenRequest {
+    code;
+    redirectUri;
     constructor(options) {
         invariant(options.redirectUri, `\`AccessTokenRequest\` requires a valid \`redirectUri\` (it must also match the one used in the auth request). Example: ${Platform.select({
             web: 'https://yourwebsite.com/redirect',
@@ -232,6 +245,7 @@ export class AccessTokenRequest extends TokenRequest {
  * [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
  */
 export class RefreshTokenRequest extends TokenRequest {
+    refreshToken;
     constructor(options) {
         invariant(options.refreshToken, `\`RefreshTokenRequest\` requires a valid \`refreshToken\`.`);
         super(options, GrantType.RefreshToken);
@@ -261,6 +275,10 @@ export class RefreshTokenRequest extends TokenRequest {
  * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
 export class RevokeTokenRequest extends Request {
+    clientId;
+    clientSecret;
+    token;
+    tokenTypeHint;
     constructor(request) {
         super(request);
         invariant(request.token, `\`RevokeTokenRequest\` requires a valid \`token\` to revoke.`);

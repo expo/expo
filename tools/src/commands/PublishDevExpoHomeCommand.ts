@@ -8,10 +8,10 @@ import process from 'process';
 import semver from 'semver';
 
 import * as ExpoCLI from '../ExpoCLI';
-import { deepCloneObject } from '../Utils';
-import AppConfig from '../typings/AppConfig';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
+import { deepCloneObject } from '../Utils';
 import { Directories, HashDirectory, XDL } from '../expotools';
+import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
   dry: boolean;
@@ -30,7 +30,7 @@ const { EXPO_HOME_DEV_ACCOUNT_USERNAME, EXPO_HOME_DEV_ACCOUNT_PASSWORD } = proce
  * Finds target SDK version for home app based on the newest SDK versions of all supported platforms.
  * If multiple different versions have been found then the highest one is used.
  */
-async function findTargetSdkVersionAsync(): Promise<string> {
+export async function findTargetSdkVersionAsync(): Promise<string> {
   const iosSdkVersion = await getNewestSDKVersionAsync('ios');
   const androidSdkVersion = await getNewestSDKVersionAsync('android');
 
@@ -45,7 +45,7 @@ async function findTargetSdkVersionAsync(): Promise<string> {
 /**
  * Sets `sdkVersion` and `version` fields in app configuration if needed.
  */
-async function maybeUpdateHomeSdkVersionAsync(appJson: AppConfig): Promise<void> {
+export async function maybeUpdateHomeSdkVersionAsync(appJson: AppConfig): Promise<void> {
   const targetSdkVersion = await findTargetSdkVersionAsync();
 
   if (appJson.expo.sdkVersion !== targetSdkVersion) {
@@ -83,7 +83,7 @@ async function setExpoCliStateAsync(newState: object): Promise<void> {
 /**
  * Deletes kernel fields that needs to be removed from published manifest.
  */
-function deleteKernelFields(appJson: AppConfig): void {
+export function deleteKernelFields(appJson: AppConfig): void {
   console.log(`Deleting kernel-related fields...`);
 
   // @tsapeta: Using `delete` keyword here would change the order of keys in app.json.
@@ -96,7 +96,7 @@ function deleteKernelFields(appJson: AppConfig): void {
 /**
  * Restores kernel fields that have been removed in previous steps - we don't want them to be present in published manifest.
  */
-function restoreKernelFields(appJson: AppConfig, appJsonBackup: AppConfig): void {
+export function restoreKernelFields(appJson: AppConfig, appJsonBackup: AppConfig): void {
   console.log('Restoring kernel-related fields...');
 
   appJson.expo.kernel = appJsonBackup.expo.kernel;

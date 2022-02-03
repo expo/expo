@@ -1,53 +1,57 @@
 name: "\U0001F41B SDK Bug Report"
-about: "Report a reproducible bug in the Expo SDK"
-labels: "needs review"
-issue_body: true
-inputs:
-- type: description
-  attributes:
-    value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
-- type: description
-  attributes:
-    value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.io/) instead.
-- type: textarea
-  attributes:
-    label: Summary
-    required: true
-    description: Describe the issue in 1 or 2 sentences
-    placeholder: Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information. If your summary is just 'X library/method isn't working', then you need to continue debugging yourself and provide more information.
-- type: dropdown
-  attributes:
-    label: Managed or bare workflow? If you have `ios/` or `android/` directories in your project, the answer is bare!
-    required: true
-    choices:
-      - managed
-      - bare
-- type: multi_select
-  attributes:
-    label: What platform(s) does this occur on?
-    required: true
-    choices:
-      - Android
-      - iOS
-      - Web
-- type: input
-  attributes: 
-    label: SDK Version (managed workflow only)
-    required: false
-    description: What version of the Expo SDK are you using?
-- type: textarea
-  attributes:
-    label: Environment
-    required: true
-    placeholder: Run `expo diagnostics` and paste the output here
-- type: textarea
-  attributes:
-    label: Reproducible demo or steps to reproduce from a blank project
-    required: true
-    description: "This should include as little code as possible, do not simply link your entire project. Sharing a link to a [Snack](https://snack.expo.io/) is a GREAT way to provide a reproducible demo :) If a reproducible demo, or a complete list of steps from blank project to bug, are not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve)."
-- type: description
-  attributes: 
-    value: Please make sure contributors can follow the steps your provided in order to reproduce the bug.
-- type: description
-  attributes: 
-    value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."
+description: 'Report a reproducible bug in the Expo SDK'
+labels: 'needs review'
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
+  - type: markdown
+    attributes:
+      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.dev/) instead.
+  - type: textarea
+    attributes:
+      label: Summary
+      description: Describe the issue in 1 or 2 sentences
+      placeholder: Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information. If your summary is just 'X library/method isn't working', then you need to continue debugging yourself and provide more information.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Managed or bare workflow? If you have `ios/` or `android/` directories in your project, the answer is bare!
+      options:
+        - managed
+        - bare
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: What platform(s) does this occur on?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: SDK Version (managed workflow only)
+      description: What version of the Expo SDK are you using?
+  - type: textarea
+    attributes:
+      label: Environment
+      placeholder: Run `expo diagnostics` and paste the output here
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproducible demo
+      description: 'This should include as little code as possible, do not simply link your entire project. Sharing a link to a [Snack](https://snack.expo.dev/) is a GREAT way to provide a reproducible demo :) If a reproducible demo is not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve).'
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Please make sure contributors can run your code and follow the steps your provided in order to reproduce the bug.
+  - type: markdown
+    attributes:
+      value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."

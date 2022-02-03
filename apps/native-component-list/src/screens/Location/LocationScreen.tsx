@@ -16,7 +16,7 @@ function SubscriptionDemo(props: SubscriptionDemoProps) {
   const [subscription, setSubscription] = React.useState<Subscription | null>(null);
 
   const toggle = React.useCallback(
-    async setValue => {
+    async (setValue) => {
       if (subscription) {
         setValue(undefined);
         subscription.remove();
@@ -44,10 +44,6 @@ export default class LocationScreen extends React.Component<{
     title: 'Location',
   };
 
-  _goToBackgroundLocationMap = () => {
-    this.props.navigation.navigate('BackgroundLocationMap');
-  };
-
   _goToGeofencingMap = () => {
     this.props.navigation.navigate('Geofencing');
   };
@@ -55,7 +51,6 @@ export default class LocationScreen extends React.Component<{
   renderLocationMapButton() {
     return (
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>
-        <ListButton onPress={this._goToBackgroundLocationMap} title="Background location map" />
         <ListButton onPress={this._goToGeofencingMap} title="Geofencing map" />
       </View>
     );
@@ -65,12 +60,28 @@ export default class LocationScreen extends React.Component<{
     return (
       <ScrollView style={styles.scrollView}>
         <SimpleActionDemo
-          title="requestPermissionsAsync"
+          title="requestPermissionsAsync (legacy)"
           action={() => Location.requestPermissionsAsync()}
         />
         <SimpleActionDemo
-          title="getPermissionsAsync"
+          title="getPermissionsAsync (legacy)"
           action={() => Location.getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="requestForegroundPermissionsAsync"
+          action={() => Location.requestForegroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getForegroundPermissionsAsync"
+          action={() => Location.getForegroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="requestBackgroundPermissionsAsync"
+          action={async () => Location.requestBackgroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getBackgroundPermissionsAsync"
+          action={() => Location.getBackgroundPermissionsAsync()}
         />
         <SimpleActionDemo
           title="hasServicesEnabledAsync"
@@ -96,12 +107,12 @@ export default class LocationScreen extends React.Component<{
         />
         <SubscriptionDemo
           title="watchPositionAsync"
-          subscribe={setValue => Location.watchPositionAsync({}, setValue)}
+          subscribe={(setValue) => Location.watchPositionAsync({}, setValue)}
         />
         <SimpleActionDemo title="getHeadingAsync" action={() => Location.getHeadingAsync()} />
         <SubscriptionDemo
           title="watchHeadingAsync"
-          subscribe={setValue => Location.watchHeadingAsync(setValue)}
+          subscribe={(setValue) => Location.watchHeadingAsync(setValue)}
         />
         {this.renderLocationMapButton()}
       </ScrollView>

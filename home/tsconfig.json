@@ -4,8 +4,10 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "noEmit": true,
-    "paths": {
-      "@expo/vector-icons": ["react-native-vector-icons"]
-    }
-  }
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true
+  },
+  "exclude": ["**/__mocks__/*"]
 }

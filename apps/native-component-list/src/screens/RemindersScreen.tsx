@@ -124,7 +124,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
       return (
         <ScrollView style={styles.container}>
           <Button onPress={this._addReminder} title="Add New Reminder" />
-          {this.state.reminders.map(reminder => (
+          {this.state.reminders.map((reminder) => (
             <ReminderRow
               reminder={reminder}
               key={reminder.id}

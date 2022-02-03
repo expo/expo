@@ -1,7 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
+@objc
+class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
+  static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
 
@@ -13,6 +15,26 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
     super.init()
 
     self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
+    fixChromeDevTools()
+  }
+
+  init(manager: DevMenuManager, bridge: RCTBridge) {
+    self.manager = manager
+
+    super.init()
+
+    self.bridge = bridge
+    fixChromeDevTools()
+  }
+
+  private func fixChromeDevTools() {
+    // Hermes inspector will use latest executed script for Chrome DevTools Protocol.
+    // It will be EXDevMenuApp.ios.js in our case.
+    // To let Hermes aware target bundle, we try to reload here as a workaround solution.
+    // See https://github.com/facebook/react-native/blob/ec614c16b331bf3f793fda5780fa273d181a8492/ReactCommon/hermes/inspector/Inspector.cpp#L291
+    if let appBridge = manager.delegate?.appBridge?(forDevMenuManager: manager) as? RCTBridge {
+      appBridge.requestReload()
+    }
   }
 
   /**
@@ -21,16 +43,17 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   public func sendCloseEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
+  
+  public func sendOpenEvent() {
+    bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
+  }
 
   // MARK: RCTBridgeDelegate
 
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
-      if RCTBundleURLProvider.sharedSettings()?.isPackagerRunning(packagerHost) == true {
-        return RCTBundleURLProvider.jsBundleURL(forBundleRoot: "index", packagerHost: packagerHost, enableDev: true, enableMinification: false)
-      }
-      print("Expo DevMenu packager host \(packagerHost) not found, falling back to bundled source file...");
+      return RCTBundleURLProvider.jsBundleURL(forBundleRoot: "index", packagerHost: packagerHost, enableDev: true, enableMinification: false)
     }
     #endif
     return jsSourceUrl()
@@ -39,7 +62,6 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
     var modules: [RCTBridgeModule] = [DevMenuInternalModule(manager: manager)]
     modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules())
-    modules.append(MockedRNCSafeAreaProvider.init())
     modules.append(DevMenuLoadingView.init())
     return modules
   }

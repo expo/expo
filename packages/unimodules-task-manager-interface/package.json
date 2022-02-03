@@ -1,6 +1,6 @@
 {
   "name": "unimodules-task-manager-interface",
-  "version": "6.0.0",
+  "version": "7.1.0",
   "description": "Universal module interface package for TaskManager",
   "main": "index.js",
   "keywords": [
@@ -19,8 +19,9 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-task-manager-interface",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/unimodules-task-manager-interface",
+  "dependencies": {},
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -1,11 +1,31 @@
 'use strict';
 
+const { getDefaultConfig } = require('@expo/metro-config');
 const debug = require('debug')('workspaces');
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
-const fs = require('fs');
-const blacklist = require('metro-config/src/defaults/blacklist');
-const { assetExts } = require('metro-config/src/defaults/defaults');
+// TODO: Use the vendored metro config in a future version after SDK 41 is released
+// const { getDefaultConfig } = require('expo/metro-config');
+const { assetExts, sourceExts } = require('metro-config/src/defaults/defaults');
 const path = require('path');
+
+const getSymlinkedNodeModulesForDirectory = require('./common/get-symlinked-modules');
+
+let exclusionList;
+try {
+  // blacklist was removed in the metro-config version used by
+  // react-native@0.64, but the interface is the same as the replacement,
+  // exclusionList, so we can use blacklist if it's available and otherwise
+  // use exclusionList.
+  exclusionList = require('metro-config/src/defaults/blacklist');
+} catch (e) {
+  if (e.code !== 'MODULE_NOT_FOUND') {
+    throw e;
+  }
+
+  // Require exclusionList after attempting to load blacklist, so if an error is
+  // thrown then it is the same as if we only required exclusionList.
+  exclusionList = require('metro-config/src/defaults/exclusionList');
+}
 
 /**
  * Returns a configuration object in the format expected for "metro.config.js" files. The
@@ -19,11 +39,16 @@ const path = require('path');
 exports.createMetroConfiguration = function createMetroConfiguration(projectPath) {
   projectPath = path.resolve(projectPath);
   debug(`Creating a Metro configuration for the project at %s`, projectPath);
+  const {
+    // Remove the React Native reporter.
+    reporter,
+    ...defaultConfig
+  } = getDefaultConfig(projectPath);
 
   let watchFolders;
   let extraNodeModules;
 
-  let workspaceRootPath = findYarnWorkspaceRoot(projectPath);
+  const workspaceRootPath = findYarnWorkspaceRoot(projectPath);
   if (workspaceRootPath) {
     debug(`Found Yarn workspace root at %s`, workspaceRootPath);
     watchFolders = [workspaceRootPath];
@@ -38,15 +63,19 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
   }
 
   return {
+    ...defaultConfig,
     // Search for modules from the project's root directory
     projectRoot: projectPath,
 
     // Include npm packages from the workspace root, where packages are hoisted
     watchFolders,
-
     resolver: {
+      ...defaultConfig.resolver,
       // test-suite includes a db asset
       assetExts: [...assetExts, 'db'],
+
+      // Include .cjs files
+      sourceExts: [...sourceExts, 'cjs'],
 
       // Make the symlinked packages visible to Metro
       extraNodeModules,
@@ -55,60 +84,16 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
       providesModuleNodeModules: [],
 
       // Ignore JS files in the native Android and Xcode projects
-      blacklistRE: blacklist([
+      blacklistRE: exclusionList([
         /.*\/android\/React(Android|Common)\/.*/,
         /.*\/versioned-react-native\/.*/,
       ]),
     },
 
     transformer: {
+      ...defaultConfig.transformer,
       // Ignore file-relative Babel configurations and apply only the project's
       enableBabelRCLookup: false,
-
-      // Temporarily include the Expo asset plugin; figure out a more general way to include it
-      assetPlugins: ['expo/tools/hashAssetFiles'],
     },
   };
 };
-
-/**
- * Returns a mapping from the names of symlinked packages to the physical paths of each package.
- */
-function getSymlinkedNodeModulesForDirectory(packagePath) {
-  let nodeModulesPath = path.join(packagePath, 'node_modules');
-  let directories = listDirectoryContents(nodeModulesPath);
-
-  let modules = {};
-  for (let directory of directories) {
-    // The directory is either a scope or a package
-    if (directory.startsWith('@')) {
-      let scopePath = path.join(nodeModulesPath, directory);
-      let scopedPackageDirectories = fs.readdirSync(scopePath);
-      for (let subdirectory of scopedPackageDirectories) {
-        let dependencyName = `${directory}/${subdirectory}`;
-        let dependencyPath = path.join(scopePath, subdirectory);
-        if (fs.lstatSync(dependencyPath).isSymbolicLink()) {
-          modules[dependencyName] = fs.realpathSync(dependencyPath);
-        }
-      }
-    } else {
-      let dependencyName = directory;
-      let dependencyPath = path.join(nodeModulesPath, directory);
-      if (fs.lstatSync(dependencyPath).isSymbolicLink()) {
-        modules[dependencyName] = fs.realpathSync(dependencyPath);
-      }
-    }
-  }
-  return modules;
-}
-
-function listDirectoryContents(directory) {
-  try {
-    return fs.readdirSync(directory);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      return [];
-    }
-    throw e;
-  }
-}

@@ -1,6 +1,6 @@
 {
   "name": "expo-local-authentication",
-  "version": "10.0.0",
+  "version": "12.1.0",
   "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "main": "build/LocalAuthentication.js",
   "types": "build/LocalAuthentication.d.ts",
@@ -33,23 +33,18 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/local-authentication/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/local-authentication/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "dependencies": {
-    "@expo/config-plugins": "~1.0.13",
+    "@expo/config-plugins": "^4.0.14",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

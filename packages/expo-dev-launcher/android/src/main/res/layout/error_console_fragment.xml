@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_gravity="top"
+  android:gravity="top"
+  android:orientation="vertical"
+  tools:context="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="40dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="40dp"
+    android:layout_marginBottom="10dp"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:weightSum="2">
+
+    <ImageButton
+      android:id="@+id/console_home_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:background="@android:color/transparent"
+      android:src="@drawable/dev_laucher_ic_home_white_36dp"
+      android:textColor="@color/dev_launcher_colorPrimaryDark"
+      android:textSize="15sp" />
+
+    <ImageButton
+      android:id="@+id/console_reload_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:background="@android:color/transparent"
+      android:src="@drawable/dev_launcher_ic_refresh_white_36dp"
+      android:textColor="@color/dev_launcher_colorPrimaryDark"
+      android:textSize="15sp" />
+  </LinearLayout>
+
+  <ListView
+    android:id="@+id/list_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dev_launcher_white"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp" />
+
+
+</LinearLayout>

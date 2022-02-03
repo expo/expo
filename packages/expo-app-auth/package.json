@@ -1,6 +1,6 @@
 {
   "name": "expo-app-auth",
-  "version": "10.0.0",
+  "version": "11.1.0",
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "main": "build/AppAuth.js",
   "types": "build/AppAuth.d.ts",
@@ -39,19 +39,18 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/app-auth/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/app-auth/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
-  },
   "dependencies": {
-    "@expo/config-plugins": "~1.0.13",
+    "@expo/config-plugins": "^4.0.14",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

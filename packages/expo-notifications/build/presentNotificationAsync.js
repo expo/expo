@@ -1,5 +1,5 @@
-import { UnavailabilityError } from '@unimodules/core';
-import uuidv4 from 'uuid/v4';
+import { UnavailabilityError } from 'expo-modules-core';
+import { v4 as uuidv4 } from 'uuid';
 import NotificationPresenter from './NotificationPresenterModule';
 let warningMessageShown = false;
 /**

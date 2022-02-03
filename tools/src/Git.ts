@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
-import path from 'path';
+import parseDiff from 'parse-diff';
+import { join } from 'path';
 
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 import { EXPO_DIR } from './Constants';
@@ -57,6 +58,18 @@ export type GitFetchOptions = {
   ref?: string;
 };
 
+export type GitFileDiff = parseDiff.File & {
+  path: string;
+};
+
+export type GitListTree = {
+  mode: string;
+  type: string;
+  object: string;
+  size: number;
+  path: string;
+};
+
 /**
  * Helper class that stores the directory inside the repository so we don't have to pass it many times.
  * This directory path doesn't have to be the repo's root path,
@@ -93,7 +106,7 @@ export class GitDirectory {
    * Initializes git repository in the directory.
    */
   async initAsync() {
-    const dotGitPath = path.join(this.path, '.git');
+    const dotGitPath = join(this.path, '.git');
     if (!(await fs.pathExists(dotGitPath))) {
       await this.runAsync(['init']);
     }
@@ -269,7 +282,7 @@ export class GitDirectory {
 
         return {
           relativePath: newPath,
-          path: path.join(this.path, newPath),
+          path: join(this.path, newPath),
           // `R` status also has a number, but we take care of only the first character.
           status: GitFileStatus[status[0]] ?? status,
         };
@@ -351,9 +364,48 @@ export class GitDirectory {
   /**
    * Finds the best common ancestor between the current ref and the given ref.
    */
-  async mergeBaseAsync(ref: string): Promise<string> {
-    const { stdout } = await this.runAsync(['merge-base', 'HEAD', ref]);
+  async mergeBaseAsync(ref: string, base: string = 'HEAD'): Promise<string> {
+    const { stdout } = await this.runAsync(['merge-base', base, ref]);
     return stdout.trim();
+  }
+
+  /**
+   * Gets the diff between two commits and parses it to the list of changed files and their chunks.
+   */
+  async getDiffAsync(commit1: string, commit2: string): Promise<GitFileDiff[]> {
+    const { stdout } = await this.runAsync(['diff', `${commit1}..${commit2}`]);
+    const diff = parseDiff(stdout);
+
+    return diff.map((entry) => {
+      const finalPath = entry.deleted ? entry.from : entry.to;
+
+      return {
+        ...entry,
+        path: join(this.path, finalPath!),
+      };
+    });
+  }
+
+  /**
+   * Lists the contents of a given tree object, like what "ls -a" does in the current working directory.
+   */
+  async listTreeAsync(ref: string, paths: string[]): Promise<GitListTree[]> {
+    const { stdout } = await this.runAsync(['ls-tree', '-l', ref, '--', ...paths]);
+
+    return stdout
+      .trim()
+      .split(/\n+/g)
+      .map((line) => {
+        const columns = line.split(/\b(?=\s+)/g);
+
+        return {
+          mode: columns[0].trim(),
+          type: columns[1].trim(),
+          object: columns[2].trim(),
+          size: Number(columns[3].trim()),
+          path: columns.slice(4).join('').trim(),
+        };
+      });
   }
 
   /**
@@ -364,7 +416,7 @@ export class GitDirectory {
   static async shallowCloneAsync(
     directory: string,
     remoteUrl: string,
-    ref: string = 'master'
+    ref: string = 'main'
   ): Promise<GitDirectory> {
     const git = new GitDirectory(directory);
 

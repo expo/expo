@@ -1,13 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setGoogleMobileAdsAppId = exports.getGoogleMobileAdsAppId = exports.withAdMobIOS = void 0;
+exports.withUserTrackingPermission = exports.setGoogleMobileAdsAppId = exports.getGoogleMobileAdsAppId = exports.withAdMobIOS = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-exports.withAdMobIOS = config => {
-    return config_plugins_1.withInfoPlist(config, config => {
+const withAdMobIOS = (config) => {
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults = setAdMobConfig(config, config.modResults);
         return config;
     });
 };
+exports.withAdMobIOS = withAdMobIOS;
 // NOTE(brentvatne): if the developer has installed the google ads sdk and does
 // not provide an app id their app will crash. Standalone apps get around this by
 // providing some default value, we will instead here assume that the user can
@@ -35,3 +36,14 @@ function setAdMobConfig(config, infoPlist) {
     infoPlist = setGoogleMobileAdsAppId(config, infoPlist);
     return infoPlist;
 }
+const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
+const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+    if (!config.ios)
+        config.ios = {};
+    if (!config.ios.infoPlist)
+        config.ios.infoPlist = {};
+    config.ios.infoPlist.NSUserTrackingUsageDescription =
+        userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
+    return config;
+};
+exports.withUserTrackingPermission = withUserTrackingPermission;

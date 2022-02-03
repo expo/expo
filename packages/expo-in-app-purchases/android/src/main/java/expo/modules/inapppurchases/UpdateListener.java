@@ -9,8 +9,8 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.Purchase;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.Promise;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.Promise;
 
 /**
  * Handler to billing updates

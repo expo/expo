@@ -1,26 +1,16 @@
-import { AndroidConfig } from '@expo/config-plugins';
 import {
-  buildResourceItem,
-  readResourcesXMLAsync,
-  ResourceXML,
-} from '@expo/config-plugins/build/android/Resources';
-import {
-  getProjectStringsXMLPathAsync,
-  removeStringItem,
-  setStringItem,
-} from '@expo/config-plugins/build/android/Strings';
-import { writeXMLAsync } from '@expo/config-plugins/build/android/XML';
-import {
-  createAndroidManifestPlugin,
-  createStringsXmlPlugin,
-} from '@expo/config-plugins/build/plugins/android-plugins';
-import { assert } from '@expo/config-plugins/build/utils/errors';
+  AndroidConfig,
+  ConfigPlugin,
+  withAndroidManifest,
+  withStringsXml,
+} from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
+const { buildResourceItem } = AndroidConfig.Resources;
+const { removeStringItem, setStringItem } = AndroidConfig.Strings;
 const {
   addMetaDataItemToMainApplication,
   getMainApplicationOrThrow,
-
   prefixAndroidKeys,
   removeMetaDataItemFromMainApplication,
 } = AndroidConfig.Manifest;
@@ -33,14 +23,19 @@ const META_AUTO_INIT = 'com.facebook.sdk.AutoInitEnabled';
 const META_AUTO_LOG_APP_EVENTS = 'com.facebook.sdk.AutoLogAppEventsEnabled';
 const META_AD_ID_COLLECTION = 'com.facebook.sdk.AdvertiserIDCollectionEnabled';
 
-export const withFacebookAppIdString = createStringsXmlPlugin(
-  applyFacebookAppIdString,
-  'withFacebookAppIdString'
-);
-export const withFacebookManifest = createAndroidManifestPlugin(
-  setFacebookConfig,
-  'withFacebookManifest'
-);
+export const withFacebookAppIdString: ConfigPlugin = (config) => {
+  return withStringsXml(config, (config) => {
+    config.modResults = applyFacebookAppIdString(config, config.modResults);
+    return config;
+  });
+};
+
+export const withFacebookManifest: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, (config) => {
+    config.modResults = setFacebookConfig(config, config.modResults);
+    return config;
+  });
+};
 
 function buildXMLItem({
   head,
@@ -133,7 +128,7 @@ function ensureFacebookActivity({
 }) {
   if (Array.isArray(mainApplication.activity)) {
     // Remove all Facebook CustomTabActivities first
-    mainApplication.activity = mainApplication.activity.filter(activity => {
+    mainApplication.activity = mainApplication.activity.filter((activity) => {
       return activity.$?.['android:name'] !== CUSTOM_TAB_ACTIVITY;
     });
   } else {
@@ -147,22 +142,10 @@ function ensureFacebookActivity({
   return mainApplication;
 }
 
-export async function setFacebookAppIdString(config: ExpoConfigFacebook, projectRoot: string) {
-  const stringsPath = await getProjectStringsXMLPathAsync(projectRoot);
-  assert(stringsPath, `There was a problem setting your Facebook App ID in "${stringsPath}"`);
-
-  let stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
-  stringsJSON = applyFacebookAppIdString(config, stringsJSON);
-
-  try {
-    await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
-  } catch {
-    throw new Error(`Error setting facebookAppId. Cannot write strings.xml to "${stringsPath}"`);
-  }
-  return true;
-}
-
-function applyFacebookAppIdString(config: ExpoConfigFacebook, stringsJSON: ResourceXML) {
+function applyFacebookAppIdString(
+  config: ExpoConfigFacebook,
+  stringsJSON: AndroidConfig.Resources.ResourceXML
+) {
   const appId = getFacebookAppId(config);
 
   if (appId) {
@@ -195,7 +178,6 @@ export function setFacebookConfig(
     mainApplication = addMetaDataItemToMainApplication(
       mainApplication,
       META_APP_ID,
-      // The corresponding string is set in setFacebookAppIdString
       `@string/${STRING_FACEBOOK_APP_ID}`
     );
   } else {

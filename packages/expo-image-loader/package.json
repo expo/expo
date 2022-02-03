@@ -1,6 +1,6 @@
 {
   "name": "expo-image-loader",
-  "version": "2.0.0",
+  "version": "3.1.0",
   "description": "Image loader",
   "main": "index.js",
   "keywords": [
@@ -18,12 +18,10 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-loader",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-image-loader",
+  "dependencies": {},
+  "devDependencies": {},
   "peerDependencies": {
-    "react-native": ">= 0.60.0"
-  },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-image-loader-interface": "^5.0.0"
+    "expo": "*"
   }
 }

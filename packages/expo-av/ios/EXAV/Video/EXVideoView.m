@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <AVFoundation/AVFoundation.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #import <EXAV/EXAV.h>
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAVPlayerData.h>
@@ -24,8 +24,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 @property (nonatomic, assign) BOOL fullscreenPlayerIsDismissing;
 @property (nonatomic, strong) EXVideoPlayerViewController *fullscreenPlayerViewController;
-@property (nonatomic, strong) UMPromiseResolveBlock requestedFullscreenChangeResolver;
-@property (nonatomic, strong) UMPromiseRejectBlock requestedFullscreenChangeRejecter;
+@property (nonatomic, strong) EXPromiseResolveBlock requestedFullscreenChangeResolver;
+@property (nonatomic, strong) EXPromiseRejectBlock requestedFullscreenChangeRejecter;
 @property (nonatomic, assign) BOOL requestedFullscreenChange;
 
 @property (nonatomic, strong) UIViewController *presentingViewController;
@@ -34,7 +34,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 @property (nonatomic, strong) NSDictionary *lastSetSource;
 @property (nonatomic, strong) NSMutableDictionary *statusToSet;
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
@@ -42,7 +42,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 #pragma mark - EXVideoView interface methods
 
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if ((self = [super init])) {
     _moduleRegistry = moduleRegistry;
@@ -87,8 +87,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 #pragma mark - Player and source
 
-- (void)_tryUpdateDataStatus:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject
+- (void)_tryUpdateDataStatus:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject
 {
   if (_data) {
     if ([_statusToSet count] > 0) {
@@ -139,15 +139,15 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   
   // Any ViewController/layer updates need to be
   // executed on the main UI thread.
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   void (^block)(void) = ^ {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     [self _removeFullscreenPlayerViewController];
     [self _removePlayerLayer];
     [self _removePlayerViewController];
   };
   _playerHasLoaded = NO;
-  [UMUtilities performSynchronouslyOnMainThread:block];
+  [EXUtilities performSynchronouslyOnMainThread:block];
 }
 
 #pragma mark - _playerViewController / _playerLayer management
@@ -284,8 +284,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)setSource:(NSDictionary *)source
        withStatus:(NSDictionary *)initialStatus
-         resolver:(UMPromiseResolveBlock)resolve
-         rejecter:(UMPromiseRejectBlock)reject
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject
 {
   if (_data) {
     [_statusToSet addEntriesFromDictionary:[_data getStatus]];
@@ -308,17 +308,17 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   NSMutableDictionary *statusToInitiallySet = [NSMutableDictionary dictionaryWithDictionary:_statusToSet];
   [_statusToSet removeAllObjects];
   
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   
   void (^statusUpdateCallback)(NSDictionary *) = ^(NSDictionary *status) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (self.onStatusUpdate) {
       self.onStatusUpdate(status);
     }
   };
   
   void (^errorCallback)(NSString *) = ^(NSString *error) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     [self _removeData];
     [self _removePlayer];
     [self _callErrorCallback:error];
@@ -328,7 +328,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                                     withSource:source
                                     withStatus:statusToInitiallySet
                            withLoadFinishBlock:^(BOOL success, NSDictionary *successStatus, NSString *error) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (success) {
       [self _updateForNewPlayer];
       if (resolve) {
@@ -348,7 +348,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   
   // Call onLoadStart on next run loop, otherwise it might not be set yet (if it is set at the same time as uri, via props)
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) 0), dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (self.onLoadStart) {
       self.onLoadStart(nil);
     }
@@ -356,8 +356,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)setStatus:(NSDictionary *)status
-         resolver:(UMPromiseResolveBlock)resolve
-         rejecter:(UMPromiseRejectBlock)reject
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject
 {
   if (status != nil) {
     [_statusToSet addEntriesFromDictionary:status];
@@ -366,8 +366,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(UMPromiseResolveBlock)resolve
-                rejecter:(UMPromiseRejectBlock)reject
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject
 {
   if (status != nil) {
     [_statusToSet addEntriesFromDictionary:status];
@@ -380,8 +380,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)setFullscreen:(BOOL)value
-             resolver:(UMPromiseResolveBlock)resolve
-             rejecter:(UMPromiseRejectBlock)reject
+             resolver:(EXPromiseResolveBlock)resolve
+             rejecter:(EXPromiseRejectBlock)reject
 {
   if (!_data) {
     // Tried to set fullscreen for an unloaded component.
@@ -400,7 +400,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     _requestedFullscreenChangeResolver = resolve;
     return;
   } else {
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     if (value && !_fullscreenPlayerPresented && !_fullscreenPlayerViewController) {
       _fullscreenPlayerViewController = [self _createNewPlayerViewController];
       
@@ -423,10 +423,10 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
       
       dispatch_async(dispatch_get_main_queue(), ^{
-        UM_ENSURE_STRONGIFY(self);
+        EX_ENSURE_STRONGIFY(self);
         self.fullscreenPlayerViewController.showsPlaybackControls = YES;
         [self.presentingViewController presentViewController:self.fullscreenPlayerViewController animated:YES completion:^{
-          UM_ENSURE_STRONGIFY(self);
+          EX_ENSURE_STRONGIFY(self);
           self.fullscreenPlayerPresented = YES;
           [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
           if (resolve) {
@@ -438,9 +438,9 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       [self videoPlayerViewControllerWillDismiss:_fullscreenPlayerViewController];
       
       dispatch_async(dispatch_get_main_queue(), ^{
-        UM_ENSURE_STRONGIFY(self);
+        EX_ENSURE_STRONGIFY(self);
         [self.presentingViewController dismissViewControllerAnimated:YES completion:^{
-          UM_ENSURE_STRONGIFY(self);
+          EX_ENSURE_STRONGIFY(self);
           [self videoPlayerViewControllerDidDismiss:self.fullscreenPlayerViewController];
           if (resolve) {
             resolve([self getStatus]);
@@ -471,9 +471,9 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)setSource:(NSDictionary *)source
 {
   if (![source isEqualToDictionary:_lastSetSource]) {
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(_exAV.methodQueue, ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       self.lastSetSource = source;
       [self setSource:source withStatus:nil resolver:nil rejecter:nil];
     });
@@ -495,9 +495,9 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     return;
   }
   
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (!self.playerHasLoaded) {
       return;
     }
@@ -554,9 +554,9 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)setStatus:(NSDictionary *)status
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(_exAV.methodQueue, ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     [self setStatus:status resolver:nil rejecter:nil];
   });
 }
@@ -686,13 +686,21 @@ willEndFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransi
 {
   if (_data) {
     [_data appDidForeground];
+
+    _playerViewController.player = _data.player;
+    _playerLayer.player = _data.player;
   }
 }
 
-- (void)appDidBackground
+- (void)appDidBackgroundStayActive:(BOOL)stayActive
 {
   if (_data) {
-    [_data appDidBackground];
+    [_data appDidBackgroundStayActive:stayActive];
+
+    if (stayActive) {
+      _playerViewController.player = nil;
+      _playerLayer.player = nil;
+    }
   }
 }
 
@@ -711,9 +719,9 @@ willEndFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransi
     }
     [self _removePlayer];
     
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     [_data handleMediaServicesReset:^{
-      UM_STRONGIFY(self);
+      EX_STRONGIFY(self);
       if (self) {
         [self _updateForNewPlayer];
       }

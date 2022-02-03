@@ -5,19 +5,19 @@
 
 @implementation EXStoreReviewModule
 
-UM_EXPORT_MODULE(ExpoStoreReview);
+EX_EXPORT_MODULE(ExpoStoreReview);
 
-UM_EXPORT_METHOD_AS(isAvailableAsync,
-                    isAvailableAsync:(UMPromiseResolveBlock)resolve
-                            rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(isAvailableAsync,
+                    isAvailableAsync:(EXPromiseResolveBlock)resolve
+                            rejecter:(EXPromiseRejectBlock)reject)
 {
   BOOL isAvailable = [SKStoreReviewController class] ? YES : NO;
   resolve(@(isAvailable));
 }
 
-UM_EXPORT_METHOD_AS(requestReview,
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestReview,
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [SKStoreReviewController requestReview];

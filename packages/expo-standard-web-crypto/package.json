@@ -1,6 +1,6 @@
 {
   "name": "expo-standard-web-crypto",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "A partial implementation of the W3C Crypto API for Expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -17,7 +17,7 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "homepage": "https://github.com/expo/expo/blob/master/packages/expo-standard-web-crypto",
+  "homepage": "https://github.com/expo/expo/blob/main/packages/expo-standard-web-crypto",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -29,11 +29,16 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "peerDependencies": {
-    "expo-random": "11.0.0"
-  },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0",
-    "expo-random": "~11.0.0"
+    "expo-module-scripts": "^2.0.0",
+    "expo-random": "~12.1.0"
+  },
+  "peerDependencies": {
+    "expo-random": "12.1.0"
+  },
+  "peerDependenciesMeta": {
+    "expo-random": {
+      "optional": true
+    }
   }
 }

@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeLinearGradient.web.d.ts","sourceRoot":"","sources":["../src/NativeLinearGradient.web.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAG/B,OAAO,EAA6B,yBAAyB,EAAE,MAAM,8BAA8B,CAAC;AAGpG,MAAM,CAAC,OAAO,UAAU,oBAAoB,CAAC,EAC3C,MAAM,EACN,SAAS,EACT,UAAU,EACV,QAAQ,EACR,GAAG,KAAK,EACT,EAAE,yBAAyB,GAAG,KAAK,CAAC,YAAY,CAgFhD"}

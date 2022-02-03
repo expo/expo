@@ -46,7 +46,7 @@ In Expo Go, a Firebase App is created for each project that is loaded, and a uni
 
 Firebase options with which the default app was initialized. If no Google services configuration was provided, `undefined` is returned.
 
-Depending on the platform, the options are read from the following files and `app.json` keys.
+Depending on the platform, the options are read from the following files and **app.json** keys.
 
 | Platform | File                       | App.json key                 |
 | -------- | -------------------------- | ---------------------------- |
@@ -72,7 +72,7 @@ console.log(FirebaseCore.DEFAULT_APP_OPTIONS);
 
 ### `FirebaseCore.DEFAULT_WEB_APP_OPTIONS`
 
-The default Firebase options as defined in `web.config.firebase` in `app.json`.
+The default Firebase options as defined in `web.config.firebase` in **app.json**.
 
 This constant is useful when you want to use the Firebase JS SDK on native.
 

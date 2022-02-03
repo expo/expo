@@ -6,10 +6,78 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 10.1.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
+- [Android] Fix `allowModifications` always return false in calendar object. ([#15307](https://github.com/expo/expo/pull/15307) by [@jekiwijaya](https://github.com/jekiwijaya))
+
+### 💡 Others
+
+- Replace custom `OptionalKeys` type wrapper with embedded in TypeScript `Partial`. ([#15192](https://github.com/expo/expo/pull/15192) by [@Simek](https://github.com/Simek))
+- Extract nested object in current types to new, separate types: `AlarmLocation` and `DaysOfTheWeek`. ([#15192](https://github.com/expo/expo/pull/15192) by [@Simek](https://github.com/Simek))
+
+## 10.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🎉 New features
+
+- Add useCalendarPermissions and useRemindersPermissions hooks from modules factory. ([#13854](https://github.com/expo/expo/pull/13854) by [@bycedric](https://github.com/bycedric))
+
+### 🐛 Bug fixes
+
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Rewrote from Java to Kotlin, migrated from `AsyncTask` to `kotlinx.coroutines`. ([#13527](https://github.com/expo/expo/pull/13527) by [@M1ST4KE](https://github.com/M1ST4KE))
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13756](https://github.com/expo/expo/pull/13756) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.2.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
+- Fixed `ExpoCalendar.getCalendarsAsync()` crashing on Android when device has unsupported calendars. ([#12724](https://github.com/expo/expo/pull/12724) by [@ibraude](https://github.com/ibraude))
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Migrated from `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
+
+## 9.1.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.1 — 2021-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.0 — 2021-03-10
+
+### 🎉 New features
+
 - Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
 
 ## 9.0.0 — 2021-01-15
 

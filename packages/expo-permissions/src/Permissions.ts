@@ -33,7 +33,10 @@ export const MEDIA_LIBRARY_WRITE_ONLY = 'mediaLibraryWriteOnly';
  */
 export const CAMERA_ROLL = MEDIA_LIBRARY;
 export const AUDIO_RECORDING = 'audioRecording';
+/** @deprecated Use `LOCATION_FOREGROUND` or `LOCATION_BACKGROUND` instead */
 export const LOCATION = 'location';
+export const LOCATION_FOREGROUND = 'locationForeground';
+export const LOCATION_BACKGROUND = 'locationBackground';
 export const USER_FACING_NOTIFICATIONS = 'userFacingNotifications';
 export const NOTIFICATIONS = 'notifications';
 export const CONTACTS = 'contacts';
@@ -60,6 +63,10 @@ const PERMISSION_MODULE_MAPPING = {
 };
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
+  console.warn(
+    `expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`
+  );
+
   if (Platform.OS === 'ios') {
     return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
   }
@@ -67,6 +74,10 @@ export async function getAsync(...types: PermissionType[]): Promise<PermissionRe
 }
 
 export async function askAsync(...types: PermissionType[]): Promise<PermissionResponse> {
+  console.warn(
+    `expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`
+  );
+
   if (Platform.OS === 'ios') {
     return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.askAsync);
   }
@@ -91,7 +102,7 @@ async function _handleSinglePermissionRequestIOSAsync(
     // We recognize the permission's library, so we inform the user to link that library to request the permission.
     if (error.code === 'E_PERMISSIONS_UNKNOWN' && PERMISSION_MODULE_MAPPING[type]) {
       const library = PERMISSION_MODULE_MAPPING[type];
-      error.message = `${error.message}, please install and link the package ${PERMISSION_MODULE_MAPPING[type]}, see more at https://github.com/expo/expo/tree/master/packages/${library}`;
+      error.message = `${error.message}, please install and link the package ${PERMISSION_MODULE_MAPPING[type]}, see more at https://github.com/expo/expo/tree/main/packages/${library}`;
     }
     throw error;
   }

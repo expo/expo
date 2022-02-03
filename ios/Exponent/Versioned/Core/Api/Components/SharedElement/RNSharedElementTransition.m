@@ -241,21 +241,50 @@
   // In such a case, remove that transform in order to obtain the "real"
   // size and position on the screen.
   if (compensateForTransforms && (ancestor.style != nil)) {
-    RNSharedElementStyle* style = ancestor.style;
-    RNSharedElementStyle* otherStyle = otherAncestor ? otherAncestor.style : nil;
-    CATransform3D transform = otherStyle ? CATransform3DConcat(style.transform, CATransform3DInvert(otherStyle.transform)) : style.transform;
+    
+    // Calculate "real" size and position of the ancestor (undo its transform)
+    RNSharedElementStyle* ancestorStyle = ancestor.style;
+    RNSharedElementStyle* otherAncestorStyle = otherAncestor ? otherAncestor.style : nil;
+    CATransform3D transform = otherAncestorStyle ? CATransform3DConcat(ancestorStyle.transform, CATransform3DInvert(otherAncestorStyle.transform)) : ancestorStyle.transform;
+    CGRect ancestorLayout = ancestorStyle.layout;
+    CGRect normalizedAncestorLayout = ancestorLayout;
     if (CATransform3DIsAffine(transform)) {
       CGAffineTransform affineTransform = CATransform3DGetAffineTransform(CATransform3DInvert(transform));
-      layout = CGRectApplyAffineTransform(layout, affineTransform);
+      // Apply the transform on the center
+      normalizedAncestorLayout.origin = CGPointMake((ancestorLayout.size.width / -2.0), (ancestorLayout.size.height / -2.0));
+      CGPoint diff = CGPointMake(ancestorLayout.origin.x - normalizedAncestorLayout.origin.x, ancestorLayout.origin.y - normalizedAncestorLayout.origin.y);
+      normalizedAncestorLayout = CGRectApplyAffineTransform(normalizedAncestorLayout, affineTransform);
+      // Undo centering
+      normalizedAncestorLayout.origin = CGPointMake(normalizedAncestorLayout.origin.x + diff.x,normalizedAncestorLayout.origin.y + diff.y);
     } else {
-      // Fallback
-      layout.origin.x -= transform.m41;
-      layout.origin.y -= transform.m42;
+      // Fallback, supports only translation
+      normalizedAncestorLayout.origin.x -= transform.m41;
+      normalizedAncestorLayout.origin.y -= transform.m42;
     }
+    
+    // Calculate size and position of element within the normalized ancestor
+    CGFloat scaleX = normalizedAncestorLayout.size.width / ancestorLayout.size.width;
+    CGFloat scaleY = normalizedAncestorLayout.size.height / ancestorLayout.size.height;
+    layout = CGRectMake(
+      ((layout.origin.x - ancestorLayout.origin.x) * scaleX) + normalizedAncestorLayout.origin.x,
+      ((layout.origin.y - ancestorLayout.origin.y) * scaleY) + normalizedAncestorLayout.origin.y,
+      layout.size.width * scaleX,
+      layout.size.height * scaleY
+    );
   }
   
   // Convert to render overlay coordinates
   return [self.superview convertRect:layout fromView:nil];
+}
+
+- (CGFloat) getAncestorVisibility:(RNSharedElementStyle*)ancestorStyle
+{
+  CGRect intersection = CGRectIntersection(self.superview.bounds, [self.superview convertRect:ancestorStyle.layout fromView:nil]);
+  if (CGRectIsNull(intersection)) return 0;
+  CGFloat superVolume = self.superview.bounds.size.width * self.superview.bounds.size.height;
+  CGFloat intersectionVolume = intersection.size.width * intersection.size.height;
+  CGFloat ancestorVolume = ancestorStyle.layout.size.width * ancestorStyle.layout.size.height;
+  return (intersectionVolume / superVolume) * (intersectionVolume / ancestorVolume);
 }
 
 - (CGRect) getInterpolatedLayout:(CGRect)layout1 layout2:(CGRect)layout2 position:(CGFloat) position
@@ -382,16 +411,16 @@
   
   // Determine starting scene that is currently visible to the user
   if (_initialVisibleAncestorIndex < 0) {
-    RNSharedElementStyle* startAncenstorLayout = startAncestor.style;
+    RNSharedElementStyle* startAncenstorStyle = startAncestor.style;
     RNSharedElementStyle* endAncestorStyle = endAncestor.style;
-    if (startAncenstorLayout && !endAncestorStyle) {
+    if (startAncenstorStyle && !endAncestorStyle) {
       _initialVisibleAncestorIndex = 0;
-    } else if (!startAncenstorLayout && endAncestorStyle) {
+    } else if (!startAncenstorStyle && endAncestorStyle) {
       _initialVisibleAncestorIndex = 1;
-    } else if (startAncenstorLayout && endAncestorStyle){
-      CGRect startAncestorVisible = CGRectIntersection(self.superview.bounds, [self.superview convertRect:startAncenstorLayout.layout fromView:nil]);
-      CGRect endAncestorVisible = CGRectIntersection(self.superview.bounds, [self.superview convertRect:endAncestorStyle.layout fromView:nil]);
-      _initialVisibleAncestorIndex = ((endAncestorVisible.size.width * endAncestorVisible.size.height) > (startAncestorVisible.size.width * startAncestorVisible.size.height)) ? 1 : 0;
+    } else if (startAncenstorStyle && endAncestorStyle){
+      CGFloat startAncestorVisibility = [self getAncestorVisibility:startAncenstorStyle];
+      CGFloat endAncestorVisibility = [self getAncestorVisibility:endAncestorStyle];
+      _initialVisibleAncestorIndex = endAncestorVisibility > startAncestorVisibility ? 1 : 0;
     }
   }
   

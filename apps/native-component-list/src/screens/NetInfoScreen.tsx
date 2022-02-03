@@ -34,7 +34,7 @@ export default class NetInfoScreen extends React.Component<{}, State> {
   };
 
   eventCounter: number = 0;
-  subscription: NetInfoSubscription = NetInfo.addEventListener(connectionInfo =>
+  subscription: NetInfoSubscription = NetInfo.addEventListener((connectionInfo) =>
     this.handleConnectionChange(connectionInfo)
   );
 
@@ -69,7 +69,7 @@ export default class NetInfoScreen extends React.Component<{}, State> {
   }
 
   _renderEvents = (events: ConnectionEvent[]) => {
-    return events.map(event => (
+    return events.map((event) => (
       <View key={event.key}>
         <HeadingText style={{ fontSize: 14 }}>{String(event.time)}</HeadingText>
         <MonoText key={event.key}>{JSON.stringify(event.connectionInfo, null, 2)}</MonoText>

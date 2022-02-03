@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 declare const _default: {
     readonly name: string;
     requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
@@ -7,3 +7,4 @@ declare const _default: {
     requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExpoCalendar.web.d.ts.map

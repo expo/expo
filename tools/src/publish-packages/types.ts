@@ -15,6 +15,7 @@ export type CommandOptions = {
   commitMessage: string;
   skipRepoChecks: boolean;
   dry: boolean;
+  force: boolean;
 
   /* exclusive options that affect what the command does */
   listUnpublished: boolean;

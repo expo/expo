@@ -22,17 +22,20 @@ export function modifyAndroidManifest(
   return manifest;
 }
 
-const withMediaLibraryExternalStorage: ConfigPlugin = config => {
-  return withAndroidManifest(config, async config => {
+const withMediaLibraryExternalStorage: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, async (config) => {
     config.modResults = modifyAndroidManifest(config.modResults);
     return config;
   });
 };
 
-const withMediaLibrary: ConfigPlugin<{
-  photosPermission?: string;
-  savePhotosPermission?: string;
-} | void> = (config, { photosPermission, savePhotosPermission } = {}) => {
+const withMediaLibrary: ConfigPlugin<
+  {
+    photosPermission?: string;
+    savePhotosPermission?: string;
+    isAccessMediaLocationEnabled?: boolean;
+  } | void
+> = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSPhotoLibraryUsageDescription =
@@ -45,7 +48,11 @@ const withMediaLibrary: ConfigPlugin<{
   return withPlugins(config, [
     [
       AndroidConfig.Permissions.withPermissions,
-      ['android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'],
+      [
+        'android.permission.READ_EXTERNAL_STORAGE',
+        'android.permission.WRITE_EXTERNAL_STORAGE',
+        isAccessMediaLocationEnabled ?? 'android.permission.ACCESS_MEDIA_LOCATION',
+      ].filter(Boolean),
     ],
     withMediaLibraryExternalStorage,
   ]);

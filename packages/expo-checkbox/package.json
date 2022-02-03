@@ -1,7 +1,7 @@
 {
   "name": "expo-checkbox",
-  "version": "1.0.2",
-  "description": "Checkbox for Android and web",
+  "version": "2.0.0",
+  "description": "Basic checkbox for iOS, Android, and web",
   "main": "build/Checkbox.js",
   "types": "build/Checkbox.d.ts",
   "scripts": {
@@ -28,13 +28,9 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/checkbox",
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/checkbox",
   "devDependencies": {
-    "expo-module-scripts": "^1.2.0"
+    "expo-module-scripts": "^2.0.0"
   },
   "jest": {
     "preset": "expo-module-scripts/enzyme"

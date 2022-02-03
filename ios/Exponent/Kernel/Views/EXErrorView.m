@@ -63,12 +63,11 @@
     // error detail label
     self.lblErrorDetail = [[UILabel alloc] init];
     _lblErrorDetail.numberOfLines = 0;
-    _lblErrorDetail.textAlignment = NSTextAlignmentLeft;
+    _lblErrorDetail.textAlignment = NSTextAlignmentCenter;
     [_vContainer addSubview:_lblErrorDetail];
     
     for (UILabel *lblToStyle in @[ _lblUrl, _lblErrorDetail ]) {
       lblToStyle.font = [UIFont systemFontOfSize:14.0f];
-      lblToStyle.textColor = [UIColor lightGrayColor];
     }
   }
   return self;
@@ -81,8 +80,8 @@
   if (_appRecord) {
     if (_appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
       appOwnerName = @"Expo";
-    } else if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest[@"name"]) {
-      appOwnerName = [NSString stringWithFormat:@"\"%@\"", _appRecord.appLoader.manifest[@"name"]];
+    } else if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest.name) {
+      appOwnerName = [NSString stringWithFormat:@"\"%@\"", _appRecord.appLoader.manifest.name];
     }
   }
 

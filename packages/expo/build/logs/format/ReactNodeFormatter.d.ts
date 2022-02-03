@@ -7,3 +7,4 @@ declare const _default: {
  * large and verbose to print.
  */
 export default _default;
+//# sourceMappingURL=ReactNodeFormatter.d.ts.map

@@ -5,6 +5,7 @@
 #import "EXAppFetcherDevelopmentMode.h"
 #import "EXAppFetcherWithTimeout.h"
 #import "EXCachedResource.h"
+#import <EXManifests/EXManifestsManifest.h>
 
 @class EXKernelAppRecord;
 @class EXAppLoader;
@@ -28,19 +29,19 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 
 @protocol EXAppLoaderDelegate <NSObject>
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest;
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest;
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress;
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data;
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data;
 - (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error;
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
 
 @end
 
 @interface EXAppLoader : NSObject <EXAppFetcherDelegate, EXAppFetcherDevelopmentModeDelegate, EXAppFetcherWithTimeoutDelegate, EXAppFetcherCacheDataSource>
 
 @property (nonatomic, readonly) NSURL *manifestUrl;
-@property (nonatomic, readonly) NSDictionary * _Nullable manifest; // possibly optimistic
-@property (nonatomic, readonly) NSDictionary * _Nullable cachedManifest; // we definitely have this manifest and its bundle on the device
+@property (nonatomic, readonly) EXManifestsManifest * _Nullable manifest; // possibly optimistic
+@property (nonatomic, readonly) EXManifestsManifest * _Nullable cachedManifest; // we definitely have this manifest and its bundle on the device
 @property (nonatomic, readonly) NSData * _Nullable bundle;
 @property (nonatomic, readonly) EXAppLoaderStatus status;
 @property (nonatomic, readonly) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
@@ -51,7 +52,7 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 @property (nonatomic, weak) id<EXAppFetcherDataSource> dataSource;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url;
-- (instancetype)initWithLocalManifest:(NSDictionary * _Nonnull)manifest;
+- (instancetype)initWithLocalManifest:(EXManifestsManifest * _Nonnull)manifest;
 
 /**
  *  Begin a new request.
@@ -90,7 +91,7 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 /**
  * Fetch manifest without any side effects or interaction with the timer.
  */
-- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure;
+- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior success:(void (^)(EXManifestsManifest *))success failure:(void (^)(NSError *))failure;
 
 @end
 

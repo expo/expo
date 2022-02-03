@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { AdMediaViewContext } from './withNativeAd';
@@ -6,7 +6,7 @@ export default class AdMediaView extends React.Component {
     render() {
         return (React.createElement(AdMediaViewContext.Consumer, null, (contextValue) => {
             const context = nullthrows(contextValue);
-            return React.createElement(NativeAdMediaView, Object.assign({}, this.props, { ref: context.nativeRef }));
+            return React.createElement(NativeAdMediaView, { ...this.props, ref: context.nativeRef });
         }));
     }
 }

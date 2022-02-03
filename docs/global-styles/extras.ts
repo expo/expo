@@ -1,13 +1,13 @@
-import { css } from '@emotion/core';
-
-import * as Constants from '~/constants/theme';
+import { css } from '@emotion/react';
+import { theme, palette, typography } from '@expo/styleguide';
 
 export const globalExtras = css`
   img.wide-image {
     max-width: 900px;
   }
 
-  img[src*="https://placehold.it/15"] {
+  img[src*="https://placehold.it/15"]
+  {
     width: 15px !important;
     height: 15px !important;
   }
@@ -25,19 +25,24 @@ export const globalExtras = css`
     outline: none;
     cursor: pointer;
     margin-bottom: 0.5rem;
+    color: ${theme.text.default};
+
+    ::-webkit-details-marker {
+      color: ${theme.icon.default};
+    }
   }
 
   details summary h3 {
     font-size: 1.2rem;
     font-weight: 500;
-    font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
+    font-family: ${typography.fontFaces.medium};
+    color: ${theme.text.default};
     display: inline-block;
   }
 
   details summary h4 {
-    font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
+    font-family: ${typography.fontFaces.medium};
+    color: ${theme.text.default};
     font-size: 1rem;
     font-weight: 500;
     display: inline-block;
@@ -71,9 +76,9 @@ export const globalExtras = css`
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: ${Constants.expoColors.primary[500]};
-    color: ${Constants.expoColors.white};
-    font-family: ${Constants.fontFamilies.book};
+    background: ${theme.button.primary.background};
+    color: ${palette.dark.white};
+    font-family: ${typography.fontFaces.regular};
     font-size: 1rem;
     cursor: pointer;
     -webkit-appearance: none;
@@ -98,7 +103,7 @@ export const globalExtras = css`
   }
 
   .diff-container {
-    border: 1px solid #e3e3e3;
+    border: 1px solid ${theme.border.default};
     border-radius: 2px;
     margin-bottom: 10px;
   }
@@ -113,6 +118,22 @@ export const globalExtras = css`
   .diff-container th {
     border-bottom: none;
     border-right: none;
+  }
+
+  .diff-container .diff-gutter-insert {
+    background: ${theme.background.success};
+  }
+
+  .diff-container .diff-gutter-delete {
+    background: ${theme.background.error};
+  }
+
+  .diff-container .diff-code-insert {
+    background: ${theme.background.success};
+  }
+
+  .diff-container .diff-code-delete {
+    background: ${theme.background.error};
   }
 
   .strike {

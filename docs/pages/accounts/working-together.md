@@ -6,7 +6,7 @@ You can grant other users access to the projects belonging to your Personal Acco
 
 ## Adding Members
 
-You can invite new members to your Personal Account, or any account you administrate, from the [Members page](https://expo.io/settings/members) in your dashboard. You can only add users with Expo accounts as members; you can direct them to [https://expo.io/signup](https://expo.io/signup) if they don't have an account yet.
+You can invite new members to your Personal Account, or any account you administrate, from the [Members page](https://expo.dev/settings/members) in your dashboard. You can only add users with Expo accounts as members; you can direct them to [https://expo.dev/signup](https://expo.dev/signup) if they don't have an account yet. You may have up to 100 members and pending invitations combined for a single account.
 
 > When adding new developers to your projects, who are publishing updates or create new builds, make sure to add the [`owner`](../versions/latest/config/app.md#owner) property to your project app manifest.
 
@@ -23,4 +23,4 @@ Access for members is managed through a role-based system. Users can have the _o
 
 ## Removing members
 
-To remove members, go to the [Members](https://expo.io/settings/members) page and revoke access.
+To remove members, go to the [Members](https://expo.dev/settings/members) page and revoke access.

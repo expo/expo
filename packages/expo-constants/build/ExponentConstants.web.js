@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import { v4 as uuidv4 } from 'uuid';
 import { ExecutionEnvironment, } from './Constants.types';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
@@ -111,6 +111,9 @@ export default {
         // This is defined by @expo/webpack-config.
         // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
+    },
+    get manifest2() {
+        return null;
     },
     get experienceUrl() {
         if (Platform.isDOMAvailable) {

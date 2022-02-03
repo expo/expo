@@ -1,46 +1,34 @@
-import { ComponentType, forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
-import createElement from 'react-native-web/dist/exports/createElement';
+import React, { ComponentType, forwardRef } from 'react';
 
-import { TableTextProps } from '../primitives/Table';
-import { TextProps } from '../primitives/Text';
+import View from '../primitives/RNWView';
 import { ViewProps } from '../primitives/View';
 
-export const Table = forwardRef((props: ViewProps, ref) => {
-  return createElement('table', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<ViewProps>;
+function createView(nativeProps: ViewProps & { __element: string }): ComponentType<ViewProps> {
+  return forwardRef((props: ViewProps, ref) => {
+    return <View {...nativeProps} {...props} ref={ref} />;
+  }) as ComponentType<ViewProps>;
+}
 
-export const THead = forwardRef((props: ViewProps, ref) => {
-  return createElement('thead', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<ViewProps>;
+export const Table = createView({ __element: 'table' });
+Table.displayName = 'Table';
 
-export const TBody = forwardRef((props: ViewProps, ref) => {
-  return createElement('tbody', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<ViewProps>;
+export const THead = createView({ __element: 'thead' });
+THead.displayName = 'THead';
 
-export const TFoot = forwardRef((props: ViewProps, ref) => {
-  return createElement('tfoot', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<ViewProps>;
+export const TBody = createView({ __element: 'tbody' });
+TBody.displayName = 'TBody';
 
-export const TH = forwardRef((props: TableTextProps, ref) => {
-  return createElement('th', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<TableTextProps>;
+export const TFoot = createView({ __element: 'tfoot' });
+TFoot.displayName = 'TFoot';
 
-export const TR = forwardRef((props: ViewProps, ref) => {
-  return createElement('tr', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<ViewProps>;
+export const TH = createView({ __element: 'th' });
+TH.displayName = 'TH';
 
-export const TD = forwardRef((props: TableTextProps, ref) => {
-  return createElement('td', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<TableTextProps>;
+export const TR = createView({ __element: 'tr' });
+TR.displayName = 'TR';
 
-export const Caption = forwardRef((props: TextProps, ref) => {
-  return createElement('caption', { ...props, style: [styles.reset, props.style], ref });
-}) as ComponentType<TextProps>;
+export const TD = createView({ __element: 'td' });
+TD.displayName = 'TD';
 
-const styles = StyleSheet.create({
-  reset: {
-    fontFamily: 'System',
-    padding: 0,
-  },
-});
+export const Caption = createView({ __element: 'caption' });
+Caption.displayName = 'Caption';

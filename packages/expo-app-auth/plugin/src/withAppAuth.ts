@@ -2,7 +2,9 @@ import {
   AndroidConfig,
   ConfigPlugin,
   createRunOncePlugin,
+  WarningAggregator,
   withAppBuildGradle,
+  withInfoPlist,
 } from '@expo/config-plugins';
 
 const pkg = require('expo-app-auth/package.json');
@@ -25,11 +27,11 @@ export function setGradlePlaceholders(buildGradle: string, placeholder: string):
   );
 }
 
-const withAppAuth: ConfigPlugin<{ placeholder?: string } | void> = (
+const withAppAuthGradleManifestPlaceholder: ConfigPlugin<{ placeholder?: string } | void> = (
   config,
   { placeholder = AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}
 ) => {
-  return withAppBuildGradle(config, config => {
+  return withAppBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setGradlePlaceholders(config.modResults.contents, placeholder);
     } else {
@@ -39,6 +41,36 @@ const withAppAuth: ConfigPlugin<{ placeholder?: string } | void> = (
     }
     return config;
   });
+};
+
+const withAppAuthInfoPlist: ConfigPlugin<string | void> = (config, OAuthRedirect) => {
+  return withInfoPlist(config, (config) => {
+    if (!Array.isArray(config.modResults.CFBundleURLTypes)) {
+      config.modResults.CFBundleURLTypes = [];
+    }
+    if (!config.ios?.bundleIdentifier) {
+      WarningAggregator.addWarningIOS(
+        'expo-app-auth',
+        'ios.bundleIdentifier must be defined in app.json or app.config.js'
+      );
+      return config;
+    }
+
+    config.modResults.CFBundleURLTypes.push({
+      // @ts-ignore: not on type
+      CFBundleTypeRole: 'Editor',
+      CFBundleURLName: 'OAuthRedirect',
+      CFBundleURLSchemes: [OAuthRedirect ? OAuthRedirect : config.ios!.bundleIdentifier!],
+    });
+    return config;
+  });
+};
+
+const withAppAuth: ConfigPlugin<{ placeholder?: string } | void> = (config, props) => {
+  config = withAppAuthGradleManifestPlaceholder(config, props);
+  config = withAppAuthInfoPlist(config);
+
+  return config;
 };
 
 export default createRunOncePlugin(withAppAuth, pkg.name, pkg.version);

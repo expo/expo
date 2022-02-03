@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI40_0_0/Expo/UMAppLoader/ABI40_0_0UMAppLoader/Interfaces/ABI40_0_0UMAppLoaderInterface.h

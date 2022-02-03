@@ -2,14 +2,12 @@ package host.exp.exponent;
 
 import com.facebook.react.ReactPackage;
 
-import org.unimodules.apploader.AppLoaderPackagesProviderInterface;
-import org.unimodules.core.interfaces.Package;
-
 import java.util.Arrays;
 import java.util.List;
 
-import host.exp.exponent.generated.BasePackageList;
-import okhttp3.OkHttpClient;
+import expo.modules.ExpoModulesPackageList;
+import expo.modules.apploader.AppLoaderPackagesProviderInterface;
+import expo.modules.core.interfaces.Package;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;
@@ -33,6 +31,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   }
 
   public List<Package> getExpoPackages() {
-    return new BasePackageList().getPackageList();
+    return ExpoModulesPackageList.getPackageList();
   }
 }

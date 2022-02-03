@@ -1,12 +1,19 @@
-import { UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
 import GoogleUser from './GoogleUser';
 
-export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
+export const {
+  /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
+  ERRORS,
+  /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
+  SCOPES,
+  /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
+  TYPES,
+} = ExpoGoogleSignIn;
 
 const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
 
@@ -63,18 +70,22 @@ async function invokeAuthMethod(method: string): Promise<GoogleUser | null> {
   return setCurrentUser(account);
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export function allowInClient() {
   _isClientUsageEnabled = true;
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export function getCurrentUser(): GoogleUser | null {
   return _currentUser;
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function askForPlayServicesAsync(): Promise<boolean> {
   return await getPlayServiceAvailability(true);
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function getPlayServiceAvailability(shouldAsk: boolean = false): Promise<boolean> {
   validateOwnership();
 
@@ -85,6 +96,7 @@ export async function getPlayServiceAvailability(shouldAsk: boolean = false): Pr
   }
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function initAsync(options?: GoogleSignInOptions): Promise<void> {
   if (!ExpoGoogleSignIn.initAsync) {
     throw new UnavailabilityError('GoogleSignIn', 'initAsync');
@@ -102,15 +114,18 @@ export async function initAsync(options?: GoogleSignInOptions): Promise<void> {
   return _initialization;
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function isSignedInAsync(): Promise<boolean> {
   const user = await getCurrentUserAsync();
   return user != null;
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function isConnectedAsync(): Promise<boolean> {
   return await ExpoGoogleSignIn.isConnectedAsync();
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function signInSilentlyAsync(): Promise<GoogleUser | null> {
   const isConnected = await isConnectedAsync();
   if (isConnected) {
@@ -128,6 +143,7 @@ export async function signInSilentlyAsync(): Promise<GoogleUser | null> {
   return null;
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function signInAsync(): Promise<GoogleSignInAuthResult> {
   try {
     const user = await invokeAuthMethod('signInAsync');
@@ -140,18 +156,22 @@ export async function signInAsync(): Promise<GoogleSignInAuthResult> {
   }
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function signOutAsync(): Promise<void> {
   await invokeAuthMethod('signOutAsync');
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function disconnectAsync(): Promise<void> {
   await invokeAuthMethod('disconnectAsync');
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function getCurrentUserAsync(): Promise<GoogleUser | null> {
   return await invokeAuthMethod('getCurrentUserAsync');
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export async function getPhotoAsync(size: number = 128): Promise<string | null> {
   if (!ExpoGoogleSignIn.getPhotoAsync) {
     throw new UnavailabilityError('GoogleSignIn', 'getPhotoAsync');
@@ -161,14 +181,22 @@ export async function getPhotoAsync(size: number = 128): Promise<string | null> 
   return await ExpoGoogleSignIn.getPhotoAsync(size);
 }
 
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export { default as GoogleAuthData } from './GoogleAuthData';
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export { default as GoogleAuthentication } from './GoogleAuthentication';
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export { default as GoogleIdentity } from './GoogleIdentity';
+/** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
 export { default as GoogleUser } from './GoogleUser';
 
 export {
+  /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
   GoogleSignInType,
+  /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
   GoogleSignInOptions,
+  /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
   GoogleSignInAuthResultType,
+  /** @deprecated `expo-google-sign-in` has been deprecated in favor of `expo-auth-session` and `@react-native-google-signin/google-signin` (development clients). */
   GoogleSignInAuthResult,
 } from './GoogleSignIn.types';

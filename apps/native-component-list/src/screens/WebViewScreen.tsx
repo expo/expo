@@ -31,7 +31,7 @@ function WebViewRemoteSource() {
     <View style={styles.container}>
       <H2 style={styles.header}>Remote Source</H2>
       <WebView
-        source={{ uri: 'https://expo.io/' }}
+        source={{ uri: 'https://expo.dev/' }}
         onLoadEnd={() => setLoading(false)}
         onMessage={({ nativeEvent: { data } }: MessageEvent) => {
           console.log('Got a message from WebView: ', JSON.parse(data));
@@ -54,11 +54,11 @@ function WebViewInlineSource() {
     <h2>You can always use a WebView if you need to!</h2>
     <p>
       <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
-      <input type="text" placeholder="Disagree? why?"></input>
+      <input type="text" placeholder="Disagree? why?" />
       <input type="submit">
     </p>
     <p>
-      <a href="https://expo.io">expo.io</a>
+      <a href="https://expo.dev">expo.dev</a>
     </p>
   `,
         }}

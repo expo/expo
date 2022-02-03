@@ -3,6 +3,8 @@ title: Using Expo Go in Bare Workflow
 sidebar_title: Using Expo Go
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 It's not currently possible to include your own native code in Expo Go, so it might surprise you to learn that it is still possible to run your bare project in the Expo Go app.
 
 Inside a freshly initialized bare project, run `expo start` and you can now run it in the client. Read on to learn more about the limitations, why you might want to still use the client in spite of the limitations, and patterns you can apply to make this work well for you.
@@ -28,61 +30,80 @@ There are a number of benefits to keeping your project runnable in the Expo Go a
 
 This will ensure that you get a version of the package that is compatible with the SDK version in your app. If you use `npm install` directly instead, you may end up with a newer version of the package that isn't supported in Expo Go yet.
 
-### Use the `.expo.[js/json/ts/tsx]` extension to provide Expo Go specific fallbacks
+### Use conditional inline requires to provide fallbacks
 
-Picture this: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@mapbox/react-native-mapbox-gl'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo Go app. You can handle this by making `MyMap.js` and `MyMap.expo.js` as follows:
-
-```js
-// MyMap.js
-import * as React from 'react';
-import Mapbox from '@mapbox/react-native-mapbox-gl';
-
-export default class MyMap extends React.Component {
-  render() {
-    return (
-      <Mapbox.MapView
-        styleURL="mapbox://styles/jhuskey/cjabpqolp3lf02so534xe4q9g"
-        style={{ flex: 1 }}
-        {...this.props}
-      />
-    );
-  }
-}
-```
+Picture this scenario: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@react-native-mapbox-gl/maps'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo Go app. You can handle this by wrapping `MapView` access with a wrapper that provides a fallback in Expo Go, and otherwise uses the native Mapbox library:
 
 ```js
-// MyMap.expo.js
+// MapView.js
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import Constants from 'expo-constants';
 
-export default class MyMap extends React.Component {
-  render() {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#000',
+let MapView;
+
+if (Constants.appOwnership === 'expo') {
+  MapView = props => (
+    <View
+      style={[
+        {
+          backgroundColor: 'lightblue',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
-        <Text style={{ color: '#fff' }}>Mapbox map not available!</Text>
-      </View>
-    );
-  }
+        },
+        props.style,
+      ]}>
+      <Text>🗺 (Mapbox not available)</Text>
+    </View>
+  );
+} else {
+  const Mapbox = require('@react-native-mapbox-gl/maps').default;
+  Mapbox.setAccessToken('access-token-here');
+  MapView = Mapbox.MapView;
 }
+
+export default MapView;
 ```
+
+By moving the `require` directive inline we only actually execute the `MyMap` module code when we enter the `else` clause, and so we prevent ever importing the `@react-native-mapbox-gl/maps` package, which would likely throw an error due to the native module being missing in the client runtime environment.
 
 ```js
 // App.js
 import * as React from 'react';
-import MyMap from './MyMap';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import MapView from './MapView';
 
-export default () => <MyMap />;
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={{ fontSize: 20, marginBottom: 10, fontWeight: '600' }}>Behold, a map! ✨</Text>
+      <MapView
+        style={{
+          height: 300,
+          width: 300,
+          borderRadius: 20,
+          overflow: 'hidden',
+        }}
+      />
+      <StatusBar style="default" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 ```
 
-> **Note**: Sometimes the React Native JavaScript bundler, [Metro](https://github.com/facebook/metro), doesn't pick up on file extension changes as quickly as you may hope and you will end up with a red screen error. If you encounter this, you can remove the `MyMap` import (eg: from App.js in the above example), then reload the app, and finally re-add the import and reload again. Alternatively, you can also close and re-open `expo-cli`.
+Problem solved! Now when we render the `<MapView />` component in the client, we'll fallback to a plain `View` placeholder. When we build the app in Xcode/Android Studio, we'll use the Mapbox map. You could also alternatively fallback to a map provided from `react-native-maps`, since it's included in the Expo SDK.
 
-Problem solved! Now when we render the `<MyMap />` component in the client, we'll fallback to a plain `View`. When we build the app in Xcode/Android Studio, we'll use the Mapbox map. You could also alternatively fallback to a map provided from `react-native-maps`, since it's included in the Expo SDK.
+<ImageSpotlight alt="MapView working in an app built with Xcode and falling back to a placeholder in Expo Go" src="/static/images/expo-go-fallback.png" />
 
 As you may have already guessed, you can apply this concept for more than just third party dependencies. For example, maybe you wrote a native module to wrap your favorite analytics library and you want to provide a mock for it within the client.
 
@@ -90,54 +111,63 @@ As you may have already guessed, you can apply this concept for more than just t
 // MyAnalytics.js
 import { NativeModules } from 'react-native';
 
+// Generic way of logging calls to MyAnalytics when module isn't available
+const makeLogger = name => options =>
+  console.log(`Called MyAnalytics.${name} with: ${JSON.stringify(options)}`);
+
+// Get native module or use fallback logger
+const MyAnalytics = NativeModules.MyAnalytics ?? {
+  logEvent: makeLogger('logEvent'),
+  setUser: makeLogger('setUser'),
+};
+
+// You usually want to wrap native function calls in functions on the JS side to
+// provide TypeScript typing and validation.
+
 export function logEvent(options) {
-  NativeModules.MyAnalytics.logEvent(options);
+  MyAnalytics.logEvent(options);
 }
 
 export function setUser(options) {
-  NativeModules.MyAnalytics.setUser(options);
+  MyAnalytics.setUser(options);
 }
 ```
 
-```js
-// MyAnalytics.expo.js
-export function logEvent(options) {
-  console.log(`Called MyAnalytics.logEvent with: ${JSON.stringify(options)}`);
-}
+### Alternatively, use optional imports
 
-export function setUser(user) {
-  console.log(`Called MyAnalytics.setUser with: ${JSON.stringify(user)}`);
-}
-```
+An alternative approach to using `expo-constants` as described above in the [conditional inline requires section](#use-conditional-inline-requires-to-provide-fallbacks) is to use `try/catch` around `require`. There's not any particularly good reason for you to use this in your application code, and it may lead to warning messages when the library throws an error on importing, but it is listed here in case you find yourself with a fitting use case.
 
-### Conditional inline requires
-
-It may occasionally make for more self-descriptive code to explicitly switch out a module based on the environment. Let's use the map example from above to demonstrate how you could do this.
+The above **MapView.js** would change to look like the following:
 
 ```js
 import * as React from 'react';
-import Constants from 'expo-constants';
+import { StyleSheet, Text, View } from 'react-native';
 
-let MyMap;
-if (Constants.appOwnership === 'expo') {
-  MyMap = <View />;
-} else {
-  MyMap = require('./MyMap').default;
+let MapView;
+
+try {
+  const Mapbox = require('@react-native-mapbox-gl/maps').default;
+  Mapbox.setAccessToken('access-token-here');
+  MapView = Mapbox.MapView;
+} catch {
+  MapView = props => (
+    <View
+      style={[
+        {
+          backgroundColor: 'lightblue',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        props.style,
+      ]}>
+      <Text>🗺 (Mapbox not available)</Text>
+    </View>
+  );
 }
 
-export default class MapScreen extends React.Component {
-  render() {
-    return (
-      <View style={{ height: 300, flex: 1 }}>
-        <MyMap rotateEnabled={false} pinchEnabled={false} />
-      </View>
-    );
-  }
-}
+export default MapView;
 ```
 
-By moving the `require` directive inline we only actually execute the `MyMap` module code when we enter the `else` clause, and so we prevent ever importing the `@mapbox/react-native-mapbox-gl` package, which would likely throw an error due to the native module being missing in the client runtime environment.
+### **Deprecated**: use the `.expo.[js/json/ts/tsx]` extension to provide Expo Go specific fallbacks
 
-### Avoid importing the `expo` package in bare apps
-
-Using the approaches above, you should avoid importing the `expo` package in bare environments. If you import anything from the `expo` package it will run code that assumes you are within the client runtime environment and throw an error.
+The `.expo` extension is removed in SDK 41. Consider using [conditional inline requires](#use-conditional-inline-requires-to-provide-fallbacks) instead, and read [expo.fyi/expo-extension-migration](https://expo.fyi/expo-extension-migration) for specific guidance on migrating away.

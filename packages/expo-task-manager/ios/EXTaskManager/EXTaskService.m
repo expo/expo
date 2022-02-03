@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 #import <EXTaskManager/EXTask.h>
 #import <EXTaskManager/EXTaskService.h>
@@ -37,7 +37,7 @@
 
 @implementation EXTaskService
 
-UM_REGISTER_SINGLETON_MODULE(TaskService)
+EX_REGISTER_SINGLETON_MODULE(TaskService)
 
 - (instancetype)init
 {
@@ -277,7 +277,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
   NSDictionary *body = @{
     @"executionInfo": executionInfo,
     @"data": data ?: @{},
-    @"error": UMNullIfNil([self _exportError:error]),
+    @"error": EXNullIfNil([self _exportError:error]),
   };
   
   NSLog(@"EXTaskService: Executing task '%@' for app '%@'.", task.name, task.appId);
@@ -499,7 +499,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
     @"name": task.name,
     @"consumerClass": [self _unversionedClassNameFromClass:task.consumer.class],
     @"consumerVersion": @([self _consumerVersion:task.consumer.class]),
-    @"options": UMNullIfNil([task options]),
+    @"options": EXNullIfNil([task options]),
   };
 }
 
@@ -522,7 +522,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
   
   [self _iterateTasksUsingBlock:^(id<UMTaskInterface> task) {
     if ([task.consumer.class respondsToSelector:@selector(supportsLaunchReason:)] && [task.consumer.class supportsLaunchReason:launchReason]) {
-      [self _addTask:task toRequest:request];
+      [self _addTask:task toRequest:request withInfo:userInfo];
     }
   }];
   
@@ -612,7 +612,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
                                   consumerClass:consumerClass
                                         options:taskConfig[@"options"]];
           } else {
-            UMLogWarn(
+            EXLogWarn(
                       @"EXTaskService: Task consumer '%@' has version '%d' that is not compatible with the saved version '%d'.",
                       consumerClassName,
                       currentConsumerVersion,
@@ -621,7 +621,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
             [self _removeTaskFromConfig:taskName appId:appId];
           }
         } else {
-          UMLogWarn(@"EXTaskService: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
+          EXLogWarn(@"EXTaskService: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
           [self _removeTaskFromConfig:taskName appId:appId];
         }
       }
@@ -629,14 +629,15 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
   }
 }
 
-- (void)_addTask:(id<UMTaskInterface>)task toRequest:(EXTaskExecutionRequest *)request
+- (void)_addTask:(id<UMTaskInterface>)task toRequest:(EXTaskExecutionRequest *)request withInfo:(nullable NSDictionary *)info
 {
   [request addTask:task];
   
+  
   // Inform the consumer that the task can be executed from then on.
   // Some types of background tasks (like background fetch) may execute the task immediately.
-  if ([[task consumer] respondsToSelector:@selector(didBecomeReadyToExecute)]) {
-    [[task consumer] didBecomeReadyToExecute];
+  if ([[task consumer] respondsToSelector:@selector(didBecomeReadyToExecuteWithData:)]) {
+    [[task consumer] didBecomeReadyToExecuteWithData:info ?: @{}];
   }
 }
 

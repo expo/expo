@@ -5,10 +5,10 @@ import android.graphics.Color;
 
 import com.facebook.ads.AdOptionsView;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoProp;
+import expo.modules.core.interfaces.services.UIManager;
 
 public class AdOptionsWrapperViewManager extends ViewManager<AdOptionsWrapperView> {
   private ModuleRegistry mModuleRegistry;

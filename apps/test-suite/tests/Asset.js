@@ -1,7 +1,7 @@
 'use strict';
 
-import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
 
 export const name = 'Asset';
 
@@ -34,7 +34,7 @@ export function test(t) {
           const asset = Asset.fromModule(module);
           t.expect(asset.name).toBe(name);
           t.expect(asset.type).toBe(type);
-          Object.keys(more).forEach(member => t.expect(asset[member]).toBe(more[member]));
+          Object.keys(more).forEach((member) => t.expect(asset[member]).toBe(more[member]));
         });
 
         t.it("when downloaded, has a 'file://' localUri", async () => {
@@ -50,7 +50,11 @@ export function test(t) {
             const asset = Asset.fromModule(module);
             await asset.downloadAsync();
 
-            const { exists, md5, uri: cacheUri } = await FileSystem.getInfoAsync(asset.localUri, {
+            const {
+              exists,
+              md5,
+              uri: cacheUri,
+            } = await FileSystem.getInfoAsync(asset.localUri, {
               cache: true,
               md5: true,
             });

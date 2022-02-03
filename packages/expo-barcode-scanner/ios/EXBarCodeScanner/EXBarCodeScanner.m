@@ -2,8 +2,7 @@
 
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
-#import <UMBarCodeScannerInterface/UMBarCodeScannerInterface.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <ZXingObjC/ZXingObjCCore.h>
 #import <ZXingObjC/ZXingObjCPDF417.h>
 #import <ZXingObjC/ZXingObjCOneD.h>
@@ -64,9 +63,9 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
         _settings = nextSettings;
         NSSet *zxingCoveredTypes = [NSSet setWithArray:[_zxingBarcodeReaders allKeys]];
         _zxingEnabled = [zxingCoveredTypes intersectsSet:newTypes];
-        UM_WEAKIFY(self);
+        EX_WEAKIFY(self);
         [self _runBlockIfQueueIsPresent:^{
-          UM_ENSURE_STRONGIFY(self);
+          EX_ENSURE_STRONGIFY(self);
           [self maybeStartBarCodeScanning];
         }];
       }
@@ -80,9 +79,9 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     return;
   }
   _barCodesScanning = newBarCodeScanning;
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [self _runBlockIfQueueIsPresent:^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if ([self isScanningBarCodes]) {
       if (self.metadataOutput) {
         [self _setConnectionsEnabled:true];

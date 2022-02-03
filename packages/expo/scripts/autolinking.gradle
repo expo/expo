@@ -1,0 +1,2 @@
+def autolinkingPath = ["node", "--print", "require.resolve('expo-modules-autolinking/package.json')"].execute(null, rootDir).text.trim()
+apply from: new File(autolinkingPath, "../scripts/android/autolinking_implementation.gradle");

@@ -1,15 +1,24 @@
-import { Subscription } from '@unimodules/core';
-import Constants from 'expo-constants';
+import * as Device from 'expo-device';
+import { Subscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
+import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { Alert, Platform, ScrollView } from 'react-native';
+import { Alert, Text, Platform, ScrollView, View } from 'react-native';
 
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+const BACKGROUND_TASK_SUCCESSFUL = 'Background task successfully ran!';
+const BACKGROUND_TEST_INFO = `To test background notification handling:\n(1) Background the app.\n(2) Send a push notification from your terminal. The push token can be found in your logs, and the command to send a notification can be found at https://docs.expo.dev/push-notifications/sending-notifications/#http2-api. On iOS, you need to include "_contentAvailable": "true" in your payload.\n(3) After receiving the notification, check your terminal for:\n"${BACKGROUND_TASK_SUCCESSFUL}"`;
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, (_data) => {
+  console.log(BACKGROUND_TASK_SUCCESSFUL);
+});
+
+const remotePushSupported = Device.isDevice;
 export default class NotificationScreen extends React.Component<
   // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -40,8 +49,9 @@ export default class NotificationScreen extends React.Component<
       this._onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
         this._handelNotificationResponseReceived
       );
+      Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
       // Using the same category as in `registerForPushNotificationsAsync`
-      Notifications.setNotificationCategoryAsync(`${Constants.manifest.id}:welcome`, [
+      Notifications.setNotificationCategoryAsync('welcome', [
         {
           buttonTitle: `Don't open app`,
           identifier: 'first-button',
@@ -65,8 +75,8 @@ export default class NotificationScreen extends React.Component<
           },
         },
       ])
-        .then(category => console.log('Notification category set', category))
-        .catch(error => console.warn('Could not have set notification category', error));
+        .then((_category) => {})
+        .catch((error) => console.warn('Could not have set notification category', error));
     }
   }
 
@@ -76,14 +86,9 @@ export default class NotificationScreen extends React.Component<
   }
 
   render() {
-    console.log(this.state);
     return (
-      <ScrollView style={{ padding: 10 }}>
+      <ScrollView contentContainerStyle={{ padding: 10, paddingBottom: 40 }}>
         <HeadingText>Local Notifications</HeadingText>
-        <ListButton
-          onPress={this._LEGACY_presentLocalNotificationAsync}
-          title="[Legacy] Present a notification immediately"
-        />
         <ListButton
           onPress={this._presentLocalNotificationAsync}
           title="Present a notification immediately"
@@ -91,6 +96,10 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={this._scheduleLocalNotificationAsync}
           title="Schedule notification for 10 seconds from now"
+        />
+        <ListButton
+          onPress={this._scheduleLocalNotificationWithCustomSoundAsync}
+          title="Schedule notification with custom sound in 1 second (not supported in Expo Go)"
         />
         <ListButton
           onPress={this._scheduleLocalNotificationAndCancelAsync}
@@ -102,8 +111,14 @@ export default class NotificationScreen extends React.Component<
         />
 
         <HeadingText>Push Notifications</HeadingText>
+        {!remotePushSupported && (
+          <Text>
+            ⚠️ Remote push notifications are not supported in the simulator, the following tests
+            should warn accordingly.
+          </Text>
+        )}
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
-
+        <BackgroundNotificationHandlingSection />
         <HeadingText>Badge Number</HeadingText>
         <ListButton
           onPress={this._incrementIconBadgeNumberAsync}
@@ -133,7 +148,7 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification triggers debugging</HeadingText>
         <ListButton
           onPress={() =>
-            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then(timestamp =>
+            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then((timestamp) =>
               alert(new Date(timestamp!))
             )
           }
@@ -145,7 +160,7 @@ export default class NotificationScreen extends React.Component<
               hour: 9,
               minute: 0,
               repeats: true,
-            }).then(timestamp => alert(new Date(timestamp!)))
+            }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for 9 AM"
         />
@@ -156,7 +171,7 @@ export default class NotificationScreen extends React.Component<
               minute: 0,
               weekday: 1,
               repeats: true,
-            }).then(timestamp => alert(new Date(timestamp!)))
+            }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for Sunday, 9 AM"
         />
@@ -193,9 +208,9 @@ export default class NotificationScreen extends React.Component<
   };
 
   _obtainUserFacingNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+    let permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+      permission = await Notifications.requestPermissionsAsync();
       if (permission.status !== 'granted') {
         Alert.alert(`We don't have permission to present notifications.`);
       }
@@ -204,9 +219,9 @@ export default class NotificationScreen extends React.Component<
   };
 
   _obtainRemoteNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      permission = await Notifications.requestPermissionsAsync();
       if (permission.status !== 'granted') {
         Alert.alert(`We don't have permission to receive remote notifications.`);
       }
@@ -230,18 +245,6 @@ export default class NotificationScreen extends React.Component<
     });
   };
 
-  _LEGACY_presentLocalNotificationAsync = async () => {
-    await this._obtainUserFacingNotifPermissionsAsync();
-    await Notifications.presentNotificationAsync({
-      title: 'Here is a local notification!',
-      body: 'This is the body',
-      data: {
-        hello: 'there',
-      },
-      sound: true,
-    });
-  };
-
   _scheduleLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
     await Notifications.scheduleNotificationAsync({
@@ -256,6 +259,31 @@ export default class NotificationScreen extends React.Component<
       },
       trigger: {
         seconds: 10,
+      },
+    });
+  };
+
+  _scheduleLocalNotificationWithCustomSoundAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+    // Prepare the notification channel
+    await Notifications.setNotificationChannelAsync('custom-sound', {
+      name: 'Notification with custom sound',
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'cat.wav', // <- for Android 8.0+
+    });
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Here is a local notification!',
+        body: 'This is the body',
+        data: {
+          hello: 'there',
+          future: 'self',
+        },
+        sound: 'cat.wav',
+      },
+      trigger: {
+        channelId: 'custom-sound',
+        seconds: 1,
       },
     });
   };
@@ -315,4 +343,54 @@ export default class NotificationScreen extends React.Component<
     await Notifications.dismissNotificationAsync(identifier);
     Alert.alert(`Notification dismissed`);
   };
+}
+
+/**
+ * If this test is failing for you on iOS, make sure you:
+ *
+ * - Have the `remote-notification` UIBackgroundMode in app.json or info.plist
+ * - Included "_contentAvailable": "true" in your notification payload
+ * - Have "Background App Refresh" enabled in your Settings
+ *
+ * If it's still not working, try killing the rest of your active apps, since the OS
+ * may still decide not to launch the app for its own reasons.
+ */
+function BackgroundNotificationHandlingSection() {
+  const [showInstructions, setShowInstructions] = React.useState(false);
+
+  return (
+    <View>
+      {showInstructions ? (
+        <View>
+          <ListButton
+            onPress={() => setShowInstructions(false)}
+            title="Hide background notification handling instructions"
+          />
+          <MonoText>{BACKGROUND_TEST_INFO}</MonoText>
+        </View>
+      ) : (
+        <ListButton
+          onPress={() => {
+            setShowInstructions(true);
+            getPermissionsAndLogToken();
+          }}
+          title="Show background notification handling instructions"
+        />
+      )}
+    </View>
+  );
+}
+
+async function getPermissionsAndLogToken() {
+  let permission = await Notifications.getPermissionsAsync();
+  if (permission.status !== 'granted') {
+    permission = await Notifications.requestPermissionsAsync();
+    if (permission.status !== 'granted') {
+      Alert.alert(`We don't have permission to receive remote notifications.`);
+    }
+  }
+  if (permission.status === 'granted') {
+    const { data: token } = await Notifications.getExpoPushTokenAsync();
+    console.log(`Got this device's push token: ${token}`);
+  }
 }

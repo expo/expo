@@ -1,62 +1,65 @@
 ---
 title: Build configuration process
+sidebar_title: Configuration process
 ---
 
-In this guide you will learn what happens when EAS CLI configures your project with `eas build:configure` (or `eas build` - which runs this same process if the project is not yet configured).
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
+In this guide, you will learn what happens when EAS CLI configures your project with `eas build:configure` (or `eas build` - which runs this same process if the project is not yet configured).
 
 EAS CLI performs the following steps when configuring your project:
 
 #### 1. Ask you about the platform(s) to configure
 
-If you only want to use EAS Build for a single platform, that's fine. If you change your mind, you can come back and the other later.
+If you only want to use EAS Build for a single platform, that's fine. If you change your mind, you can come back and configure the other later.
 
-<center><img src="/static/images/eas-build/walkthrough/04-configure-platform.png" /></center>
+<ImageSpotlight alt="Terminal running eas build command with platform iOS and Android options available" src="/static/images/eas-build/configure/01-configure-platform.png" containerStyle={{ paddingBottom: 0 }} />
 
 #### 2. Create eas.json
 
-The command will create an `eas.json` file in the root directory with the following contents:
+The command will create an **eas.json** file in the root directory with the default configuration. It looks something like this:
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic"
-      }
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
     },
-    "ios": {
-      "release": {
-        "workflow": "generic"
-      }
-    }
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
   }
 }
 ```
 
-This is your EAS Build configuration. It defines a single build profile named `release` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. In the generated configuration, each profile declares that the project is a generic React Native project (unlike a managed Expo project which doesn't contain native code in the project tree). If you want to learn more about `eas.json` see the [Configuration with eas.json](/build/eas-json.md) page.
+If you have a bare project, it will look a bit different.
 
-#### 3. Configure the Android project
+This is your EAS Build configuration. It defines three build profiles named `development`, `preview`, and `production` (you can have multiple build profiles like `production`, `debug`, `testing`, etc.) for each platform. If you want to learn more about **eas.json** see the [Configuration with eas.json](/build/eas-json.md) page.
 
-EAS CLI performs two steps:
+#### 3. Configure the project
 
-- It resolves the application ID and updates `build.gradle` with it.
+This step varies depending on the project type you have.
 
-  > If you have previously set the Android application ID in app.json, you'll be asked to choose between that and the application ID defined in the native project (this is the default that comes from `expo init`).
-  >
-  > It's important that you choose the application ID defined in app.json because this is how your application will be identified on the Google Play Store.
+#### 3.1. Managed project
 
-- It auto-configures your Gradle project so we could build it on our servers.
+If you haven't configured your **app.json** with `android.package` and/or `ios.bundleIdentifier` yet, EAS CLI will prompt you to specify them.
 
-  > This step also patches `build.gradle` by including there our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
+- `android.package` will be used as the Android application id which is used to identify your app on the Google Play Store
+- `ios.bundleIdentifier` will be used to identify you app on the Apple App Store
 
-<center><img src="/static/images/eas-build/walkthrough/05-configure-android.png" /></center>
+<ImageSpotlight alt="Application identifier prompts in eas build:configure" src="/static/images/eas-build/configure/02-configure-app-ids.png" containerStyle={{ paddingBottom: 0 }} />
 
-#### 4. Configure the iOS project
+In the example above, we defined exactly the same Android application id and iOS bundle identifier. However, they don't need to match.
 
-Similar configuration step is performed for the iOS project. EAS Build resolved the bundle identifier and updates the `project.pbxproj` file.
+#### 3.2. Bare project
 
-Make sure to choose the bundle identifier defined in app.json because it'll be used to identify you app on the Apple App Store.
+There are no additional steps for bare workflow projects.
 
-<center><img src="/static/images/eas-build/walkthrough/06-configure-xcode.png" /></center>
+#### 5. Next steps
 
 That's all there is to configuring a project to be compatible with EAS Build.
+There is one final step if you set `cli.requireCommit` to `true` in your **eas.json** — you'll be prompted to commit all the changes we made for you. You can choose to review them before committing, and you can either specify the git commit message or use a default message.
+
+<ImageSpotlight alt="Application identifier prompts in eas build:configure" src="/static/images/eas-build/configure/03-next-steps.png" containerStyle={{ paddingBottom: 0 }} />

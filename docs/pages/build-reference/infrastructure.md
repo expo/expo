@@ -1,33 +1,33 @@
 ---
 title: Build server infrastructure
+sidebar_title: Server infrastructure
 ---
 
-This document describes the current build infrastructure as of December 15, 2020. It is likely to change over time, and this document will be updated.
+This document describes the current build infrastructure as of October 8, 2021. It is likely to change over time, and this document will be updated.
 
-The software components will become customizable, but they aren't yet. So there is only one version of Node, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on currently available.
+## Configuring build environment
 
-## JavaScript environment
+Images for each platform have one specific version of Node, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](../build/eas-json). If there's no dedicated configuration option you're looking for, you can use [npm hooks](how-tos/#eas-build-specific-npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
 
-- Node.js 14.15.1
-- Yarn 1.22.10
+When selecting an image for the build you can use the full name provided below or one of the aliases: `default`, `latest`.
 
-## Android build server configuration
+- The use of a specific name guarantees the consistent environment with only minor updates.
+- `default` alias will be assigned to the environment that most closely resembles the configuration used for Expo SDK development.
+- `latest` alias will be assigned to the image with the most up to date versions of the software.
+
+> **Note:**
+>
+> - If you have a bare workflow project: your build is going to use the `default` image unless you provide `image` in **eas.json**.
+> - If you have a managed workflow project: your build is going to use an automatically chosen image, unless you provide `image` in **eas.json**.
+
+## Android build server configurations
 
 - Android workers run on Kubernetes in an isolated environment
   - Every build gets its own container running on a dedicated Kubernetes node
-  - Build resources: 4 CPU, 16 GB RAM (14 GB after k8s overhead)
-- Installed software:
-  - Docker image: `ubuntu:bionic-20201119`
-  - NDK 19.2.5345600
-- NPM cache deployed with Kubernetes
-- Maven cache deployed with Kubernetes, cached repositories:
-  - `maven-central` - [https://repo1.maven.org/maven2/](https://repo1.maven.org/maven2/)
-  - `google` - [https://maven.google.com/](https://maven.google.com/)
-  - `android-tools` - [https://dl.bintray.com/android/android-tools/](https://dl.bintray.com/android/android-tools/)
-  - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
-  - `plugins` - [https://plugins.gradle.org/m2/](https://plugins.gradle.org/m2/)
-
-- Global gradle configuration in `~/.gradle/gradle.properties`:
+  - Build resources: 4 CPU, 12 GB RAM
+- NPM cache deployed with Kubernetes. [Learn more](caching/#javascript-dependencies)
+- Maven cache deployed with Kubernetes. [Learn more](caching/#android-dependencies)
+- Global Gradle configuration in `~/.gradle/gradle.properties`:
 
   ```jsx
   org.gradle.jvmargs=-Xmx14g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
@@ -36,16 +36,130 @@ The software components will become customizable, but they aren't yet. So there 
   org.gradle.daemon=false
   ```
 
-## iOS build server configuration
+- `~/.npmrc`
 
-- iOS worker VMs run on Macs Pro 6.1 in an isolated environement
+  ```
+  user=0
+  unsafe-perm=true
+  registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
+  ```
+
+- `~/.yarnrc.yml`
+
+  ```
+  unsafeHttpWhitelist:
+    - "*"
+  npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
+  ```
+
+#### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `latest`)
+
+<details><summary>Details</summary>
+
+- Docker image: `ubuntu:focal-20210921`
+- NDK 21.4.7075529
+- Node.js 14.18.1
+- Yarn 1.22.10
+- Java 11
+
+</details>
+
+#### Image `ubuntu-20.04-jdk-8-ndk-r21e`
+
+<details><summary>Details</summary>
+
+- Docker image: `ubuntu:focal-20210921`
+- NDK 21.4.7075529
+- Node.js 14.18.1
+- Yarn 1.22.10
+- Java 8
+
+</details>
+
+#### Image `ubuntu-18.04-jdk-11-ndk-r19c`
+
+<details><summary>Details</summary>
+
+- Docker image: `ubuntu:bionic-20210930`
+- NDK 19.2.5345600
+- Node.js 14.18.1
+- Yarn 1.22.10
+- Java 11
+
+</details>
+
+#### Image `ubuntu-18.04-jdk-8-ndk-r19c` (alias `default`)
+
+<details><summary>Details</summary>
+
+- Docker image: `ubuntu:bionic-20210930`
+- NDK 19.2.5345600
+- Node.js 14.18.1
+- Yarn 1.22.10
+- Java 8
+
+</details>
+
+## iOS build server configurations
+
+- iOS worker VMs run on Macs Pro 6.1 in an isolated environment
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads), 64 GB RAM
-  - Build resource limits: 6 cores, 8 GB RAM
-- Installed software:
-  - macOS Catalina 10.15.4
-  - Xcode 12.1 (12A7403)
-  - fastlane 2.170.0
-  - CocoaPods 1.10.0
-  - Ruby 2.6.3p62 (2019-04-16 revision 67580) [universal.x86_64-darwin19]
-- NPM cache (temporary disabled)
+  - Build resource limits: 6 cores, 12 GB RAM
+- npm cache. [Learn more](caching/#javascript-dependencies)
+- `~/.npmrc`
+
+  ```
+  registry=http://10.254.24.8:4873
+  ```
+
+- `~/.yarnrc.yml`
+
+  ```
+  unsafeHttpWhitelist:
+    - "*"
+  npmRegistryServer: "registry=http://10.254.24.8:4873"
+  ```
+
+#### Image `macos-monterey-12.1-xcode-13.2`
+
+<details><summary>Details</summary>
+
+- macOS Monterey 12.1
+- Xcode 13.2.1 (13C100)
+- Node.js 14.18.1
+- Yarn 1.22.10
+- npm 6.14.8
+- fastlane 2.201.0
+- CocoaPods 1.11.2
+- Ruby 2.7
+
+</details>
+
+#### Image `macos-big-sur-11.4-xcode-13.0` (alias `latest`, `default`)
+
+<details><summary>Details</summary>
+
+- macOS Big Sur 11.4
+- Xcode 13.0 (13A233)
+- Node.js 14.18.1
+- Yarn 1.22.10
+- fastlane 2.185.1
+- CocoaPods 1.10.1
+- Ruby 2.7
+
+</details>
+
+#### Image `macos-big-sur-11.4-xcode-12.5`
+
+<details><summary>Details</summary>
+
+- macOS Big Sur 11.4
+- Xcode 12.5 (12E5244e)
+- Node.js 14.18.1
+- Yarn 1.22.10
+- fastlane 2.185.1
+- CocoaPods 1.10.1
+- Ruby 2.7
+
+</details>

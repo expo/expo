@@ -2,15 +2,13 @@
 title: Configuring the Status Bar
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 The status bar configuration often feels like a small detail to a developer, but it can make a big difference on the overall feel and perceived level of polish of your app by users. When you have a white status bar on a white background, you just know something isn't going quite right.
 
 This guide is intended to help you know what tools are at your disposal to configure the status bar for your iOS and Android apps.
 
-<div style={{backgroundColor: '#fafafa', flex: 1, textAlign: 'center'}}>
-  <img src="/static/images/status-bar-style-comparison.png" alt="A comparison of good and bad status bar styling" />
-</div>
-
-<br />
+<ImageSpotlight src="/static/images/status-bar-style-comparison.png" alt="A comparison of good and bad status bar styling" />
 
 > 👀 Notice how bad the contrast is between the status bar text and the background in the second image. This is what we want to try to avoid.
 
@@ -18,7 +16,7 @@ This guide is intended to help you know what tools are at your disposal to confi
 
 > This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo managed workflow to customize the status bar before the app has loaded, while the splash screen is presented.
 
-The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in `app.json`. The options available are similar to those provided by [expo-status-bar](../versions/latest/sdk/status-bar.md).
+The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in **app.json**. The options available are similar to those provided by [expo-status-bar](../versions/latest/sdk/status-bar.md).
 
 <div style={{marginTop: -10}} />
 

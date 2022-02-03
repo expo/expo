@@ -34,19 +34,21 @@ export function setImagePickerManifestActivity(
   return androidManifest;
 }
 
-const withImagePickerManifestActivity: ConfigPlugin = config => {
+const withImagePickerManifestActivity: ConfigPlugin = (config) => {
   // This plugin has no ability to remove the activity that it adds.
-  return withAndroidManifest(config, async config => {
+  return withAndroidManifest(config, async (config) => {
     config.modResults = setImagePickerManifestActivity(config.modResults);
     return config;
   });
 };
 
-const withImagePicker: ConfigPlugin<{
-  photosPermission?: string;
-  cameraPermission?: string;
-  microphonePermission?: string;
-} | void> = (config, { photosPermission, cameraPermission, microphonePermission } = {}) => {
+const withImagePicker: ConfigPlugin<
+  {
+    photosPermission?: string;
+    cameraPermission?: string;
+    microphonePermission?: string;
+  } | void
+> = (config, { photosPermission, cameraPermission, microphonePermission } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSPhotoLibraryUsageDescription =

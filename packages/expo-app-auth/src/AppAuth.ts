@@ -1,4 +1,4 @@
-import { CodedError, UnavailabilityError } from '@unimodules/core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 
 import {
@@ -55,10 +55,12 @@ async function _executeAsync(props: OAuthProps): Promise<TokenResponse> {
   return await ExpoAppAuth.executeAsync(props);
 }
 
+/** @deprecated `expo-app-auth` has been deprecated in favor of `expo-auth-session`. [Learn more](https://expo.fyi/expo-app-auth-deprecated). */
 export function getDefaultOAuthRedirect(): string {
   return `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
 }
 
+/** @deprecated `expo-app-auth` has been deprecated in favor of `expo-auth-session`. [Learn more](https://expo.fyi/expo-app-auth-deprecated). */
 export async function authAsync(props: OAuthProps): Promise<TokenResponse> {
   if (!ExpoAppAuth.executeAsync) {
     throw new UnavailabilityError('expo-app-auth', 'authAsync');
@@ -66,6 +68,7 @@ export async function authAsync(props: OAuthProps): Promise<TokenResponse> {
   return await _executeAsync(props);
 }
 
+/** @deprecated `expo-app-auth` has been deprecated in favor of `expo-auth-session`. [Learn more](https://expo.fyi/expo-app-auth-deprecated). */
 export async function refreshAsync(
   props: OAuthProps,
   refreshToken: string
@@ -83,7 +86,7 @@ export async function refreshAsync(
   });
 }
 
-/* JS Method */
+/** @deprecated `expo-app-auth` has been deprecated in favor of `expo-auth-session`. [Learn more](https://expo.fyi/expo-app-auth-deprecated). */
 export async function revokeAsync(
   { clientId, issuer, serviceConfiguration }: OAuthBaseProps,
   { token, isClientIdProvided = false }: OAuthRevokeOptions
@@ -128,4 +131,9 @@ export async function revokeAsync(
   }
 }
 
-export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;
+export const {
+  /** @deprecated `expo-app-auth` has been deprecated in favor of `expo-auth-session`. [Learn more](https://expo.fyi/expo-app-auth-deprecated). */
+  OAuthRedirect,
+  /** @deprecated `expo-app-auth` has been deprecated in favor of `expo-auth-session`. [Learn more](https://expo.fyi/expo-app-auth-deprecated). */
+  URLSchemes,
+} = ExpoAppAuth;

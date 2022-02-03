@@ -1,6 +1,7 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import path from 'path';
+import semver from 'semver';
 
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
@@ -22,7 +23,12 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
     logger.info('\n📤 Updating workspace projects...');
 
     const workspaceInfo = await Workspace.getInfoAsync();
-    const dependenciesKeys = ['dependencies', 'devDependencies', 'peerDependencies'];
+    const dependenciesKeys = [
+      'dependencies',
+      'devDependencies',
+      'peerDependencies',
+      'optionalDependencies',
+    ];
 
     const parcelsObject = parcels.reduce((acc, parcel) => {
       acc[parcel.pkg.packageName] = parcel;
@@ -61,7 +67,10 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
           for (const { pkg, state } of projectDependencies) {
             const currentVersionRange = dependenciesObject[pkg.packageName];
 
-            if (!currentVersionRange) {
+            if (
+              !currentVersionRange ||
+              !shouldUpdateDependencyVersion(projectName, currentVersionRange, state.releaseVersion)
+            ) {
               continue;
             }
 
@@ -83,9 +92,24 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
         // Save project's `package.json`.
         await JsonFile.writeAsync(projectPackageJsonPath, projectPackageJson);
 
-        // Flush batched logs.
-        batch.flush();
+        // Flush batched logs if there is at least one version change in the project.
+        if (batch.batchedLogs.length > 1) {
+          batch.flush();
+        }
       })
     );
   }
 );
+
+/**
+ * Returns boolean indicating if the version range should be updated. Our policy assumes that `expo` package controls versions
+ * of other expo packages (e.g. expo-modules-core, expo-modules-autolinking). Any other package (or workspace project)
+ * doesn't need to be updated as long as the new version still satisfies the version range.
+ *
+ * @param packageName Name of the package to update
+ * @param currentRange Current version range of the dependency
+ * @param version The new version of the dependency
+ */
+function shouldUpdateDependencyVersion(packageName: string, currentRange: string, version: string) {
+  return packageName === 'expo' || !semver.satisfies(version, currentRange);
+}

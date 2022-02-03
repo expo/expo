@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
-import { Subscription } from '@unimodules/core';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { Subscription } from 'expo-modules-core';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -216,7 +216,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
             minimumValue={0}
             maximumValue={20}
             value={this.state.cornerRadius}
-            onValueChange={cornerRadius => this.setState({ cornerRadius })}
+            onValueChange={(cornerRadius) => this.setState({ cornerRadius })}
           />
         </View>
         {this.state.credentials && (

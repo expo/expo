@@ -43,7 +43,7 @@ If you would like to customize the Prettier settings, create a file named `.pret
   "printWidth": 100,
   "tabWidth": 2,
   "singleQuote": true,
-  "jsxBracketSameLine": true,
+  "bracketSameLine": true,
   "trailingComma": "es5"
 }
 ```

@@ -1,13 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+  <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
     <!-- Customize your theme here. -->
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
-  <style name="Theme.Exponent.Light" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="Theme.Exponent.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -15,7 +15,7 @@
     <item name="android:windowBackground">@color/white</item>
   </style>
 
-  <style name="Theme.Exponent.Dark" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="Theme.Exponent.Dark" parent="Theme.MaterialComponents.Light.NoActionBar">
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -32,7 +32,7 @@
   </style>
 
   <!-- Theme passed to RN. -->
-  <style name="Theme.Exponent.None" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="Theme.Exponent.None" parent="Theme.MaterialComponents.Light.NoActionBar">
     <item name="android:textColor">#000000</item>
     <item name="android:editTextStyle">@style/ExponentEditText</item>
   </style>
@@ -130,7 +130,7 @@
     <item name="android:layout_weight">1.0</item>
   </style>
 
-  <style name="InfoToolbar" parent="Theme.AppCompat">
+  <style name="InfoToolbar" parent="Theme.MaterialComponents">
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="android:textColorPrimary">@color/white</item>
     <item name="android:textColorSecondary">@color/white</item>

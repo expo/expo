@@ -1,10 +1,10 @@
 const { withDangerousMod, IOSConfig } = require('@expo/config-plugins');
 const fs = require('fs-extra');
 
-const withDevMenu = config => {
+const withDevMenu = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
       let contents = await fs.readFile(fileInfo.path, 'utf-8');
       if (fileInfo.language === 'objc') {
@@ -25,7 +25,8 @@ const withDevMenu = config => {
         }
 
         // Make the extraModules mutable
-        const modulesRegex = /NSArray<id<RCTBridgeModule>>\s?\*extraModules\s?=\s?\[_moduleRegistryAdapter extraModulesForBridge:bridge\];/;
+        const modulesRegex =
+          /NSArray<id<RCTBridgeModule>>\s?\*extraModules\s?=\s?\[_moduleRegistryAdapter extraModulesForBridge:bridge\];/;
         if (contents.match(modulesRegex)) {
           contents = contents.replace(
             modulesRegex,

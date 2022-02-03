@@ -1,16 +1,11 @@
-import React from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
+import React, { PropsWithChildren } from 'react';
+import { StyleSheet, Text, TextProps, View } from 'react-native';
 
-export default function HeadingText(props: {
-  style?: StyleProp<TextStyle>;
-  children?: string | React.ReactChildren;
-}) {
-  return (
-    <View style={styles.container}>
-      <Text style={[styles.headingText, props.style]}>{props.children}</Text>
-    </View>
-  );
-}
+const HeadingText = ({ children, style }: PropsWithChildren<TextProps>) => (
+  <View style={styles.container}>
+    <Text style={[styles.headingText, style]}>{children}</Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -21,3 +16,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
+export default HeadingText;

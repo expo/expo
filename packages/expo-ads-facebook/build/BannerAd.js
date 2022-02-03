@@ -1,10 +1,10 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
 export default class BannerAd extends React.Component {
     render() {
         const { type, onPress, onError, style, ...props } = this.props;
         const size = _getSizeForAdType(type);
-        return (React.createElement(NativeBannerView, Object.assign({ size: size, onAdPress: onPress, onAdError: onError, style: [style, { height: size }] }, props)));
+        return (React.createElement(NativeBannerView, { size: size, onAdPress: onPress, onAdError: onError, style: [style, { height: size }], ...props }));
     }
 }
 function _getSizeForAdType(type) {

@@ -1,5 +1,6 @@
 import * as Directories from './Directories';
 
+export const LOCAL_API_HOST = 'localhost:3000';
 export const STAGING_API_HOST = 'staging.exp.host';
 export const PRODUCTION_API_HOST = 'exp.host';
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-battery",
-  "version": "4.0.0",
+  "version": "6.1.0",
   "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "main": "build/Battery.js",
   "types": "build/Battery.d.ts",
@@ -28,11 +28,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/battery/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/battery/",
+  "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   },
   "peerDependencies": {
-    "@unimodules/core": "~5.1.2"
+    "expo": "*"
   }
 }

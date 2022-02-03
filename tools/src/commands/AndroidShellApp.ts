@@ -65,5 +65,9 @@ export default (program: any) => {
     .option('--keystoreAlias [string]', 'Keystore alias (optional)')
     .option('--keystorePassword [string]', 'Keystore password (optional)')
     .option('--keyPassword [string]', 'Key password (optional)')
+    .option(
+      '--privateConfigFile [string]',
+      'Path to privateConfig file (aka exp.android.config in app.json) (optional)'
+    )
     .asyncAction(action);
 };

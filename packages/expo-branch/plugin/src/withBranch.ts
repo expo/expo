@@ -5,7 +5,7 @@ import { withBranchIOS } from './withBranchIOS';
 
 const pkg = require('expo-branch/package.json');
 
-const withBranch: ConfigPlugin = config => {
+const withBranch: ConfigPlugin = (config) => {
   config = withBranchAndroid(config);
   config = withBranchIOS(config);
   return config;

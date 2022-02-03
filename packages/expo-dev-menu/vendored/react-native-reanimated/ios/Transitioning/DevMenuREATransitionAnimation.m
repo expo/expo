@@ -18,7 +18,7 @@ CGFloat DevMenuSimAnimationDragCoefficient()
     // we need it to be 1.0.
     return 1.0;
   } else {
-    return (CGFloat)UIAnimationDragCoefficient();
+    return 1.0;
   }
 #else
   return 1.0;

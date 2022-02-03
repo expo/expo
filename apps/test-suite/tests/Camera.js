@@ -1,8 +1,5 @@
-'use strict';
-
-import { Video } from 'expo-av';
+import { Audio, Video } from 'expo-av';
 import { Camera } from 'expo-camera';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform } from 'react-native';
 
@@ -13,29 +10,30 @@ export const name = 'Camera';
 const style = { width: 200, height: 200 };
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Camera', () => {
     let instance = null;
     let originalTimeout;
 
-    const refSetter = ref => {
+    const refSetter = (ref) => {
       instance = ref;
     };
 
     const mountAndWaitFor = (child, propName = 'onCameraReady') =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const response = originalMountAndWaitFor(child, propName, setPortalChild);
         setTimeout(() => resolve(response), 1500);
       });
 
     t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.CAMERA);
+        return Camera.requestPermissionsAsync();
       });
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.AUDIO_RECORDING);
+        return Audio.requestPermissionsAsync();
       });
 
       originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -47,7 +45,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.beforeEach(async () => {
-      const { status } = await Permissions.getAsync(Permissions.CAMERA);
+      const { status } = await Camera.getPermissionsAsync();
       t.expect(status).toEqual('granted');
     });
 
@@ -179,6 +177,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             t.expect(picture).toBeDefined();
             t.expect(picture.exif).toBeDefined();
             t.expect(picture.exif.LensModel).toMatch('back');
+            await cleanupPortal();
           });
 
           t.it('returns `exif.LensModel ~= front` if camera type is set to front', async () => {
@@ -189,6 +188,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             t.expect(picture).toBeDefined();
             t.expect(picture.exif).toBeDefined();
             t.expect(picture.exif.LensModel).toMatch('front');
+            await cleanupPortal();
           });
 
           t.it('returns `exif.DigitalZoom ~= false` if zoom is not set', async () => {
@@ -197,6 +197,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             t.expect(picture).toBeDefined();
             t.expect(picture.exif).toBeDefined();
             t.expect(picture.exif.DigitalZoomRatio).toBeFalsy();
+            await cleanupPortal();
           });
 
           t.it('returns `exif.DigitalZoom ~= false` if zoom is set to 0', async () => {
@@ -205,6 +206,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             t.expect(picture).toBeDefined();
             t.expect(picture.exif).toBeDefined();
             t.expect(picture.exif.DigitalZoomRatio).toBeFalsy();
+            await cleanupPortal();
           });
 
           let smallerRatio = null;
@@ -216,6 +218,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             t.expect(picture.exif).toBeDefined();
             t.expect(picture.exif.DigitalZoomRatio).toBeGreaterThan(0);
             smallerRatio = picture.exif.DigitalZoomRatio;
+            await cleanupPortal();
           });
 
           t.it(
@@ -226,6 +229,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
               t.expect(picture).toBeDefined();
               t.expect(picture.exif).toBeDefined();
               t.expect(picture.exif.DigitalZoomRatio).toBeGreaterThan(smallerRatio);
+              await cleanupPortal();
             }
           );
         }
@@ -249,6 +253,26 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(response.uri).toMatch(/^file:\/\//);
       });
 
+      if (Platform.OS === 'ios') {
+        t.it('throws for an unavailable codec', async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+
+          await instance
+            .recordAsync({
+              codec: '123',
+            })
+            .catch((error) => {
+              t.expect(error.message).toMatch(/(?=.*codec)(?=.*is not supported)/i);
+            });
+        });
+
+        t.it('returns available codecs', async () => {
+          const codecs = await Camera.getAvailableVideoCodecsAsync();
+          t.expect(codecs).toBeDefined();
+          t.expect(codecs.length).toBeGreaterThan(0);
+        });
+      }
+
       let recordedFileUri = null;
 
       t.it('stops the recording after maxDuration', async () => {
@@ -269,7 +293,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
 
       // Test for the fix to: https://github.com/expo/expo/issues/1976
-      const testFrontCameraRecording = async camera => {
+      const testFrontCameraRecording = async (camera) => {
         await mountAndWaitFor(camera);
         const response = await instance.recordAsync({ maxDuration: 2 });
 
@@ -327,7 +351,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.it('started/stopped manually', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
-          const recordFor = duration =>
+          const recordFor = (duration) =>
             new Promise(async (resolve, reject) => {
               const recordingPromise = instance.recordAsync();
               await waitFor(duration);
@@ -350,7 +374,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.it('started/stopped automatically', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
-          const recordFor = duration =>
+          const recordFor = (duration) =>
             new Promise(async (resolve, reject) => {
               try {
                 const response = await instance.recordAsync({ maxDuration: duration / 1000 });

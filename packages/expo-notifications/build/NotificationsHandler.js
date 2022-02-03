@@ -1,6 +1,7 @@
-import { EventEmitter, CodedError, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, CodedError, UnavailabilityError } from 'expo-modules-core';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
 export class NotificationTimeoutError extends CodedError {
+    info;
     constructor(notificationId, notification) {
         super('ERR_NOTIFICATION_TIMEOUT', `Notification handling timed out for ID ${notificationId}.`);
         this.info = { id: notificationId, notification };

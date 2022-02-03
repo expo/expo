@@ -2,15 +2,15 @@
 
 import EXDevMenuInterface
 
-class DevMenuBridgeProxyDelegate : DevMenuDelegateProtocol {
+class DevMenuBridgeProxyDelegate: DevMenuDelegateProtocol {
   private let bridge: RCTBridge
-  
+
   init(_ bridge: RCTBridge) {
     self.bridge = bridge
   }
-  
+
   public func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject? {
-    return self.bridge;
+    return self.bridge
   }
 }
 
@@ -29,13 +29,13 @@ class Dispatch {
 }
 
 /**
- A container for dev menu items array.
- NSMapTable requires the second generic type to be a class, so `[DevMenuItem]` is not allowed.
+ A container for array.
+ NSMapTable requires the second generic type to be a class, so `[DevMenuScreen]` is not allowed.
  */
-class DevMenuItemsContainer {
-  fileprivate let items: [DevMenuItem]
+class DevMenuCacheContainer<T> {
+  fileprivate let items: [T]
 
-  fileprivate init(items: [DevMenuItem]) {
+  fileprivate init(items: [T]) {
     self.items = items
   }
 }
@@ -43,13 +43,30 @@ class DevMenuItemsContainer {
 /**
  A hash map storing an array of dev menu items for specific extension.
  */
-private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, DevMenuItemsContainer>.weakToStrongObjects()
+private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, DevMenuItemsContainerProtocol>.weakToStrongObjects()
+
+/**
+ A hash map storing an array of dev menu screens for specific extension.
+ */
+private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, DevMenuCacheContainer<DevMenuScreen>>.weakToStrongObjects()
+
+/**
+ A hash map storing an array of dev menu screens for specific extension.
+ */
+private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtocol, DevMenuCacheContainer<DevMenuDataSourceProtocol>>.weakToStrongObjects()
 
 /**
  Manages the dev menu and provides most of the public API.
  */
 @objc
 open class DevMenuManager: NSObject, DevMenuManagerProtocol {
+  var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
+  lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
+  lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
+  var canLaunchDevMenuOnStart = true
+
+  public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
+
   /**
    Shared singleton instance.
    */
@@ -71,13 +88,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    */
   public private(set) var session: DevMenuSession?
 
+  var currentScreen: String?
+
   /**
    The delegate of `DevMenuManager` implementing `DevMenuDelegateProtocol`.
    */
   @objc
   public var delegate: DevMenuDelegateProtocol? {
     didSet {
-      guard DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished, let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+      guard self.canLaunchDevMenuOnStart && (DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished), let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
         return
       }
       if bridge.isLoading {
@@ -87,7 +106,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       }
     }
   }
-  
+
   @objc
   public static func configure(withBridge bridge: AnyObject) {
     if let bridge = bridge as? RCTBridge {
@@ -100,7 +119,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
     NotificationCenter.default.removeObserver(self)
-  
+
     DispatchQueue.main.async {
       self.openMenu()
     }
@@ -109,8 +128,11 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
-    
+    self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
+    self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
+    self.readAutoLaunchDisabledState()
+    self.expoSessionDelegate.restoreSession()
   }
 
   /**
@@ -126,8 +148,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    */
   @objc
   @discardableResult
+  public func openMenu(_ screen: String? = nil) -> Bool {
+    return setVisibility(true, screen: screen)
+  }
+
+  @objc
+  @discardableResult
   public func openMenu() -> Bool {
-    return setVisibility(true)
+    appInstance.sendOpenEvent()
+    return openMenu(nil)
   }
 
   /**
@@ -136,11 +165,11 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   @discardableResult
   public func closeMenu() -> Bool {
-    if (isVisible) {
+    if isVisible {
       appInstance.sendCloseEvent()
       return true
     }
-    
+
     return false
   }
 
@@ -162,22 +191,36 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     return isVisible ? closeMenu() : openMenu()
   }
 
-  // MARK: internals
+  @objc
+  public func setCurrentScreen(_ screenName: String?) {
+    currentScreen = screenName
+  }
 
-  func dispatchAction(withId actionId: String) {
-    guard let extensions = extensions else {
+  @objc
+  public func sendEventToDelegateBridge(_ eventName: String, data: Any?) {
+    guard let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
       return
     }
-    for ext in extensions {
-      guard let devMenuItems = loadDevMenuItems(forExtension: ext) else {
-        continue
-      }
-      for item in devMenuItems {
-        if let action = item as? DevMenuAction, action.actionId == actionId {
-          if delegate?.devMenuManager?(self, willDispatchAction: action) ?? true {
-            action.action()
-          }
-          return
+
+    let args = data == nil ? [eventName] : [eventName, data!]
+    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: args)
+  }
+
+  // MARK: internals
+
+  func dispatchCallable(withId id: String, args: [String: Any]?) {
+    for callable in devMenuCallable {
+      if callable.id == id {
+        switch callable {
+          case let action as DevMenuExportedAction:
+            if args != nil {
+              NSLog("[DevMenu] Action $@ was called with arguments.", id)
+            }
+            action.call()
+          case let function as DevMenuExportedFunction:
+            function.call(args: args)
+          default:
+            NSLog("[DevMenu] Callable $@ has unknown type.", id)
         }
       }
     }
@@ -192,44 +235,73 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return nil
     }
     let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
-    let uniqueExtensionNames: [String] = Array(Set(allExtensions.map({ type(of: $0).moduleName() })))
+
+    let uniqueExtensionNames = Set(
+      allExtensions
+        .map { type(of: $0).moduleName!() }
+        .compactMap { $0 } // removes nils
+    ).sorted()
 
     return uniqueExtensionNames
       .map({ bridge.module(forName: DevMenuUtils.stripRCT($0)) })
-      .filter({ $0 is DevMenuExtensionProtocol }) as! [DevMenuExtensionProtocol]
+      .filter({ $0 is DevMenuExtensionProtocol }) as? [DevMenuExtensionProtocol]
   }
 
   /**
    Gathers `DevMenuItem`s from all dev menu extensions and returns them as an array.
    */
-  var devMenuItems: [DevMenuItem] {
-    var items: [DevMenuItem] = []
-
-    extensions?.forEach({ ext in
-      if let extensionItems = loadDevMenuItems(forExtension: ext) {
-        items.append(contentsOf: extensionItems)
-      }
-    })
-    return items.sorted {
-      if $0.importance == $1.importance {
-        return $0.label().localizedCaseInsensitiveCompare($1.label()) == .orderedAscending
-      }
-      return $0.importance > $1.importance
-    }
+  var devMenuItems: [DevMenuScreenItem] {
+    return extensions?.map { loadDevMenuItems(forExtension: $0)?.getAllItems() ?? [] }.flatMap { $0 } ?? []
   }
 
   /**
-   Returns an array of `DevMenuAction`s returned by the dev menu extensions.
+   Gathers root `DevMenuItem`s (elements on the main screen) from all dev menu extensions and returns them as an array.
    */
-  var devMenuActions: [DevMenuAction] {
-    return devMenuItems.filter { $0 is DevMenuAction } as! [DevMenuAction]
+  var devMenuRootItems: [DevMenuScreenItem] {
+    return extensions?.map { loadDevMenuItems(forExtension: $0)?.getRootItems() ?? [] }.flatMap { $0 } ?? []
+  }
+
+  /**
+   Gathers `DevMenuScreen`s from all dev menu extensions and returns them as an array.
+   */
+  var devMenuScreens: [DevMenuScreen] {
+    return extensions?.map { loadDevMenuScreens(forExtension: $0) ?? [] }.flatMap { $0 } ?? []
+  }
+
+  /**
+   Gathers `DevMenuDataSourceProtocol`s from all dev menu extensions and returns them as an array.
+   */
+  var devMenuDataSources: [DevMenuDataSourceProtocol] {
+    return extensions?.map { loadDevMenuDataSources(forExtension: $0) ?? [] }.flatMap { $0 } ?? []
+  }
+
+  /**
+   Returns an array of `DevMenuExportedCallable`s returned by the dev menu extensions.
+   */
+  var devMenuCallable: [DevMenuExportedCallable] {
+    let providers = currentScreen == nil ?
+      devMenuItems.filter { $0 is DevMenuCallableProvider } :
+      (devMenuScreens.first { $0.screenName == currentScreen }?.getAllItems() ?? []).filter { $0 is DevMenuCallableProvider }
+
+    // We use compactMap here to remove nils
+    return (providers as! [DevMenuCallableProvider]).compactMap { $0.registerCallable?() }
   }
 
   /**
    Returns an array of dev menu items serialized to the dictionary.
    */
-  func serializedDevMenuItems() -> [[String : Any]] {
-    return devMenuItems.map({ $0.serialize() })
+  func serializedDevMenuItems() -> [[String: Any]] {
+    return devMenuRootItems
+      .sorted(by: { $0.importance > $1.importance })
+      .map({ $0.serialize() })
+  }
+
+  /**
+   Returns an array of dev menu screens serialized to the dictionary.
+   */
+  func serializedDevMenuScreens() -> [[String: Any]] {
+    return devMenuScreens
+      .map({ $0.serialize() })
   }
 
   // MARK: delegate stubs
@@ -252,6 +324,16 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     return delegate?.shouldShowOnboarding?(manager: self) ?? !DevMenuSettings.isOnboardingFinished
   }
 
+  func readAutoLaunchDisabledState() {
+    let userDefaultsValue = UserDefaults.standard.bool(forKey: "EXDevMenuDisableAutoLaunch")
+    if userDefaultsValue {
+      self.canLaunchDevMenuOnStart = false
+      UserDefaults.standard.removeObject(forKey: "EXDevMenuDisableAutoLaunch")
+    } else {
+      self.canLaunchDevMenuOnStart = true
+    }
+  }
+
   @available(iOS 12.0, *)
   var userInterfaceStyle: UIUserInterfaceStyle {
     return delegate?.userInterfaceStyle?(forDevMenuManager: self) ?? UIUserInterfaceStyle.unspecified
@@ -259,19 +341,48 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
 
   // MARK: private
 
-  private func loadDevMenuItems(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuItem]? {
+  private func loadDevMenuItems(forExtension ext: DevMenuExtensionProtocol) -> DevMenuItemsContainerProtocol? {
     if let itemsContainer = extensionToDevMenuItemsMap.object(forKey: ext) {
-      return itemsContainer.items
+      return itemsContainer
     }
-    if let items = ext.devMenuItems?() {
-      let container = DevMenuItemsContainer(items: items)
-      extensionToDevMenuItemsMap.setObject(container, forKey: ext)
-      return items
+
+    if let itemsContainer = ext.devMenuItems?(extensionSettings) {
+      extensionToDevMenuItemsMap.setObject(itemsContainer, forKey: ext)
+      return itemsContainer
     }
+
     return nil
   }
 
-  private func setVisibility(_ visible: Bool) -> Bool {
+  private func loadDevMenuScreens(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuScreen]? {
+    if let screenContainer = extensionToDevMenuScreensMap.object(forKey: ext) {
+      return screenContainer.items
+    }
+
+    if let screens = ext.devMenuScreens?(extensionSettings) {
+      let container = DevMenuCacheContainer<DevMenuScreen>(items: screens)
+      extensionToDevMenuScreensMap.setObject(container, forKey: ext)
+      return screens
+    }
+
+    return nil
+  }
+
+  private func loadDevMenuDataSources(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuDataSourceProtocol]? {
+    if let dataSourcesContainer = extensionToDevMenuDataSourcesMap.object(forKey: ext) {
+      return dataSourcesContainer.items
+    }
+
+    if let dataSources = ext.devMenuDataSources?(extensionSettings) {
+      let container = DevMenuCacheContainer<DevMenuDataSourceProtocol>(items: dataSources)
+      extensionToDevMenuDataSourcesMap.setObject(container, forKey: ext)
+      return dataSources
+    }
+
+    return nil
+  }
+
+  private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
     if !canChangeVisibility(to: visible) {
       return false
     }
@@ -280,7 +391,8 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
         debugPrint("DevMenuManager: The delegate is unset or it didn't provide a bridge to render for.")
         return false
       }
-      session = DevMenuSession(bridge: bridge, appInfo: delegate?.appInfo?(forDevMenuManager: self))
+      session = DevMenuSession(bridge: bridge, appInfo: delegate?.appInfo?(forDevMenuManager: self), screen: screen)
+      setCurrentScreen(screen)
       DispatchQueue.main.async { self.window?.makeKeyAndVisible() }
     } else {
       session = nil

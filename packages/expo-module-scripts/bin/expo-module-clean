@@ -10,9 +10,7 @@ fi
 directory=$1
 # Support `yarn clean plugin` to delete ./plugin/build/
 if [[ -n $directory ]]; then
-  rm -rf "$(pwd)/$directory/build"
+  rm -rf "$directory/build"
 else
   rm -rf build
 fi
-
-

@@ -1,6 +1,9 @@
 import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
 export default class AppLoading extends React.Component {
+    static defaultProps = {
+        autoHideSplash: true,
+    };
     constructor(props) {
         super(props);
         SplashScreen.preventAutoHideAsync();
@@ -22,7 +25,4 @@ export default class AppLoading extends React.Component {
         return null;
     }
 }
-AppLoading.defaultProps = {
-    autoHideSplash: true,
-};
 //# sourceMappingURL=AppLoadingNativeWrapper.js.map

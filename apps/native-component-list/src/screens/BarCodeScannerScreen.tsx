@@ -1,6 +1,4 @@
-import { usePermissions } from '@use-expo/permissions';
-import { BarCodeScanner, BarCodePoint, BarCodeBounds } from 'expo-barcode-scanner';
-import * as Permissions from 'expo-permissions';
+import { BarCodeScanner, BarCodePoint, BarCodeBounds, usePermissions } from 'expo-barcode-scanner';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
@@ -39,17 +37,24 @@ function reducer(state: State, action: Partial<State>): State {
 }
 
 export default function BarcodeScannerScreen() {
-  const [isPermissionsGranted] = usePermissions(Permissions.CAMERA, { ask: true });
+  const [permission, requestPermission] = usePermissions();
 
-  if (!isPermissionsGranted) {
-    return (
-      <View style={styles.container}>
-        <Text>You have not granted permission to use the camera on this device!</Text>
-      </View>
-    );
+  if (!permission) {
+    return null;
   }
 
-  return <BarcodeScannerExample />;
+  if (permission.granted) {
+    return <BarcodeScannerExample />;
+  }
+
+  return (
+    <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <Text style={{ margin: 16 }}>
+        You have not granted permission to use the camera on this device!
+      </Text>
+      <Button onPress={requestPermission} title="Grant permission" />
+    </View>
+  );
 }
 
 function BarcodeScannerExample() {
@@ -171,9 +176,21 @@ function BarcodeScannerExample() {
       <View style={styles.toolbar}>
         <Button color={BUTTON_COLOR} title="Direction" onPress={toggleType} />
         <Button color={BUTTON_COLOR} title="Orientation" onPress={toggleScreenOrientationState} />
-        <Button color={BUTTON_COLOR} title="Bounding box" onPress={toggleBoundingBox} />
-        <Button color={BUTTON_COLOR} title="Text" onPress={toggleText} />
-        <Button color={BUTTON_COLOR} title="Alerting" onPress={toggleAlertingAboutResult} />
+        <Button
+          title="Bounding box"
+          onPress={toggleBoundingBox}
+          color={state.showBoundingBox ? undefined : BUTTON_COLOR}
+        />
+        <Button
+          title="Text"
+          onPress={toggleText}
+          color={state.showText ? undefined : BUTTON_COLOR}
+        />
+        <Button
+          title="Alerting"
+          onPress={toggleAlertingAboutResult}
+          color={state.alerting ? undefined : BUTTON_COLOR}
+        />
       </View>
     </View>
   );

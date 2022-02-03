@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "9.0.0",
+  "version": "10.1.0",
   "description": "ExpoSharing standalone module",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
@@ -29,13 +29,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/sharing/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
   "dependencies": {},
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-file-system-interface": "*"
-  },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

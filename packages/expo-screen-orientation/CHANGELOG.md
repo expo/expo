@@ -6,10 +6,67 @@
 
 ### 🎉 New features
 
-- Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
-- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.1.1 — 2021-12-08
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.0 — 2021-12-03
+
+### 💡 Others
+
+- [plugin] Added SDK 43 tests for new AppDelegate template ([#14763](https://github.com/expo/expo/pull/14763) by [@EvanBacon](https://github.com/EvanBacon))
+- The app delegate subscriber on iOS has been separated from the singleton module to hook into the new implementation of `ExpoAppDelegate`. ([#14867](https://github.com/expo/expo/pull/14867) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- Extra setup on iOS bare projects is not necessary from the support of `ExpoReactDelegateHandler`. ([#15140](https://github.com/expo/expo/pull/15140) by [@kudo](https://github.com/kudo))
+
+## 4.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes
+
+- Fixed an issue with building on Xcode 13. ([#13898](https://github.com/expo/expo/pull/13898) by [@cruzach](https://github.com/cruzach))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+- Fixed integration with the `react-native-screens` orientation prop. ([#14541](https://github.com/expo/expo/pull/14541) by [@lukmccall](https://github.com/lukmccall))
+- Fixed orientation lock not working in bare workflow on iOS. ([#14543](https://github.com/expo/expo/pull/14543) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Export missing `Subscription` type. ([#14150](https://github.com/expo/expo/pull/14150) by [@Simek](https://github.com/Simek))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.2.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+
+## 3.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ## 3.0.0 — 2021-01-15
 

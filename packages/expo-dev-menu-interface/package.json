@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu-interface",
-  "version": "0.1.2",
+  "version": "0.5.1",
   "description": "Interface for expo-dev-menu",
   "main": "index.js",
   "keywords": [
@@ -21,5 +21,8 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io"
+  "homepage": "https://docs.expo.dev",
+  "peerDependencies": {
+    "expo": "*"
+  }
 }

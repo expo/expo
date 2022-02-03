@@ -24,10 +24,20 @@ export async function vendorAsync(
     throw new Error('Missing `*.podspec` file!');
   }
 
-  const podspec = await readPodspecAsync(path.join(sourceDirectory, podspecFile));
+  let podspecPath = path.join(sourceDirectory, podspecFile);
+  if (config.preReadPodspecHookAsync) {
+    podspecPath = await config.preReadPodspecHookAsync(podspecPath);
+  }
+  const podspec = await readPodspecAsync(podspecPath);
 
   // Get a list of source files specified by the podspec.
-  const files = await searchFilesAsync(sourceDirectory, podspec.source_files);
+  const filesPatterns = ([] as string[]).concat(
+    podspec.source_files,
+    podspec.ios?.source_files ?? [],
+    podspec.preserve_paths ?? []
+  );
+
+  const files = await searchFilesAsync(sourceDirectory, filesPatterns);
 
   await copyVendoredFilesAsync(files, {
     sourceDirectory,

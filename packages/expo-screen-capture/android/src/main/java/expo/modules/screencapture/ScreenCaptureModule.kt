@@ -4,12 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.view.WindowManager
 
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.errors.CurrentActivityNotFoundException
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.errors.CurrentActivityNotFoundException
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
 
 class ScreenCaptureModule(context: Context) : ExportedModule(context) {
 
@@ -28,7 +28,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
   fun preventScreenCapture(promise: Promise) {
     val activity = getCurrentActivity()
 
-    activity.runOnUiThread{
+    activity.runOnUiThread {
       try {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
       } catch (exception: Exception) {
@@ -42,7 +42,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
   fun allowScreenCapture(promise: Promise) {
     val activity = getCurrentActivity()
 
-    activity.runOnUiThread{
+    activity.runOnUiThread {
       try {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
       } catch (exception: Exception) {

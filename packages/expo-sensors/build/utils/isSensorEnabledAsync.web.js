@@ -1,5 +1,49 @@
-import { Platform } from '@unimodules/core';
+import { PermissionStatus, Platform } from 'expo-modules-core';
+export async function getPermissionsAsync() {
+    // We can infer from the requestor if this is an older browser.
+    const status = getRequestPermission()
+        ? PermissionStatus.UNDETERMINED
+        : isIOS()
+            ? PermissionStatus.DENIED
+            : PermissionStatus.GRANTED;
+    return {
+        status,
+        expires: 'never',
+        canAskAgain: true,
+        granted: status === PermissionStatus.GRANTED,
+    };
+}
+export async function requestPermissionsAsync() {
+    const status = await askSensorPermissionAsync();
+    return {
+        status,
+        expires: 'never',
+        granted: status === PermissionStatus.GRANTED,
+        canAskAgain: false,
+    };
+}
+async function askSensorPermissionAsync() {
+    const requestPermission = getRequestPermission();
+    // Technically this is incorrect because it doesn't account for iOS 12.2 Safari.
+    // But unfortunately we can only abstract so much.
+    if (!requestPermission)
+        return PermissionStatus.GRANTED;
+    // If this isn't invoked in a touch-event then it never resolves.
+    // Safari probably should throw an error but because it doesn't we have no way of informing the developer.
+    const status = await requestPermission();
+    switch (status) {
+        case 'granted':
+            return PermissionStatus.GRANTED;
+        case 'denied':
+            return PermissionStatus.DENIED;
+        default:
+            return PermissionStatus.UNDETERMINED;
+    }
+}
 export function getRequestPermission() {
+    if (!Platform.isDOMAvailable) {
+        return null;
+    }
     if (typeof DeviceMotionEvent !== 'undefined' && !!DeviceMotionEvent?.requestPermission) {
         return DeviceMotionEvent.requestPermission;
     }
@@ -63,7 +107,7 @@ timeout = 250) {
     if (!isIOS && !getRequestPermission()) {
         return true;
     }
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         const id = setTimeout(() => {
             window.removeEventListener(eventName, listener);
             resolve(false);

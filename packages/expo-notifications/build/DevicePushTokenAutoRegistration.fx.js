@@ -1,5 +1,5 @@
 import 'abort-controller/polyfill';
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';

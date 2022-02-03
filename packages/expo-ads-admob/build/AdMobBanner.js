@@ -1,18 +1,16 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
 import { View } from 'react-native';
 let _hasWarnedAboutTestDeviceID = false;
 export default class AdMobBanner extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.state = { style: {} };
-        this._handleSizeChange = ({ nativeEvent }) => {
-            const { height, width } = nativeEvent;
-            this.setState({ style: { width, height } });
-        };
-        this._handleDidFailToReceiveAdWithError = ({ nativeEvent }) => this.props.onDidFailToReceiveAdWithError &&
-            this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
-    }
+    static defaultProps = { bannerSize: 'smartBannerPortrait' };
+    state = { style: {} };
+    _handleSizeChange = ({ nativeEvent }) => {
+        const { height, width } = nativeEvent;
+        this.setState({ style: { width, height } });
+    };
+    _handleDidFailToReceiveAdWithError = ({ nativeEvent }) => this.props.onDidFailToReceiveAdWithError &&
+        this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
     render() {
         const additionalRequestParams = {
             ...this.props.additionalRequestParams,
@@ -28,6 +26,5 @@ export default class AdMobBanner extends React.Component {
             React.createElement(ExpoBannerView, { style: this.state.style, adUnitID: this.props.adUnitID, bannerSize: this.props.bannerSize, onSizeChange: this._handleSizeChange, additionalRequestParams: additionalRequestParams, onAdViewDidReceiveAd: this.props.onAdViewDidReceiveAd, onDidFailToReceiveAdWithError: this._handleDidFailToReceiveAdWithError, onAdViewWillPresentScreen: this.props.onAdViewWillPresentScreen, onAdViewWillDismissScreen: this.props.onAdViewWillDismissScreen, onAdViewDidDismissScreen: this.props.onAdViewDidDismissScreen, onAdViewWillLeaveApplication: this.props.onAdViewWillLeaveApplication })));
     }
 }
-AdMobBanner.defaultProps = { bannerSize: 'smartBannerPortrait' };
 const ExpoBannerView = requireNativeViewManager('ExpoAdsAdMobBannerView');
 //# sourceMappingURL=AdMobBanner.js.map

@@ -23,7 +23,7 @@ The following method takes care of all this for you, so feel free to copy/paste 
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */
-  if (Constants.isDevice) {
+  if (Device.isDevice) {
     /* @end */
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -64,7 +64,7 @@ registerForPushNotificationsAsync = async () => {
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */
-  if (Constants.isDevice) {
+  if (Device.isDevice) {
     /* @end */
     const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
     let finalStatus = existingStatus;
@@ -107,11 +107,14 @@ If you're using the bare workflow, or building a standalone app with `expo build
 
 For Android, both managed and bare workflow users need to follow our [FCM setup guide](using-fcm.md), it should only take about 5 minutes.
 
-For iOS, the managed workflow takes care of push notification credentials automatically when you run `expo build:ios`. In the bare workflow, you'll need to use the `expo credentials:manager` command to upload your push notification credentials to Expo's servers. Follow these steps:
-
-1. Make sure your `ios.bundleIdentifier` key in `app.json` is set.
-2. Make sure you've created the relevant provisioning profile for your app in the [Apple Developer Console](https://developer.apple.com/account/resources/profiles/list)
-3. Run `expo credentials:manager -p ios` in your project directory.
-4. Select `Add new Push Notifications Key` (or `Use existing Push Notifications Key in current project` if you already have one)
+For iOS, the Classic `expo build` service takes care of push notification credentials automatically when you run `expo build:ios`. But when using [EAS Build](/build/introduction.md) or the bare workflow, you'll need to use the `expo credentials:manager` command to upload your push notification credentials to Expo's servers. You can find more detailed instructions [here](/app-signing/managed-credentials.md#ios).
 
 > Note: A paid Apple Developer Account is **required** to generate credentials.
+
+## Next steps
+
+Try out [sending a notification with Expo](./sending-notifications.md)!
+
+## See also
+
+- Having trouble? Visit [Expo's notification FAQ page](./faq.md)

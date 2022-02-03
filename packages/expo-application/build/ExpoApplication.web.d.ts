@@ -8,3 +8,4 @@ declare const _default: {
     getInstallationTimeAsync(): Promise<null>;
 };
 export default _default;
+//# sourceMappingURL=ExpoApplication.web.d.ts.map

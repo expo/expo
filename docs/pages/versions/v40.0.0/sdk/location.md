@@ -23,7 +23,7 @@ In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
 In order to use [Background Location Methods](#background-location-methods), the following requirements apply:
 
 - `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](task-manager.md#configuration). **(_iOS only_)**
+- `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration). **(_iOS only_)**
 - Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 
 In order to use [Geofencing Methods](#geofencing-methods), the following requirements apply:

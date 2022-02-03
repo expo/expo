@@ -1,8 +1,5 @@
 package versioned.host.exp.exponent.modules.api.components.sharedelement;
 
-import java.util.Locale;
-
-import android.util.Log;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Color;
@@ -10,6 +7,7 @@ import android.graphics.Matrix;
 import android.view.View;
 import android.view.ViewParent;
 import android.content.Context;
+import androidx.annotation.Size;
 
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.bridge.ReadableMap;
@@ -19,9 +17,10 @@ import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 
 public class RNSharedElementStyle {
-  static private String LOG_TAG = "RNSharedElementStyle";
+  // static private final String LOG_TAG = "RNSharedElementStyle";
 
   static Rect EMPTY_RECT = new Rect();
+  static RectF EMPTY_RECTF = new RectF();
 
   static int PROP_OPACITY = 1 << 0;
   static int PROP_ELEVATION = 1 << 1;
@@ -43,9 +42,9 @@ public class RNSharedElementStyle {
                   PROP_BORDER_BOTTOMRIGHT_RADIUS;
   static int PROP_SCALETYPE = 1 << 10;
 
-  Rect layout = new Rect(); // absolute layout on screen
+  RectF layout = new RectF(); // absolute layout on screen
   Rect frame = new Rect(); // frame rect relative to parent
-  Matrix transform = new Matrix();
+  RectF ancestorLayout = new RectF(); // absolute layout on screen
   Matrix ancestorTransform = new Matrix();
   ScaleType scaleType = ScaleType.FIT_XY;
   int backgroundColor = Color.TRANSPARENT;
@@ -150,56 +149,48 @@ public class RNSharedElementStyle {
     return (Color.alpha(backgroundColor) > 0) || (Color.alpha(borderColor) > 0);
   }
 
-  static Rect normalizeLayout(RNSharedElementStyle style, RNSharedElementStyle otherStyle) {
-    if (style == null) return EMPTY_RECT;
-    return normalizeLayout(style.layout, style, otherStyle);
+  static RectF normalizeLayout(boolean compensateForTransforms, RNSharedElementStyle style, @Size(2) int[] parentOffset) {
+    if (style == null) return EMPTY_RECTF;
+    return normalizeLayout(compensateForTransforms, style.layout, style, parentOffset);
   }
 
-  static Rect normalizeLayout(Rect layout, RNSharedElementStyle style, RNSharedElementStyle otherStyle) {
-    if ((layout == null) || (style == null)) return EMPTY_RECT;
+  static RectF normalizeLayout(boolean compensateForTransforms, RectF layout, RNSharedElementStyle style, @Size(2) int[] parentOffset) {
+    if (layout == null) return EMPTY_RECTF;
 
-    // Get ancestor translation
-    float[] f = new float[9];
-    style.ancestorTransform.getValues(f);
-    int ancestorTranslateX = (int) f[Matrix.MTRANS_X];
-    int ancestorTranslateY = (int) f[Matrix.MTRANS_Y];
-
-    // Get other translation
-    int otherAncestorTranslateX = ancestorTranslateX;
-    int otherAncestorTranslateY = ancestorTranslateY;
-    if (otherStyle != null) {
-      otherStyle.ancestorTransform.getValues(f);
-      otherAncestorTranslateX = (int) f[Matrix.MTRANS_X];
-      otherAncestorTranslateY = (int) f[Matrix.MTRANS_Y];
-    }
-
-    // Calculate the optional translation that was performed on the ancestor.
-    // This corrects for any scene translation that was performed by the navigator.
-    // E.g. when the incoming scene starts to the right and moves to the left
-    // to enter the screen
-    int left = layout.left - ((ancestorTranslateX != otherAncestorTranslateX) ? ancestorTranslateX : 0);
-    int top = layout.top - ((ancestorTranslateY != otherAncestorTranslateY) ? ancestorTranslateY : 0);
-    return new Rect(left, top, left + layout.width(), top + layout.height());
+    // Compensate for any transforms that have been applied to the scene by the
+    // navigator. For instance, a navigator may translate the scene to the right,
+    // outside of the screen, in order to show it using a slide animation.
+    // In such a case, remove that transform in order to obtain the "real"
+    // size and position on the screen.
+    if (compensateForTransforms && (style != null)) {
+      RectF normalizedLayout = new RectF(layout);
+      normalizedLayout.offset(-parentOffset[0], -parentOffset[1]);
+      Matrix transform = new Matrix();
+      style.ancestorTransform.invert(transform);
+      transform.mapRect(normalizedLayout);
+      normalizedLayout.offset(parentOffset[0], parentOffset[1]);
+      return normalizedLayout;
+    } 
+    return layout;
   }
 
   static boolean equalsScaleType(ScaleType scaleType1, ScaleType scaleType2) {
-    if (scaleType1 == scaleType2) return true;
-    return false;
+    return scaleType1 == scaleType2;
   }
 
-  static ScaleType getInterpolatingScaleType(RNSharedElementStyle style1, RNSharedElementStyle style2, float position) {
+  static ScaleType getInterpolatingScaleType(RNSharedElementStyle style1, RectF layout1, RNSharedElementStyle style2, RectF layout2, float position) {
     if (style1.scaleType == style2.scaleType) return style1.scaleType;
     InterpolatingScaleType scaleType = new InterpolatingScaleType(
             style1.scaleType,
             style2.scaleType,
-            new Rect(0, 0, style1.layout.width(), style1.layout.height()),
-            new Rect(0, 0, style2.layout.width(), style2.layout.height())
+            new Rect(0, 0, (int)layout1.width(), (int)layout1.height()),
+            new Rect(0, 0, (int)layout2.width(), (int)layout2.height())
     );
     scaleType.setValue(position);
     return scaleType;
   }
 
-  static RectF getInterpolatedLayout(Rect layout1, Rect layout2, float position) {
+  static RectF getInterpolatedLayout(RectF layout1, RectF layout2, float position) {
     return new RectF(
             (layout1.left + ((layout2.left - layout1.left) * position)),
             (layout1.top + ((layout2.top - layout1.top) * position)),
@@ -227,11 +218,13 @@ public class RNSharedElementStyle {
 
   static RNSharedElementStyle getInterpolatedStyle(
           RNSharedElementStyle style1,
+          RectF layout1,
           RNSharedElementStyle style2,
+          RectF layout2,
           float position
   ) {
     RNSharedElementStyle result = new RNSharedElementStyle();
-    result.scaleType = RNSharedElementStyle.getInterpolatingScaleType(style1, style2, position);
+    result.scaleType = RNSharedElementStyle.getInterpolatingScaleType(style1, layout1, style2, layout2, position);
     result.opacity = style1.opacity + ((style2.opacity - style1.opacity) * position);
     result.backgroundColor = RNSharedElementStyle.getInterpolatedColor(style1.backgroundColor, style2.backgroundColor, position);
     result.borderTopLeftRadius = style1.borderTopLeftRadius + ((style2.borderTopLeftRadius - style1.borderTopLeftRadius) * position);
@@ -245,7 +238,7 @@ public class RNSharedElementStyle {
     return result;
   }
 
-  static Matrix getAbsoluteViewTransform(View view, boolean failIfNotMounted) {
+  static Matrix getAbsoluteViewTransform(View view) {
     Matrix matrix = new Matrix(view.getMatrix());
     float[] vals = new float[9];
     matrix.getValues(vals);
@@ -253,7 +246,7 @@ public class RNSharedElementStyle {
     float[] vals2 = new float[9];
     ViewParent parentView = view.getParent();
 
-    while (parentView != null && parentView instanceof View) {
+    while (parentView instanceof View && parentView != null) {
       Matrix parentMatrix = ((View) parentView).getMatrix();
       parentMatrix.getValues(vals2);
 
@@ -269,10 +262,38 @@ public class RNSharedElementStyle {
 
       parentView = parentView.getParent();
     }
-    if (parentView == null && failIfNotMounted) {
+    if (parentView == null) {
       return null;
     }
     matrix.setValues(vals);
     return matrix;
+  }
+
+  static float getAncestorVisibility(View view, RNSharedElementStyle style) {
+    RectF rect = new RectF();
+    getLayoutOnScreen(view, rect);
+    RectF intersection = new RectF();
+    if (!intersection.setIntersect(rect, style.ancestorLayout)) return 0.0f;
+    float superVolume = rect.width() * rect.height();
+    float intersectionVolume = intersection.width() * intersection.height();
+    float ancestorVolume = style.ancestorLayout.width() * style.ancestorLayout.height();
+    return (intersectionVolume / superVolume) * (intersectionVolume / ancestorVolume);
+  }
+
+  static void getLayoutOnScreen(View view, RectF output)  {
+    output.set(0.0f, 0.0f, view.getWidth(), view.getHeight());
+    view.getMatrix().mapRect(output);
+    output.offset(view.getLeft(), view.getTop());
+
+    ViewParent viewParent = view.getParent();
+    while (viewParent instanceof View) {
+      view = (View) viewParent;
+
+      output.offset(-view.getScrollX(), -view.getScrollY());
+      view.getMatrix().mapRect(output);
+      output.offset(view.getLeft(), view.getTop());
+
+      viewParent = view.getParent();
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from '@unimodules/core';
+import { ProxyNativeModule } from 'expo-modules-core';
 import { NotificationChannel } from './NotificationChannelManager.types';
 export interface NotificationChannelGroup {
     id: string;
@@ -17,3 +17,4 @@ export interface NotificationChannelGroupManager extends ProxyNativeModule {
     setNotificationChannelGroupAsync?: (groupId: string, group: NotificationChannelGroupInput) => Promise<NotificationChannelGroup | null>;
     deleteNotificationChannelGroupAsync?: (groupId: string) => Promise<void>;
 }
+//# sourceMappingURL=NotificationChannelGroupManager.types.d.ts.map

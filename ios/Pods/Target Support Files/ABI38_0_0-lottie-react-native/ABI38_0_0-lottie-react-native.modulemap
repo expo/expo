@@ -1,6 +1,0 @@
-module ABI38_0_0_lottie_react_native {
-  umbrella header "ABI38_0_0-lottie-react-native-umbrella.h"
-
-  export *
-  module * { export * }
-}

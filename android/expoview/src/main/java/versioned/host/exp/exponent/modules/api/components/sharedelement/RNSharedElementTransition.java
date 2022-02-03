@@ -4,16 +4,15 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.util.Log;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
@@ -21,7 +20,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class RNSharedElementTransition extends ViewGroup {
-  static private String LOG_TAG = "RNSharedElementTransition";
+  // static private final String LOG_TAG = "RNSharedElementTransition";
 
   enum Item {
     START(0),
@@ -38,7 +37,7 @@ public class RNSharedElementTransition extends ViewGroup {
     }
   }
 
-  private RNSharedElementNodeManager mNodeManager = null;
+  private final RNSharedElementNodeManager mNodeManager;
   private RNSharedElementAnimation mAnimation = RNSharedElementAnimation.MOVE;
   private RNSharedElementResize mResize = RNSharedElementResize.STRETCH;
   private RNSharedElementAlign mAlign = RNSharedElementAlign.CENTER_CENTER;
@@ -46,11 +45,12 @@ public class RNSharedElementTransition extends ViewGroup {
   private boolean mReactLayoutSet = false;
   private boolean mInitialLayoutPassCompleted = false;
   private boolean mInitialNodePositionSet = false;
-  private ArrayList<RNSharedElementTransitionItem> mItems = new ArrayList<RNSharedElementTransitionItem>();
-  private int[] mParentOffset = new int[2];
+  private final ArrayList<RNSharedElementTransitionItem> mItems = new ArrayList<>();
+  private final int[] mParentOffset = new int[2];
   private boolean mRequiresClipping = false;
-  private RNSharedElementView mStartView;
-  private RNSharedElementView mEndView;
+  private final RNSharedElementView mStartView;
+  private final RNSharedElementView mEndView;
+  private int mInitialVisibleAncestorIndex = -1;
 
   public RNSharedElementTransition(ThemedReactContext context, RNSharedElementNodeManager nodeManager) {
     super(context);
@@ -155,26 +155,20 @@ public class RNSharedElementTransition extends ViewGroup {
     for (final RNSharedElementTransitionItem item : mItems) {
       if (item.getNeedsStyle()) {
         item.setNeedsStyle(false);
-        item.getNode().requestStyle(new Callback() {
-          @Override
-          public void invoke(Object... args) {
-            RNSharedElementStyle style = (RNSharedElementStyle) args[0];
-            item.setStyle(style);
-            updateLayout();
-            updateNodeVisibility();
-          }
+        item.getNode().requestStyle(args -> {
+          RNSharedElementStyle style = (RNSharedElementStyle) args[0];
+          item.setStyle(style);
+          updateLayout();
+          updateNodeVisibility();
         });
       }
       if (item.getNeedsContent()) {
         item.setNeedsContent(false);
-        item.getNode().requestContent(new Callback() {
-          @Override
-          public void invoke(Object... args) {
-            RNSharedElementContent content = (RNSharedElementContent) args[0];
-            item.setContent(content);
-            updateLayout();
-            updateNodeVisibility();
-          }
+        item.getNode().requestContent(args -> {
+          RNSharedElementContent content = (RNSharedElementContent) args[0];
+          item.setContent(content);
+          updateLayout();
+          updateNodeVisibility();
         });
       }
     }
@@ -186,6 +180,10 @@ public class RNSharedElementTransition extends ViewGroup {
     // Local data
     RNSharedElementTransitionItem startItem = mItems.get(Item.START.getValue());
     RNSharedElementTransitionItem endItem = mItems.get(Item.END.getValue());
+
+    // Get parent offset
+    View parent = (View) getParent();
+    parent.getLocationInWindow(mParentOffset);
 
     // Get styles
     RNSharedElementStyle startStyle = startItem.getStyle();
@@ -199,19 +197,34 @@ public class RNSharedElementTransition extends ViewGroup {
       startContent = endContent;
     }
 
+    // Determine starting scene that is currently visible to the user
+    if (mInitialVisibleAncestorIndex < 0) {
+      if ((startStyle != null) && (endStyle == null)) {
+        mInitialVisibleAncestorIndex = (endItem.getNode() == null) ? 1 : 0;
+      } else if ((endStyle != null) && (startStyle == null)) {
+        mInitialVisibleAncestorIndex = (startItem.getNode() == null) ? 0 : 1;
+      } else if ((startStyle != null) && (endStyle != null)) {
+        float startAncestorVisibility = RNSharedElementStyle.getAncestorVisibility(parent, startStyle);
+        float endAncestorVisibility = RNSharedElementStyle.getAncestorVisibility(parent, endStyle);
+        mInitialVisibleAncestorIndex = endAncestorVisibility > startAncestorVisibility ? 1 : 0;
+      } else {
+        // Wait for both styles before deciding which ancestor is currently visible to the user
+      }
+    }
+
     // Get layout
-    Rect startLayout = RNSharedElementStyle.normalizeLayout(startStyle, endStyle);
+    boolean startCompensate = mInitialVisibleAncestorIndex == 1;
+    RectF startLayout = RNSharedElementStyle.normalizeLayout(startCompensate, startStyle, mParentOffset);
     Rect startFrame = (startStyle != null) ? startStyle.frame : RNSharedElementStyle.EMPTY_RECT;
-    Rect endLayout = RNSharedElementStyle.normalizeLayout(endStyle, startStyle);
+    boolean endCompensate = mInitialVisibleAncestorIndex == 0;
+    RectF endLayout = RNSharedElementStyle.normalizeLayout(endCompensate, endStyle, mParentOffset);
     Rect endFrame = (endStyle != null) ? endStyle.frame : RNSharedElementStyle.EMPTY_RECT;
-    RectF parentLayout = new RectF(startLayout);
-    parentLayout.union(new RectF(endLayout));
 
     // Get clipped areas
-    Rect startClippedLayout = RNSharedElementStyle.normalizeLayout((startStyle != null) ? startItem.getClippedLayout() : RNSharedElementStyle.EMPTY_RECT, startStyle, endStyle);
-    Rect startClipInsets = getClipInsets(startLayout, startClippedLayout);
-    Rect endClippedLayout = RNSharedElementStyle.normalizeLayout((endStyle != null) ? endItem.getClippedLayout() : RNSharedElementStyle.EMPTY_RECT, endStyle, startStyle);
-    Rect endClipInsets = getClipInsets(endLayout, endClippedLayout);
+    RectF startClippedLayout = RNSharedElementStyle.normalizeLayout(startCompensate, (startStyle != null) ? startItem.getClippedLayout() : RNSharedElementStyle.EMPTY_RECTF, startStyle, mParentOffset);
+    RectF startClipInsets = getClipInsets(startLayout, startClippedLayout);
+    RectF endClippedLayout = RNSharedElementStyle.normalizeLayout(endCompensate, (endStyle != null) ? endItem.getClippedLayout() : RNSharedElementStyle.EMPTY_RECTF, endStyle, mParentOffset);
+    RectF endClipInsets = getClipInsets(endLayout, endClippedLayout);
 
     // Get interpolated layout
     RectF interpolatedLayout;
@@ -219,40 +232,42 @@ public class RNSharedElementTransition extends ViewGroup {
     RNSharedElementStyle interpolatedStyle;
     if ((startStyle != null) && (endStyle != null)) {
       interpolatedLayout = RNSharedElementStyle.getInterpolatedLayout(startLayout, endLayout, mNodePosition);
-      interpolatedClipInsets = getInterpolatedClipInsets(parentLayout, startClipInsets, startClippedLayout, endClipInsets, endClippedLayout, mNodePosition);
-      interpolatedStyle = RNSharedElementStyle.getInterpolatedStyle(startStyle, endStyle, mNodePosition);
+      interpolatedClipInsets = getInterpolatedClipInsets(interpolatedLayout, startClipInsets, startClippedLayout, endClipInsets, endClippedLayout, mNodePosition);
+      interpolatedStyle = RNSharedElementStyle.getInterpolatedStyle(startStyle, startLayout, endStyle, endLayout, mNodePosition);
     } else if (startStyle != null) {
-      interpolatedLayout = new RectF(startLayout);
+      interpolatedLayout = startLayout;
       interpolatedStyle = startStyle;
-      interpolatedClipInsets = new RectF(startClipInsets);
+      interpolatedClipInsets = startClipInsets;
     } else {
       if (!mInitialNodePositionSet) {
         mNodePosition = 1.0f;
         mInitialNodePositionSet = true;
       }
-      interpolatedLayout = new RectF(endLayout);
+      interpolatedLayout = endLayout;
       interpolatedStyle = endStyle;
-      interpolatedClipInsets = new RectF(endClipInsets);
+      interpolatedClipInsets = endClipInsets;
     }
 
-    // Apply clipping insets
-    // TODO: Fix clipping when end-layout is larger than
-    // start-layout in all dimensions.
-    // TEST: ScrollViews & Clipping > Clip Bottom --> Full reveal
-    parentLayout.left += interpolatedClipInsets.left;
-    parentLayout.top += interpolatedClipInsets.top;
-    parentLayout.right -= interpolatedClipInsets.right;
-    parentLayout.bottom -= interpolatedClipInsets.bottom;
-
-    // Calculate clipped layout
-    mRequiresClipping = !parentLayout.contains(interpolatedLayout);
+    // Calculate outer frame rect. Apply clipping insets if needed
+    RectF parentLayout;
+    if (interpolatedClipInsets.left > 0.0f || interpolatedClipInsets.top > 0.0f || interpolatedClipInsets.right > 0.0f || interpolatedClipInsets.bottom > 0.0f) {
+      parentLayout = new RectF(interpolatedLayout);
+      parentLayout.left += interpolatedClipInsets.left;
+      parentLayout.top += interpolatedClipInsets.top;
+      parentLayout.right -= interpolatedClipInsets.right;
+      parentLayout.bottom -= interpolatedClipInsets.bottom;
+      mRequiresClipping = true;
+    } else {
+      parentLayout = new RectF(startLayout);
+      parentLayout.union(endLayout);
+      mRequiresClipping = false;
+    }
 
     //Log.d(LOG_TAG, "updateLayout: " + mNodePosition);
 
     // Update outer viewgroup layout. The outer viewgroup hosts 2 inner views
     // which draw the content & elevation. The outer viewgroup performs additional
     // clipping on these views.
-    ((View) getParent()).getLocationOnScreen(mParentOffset);
     super.layout(
             -mParentOffset[0],
             -mParentOffset[1],
@@ -346,12 +361,10 @@ public class RNSharedElementTransition extends ViewGroup {
   }
 
   private void updateNodeVisibility() {
-    RNSharedElementTransitionItem startItem = mItems.get(Item.START.getValue());
-    RNSharedElementTransitionItem endItem = mItems.get(Item.END.getValue());
-    boolean hidden = mInitialLayoutPassCompleted
-            && (((startItem.getStyle() != null) && (startItem.getContent() != null))
-            || ((endItem.getStyle() != null) && (endItem.getContent() != null)));
     for (RNSharedElementTransitionItem item : mItems) {
+      boolean hidden = mInitialLayoutPassCompleted
+              && (item.getStyle() != null)
+              && (item.getContent() != null);
       if (hidden && (mAnimation == RNSharedElementAnimation.FADE_IN) && item.getName().equals("start"))
         hidden = false;
       if (hidden && (mAnimation == RNSharedElementAnimation.FADE_OUT) && item.getName().equals("end"))
@@ -360,8 +373,8 @@ public class RNSharedElementTransition extends ViewGroup {
     }
   }
 
-  private Rect getClipInsets(Rect layout, Rect clippedLayout) {
-    return new Rect(
+  static private RectF getClipInsets(RectF layout, RectF clippedLayout) {
+    return new RectF(
             clippedLayout.left - layout.left,
             clippedLayout.top - layout.top,
             layout.right - clippedLayout.right,
@@ -369,12 +382,12 @@ public class RNSharedElementTransition extends ViewGroup {
     );
   }
 
-  private RectF getInterpolatedClipInsets(
+  static private RectF getInterpolatedClipInsets(
           RectF interpolatedLayout,
-          Rect startClipInsets,
-          Rect startClippedLayout,
-          Rect endClipInsets,
-          Rect endClippedLayout,
+          RectF startClipInsets,
+          RectF startClippedLayout,
+          RectF endClipInsets,
+          RectF endClippedLayout,
           float position) {
     RectF clipInsets = new RectF();
 
@@ -417,7 +430,7 @@ public class RNSharedElementTransition extends ViewGroup {
     return clipInsets;
   }
 
-  private void fireMeasureEvent(String name, RNSharedElementTransitionItem item, Rect layout, Rect clippedLayout) {
+  private void fireMeasureEvent(String name, RNSharedElementTransitionItem item, RectF layout, RectF clippedLayout) {
     ReactContext reactContext = (ReactContext) getContext();
     RNSharedElementStyle style = item.getStyle();
     RNSharedElementContent content = item.getContent();

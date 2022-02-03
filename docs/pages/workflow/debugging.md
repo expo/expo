@@ -31,17 +31,18 @@ If you are able to simplify your code as much as possible, tracking down the sou
 
 Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (i.e. where, how, and why did the error occur?). **The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
 
-> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production Javascript bundles.
+> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
 
-Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving Javascript errors in your production app. This will give you a good sense of how many people are running into an error, how often, when, **and it even provides sourcemaps so you will have stacktraces of your errors!** Sentry is one of those tools that if you wait until you need it to install it, then you waited too long. Also- Sentry is free up to 5000 events/month.
+Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving JavaScript errors in your production app. This will give you a good sense of how many people are running into an error, and how often.
 
 ### My production app is crashing
 
-This can be a really frustrating scenario, since it gives you very little information to go off of on first glance. But, in reality, crashes can be one of the easiest-to-solve errors once you:
+This can be a really frustrating scenario, since it gives you very little information to go off of on first glance. It's important now to reproduce the issue, and, even if you can't do that, to find any related crash reports.
 
-- [Access the native device logs](logging.md#optional-manually-access-device-logs)
 - Reproduce the crash (either using your production app, or the Expo Go app)
-- Search the logs for a "fatal exception" (there could be a few) to see exactly what is causing your app to crash
+- **Find an associated JavaScript crash report**: Check your JavaScript error reporting service (such as Sentry).
+- **Find an associated iOS crash report**: If your iOS app is on TestFlight or the App Store, you can use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode. If not, refer to their ["Diagnosing Issues Using Crash Reports and Device Logs" guide](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs).
+- **Find an associated Android crash report**: If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run `adb logcat` to view the streaming logs. The `adb` (Android Debug Bridge) program is part of the Android SDK; an alternative to installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
 
 With that information, you should be able to identify where the error is coming from, or at least search the internet for possible causes & solutions.
 
@@ -51,7 +52,7 @@ This might indicate that there is a performance issue. You likely need to run yo
 
 ## Stuck?
 
-The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.io/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
+The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
 
 ## Useful tools for debugging
 
@@ -64,15 +65,13 @@ This menu gives you access to several functions which are useful for debugging, 
 - iOS Device: Shake the device a little bit, or touch 3 fingers to the screen.
 - iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
 - Android Device: Shake the device vertically a little bit, or run `adb shell input keyevent 82` in your terminal window if your device is connected via USB.
-- Android Emulator: Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
+- Android Emulator: Either hit `Cmd+M` (`Ctrl+M` on Windows), or run `adb shell input keyevent 82` in your terminal window.
 
 The Developer Menu gives you a couple different functionalities. A few are pretty self-explanatory, like:
 
 - Reload manifest & JS bundle: this will reload your app. Usually this isn't necessary if you have Live or Hot Reload enabled, since it will automatically refresh whenever you save your changes in your text editor.
 - Go to Expo Home: Leave your app and navigate back to the Expo Go app homescreen
 - Enable/Disable Live Reload: When enabled, your app will automatically refresh the JS bundle whenever you save file changes in your project directory.
-
-> **Note**: In order to use Live Reload, your components must be **class** components, rather than a functional components. You can read about their differences [here](https://reactjs.org/docs/components-and-props.html#function-and-class-components).
 
 Now let's explore some of the more exciting functionalities...
 
@@ -81,7 +80,7 @@ Now let's explore some of the more exciting functionalities...
 This opens up a small window giving you performance information of your app. You will see:
 
 - RAM usage of your project
-- Javascript heap (this is an easy way to know of any memory leaks in your application)
+- JavaScript heap (this is an easy way to know of any memory leaks in your application)
 - 2 numbers for Views, the top indicates the number of views for the screen, the bottom indicates the number of views in the component
 - Frames Per Second for the UI and JS threads. The UI thread is used for native Android or iOS UI rendering. The JS thread is where most of your logic will be run, including API calls, touch events, etc.
 
@@ -95,10 +94,10 @@ The React Native Debugger includes a lot of the tools listed later in this page,
 
 We'll give a quick look at it here, but check out their [documentation](https://github.com/jhen0409/react-native-debugger#documentation) for a more in-depth look.
 
-You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on a mac you can run:
+You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on macOS you can run:
 
 ```sh
-brew cask install react-native-debugger
+brew install --cask react-native-debugger
 ```
 
 ### Startup
@@ -113,7 +112,9 @@ If you right-click anywhere in the React Native Debugger, you'll get some handy 
 
 ### Inspecting network traffic
 
-It's easy to use the React Native Debugger to debug your network requests. Simple right-click to `Enable Network Inspect`, which allows you to open the Network tab and inspect requests of `fetch` and `XMLHttpRequest`. There are [some limitations](https://github.com/jhen0409/react-native-debugger/blob/master/docs/network-inspect-of-chrome-devtools.md#limitations), so there are a few other alternatives, all require using a proxy. The following options will all work:
+It's easy to use the React Native Debugger to debug your network request: right-click anywhere in the React Native Debugger and select `Enable Network Inspect`. This will enable the Network tab and allow you to inspect requests of `fetch` and `XMLHttpRequest`.
+
+There are however [some limitations](https://github.com/jhen0409/react-native-debugger/blob/master/docs/network-inspect-of-chrome-devtools.md#limitations), so there are a few other alternatives, all of which require using a proxy:
 
 - [Charles Proxy](https://www.charlesproxy.com/documentation/configuration/browser-and-system-configuration/) (~$50 USD, our preferred tool)
 - [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
@@ -159,7 +160,7 @@ You can debug Expo apps using the Chrome debugger tools. Rather than running you
 
 - Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 
-- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add `expo/build/logs/RemoteConsole.js` as a pattern with "Blackbox" selected.
+- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add **expo/build/logs/RemoteConsole.js** as a pattern with "Blackbox" selected.
 
 ### Troubleshooting localhost debugging
 

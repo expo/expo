@@ -19,6 +19,5 @@ public interface TaskManagerInterface {
 
   void flushQueuedEvents();
 
-  String getAppId();
-
+  String getAppScopeKey();
 }

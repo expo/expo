@@ -9,7 +9,7 @@ type Props = {
   buttonKey: string;
   label: string;
   onPress: (key: string) => any;
-  icon?: string;
+  icon?: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
   isEnabled?: boolean;
   detail?: string;
 };
@@ -35,7 +35,10 @@ class DevMenuButton extends React.PureComponent<Props, any> {
     }
   };
 
-  renderButtonIcon(icon: string | undefined, isEnabled: boolean) {
+  renderButtonIcon(
+    icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'] | undefined,
+    isEnabled: boolean
+  ) {
     if (!icon) {
       return null;
     }

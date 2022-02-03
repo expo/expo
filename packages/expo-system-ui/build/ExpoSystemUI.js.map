@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoSystemUI.js","sourceRoot":"","sources":["../src/ExpoSystemUI.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,YAAY,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoSystemUI ?? {};\n"]}

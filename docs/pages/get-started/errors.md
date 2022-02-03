@@ -16,13 +16,13 @@ You can also create warnings and errors on your own with `console.warn("Warning 
 
 When you encounter an error during development, you will be shown the error message, as well as the "stacktrace," which is a report of the recent calls your application made or was making when it crashed. This stacktrace is shown both in your terminal and in the Expo Go app.
 
-This stacktrace is **extremely valuable** since it gives you the location the error comes from. For example, in the following clip we know that the error came from the file `LinksScreen.js` on line 10 and column (character) 15.
+This stacktrace is **extremely valuable** since it gives you the location the error comes from. For example, in the following clip we know that the error came from the file **LinksScreen.js** on line 10 and column (character) 15.
 
 <Video file="debugging/stacktrace.mp4" />
 
 When we take a look at that file, in line 10, we can see we are calling the function `this.renderText()`. "`this`" refers to our `LinksScreen` component, and `renderText` _should_ be a method in our component, but we haven't declared it! Hence the error message telling us that `this.renderText is undefined` (we haven't told the app that `renderText` is a function it can call, yet). Once we add that declaration in, our app is working again!
 
-This is a simple example, but it shows how useful error messages and stacktraces can be if you take the time to decipher them. Debugging errors is one of the most frustrating, but also satisyfing parts of development, and remember that you're never alone! The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.io/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
+This is a simple example, but it shows how useful error messages and stacktraces can be if you take the time to decipher them. Debugging errors is one of the most frustrating, but also satisyfing parts of development, and remember that you're never alone! The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
 
 ## Up Next
 

@@ -11,17 +11,17 @@ Instead of providing credentials, you can generate tokens that will allow you to
 
 ### Personal Account: Personal Access Tokens
 
-You can create Personal Access Tokens from the [Access Tokens page](https://expo.io/settings/access-tokens) on your dashboard. Anyone with this token can perform actions on your behalf. That applies to all content on your Personal Account, as well as any Personal Accounts or Organizations that you have been granted access to.
+You can create Personal Access Tokens from the [Access Tokens page](https://expo.dev/settings/access-tokens) on your dashboard. Anyone with this token can perform actions on your behalf. That applies to all content on your Personal Account, as well as any Personal Accounts or Organizations that you have been granted access to.
 
 ### Organizations: Bot Users & Access Tokens
 
-Organizations can create Bot Users to take actions to take actions on resources owned by the Organization.  Bot Users can be assigned [a role](/working-together) to limit the actions they are authorized to perform.  Bot users cannot sign in to any Expo products, cannot own any projects themselves, and can only authenticate via an access token.
+Organizations can create Bot Users to take actions on resources owned by the Organization.  Bot Users can be assigned [a role](/working-together) to limit the actions they are authorized to perform.  Bot users cannot sign in to any Expo products, cannot own any projects themselves, and can only authenticate via an access token.
 
 ### Using Access Tokens
 
 You can use any tokens you have created to perform actions with the Expo CLI (other than signing in and out). To use tokens, you need to define an environment variable, like `EXPO_TOKEN="token"`, before running commands.
 
-If you are using Github Actions, you can configure the `expo-token` property to include this environment variable in all of the job steps ([https://github.com/expo/expo-github-action#configuration-options](https://github.com/expo/expo-github-action#configuration-options)).
+If you are using GitHub Actions, [you can configure the `expo-token` property](https://github.com/expo/expo-github-action#configuration-options) to include this environment variable in all of the job steps.
 
 Common situations where access tokens are useful:
 
@@ -31,4 +31,4 @@ Common situations where access tokens are useful:
 
 ### Revoking Access Tokens
 
-In case a token was accidentally leaked, you can revoke it without changing your username and password. When you revoke the access token, you block all access to your account using this token. To do this, go to the [Access Token page](https://expo.io/settings/access-tokens) on your dashboard and delete the token you want to revoke.
+In case a token was accidentally leaked, you can revoke it without changing your username and password. When you revoke the access token, you block all access to your account using this token. To do this, go to the [Access Token page](https://expo.dev/settings/access-tokens) on your dashboard and delete the token you want to revoke.

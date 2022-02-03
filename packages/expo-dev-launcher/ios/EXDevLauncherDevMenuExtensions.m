@@ -11,12 +11,12 @@
 // Need to explicitly define `moduleName` here for dev menu to pick it up
 RCT_EXTERN void RCTRegisterModule(Class);
 
-+(NSString *)moduleName
++ (NSString *)moduleName
 {
   return @"ExpoDevelopmentClientDevMenuExtensions";
 }
 
-+(void)load
++ (void)load
 {
   RCTRegisterModule(self);
 }
@@ -25,18 +25,27 @@ RCT_EXTERN void RCTRegisterModule(Class);
   return YES;
 }
 
--(NSArray<DevMenuItem *> *)devMenuItems {
+- (id<DevMenuItemsContainerProtocol>)devMenuItems:(id<DevMenuExtensionSettingsProtocol>)settings
+{
+  if (![EXDevLauncherController.sharedInstance isAppRunning]) {
+    return nil;
+  }
+  
+  DevMenuItemsContainer *container = [DevMenuItemsContainer new];
+  
   DevMenuAction *backToLauncher = [[DevMenuAction alloc] initWithId:@"backToLauncher" action:^{
     dispatch_async(dispatch_get_main_queue(), ^{
       EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
       [controller navigateToLauncher];
     });
   }];
-  backToLauncher.label = ^{ return @"Back to launcher"; };
+  backToLauncher.label = ^{ return @"Back to Launcher"; };
   backToLauncher.glyphName = ^{ return @"exit-to-app"; };
-  backToLauncher.importance = DevMenuItemImportanceHigh;
+  backToLauncher.importance = DevMenuItemImportanceMedium;
   [backToLauncher registerKeyCommandWithInput:@"L" modifiers:UIKeyModifierCommand];
-  return @[backToLauncher];
+  
+  [container addItem:backToLauncher];
+  return container;
 }
 
 @end

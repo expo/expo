@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import Slider from '@react-native-community/slider';
 import * as React from 'react';
 import { StyleSheet, View, Animated, TouchableOpacity, Text } from 'react-native';

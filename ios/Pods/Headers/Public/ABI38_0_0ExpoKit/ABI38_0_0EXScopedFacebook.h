@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/UniversalModules/EXFacebook/ABI38_0_0EXScopedFacebook.h

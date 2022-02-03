@@ -18,11 +18,9 @@ class RNSharedElementContent {
       GenericDraweeView imageView = (GenericDraweeView) view;
       DraweeController controller = imageView.getController();
       GenericDraweeHierarchy hierarchy = imageView.getHierarchy();
-      String controllerDetails = controller.toString();
-      if (controllerDetails.contains("fetchedImage=0,")) {
+      if (controller == null || controller.toString().contains("fetchedImage=0,")) {
         return null;
       }
-      Drawable drawable = imageView.getDrawable();
       RectF imageBounds = new RectF();
       hierarchy.getActualImageBounds(imageBounds);
       return imageBounds;

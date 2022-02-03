@@ -1,0 +1,20 @@
+query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
+  me {
+    id
+    username
+    firstName
+    lastName
+    profilePhoto
+    accounts {
+      id
+      name
+    }
+    appCount
+    apps(limit: $appLimit, offset: 0, includeUnpublished: true) {
+      ...CommonAppData
+    }
+    snacks(limit: $snackLimit, offset: 0) {
+      ...CommonSnackData
+    }
+  }
+}

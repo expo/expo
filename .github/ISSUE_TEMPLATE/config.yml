@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Expo Community Support
-    url: https://forums.expo.io/
-    about: Please ask and answer questions regarding Expo here
+    url: https://forums.expo.dev/
+    about: Please ask and answer questions regarding Expo here.
+  - name: Expo Developers Discord
+    url: https://chat.expo.dev/
+    about: Join other developers in discussions regarding Expo.

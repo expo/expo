@@ -1,15 +1,23 @@
 #import "EXDevLauncherInternal.h"
 
-#import "EXDevLauncherController+Private.h"
+#import "EXDevLauncherController.h"
 #import <React/RCTBridge.h>
 
+#if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside EXDevLauncher module
+#import <EXDevLauncher/EXDevLauncher-Swift.h>
+#else
 #import <EXDevLauncher-Swift.h>
+#endif
 
-const NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
+NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 @implementation EXDevLauncherInternal
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"EXDevLauncherInternal";
+}
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -32,6 +40,39 @@ RCT_EXPORT_MODULE()
 + (BOOL)requiresMainQueueSetup
 {
   return NO;
+}
+
+- (NSString *)findClientUrlScheme
+{
+  NSString *clientUrlScheme = nil;
+  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]) {
+    NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+    for (NSDictionary *urlType in urlTypes) {
+      if (urlType[@"CFBundleURLSchemes"]) {
+        NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
+        for (NSString *urlScheme in urlSchemes) {
+          // Find a scheme with a prefix or fall back to the first scheme defined.
+          if ([urlScheme hasPrefix:@"exp+"] || !clientUrlScheme) {
+            clientUrlScheme = urlScheme;
+          }
+        }
+      }
+    }
+  }
+  return clientUrlScheme;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  BOOL isDevice = YES;
+#if TARGET_IPHONE_SIMULATOR
+  isDevice = NO;
+#endif
+  return @{
+    @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null],
+    @"installationID": [EXDevLauncherController.sharedInstance.installationIDHelper getOrCreateInstallationID] ?: [NSNull null],
+    @"isDevice": @(isDevice)
+  };
 }
 
 - (void)onNewPendingDeepLink:(NSURL *)deepLink
@@ -74,5 +115,22 @@ RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
 {
   resolve([[EXDevLauncherController sharedInstance] recentlyOpenedApps]);
 }
+
+RCT_EXPORT_METHOD(getBuildInfo:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *buildInfo = [[EXDevLauncherController sharedInstance] getBuildInfo];
+  resolve(buildInfo);
+}
+
+RCT_EXPORT_METHOD(copyToClipboard:(NSString *)content
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  
+  [[EXDevLauncherController sharedInstance] copyToClipboard:content];
+  resolve(nil);
+}
+
 
 @end

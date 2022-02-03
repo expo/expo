@@ -11,15 +11,15 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Known issues
 
-BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582)
+BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant GitHub issue](https://github.com/expo/expo/issues/3582)
 
 ## Installation
 
-For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-background-fetch`. To use it in [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-background-fetch);
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-background-fetch`. To use it in [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/main/packages/expo-background-fetch);
 
 ## Configuration
 
-In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
+In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
 
 On Android, this module might listen when the device is starting up. It's necessary to continue working on tasks started with `startOnBoot`. It also keeps devices "awake" that are going idle and asleep fast, to improve reliability of the tasks. Because of this both the `RECEIVE_BOOT_COMPLETED` and `WAKE_LOCK` permissions are added automatically.
 

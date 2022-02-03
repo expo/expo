@@ -1,7 +1,7 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { View, findNodeHandle } from 'react-native';
+import { Platform, View, findNodeHandle } from 'react-native';
 
 import { AdOptionsViewContext, AdOptionsViewContextValue } from './withNativeAd';
 
@@ -10,7 +10,7 @@ enum NativeOrientation {
   Vertical = 1,
 }
 
-type Props = React.ComponentProps<typeof View> & {
+type Props = React.ComponentPropsWithRef<typeof View> & {
   iconSize: number;
   iconColor?: string;
   orientation: 'horizontal' | 'vertical';
@@ -35,20 +35,27 @@ export default class AdOptionsView extends React.Component<Props> {
           height: this.props.iconSize * 2,
         };
 
+    const { iconSize, orientation, ...props } = this.props;
+    const platformSpecificProps =
+      Platform.OS === 'android'
+        ? {
+            iconSize,
+            orientation: this.shouldAlignHorizontal()
+              ? NativeOrientation.Horizontal
+              : NativeOrientation.Vertical,
+          }
+        : null;
+
     return (
       <AdOptionsViewContext.Consumer>
         {(contextValue: AdOptionsViewContextValue | null) => {
           const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
           return (
             <NativeAdOptionsView
-              {...this.props}
+              {...props}
+              {...platformSpecificProps}
               style={[this.props.style, style]}
               nativeAdViewTag={findNodeHandle(adViewRef.current)}
-              orientation={
-                this.shouldAlignHorizontal()
-                  ? NativeOrientation.Horizontal
-                  : NativeOrientation.Vertical
-              }
             />
           );
         }}
@@ -60,4 +67,5 @@ export default class AdOptionsView extends React.Component<Props> {
 // The native AdOptionsView has the same props as regular View
 export type NativeAdOptionsView = React.Component<Props>;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
-export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');
+export const NativeAdOptionsView: React.ComponentType<any> =
+  requireNativeViewManager('AdOptionsView');

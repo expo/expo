@@ -15,4 +15,4 @@ const withBarcodeScanner = (config, { microphonePermission, cameraPermission } =
         microphonePermission || config.ios.infoPlist.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
     return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, ['android.permission.CAMERA']);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withBarcodeScanner, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withBarcodeScanner, pkg.name, pkg.version);

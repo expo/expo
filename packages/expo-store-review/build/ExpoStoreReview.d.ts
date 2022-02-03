@@ -4,3 +4,4 @@ declare const _default: {
     requestReview: (() => Promise<void>) | null;
 };
 export default _default;
+//# sourceMappingURL=ExpoStoreReview.d.ts.map

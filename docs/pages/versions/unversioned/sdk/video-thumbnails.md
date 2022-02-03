@@ -1,9 +1,11 @@
 ---
 title: VideoThumbnails
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails'
+packageName: 'expo-video-thumbnails'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -13,7 +15,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-video-thumbnails" />
+<APIInstallSection />
 
 ## Usage
 
@@ -74,20 +76,4 @@ const styles = StyleSheet.create({
 import * as VideoThumbnails from 'expo-video-thumbnails';
 ```
 
-### `VideoThumbnails.getThumbnailAsync(uri, options)`
-
-Create an image thumbnail from video provided via `uri`.
-
-#### Arguments
-
-- **uri (_string_)** -- URI of the video.
-
-- **options (_object_)** -- A map defining how modified thumbnail should be created:
-
-  - **quality (_number_)** -- A value in range `0.0` - `1.0` specifying quality level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
-  - **time (_number_)** -- The time position where the image will be retrieved in ms.
-  - **headers (_object_)** -- In case `uri` is a remote `uri`, headers object passed in a network request.
-
-#### Returns
-
-Returns `{ uri, width, height }` where `uri` is a URI to the created image (useable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the image.
+<APISection packageName="expo-video-thumbnails" apiName="VideoThumbnails" />

@@ -3,19 +3,21 @@ package expo.modules.imagepicker.exporters
 import android.graphics.Bitmap
 import android.net.Uri
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import org.apache.commons.io.FilenameUtils
-import org.unimodules.interfaces.imageloader.ImageLoader
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class CompressionImageExporter(private val mImageLoader: ImageLoader,
-                               private val mQuality: Int,
-                               private val mBase64: Boolean) : ImageExporter {
+class CompressionImageExporter(
+  private val mImageLoader: ImageLoaderInterface,
+  private val mQuality: Int,
+  private val mBase64: Boolean
+) : ImageExporter {
 
   override fun export(source: Uri, output: File, exporterListener: Listener) {
-    val imageLoaderHandler = object : ImageLoader.ResultListener {
+    val imageLoaderHandler = object : ImageLoaderInterface.ResultListener {
       override fun onSuccess(bitmap: Bitmap) {
         val width = bitmap.width
         val height = bitmap.height
@@ -47,10 +49,10 @@ class CompressionImageExporter(private val mImageLoader: ImageLoader,
    * Compress and save the `bitmap` to `file`, optionally saving it in `out` if
    * base64 is requested.
    *
-   * @param bitmap         bitmap to be saved
+   * @param bitmap bitmap to be saved
    * @param compressFormat compression format to save the image in
-   * @param output         file to save the image to
-   * @param out            if not null, the stream to save the image to
+   * @param output file to save the image to
+   * @param out if not null, the stream to save the image to
    */
   @Throws(IOException::class)
   private fun saveBitmap(bitmap: Bitmap, compressFormat: Bitmap.CompressFormat, output: File, out: ByteArrayOutputStream?) {
@@ -64,5 +66,4 @@ class CompressionImageExporter(private val mImageLoader: ImageLoader,
   private fun writeImage(image: Bitmap, output: File, compressFormat: Bitmap.CompressFormat) {
     FileOutputStream(output).use { out -> image.compress(compressFormat, mQuality, out) }
   }
-
 }

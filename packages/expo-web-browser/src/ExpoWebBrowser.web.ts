@@ -1,5 +1,5 @@
-import { CodedError, Platform } from '@unimodules/core';
 import compareUrls from 'compare-urls';
+import { CodedError, Platform } from 'expo-modules-core';
 import { AppState, Dimensions, AppStateStatus } from 'react-native';
 
 import {
@@ -62,11 +62,10 @@ export default {
     if (!Platform.isDOMAvailable) return;
     dismissPopup();
   },
-  maybeCompleteAuthSession({
-    skipRedirectCheck,
-  }: {
-    skipRedirectCheck?: boolean;
-  }): { type: 'success' | 'failed'; message: string } {
+  maybeCompleteAuthSession({ skipRedirectCheck }: { skipRedirectCheck?: boolean }): {
+    type: 'success' | 'failed';
+    message: string;
+  } {
     if (!Platform.isDOMAvailable) {
       return {
         type: 'failed',
@@ -105,7 +104,7 @@ export default {
       );
     }
     // Send the URL back to the opening window.
-    parent.postMessage({ url, expoSender: handle }, parent.location);
+    parent.postMessage({ url, expoSender: handle }, parent.location.toString());
     return { type: 'success', message: `Attempting to complete auth` };
 
     // Maybe set timer to throw an error if the window is still open after attempting to complete.
@@ -143,7 +142,7 @@ export default {
       }
     }
 
-    return new Promise(async resolve => {
+    return new Promise(async (resolve) => {
       // Create a listener for messages sent from the popup
       const listener = (event: MessageEvent) => {
         if (!event.isTrusted) return;

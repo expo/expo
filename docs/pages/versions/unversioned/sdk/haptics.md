@@ -1,10 +1,13 @@
 ---
 title: Haptics
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-haptics'
+packageName: 'expo-haptics'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-haptics`** provides haptic (touch) feedback for
 
@@ -24,11 +27,63 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 
 ## Installation
 
-<InstallSection packageName="expo-haptics" />
+<APIInstallSection />
 
 ## Configuration
 
 On Android, this module requires permission to control vibration on the device. The `VIBRATE` permission is added automatically.
+
+## Usage
+
+<SnackInline label='Haptics usage' dependencies={['expo-haptics']}>
+
+```jsx
+import * as React from 'react';
+import { StyleSheet, View, Text, Button } from 'react-native';
+import * as Haptics from 'expo-haptics';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Haptics.selectionAsync</Text>
+      <View style={styles.buttonContainer}>
+        <Button title='Selection' onPress={() => /* @info */ Haptics.selectionAsync() /* @end */} />
+      </View>
+      <Text style={styles.text}>Haptics.notificationAsync</Text>
+      <View style={styles.buttonContainer}>
+        <Button title='Success' onPress={() => /* @info */ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) /* @end */} />
+        <Button title='Error' onPress={() => /* @info */ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error) /* @end */} />
+        <Button title='Warning' onPress={() => /* @info */ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning) /* @end */} />
+      </View>
+      <Text style={styles.text}>Haptics.impactAsync</Text>
+      <View style={styles.buttonContainer}>
+        <Button title='Light' onPress={() => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) /* @end */} />
+        <Button title='Medium' onPress={() => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium) /* @end */} />
+        <Button title='Heavy' onPress={() => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) /* @end */} />
+      </View>
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginTop: 10,
+    marginBottom: 30,
+    justifyContent: 'space-between'
+  },
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -36,34 +91,4 @@ On Android, this module requires permission to control vibration on the device. 
 import * as Haptics from 'expo-haptics';
 ```
 
-## Methods
-
-### `Haptics.selectionAsync()`
-
-Used to let a user know when a selection change has been registered
-
-#### Returns
-
-A `Promise` resolving once native size haptics functionality is triggered.
-
-### `Haptics.notificationAsync(type)`
-
-The kind of notification response used in the feedback
-
-#### Arguments
-
-- **type: `NotificationFeedbackType`** -- A notification feedback type that on `iOS` is directly mapped to [UINotificationFeedbackType](https://developer.apple.com/documentation/uikit/uinotificationfeedbacktype), while on `Android` these are simulated using [Vibrator](https://developer.android.com/reference/android/os/Vibrator). You can use one of `Haptics.NotificationFeedbackType.{Success, Warning, Error}`.
-
-#### Returns
-
-A `Promise` resolving once native size haptics functionality is triggered.
-
-### `Haptics.impactAsync(style)`
-
-#### Arguments
-
-- **style: `ImpactFeedbackStyle`** -- A collision indicator that on `iOS` is directly mapped to [UIImpactFeedbackStyle](https://developer.apple.com/documentation/uikit/uiimpactfeedbackstyle), while on `Android` these are simulated using [Vibrator](https://developer.android.com/reference/android/os/Vibrator). You can use one of `Haptics.ImpactFeedbackStyle.{Light, Medium, Heavy}`.
-
-#### Returns
-
-A `Promise` resolving once native size haptics functionality is triggered.
+<APISection packageName="expo-haptics" apiName="Haptics" />

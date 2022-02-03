@@ -1,16 +1,17 @@
-import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from '@expo/config-plugins';
 
 const pkg = require('expo-task-manager/package.json');
 
-const withTaskManager: ConfigPlugin = config => {
-  if (!config.ios) config.ios = {};
-  if (!config.ios.infoPlist) config.ios.infoPlist = {};
-  if (!config.ios.infoPlist.UIBackgroundModes) config.ios.infoPlist.UIBackgroundModes = [];
-
-  // TODO: Maybe entitlements are needed
-  config.ios.infoPlist.UIBackgroundModes = [
-    ...new Set(config.ios.infoPlist.UIBackgroundModes.concat(['location', 'fetch'])),
-  ];
+const withTaskManager: ConfigPlugin = (config) => {
+  config = withInfoPlist(config, (config) => {
+    if (!Array.isArray(config.modResults.UIBackgroundModes)) {
+      config.modResults.UIBackgroundModes = [];
+    }
+    if (!config.modResults.UIBackgroundModes.includes('fetch')) {
+      config.modResults.UIBackgroundModes.push('fetch');
+    }
+    return config;
+  });
 
   return config;
 };

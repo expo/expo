@@ -11,6 +11,7 @@ const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
 const SDK_DOCS_DIR = path.join(DOCS_DIR, 'pages', 'versions');
 const STATIC_EXAMPLES_DIR = path.join(DOCS_DIR, 'public', 'static', 'examples');
+const STATIC_API_DATA_DIR = path.join(DOCS_DIR, 'public', 'static', 'data');
 
 async function action(options) {
   const { sdk, updateReactNativeDocs } = options;
@@ -35,7 +36,7 @@ async function action(options) {
 
     console.log(`Updating ${chalk.cyan('react-native-website')} submodule...`);
 
-    await spawnAsync('git', ['checkout', 'master'], {
+    await spawnAsync('git', ['checkout', 'main'], {
       cwd: reactNativeWebsiteDir,
     });
 
@@ -53,14 +54,21 @@ async function action(options) {
     });
   }
 
-  const targetSdkDirectory = path.join(SDK_DOCS_DIR, `v${sdk}`);
-  const targetExampleDirectory = path.join(STATIC_EXAMPLES_DIR, `v${sdk}`);
+  const versionDirectory = `v${sdk}`;
+  const targetSdkDirectory = path.join(SDK_DOCS_DIR, versionDirectory);
+  const targetExampleDirectory = path.join(STATIC_EXAMPLES_DIR, versionDirectory);
+  const targetAPIDataDirectory = path.join(STATIC_API_DATA_DIR, versionDirectory);
 
   if (await fs.pathExists(targetSdkDirectory)) {
-    console.log(chalk.magenta(`v${sdk}`), 'directory already exists. Skipping copy operation.');
+    console.log(
+      chalk.magenta(versionDirectory),
+      'directory already exists. Skipping copy operation.'
+    );
   } else {
     console.log(
-      `Copying ${chalk.yellow('unversioned')} docs to ${chalk.yellow(`v${sdk}`)} directory...`
+      `Copying ${chalk.yellow('unversioned')} docs to ${chalk.yellow(
+        versionDirectory
+      )} directory...`
     );
 
     await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
@@ -72,7 +80,7 @@ async function action(options) {
         const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
         await transformFileAsync(apiFilePath, [
           {
-            find: /(sourceCodeUrl:.*?\/tree\/)(master)(\/packages[^\n]*)/,
+            find: /(sourceCodeUrl:.*?\/tree\/)(main)(\/packages[^\n]*)/,
             replaceWith: `$1sdk-${sdk.substring(0, 2)}$3`,
           },
         ]);
@@ -82,17 +90,32 @@ async function action(options) {
 
   if (await fs.pathExists(targetExampleDirectory)) {
     console.log(
-      chalk.magenta(`v${sdk}`),
+      chalk.magenta(versionDirectory),
       'examples directory already exists. Skipping copy operation.'
     );
   } else {
     console.log(
       `Copying ${chalk.yellow('unversioned')} static examples to ${chalk.yellow(
-        `v${sdk}`
-      )} directory...`
+        versionDirectory
+      )} directory…`
     );
 
     await fs.copy(path.join(STATIC_EXAMPLES_DIR, 'unversioned'), targetExampleDirectory);
+  }
+
+  if (await fs.pathExists(targetAPIDataDirectory)) {
+    console.log(
+      chalk.magenta(versionDirectory),
+      'API data directory already exists. Skipping copy operation.'
+    );
+  } else {
+    console.log(
+      `Copying ${chalk.yellow('unversioned')} generated API files to ${chalk.yellow(
+        versionDirectory
+      )} directory…`
+    );
+
+    await fs.copy(path.join(STATIC_API_DATA_DIR, 'unversioned'), targetAPIDataDirectory);
   }
 
   console.log(

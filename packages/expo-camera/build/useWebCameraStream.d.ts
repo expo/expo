@@ -7,3 +7,4 @@ export declare function useWebCameraStream(video: React.MutableRefObject<HTMLVid
     type: CameraType | null;
     mediaTrackSettings: MediaTrackSettings | null;
 };
+//# sourceMappingURL=useWebCameraStream.d.ts.map

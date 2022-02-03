@@ -5,8 +5,8 @@ import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 
-open class DevLauncherReactActivityNOPDelegate(activity: ReactActivity)
-  : ReactActivityDelegate(activity, null) {
+open class DevLauncherReactActivityNOPDelegate(activity: ReactActivity) :
+  ReactActivityDelegate(activity, null) {
 
   override fun onCreate(savedInstanceState: Bundle?) {}
   override fun onResume() {}

@@ -1,4 +1,4 @@
-import { EvilIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Link, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
@@ -89,7 +89,7 @@ export default function ComponentListScreen(props: Props) {
           {props.renderItemRight && props.renderItemRight(item)}
           <Text style={styles.rowLabel}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
-            <EvilIcons name="chevron-right" size={24} color="#595959" />
+            <Ionicons name="chevron-forward" size={18} color="#595959" />
           </Text>
         </View>
       </LinkButton>
@@ -106,7 +106,7 @@ export default function ComponentListScreen(props: Props) {
         }
         return 1;
       }
-      return 0;
+      return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
     });
   }, [props.apis]);
 

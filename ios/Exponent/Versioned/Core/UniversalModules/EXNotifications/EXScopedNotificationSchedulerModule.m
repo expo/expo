@@ -3,60 +3,60 @@
 #import "EXScopedNotificationSchedulerModule.h"
 #import "EXScopedNotificationsUtils.h"
 #import "EXScopedNotificationSerializer.h"
+#import "EXScopedNotificationsUtils.h"
 
 @interface EXScopedNotificationSchedulerModule ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
 @end
 
-// TODO: (@lukmccall) experiences may break one another by trying to schedule notifications of the same identifier.
-// See https://github.com/expo/expo/pull/8361#discussion_r429153429.
 @implementation EXScopedNotificationSchedulerModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
 
   return self;
+}
+
+- (UNNotificationRequest *)buildNotificationRequestWithIdentifier:(NSString *)identifier
+                                                          content:(NSDictionary *)contentInput
+                                                          trigger:(NSDictionary *)triggerInput
+{
+  NSString *scopedIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:identifier
+                                                                    forExperience:_scopeKey];
+  return [super buildNotificationRequestWithIdentifier:scopedIdentifier content:contentInput trigger:triggerInput];
 }
 
 - (NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests;
 {
   NSMutableArray *serializedRequests = [NSMutableArray new];
   for (UNNotificationRequest *request in requests) {
-    if ([EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:_experienceId]) {
+    if ([EXScopedNotificationsUtils isId:request.identifier scopedByExperience:_scopeKey]) {
       [serializedRequests addObject:[EXScopedNotificationSerializer serializedNotificationRequest:request]];
     }
   }
   return serializedRequests;
 }
 
-- (void)cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
+
+- (void)cancelNotification:(NSString *)identifier resolve:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject
 {
-  __block NSString *experienceId = _experienceId;
-  [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-    for (UNNotificationRequest *request in requests) {
-      if ([request.identifier isEqual:identifier]) {
-        if ([EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:experienceId]) {
-          [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
-        }
-        break;
-      }
-    }
-    resolve(nil);
-  }];
+  NSString *scopedIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:identifier
+                                                                    forExperience:_scopeKey];
+  [super cancelNotification:scopedIdentifier resolve:resolve rejecting:reject];
 }
 
-- (void)cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
+- (void)cancelAllNotificationsWithResolver:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject
 {
-  __block NSString *experienceId = _experienceId;
+  __block NSString *scopeKey = _scopeKey;
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     NSMutableArray<NSString *> *toRemove = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
-      if ([EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:experienceId]) {
+      if ([EXScopedNotificationsUtils isId:request.identifier scopedByExperience:scopeKey]) {
         [toRemove addObject:request.identifier];
       }
     }

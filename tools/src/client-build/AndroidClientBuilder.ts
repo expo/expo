@@ -4,13 +4,22 @@ import path from 'path';
 import { ANDROID_DIR } from '../Constants';
 import { androidAppVersionAsync } from '../ProjectVersions';
 import { spawnAsync } from '../Utils';
-import { ClientBuilder, Platform, S3Client } from './types';
+import { ClientBuilder, ClientBuildFlavor, Platform, S3Client } from './types';
 
 export default class AndroidClientBuilder implements ClientBuilder {
   platform: Platform = 'android';
 
   getAppPath(): string {
-    return path.join(ANDROID_DIR, 'app', 'build', 'outputs', 'apk', 'release', 'app-release.apk');
+    return path.join(
+      ANDROID_DIR,
+      'app',
+      'build',
+      'outputs',
+      'apk',
+      'versioned',
+      'release',
+      'app-versioned-release.apk'
+    );
   }
 
   getClientUrl(appVersion: string): string {
@@ -21,8 +30,10 @@ export default class AndroidClientBuilder implements ClientBuilder {
     return androidAppVersionAsync();
   }
 
-  async buildAsync() {
-    await spawnAsync('fastlane', ['android', 'build', 'build_type:Release'], { stdio: 'inherit' });
+  async buildAsync(flavor: ClientBuildFlavor = ClientBuildFlavor.VERSIONED) {
+    await spawnAsync('fastlane', ['android', 'build', 'build_type:Release', `flavor:${flavor}`], {
+      stdio: 'inherit',
+    });
   }
 
   async uploadBuildAsync(s3Client: S3Client, appVersion: string) {

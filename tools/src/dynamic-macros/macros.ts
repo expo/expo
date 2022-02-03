@@ -6,7 +6,7 @@ import ip from 'ip';
 import os from 'os';
 import path from 'path';
 import request from 'request-promise-native';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getHomeSDKVersionAsync } from '../ProjectVersions';
@@ -18,6 +18,8 @@ interface Manifest {
 
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
+
+const dogfoodingHomeUrl = 'exp://expo.io/@expo-dogfooding/home';
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 
@@ -62,7 +64,7 @@ export default {
       return process.env.TEST_SUITE_URI;
     } else {
       try {
-        let testSuitePath = path.join(__dirname, '..', 'apps', 'test-suite');
+        let testSuitePath = path.join(__dirname, '..', '..', '..', 'apps', 'test-suite');
         let status = await Project.currentStatus(testSuitePath);
         if (status === 'running') {
           return await UrlUtils.constructManifestUrlAsync(testSuitePath);
@@ -131,6 +133,20 @@ export default {
       manifest = await getManifestAsync(savedDevHomeUrl, platform, sdkVersion);
     } catch (e) {
       const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`;
+      console[isTurtle ? 'debug' : 'error'](msg);
+      return '';
+    }
+
+    return kernelManifestObjectToJson(manifest);
+  },
+
+  async DOGFOODING_PUBLISHED_KERNEL_MANIFEST(platform) {
+    let manifest: Manifest;
+    try {
+      const sdkVersion = await this.TEMPORARY_SDK_VERSION();
+      manifest = await getManifestAsync(dogfoodingHomeUrl, platform, sdkVersion);
+    } catch (e) {
+      const msg = `Unable to download manifest from ${dogfoodingHomeUrl}: ${e.message}`;
       console[isTurtle ? 'debug' : 'error'](msg);
       return '';
     }

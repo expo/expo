@@ -1,5 +1,5 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
@@ -14,7 +14,10 @@ function getHostUri() {
     if (Constants.manifest?.hostUri) {
         return Constants.manifest.hostUri;
     }
-    else if (!Constants.manifest?.hostUri && !hasCustomScheme()) {
+    else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
+        return Constants.manifest2.extra.expoClient.hostUri;
+    }
+    else if (!hasCustomScheme()) {
         // we're probably not using up-to-date xdl, so just fake it for now
         // we have to remove the /--/ on the end since this will be inserted again later
         return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
@@ -41,7 +44,7 @@ function removeLeadingSlash(url) {
 function removeTrailingSlashAndQueryString(url) {
     return url.replace(/\/?\?.*$/, '');
 }
-function ensureLeadingSlash(input, shouldAppend) {
+function ensureTrailingSlash(input, shouldAppend) {
     const hasSlash = input.endsWith('/');
     if (hasSlash && !shouldAppend) {
         return input.substring(0, input.length - 1);
@@ -51,7 +54,7 @@ function ensureLeadingSlash(input, shouldAppend) {
     }
     return input;
 }
-function ensureTrailingSlash(input, shouldAppend) {
+function ensureLeadingSlash(input, shouldAppend) {
     const hasSlash = input.startsWith('/');
     if (hasSlash && !shouldAppend) {
         return input.substring(1);
@@ -61,12 +64,12 @@ function ensureTrailingSlash(input, shouldAppend) {
     }
     return input;
 }
+// @needsAudit
 /**
  * Create a URL that works for the environment the app is currently running in.
  * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
  *
- * **Examples**
- *
+ * # Examples
  * - Bare: empty string
  * - Standalone, Custom: `yourscheme:///path`
  * - Web (dev): `https://localhost:19006/path`
@@ -75,40 +78,50 @@ function ensureTrailingSlash(input, shouldAppend) {
  * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
  * @param path addition path components to append to the base URL.
- * @param queryParams An object of parameters that will be converted into a query string.
+ * @param queryParams An object with a set of query parameters. These will be merged with any
+ * Expo-specific parameters that are needed (e.g. release channel) and then appended to the URL
+ * as a query string.
+ * @param scheme Optional URI protocol to use in the URL `<scheme>:///`, when `undefined` the scheme
+ * will be chosen from the Expo config (`app.config.js` or `app.json`).
+ * @return A URL string which points to your app with the given deep link information.
+ * @deprecated An alias for [`createURL()`](#linkingcreateurlpath-namedparameters). This method is
+ * deprecated and will be removed in a future SDK version.
  */
 export function makeUrl(path = '', queryParams, scheme) {
     return createURL(path, { queryParams, scheme, isTripleSlashed: true });
 }
+// @needsAudit
 /**
- * Create a URL that works for the environment the app is currently running in.
- * The scheme in bare and standalone must be defined in the Expo config (app.config.js or app.json) under `expo.scheme`.
+ * Helper method for constructing a deep link into your app, given an optional path and set of query
+ * parameters. Creates a URI scheme with two slashes by default.
  *
- * **Examples**
+ * The scheme in bare and standalone must be defined in the Expo config (`app.config.js` or `app.json`)
+ * under `expo.scheme`.
  *
- * - Bare: `<scheme>://path` -- uses provided scheme or scheme from Expo config `scheme`.
+ * # Examples
+ * - Bare: `<scheme>://path` - uses provided scheme or scheme from Expo config `scheme`.
  * - Standalone, Custom: `yourscheme://path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
  * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
  * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
- * @param path addition path components to append to the base URL.
- * @param scheme URI protocol `<scheme>://` that must be built into your native app.
- * @param queryParams An object of parameters that will be converted into a query string.
+ * @param path Addition path components to append to the base URL.
+ * @param namedParameters Additional options object.
+ * @return A URL string which points to your app with the given deep link information.
  */
-export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false, } = {}) {
+export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false } = {}) {
     if (Platform.OS === 'web') {
         if (!Platform.isDOMAvailable)
             return '';
-        const origin = ensureLeadingSlash(window.location.origin, false);
+        const origin = ensureTrailingSlash(window.location.origin, false);
         let queryString = qs.stringify(queryParams);
         if (queryString) {
             queryString = `?${queryString}`;
         }
         let outputPath = path;
         if (outputPath)
-            outputPath = ensureTrailingSlash(path, true);
+            outputPath = ensureLeadingSlash(path, true);
         return encodeURI(`${origin}${outputPath}${queryString}`);
     }
     const resolvedScheme = resolveScheme({ scheme });
@@ -151,13 +164,14 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
     if (queryString) {
         queryString = `?${queryString}`;
     }
-    hostUri = ensureTrailingSlash(hostUri, !isTripleSlashed);
+    hostUri = ensureLeadingSlash(hostUri, !isTripleSlashed);
     return encodeURI(`${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}${queryString}`);
 }
+// @needsAudit
 /**
- * Returns the components and query parameters for a given URL.
- *
- * @param url Input URL to parse
+ * Helper method for parsing out deep link information from a URL.
+ * @param url A URL that points to the currently running experience (e.g. an output of `Linking.createURL()`).
+ * @return A `ParsedURL` object.
  */
 export function parse(url) {
     validateURL(url);
@@ -180,10 +194,7 @@ export function parse(url) {
         let expoPrefix = null;
         if (hostUriStripped) {
             const parts = hostUriStripped.split('/');
-            expoPrefix = parts
-                .slice(1)
-                .concat(['--/'])
-                .join('/');
+            expoPrefix = parts.slice(1).concat(['--/']).join('/');
         }
         if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
             path = path.substring(expoPrefix.length);
@@ -200,26 +211,35 @@ export function parse(url) {
         scheme,
     };
 }
+// @needsAudit
 /**
- * Add a handler to Linking changes by listening to the `url` event type
- * and providing the handler
- *
- * See https://reactnative.dev/docs/linking.html#addeventlistener
+ * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
+ * It is recommended to use the [`useURL()`](#useurl) hook instead.
+ * @param type The only valid type is `'url'`.
+ * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
+ * [`EventType`](#eventype).
+ * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export function addEventListener(type, handler) {
     NativeLinking.addEventListener(type, handler);
 }
 /**
  * Remove a handler by passing the `url` event type and the handler.
- *
- * See https://reactnative.dev/docs/linking.html#removeeventlistener
+ * @param type The only valid type is `'url'`.
+ * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
+ * [`EventType`](#eventype).
+ * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
  */
 export function removeEventListener(type, handler) {
     NativeLinking.removeEventListener(type, handler);
 }
+// @needsAudit
 /**
- * **Native:** Parses the link that opened the app. If no link opened the app, all the fields will be \`null\`.
- * **Web:** Parses the current window URL.
+ * Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`.
+ * Parses the deep link information out of the URL used to open the experience initially.
+ * If no link opened the app, all the fields will be `null`.
+ * > On the web it parses the current window URL.
+ * @return A promise that resolves with `ParsedURL` object.
  */
 export async function parseInitialURLAsync() {
     const initialUrl = await NativeLinking.getInitialURL();
@@ -233,9 +253,11 @@ export async function parseInitialURLAsync() {
     }
     return parse(initialUrl);
 }
+// @needsAudit
 /**
- * Launch an Android intent with optional extras
- *
+ * Launch an Android intent with extras.
+ * > Use [IntentLauncher](../intent-launcher) instead, `sendIntent` is only included in
+ * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
 export async function sendIntent(action, extras) {
@@ -244,9 +266,9 @@ export async function sendIntent(action, extras) {
     }
     throw new UnavailabilityError('Linking', 'sendIntent');
 }
+// @needsAudit
 /**
- * Attempt to open the system settings for an the app.
- *
+ * Open the operating system settings app and displays the app’s custom settings, if it has any.
  * @platform ios
  */
 export async function openSettings() {
@@ -258,38 +280,54 @@ export async function openSettings() {
     }
     await openURL('app-settings:');
 }
+// @needsAudit
 /**
- * If the app launch was triggered by an app link,
- * it will give the link url, otherwise it will give `null`
+ * Get the URL that was used to launch the app if it was launched by a link.
+ * @return The URL string that launched your app, or `null`.
  */
 export async function getInitialURL() {
     return (await NativeLinking.getInitialURL()) ?? null;
 }
+// @needsAudit
 /**
- * Try to open the given `url` with any of the installed apps.
+ * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
+ * for more information.
+ * @param url A URL for the operating system to open, eg: `tel:5555555`, `exp://`.
+ * @return A `Promise` that is fulfilled with `true` if the link is opened operating system
+ * automatically or the user confirms the prompt to open the link. The `Promise` rejects if there
+ * are no applications registered for the URL or the user cancels the dialog.
  */
 export async function openURL(url) {
     validateURL(url);
     return await NativeLinking.openURL(url);
 }
+// @needsAudit
 /**
  * Determine whether or not an installed app can handle a given URL.
- * On web this always returns true because there is no API for detecting what URLs can be opened.
+ * On web this always returns `true` because there is no API for detecting what URLs can be opened.
+ * @param url The URL that you want to test can be opened.
+ * @return A `Promise` object that is fulfilled with `true` if the URL can be handled, otherwise it
+ * `false` if not.
+ *
+ * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#opening-links-to-other-apps).
  */
 export async function canOpenURL(url) {
     validateURL(url);
     return await NativeLinking.canOpenURL(url);
 }
+// @needsAudit
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
+ * @return Returns the initial URL or `null`.
  */
-export function useUrl() {
+export function useURL() {
     const [url, setLink] = useState(null);
     function onChange(event) {
         setLink(event.url);
     }
     useEffect(() => {
-        getInitialURL().then(url => setLink(url));
+        getInitialURL().then((url) => setLink(url));
         addEventListener('url', onChange);
         return () => removeEventListener('url', onChange);
     }, []);

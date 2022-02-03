@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoDevMenu.js","sourceRoot":"","sources":["../src/ExpoDevMenu.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAI7C,eAAe,aAAa,CAAC,WAA0B,CAAC","sourcesContent":["import { NativeModules } from 'react-native';\n\nimport { ExpoDevMenu } from './ExpoDevMenu.types';\n\nexport default NativeModules.ExpoDevMenu as ExpoDevMenu;\n"]}

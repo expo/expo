@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
+import { Audio, AVPlaybackStatus } from 'expo-av';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
@@ -13,7 +13,7 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
-type ErrorState = Error | null;
+type ErrorState = string | null | undefined;
 
 type PlaybackState =
   | { isLoaded: false }
@@ -21,7 +21,7 @@ type PlaybackState =
       isLoaded: true;
       sound: Audio.Sound;
       positionMillis: number;
-      durationMillis: number;
+      durationMillis: number | undefined;
       isPlaying: boolean;
       isLooping: boolean;
       isMuted: boolean;
@@ -36,7 +36,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
   const [error, setError] = useState(initialErrorState);
   const [playback, setPlayback] = useState(initialPlaybackState);
 
-  function handlePlaybackStatusUpdate(sound: Audio.Sound, status): void {
+  function handlePlaybackStatusUpdate(sound: Audio.Sound, status: AVPlaybackStatus): void {
     if (!status.isLoaded) {
       setPlayback({ isLoaded: false });
       setError(status.error);
@@ -58,7 +58,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
 
   useEffect(() => {
     const sound = new Audio.Sound();
-    sound.setOnPlaybackStatusUpdate(status => {
+    sound.setOnPlaybackStatusUpdate((status) => {
       handlePlaybackStatusUpdate(sound, status);
     });
 
@@ -83,7 +83,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
             if (playback.isLoaded) {
               if (playback.isPlaying) {
                 playback.sound.pauseAsync();
-              } else if (playback.positionMillis < playback.durationMillis) {
+              } else if (playback.positionMillis < playback.durationMillis!) {
                 playback.sound.playFromPositionAsync(0);
               } else {
                 playback.sound.playAsync();
@@ -97,7 +97,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
           numberOfLines={1}>
           {playback.isLoaded
             ? `${_formatTime(playback.positionMillis / 1000)} / ${_formatTime(
-                playback.durationMillis / 1000
+                playback.durationMillis! / 1000
               )}`
             : '00:00 / 00:00'}
         </StyledText>
@@ -105,7 +105,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
       <View style={styles.buttonContainer}>
         <AudioSettingsButton
           title="Repeat"
-          iconName="repeat"
+          iconName="ios-repeat"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.isLooping}
           onPress={() => {
@@ -116,7 +116,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Slower"
-          iconName="hourglass"
+          iconName="ios-hourglass"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.rate < 1}
           onPress={() => {
@@ -132,7 +132,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Faster"
-          iconName="speedometer"
+          iconName="ios-speedometer"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.rate > 1}
           onPress={() => {
@@ -148,7 +148,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Correct Pitch"
-          iconName="stats"
+          iconName="ios-stats-chart"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.shouldCorrectPitch}
           onPress={() => {
@@ -163,7 +163,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Mute"
-          iconName="volume-off"
+          iconName="ios-volume-off"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.isMuted}
           onPress={() => {
@@ -173,14 +173,19 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
           }}
         />
       </View>
-      {error ? <PlayerErrorOverlay errorMessage={error.message} /> : null}
+      {error ? <PlayerErrorOverlay errorMessage={error} /> : null}
     </View>
   );
 }
 
 type AudioSettingsButtonProps = {
   title: string;
-  iconName: string;
+  iconName:
+    | 'ios-hourglass'
+    | 'ios-volume-off'
+    | 'ios-repeat'
+    | 'ios-speedometer'
+    | 'ios-stats-chart';
   disabled: boolean;
   active: boolean;
   onPress: () => void;
@@ -194,7 +199,7 @@ function AudioSettingsButton(props: AudioSettingsButtonProps) {
       onPress={props.onPress}
       style={[props.style, styles.button, props.active ? styles.activeButton : null]}>
       <Ionicons
-        name={`ios-${props.iconName}`}
+        name={props.iconName}
         style={[
           styles.icon,
           props.disabled ? styles.disabledButton : null,

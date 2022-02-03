@@ -1,0 +1,106 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
+
+group = 'host.exp.exponent'
+version = '0.7.0'
+
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+  }
+}
+
+// Creating sources with comments
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.srcDirs
+}
+
+afterEvaluate {
+  publishing {
+    publications {
+      release(MavenPublication) {
+        from components.release
+        // Add additional sourcesJar to artifacts
+        artifact(androidSourcesJar)
+      }
+    }
+    repositories {
+      maven {
+        url = mavenLocal().url
+      }
+    }
+  }
+}
+
+android {
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  defaultConfig {
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    consumerProguardFiles 'proguard-rules.pro'
+    versionCode 1
+    versionName "0.7.0"
+  }
+  lintOptions {
+    abortOnError false
+  }
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
+
+  testOptions {
+    unitTests.all {
+      testLogging {
+        outputs.upToDateWhen { false }
+        events "passed", "failed", "skipped", "standardError"
+        showCauses true
+        showExceptions true
+        showStandardStreams true
+      }
+    }
+  }
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation 'androidx.annotation:annotation:1.2.0'
+
+  // used only in `expo.modules.core.errors.ModuleDestroyedException` for API export
+  compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'io.mockk:mockk:1.10.6'
+  testImplementation "com.google.truth:truth:1.1.2"
+}
+
+/**
+ * To make the users of annotations @OptIn and @RequiresOptIn aware of their experimental status,
+ * the compiler raises warnings when compiling the code with these annotations:
+ * This class can only be used with the compiler argument '-Xopt-in=kotlin.RequiresOptIn'
+ * To remove the warnings, we add the compiler argument -Xopt-in=kotlin.RequiresOptIn.
+ */
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+  kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+}

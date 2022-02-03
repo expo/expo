@@ -1,9 +1,15 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
+#import <ExpoModulesCore/EXModuleRegistryAdapter.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <EXManifests/EXManifestsManifest.h>
 
-@interface EXScopedModuleRegistryAdapter : UMModuleRegistryAdapter
+@interface EXScopedModuleRegistryAdapter : EXModuleRegistryAdapter
 
-- (UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params forExperienceId:(NSString *)experienceId withKernelServices:(NSDictionary *)kernelServices;
+- (EXModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
+                  forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                     scopeKey:(NSString *)scopeKey
+                                     manifest:(EXManifestsManifest *)manifest
+                           withKernelServices:(NSDictionary *)kernelServices;
 
 @end

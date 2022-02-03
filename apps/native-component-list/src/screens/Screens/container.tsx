@@ -56,7 +56,7 @@ class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <LazyTabs ref={tabs => (this.tabs = tabs!)} renderScreen={this.renderScreen} />
+        <LazyTabs ref={(tabs) => (this.tabs = tabs!)} renderScreen={this.renderScreen} />
         <View style={styles.tabbar}>
           <Button title="azure" onPress={() => this.tabs!.goto('azure')} />
           <Button title="pink" onPress={() => this.tabs!.goto('pink')} />

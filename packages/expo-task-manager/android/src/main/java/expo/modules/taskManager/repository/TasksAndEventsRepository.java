@@ -51,20 +51,20 @@ public interface TasksAndEventsRepository {
     public Map<String, Object> tasks;
   }
 
-  void putEvents(String appId, List<Bundle> events);
-  void putEventForAppId(String appId, Bundle body);
-  boolean hasEvents(String appId);
-  void removeEvents(String appId);
-  List<Bundle> getEvents(String appId);
+  void putEvents(String appScopeKey, List<Bundle> events);
+  void putEventForAppScopeKey(String appScopeKey, Bundle body);
+  boolean hasEvents(String appScopeKey);
+  void removeEvents(String appScopeKey);
+  List<Bundle> getEvents(String appScopeKey);
 
   boolean tasksExist();
   void createTasks();
-  @NonNull Set<String> allAppIdsWithTasks();
-  Map<String, TaskInterface> getTasks(String appId);
-  boolean hasTasks(String appId);
-  void putTasks(String appId, Map<String, TaskInterface> tasks);
-  void removeTasks(String appId);
-  void removeTask(String appId, String taskName);
-  void persistTasksForAppId(SharedPreferences preferences, String appId);
+  @NonNull Set<String> allAppScopeKeysWithTasks();
+  Map<String, TaskInterface> getTasks(String appScopeKey);
+  boolean hasTasks(String appScopeKey);
+  void putTasks(String appScopeKey, Map<String, TaskInterface> tasks);
+  void removeTasks(String appScopeKey);
+  void removeTask(String appScopeKey, String taskName);
+  void persistTasksForAppScopeKey(SharedPreferences preferences, String appScopeKey);
   Map<String, AppConfig> readPersistedTasks(SharedPreferences preferences);
 }

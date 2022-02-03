@@ -8,6 +8,54 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 11.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
+- On iOS replaced non-working `alpha`-based blur mechanism with a new one basing on `UIViewPropertyAnimator`. ([#14946](https://github.com/expo/expo/pull/14946) by [@bbarthec](https://github.com/bbarthec))
+- Renamed `BlurProps` to `BlurViewProps` to align with React Native's types naming convention. ([#14946](https://github.com/expo/expo/pull/14946) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- On iOS fixed `intensity` property not blurring text content properly. ([#14946](https://github.com/expo/expo/pull/14946) by [@bbarthec](https://github.com/bbarthec))
+
+## 10.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Web: Cap `intensity` value at `100`, update the tint color values. ([#14112](https://github.com/expo/expo/pull/14112) by [@Simek](https://github.com/Simek))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+
+## 9.0.3 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.2 — 2021-03-23
+
+### 🐛 Bug fixes
+
+- Fix types - tint now a string union `'dark' | 'light' | 'default'` rather than any string. ([#12264](https://github.com/expo/expo/pull/12264) by [@brentvatne](https://github.com/brentvatne))
+
+## 9.0.1 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
 ## 9.0.0 — 2021-01-15
 
 ### 🛠 Breaking changes

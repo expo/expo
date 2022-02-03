@@ -1,7 +1,7 @@
 {
   "name": "expo-template-tabs",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "40.0.0",
+  "version": "44.0.1",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -15,32 +15,32 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/vector-icons": "^10.0.0",
-    "@react-native-community/masked-view": "0.1.10",
-    "@react-navigation/bottom-tabs": "5.11.2",
-    "@react-navigation/native": "~5.8.10",
-    "@react-navigation/stack": "~5.12.8",
-    "expo": "~40.0.0-beta.0",
-    "expo-asset": "~8.2.1",
-    "expo-constants": "~9.3.0",
-    "expo-font": "~8.4.0",
-    "expo-linking": "^1.0.1",
-    "expo-splash-screen": "~0.8.0",
-    "expo-status-bar": "~1.0.3",
-    "expo-web-browser": "~8.6.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.0.tar.gz",
-    "react-native-gesture-handler": "~1.8.0",
-    "react-native-safe-area-context": "3.1.9",
-    "react-native-screens": "~2.15.0",
-    "react-native-web": "~0.13.12"
+    "@expo/vector-icons": "^12.0.0",
+    "@react-navigation/bottom-tabs": "^6.0.5",
+    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/native-stack": "^6.1.0",
+    "expo": "~44.0.5",
+    "expo-asset": "~8.4.6",
+    "expo-constants": "~13.0.1",
+    "expo-font": "~10.0.4",
+    "expo-linking": "~3.0.0",
+    "expo-splash-screen": "~0.14.1",
+    "expo-status-bar": "~1.2.0",
+    "expo-web-browser": "~10.1.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-native": "0.66.4",
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-screens": "~3.10.1",
+    "react-native-web": "0.17.1"
   },
   "devDependencies": {
-    "@babel/core": "~7.9.0",
-    "@types/react": "~16.9.35",
-    "@types/react-native": "~0.63.2",
-    "jest-expo": "~40.0.0",
-    "typescript": "~4.0.0"
+    "@babel/core": "^7.12.9",
+    "@types/react": "~17.0.21",
+    "@types/react-native": "~0.66.13",
+    "jest-expo": "~44.0.1",
+    "jest": "^26.6.3",
+    "react-test-renderer": "17.0.2",
+    "typescript": "~4.3.5"
   }
 }

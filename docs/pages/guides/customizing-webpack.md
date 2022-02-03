@@ -2,12 +2,12 @@
 title: Customizing Webpack
 ---
 
-When you run `expo start:web` or `expo build:web` the CLI will check to see if your project has a `webpack.config.js` in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
+When you run `expo start:web` or `expo build:web` the CLI will check to see if your project has a **webpack.config.js** in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
 
 > This is akin to `react-scripts` & `create-react-app`.
 
-If you need to edit the config the best way to do this is by running `expo customize:web` and selecting the `webpack.config.js` option.
-This will install `@expo/webpack-config` as a devDependency and create a template `webpack.config.js` into your project.
+If you need to edit the config the best way to do this is by running `expo customize:web` and selecting the **webpack.config.js** option.
+This will install `@expo/webpack-config` as a devDependency and create a template **webpack.config.js** into your project.
 You can now make changes to a config object based on the default config and return it for Expo CLI to use.
 Deleting the config will cause Expo to fall back to the default again.
 
@@ -15,7 +15,7 @@ If you create a new Webpack config or make any changes to it you'll need to rest
 
 ## Example
 
-**`webpack.config.js`**
+**webpack.config.js**
 
 ```ts
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
@@ -77,7 +77,7 @@ The reason it automatically includes the polyfill is because `react-native-web` 
 
 ## Editing static files
 
-You can also use `expo customize:web` to generate the static project files: `index.html`, `serve.json`, `favicon.ico`, etc...
+You can also use `expo customize:web` to generate the static project files: **index.html**, **serve.json**, **favicon.ico**, etc...
 These can be used to customize your project in a more familiar way.
 
 All of the files you select from the terminal prompt will be copied to a `web/` folder in your project's root directory. Think of this folder like `public/` in Create React App. We use "web" instead of "public" because Expo projects target more then just web. For mobile platforms, we similarly put platform-specific project files in `/ios` and `/android` folders.
@@ -88,5 +88,5 @@ If at some point you want to reset these files to their initial values simply ru
 ### Why
 
 - Customizing the favicon icon
-- Adding third-party API code to the `<head/>` in your `index.html`
-- Changing the caching policy in the `serve.json` file
+- Adding third-party API code to the `<head/>` in your **index.html**
+- Changing the caching policy in the **serve.json** file

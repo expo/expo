@@ -2,11 +2,11 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXFacebookAppDelegate : UMSingletonModule <UIApplicationDelegate>
+@interface EXFacebookAppDelegate : EXSingletonModule <UIApplicationDelegate>
 
 @end
 

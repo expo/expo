@@ -13,18 +13,12 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTLinkingManager.h>
-#import <React/RCTDevMenu.h>
-#import <React/RCTKeyCommands.h>
-#import <React/RCTRedBox.h>
-#import <React/RCTAsyncLocalStorage.h>
 
+// Expo modules
 
-// Unimodules
-
-#import <UMCore/UMModuleRegistry.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
-#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
-#import <UMCore/UMAppDelegateWrapper.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXNativeModulesProxy.h>
+#import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 
 // OTA Updates
 
@@ -33,3 +27,4 @@
 // Dev Client
 
 #import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXScreenOrientation/EXScreenOrientationViewController.h>

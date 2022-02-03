@@ -11,26 +11,26 @@ static NSString* const OPTIONS_KEY_HEADERS = @"headers";
 
 @implementation EXVideoThumbnailsModule
 
-UM_EXPORT_MODULE(ExpoVideoThumbnails);
+EX_EXPORT_MODULE(ExpoVideoThumbnails);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
 }
 
-UM_EXPORT_METHOD_AS(getThumbnail,
+EX_EXPORT_METHOD_AS(getThumbnail,
                     sourceFilename:(NSString *)source
                     options:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:source];
   if ([url isFileURL]) {
     if (!_fileSystem) {
       return reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
     }
-    if (!([_fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
+    if (!([_fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
       return reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", source], nil);
     }
   }
@@ -42,6 +42,8 @@ UM_EXPORT_METHOD_AS(getThumbnail,
   AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:@{@"AVURLAssetHTTPHeaderFieldsKey": headers}];
   AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
   generator.appliesPreferredTrackTransform = YES;
+  generator.requestedTimeToleranceBefore = kCMTimeZero;
+  generator.requestedTimeToleranceAfter = kCMTimeZero;
 
   NSError *err = NULL;
   CMTime time = CMTimeMake(timeInMs, 1000);
@@ -64,6 +66,8 @@ UM_EXPORT_METHOD_AS(getThumbnail,
   NSURL *fileURL = [NSURL fileURLWithPath:newPath];
   NSString *filePath = [fileURL absoluteString];
 
+  CGImageRelease(imgRef);
+  
   resolve(@{
             @"uri" : filePath,
             @"width" : @(thumbnail.size.width),

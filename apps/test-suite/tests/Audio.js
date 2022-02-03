@@ -74,7 +74,7 @@ export function test(t) {
             error = err;
           }
           t.expect(error).not.toBeNull();
-          error && t.expect(error.toString()).toMatch('Impossible audio mode');
+          error && t.expect(error.message).toMatch('Impossible audio mode');
         });
       }
     });
@@ -137,9 +137,9 @@ export function test(t) {
             }
             t.expect(error).toBeDefined();
             if (Platform.OS === 'android') {
-              t.expect(error.toString()).toMatch('Response code: 401');
+              t.expect(error.message).toMatch('Response code: 401');
             } else {
-              t.expect(error.toString()).toMatch('error code -1013');
+              t.expect(error.message).toMatch('error code -1013');
             }
             const signInResponse = await (
               await fetch(`${authenticatedStaticFilesBackend}/sign_in`, {
@@ -310,7 +310,7 @@ export function test(t) {
           await soundObject.loadAsync(mainTestingSource);
         } catch (error) {
           hasBeenRejected = true;
-          error && t.expect(error.toString()).toMatch('already loaded');
+          error && t.expect(error.message).toMatch('already loaded');
         }
         t.expect(hasBeenRejected).toBe(true);
       });
@@ -513,7 +513,7 @@ export function test(t) {
             await soundObject.setVolumeAsync(value);
           } catch (error) {
             hasBeenRejected = true;
-            error && t.expect(error.toString()).toMatch(/value .+ between/);
+            error && t.expect(error.message).toMatch(/value .+ between/);
           }
           t.expect(hasBeenRejected).toBe(true);
         });

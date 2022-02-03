@@ -5,26 +5,35 @@
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
+#import <EXManifests/EXManifestsBareManifest.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
+
+
 @interface EXUpdatesUpdate ()
 
-@property (nonatomic, strong, readwrite) NSDictionary *rawManifest;
+@property (nonatomic, strong, readwrite) EXManifestsManifest* manifest;
 
 @end
 
 @implementation EXUpdatesUpdate
 
-- (instancetype)initWithRawManifest:(NSDictionary *)manifest
+- (instancetype)initWithManifest:(EXManifestsManifest *)manifest
                              config:(EXUpdatesConfig *)config
                            database:(nullable EXUpdatesDatabase *)database
 {
   if (self = [super init]) {
-    _rawManifest = manifest;
+    _manifest = manifest;
     _config = config;
     _database = database;
     _scopeKey = config.scopeKey;
+    _status = EXUpdatesUpdateStatusPending;
+    _lastAccessed = [NSDate date];
+    _successfulLaunchCount = 0;
+    _failedLaunchCount = 0;
     _isDevelopmentMode = NO;
   }
   return self;
@@ -34,38 +43,51 @@ NS_ASSUME_NONNULL_BEGIN
                     scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
-                    metadata:(nullable NSDictionary *)metadata
+                    manifest:(nullable NSDictionary *)manifest
                       status:(EXUpdatesUpdateStatus)status
                         keep:(BOOL)keep
                       config:(EXUpdatesConfig *)config
                     database:(EXUpdatesDatabase *)database
 {
-  // for now, we store the entire managed manifest in the metadata field
-  EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:metadata ?: @{}
+  EXUpdatesUpdate *update = [[self alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:(manifest ?: @{})]
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
   update.scopeKey = scopeKey;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
-  update.metadata = metadata;
+  update.manifestJSON = manifest;
   update.status = status;
   update.keep = keep;
   return update;
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
+                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                        extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
+                             error:(NSError ** _Nullable)error
 {
-  if (config.usesLegacyManifest) {
-    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
+  NSString *expoProtocolVersion = manifestHeaders.protocolVersion;
+
+  if (expoProtocolVersion == nil) {
+    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
-  } else {
-    return [EXUpdatesNewUpdate updateWithNewManifest:manifest
+  } else if (expoProtocolVersion.integerValue == 0) {
+    return [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:manifest]
+                                     manifestHeaders:manifestHeaders
+                                          extensions:extensions
                                               config:config
                                             database:database];
+  } else {
+    if(error){
+      *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
+                                   code:1000
+                               userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"expo-protocol-version '%@' is invalid", expoProtocolVersion]}];
+    }
+    return nil;
   }
 }
 
@@ -73,27 +95,14 @@ NS_ASSUME_NONNULL_BEGIN
                                     config:(EXUpdatesConfig *)config
                                   database:(nullable EXUpdatesDatabase *)database
 {
-  if (config.usesLegacyManifest) {
-    if (manifest[@"releaseId"]) {
-      return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
-                                                      config:config
-                                                    database:database];
-    } else {
-      return [EXUpdatesBareUpdate updateWithBareManifest:manifest
-                                                  config:config
-                                                database:database];
-    }
+  if (manifest[@"releaseId"]) {
+    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifest]
+                                                    config:config
+                                                  database:database];
   } else {
-    // bare (embedded) manifests should never have a runtimeVersion field
-    if (manifest[@"manifest"] || manifest[@"runtimeVersion"]) {
-      return [EXUpdatesNewUpdate updateWithNewManifest:manifest
-                                                config:config
-                                              database:database];
-    } else {
-      return [EXUpdatesBareUpdate updateWithBareManifest:manifest
-                                                  config:config
-                                                database:database];
-    }
+    return [EXUpdatesBareUpdate updateWithBareManifest:[[EXManifestsBareManifest alloc] initWithRawManifestJSON:manifest]
+                                                   config:config
+                                                 database:database];
   }
 }
 

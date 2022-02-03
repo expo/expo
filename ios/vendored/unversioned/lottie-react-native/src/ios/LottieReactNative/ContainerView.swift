@@ -1,8 +1,5 @@
-#if canImport(React)
-import React
-#endif
-
 import Lottie
+import Foundation
 
 class ContainerView: RCTView {
     private var speed: CGFloat = 0.0
@@ -15,9 +12,19 @@ class ContainerView: RCTView {
     @objc var onAnimationFinish: RCTBubblingEventBlock?
     var animationView: AnimationView?
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if #available(iOS 13.0, *) {
+            if (self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)) {
+                applyProperties()
+                print("dark mode changed")
+            }
+        }
+    }
+
     @objc func setSpeed(_ newSpeed: CGFloat) {
         speed = newSpeed
-        
+
         if (newSpeed != 0.0) {
             animationView?.animationSpeed = newSpeed
             if (!(animationView?.isAnimationPlaying ?? true)) {
@@ -48,7 +55,7 @@ class ContainerView: RCTView {
 
         guard let data = sourceJson.data(using: String.Encoding.utf8),
         let animation = try? JSONDecoder().decode(Animation.self, from: data) else {
-            if (RCT_DEV == 1) {
+            if (RCT_DEBUG == 1) {
                 print("Unable to create the lottie animation object from the JSON source")
             }
             return
@@ -86,47 +93,33 @@ class ContainerView: RCTView {
         applyProperties()
     }
 
-    func hexStringToUIColor(hex: String) -> UIColor {
-        var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-
-        if (cString.hasPrefix("#")) {
-            cString.remove(at: cString.startIndex)
+    func play(fromFrame: AnimationFrameTime? = nil, toFrame: AnimationFrameTime) {
+        let callback: LottieCompletionBlock = { animationFinished in
+            if let onFinish = self.onAnimationFinish {
+                onFinish(["isCancelled": !animationFinished])
+            }
         }
 
-        if ((cString.count) == 0) {
-            return UIColor.red
-        }
-
-        if ((cString.count) != 6) {
-            return UIColor.green
-        }
-
-        var rgbValue:UInt32 = 0
-        Scanner(string: cString).scanHexInt32(&rgbValue)
-
-        return UIColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
-        )
+        animationView?.backgroundBehavior = .pauseAndRestore
+        animationView?.play(fromFrame: fromFrame, toFrame: toFrame, loopMode: self.loop, completion: callback);
     }
 
-    func play(fromFrame: AnimationFrameTime? = nil, toFrame: AnimationFrameTime, completion: LottieCompletionBlock? = nil) {
-        animationView?.backgroundBehavior = .pauseAndRestore
-        animationView?.play(fromFrame: fromFrame, toFrame: toFrame, loopMode: self.loop, completion: completion);
-    }
+    func play() {
+        let callback: LottieCompletionBlock = { animationFinished in
+            if let onFinish = self.onAnimationFinish {
+                onFinish(["isCancelled": !animationFinished])
+            }
+        }
 
-    func play(completion: LottieCompletionBlock? = nil) {
         animationView?.backgroundBehavior = .pauseAndRestore
-        animationView?.play(completion: completion)
+        animationView?.play(completion: callback)
     }
 
     func reset() {
         animationView?.currentProgress = 0;
         animationView?.pause()
     }
-    
+
     func pause() {
         animationView?.pause()
     }
@@ -156,7 +149,7 @@ class ContainerView: RCTView {
             for filter in colorFilters {
                 let keypath: String = "\(filter.value(forKey: "keypath") as! String).**.Color"
                 let fillKeypath = AnimationKeypath(keypath: keypath)
-                let colorFilterValueProvider = ColorValueProvider(hexStringToUIColor(hex: filter.value(forKey: "color") as! String).lottieColorValue)
+                let colorFilterValueProvider = ColorValueProvider((filter.value(forKey: "color") as! PlatformColor).lottieColorValue)
                 animationView?.setValueProvider(colorFilterValueProvider, keypath: fillKeypath)
             }
         }

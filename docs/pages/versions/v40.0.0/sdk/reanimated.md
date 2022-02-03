@@ -29,7 +29,7 @@ You also need to install the library directly with npm or yarn rather than using
 npm install react-native-reanimated@2.0.0-rc.0
 ```
 
-Finally, you'll need to add the babel plugin to `babel.config.js`:
+Finally, you'll need to add the babel plugin to **babel.config.js**:
 
 ```jsx
 module.exports = function(api) {

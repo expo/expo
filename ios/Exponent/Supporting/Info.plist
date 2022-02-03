@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.18.4</string>
+	<string>2.22.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -32,6 +32,7 @@
 				<string>exp</string>
 				<string>exps</string>
 				<string>fb1696089354000816</string>
+				<string>expauth</string>
 			</array>
 		</dict>
 		<dict>
@@ -54,7 +55,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.18.4</string>
+	<string>2.22.2</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
 	<key>FacebookAppID</key>
@@ -91,7 +92,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Expo projects to access your contacts</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Expo Go needs access to your local network to load projects from your development server.</string>
+	<string>Expo Go needs access to your local network to load projects from your development server</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Allow Expo projects to use your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -101,18 +102,36 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo projects to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Expo projects to access your device's accelerometer</string>
+	<string>Allow Expo projects to access your device accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Expo projects permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give Expo projects permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo projects to access your reminders</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This identifier will be used to deliver personalized ads to you</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>v9wttpbfk9.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>n38lu8286q.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 		<string>fetch</string>
 		<string>location</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

@@ -1,17 +1,17 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import invariant from 'invariant';
 const EventTypes = ['url'];
 const listeners = [];
 export default {
     addEventListener(type, listener) {
         invariant(EventTypes.indexOf(type) !== -1, `Linking.addEventListener(): ${type} is not a valid event`);
-        const nativeListener = nativeEvent => listener({ url: window.location.href, nativeEvent });
+        const nativeListener = (nativeEvent) => listener({ url: window.location.href, nativeEvent });
         listeners.push({ listener, nativeListener });
         window.addEventListener('message', nativeListener, false);
     },
     removeEventListener(type, listener) {
         invariant(EventTypes.indexOf(type) !== -1, `Linking.removeEventListener(): ${type} is not a valid event.`);
-        const listenerIndex = listeners.findIndex(pair => pair.listener === listener);
+        const listenerIndex = listeners.findIndex((pair) => pair.listener === listener);
         invariant(listenerIndex !== -1, 'Linking.removeEventListener(): cannot remove an unregistered event listener.');
         const nativeListener = listeners[listenerIndex].nativeListener;
         window.removeEventListener('message', nativeListener, false);

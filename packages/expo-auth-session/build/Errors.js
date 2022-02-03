@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 const errorCodeMessages = {
     // https://tools.ietf.org/html/rfc6749#section-4.1.2.1
     // https://openid.net/specs/openid-connect-core-1_0.html#AuthError
@@ -35,6 +35,21 @@ const errorCodeMessages = {
  * [Section 4.1.2.1](https://tools.ietf.org/html/rfc6749#section-4.1.2.1)
  */
 export class ResponseError extends CodedError {
+    /**
+     * Used to assist the client developer in
+     * understanding the error that occurred.
+     */
+    description;
+    /**
+     * A URI identifying a human-readable web page with
+     * information about the error, used to provide the client
+     * developer with additional information about the error.
+     */
+    uri;
+    /**
+     * Raw results of the error.
+     */
+    params;
     constructor(params, errorCodeType) {
         const { error, error_description, error_uri } = params;
         const message = errorCodeMessages[errorCodeType][error];
@@ -58,6 +73,10 @@ export class ResponseError extends CodedError {
  * [Section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2)
  */
 export class AuthError extends ResponseError {
+    /**
+     * Required only if state is used in the initial request
+     */
+    state;
     constructor(response) {
         super(response, 'auth');
         this.state = response.state;

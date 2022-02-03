@@ -2,7 +2,7 @@
 
 #import <OpenGLES/EAGL.h>
 #import <EXGL_CPP/UEXGL.h>
-#import <UMCore/UMModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
 
 @class EXGLContext;
 
@@ -17,13 +17,14 @@
 
 @interface EXGLContext : NSObject
 
-- (nullable instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull UMModuleRegistry *)moduleRegistry;
-- (void)initialize:(nullable void(^)(BOOL))callback;
+- (nullable instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
+- (void)initialize;
+- (void)prepare:(nullable void(^)(BOOL))callback;
 - (BOOL)isInitialized;
 - (nullable EAGLContext *)createSharedEAGLContext;
 - (void)runAsync:(nonnull void(^)(void))callback;
 - (void)runInEAGLContext:(nonnull EAGLContext*)context callback:(nonnull void(^)(void))callback;
-- (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options resolve:(nonnull UMPromiseResolveBlock)resolve reject:(nonnull UMPromiseRejectBlock)reject;
+- (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options resolve:(nonnull EXPromiseResolveBlock)resolve reject:(nonnull EXPromiseRejectBlock)reject;
 - (void)destroy;
 
 // "protected"

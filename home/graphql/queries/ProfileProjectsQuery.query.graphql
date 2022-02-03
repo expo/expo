@@ -1,0 +1,9 @@
+query Home_MyApps($limit: Int!, $offset: Int!) {
+  me {
+    id
+    appCount
+    apps(limit: $limit, offset: $offset, includeUnpublished: true) {
+      ...CommonAppData
+    }
+  }
+}

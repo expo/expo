@@ -3,10 +3,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { AdTriggerViewContext } from './withNativeAd';
 export default class AdTriggerView extends React.Component {
-    constructor() {
-        super(...arguments);
-        this._trigger = null;
-    }
+    _trigger = null;
     render() {
         return (React.createElement(AdTriggerViewContext.Consumer, null, (contextValue) => {
             const context = nullthrows(contextValue);
@@ -46,7 +43,7 @@ export default class AdTriggerView extends React.Component {
     }
     // TODO: change from TouchableOpacity to a Gesture Handler BorderlessButton
     _renderDefaultInteractiveComponent(props) {
-        return React.createElement(TouchableOpacity, Object.assign({}, props, { collapsable: false }));
+        return React.createElement(TouchableOpacity, { ...props, collapsable: false });
     }
 }
 //# sourceMappingURL=AdTriggerView.js.map

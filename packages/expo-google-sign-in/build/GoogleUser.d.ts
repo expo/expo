@@ -17,3 +17,4 @@ declare class GoogleUser extends GoogleIdentity {
     };
 }
 export default GoogleUser;
+//# sourceMappingURL=GoogleUser.d.ts.map

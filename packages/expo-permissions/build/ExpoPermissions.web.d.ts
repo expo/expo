@@ -6,3 +6,4 @@ declare const _default: {
 };
 export default _default;
 export declare function getRequestMotionPermission(): (() => Promise<PermissionState>) | null;
+//# sourceMappingURL=ExpoPermissions.web.d.ts.map

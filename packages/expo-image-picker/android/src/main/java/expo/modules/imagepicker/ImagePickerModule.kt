@@ -11,6 +11,18 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import com.theartofdev.edmodo.cropper.CropImage
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
+import expo.modules.core.Promise
+import expo.modules.core.errors.ModuleDestroyedException
+import expo.modules.core.interfaces.ActivityEventListener
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.services.UIManager
+import expo.modules.core.utilities.FileUtilities.generateOutputPath
+import expo.modules.core.utilities.ifNull
 import expo.modules.imagepicker.ImagePickerOptions.Companion.optionsFromMap
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.CropImageExporter
@@ -20,41 +32,46 @@ import expo.modules.imagepicker.fileproviders.CacheFileProvider
 import expo.modules.imagepicker.fileproviders.CropFileProvider
 import expo.modules.imagepicker.tasks.ImageResultTask
 import expo.modules.imagepicker.tasks.VideoResultTask
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ActivityEventListener
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.interfaces.services.UIManager
-import org.unimodules.core.utilities.FileUtilities.generateOutputPath
-import org.unimodules.interfaces.imageloader.ImageLoader
-import org.unimodules.interfaces.permissions.Permissions
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsResponseListener
-import org.unimodules.interfaces.permissions.PermissionsStatus
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponseListener
+import expo.modules.interfaces.permissions.PermissionsStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import java.io.IOException
 import java.lang.ref.WeakReference
 
 class ImagePickerModule(
   private val mContext: Context,
-  val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
   private val pickerResultStore: PickerResultsStore = PickerResultsStore(mContext)
 ) : ExportedModule(mContext), ActivityEventListener, LifecycleEventListener {
 
   private var mCameraCaptureURI: Uri? = null
   private var mPromise: Promise? = null
   private var mPickerOptions: ImagePickerOptions? = null
+  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+  private var exifDataHandler: ExifDataHandler? = null
+
+  override fun onDestroy() {
+    try {
+      mUIManager.unregisterLifecycleEventListener(this)
+      moduleCoroutineScope.cancel(ModuleDestroyedException(ImagePickerConstants.PROMISES_CANCELED))
+    } catch (e: IllegalStateException) {
+      Log.e(ImagePickerConstants.TAG, "The scope does not have a job in it")
+    }
+  }
 
   /**
    * Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes.
    * Moreover, the react context will be reloaded again in such a case. We need to handle this situation.
    * To do it we track if the current activity was destroyed.
    */
-  private var mWasDestroyed = false
+  private var mWasHostDestroyed = false
 
-  private val mImageLoader: ImageLoader by moduleRegistry()
+  private val mImageLoader: ImageLoaderInterface by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
   private val mPermissions: Permissions by moduleRegistry()
   private val mActivityProvider: ActivityProvider by moduleRegistry()
@@ -70,8 +87,10 @@ class ImagePickerModule(
       return _experienceActivity.get()
     }
 
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryPropertyDelegate.onCreate(moduleRegistry)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
     mUIManager.registerLifecycleEventListener(this)
   }
 
@@ -122,8 +141,9 @@ class ImagePickerModule(
     }
 
     val permissionsResponseHandler = PermissionsResponseListener { permissionsResponse: Map<String, PermissionsResponse> ->
-      if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED
-        && permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
+      if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
+        permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
+      ) {
         launchCameraWithPermissionsGranted(promise, cameraIntent, pickerOptions)
       } else {
         promise.reject(SecurityException("User rejected permissions"))
@@ -252,7 +272,7 @@ class ImagePickerModule(
       setOutputCompressFormat(compressFormat)
       setOutputCompressQuality(pickerOptions.quality)
     }
-
+    exifDataHandler = ExifDataHandler(uri)
     startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
   }
 
@@ -267,7 +287,7 @@ class ImagePickerModule(
       mUIManager.unregisterActivityEventListener(this)
 
       var pickerOptions = mPickerOptions!!
-      val promise = if (mWasDestroyed && mPromise !is PendingPromise) {
+      val promise = if (mWasHostDestroyed && mPromise !is PendingPromise) {
         if (pickerOptions.isBase64) {
           // we know that the activity was killed and we don't want to store
           // base64 into `SharedPreferences`...
@@ -280,7 +300,7 @@ class ImagePickerModule(
             pickerOptions.isExif,
             pickerOptions.videoMaxDuration
           )
-          //...but we need to remember to add it later.
+          // ...but we need to remember to add it later.
           PendingPromise(pickerResultStore, isBase64 = true)
         } else {
           PendingPromise(pickerResultStore)
@@ -315,19 +335,21 @@ class ImagePickerModule(
   }
 
   private fun shouldHandleOnActivityResult(activity: Activity, requestCode: Int): Boolean {
-    return experienceActivity != null
-      && mPromise != null
-      && mPickerOptions != null
+    return experienceActivity != null &&
+      mPromise != null &&
+      mPickerOptions != null &&
       // When we launched the crop tool and the android kills current activity, the references can be different.
       // So, we fallback to the requestCode in this case.
-      && (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+      (activity === experienceActivity || mWasHostDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
   }
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
     if (resultCode != Activity.RESULT_OK) {
-      promise.resolve(Bundle().apply {
-        putBoolean("cancelled", true)
-      })
+      promise.resolve(
+        Bundle().apply {
+          putBoolean("cancelled", true)
+        }
+      )
       return
     }
 
@@ -336,7 +358,17 @@ class ImagePickerModule(
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
       val result = CropImage.getActivityResult(intent)
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
-      ImageResultTask(promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isExif, exporter).execute()
+      ImageResultTask(
+        promise,
+        result.uri,
+        contentResolver,
+        CropFileProvider(result.uri),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
+      ).execute()
       return
     }
 
@@ -365,7 +397,17 @@ class ImagePickerModule(
         CompressionImageExporter(mImageLoader, pickerOptions.quality, pickerOptions.isBase64)
       }
 
-      ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter).execute()
+      ImageResultTask(
+        promise,
+        uri,
+        contentResolver,
+        CacheFileProvider(mContext.cacheDir, deduceExtension(type)),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
+      ).execute()
       return
     }
 
@@ -373,7 +415,7 @@ class ImagePickerModule(
       val metadataRetriever = MediaMetadataRetriever().apply {
         setDataSource(mContext, uri)
       }
-      VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever).execute()
+      VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever, moduleCoroutineScope).execute()
     } catch (e: RuntimeException) {
       e.printStackTrace()
       promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
@@ -386,11 +428,15 @@ class ImagePickerModule(
   //region LifecycleEventListener
 
   override fun onHostDestroy() {
-    mWasDestroyed = true
-    mUIManager.unregisterLifecycleEventListener(this)
+    mWasHostDestroyed = true
   }
 
-  override fun onHostResume() = Unit
+  override fun onHostResume() {
+    if (mWasHostDestroyed) {
+      _experienceActivity = WeakReference(mActivityProvider.currentActivity)
+      mWasHostDestroyed = false
+    }
+  }
   override fun onHostPause() = Unit
 
   //endregion

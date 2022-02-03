@@ -20,44 +20,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as Device from 'expo-device';
 ```
 
-### Constants
-
-- [`Device.isDevice`](#deviceisdevice)
-- [`Device.brand`](#devicebrand)
-- [`Device.manufacturer`](#devicemanufacturer)
-- [`Device.modelName`](#devicemodelname)
-- [`Device.modelId`](#devicemodelid) (iOS only)
-- [`Device.designName`](#devicedesignname) (Android only)
-- [`Device.productName`](#deviceproductname) (Android only)
-- [`Device.deviceYearClass`](#devicedeviceyearclass)
-- [`Device.totalMemory`](#devicetotalmemory)
-- [`Device.supportedCpuArchitectures`](#devicesupportedcpuarchitectures)
-- [`Device.osName`](#deviceosname)
-- [`Device.osVersion`](#deviceosversion)
-- [`Device.osBuildId`](#deviceosbuildid)
-- [`Device.osInternalBuildId`](#deviceosinternalbuildid)
-- [`Device.osBuildFingerprint`](#deviceosbuildfingerprint) (Android only)
-- [`Device.platformApiLevel`](#deviceplatformapilevel) (Android only)
-- [`Device.deviceName`](#devicedevicename)
-
-### Methods
-
-- [`Device.getDeviceTypeAsync()`](#devicegetdevicetypeasync)
-- [`Device.getUptimeAsync()`](#devicegetuptimeasync)
-- [`Device.getMaxMemoryAsync()`](#devicegetmaxmemoryasync) (Android only)
-- [`Device.isRootedExperimentalAsync()`](#deviceisrootedexperimentalasync)
-- [`Device.isSideLoadingEnabledAsync()`](#deviceissideloadingenabledasync) (Android only)
-- [`Device.getPlatformFeaturesAsync()`](#devicegetplatformfeaturesasync) (Android only)
-- [`Device.hasPlatformFeatureAsync(feature)`](#devicehasplatformfeatureasyncfeature) (Android only)
-
-### Enum Types
-
-- [`Device.DeviceType`](#devicedevicetype)
-
-### Errors
-
-- [Error Codes](#error-codes)
-
 ## Constants
 
 ### `Device.isDevice`

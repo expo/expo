@@ -1,0 +1,13 @@
+#import <Foundation/Foundation.h>
+#import <ABI42_0_0React/ABI42_0_0RCTBridgeModule.h>
+#import <ABI42_0_0React/ABI42_0_0RCTViewManager.h>
+
+@interface ABI42_0_0RCT_EXTERN_REMAP_MODULE(CardFieldManager, ABI42_0_0CardFieldManager, ABI42_0_0RCTViewManager)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(postalCodeEnabled, BOOL)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(onCardChange, ABI42_0_0RCTDirectEventBlock)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(onFocusChange, ABI42_0_0RCTDirectEventBlock)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(cardStyle, NSDictionary)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(placeholder, NSDictionary)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(autofocus, BOOL)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(dangerouslyGetFullCardDetails, BOOL)
+@end

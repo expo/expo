@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 
 import {
   CameraCapturedPicture,
@@ -25,10 +25,11 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
 
   // First get ahold of the legacy getUserMedia, if present
   const getUserMedia =
+    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia ||
-    function() {
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';
@@ -38,6 +39,77 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
   return new Promise((resolve, reject) => {
     getUserMedia.call(navigator, constraints, resolve, reject);
   });
+}
+
+function handleGetUserMediaError({ message }: { message: string }): PermissionResponse {
+  // name: NotAllowedError
+  // code: 0
+  if (message === 'Permission dismissed') {
+    return {
+      status: PermissionStatus.UNDETERMINED,
+      expires: 'never',
+      canAskAgain: true,
+      granted: false,
+    };
+  } else {
+    // TODO: Bacon: [OSX] The system could deny access to chrome.
+    // TODO: Bacon: add: { status: 'unimplemented' }
+    return {
+      status: PermissionStatus.DENIED,
+      expires: 'never',
+      canAskAgain: true,
+      granted: false,
+    };
+  }
+}
+
+async function handleRequestPermissionsAsync(): Promise<PermissionResponse> {
+  try {
+    await getUserMedia({
+      video: true,
+    });
+    return {
+      status: PermissionStatus.GRANTED,
+      expires: 'never',
+      canAskAgain: true,
+      granted: true,
+    };
+  } catch ({ message }) {
+    return handleGetUserMediaError({ message });
+  }
+}
+
+async function handlePermissionsQueryAsync(
+  query: 'camera' | 'microphone'
+): Promise<PermissionResponse> {
+  if (!navigator?.permissions?.query) {
+    throw new UnavailabilityError('expo-camera', 'navigator.permissions API is not available');
+  }
+
+  const { state } = await navigator.permissions.query({ name: query });
+  switch (state) {
+    case 'prompt':
+      return {
+        status: PermissionStatus.UNDETERMINED,
+        expires: 'never',
+        canAskAgain: true,
+        granted: false,
+      };
+    case 'granted':
+      return {
+        status: PermissionStatus.GRANTED,
+        expires: 'never',
+        canAskAgain: true,
+        granted: true,
+      };
+    case 'denied':
+      return {
+        status: PermissionStatus.DENIED,
+        expires: 'never',
+        canAskAgain: true,
+        granted: false,
+      };
+  }
 }
 
 export default {
@@ -122,39 +194,24 @@ export default {
     // TODO: Support on web
   }, */
   async getPermissionsAsync(): Promise<PermissionResponse> {
-    if (!navigator?.permissions?.query) {
-      throw new UnavailabilityError('expo-camera', 'navigator.permissions API is not available');
-    }
-
-    const { state } = await navigator.permissions.query({ name: 'camera' });
-    switch (state) {
-      case 'prompt':
-        return {
-          status: PermissionStatus.UNDETERMINED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: false,
-        };
-      case 'granted':
-        return {
-          status: PermissionStatus.GRANTED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: true,
-        };
-      case 'denied':
-        return {
-          status: PermissionStatus.DENIED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: false,
-        };
-    }
+    return handlePermissionsQueryAsync('camera');
   },
   async requestPermissionsAsync(): Promise<PermissionResponse> {
+    return handleRequestPermissionsAsync();
+  },
+  async getCameraPermissionsAsync(): Promise<PermissionResponse> {
+    return handlePermissionsQueryAsync('camera');
+  },
+  async requestCameraPermissionsAsync(): Promise<PermissionResponse> {
+    return handleRequestPermissionsAsync();
+  },
+  async getMicrophonePermissionsAsync(): Promise<PermissionResponse> {
+    return handlePermissionsQueryAsync('microphone');
+  },
+  async requestMicrophonePermissionsAsync(): Promise<PermissionResponse> {
     try {
       await getUserMedia({
-        video: true,
+        audio: true,
       });
       return {
         status: PermissionStatus.GRANTED,
@@ -163,25 +220,7 @@ export default {
         granted: true,
       };
     } catch ({ message }) {
-      // name: NotAllowedError
-      // code: 0
-      if (message === 'Permission dismissed') {
-        return {
-          status: PermissionStatus.UNDETERMINED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: false,
-        };
-      } else {
-        // TODO: Bacon: [OSX] The system could deny access to chrome.
-        // TODO: Bacon: add: { status: 'unimplemented' }
-        return {
-          status: PermissionStatus.DENIED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: false,
-        };
-      }
+      return handleGetUserMediaError({ message });
     }
   },
 };

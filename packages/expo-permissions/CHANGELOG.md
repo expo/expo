@@ -6,9 +6,66 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 13.1.0 — 2021-12-03
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2021-10-01
+
+### 💡 Others
+
+- Updated `@testing-library/react-hooks` to version `7.0.1`. ([#14552](https://github.com/expo/expo/pull/14552)) by [@Simek](https://github.com/Simek))
+
+## 13.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.1.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+- Migrated from `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.1 — 2021-04-13
+
+### 🐛 Bug fixes
+
+- Guard updating hook state on unmounted components. ([#12482](https://github.com/expo/expo/pull/12482) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.0.0 — 2021-03-10
+
+### 🛠 Breaking changes
+
+- Splitting location permissions into `Foreground` and `Background` permissions. ([#12063](https://github.com/expo/expo/pull/12063) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
 
 ## 11.0.0 — 2021-01-15
 

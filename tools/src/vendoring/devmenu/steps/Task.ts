@@ -61,7 +61,7 @@ export abstract class Task {
   /**
    * A function which will be call in start method. The body of the task.
    */
-  protected abstract async execute();
+  protected abstract execute(): Promise<void>;
 
   /**
    * A method that starts the task. It provides error handling.

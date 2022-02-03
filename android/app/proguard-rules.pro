@@ -145,3 +145,7 @@
 
 ##### DBFlow #####
 -keep class com.raizlabs.android.dbflow.config.GeneratedDatabaseHolder
+
+##### Segment #####
+-keep class com.segment.analytics.** { *; }
+-keep class androidx.lifecycle.DefaultLifecycleObserver

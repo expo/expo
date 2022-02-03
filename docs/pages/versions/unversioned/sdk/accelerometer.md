@@ -1,9 +1,10 @@
 ---
 title: Accelerometer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
+packageName: 'expo-sensors'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -14,7 +15,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-sensors" />
+<APIInstallSection />
 
 ## Usage
 
@@ -137,7 +138,7 @@ import { Accelerometer } from 'expo-sensors';
 
 Returns whether the accelerometer is enabled on the device.
 
-On mobile web, you must first invoke `Permissions.askAsync(Permissions.MOTION)` in a user interaction (i.e. touch event) before you can use this module. If the `status` is not equal to `granted` then you should inform the end user that they may have to open settings.
+On mobile web, you must first invoke `Accelerometer.requestPermissionsAsync()` in a user interaction (i.e. touch event) before you can use this module. If the `status` is not equal to `granted` then you should inform the end user that they may have to open settings.
 
 On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
 
@@ -173,5 +174,3 @@ Subscribe for updates to the accelerometer.
 
 - **intervalMs (_number_)** Desired interval in milliseconds between
   accelerometer updates.
-
-#

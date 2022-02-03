@@ -2,6 +2,7 @@
 title: iOS Simulator
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 
 It's often convenient to develop your app directly on your computer rather than having to physically interact with an iPhone and iPad and load your app over the network, which may be slow under some conditions such as if you need to use a tunnel connection because LAN isn't possible on your network.
@@ -16,11 +17,11 @@ This step is very easy but it takes a while. Open up the Mac App Store, search f
 
 Open Xcode, then choose "Preferences..." from the Xcode menu (or press ⌘+,). Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
 
-![Xcode Preferences](/static/images/xcode-command-line.png)
+<ImageSpotlight alt="Xcode preferences" src="/static/images/xcode-command-line.png" containerStyle={{ paddingBottom: 0 }} />
 
 ## Step 3: Try it out
 
-Run your app with `expo-cli` and press `i` from the command line or `Run on iOS simulator` from the browser-based DevTools UI. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo-CLI section of the forums](https://forums.expo.io/c/expo-cli). The troubleshooting tips below may be helpful too.
+Run your app with `expo-cli` and press `i` from the command line or `Run on iOS simulator` from the browser-based DevTools UI. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo-CLI section of the forums](https://forums.expo.dev/c/expo-cli). The troubleshooting tips below may be helpful too.
 
 <Video file="open-in-ios-simulator.mp4" />
 
@@ -43,7 +44,7 @@ It should also be noted that Simulator suspends background apps and processes on
 
 Sometimes the iOS simulator doesn't respond to commands to open. If it seems to be stuck on this prompt, you can open the iOS simulator manually (`open -a Simulator`) and then in the macOS toolbar choose Hardware &rarr; Device and select an iOS version and device that you'd like to open.
 
-![Xcode Preferences](/static/images/open-simulator-manually.png)
+<ImageSpotlight alt="Hardware > Device toolbar in Xcode" src="/static/images/open-simulator-manually.png" />
 
 You can also use this menu to open any version of the simulator that you like. You can open multiple simulators at the same time but `expo-cli` will always act on the most recently opened on.
 

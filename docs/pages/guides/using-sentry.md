@@ -3,6 +3,7 @@ title: Using Sentry
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -17,38 +18,49 @@ It notifies you of exceptions or errors that your users run into while using you
 - It is free for up to 5,000 events per month.
 - It streamlines your error-reporting code across iOS, Android, and web
 
-> Note: Native crash reporting is not available with `sentry-expo` in the managed workflow.
+> Note: Native crash reporting is not available with the classic build system (`expo build:[ios|android]`), but is available via EAS Build.
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
 ## How to add Sentry to your Expo project
 
-### Sign up for a Sentry account and create a project
+### Step 0: Sign up for a Sentry account and create a project
 
 Before getting real-time updates on errors and making your app generally incredible, you'll need to make sure you've created a Sentry project. Here's how to do that:
 
 1. [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need them later.
 
    - **organization name** is available in your `Organization settings` tab
-   - **project name** is available in your project's `Settings` > `General Settings` tab
-   - **`DSN`** is avalable in your project's `Settings` > `Projects` > `Client Keys (DSN)` tab
+   - **project name** is available in your project's `Settings` > `Projects` tab (find it in the list)
+   - **`DSN`** is avalable in your project's `Settings` > `Projects` > **Project name** > `Client Keys (DSN)` tab
 
-2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token** (Ensure you have `project:write` selected under scopes). Save this, too.
+2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 
-### Install and configure Sentry
+### Step 1: Installation
 
-- In your project, install the Expo integration: `yarn add sentry-expo` or `npm i sentry-expo`
-- Add the following in your app's main file (usually `App.js`):
+In your project directory, run:
 
-```javascript
+<TerminalBlock cmd={['expo install sentry-expo']} />
+
+> If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
+
+`sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
+
+<TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']} />
+
+### Step 2: Code
+
+Add the following to your app's main file (usually `App.js`):
+
+```js
 import * as Sentry from 'sentry-expo';
 
 Sentry.init({
   dsn: 'YOUR DSN HERE',
   enableInExpoDevelopment: true,
-  debug: true, // Sentry will try to print out useful debugging information if something goes wrong with sending an event. Set this to `false` in production.
+  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
 });
 
 // Access any @sentry/react-native exports via:
@@ -58,7 +70,11 @@ Sentry.Native.*
 Sentry.Browser.*
 ```
 
-- Open `app.json` and add a `postPublish hook`:
+### Step 3: App Config
+
+#### Configure your `postPublish` hook
+
+Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
 ```json
 {
@@ -94,7 +110,8 @@ The correct `authToken` value can be generated from the [Sentry API page ](https
 > SENTRY_PROJECT=myCoolProject expo publish
 > ```
 
-#### Additional config options
+<details><summary><h4>Additional configuration options</h4></summary>
+<p>
 
 In addition to the required config fields above, you can also provide these **optional** fields:
 
@@ -112,47 +129,61 @@ In addition to the required config fields above, you can also provide these **op
 > - release = SENTRY_RELEASE
 > - url = SENTRY_URL
 
-### Additional bare workflow setup
+</p>
+</details>
 
-Setting up `sentry-expo` in the bare workflow requires just a few extra steps in addition to those listed above:
+#### Add the Config Plugin
 
-1. Run `yarn add @sentry/react-native`, followed by `npx pod-install`.
-2. Run `yarn sentry-wizard -i reactNative -p ios android`. This will automatically configure your native Android & iOS projects
-3. The previous step will add an extra
+> Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
 
-   ```js
-   import * as Sentry from '@sentry/react-native';
+Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 
-   Sentry.init({
-     dsn: 'YOUR DSN',
-   });
-   ```
+```json
+{
+  "expo": {
+    // ... your existing configuration
+    "plugins": ["sentry-expo"]
+  }
+}
+```
 
-to your root project file (usually `App.js`), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
+If you directly edit your native `ios/` and `android/` directories (i.e. you have ejected your project, or have a bare workflow project), **you should not use the above `plugins` property**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra:
 
-#### Configure "no publish builds"
+```js
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'YOUR DSN',
+});
+```
+
+to your root project file (usually **App.js**), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
+
+## Sourcemaps
+
+With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
+
+> This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/hosting-your-app.md).
+
+### "No publish builds"
+
+> Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
 
 With `expo-updates`, release builds of both iOS and Android apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the sourcemaps aren't uploaded in the usual way like they are when you run `expo publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
 
 - Your `release` will automatically be set to Sentry's expected value- `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android).
 - Your `dist` will automatically be set to Sentry's expected value- `${buildNumber}` (iOS) or `${versionCode}` (Android).
-- The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file).
+- The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). If you're using the managed workflow, then we handle all of this setup for you via the [`plugin` you added above](#add-the-config-plugin).
 
-> Please note that configuration for `expo publish` and `expo export` is still done via `app.json`.
+> Please note that configuration for `expo publish` and `expo export` in bare and managed is still done via `app.json`.
 
 Skipping or misconfiguring either of these will result in sourcemaps not working, and thus you won't see proper stacktraces in your errors.
 
-### Publish your app with sourcemaps
+### Self-hosting updates?
 
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
+If you're self-hosting your updates (this means you run `expo export` instead of `expo publish`), you need to:
 
-> This hook can also be used as a `postExport` hook if you're [self-hosting your OTA Updates](../distribution/hosting-your-app.md).
-
-### Self-hosting OTA?
-
-If you're self-hosting your Over the Air Updates (this means you run `expo export` instead of `expo publish`), you need to:
-
-- replace `hooks.postPublish` in your `app.json` file with `hooks.postExport` (everything else stays the same)
+- replace `hooks.postPublish` in your **app.json** file with `hooks.postExport` (everything else stays the same)
 - add the `RewriteFrames` integration to your `Sentry.init` call like so:
 
 ```js
@@ -190,7 +221,7 @@ In order to ensure that errors are reported reliably, Sentry defers reporting th
 
 ## Disabled by default in dev
 
-Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.captureException(new Error('Oops!'))` but these methods will be no-op.
+Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.Native.captureException(new Error('Oops!'))` but these methods will be no-op.
 
 ## Learn more about Sentry
 

@@ -71,6 +71,6 @@ export default class OpenFromClipboardButton extends React.Component<Props> {
     Keyboard.dismiss();
 
     const url = UrlUtils.normalizeUrl(clipboardUrl);
-    Linking.canOpenURL(url) && Linking.openURL(url);
+    Linking.openURL(url);
   }
 }

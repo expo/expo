@@ -1,6 +1,6 @@
 import * as Calendar from 'expo-calendar';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { UnavailabilityError } from '@unimodules/core';
 
 import * as TestUtils from '../TestUtils';
 
@@ -12,11 +12,6 @@ async function createTestReminderAsync(calendarId) {
     startDate: new Date(2019, 3, 3, 9, 0, 0),
     dueDate: new Date(2019, 3, 3, 23, 59, 59),
   });
-}
-
-async function getFirstCalendarForRemindersAsync() {
-  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.REMINDER);
-  return calendars[0] && calendars[0].id;
 }
 
 function expectMethodsToReject(t, methods) {
@@ -47,7 +42,8 @@ function testReminderShape(t, reminder) {
 }
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('CalendarReminders', () => {

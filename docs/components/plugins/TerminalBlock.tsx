@@ -1,37 +1,35 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { palette, typography } from '@expo/styleguide';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-
 const STYLES_PROMPT = css`
-  background-color: ${Constants.colors.black};
+  background-color: ${palette.light.black};
   border-radius: 4px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  overflow-x: scroll;
+  overflow-x: auto;
   margin-bottom: 1rem;
 `;
 
 const STYLES_LINE = css`
   white-space: nowrap;
-  font-family: ${Constants.fontFamilies.mono};
+  font-family: ${typography.fontFaces.mono};
   font-size: 13px;
-  color: ${Constants.colors.codeWhite};
+  color: ${palette.dark.gray[900]};
   line-height: 160%;
   ::before {
     content: '$ ';
-    color: ${Constants.colors.lila};
+    color: ${palette.dark.primary[700]};
   }
 `;
 
 const STYLES_COMMENT = css`
   user-select: none;
   white-space: nowrap;
-  font-family: ${Constants.fontFamilies.mono};
-  opacity: 0.6;
+  font-family: ${typography.fontFaces.mono};
   font-size: 13px;
-  color: ${Constants.colors.codeWhite};
+  color: ${palette.dark.gray[600]};
   line-height: 150%;
 `;
 

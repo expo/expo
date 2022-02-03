@@ -18,7 +18,7 @@ export default function useLastNotificationResponse() {
 
   // useLayoutEffect ensures the listener is registered as soon as possible
   useLayoutEffect(() => {
-    const subscription = addNotificationResponseReceivedListener(response => {
+    const subscription = addNotificationResponseReceivedListener((response) => {
       setLastNotificationResponse(response);
     });
     return () => {
@@ -30,11 +30,11 @@ export default function useLastNotificationResponse() {
   // from the native module which is an "always active listener"
   // and always returns the most recent response.
   useEffect(() => {
-    NotificationsEmitterModule.getLastNotificationResponseAsync?.().then(response => {
+    NotificationsEmitterModule.getLastNotificationResponseAsync?.().then((response) => {
       // We only update the state with the resolved value if it's empty,
       // because if it's not empty it must have been populated by the `useLayoutEffect`
       // listener which returns "live" values.
-      setLastNotificationResponse(currentResponse => currentResponse ?? response);
+      setLastNotificationResponse((currentResponse) => currentResponse ?? response);
     });
   }, []);
 

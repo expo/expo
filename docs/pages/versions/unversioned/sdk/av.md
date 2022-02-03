@@ -1,22 +1,23 @@
 ---
 title: AV
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
+packageName: 'expo-av'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The [`Audio.Sound`](audio.md) objects and [`Video`](video.md) components share a unified imperative API for media playback.
 
 Note that for `Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
-Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
+Try the [playlist example app](http://expo.dev/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-<InstallSection packageName="expo-av" />
+<APIInstallSection />
 
 ## API
 
@@ -33,6 +34,8 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 #### Example: `Audio.Sound`
 
 ```javascript
+await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+  
 const playbackObject = new Audio.Sound();
 // OR
 const { sound: playbackObject } = await Audio.Sound.createAsync(
@@ -131,7 +134,7 @@ On the `playbackObject` reference, the following API is provided:
 
   #### Parameters
 
-  - **statusToSet (_AVPlaybackStatusToSet_)** -- The new `AVPlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `AVPlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overriden with respectively `0` and `true`.
+  - **statusToSet (_AVPlaybackStatusToSet_)** -- The new `AVPlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `AVPlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overridden with respectively `0` and `true`.
 
   #### Returns
 

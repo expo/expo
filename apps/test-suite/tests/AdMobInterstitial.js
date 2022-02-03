@@ -1,5 +1,5 @@
-import { Platform } from 'react-native';
 import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
+import { Platform } from 'react-native';
 
 export const name = 'AdMobInterstitial';
 

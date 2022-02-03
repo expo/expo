@@ -20,8 +20,6 @@ export function invariantClientId(idName, value, providerName) {
         throw new Error(`Client Id property \`${idName}\` must be defined to use ${providerName} auth on this platform.`);
 }
 export function useProxyEnabled(redirectUriOptions) {
-    return useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-        redirectUriOptions.useProxy,
-    ]);
+    return useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [redirectUriOptions.useProxy]);
 }
 //# sourceMappingURL=ProviderUtils.js.map

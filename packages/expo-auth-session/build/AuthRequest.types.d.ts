@@ -1,3 +1,4 @@
+import { CreateURLOptions } from 'expo-linking';
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 export declare enum CodeChallengeMethod {
     /**
@@ -77,6 +78,12 @@ export declare type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'wind
      */
     useProxy?: boolean;
     /**
+     * URL options to be used when creating the redirect URL for the auth proxy.
+     */
+    proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & {
+        path?: string;
+    };
+    /**
      * **Web:** features to use with `window.open()`
      */
     windowFeatures?: WebBrowserWindowFeatures;
@@ -155,3 +162,4 @@ export interface AuthRequestConfig {
      */
     usePKCE?: boolean;
 }
+//# sourceMappingURL=AuthRequest.types.d.ts.map

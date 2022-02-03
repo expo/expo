@@ -1,4 +1,4 @@
-export declare function generateRandomAsync(size: number): Promise<string>;
+export declare function generateRandom(size: number): string;
 /**
  * Proof key for Code Exchange by OAuth Public Clients (RFC 7636), Section 4.1
  * [Section 4.1](https://tools.ietf.org/html/rfc7636#section-4.1)
@@ -12,3 +12,4 @@ export declare function buildCodeAsync(size?: number): Promise<{
  * Digest a random string with hex encoding, useful for creating `nonce`s.
  */
 export declare function generateHexStringAsync(size: number): Promise<string>;
+//# sourceMappingURL=PKCE.d.ts.map

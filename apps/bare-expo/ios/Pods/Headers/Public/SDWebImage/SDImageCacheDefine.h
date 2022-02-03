@@ -1,1 +1,0 @@
-../../../SDWebImage/SDWebImage/Core/SDImageCacheDefine.h

@@ -1,6 +1,0 @@
-module Pods_BareExpoMain_BareExpoDetox {
-  umbrella header "Pods-BareExpoMain-BareExpoDetox-umbrella.h"
-
-  export *
-  module * { export * }
-}

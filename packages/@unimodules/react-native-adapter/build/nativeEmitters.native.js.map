@@ -1,1 +1,0 @@
-{"version":3,"file":"nativeEmitters.native.js","sourceRoot":"","sources":["../src/nativeEmitters.native.ts"],"names":[],"mappings":"AAAA,OAAO,eAAe,MAAM,oDAAoD,CAAC;AAEjF,OAAO,EAAE,eAAe,EAAE,CAAC","sourcesContent":["import RCTEventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';\n\nexport { RCTEventEmitter };\n"]}

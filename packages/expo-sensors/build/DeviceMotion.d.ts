@@ -44,3 +44,4 @@ declare class DeviceMotionSensor extends DeviceSensor<DeviceMotionMeasurement> {
 export declare const Gravity: any;
 declare const _default: DeviceMotionSensor;
 export default _default;
+//# sourceMappingURL=DeviceMotion.d.ts.map

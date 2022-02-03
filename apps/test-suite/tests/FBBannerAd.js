@@ -1,7 +1,8 @@
 'use strict';
 
-import React from 'react';
 import * as FacebookAds from 'expo-ads-facebook';
+import React from 'react';
+
 import { mountAndWaitForWithTimeout } from './helpers';
 
 const { BannerAd, AdSettings } = FacebookAds;
@@ -18,7 +19,7 @@ export const name = 'BannerAd';
 // Probably test won't pass if you are not logged into account connected
 // with placement id.
 
-const placementId = '629712900716487_662949307392846';
+const placementId = 'IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID';
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('FacebookAds.BannerView', () => {

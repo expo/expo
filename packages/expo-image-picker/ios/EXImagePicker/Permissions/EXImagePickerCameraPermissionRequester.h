@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
-@interface EXImagePickerCameraPermissionRequester : NSObject<UMPermissionsRequester>
+@interface EXImagePickerCameraPermissionRequester : NSObject<EXPermissionsRequester>
 
 @end

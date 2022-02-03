@@ -5,9 +5,12 @@ import semver from 'semver';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { printPackageParcel } from '../helpers';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, ReleaseType, TaskArgs } from '../types';
 import { findUnpublished } from './findUnpublished';
-import { resolveReleaseTypeAndVersion } from './resolveReleaseTypeAndVersion';
+import {
+  resolveReleaseTypeAndVersion,
+  resolveSuggestedVersion,
+} from './resolveReleaseTypeAndVersion';
 
 const { green, cyan, red } = chalk;
 const CUSTOM_VERSION_CHOICE_VALUE = 'custom-version';
@@ -28,7 +31,7 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     for (const parcel of parcels) {
       printPackageParcel(parcel);
 
-      if (await selectPackageToPublishAsync(parcel)) {
+      if (await selectPackageToPublishAsync(parcel, options)) {
         newParcels.push(parcel);
       }
     }
@@ -44,7 +47,10 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
  * Prompts the user to confirm whether the package should be published.
  * It immediately returns `true` if it's run on the CI.
  */
-async function selectPackageToPublishAsync(parcel: Parcel): Promise<boolean> {
+async function selectPackageToPublishAsync(
+  parcel: Parcel,
+  options: CommandOptions
+): Promise<boolean> {
   if (process.env.CI) {
     return true;
   }
@@ -60,7 +66,11 @@ async function selectPackageToPublishAsync(parcel: Parcel): Promise<boolean> {
     },
   ]);
   if (!selected) {
-    const incrementedVersions = incrementVersion(parcel.pkg.packageVersion);
+    const incrementedVersions = incrementVersion(
+      parcel.pkg.packageVersion,
+      parcel.pkgView?.versions ?? [],
+      options.prerelease === true ? 'rc' : options.prerelease || null
+    );
     const { version, customVersion } = await inquirer.prompt([
       {
         type: 'list',
@@ -107,10 +117,19 @@ async function selectPackageToPublishAsync(parcel: Parcel): Promise<boolean> {
 /**
  * Creates an object with possible incrementations of given version.
  */
-function incrementVersion(version: string): Record<string, string> {
-  const releaseTypes = ['major', 'minor', 'patch'];
+function incrementVersion(
+  version: string,
+  otherVersions: string[],
+  prerelease?: string | null
+): Record<string, string> {
+  const releaseTypes: ReleaseType[] = [ReleaseType.MAJOR, ReleaseType.MINOR, ReleaseType.PATCH];
+
+  // Add more options for prerelease versions
+  if (prerelease) {
+    releaseTypes.push(ReleaseType.PREMAJOR, ReleaseType.PREMINOR, ReleaseType.PREPATCH);
+  }
   return releaseTypes.reduce((acc, type) => {
-    acc[type] = semver.inc(version, type);
+    acc[type] = resolveSuggestedVersion(version, otherVersions, type, prerelease);
     return acc;
   }, {});
 }

@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-analytics",
-  "version": "3.0.0",
+  "version": "6.0.0",
   "sideEffects": false,
   "description": "A universal module that interfaces with the native firebase analytics API",
   "main": "build/Analytics.js",
@@ -31,22 +31,17 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/firebase-analytics/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/firebase-analytics/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "expo-constants": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "expo-firebase-core": "~2.0.0"
+    "expo-firebase-core": "~4.1.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 const LOCAL_STORAGE_KEY = 'EXPO_ERROR_RECOVERY_STORAGE';
 function _consumeRecoveryProps() {
     if (!Platform.isDOMAvailable)

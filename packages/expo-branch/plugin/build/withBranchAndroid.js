@@ -2,10 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setBranchApiKey = exports.getBranchApiKey = exports.withBranchAndroid = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-const android_plugins_1 = require("@expo/config-plugins/build/plugins/android-plugins");
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
 const META_BRANCH_KEY = 'io.branch.sdk.BranchKey';
-exports.withBranchAndroid = android_plugins_1.createAndroidManifestPlugin(setBranchApiKey, 'withBranchAndroid');
+const withBranchAndroid = (config) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        config.modResults = setBranchApiKey(config, config.modResults);
+        return config;
+    });
+};
+exports.withBranchAndroid = withBranchAndroid;
 function getBranchApiKey(config) {
     var _a, _b, _c, _d;
     return (_d = (_c = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.config) === null || _b === void 0 ? void 0 : _b.branch) === null || _c === void 0 ? void 0 : _c.apiKey) !== null && _d !== void 0 ? _d : null;

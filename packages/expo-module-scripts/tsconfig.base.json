@@ -5,7 +5,6 @@
     "jsx": "react",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "types": ["jest", "jest-require"],
     "typeRoots": [
       "./ts-declarations",
@@ -13,6 +12,7 @@
     ],
     "sourceMap": true,
     "declaration": true,
+    "declarationMap": true,
     "inlineSources": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,

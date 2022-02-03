@@ -1,13 +1,11 @@
 ---
-title: Using Libraries
+title: Using libraries
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 
 Every app is made up of some combination of React Native, Expo SDK, and third party libraries. It's important to understand how to use the libraries from each of these sources, and how to determine whether a third-party library will work in your project or not.
-
-If you are using the bare workflow, read the [guide for using libraries in the bare workflow](../bare/using-libraries.md) instead of this page.
 
 ## Using React Native Core Libraries
 
@@ -30,11 +28,11 @@ export default function App() {
 
 ## Using Expo SDK Libraries
 
-> 💡 If you initialized your app using @react-native-community/cli and you don't have `react-native-unimodules` installed in it yet, please refer to the guide for [using the Expo SDK in existing apps](../bare/existing-apps.md).
+> 💡 If you initialized your app using `@react-native-community/cli` and you don't have the `expo` package installed in it yet, please refer to the guide for [using the Expo SDK in existing apps](../bare/existing-apps.md).
 
-The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more.
+The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more.
 
-To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.io/versions/latest/) or through the documentation Search bar.
+To use a library from the Expo SDK, find the one you are looking for in the [API Reference](/versions/latest) or through the documentation Search bar.
 
 At the top of the page you will see a description of the library and a platform compatibility table. It tells you which platforms and environments the library is compatible with. It looks like this:
 
@@ -82,7 +80,7 @@ export default function App() {
 
 After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments.
 
-Usually libraries built specifically for other platforms will not work with React Native. Examples include `react-select` which is built for the web and specifically targets `react-dom`, and `rimraf` which is built for Node.js and interacts with your computer file system. Other libraries like `lodash` use only JavaScript langauge features and work in any environment.
+Usually libraries built specifically for other platforms will not work with React Native. Examples include `react-select` which is built for the web and specifically targets `react-dom`, and `rimraf` which is built for Node.js and interacts with your computer file system. Other libraries like `lodash` use only JavaScript language features and work in any environment.
 
 ### Determining Third-Party Library Compatibility
 

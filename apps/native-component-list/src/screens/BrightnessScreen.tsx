@@ -1,6 +1,5 @@
 import Slider from '@react-native-community/slider';
 import * as Brightness from 'expo-brightness';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -39,21 +38,30 @@ function BrightnessView() {
   const [brightness] = useResolvedValue(Brightness.getBrightnessAsync);
   const [systemBrightness] = useResolvedValue(Brightness.getSystemBrightnessAsync);
   const [sliderBrightness, setBrightness] = React.useState<Record<string, number>>({});
-  const [systemBrightnessPermissionGranted, askAsync] = Permissions.usePermissions(
-    Permissions.SYSTEM_BRIGHTNESS
-  );
+
+  const [systemBrightnessPermissionGranted, setSystemBrightnessPermissionGranted] =
+    React.useState(false);
+
+  React.useEffect(() => {
+    async function initialize() {
+      const { granted } = await Brightness.getPermissionsAsync();
+      setSystemBrightnessPermissionGranted(granted);
+    }
+
+    initialize();
+  }, []);
 
   function alertBrightnessAsync(type: string) {
     (type === 'Brightness'
       ? Brightness.getBrightnessAsync()
       : Brightness.getSystemBrightnessAsync()
-    ).then(value => {
+    ).then((value) => {
       alert(value);
     });
   }
 
   function updateBrightnessAsync(value: number, type: string) {
-    setBrightness(brightness => ({ ...brightness, [type]: value }));
+    setBrightness((brightness) => ({ ...brightness, [type]: value }));
     if (type === 'Brightness') {
       Brightness.setBrightnessAsync(value);
     } else {
@@ -66,15 +74,21 @@ function BrightnessView() {
     SystemBrightness: systemBrightness,
   };
 
-  const views = brightnessTypes.map(type => {
+  const views = brightnessTypes.map((type) => {
     const currentBrightness = initBrightness[type] ?? 0;
     return (
       <View key={type} style={{ padding: 20 }}>
         <HeadingText>{type}</HeadingText>
+        {/* you can attempt to request permission even if already granted, but it will noop */}
         {type === 'SystemBrightness' && (
           <Button
-            title="Permissions.SYSTEM_BRIGHTNESS"
-            onPress={() => askAsync()}
+            title={`Request permissions ${
+              systemBrightnessPermissionGranted ? ' (already granted)' : ''
+            }`}
+            onPress={async () => {
+              const { granted } = await Brightness.requestPermissionsAsync();
+              setSystemBrightnessPermissionGranted(granted);
+            }}
             style={{ marginTop: 15 }}
           />
         )}
@@ -90,22 +104,12 @@ function BrightnessView() {
         <Slider
           value={currentBrightness}
           disabled={type === 'SystemBrightness' && !systemBrightnessPermissionGranted}
-          onValueChange={value => updateBrightnessAsync(value, type)}
+          onValueChange={(value) => updateBrightnessAsync(value, type)}
         />
       </View>
     );
   });
-  return (
-    <ScrollView style={{ flex: 1 }}>
-      {views}
-      <View style={{ padding: 20 }}>
-        <HeadingText>Permission</HeadingText>
-        {systemBrightnessPermissionGranted && (
-          <Text>{JSON.stringify(systemBrightnessPermissionGranted, null, 2)}</Text>
-        )}
-      </View>
-    </ScrollView>
-  );
+  return <ScrollView style={{ flex: 1 }}>{views}</ScrollView>;
 }
 
 BrightnessScreen.navigationOptions = {

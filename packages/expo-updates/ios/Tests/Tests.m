@@ -2,6 +2,7 @@
 
 @import XCTest;
 
+#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesUtils.h>
@@ -11,18 +12,6 @@
 @end
 
 @implementation Tests
-
-- (void)setUp
-{
-    [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-}
-
-- (void)tearDown
-{
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
-}
 
 - (void)testGetRuntimeVersionWithConfig
 {
@@ -49,6 +38,37 @@
 
   NSURL *urlOtherPort = [NSURL URLWithString:@"https://exp.host:47/test"];
   XCTAssert([@"https://exp.host:47" isEqualToString:[EXUpdatesConfig normalizedURLOrigin:urlOtherPort]], @"should return a normalized URL origin with port if non-default port is specified");
+}
+
+- (void)testAssetFilename
+{
+  EXUpdatesAsset *asset1 = [[EXUpdatesAsset alloc] initWithKey:nil type:@"bundle"];
+  EXUpdatesAsset *asset2 = [[EXUpdatesAsset alloc] initWithKey:nil type:@"bundle"];
+  XCTAssertNotEqualObjects(asset1.filename, asset2.filename, @"Asset filenames with null keys should be unique");
+
+  EXUpdatesAsset *assetSetFilename = [[EXUpdatesAsset alloc] initWithKey:nil type:@"bundle"];
+  NSString *filenameFromDatabase = @"filename.png";
+  assetSetFilename.filename = filenameFromDatabase;
+  XCTAssertEqualObjects(filenameFromDatabase, assetSetFilename.filename, @"Should be able to override the default asset filename if the database has something different");
+}
+
+- (void)testAssetFilenameWithFileExtension
+{
+  EXUpdatesAsset *assetWithDotPrefix = [[EXUpdatesAsset alloc] initWithKey:@"cat" type:@".jpeg"];
+  XCTAssertEqualObjects(assetWithDotPrefix.filename, @"cat.jpeg");
+  
+  EXUpdatesAsset *assetWithoutDotPrefix = [[EXUpdatesAsset alloc] initWithKey:@"cat" type:@"jpeg"];
+  XCTAssertEqualObjects(assetWithoutDotPrefix.filename, @"cat.jpeg");
+  
+  EXUpdatesAsset *assetWithoutKey = [[EXUpdatesAsset alloc] initWithKey:nil type:@"jpeg"];
+  XCTAssertEqualObjects([assetWithoutKey.filename substringFromIndex:[assetWithoutKey.filename length] - 5], @".jpeg");
+}
+
+- (void)testAssetFilenameWithoutFileExtension
+{
+  EXUpdatesAsset *assetWithDotPrefix = [[EXUpdatesAsset alloc] initWithKey:@"cat" type:nil];
+  XCTAssertEqualObjects(assetWithDotPrefix.filename, @"cat");
+
 }
 
 @end

@@ -5,7 +5,6 @@ exports[`renders H1 1`] = `
   aria-level="1"
   className="css-reset-4rbku5 css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   role="heading"
   style={
     Object {
@@ -23,7 +22,6 @@ exports[`renders H2 1`] = `
   aria-level="2"
   className="css-reset-4rbku5 css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   role="heading"
   style={
     Object {
@@ -41,7 +39,6 @@ exports[`renders H3 1`] = `
   aria-level="3"
   className="css-reset-4rbku5 css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   role="heading"
   style={
     Object {
@@ -59,7 +56,6 @@ exports[`renders H4 1`] = `
   aria-level="4"
   className="css-reset-4rbku5 css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   role="heading"
   style={
     Object {
@@ -77,7 +73,6 @@ exports[`renders H5 1`] = `
   aria-level="5"
   className="css-reset-4rbku5 css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   role="heading"
   style={
     Object {
@@ -95,7 +90,6 @@ exports[`renders H6 1`] = `
   aria-level="6"
   className="css-reset-4rbku5 css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   role="heading"
   style={
     Object {

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXScreenOrientation/ABI38_0_0EXScreenOrientation/ABI38_0_0EXScreenOrientationRegistry.h

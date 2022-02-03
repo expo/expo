@@ -1,9 +1,11 @@
 ---
 title: Sharing
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sharing'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sharing'
+packageName: 'expo-sharing'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
@@ -25,7 +27,7 @@ Currently `expo-sharing` only supports sharing *from your app to other apps* and
 
 ## Installation
 
-<InstallSection packageName="expo-sharing" />
+<APIInstallSection />
 
 ## API
 
@@ -33,37 +35,4 @@ Currently `expo-sharing` only supports sharing *from your app to other apps* and
 import * as Sharing from 'expo-sharing';
 ```
 
-**[Methods](#methods)**
-
-- [Installation](#installation)
-- [API](#api)
-- [Methods](#methods)
-  - [`Sharing.isAvailableAsync()`](#sharingisavailableasync)
-    - [Returns](#returns)
-  - [`Sharing.shareAsync(url, options)`](#sharingshareasyncurl-options)
-    - [Arguments](#arguments)
-
-## Methods
-
-### `Sharing.isAvailableAsync()`
-
-Determine if the sharing API can be used in this app.
-
-#### Returns
-
-A promise that resolves to `true` if the sharing API can be used, and `false` otherwise.
-
-### `Sharing.shareAsync(url, options)`
-
-Opens action sheet to share file to different applications which can handle this type of file.
-
-#### Arguments
-
-- **url (_string_)** -- Local file URL to share.
-- **options (_object_)** --
-
-  A map of options:
-
-  - **mimeType (_string_)** -- sets `mimeType` for `Intent` (**Android only**)
-  - **dialogTitle (_string_)** -- sets share dialog title (**Android and Web only**)
-  - **UTI (_string_)** -- ([Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)) the type of the target file (**iOS only**)
+<APISection packageName="expo-sharing" apiName="Sharing" />

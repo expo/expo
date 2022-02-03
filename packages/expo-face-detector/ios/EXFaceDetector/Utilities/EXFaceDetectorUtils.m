@@ -8,7 +8,6 @@
 
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
-#import <Firebase/Firebase.h>
 
 NSString *const EXGMVDataOutputWidthKey = @"Width";
 NSString *const EXGMVDataOutputHeightKey = @"Height";
@@ -24,21 +23,22 @@ static const NSString *kTrackingEnabled = @"tracking";
 {
   return @{
            @"Mode" : @{
-               @"fast" : @(FIRVisionFaceDetectorPerformanceModeFast),
-               @"accurate" : @(FIRVisionFaceDetectorPerformanceModeAccurate)
+               @"fast" : @(MLKFaceDetectorPerformanceModeFast),
+               @"accurate" : @(MLKFaceDetectorPerformanceModeAccurate)
                },
            @"Landmarks" : @{
-               @"all" : @(FIRVisionFaceDetectorLandmarkModeAll),
-               @"none" : @(FIRVisionFaceDetectorLandmarkModeNone)
+               @"all" : @(MLKFaceDetectorLandmarkModeAll),
+               @"none" : @(MLKFaceDetectorLandmarkModeNone)
                },
            @"Classifications" : @{
-               @"all" : @(FIRVisionFaceDetectorClassificationModeAll),
-               @"none" : @(FIRVisionFaceDetectorClassificationModeNone)
+               @"all" : @(MLKFaceDetectorClassificationModeAll),
+               @"none" : @(MLKFaceDetectorClassificationModeNone)
                }
            };
 }
 
-+ (BOOL)didOptionsChange:(FIRVisionFaceDetectorOptions *)options comparingTo:(FIRVisionFaceDetectorOptions *)other
++ (BOOL)didOptionsChange:(MLKFaceDetectorOptions *)options
+             comparingTo:(MLKFaceDetectorOptions *)other
 {
   return options.performanceMode == other.performanceMode &&
   options.classificationMode == other.classificationMode &&
@@ -48,9 +48,9 @@ static const NSString *kTrackingEnabled = @"tracking";
   options.trackingEnabled == other.trackingEnabled;
 }
 
-+ (FIRVisionFaceDetectorOptions *)createCopy:(FIRVisionFaceDetectorOptions *)from
++ (MLKFaceDetectorOptions *)createCopy:(MLKFaceDetectorOptions *)from
 {
-  FIRVisionFaceDetectorOptions *options = [FIRVisionFaceDetectorOptions new];
+  MLKFaceDetectorOptions *options = [MLKFaceDetectorOptions new];
   options.performanceMode = from.performanceMode;
   options.classificationMode = from.classificationMode;
   options.contourMode = from.contourMode;
@@ -61,13 +61,13 @@ static const NSString *kTrackingEnabled = @"tracking";
 }
 
 
-+ (FIRVisionFaceDetectorOptions *) mapOptions:(NSDictionary*)options {
-  return [self newOptions:[FIRVisionFaceDetectorOptions new] withValues:options];
++ (MLKFaceDetectorOptions *) mapOptions:(NSDictionary*)options {
+  return [self newOptions:[MLKFaceDetectorOptions new] withValues:options];
 }
 
-+ (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions*)options withValues:(NSDictionary *)values
++ (MLKFaceDetectorOptions *) newOptions:(MLKFaceDetectorOptions*)options withValues:(NSDictionary *)values
 {
-  FIRVisionFaceDetectorOptions *result = [self createCopy:options];
+  MLKFaceDetectorOptions *result = [self createCopy:options];
   if([values objectForKey:kModeOptionName]) {
     result.performanceMode = [values[kModeOptionName] longValue];
   }
@@ -83,16 +83,16 @@ static const NSString *kTrackingEnabled = @"tracking";
   return result;
 }
 
-+ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions *)first to:(FIRVisionFaceDetectorOptions*)second {
++ (BOOL)areOptionsEqual:(MLKFaceDetectorOptions *)first to:(MLKFaceDetectorOptions*)second {
   return [self didOptionsChange:first comparingTo:second];
 }
 
 + (NSDictionary *)defaultFaceDetectorOptions
 {
   return @{
-           kModeOptionName: @(FIRVisionFaceDetectorPerformanceModeFast),
-           kDetectLandmarksOptionName: @(FIRVisionFaceDetectorLandmarkModeNone),
-           kRunClassificationsOptionName: @(FIRVisionFaceDetectorClassificationModeNone)
+           kModeOptionName: @(MLKFaceDetectorPerformanceModeFast),
+           kDetectLandmarksOptionName: @(MLKFaceDetectorLandmarkModeNone),
+           kRunClassificationsOptionName: @(MLKFaceDetectorClassificationModeNone)
            };
 }
 
@@ -101,28 +101,20 @@ static const NSString *kTrackingEnabled = @"tracking";
   switch (imageOrientation) {
     case UIImageOrientationUp:
       return kCGImagePropertyOrientationUp;
-      break;
     case UIImageOrientationUpMirrored:
       return kCGImagePropertyOrientationUpMirrored;
-      break;
     case UIImageOrientationDown:
       return kCGImagePropertyOrientationDown;
-      break;
     case UIImageOrientationDownMirrored:
       return kCGImagePropertyOrientationDownMirrored;
-      break;
     case UIImageOrientationRight:
       return kCGImagePropertyOrientationRight;
-      break;
     case UIImageOrientationRightMirrored:
       return kCGImagePropertyOrientationRightMirrored;
-      break;
     case UIImageOrientationLeft:
       return kCGImagePropertyOrientationLeft;
-      break;
     case UIImageOrientationLeftMirrored:
       return kCGImagePropertyOrientationLeftMirrored;
-      break;
   }
 };
 

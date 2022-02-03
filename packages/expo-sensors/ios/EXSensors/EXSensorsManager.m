@@ -1,7 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXSensors/EXSensorsManager.h>
+#import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
+
+#import <ExpoModulesCore/EXDefines.h>
+#import <EXSensors/EXSensorsManager.h>
 
 @interface EXSensorsManager ()
 
@@ -18,11 +21,11 @@
 
 @implementation EXSensorsManager
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface), @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
+  return @[@protocol(EXAccelerometerInterface), @protocol(EXBarometerInterface), @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
 }
 
 - (instancetype)init

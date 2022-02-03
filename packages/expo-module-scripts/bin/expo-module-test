@@ -12,7 +12,7 @@ if [ "$1" == "plugin" ]; then
   args+=("--rootDir")
   args+=("plugin")
 
-  if [[ -f "$(pwd)/plugin/jest.config.js" ]]; then
+  if [[ -f plugin/jest.config.js ]]; then
     args+=("--config")
     args+=("plugin/jest.config.js")
   fi

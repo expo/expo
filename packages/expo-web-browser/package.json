@@ -1,6 +1,6 @@
 {
   "name": "expo-web-browser",
-  "version": "9.0.0",
+  "version": "10.1.0",
   "description": "Provides access to the system's web browser and supports handling redirects. On iOS, it uses SFSafariViewController or SFAuthenticationSession, depending on the method you call, and on Android it uses ChromeCustomTabs. As of iOS 11, SFSafariViewController no longer shares cookies with Safari, so if you are using WebBrowser for authentication you will want to use WebBrowser.openAuthSessionAsync, and if you just want to open a webpage (such as your app privacy policy), then use WebBrowser.openBrowserAsync.",
   "main": "build/WebBrowser.js",
   "types": "build/WebBrowser.d.ts",
@@ -31,21 +31,17 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/webbrowser/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
-  "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
-  },
   "dependencies": {
     "compare-urls": "^2.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -10,4 +10,5 @@ import com.facebook.react.ReactInstanceManager
 interface DevMenuSessionInterface {
   val reactInstanceManager: ReactInstanceManager
   val appInfo: Bundle
+  val openScreen: String?
 }

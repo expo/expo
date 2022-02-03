@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.components.maskedview;
 
 import android.view.View;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -26,5 +27,12 @@ public class RNCMaskedViewManager extends ViewGroupManager<RNCMaskedView> {
   @Override
   protected RNCMaskedView createViewInstance(ThemedReactContext themedReactContext) {
     return new RNCMaskedView(themedReactContext);
+  }
+
+  @ReactProp(name = "androidRenderingMode")
+  public void setAndroidRenderingMode(RNCMaskedView view, @Nullable String renderingMode) {
+    if (renderingMode != null) {
+      view.setRenderingMode(renderingMode);
+    }
   }
 }

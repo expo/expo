@@ -4,12 +4,12 @@
 
 @implementation EXErrorRecoveryModule
 
-UM_EXPORT_MODULE(ExpoErrorRecovery);
+EX_EXPORT_MODULE(ExpoErrorRecovery);
 
-UM_EXPORT_METHOD_AS(saveRecoveryProps,
+EX_EXPORT_METHOD_AS(saveRecoveryProps,
                     saveRecoveryProps:(NSString *)props
-                    resolve:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (props) {
     if (![self setRecoveryProps:props]) {
@@ -22,7 +22,7 @@ UM_EXPORT_METHOD_AS(saveRecoveryProps,
 - (NSDictionary *)constantsToExport
 {
   return @{
-           @"recoveredProps": UMNullIfNil([self consumeRecoveryProps])
+           @"recoveredProps": EXNullIfNil([self consumeRecoveryProps])
            };
 }
 

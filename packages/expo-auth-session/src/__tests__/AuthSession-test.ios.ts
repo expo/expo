@@ -12,7 +12,7 @@ function applyMocks() {
       default: {
         ...Constants,
         executionEnvironment: ExecutionEnvironment.Standalone,
-        manifest: { ...Constants.manifest, id: '@example/abc' },
+        manifest: { ...Constants.manifest, id: '@example/abc', originalFullName: '@example/abc' },
       },
     };
   });
@@ -36,11 +36,6 @@ it(`returns correct redirect URL from getRedirectUrl`, () => {
   expect(getRedirectUrl()).toEqual('https://auth.expo.io/@example/abc');
 });
 
-it(`returns the correct return URL from getDefaultReturnUrl`, () => {
-  const { getDefaultReturnUrl } = require('../AuthSession');
-  expect(getDefaultReturnUrl()).toEqual('exp://exp.host/@test/test/--/expo-auth-session');
-});
-
 it(`opens WebBrowser startAsync to the start URL`, async () => {
   const authUrl = 'abcd.com';
   const returnUrl = 'efgh.com';
@@ -51,9 +46,9 @@ it(`opens WebBrowser startAsync to the start URL`, async () => {
   mockOpenAuthSessionAsync(WebBrowser, async () => ({ type: 'cancel' }));
   await startAsync({ authUrl, returnUrl });
 
-  const { getSessionUrlProvider } = require('../SessionUrlProvider');
+  const sessionUrlProvider = require('../SessionUrlProvider').default;
   expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
-    getSessionUrlProvider().getStartUrl(authUrl, returnUrl),
+    sessionUrlProvider.getStartUrl(authUrl, returnUrl),
     returnUrl,
     { showInRecents: false }
   );
@@ -73,7 +68,7 @@ it(`only lets you call startAsync once at a time`, async () => {
   const WebBrowser = require('expo-web-browser');
 
   mockOpenAuthSessionAsync(WebBrowser, () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(normalResponse), 0);
     });
   });
@@ -164,6 +159,7 @@ it(`lets us call AuthSession.startAsync after param validation throws`, async ()
 it(`warns if user is @anonymous in getRedirectUrl`, () => {
   const Constants = require('expo-constants').default;
   mockProperty(Constants.manifest, 'id', '@anonymous/abc');
+  mockProperty(Constants.manifest, 'originalFullName', null);
   mockProperty(console, 'warn', jest.fn());
   const { getRedirectUrl } = require('../AuthSession');
   getRedirectUrl();

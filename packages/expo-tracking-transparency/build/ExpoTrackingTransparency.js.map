@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoTrackingTransparency.js","sourceRoot":"","sources":["../src/ExpoTrackingTransparency.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,wBAAwB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoTrackingTransparency;\n"]}
