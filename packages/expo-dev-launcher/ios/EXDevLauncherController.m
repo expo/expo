@@ -181,6 +181,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 {
   if (_delegate != nil) {
     [self startWithWindow:window delegate:_delegate launchOptions:_launchOptions];
+  } else {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
   }
 }
 
