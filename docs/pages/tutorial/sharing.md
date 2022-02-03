@@ -35,7 +35,7 @@ export default function App() {
 
   /* @info Share the selected image if sharing is available on the user's device */
   let openShareDialogAsync = async () => {
-    if (!(await Sharing.isAvailableAsync())) {
+    if (Platform.OS === 'web') {
       alert(`Uh oh, sharing isn't available on your platform`);
       return;
     }
