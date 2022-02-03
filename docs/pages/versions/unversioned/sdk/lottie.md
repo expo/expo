@@ -1,9 +1,10 @@
 ---
 title: Lottie
-sourceCodeUrl: 'https://github.com/react-native-community/lottie-react-native'
+sourceCodeUrl: 'https://github.com/lottie-react-native/lottie-react-native'
+packageName: 'lottie-react-native'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -13,7 +14,7 @@ Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation
 
 ## Installation
 
-<InstallSection packageName="lottie-react-native" href="https://github.com/react-native-community/lottie-react-native" />
+<APIInstallSection href="https://github.com/lottie-react-native/lottie-react-native" />
 
 ## Usage
 
@@ -80,20 +81,10 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-## Importing Lottie
-
-You can import it like this:
+## API
 
 ```javascript
 import LottieView from 'lottie-react-native';
 ```
 
-## Known Issues
-
-> The Lottie SDK is currently considered to be under Expo's "DangerZone" because it's implementation is still in Alpha.
-
-- Importing Lottie 3 files causes the previewer to crash without a visible error, because Expo relies on `lottie-react-native` v2.
-
-## Using the Lottie API
-
-We pull in the API from [lottie-react-native](https://github.com/airbnb/lottie-react-native#basic-usage), so the documentation there is the best resource to follow.
+Refer to the [lottie-react-native repository](https://github.com/lottie-react-native/lottie-react-native#usage) for more detailed documentation.

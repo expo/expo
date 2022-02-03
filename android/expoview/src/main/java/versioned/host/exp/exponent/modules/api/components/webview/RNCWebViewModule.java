@@ -61,7 +61,7 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
       DO_NOT_OVERRIDE,
     }
 
-    private int nextLockIdentifier = 0;
+    private int nextLockIdentifier = 1;
     private final HashMap<Integer, AtomicReference<ShouldOverrideCallbackState>> shouldOverrideLocks = new HashMap<>();
 
     public synchronized Pair<Integer, AtomicReference<ShouldOverrideCallbackState>> getNewLock() {

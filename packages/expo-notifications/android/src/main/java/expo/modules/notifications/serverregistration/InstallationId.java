@@ -14,26 +14,32 @@ import java.util.UUID;
 /**
  * An installation ID provider - it solves two purposes:
  * - in installations that have a legacy UUID persisted
- *   in shared-across-expo-modules SharedPreferences,
- *   migrates the UUID from there to a non-backed-up file,
+ * in shared-across-expo-modules SharedPreferences or
+ * shared-across-expo-modules non-backed-up file,
+ * migrates the UUID from there to its own non-backed-up file,
  * - provides/creates a UUID unique per an installation.
- *
+ * <p>
  * Similar class exists in expoview and expo-constants.
  */
 public class InstallationId {
   private static final String TAG = InstallationId.class.getSimpleName();
 
-  public static final String LEGACY_UUID_KEY = "uuid";
-  public static final String UUID_FILE_NAME = "expo_installation_uuid.txt";
-  private static final String PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences";
+  // Legacy storage
+  public static final String LEGACY_PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences";
+  public static final String LEGACY_PREFERENCES_UUID_KEY = "uuid";
+
+  public static final String LEGACY_UUID_FILE_NAME = "expo_installation_uuid.txt";
+
+  // Primary storage
+  public static final String UUID_FILE_NAME = "expo_notifications_installation_uuid.txt";
 
   private String mUuid;
   private Context mContext;
-  private SharedPreferences mSharedPreferences;
+  private SharedPreferences mLegacySharedPreferences;
 
   public InstallationId(Context context) {
     mContext = context;
-    mSharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
+    mLegacySharedPreferences = context.getSharedPreferences(LEGACY_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
   }
 
   public String getUUID() {
@@ -42,46 +48,47 @@ public class InstallationId {
       return mUuid;
     }
 
-    // Read from non-backed-up storage
-    File uuidFile = getNonBackedUpUuidFile();
-    try (FileReader fileReader = new FileReader(uuidFile);
-         BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-      // Cache for future calls
-      mUuid = UUID.fromString(bufferedReader.readLine()).toString();
-    } catch (IOException | IllegalArgumentException e) {
-      // do nothing, try other sources
-    }
-
-    // We could have returned inside try clause,
-    // but putting it like this here makes it immediately
-    // visible.
+    // 1. Read from primary storage
+    //    If there already is a value it must have been migrated previously.
+    mUuid = readUUIDFromFile(new File(mContext.getNoBackupFilesDir(), UUID_FILE_NAME));
     if (mUuid != null) {
       return mUuid;
     }
 
-    // In November 2020 we decided to move installationID (backed by LEGACY_UUID_KEY value) from backed-up SharedPreferences
-    // to a non-backed-up text file to fix issues where devices restored from backups have the same installation IDs
-    // as the devices where the backup was created.
-    String legacyUuid = mSharedPreferences.getString(LEGACY_UUID_KEY, null);
-    if (legacyUuid != null) {
-      mUuid = legacyUuid;
-
-      boolean uuidHasBeenSuccessfullyMigrated = true;
-
-      try (FileWriter writer = new FileWriter(uuidFile)) {
-        writer.write(legacyUuid);
+    // 2. Read from legacy shared preferences
+    //    If there is a value we should use it - it's been used by previous versions
+    //    of expo-notifications, so in order not to rotate the ID we should migrate it
+    //    to new storage.
+    mUuid = mLegacySharedPreferences.getString(LEGACY_PREFERENCES_UUID_KEY, null);
+    if (mUuid != null) {
+      try {
+        saveUUID(mUuid);
+        // We only remove the value from old storage once it's set and saved in the new storage.
+        mLegacySharedPreferences.edit().remove(LEGACY_PREFERENCES_UUID_KEY).apply();
       } catch (IOException e) {
-        uuidHasBeenSuccessfullyMigrated = false;
         Log.e(TAG, "Error while migrating UUID from legacy storage. " + e);
       }
 
-      // We only remove the value from old storage once it's set and saved in the new storage.
-      if (uuidHasBeenSuccessfullyMigrated) {
-        mSharedPreferences.edit().remove(LEGACY_UUID_KEY).apply();
-      }
+      return mUuid;
     }
 
-    // Return either value from legacy storage or null
+    // 3. Migrate from legacy file
+    //    If there is a value and we've made it up to here it means
+    //    expo-notifications hasn't used *its own* ID in the past -
+    //    - it used expo-constants' ID. Since it's now deprecated,
+    //    let's copy the value to our own storage.
+    mUuid = readUUIDFromFile(new File(mContext.getNoBackupFilesDir(), LEGACY_UUID_FILE_NAME));
+    if (mUuid != null) {
+      try {
+        saveUUID(mUuid);
+      } catch (IOException e) {
+        Log.e(TAG, "Error while migrating UUID from legacy storage. " + e);
+      }
+
+      return mUuid;
+    }
+
+    //noinspection ConstantConditions
     return mUuid;
   }
 
@@ -96,15 +103,32 @@ public class InstallationId {
     // fails subsequent calls to get(orCreate)UUID
     // return the same value.
     mUuid = UUID.randomUUID().toString();
-    try (FileWriter writer = new FileWriter(getNonBackedUpUuidFile())) {
-      writer.write(mUuid);
+    try {
+      saveUUID(mUuid);
     } catch (IOException e) {
       Log.e(TAG, "Error while writing new UUID. " + e);
     }
     return mUuid;
   }
 
-  private File getNonBackedUpUuidFile() {
+  protected String readUUIDFromFile(File file) {
+    try (FileReader fileReader = new FileReader(file);
+         BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+      String line = bufferedReader.readLine();
+      // If line is not a UUID, it throws an IllegalArgumentException
+      return UUID.fromString(line).toString();
+    } catch (IOException | IllegalArgumentException e) {
+      return null;
+    }
+  }
+
+  protected void saveUUID(String uuid) throws IOException {
+    try (FileWriter writer = new FileWriter(getNonBackedUpUuidFile())) {
+      writer.write(uuid);
+    }
+  }
+
+  protected File getNonBackedUpUuidFile() {
     return new File(mContext.getNoBackupFilesDir(), UUID_FILE_NAME);
   }
 }

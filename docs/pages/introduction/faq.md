@@ -2,12 +2,12 @@
 title: Common questions
 ---
 
-In addition to the questions below, see the [forums](http://forums.expo.io/) for more common questions and answers. Some of this information is repeated from earlier sections of the introduction but we include it here for comprehensiveness.
+In addition to the questions below, see the [forums](https://forums.expo.dev/) for more common questions and answers. Some of this information is repeated from earlier sections of the introduction but we include it here for comprehensiveness.
 
 <details><summary><h4>Is Expo similar to React for web development?</h4></summary>
 <p>
 
-Expo and React Native are similar to React. You'll have to learn a new set of components (`View` instead of `div`, for example) and writing mobile apps is very different from websites; you think more in terms of screens and different navigators instead of separate web pages, but much more your knowledge carries over than if you were writing a traditional Android or iOS app.
+Expo and React Native are similar to React. You'll have to learn a new set of components (`View` instead of `div`, for example) and writing mobile apps is very different from websites; you think more in terms of screens and different navigators instead of separate web pages, but much more of your knowledge carries over than if you were writing a traditional Android or iOS app.
 
 </p>
 </details>
@@ -33,7 +33,7 @@ Expo tools are free to use and open source. You can view the source for the Expo
 
 Just because you can run everything that Expo provides on your own hardware doesn't mean setting up and managing all of the services you need is the right fit for your team.
 
-If that sounds like you, you can see what we offer at https://expo.io/developer-services
+If that sounds like you, you can see what we offer at https://expo.dev/developer-services
 
 </p>
 </details>
@@ -53,9 +53,9 @@ However, if you need something custom that isn't possible with the native module
 <details><summary><h4>How do I share my Expo project? Can I submit it to the app stores?</h4></summary>
 <p>
 
-The fastest way to share your managed Expo project is to publish it. You can do this by clicking 'Publish' in Expo Dev Tools or running `expo publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight or sign up for the [Priority Plan](https://expo.io/developer-services) in order to share your app with teammates through the Expo client.
+The fastest way to share your managed Expo project is to publish it. You can do this by clicking 'Publish' in Expo Dev Tools or running `expo publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo Go app for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.dev/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight or sign up for the [Priority Plan](https://expo.dev/developer-services) in order to share your app with teammates through the Expo Go app.
 
-When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../distribution/building-standalone-apps.md#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
+When you're ready, you can create a standalone app (**.ipa** and **.apk**) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../distribution/building-standalone-apps.md#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
 </p>
 </details>
@@ -75,7 +75,7 @@ If you are using native libraries that aren't supported by Expo, you will either
 <details><summary><h4>What version of Android and iOS are supported by Expo apps?</h4></summary>
 <p>
 
-Expo supports Android 5+ and iOS 10+.
+Expo supports Android 5+ and iOS 11+.
 
 </p>
 </details>

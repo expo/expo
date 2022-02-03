@@ -1,9 +1,10 @@
 ---
 title: SafeAreaContext
 sourceCodeUrl: 'https://github.com/th3rdwave/react-native-safe-area-context'
+packageName: 'react-native-safe-area-context'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`react-native-safe-area-context`** provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
@@ -12,7 +13,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="react-native-safe-area-context" href="https://github.com/th3rdwave/react-native-safe-area-context#getting-started" />
+<APIInstallSection href="https://github.com/th3rdwave/react-native-safe-area-context#getting-started" />
 
 ## API
 
@@ -30,7 +31,7 @@ import {
 
 If you set your own padding on the view, it will be added to the padding from the safe area.
 
-**If you are targeting web, you must set up `SafeAreaProvider` in as described in the hooks section**. You do not need to for native platforms.
+**If you are targeting web, you must set up `SafeAreaProvider` as described in the hooks section**. You do not need to for native platforms.
 
 ```js
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -126,7 +127,7 @@ If you are doing server side rendering on the web, you can use `initialSafeAreaI
 
 In a web-only app, you would use CSS environment variables to get the size of the screen's safe area insets.
 
-`styles.css`
+**styles.css**
 
 ```css
 div {
@@ -141,7 +142,7 @@ div {
 
 Universally, the hook `useSafeAreaInsets()` can provide access to this information.
 
-`App.js`
+**App.js**
 
 ```jsx
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

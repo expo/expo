@@ -88,7 +88,9 @@ RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(userLocationAnnotationTitle, NSString)
+RCT_EXPORT_VIEW_PROPERTY(userInterfaceStyle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(followsUserLocation, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(userLocationCalloutEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsPointsOfInterest, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsBuildings, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsCompass, BOOL)
@@ -380,6 +382,7 @@ RCT_EXPORT_METHOD(animateToBearing:(nonnull NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(fitToElements:(nonnull NSNumber *)reactTag
+        edgePadding:(nonnull NSDictionary *)edgePadding
         animated:(BOOL)animated)
 {
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -558,6 +561,48 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
                       @"latitude": @(coordinate.latitude),
                       @"longitude": @(coordinate.longitude),
                       });
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
+                                 coordinate: (NSDictionary *)coordinate
+                                   resolver: (RCTPromiseResolveBlock)resolve
+                                   rejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[AIRMap class]]) {
+            reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid view returned from registry, expecting AIRMap, got: %@", view], NULL);
+        } else {
+            if (coordinate == nil ||
+                ![[coordinate allKeys] containsObject:@"latitude"] ||
+                ![[coordinate allKeys] containsObject:@"longitude"]) {
+                reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid coordinate format"], NULL);
+            }
+            CLLocation *location = [[CLLocation alloc] initWithLatitude:[coordinate[@"latitude"] doubleValue]
+                                                              longitude:[coordinate[@"longitude"] doubleValue]];
+            CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+            [geoCoder reverseGeocodeLocation:location
+                           completionHandler:^(NSArray *placemarks, NSError *error) {
+                    if (error == nil && [placemarks count] > 0){
+                        CLPlacemark *placemark = placemarks[0];
+                        resolve(@{
+                            @"name" : [NSString stringWithFormat:@"%@", placemark.name],
+                            @"thoroughfare" : [NSString stringWithFormat:@"%@", placemark.thoroughfare],
+                            @"subThoroughfare" : [NSString stringWithFormat:@"%@", placemark.subThoroughfare],
+                            @"locality" : [NSString stringWithFormat:@"%@", placemark.locality],
+                            @"subLocality" : [NSString stringWithFormat:@"%@", placemark.subLocality],
+                            @"administrativeArea" : [NSString stringWithFormat:@"%@", placemark.administrativeArea],
+                            @"subAdministrativeArea" : [NSString stringWithFormat:@"%@", placemark.subAdministrativeArea],
+                            @"postalCode" : [NSString stringWithFormat:@"%@", placemark.postalCode],
+                            @"countryCode" : [NSString stringWithFormat:@"%@", placemark.ISOcountryCode],
+                            @"country" : [NSString stringWithFormat:@"%@", placemark.country],
+                        });
+                    } else {
+                        reject(@"Invalid argument", [NSString stringWithFormat:@"Can not get address location"], NULL);
+                    }
+            }];
         }
     }];
 }
@@ -840,6 +885,18 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
 
 #pragma mark Annotation Stuff
 
+- (void)mapView:(AIRMap *)mapView didAddAnnotationViews:(NSArray<MKAnnotationView *> *)views
+{
+    if(!mapView.userLocationCalloutEnabled){
+        for(MKAnnotationView* view in views){
+            if ([view.annotation isKindOfClass:[MKUserLocation class]]){
+                [view setEnabled:NO];
+                [view setCanShowCallout:NO];
+                break;
+            }
+        }
+    }
+}
 
 
 - (void)mapView:(AIRMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view

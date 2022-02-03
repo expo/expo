@@ -25,6 +25,7 @@ RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(textAlign, NSTextAlignment)
+RCT_EXPORT_VIEW_PROPERTY(numberOfLines, NSInteger)
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RNCPicker)
 {
   view.font = [RCTFont updateFont:view.font withSize:json ?: @(defaultView.font.pointSize)];

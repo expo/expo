@@ -11,9 +11,9 @@ declare const _default: {
      */
     setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void>;
     /**
-     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
+     * Not supported on web, this method is a no-op
      */
-    setCurrentScreen(screenName?: string | undefined, screenClassOverride?: string | undefined): Promise<void>;
+    setSessionTimeoutDuration(_sessionTimeoutInterval: number): Promise<void>;
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
      */
@@ -34,3 +34,4 @@ declare const _default: {
     setDebugModeEnabled(isEnabled: boolean): Promise<void>;
 };
 export default _default;
+//# sourceMappingURL=ExpoFirebaseAnalytics.web.d.ts.map

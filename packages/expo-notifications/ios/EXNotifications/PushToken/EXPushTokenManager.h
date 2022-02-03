@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 #import <EXNotifications/EXPushTokenListener.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXPushTokenManager : UMSingletonModule <UIApplicationDelegate, EXPushTokenManager>
+@interface EXPushTokenManager : EXSingletonModule <UIApplicationDelegate, EXPushTokenManager>
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;

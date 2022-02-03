@@ -1,8 +1,11 @@
 ---
 title: AppLoading
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/launch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-app-loading'
+packageName: 'expo-app-loading'
 ---
 
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-app-loading`** tells `expo-splash-screen` to keep the splash screen visible while the AppLoading component is mounted.
@@ -13,7 +16,7 @@ This is useful to download and cache fonts, logos, icon images and other assets 
 
 ## Installation
 
-<InstallSection packageName="expo-app-loading" />
+<APIInstallSection />
 
 ## Usage
 
@@ -67,11 +70,4 @@ export default class App extends React.Component {
 import AppLoading from 'expo-app-loading';
 ```
 
-### props
-
-The following props are recommended, but optional. If you do not provide any props, you are responsible for coordinating loading assets, handling errors, and updating state to unmount the `AppLoading` component.
-
-- **startAsync (_function_)** -- A `function` that returns a `Promise`, and the `Promise` should resolve when the app is done loading required data and assets.
-- **onError (_function_)** -- If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
-- **onFinish (_function_)** -- **(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.
-- **autoHideSplash (_boolean_)** -- Whether to hide the native splash screen as soon as you unmount the AppLoading component. See [SplashScreen module](splash-screen.md) for an example.
+<APISection packageName="expo-app-loading" apiName="AppLoading" />

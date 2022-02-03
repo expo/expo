@@ -1,9 +1,11 @@
 ---
 title: Pedometer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
+packageName: 'expo-sensors'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -13,16 +15,16 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-sensors" />
+<APIInstallSection />
 
 ## Usage
 
 <SnackInline label='Pedometer' dependencies={['expo-sensors']} >
 
-```js
+```jsx
 import React from 'react';
-import { Pedometer } from 'expo-sensors';
 import { StyleSheet, Text, View } from 'react-native';
+import { Pedometer } from 'expo-sensors';
 
 export default class App extends React.Component {
   state = {
@@ -90,6 +92,7 @@ export default class App extends React.Component {
   }
 }
 
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -98,6 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+/* @end */
 ```
 
 </SnackInline>
@@ -108,44 +112,7 @@ const styles = StyleSheet.create({
 import { Pedometer } from 'expo-sensors';
 ```
 
-### `Pedometer.isAvailableAsync()`
-
-Returns whether the pedometer is enabled on the device.
-
-#### Returns
-
-- Returns a promise that resolves to a `Boolean`, indicating whether the pedometer is available on this device.
-
-### `Pedometer.getStepCountAsync(start, end)`
-
-Get the step count between two dates.
-
-#### Arguments
-
-- **start (_Date_)** -- A date indicating the start of the range over which to measure steps.
-- **end (_Date_)** -- A date indicating the end of the range over which to measure steps.
-
-#### Returns
-
-- Returns a promise that resolves to an `Object` with a `steps` key, which is a `Number` indicating the number of steps taken between the given dates.
-
-##### Note: iOS returns only last 7 days worth of data
-
-As [Apple documentation states](https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc):
-
-> Only the past seven days worth of data is stored and available for you to retrieve. Specifying a start date that is more than seven days in the past returns only the available data.
-
-### `Pedometer.watchStepCount(callback)`
-
-Subscribe to pedometer updates.
-
-#### Arguments
-
-- **callback (_function_)** A callback that is invoked when new step count data is available. The callback is provided a single argument that is an object with a `steps` key.
-
-#### Returns
-
-- An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
+<APISection packageName="expo-pedometer" apiName="Pedometer" />
 
 ## Standalone Applications
 

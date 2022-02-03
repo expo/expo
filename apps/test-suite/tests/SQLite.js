@@ -1,8 +1,8 @@
 'use strict';
 
-import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
+import { Platform } from 'expo-modules-core';
 import * as SQLite from 'expo-sqlite';
 
 export const name = 'SQLite';
@@ -14,7 +14,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -77,7 +77,7 @@ export function test(t) {
           const db = SQLite.openDatabase('downloaded.db');
           await new Promise((resolve, reject) => {
             db.transaction(
-              tx => {
+              (tx) => {
                 const onError = (tx, error) => reject(error);
                 tx.executeSql(
                   'SELECT * FROM Users',
@@ -93,6 +93,7 @@ export function test(t) {
               resolve
             );
           });
+          db._db.close();
         },
         30000
       );
@@ -103,7 +104,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -151,7 +152,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -197,7 +198,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -242,7 +243,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -285,36 +286,35 @@ export function test(t) {
       });
     }
 
-  
-      t.it('should return correct rowsAffected value', async () => {
-        const db = SQLite.openDatabase('test.db');
-        await new Promise((resolve, reject) => {
-          db.transaction(
-            tx => {
-              const nop = () => {};
-              const onError = (tx, error) => reject(error);
-
-              tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
-              tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
-                [],
-                nop,
-                onError
-              );
-              tx.executeSql(
-                'INSERT INTO Users (name) VALUES (?), (?), (?)',
-                ['name1', 'name2', 'name3'],
-                nop,
-                onError
-              );
-            },
-            reject,
-            resolve
-          );
-        });
-        await new Promise((resolve, reject) => {
-          db.transaction(tx => {
+    t.it('should return correct rowsAffected value', async () => {
+      const db = SQLite.openDatabase('test.db');
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
             const nop = () => {};
+            const onError = (tx, error) => reject(error);
+
+            tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
+            tx.executeSql(
+              'CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+              [],
+              nop,
+              onError
+            );
+            tx.executeSql(
+              'INSERT INTO Users (name) VALUES (?), (?), (?)',
+              ['name1', 'name2', 'name3'],
+              nop,
+              onError
+            );
+          },
+          reject,
+          resolve
+        );
+      });
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
             const onError = (tx, error) => reject(error);
             tx.executeSql(
               'DELETE FROM Users WHERE name=?',
@@ -332,7 +332,8 @@ export function test(t) {
               },
               onError
             );
-            tx.executeSql( // ensure deletion succeedeed
+            tx.executeSql(
+              // ensure deletion succeedeed
               'SELECT * from Users',
               [],
               (tx, results) => {
@@ -340,54 +341,59 @@ export function test(t) {
               },
               onError
             );
-          }, reject, resolve)
-        });
+          },
+          reject,
+          resolve
+        );
       });
-      if (Platform.OS !== 'web') { // It is not expected to work on web, since we cannot execute PRAGMA to enable foreign keys support
-        t.it('should return correct rowsAffected value when deleting cascade', async () => {
-          const db = SQLite.openDatabase('test.db');
-          db.exec([{sql: 'PRAGMA foreign_keys = ON;', args:[]}], false, ()=>{});
-          await new Promise((resolve, reject) => {
-            db.transaction(
-              tx => {
-                const nop = () => {};
-                const onError = (tx, error) => reject(error);
+    });
+    if (Platform.OS !== 'web') {
+      // It is not expected to work on web, since we cannot execute PRAGMA to enable foreign keys support
+      t.it('should return correct rowsAffected value when deleting cascade', async () => {
+        const db = SQLite.openDatabase('test.db');
+        db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {});
+        await new Promise((resolve, reject) => {
+          db.transaction(
+            (tx) => {
+              const nop = () => {};
+              const onError = (tx, error) => reject(error);
 
-                tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
-                tx.executeSql('DROP TABLE IF EXISTS Posts;', [], nop, onError);
-                tx.executeSql(
-                  'CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
-                  [],
-                  nop,
-                  onError
-                );
-                tx.executeSql(
-                  'CREATE TABLE IF NOT EXISTS Posts (post_id INTEGER PRIMARY KEY NOT NULL, content VARCHAR(64), userposted INTEGER, FOREIGN KEY(userposted) REFERENCES Users(user_id) ON DELETE CASCADE);',
-                  [],
-                  nop,
-                  onError
-                );
-                tx.executeSql(
-                  'INSERT INTO Users (name) VALUES (?), (?), (?)',
-                  ['name1', 'name2', 'name3'],
-                  nop,
-                  onError
-                );
+              tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
+              tx.executeSql('DROP TABLE IF EXISTS Posts;', [], nop, onError);
+              tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+                [],
+                nop,
+                onError
+              );
+              tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS Posts (post_id INTEGER PRIMARY KEY NOT NULL, content VARCHAR(64), userposted INTEGER, FOREIGN KEY(userposted) REFERENCES Users(user_id) ON DELETE CASCADE);',
+                [],
+                nop,
+                onError
+              );
+              tx.executeSql(
+                'INSERT INTO Users (name) VALUES (?), (?), (?)',
+                ['name1', 'name2', 'name3'],
+                nop,
+                onError
+              );
 
-                tx.executeSql(
-                  'INSERT INTO Posts (content, userposted) VALUES (?, ?), (?, ?), (?, ?)',
-                  ['post1', 1, 'post2', 1, 'post3', 2],
-                  nop,
-                  onError
-                );
-                tx.executeSql('PRAGMA foreign_keys=off;', [], nop, onError);
-              },
-              reject,
-              resolve
-            );
-          });
-          await new Promise((resolve, reject) => {
-            db.transaction(tx => {
+              tx.executeSql(
+                'INSERT INTO Posts (content, userposted) VALUES (?, ?), (?, ?), (?, ?)',
+                ['post1', 1, 'post2', 1, 'post3', 2],
+                nop,
+                onError
+              );
+              tx.executeSql('PRAGMA foreign_keys=off;', [], nop, onError);
+            },
+            reject,
+            resolve
+          );
+        });
+        await new Promise((resolve, reject) => {
+          db.transaction(
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
               tx.executeSql('PRAGMA foreign_keys=on;', [], nop, onError);
@@ -408,7 +414,8 @@ export function test(t) {
                 onError
               );
 
-              tx.executeSql( // ensure deletion succeeded
+              tx.executeSql(
+                // ensure deletion succeeded
                 'SELECT * from Users',
                 [],
                 (tx, results) => {
@@ -426,9 +433,12 @@ export function test(t) {
                 onError
               );
               tx.executeSql('PRAGMA foreign_keys=off;', [], nop, onError);
-            }, reject, resolve)
-          });
+            },
+            reject,
+            resolve
+          );
         });
-      }
+      });
+    }
   });
 }

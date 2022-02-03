@@ -7,7 +7,8 @@
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 
-#import <UMReactNativeAdapter/UMModuleRegistryHolderReactModule.h>
+#import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+
 #import "EXConstantsBinding.h"
 
 @implementation RCTConvert (NSCalendarUnit)
@@ -47,9 +48,17 @@ EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNotification
   _bridge = bridge;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                          kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
+                                          params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId
+                                            scopeKey:scopeKey
+                                        easProjectId:easProjectId
+                               kernelServiceDelegate:kernelServiceInstances
+                                              params:params]) {
     _userNotificationCenter = kernelServiceInstances[@"UserNotificationCenter"];
     _remoteNotificationsDelegate = kernelServiceInstances[@"RemoteNotificationManager"];
     _notificationsIdentifiersManager = kernelServiceInstances[@"UserNotificationManager"];
@@ -62,7 +71,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  EXConstantsBinding *constants = [[[self.bridge moduleForClass:[UMModuleRegistryHolderReactModule class]] moduleRegistry] getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
+  EXConstantsBinding *constants = [[[self.bridge moduleForClass:[EXModuleRegistryHolderReactModule class]] exModuleRegistry] getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
   if (![constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
@@ -80,7 +89,7 @@ RCT_REMAP_METHOD(getExponentPushTokenAsync,
                  getExponentPushTokenAsyncWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  if (!self.experienceId) {
+  if (!self.experienceStableLegacyId && !self.easProjectId) {
     reject(@"E_NOTIFICATIONS_INTERNAL_ERROR", @"The notifications module is missing the current project's ID", nil);
     return;
   }
@@ -212,7 +221,8 @@ RCT_EXPORT_METHOD(legacyScheduleLocalRepeatingNotification:(NSDictionary *)paylo
   localNotification.applicationIconBadgeNumber = [RCTConvert NSInteger:payload[@"count"]] ?: 0;
   localNotification.userInfo = @{
                                  @"body": payload[@"data"],
-                                 @"experienceId": self.experienceId,
+                                 @"experienceId": self.scopeKey,
+                                 @"scopeKey": self.scopeKey,
                                  @"id": uniqueId
                                  };
   localNotification.fireDate = [RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
@@ -256,7 +266,7 @@ RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
   [_userNotificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     NSMutableArray<NSString *> *requestsToCancelIdentifiers = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
-      if ([request.content.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
+      if ([request.content.userInfo[@"experienceId"] isEqualToString:self.scopeKey]) {
         [requestsToCancelIdentifiers addObject:request.identifier];
       }
     }
@@ -378,7 +388,8 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
 
   content.userInfo = @{
                        @"body": payload[@"data"],
-                       @"experienceId": self.experienceId,
+                       @"experienceId": self.scopeKey,
+                       @"scopeKey": self.scopeKey,
                        @"id": uniqueId
                        };
 
@@ -386,7 +397,7 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
 }
 
 - (NSString *)internalIdForIdentifier:(NSString *)identifier {
-  return [_notificationsIdentifiersManager internalIdForIdentifier:identifier experienceId:self.experienceId];
+  return [_notificationsIdentifiersManager internalIdForIdentifier:identifier scopeKey:self.scopeKey];
 }
 
 - (UNCalendarNotificationTrigger *)notificationTriggerFor:(NSNumber * _Nullable)unixTime

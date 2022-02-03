@@ -5,7 +5,7 @@
 
 @interface EXPendingNotification ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 @property (nonatomic, strong) NSDictionary *body;
 @property (nonatomic, assign) BOOL isRemote;
 @property (nonatomic, assign) BOOL isFromBackground;
@@ -19,12 +19,12 @@
 - (instancetype)initWithNotification:(UNNotification *)notification
 {
   NSDictionary *payload = notification.request.content.userInfo ?: @{};
-  return [self initWithExperienceId:payload[@"experienceId"]
-                   notificationBody:payload[@"body"]
-                           isRemote:[notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]
-                   isFromBackground:NO
-                           actionId:nil
-                           userText:nil];
+  return [self initWithScopeKey:payload[@"scopeKey"] ?: payload[@"experienceId"]
+                         notificationBody:payload[@"body"]
+                                 isRemote:[notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]
+                         isFromBackground:NO
+                                 actionId:nil
+                                 userText:nil];
 }
 
 - (instancetype)initWithNotificationResponse:(UNNotificationResponse *)notificationResponse identifiersManager:(id<EXNotificationsIdentifiersManager>)manager
@@ -41,16 +41,16 @@
   return self;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-                    notificationBody:(NSDictionary *)body
-                            isRemote:(BOOL)isRemote
-                    isFromBackground:(BOOL)isFromBackground
-                            actionId:(NSString *)actionId
-                            userText:(NSString *)userText {
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
+                          notificationBody:(NSDictionary *)body
+                                  isRemote:(BOOL)isRemote
+                          isFromBackground:(BOOL)isFromBackground
+                                  actionId:(NSString *)actionId
+                                  userText:(NSString *)userText {
   if (self = [super init]) {
     _isRemote = isRemote;
     _isFromBackground = isFromBackground;
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
     _body = body ?: @{};
     _actionId = actionId;
     _userText = userText;

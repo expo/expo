@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-video-thu
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-video-thumbnails`** allows you to generate an image to serve as a thumbnail from a video file.
 
@@ -13,6 +14,59 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ## Installation
 
 <InstallSection packageName="expo-video-thumbnails" />
+
+## Usage
+
+<SnackInline label='Video Thumbnails' dependencies={['expo-video-thumbnails']}>
+
+```jsx
+import React, { useState } from 'react';
+import { StyleSheet, Button, View, Image, Text } from 'react-native';
+import * as VideoThumbnails from 'expo-video-thumbnails';
+
+export default function App() {
+  const [image, setImage] = useState(null);
+
+  const generateThumbnail = async () => {
+    try {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(
+        'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+        {
+          time: 15000,
+        }
+      );
+      setImage(uri);
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Button onPress={generateThumbnail} title="Generate thumbnail" />
+      {image && <Image source={{ uri: image }} style={styles.image} />}
+      <Text>{image}</Text>
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  image: {
+    width: 200,
+    height: 200,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -37,51 +91,3 @@ Create an image thumbnail from video provided via `uri`.
 #### Returns
 
 Returns `{ uri, width, height }` where `uri` is a URI to the created image (useable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the image.
-
-### Basic Example
-
-```javascript
-import React from 'react';
-import { StyleSheet, Button, View, Image, Text } from 'react-native';
-import * as VideoThumbnails from 'expo-video-thumbnails';
-
-export default class App extends React.Component {
-  state = {
-    image: null,
-  };
-
-  generateThumbnail = async () => {
-    try {
-      const { uri } = await VideoThumbnails.getThumbnailAsync(
-        'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-        {
-          time: 15000,
-        }
-      );
-      this.setState({ image: uri });
-    } catch (e) {
-      console.warn(e);
-    }
-  };
-
-  render() {
-    const { image } = this.state;
-    return (
-      <View style={styles.container}>
-        <Button onPress={this.generateThumbnail} title="Generate thumbnail" />
-        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-        <Text>{image}</Text>
-      </View>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-});
-```

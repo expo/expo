@@ -14,6 +14,9 @@ yarn-error.log
 # Ruby
 .direnv
 
+# Env
+.envrc.local
+
 # Emacs
 *~
 
@@ -34,15 +37,10 @@ yarn-error.log
 *.xcscmblueprint
 xcuserdata
 
-# Android Studio
+# IDEA / Android Studio
 *.iml
 .gradle
-.idea/libraries
-.idea/workspace.xml
-.idea/gradle.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
+.idea
 
 # Eclipse
 .project
@@ -55,6 +53,7 @@ xcuserdata
 *.apk
 *.hprof
 /android/**/build
+/android/**/.cxx
 /android/**/local.properties
 /android/captures
 /android/expoview/libs/ReactAndroid-temp
@@ -100,6 +99,7 @@ templates/**/Pods/**
 /fastlane/Deployment
 /Preview.html
 /gc_keys.json
+/fastlane/gc_keys.json
 
 # CI
 /android/logcat.txt
@@ -128,3 +128,11 @@ docs/pages/versions/*/react-native/*.diff
 
 # Home
 /home/dist
+
+# Prebuilds
+/packages/**/*.xcframework
+/packages/**/*.spec.json
+/packages/**/Info-generated.plist
+
+# Pods
+/ios/Pods

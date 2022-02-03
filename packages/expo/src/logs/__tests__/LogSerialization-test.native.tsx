@@ -7,7 +7,7 @@ import LogSerialization from '../LogSerialization';
 import { LogErrorData } from '../RemoteLogging';
 
 jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
-  jest.fn(async stack =>
+  jest.fn(async (stack) =>
     // We don't test symbolication itself in this test, partly because it's complex
     ({ stack })
   )
@@ -93,7 +93,7 @@ it(`serializes React components (refs)`, async () => {
   class TestComponent extends React.Component {
     child: React.Component | null = null;
     render() {
-      return <ChildComponent ref={component => (this.child = component)} />;
+      return <ChildComponent ref={(component) => (this.child = component)} />;
     }
   }
   class ChildComponent extends React.Component {
@@ -110,6 +110,19 @@ it(`serializes React components (refs)`, async () => {
   expect(Array.isArray(result.body)).toBe(true);
   expect(result.body[0]).toMatch('ChildComponent');
   expect(result.includesStack).toBeFalsy();
+});
+
+it(`truncates strings that are too long`, async () => {
+  const result = await LogSerialization.serializeLogDataAsync(['-'.repeat(10_001)], 'info');
+  expect(result.body[0]).toMatch(/truncated to the first [0-9]+ characters/);
+});
+
+it(`truncates the serialized output, if it's too long`, async () => {
+  const result = await LogSerialization.serializeLogDataAsync(
+    [Array(1000).fill('Hello world')],
+    'info'
+  );
+  expect(result.body[0]).toMatch(/truncated to the first [0-9]+ characters/);
 });
 
 describe('with stack trace support in Expo CLI', () => {
@@ -219,7 +232,7 @@ describe(`without stack trace support in Expo CLI`, () => {
   let originalProjectRoot;
 
   beforeAll(() => {
-    if (!Constants.manifest.developer) {
+    if (!Constants.manifest?.developer) {
       throw new Error('Constants.manifest.developer is not defined');
     }
     originalProjectRoot = Constants.manifest.developer.projectRoot;
@@ -227,7 +240,7 @@ describe(`without stack trace support in Expo CLI`, () => {
   });
 
   afterAll(() => {
-    if (!Constants.manifest.developer) {
+    if (!Constants.manifest?.developer) {
       throw new Error('Constants.manifest.developer is not defined');
     }
     Constants.manifest.developer.projectRoot = originalProjectRoot;

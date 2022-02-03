@@ -1,9 +1,13 @@
 ---
 title: FacebookAds
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-facebook'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ads-facebook'
+packageName: 'expo-ads-facebook'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
@@ -12,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-ads-facebook" />
+<APIInstallSection />
 
 For bare apps, you will also need to follow [Facebook's Get Started guide](https://developers.facebook.com/docs/audience-network/get-started).
 
@@ -22,12 +26,54 @@ For bare apps, you will also need to follow [Facebook's Get Started guide](https
 
 You need to create a placement ID to display ads. Follow steps 1 and 3 from the [Getting Started Guide for Facebook Audience](https://developers.facebook.com/docs/audience-network/getting-started) to create the placement ID.
 
-### Configuring app.json
+### Configuration in app.json / app.config.js
+
+You can configure `expo-ads-facebook` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 In your project's [app.json](../../../workflow/configuration.md), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
-- In the Expo client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in the Expo client.
+- In the Expo Go app, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in Expo Go.
 - To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../../distribution/building-standalone-apps.md).
+
+<ConfigClassic>
+
+You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.md#infoplist) and [`android.permissions`](../config/app.md#permissions).
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-ads-facebook` repository](https://github.com/expo/expo/tree/main/packages/expo-ads-facebook#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
+
+<ConfigPluginExample>
+
+```json
+{
+  "expo": {
+    "facebookScheme": "fb1234567891234567",
+    "facebookAppId": "1234567891234567",
+    "facebookDisplayName": "My name",
+    "facebookAutoLogAppEventsEnabled": true,
+    "facebookAdvertiserIDCollectionEnabled": true,
+    "plugins": [
+      [
+        "expo-ads-facebook",
+        {
+          "userTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties properties={[
+{ name: 'userTrackingPermission', platform: 'ios', description: 'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.', default: '"This identifier will be used to deliver personalized ads to you."' },
+]} />
 
 ### Development vs Production
 
@@ -61,7 +107,7 @@ FacebookAds.InterstitialAdManager.showAd(placementId)
   .catch(error => {});
 ```
 
-The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dimisses or interacts with the displayed ad.
+The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dismisses or interacts with the displayed ad.
 
 ### Native Ads
 
@@ -283,6 +329,26 @@ Promise will be rejected when there's an error loading ads from Facebook Audienc
 
 AdSettings contains global settings for all ad controls.
 
+#### requestPermissionsAsync
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+#### getPermissionsAsync
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 #### currentDeviceHash
 
 Constant which contains current device's hash.
@@ -307,6 +373,16 @@ an instance of AdsManager once again.
 FacebookAds.AdSettings.clearTestDevices();
 ```
 
+### setAdvertiserTrackingEnabled (iOS)
+
+Indicate to the Audience Network SDK if the user has consented to advertising tracking. This only applies to iOS 14+ and for all other versions "Limited Ad Tracking" is used. [Learn more](https://developers.facebook.com/docs/app-events/guides/advertising-tracking-enabled/).
+
+```js
+FacebookAds.AdSettings.setAdvertisingTrackingEnabled(true);
+```
+
+**Note:** This method is a no-op on Android and on iOS <= 13.
+
 #### setLogLevel (iOS)
 
 Sets current SDK log level.
@@ -327,6 +403,8 @@ Configures the ad control for treatment as child-directed.
 FacebookAds.AdSettings.setIsChildDirected(true | false);
 ```
 
+> This is called `setMixedAudience` in the underlying Android SDK.
+
 #### setMediationService
 
 If an ad provided service is mediating Audience Network in their SDK, it is required to set the name of the mediation service
@@ -344,6 +422,18 @@ FacebookAds.AdSettings.setUrlPrefix('...');
 ```
 
 **Note:** This method should never be used in production
+
+## Permissions
+
+### Android
+
+_No permissions required_.
+
+### iOS
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={[ 'NSUserTrackingUsageDescription' ]} />
 
 ## Troubleshooting
 

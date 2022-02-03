@@ -1,3 +1,5 @@
 import 'expo/build/Expo.fx';
 import * as React from 'react';
-export default function registerRootComponent<P>(component: React.ComponentType<P>): void;
+import { InitialProps } from './withExpoRoot.types';
+export default function registerRootComponent<P extends InitialProps>(component: React.ComponentType<P>): void;
+//# sourceMappingURL=registerRootComponent.d.ts.map

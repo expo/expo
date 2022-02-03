@@ -1,11 +1,11 @@
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
-import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, AppStateStatus, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView, { Polyline } from 'react-native-maps';
 
 import NavigationEvents from '../components/NavigationEvents';
@@ -86,7 +86,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
     );
     const savedLocations = await getSavedLocations();
 
-    this.eventSubscription = locationEventsEmitter.addListener('update', locations => {
+    this.eventSubscription = locationEventsEmitter.addListener('update', (locations: Region[]) => {
       this.setState({ savedLocations: locations });
     });
 
@@ -94,7 +94,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
       alert('Click `Start tracking` to start getting location updates.');
     }
 
-    this.setState(state => ({
+    this.setState((state) => ({
       accuracy: (task && task.options.accuracy) || state.accuracy,
       isTracking,
       savedLocations,
@@ -107,7 +107,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
     }));
   };
 
-  handleAppStateChange = nextAppState => {
+  handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (nextAppState !== 'active') {
       return;
     }
@@ -165,7 +165,9 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
 
   onAccuracyChange = () => {
     const next = Location.Accuracy[this.state.accuracy + 1];
-    const accuracy = next ? Location.Accuracy[next] : Location.Accuracy.Lowest;
+    const accuracy = next
+      ? (Location.Accuracy[next as any] as any as Location.Accuracy)
+      : Location.Accuracy.Lowest;
 
     this.setState({ accuracy });
 
@@ -177,7 +179,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
 
   toggleLocationIndicator = async () => {
     this.setState(
-      state => ({ showsBackgroundLocationIndicator: !state.showsBackgroundLocationIndicator }),
+      (state) => ({ showsBackgroundLocationIndicator: !state.showsBackgroundLocationIndicator }),
       async () => {
         if (this.state.isTracking) {
           await this.startLocationUpdates();
@@ -280,7 +282,7 @@ if (Platform.OS !== 'android') {
   TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }: any) => {
     if (locations && locations.length > 0) {
       const savedLocations = await getSavedLocations();
-      const newLocations = locations.map(({ coords }) => ({
+      const newLocations = locations.map(({ coords }: { coords: any }) => ({
         latitude: coords.latitude,
         longitude: coords.longitude,
       }));

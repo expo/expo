@@ -1,7 +1,9 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import mapValues from 'lodash/mapValues';
+import { SessionObject } from 'redux/SessionReducer';
 
 import * as Kernel from '../kernel/Kernel';
+import { HistoryItem } from '../types';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 
 type Settings = Record<string, any>;
@@ -12,7 +14,7 @@ const Keys = mapValues(
     History: 'history',
     Settings: 'settings',
   },
-  value => `Exponent.${value}`
+  (value) => `Exponent.${value}`
 );
 
 async function getSettingsAsync(): Promise<Settings> {
@@ -49,7 +51,7 @@ async function getSessionAsync() {
     if (json) {
       try {
         results = JSON.parse(json);
-        await saveSessionAsync(results);
+        await saveSessionAsync(results as SessionObject);
         await AsyncStorage.removeItem(Keys.Session);
       } catch (e) {
         return null;
@@ -60,11 +62,11 @@ async function getSessionAsync() {
   return results;
 }
 
-async function saveSessionAsync(session): Promise<void> {
-  await Kernel.setSessionAsync(session);
+async function saveSessionAsync(session: SessionObject): Promise<void> {
+  await Kernel.setSessionAsync(session as any);
 }
 
-async function getHistoryAsync() {
+async function getHistoryAsync(): Promise<HistoryItem[]> {
   const jsonHistory = await AsyncStorage.getItem(Keys.History);
   if (jsonHistory) {
     try {
@@ -76,7 +78,7 @@ async function getHistoryAsync() {
   return [];
 }
 
-async function saveHistoryAsync(history): Promise<void> {
+async function saveHistoryAsync(history: HistoryItem[]): Promise<void> {
   await AsyncStorage.setItem(Keys.History, JSON.stringify(history));
 }
 
@@ -90,8 +92,8 @@ async function removeSessionAsync(): Promise<void> {
 
 // adds a hook for native code to query Home's history.
 // needed for routing push notifications in Home.
-addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', async event => {
-  const { experienceId } = event;
+addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', async (event) => {
+  const { experienceId } = event; // scopeKey
   let history = await getHistoryAsync();
   history = history.sort((item1, item2) => {
     // date descending -- we want to pick the most recent experience with this id,
@@ -101,7 +103,14 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
     const item1time = item1.time ? item1.time : 0;
     return item2time - item1time;
   });
-  const historyItem = history.find(item => item.manifest && item.manifest.id === experienceId);
+  // TODO(wschurman): only check for scope key in the future when most manifests contain it
+  // TODO(wschurman): update for new manifest2 format (Manifest)
+  const historyItem = history.find(
+    (item) =>
+      item.manifest &&
+      (item.manifest.id === experienceId ||
+        ('scopeKey' in item.manifest && item.manifest.scopeKey === experienceId))
+  );
   if (historyItem) {
     return { url: historyItem.url };
   }

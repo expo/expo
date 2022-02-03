@@ -215,9 +215,10 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if ([EXEnvironment sharedEnvironment].isDetached) {
     NSDictionary *launchOptions = [ExpoKit sharedInstance].launchOptions;
     NSURL *launchOptionsUrl = [[self class] initialUrlFromLaunchOptions:launchOptions];
-    if (launchOptionsUrl) {
-      urlToTransform = launchOptionsUrl;
+    if (!launchOptionsUrl) {
+      return nil;
     }
+    urlToTransform = launchOptionsUrl;
   }
 
   NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:urlToTransform resolvingAgainstBaseURL:YES];
@@ -291,8 +292,8 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 
       if ([urlToRouteBasePath isEqualToString:manifestUrlBasePath]) {
         // release-channel is a special query parameter that we treat as a separate app, so we need to check that here
-        NSString *manifestUrlReleaseChannel = [[self class] _releaseChannelWithUrlComponents:manifestUrlComponents];
-        NSString *urlToRouteReleaseChannel = [[self class] _releaseChannelWithUrlComponents:urlToRouteComponents];
+        NSString *manifestUrlReleaseChannel = [[self class] releaseChannelWithUrlComponents:manifestUrlComponents];
+        NSString *urlToRouteReleaseChannel = [[self class] releaseChannelWithUrlComponents:urlToRouteComponents];
         if ([manifestUrlReleaseChannel isEqualToString:urlToRouteReleaseChannel]) {
           return YES;
         }
@@ -315,7 +316,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   return mutablePath;
 }
 
-+ (NSString *)_releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents
++ (NSString *)releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents
 {
   NSString *releaseChannel = @"default";
   NSArray<NSURLQueryItem *> *queryItems = urlComponents.queryItems;

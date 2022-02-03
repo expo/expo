@@ -1,15 +1,13 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
-import { setTestDeviceIDAsync } from './AdMob';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 const moduleName = 'AdMobRewarded';
 const eventNames = [
-    'rewardedVideoDidRewardUser',
+    'rewardedVideoUserDidEarnReward',
     'rewardedVideoDidLoad',
     'rewardedVideoDidFailToLoad',
-    'rewardedVideoDidOpen',
-    'rewardedVideoDidStart',
-    'rewardedVideoDidClose',
-    'rewardedVideoWillLeaveApplication',
+    'rewardedVideoDidPresent',
+    'rewardedVideoDidFailToPresent',
+    'rewardedVideoDidDismiss',
 ];
 const eventEmitter = new EventEmitter(AdMobNativeModule);
 const eventHandlers = {};
@@ -22,11 +20,6 @@ export default {
             throw new UnavailabilityError(moduleName, 'setAdUnitID');
         }
         await AdMobNativeModule.setAdUnitID(id);
-    },
-    /** @deprecated Test device IDs are now set globally. Use `AdMob.setTestDeviceIDAsync` instead. */
-    async setTestDeviceID(id) {
-        console.warn('AdMobRewarded.setTestDeviceID is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.');
-        await setTestDeviceIDAsync(id);
     },
     async requestAdAsync(options = {}) {
         if (!AdMobNativeModule.requestAd) {

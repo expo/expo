@@ -1,2 +1,2 @@
-declare const _default: () => null;
-export default _default;
+export default function DevLoadingView(): JSX.Element | null;
+//# sourceMappingURL=DevLoadingView.d.ts.map

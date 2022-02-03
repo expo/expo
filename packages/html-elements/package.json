@@ -1,6 +1,6 @@
 {
   "name": "@expo/html-elements",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
   "main": "build/Elements.js",
   "types": "build/Elements.d.ts",
@@ -31,14 +31,11 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/html-elements",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/html-elements",
   "jest": {
     "preset": "expo-module-scripts/enzyme"
   },
-  "peerDependencies": {
-    "react-native-web": "~0.13.7"
-  },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }

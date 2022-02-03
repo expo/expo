@@ -1,17 +1,39 @@
 import Constants from 'expo-constants';
 
-export interface IFirebaseOptions {
-  appId: string;
-  apiKey: string;
-  databaseURL: string;
-  trackingId: string;
-  messagingSenderId: string;
-  storageBucket: string;
-  projectId: string;
-  authDomain: string;
-  measurementId: string;
-}
+// @docsMissing
+export type FirebaseOptions = {
+  /**
+   * Unique identifier of the Firebase app.
+   */
+  appId?: string;
+  /**
+   * Firebase API key.
+   */
+  apiKey?: string;
+  /**
+   * Firebase database URL.
+   */
+  databaseURL?: string;
+  /**
+   * Tracking identifier for Google Analytics.
+   */
+  trackingId?: string;
+  messagingSenderId?: string;
+  /**
+   * Google Cloud Storage bucket name.
+   */
+  storageBucket?: string;
+  /**
+   * Unique identifier of the Firebase project.
+   */
+  projectId?: string;
+  authDomain?: string;
+  measurementId?: string;
+};
 
-export function getDefaultWebOptions(): IFirebaseOptions | void {
-  return Constants.manifest?.web?.config?.firebase;
+export function getDefaultWebOptions(): FirebaseOptions | void {
+  return (
+    Constants.manifest?.web?.config?.firebase ??
+    Constants.manifest2?.extra?.expoClient?.web?.config?.firebase
+  );
 }

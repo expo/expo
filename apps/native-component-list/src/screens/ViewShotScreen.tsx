@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library';
+import { Platform } from 'expo-modules-core';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -46,7 +46,7 @@ export default class ViewShotScreen extends React.Component<{}, State> {
   handleScreenCapturePress = async () => {
     if (Platform.OS === 'web') {
       try {
-        const screenUri = await takeSnapshotAsync((undefined as unknown) as number, {
+        const screenUri = await takeSnapshotAsync(undefined as unknown as number, {
           format: 'jpg',
           quality: 0.8,
           result: 'data-uri',

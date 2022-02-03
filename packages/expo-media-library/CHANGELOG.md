@@ -8,6 +8,99 @@
 
 ### 🐛 Bug fixes
 
+- Don't ask for `ACCESS_MEDIA_LOCATION` permission if it's not present in `AndroidManifest.xml`. ([#16034](https://github.com/expo/expo/pull/16034) by [@barthap](https://github.com/barthap))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 14.0.0 — 2021-12-03
+
+### 💡 Others
+
+- Rewritten Android module to Kotlin. ([#14562](https://github.com/expo/expo/pull/14562), [#14563](https://github.com/expo/expo/pull/14563), [#14564](https://github.com/expo/expo/pull/14564), [#14565](https://github.com/expo/expo/pull/14565), [#14566](https://github.com/expo/expo/pull/14566) by [@barthap](https://github.com/barthap))
+
+## 13.0.1 — 2021-10-01
+
+### 🐛 Bug fixes
+
+- Fix permissions always returning denied on android api < 29. ([#14570](https://github.com/expo/expo/pull/14570) by [@kudo](https://github.com/kudo))
+- Fix unhandled rejection when asset creation fails on Android. ([#14583](https://github.com/expo/expo/pull/14583) by [@barthap](https://github.com/barthap))
+
+## 13.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🎉 New features
+
+- Added `isAvailableAsync` method. ([#13418](https://github.com/expo/expo/pull/13418) by [@danielmark0116](https://github.com/danielmark0116))
+- Add `usePermissions` hook from modules factory. ([#13862](https://github.com/expo/expo/pull/13862) by [@bycedric](https://github.com/bycedric))
+
+### 🐛 Bug fixes
+
+- Restore location exif data getter for Android 10+ devices. ([#14413](https://github.com/expo/expo/pull/14413) by [@ajsmth](https://github.com/ajsmth))
+- EXIF parsing failure no longer crashes the `getAssetsAsync` and `getAssetInfoAsync`, the promise returns `exif: null` instead. ([#14408](https://github.com/expo/expo/pull/14408) by [@barthap](https://github.com/barthap))
+- Fixed `createAssetAsync` and `saveToLibraryAsync` on Android 11. ([#14518](https://github.com/expo/expo/pull/14518) by [@barthap](https://github.com/barthap))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13755](https://github.com/expo/expo/pull/13755) by [@tsapeta](https://github.com/tsapeta))
+- Added `AlbumType` and `MediaSubtype` types, added missing `orientation` key to the `Asset` type. ([#13936](https://github.com/expo/expo/pull/13936) by [@Simek](https://github.com/Simek))
+- Remove `assets-library://` uri scheme usage in favour of `ph://` ([#14173](https://github.com/expo/expo/pull/14173) by [@ajsmth](https://github.com/ajsmth))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.1.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Migrated from `unimodules-file-system-interface` and `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.1 — 2021-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2021-03-10
+
+### 🛠 Breaking changes
+
+- Changed location of newly created albums on Android. From now, albums won't be saved in the root folder. ([#12017](https://github.com/expo/expo/pull/12017) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+- Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+- In 'getAssetInfoAsync', respect the `shouldDownloadFromNetwork` option. ([#12086](https://github.com/expo/expo/pull/12086) by [@drtangible](https://github.com/drtangible))
+
+## 11.0.0 — 2021-01-15
+
+### ⚠️ Notices
+
+- The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Created config plugins ([#11538](https://github.com/expo/expo/pull/11538) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 10.0.0 — 2020-11-17
 
 ### 🛠 Breaking changes

@@ -1,27 +1,38 @@
 /**
- * Determine if the platform has the capabilities to use `requestedReview`
- * - iOS: `true` if iOS 10.3 or greater and the StoreKit framework is linked
- * - Android: `true` if Android 5.0 or greater and PlayStore is installed
- * - web: Always `false`
+ * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
+ * @return
+ * This returns a promise fulfills with `boolean`, depending on the platform:
+ * - On iOS, it will resolve to `true` if the device is running iOS 10.3+.
+ * - On Android, it will resolve to `true` if the device is running Android 5.0+.
+ * - On Web, it will resolve to `false`.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 /**
- * @deprecated use `isAvailableAsync()` instead
- */
-export declare function isSupported(): void;
-/**
- * Use the iOS `SKStoreReviewController` or Android `ReviewManager` API
- * to prompt a user rating without leaving the app.
+ * In ideal circumstances this will open a native modal and allow the user to select a star rating
+ * that will then be applied to the App Store, without leaving the app. If the device is running
+ * a version of iOS lower than 10.3, or a version of Android lower than 5.0, this will attempt
+ * to get the store URL and link the user to it.
  */
 export declare function requestReview(): Promise<void>;
 /**
- * Get your app's store URLs from `app.config.js` or `app.json`:
- * - iOS: https://docs.expo.io/versions/latest/workflow/configuration#appstoreurlurl-to-your-app-on-the-apple-app-store-if-you-have-deployed-it-there-this-is-used-to-link-to-your-store-page-from-your-expo-project-page-if-your-app-is-public
- * - Android: https://docs.expo.io/versions/latest/workflow/configuration#playstoreurlurl-to-your-app-on-the-google-play-store-if-you-have-deployed-it-there-this-is-used-to-link-to-your-store-page-from-your-expo-project-page-if-your-app-is-public
- * - web: returns `null`
+ * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
+ * `Constants.manifest.android.playStoreUrl` on Android.
+ *
+ * On Web this will return `null`.
  */
 export declare function storeUrl(): string | null;
 /**
- * A flag to detect if this module can do anything.
+ * @return This returns a promise that fulfills to `true` if `StoreReview.requestReview()` is capable
+ * directing the user to some kind of store review flow. If the app config (`app.json`) does not
+ * contain store URLs and native store review capabilities are not available then the promise
+ * will fulfill to `false`.
+ *
+ * @example
+ * ```ts
+ * if (await StoreReview.hasAction()) {
+ *   // you can call StoreReview.requestReview()
+ * }
+ * ```
  */
 export declare function hasAction(): Promise<boolean>;
+//# sourceMappingURL=StoreReview.d.ts.map

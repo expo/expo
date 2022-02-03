@@ -1,1 +1,0 @@
-../../../../../packages/expo-branch/ios/EXBranch/RNBranch/RNBranchEventEmitter.h

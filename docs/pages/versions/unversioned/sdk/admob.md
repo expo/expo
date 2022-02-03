@@ -1,9 +1,13 @@
 ---
 title: Admob
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-admob'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ads-admob'
+packageName: 'expo-ads-admob'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) for mobile advertising, including components for banner ads and imperative APIs for interstitial and rewarded video ads. **`expo-ads-admob`** is largely based of the [react-native-admob](https://github.com/sbugert/react-native-admob) module, as the documentation and questions surrounding that module may prove helpful. A simple example implementing AdMob SDK can be found [here](https://github.com/deadcoder0904/expo-google-admob).
@@ -12,11 +16,13 @@ Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) 
 
 ## Installation
 
-<InstallSection packageName="expo-ads-admob" />
+<APIInstallSection />
 
-## Configuration
+## Configuration in app.json / app.config.js
 
-For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to `app.json` under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid `app.json` would look like:
+You can configure `expo-ads-admob` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to **app.json** under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid **app.json** would look like:
 
 ```json
 {
@@ -40,6 +46,41 @@ For the module to attribute interactions with ads to your AdMob app properly you
   }
 }
 ```
+
+<ConfigClassic>
+
+You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.md#infoplist) and [`android.permissions`](../config/app.md#permissions).
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-ads-admob` repository](https://github.com/expo/expo/tree/main/packages/expo-ads-admob#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
+
+<ConfigPluginExample>
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-ads-admob",
+        {
+          "userTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties properties={[
+{ name: 'userTrackingPermission', platform: 'ios', description: 'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.', default: '"This identifier will be used to deliver personalized ads to you."' },
+]} />
 
 ## Usage
 
@@ -88,12 +129,12 @@ await AdMobRewarded.showAdAsync();
 - Ensure you **never** load a real production ad in an Android Emulator or iOS Simulator. Failure to do this can result in a ban from the AdMob program.
 
 ```tsx
-import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 
 const testID = 'google-test-id';
 const productionID = 'my-id';
 // Is a real device and running in production.
-const adUnitID = Constants.isDevice && !__DEV__ ? productionId : testID;
+const adUnitID = Device.isDevice && !__DEV__ ? productionID : testID;
 ```
 
 ## Methods
@@ -105,6 +146,26 @@ Returns whether the AdMob API is enabled on the current device. This does not ch
 #### Returns
 
 Async `boolean`, indicating whether the AdMob API is available on the current device. Currently this resolves `true` on iOS and Android only.
+
+### `requestPermissionsAsync()`
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `getPermissionsAsync()`
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### setTestDeviceIDAsync(testDeviceID)
 
@@ -204,25 +265,22 @@ Opens a rewarded AdMob ad.
 
 #### Methods
 
-| Name                            | Description                                    |
-| ------------------------------- | ---------------------------------------------- |
-| `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests. |
-
-| `requestAdAsync(options)` | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
-| `showAdAsync()` | (async) shows a rewarded if it is ready (async) |
+| Name                            | Description                                                                                                                                          |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests.                                                                                                       |
+| `requestAdAsync(options)`       | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
+| `showAdAsync()`                 | (async) shows a rewarded if it is ready (async)                                                                                                      |
 
 #### Events
 
-| iOS                                          | _this library_                      | Android                            |
-| -------------------------------------------- | ----------------------------------- | ---------------------------------- |
-| `rewardBasedVideoAd:didRewardUserWithReward` | `rewardedVideoDidRewardUser`        | `onRewarded`                       |
-| `rewardBasedVideoAdDidReceiveAd`             | `rewardedVideoDidLoad`              | `onRewardedVideoAdLoaded`          |
-| `rewardBasedVideoAd:didFailToLoadWithError`  | `rewardedVideoDidFailToLoad`        | `onRewardedVideoAdFailedToLoad`    |
-| `rewardBasedVideoAdDidOpen`                  | `rewardedVideoDidOpen`              | `onRewardedVideoAdOpened`          |
-|                                              | `rewardedVideoDidComplete`          | `onRewardedVideoCompleted`         |
-| `rewardBasedVideoAdDidClose`                 | `rewardedVideoDidClose`             | `onRewardedVideoAdClosed`          |
-| `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
-| `rewardBasedVideoAdDidStartPlaying`          | `rewardedVideoDidStart`             | `onRewardedVideoStarted`           |
+| Events are based on native ad lifecycle |
+| --------------------------------------- |
+| `rewardedVideoUserDidEarnReward`        |
+| `rewardedVideoDidLoad`                  |
+| `rewardedVideoDidFailToLoad`            |
+| `rewardedVideoDidPresent`               |
+| `rewardedVideoDidFailToPresent`         |
+| `rewardedVideoDidDismiss`               |
 
 #### Test ID
 
@@ -234,3 +292,17 @@ const adUnitID = Platform.select({
   android: 'ca-app-pub-3940256099942544/5224354917',
 });
 ```
+
+## Permissions
+
+### Android
+
+The following permissions are added automatically through this library's `AndroidManifest.xml`.
+
+<AndroidPermissions permissions={['INTERNET']} />
+
+### iOS
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={[ 'NSUserTrackingUsageDescription' ]} />

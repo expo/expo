@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import { EventSubscription } from 'fbemitter';
 import nullthrows from 'nullthrows';
 import React from 'react';
@@ -66,7 +66,7 @@ export default function withNativeAd<P>(
           this.setState({ canRequestAds: true });
         });
       }
-      this._errorSubscription = this.props.adsManager.onAdsErrored(error => {
+      this._errorSubscription = this.props.adsManager.onAdsErrored((error) => {
         // From what I, @sjchmiela, understand, an error may be encountered multiple times
         // and it does *not* mean that the manager is not able to request ads at all -
         // - this may have been an intermittent error -- that's why we don't set canRequestAds to false
@@ -220,11 +220,11 @@ export default function withNativeAd<P>(
 type NativeAdViewProps = {
   adsManager: string;
   onAdLoaded?: (event: { nativeEvent: NativeAd }) => void;
-} & React.ComponentProps<typeof View>;
+} & React.ComponentPropsWithRef<typeof View>;
 
 type NativeAdView = React.Component<NativeAdViewProps>;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
-const NativeAdView = requireNativeViewManager('CTKNativeAd');
+const NativeAdView: React.ComponentType<any> = requireNativeViewManager('CTKNativeAd');
 
 // React contexts for ad views that need to register with the ad container
 export type AdIconViewContextValue = {

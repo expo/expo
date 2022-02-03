@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -11,14 +11,15 @@ import {
 
 import Colors from '../constants/Colors';
 
-interface Props extends TouchableHighlightProps {
-  disabled?: boolean;
-  loading?: boolean;
-  title?: string;
-  buttonStyle?: ViewStyle;
-}
+type Props = PropsWithChildren<
+  TouchableHighlightProps & {
+    loading?: boolean;
+    title?: string;
+    buttonStyle?: ViewStyle;
+  }
+>;
 
-const Button: React.FunctionComponent<Props> = ({
+const Button = ({
   disabled,
   loading,
   title,
@@ -27,7 +28,7 @@ const Button: React.FunctionComponent<Props> = ({
   style,
   buttonStyle,
   children,
-}) => (
+}: Props) => (
   <View style={[styles.container, style]}>
     <TouchableHighlight
       style={[styles.button, disabled && styles.disabledButton, buttonStyle]}

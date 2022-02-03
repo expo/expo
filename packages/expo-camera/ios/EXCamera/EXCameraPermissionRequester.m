@@ -1,8 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXCamera/EXCameraPermissionRequester.h>
-#import <UMCore/UMDefines.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -16,25 +16,25 @@
 - (NSDictionary *)getPermissions
 {
   AVAuthorizationStatus systemStatus;
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
   if (!(cameraUsageDescription && microphoneUsageDescription)) {
-    UMFatal(UMErrorWithMessage(@"This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these entries to your bundle's Info.plist."));
+    EXFatal(EXErrorWithMessage(@"This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these entries to your bundle's Info.plist."));
     systemStatus = AVAuthorizationStatusDenied;
   } else {
     systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
   }
   switch (systemStatus) {
     case AVAuthorizationStatusAuthorized:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       break;
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       break;
     case AVAuthorizationStatusNotDetermined:
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       break;
   }
   return @{
@@ -42,11 +42,11 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-    UM_STRONGIFY(self)
+    EX_STRONGIFY(self)
     resolve([self getPermissions]);
   }];
 }

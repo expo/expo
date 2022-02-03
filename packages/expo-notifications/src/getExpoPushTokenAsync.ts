@@ -1,6 +1,6 @@
-import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
+import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
@@ -21,6 +21,7 @@ interface Options {
   deviceId?: string;
   development?: boolean;
   experienceId?: string;
+  projectId?: string;
   applicationId?: string;
   devicePushToken?: DevicePushToken;
 }
@@ -30,12 +31,21 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const deviceId = options.deviceId || (await getDeviceIdAsync());
 
-  const experienceId = options.experienceId || (Constants.manifest && Constants.manifest.id);
+  const experienceId =
+    options.experienceId ||
+    Constants.manifest?.originalFullName ||
+    Constants.manifest2?.extra?.expoClient?.originalFullName ||
+    Constants.manifest?.id;
 
-  if (!experienceId) {
+  const projectId =
+    options.projectId ||
+    Constants.manifest2?.extra?.eas?.projectId ||
+    Constants.manifest?.projectId;
+
+  if (!experienceId && !projectId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_EXPERIENCE_ID',
-      "No experienceId found. If it can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself."
+      "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself."
     );
   }
 
@@ -54,11 +64,11 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const body = {
     type,
-    deviceId,
+    deviceId: deviceId.toLowerCase(),
     development,
-    experienceId,
     appId: applicationId,
     deviceToken: getDeviceToken(devicePushToken),
+    ...(projectId ? { projectId } : { experienceId }),
   };
 
   const response = await fetch(url, {
@@ -67,7 +77,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
       'content-type': 'application/json',
     },
     body: JSON.stringify(body),
-  }).catch(error => {
+  }).catch((error) => {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NETWORK_ERROR',
       `Error encountered while fetching Expo token: ${error}.`
@@ -183,7 +193,8 @@ function getDeviceToken(devicePushToken: DevicePushToken) {
 async function shouldUseDevelopmentNotificationService() {
   if (Platform.OS === 'ios') {
     try {
-      const notificationServiceEnvironment = await Application.getIosPushNotificationServiceEnvironmentAsync();
+      const notificationServiceEnvironment =
+        await Application.getIosPushNotificationServiceEnvironmentAsync();
       if (notificationServiceEnvironment === 'development') {
         return true;
       }

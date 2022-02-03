@@ -15,3 +15,4 @@ export declare type LinkProps = React.PropsWithChildren<TextProps & {
     /** @platform web */
     target?: string;
 }>;
+//# sourceMappingURL=Text.types.d.ts.map

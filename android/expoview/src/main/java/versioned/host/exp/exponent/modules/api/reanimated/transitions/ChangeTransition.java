@@ -3,13 +3,13 @@ package versioned.host.exp.exponent.modules.api.reanimated.transitions;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.transition.ChangeBounds;
 import androidx.transition.ChangeTransform;
 import androidx.transition.Transition;
 import androidx.transition.TransitionPropagation;
 import androidx.transition.TransitionValues;
-import android.view.ViewGroup;
 
 final class ChangeTransition extends Transition {
 
@@ -62,9 +62,11 @@ final class ChangeTransition extends Transition {
   }
 
   @Override
-  public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues) {
+  public Animator createAnimator(
+      ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues) {
     mChangeTransform.setReparent(false);
-    Animator changeTransformAnimator = mChangeTransform.createAnimator(sceneRoot, startValues, endValues);
+    Animator changeTransformAnimator =
+        mChangeTransform.createAnimator(sceneRoot, startValues, endValues);
     Animator changeBoundsAnimator = mChangeBounds.createAnimator(sceneRoot, startValues, endValues);
 
     if (changeTransformAnimator == null) {

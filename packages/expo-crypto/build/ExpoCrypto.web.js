@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 import { CryptoEncoding } from './Crypto.types';
 export default {
     get name() {
@@ -22,7 +22,7 @@ export default {
 };
 function hexString(buffer) {
     const byteArray = new Uint8Array(buffer);
-    const hexCodes = [...byteArray].map(value => {
+    const hexCodes = [...byteArray].map((value) => {
         const hexCode = value.toString(16);
         const paddedHexCode = hexCode.padStart(2, '0');
         return paddedHexCode;

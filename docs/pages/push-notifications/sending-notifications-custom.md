@@ -1,5 +1,6 @@
 ---
 title: Sending Notifications with APNs & FCM
+hideFromSearch: true
 ---
 
 Communicating directly with APNs and FCM is much more complicated than sending notifications through [Expo's push notification service](sending-notifications.md), so you should only use this feature if you're prepared to undertake that complexity. Here are a few things you'll have to handle yourself if you choose to write your own server for FCM and APNs:
@@ -44,6 +45,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
     priority: 'normal',
     data: {
       experienceId: '@yourExpoUsername/yourProjectSlug',
+      scopeKey: '@yourExpoUsername/yourProjectSlug',
       title: "\uD83D\uDCE7 You've got mail",
       message: 'Hello world! \uD83C\uDF10',
     },
@@ -51,7 +53,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
 });
 ```
 
-**The `experienceId` field is required**, otherwise your notifications will not go through to your app. FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../versions/latest/sdk/notifications.md#firebaseremotemessage).
+**The `experienceId` and `scopeKey` fields are required**, otherwise your notifications will not go through to your app. FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../versions/latest/sdk/notifications.md#firebaseremotemessage).
 
 > FCM also provides some server-side libraries in a few languages you can use instead of raw `fetch` requests. [See here for more info](https://firebase.google.com/docs/cloud-messaging/send-message#node.js).
 
@@ -120,7 +122,8 @@ request.write(
         body: 'Hello world! \uD83C\uDF10',
       },
     },
-    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo client app
+    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
+    scopeKey: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
   })
 );
 request.end();
@@ -152,6 +155,7 @@ The examples above show bare minimum notification requests, which aren't that ex
   },
   "body": { object of key-value pairs },
   "experienceId": "@yourExpoUsername/yourProjectSlug",
+  "scopeKey": "@yourExpoUsername/yourProjectSlug",
 }
 ```
 
@@ -164,6 +168,7 @@ The examples above show bare minimum notification requests, which aren't that ex
   "priority": "normal" || "high",
   "data": {
     "experienceId": "@yourExpoUsername/yourProjectSlug",
+    "scopeKey": "@yourExpoUsername/yourProjectSlug",
     "title": title of your message,
     "message": body of your message,
     "channelId": the android channel ID associated with this notification,
@@ -172,7 +177,7 @@ The examples above show bare minimum notification requests, which aren't that ex
     "link": the link this notification should open,
     "sound": boolean or the custom sound file you'd like to play,
     "vibrate": "true" | "false" | number[],
-    "priority": AndroidNotificationPriority, // https://docs.expo.io/versions/latest/sdk/notifications/#androidnotificationpriority
+    "priority": AndroidNotificationPriority, // https://docs.expo.dev/versions/latest/sdk/notifications/#androidnotificationpriority
     "badge": the number to set the icon badge to,
     "body": { object of key-value pairs }
   }
@@ -225,13 +230,16 @@ admin.messaging().sendToDevice(
       // ⚠️ Notice the schema of this payload is different
       // than that of Firebase SDK. What is there called "body"
       // here is a "message". For more info see:
-      // https://docs.expo.io/versions/latest/sdk/notifications/#android-push-notification-payload-specification
+      // https://docs.expo.dev/versions/latest/sdk/notifications/#android-push-notification-payload-specification
 
-      body: {        // ⚠️ As per Android payload format specified above, the
-        photoId: 42, // additional "data" should be placed under "body" key.
-      }
+      body:                              // ⚠️ As per Android payload format specified above, the
+        JSON.stringify({ photoId: 42 }), // additional "data" should be placed under "body" key.
     },
   },
   options
 );
 ```
+
+## Next steps
+
+Now that you can send notifications to your app, set your app up for [receiving notifications and taking action based on those events](./receiving-notifications.md)!

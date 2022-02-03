@@ -1,1 +1,3 @@
-export default function styleToBarStyle(style: "auto" | "inverted" | "light" | "dark" | undefined, colorScheme: 'light' | 'dark'): 'light-content' | 'dark-content';
+import { StatusBarStyle } from './StatusBar.types';
+export default function styleToBarStyle(style: StatusBarStyle | undefined, colorScheme: 'light' | 'dark'): 'light-content' | 'dark-content';
+//# sourceMappingURL=styleToBarStyle.web.d.ts.map

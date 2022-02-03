@@ -7,9 +7,9 @@ import com.facebook.ads.NativeAdsManager;
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoProp;
 
 public class NativeAdViewManager extends ViewManager<NativeAdView> {
   private static String NAME = "CTKNativeAd";

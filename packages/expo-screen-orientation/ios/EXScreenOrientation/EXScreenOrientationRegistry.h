@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/ExpoModulesCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,9 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXScreenOrientationRegistry : UMSingletonModule <UIApplicationDelegate, EXScreenOrientationEventEmitter, EXScreenOrientationRegistry>
+@interface EXScreenOrientationRegistry : EXSingletonModule <UIApplicationDelegate, EXScreenOrientationEventEmitter, EXScreenOrientationRegistry>
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions;
+- (void)updateCurrentScreenOrientation;
 
 - (UIInterfaceOrientationMask)requiredOrientationMask;
 - (void)traitCollectionDidChangeTo:(UITraitCollection *)traitCollection;

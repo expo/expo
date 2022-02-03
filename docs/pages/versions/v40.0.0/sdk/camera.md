@@ -25,11 +25,11 @@ In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording require
 
 > ⚠️ Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
-<SnackInline label='Basic Camera usage' templateId='camera' dependencies={['expo-camera']}>
+<SnackInline label='Basic Camera usage' dependencies={['expo-camera']}>
 
-```js
+```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 
 export default function App() {
@@ -50,20 +50,11 @@ export default function App() {
     return <Text>No access to camera</Text>;
   }
   return (
-    <View style={{ flex: 1 }}>
-      <Camera style={{ flex: 1 }} type={type}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'transparent',
-            flexDirection: 'row',
-          }}>
+    <View style={styles.container}>
+      <Camera style={styles.camera} type={type}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={{
-              flex: 0.1,
-              alignSelf: 'flex-end',
-              alignItems: 'center',
-            }}
+            style={styles.button}
             onPress={() => {
               setType(
                 type === Camera.Constants.Type.back
@@ -71,13 +62,39 @@ export default function App() {
                   : Camera.Constants.Type.back
               );
             }}>
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
+            <Text style={styles.text}> Flip </Text>
           </TouchableOpacity>
         </View>
       </Camera>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    margin: 20,
+  },
+  button: {
+    flex: 0.1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

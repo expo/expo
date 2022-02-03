@@ -7,4 +7,10 @@ if [[ ! -f package.json ]]; then
   exit 1
 fi
 
-rm -rf build
+directory=$1
+# Support `yarn clean plugin` to delete ./plugin/build/
+if [[ -n $directory ]]; then
+  rm -rf "$directory/build"
+else
+  rm -rf build
+fi

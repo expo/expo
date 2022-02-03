@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/UMPermissionsInterface/ABI37_0_0UMPermissionsInterface/ABI37_0_0UMPermissionsInterface.h

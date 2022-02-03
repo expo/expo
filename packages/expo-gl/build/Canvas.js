@@ -1,4 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { PixelRatio, StyleSheet, View } from 'react-native';
@@ -43,14 +43,14 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         if (size) {
             return size;
         }
-        else if (!ref.current || !canUseDOM) {
+        else if (!ref.current || !Platform.isDOMAvailable) {
             return { width: 0, height: 0 };
         }
         const element = getElement(ref.current);
         const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
         return { width, height };
     }
-    function onLayout(event) {
+    const onLayout = (event) => {
         const { nativeEvent: { layout: { width, height }, }, } = event;
         if (width !== size?.width || height !== size.height) {
             setSize({ width, height });
@@ -58,7 +58,7 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
                 props.onLayout(event);
             }
         }
-    }
+    };
     React.useEffect(() => {
         if (ref.current != null) {
             setSize(getSize());
@@ -74,7 +74,7 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         }
         setRef(props.canvasRef, canvas);
     }, [_canvasRef]);
-    return (React.createElement(View, Object.assign({}, props, { pointerEvents: "box-none", ref: ref, onLayout: onLayout }),
+    return (React.createElement(View, { ...props, pointerEvents: "box-none", ref: ref, onLayout: onLayout },
         React.createElement(Canvas, { ref: _canvasRef, pointerEvents: pointerEvents, style: StyleSheet.absoluteFill }),
         children));
 };

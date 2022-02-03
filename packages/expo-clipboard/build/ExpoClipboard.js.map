@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoClipboard.js","sourceRoot":"","sources":["../src/ExpoClipboard.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,aAAa,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoClipboard;\n"]}

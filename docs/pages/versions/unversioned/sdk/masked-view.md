@@ -1,21 +1,24 @@
 ---
 title: MaskedView
-sourceCodeUrl: 'https://github.com/react-native-community/react-native-masked-view'
+sourceCodeUrl: 'https://github.com/react-native-masked-view/masked-view'
+packageName: '@react-native-masked-view/masked-view'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`@react-native-community/masked-view`** provides a masked view which only displays the pixels that overlap with the view rendered in its mask element.
+**`@react-native-masked-view/masked-view`** provides a masked view which only displays the pixels that overlap with the view rendered in its mask element.
 
-> ⚠️ Android support for this library is currently experimental and you may encounter inconsistencies in behavior across platforms. Please report issues you encounter to [react-native-community/react-native-masked-view/issues](https://github.com/react-native-community/react-native-masked-view).
+> ⚠️ You can only have one of either `@react-native-community/masked-view` or `@react-native-masked-view/masked-view` installed in your project at any given time. React Navigation v5.x requires `@react-native-community/masked-view`, so you should use that package instead if you are using React Navigation v5.x.
+
+> ⚠️ Android support for this library is experimental and you may encounter inconsistencies in behavior across platforms. Please report issues you encounter to [react-native-masked-view/masked-view/issues](https://github.com/react-native-masked-view/masked-view).
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-<InstallSection packageName="@react-native-community/masked-view" href="https://github.com/react-native-community/react-native-masked-view#getting-started" />
+<APIInstallSection href="https://github.com/react-native-masked-view/masked-view#getting-started" />
 
 ## Usage
 
-See full documentation at [react-native-community/react-native-masked-view](https://github.com/react-native-community/react-native-masked-view).
+See full documentation at [react-native-masked-view/masked-view](https://github.com/react-native-masked-view/masked-view).

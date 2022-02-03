@@ -1,8 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, Button, Text } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import HeaderContainerRight from '../../components/HeaderContainerRight';
+import HeaderIconButton from '../../components/HeaderIconButton';
 import AnimationBar from './AnimationBar';
 import CompareBar from './CompareBar';
 import {
@@ -35,6 +36,7 @@ export default function ImageTestScreen({ navigation, route }: Props) {
   const [animValue, setAnimValue] = React.useState<Animated.Value | undefined>();
   const [viewKey, setViewKey] = React.useState<string>('initial');
   const [events, setEvents] = React.useState<string[]>([]);
+  const [loadDemanded, setLoadDemanded] = React.useState<boolean>(false);
 
   React.useLayoutEffect(() => {
     const { test } = route.params;
@@ -101,34 +103,57 @@ export default function ImageTestScreen({ navigation, route }: Props) {
     forceUpdate();
   };
 
+  const onPressLoad = () => {
+    setLoadDemanded(true);
+  };
+
   const onClearEvents = () => setEvents([]);
+
+  const isComponentLoaded = () => !loadOnDemand || loadDemanded;
 
   const test = route.params.test as ImageTest;
   const isAnimatable = typeof test.props === 'function';
   const hasEvents = isAnimatable && test.name.startsWith('on');
+  const loadOnDemand = test.loadOnDemand;
 
   const imageProps = resolveProps(test.props, animValue, false, onEventMessage);
 
   return (
     <View style={styles.container} key={viewKey}>
       {isAnimatable && <AnimationBar onAnimationValue={onAnimationValue} />}
-      <View style={styles.content}>
-        <ImageTestView imageProps={imageProps} ImageComponent={getImageComponent()} />
-        {!compareEnabled && (
-          <View style={styles.stylesContainer}>
-            <ImageStylesView test={test} animValue={animValue} />
-          </View>
-        )}
-      </View>
+      {test.testInformation && <Text>{test.testInformation}</Text>}
+      {isComponentLoaded() && (
+        <View style={styles.content}>
+          <ImageTestView
+            imageProps={imageProps}
+            ImageComponent={getImageComponent()}
+            loadOnDemand={false}
+          />
+          {!compareEnabled && (
+            <View style={styles.stylesContainer}>
+              <ImageStylesView test={test} animValue={animValue} />
+            </View>
+          )}
+        </View>
+      )}
+      {!isComponentLoaded() && (
+        <View>
+          <Button title="Load" onPress={onPressLoad} />
+        </View>
+      )}
       <CompareBar
         collapsed={!compareEnabled}
         ImageComponent={getSelectedCompareComponent()}
         onPress={onPressCompare}
         onPressComponent={onPressCompareComponent}
       />
-      {compareEnabled && (
+      {isComponentLoaded() && compareEnabled && (
         <View style={styles.content}>
-          <ImageTestView imageProps={imageProps} ImageComponent={getSelectedCompareComponent()} />
+          <ImageTestView
+            imageProps={imageProps}
+            ImageComponent={getSelectedCompareComponent()}
+            loadOnDemand={false}
+          />
         </View>
       )}
       {hasEvents && <ImageEventsView onClear={onClearEvents} events={events} />}

@@ -28,19 +28,15 @@
 
 // https://medium.com/@cafielo/how-to-detect-notch-screen-in-swift-56271827625d
 + (BOOL)doesDeviceHaveNotch {
-  if (@available(iOS 11.0, *)) {
-    static BOOL bottomSafeAreaInsetIsPositive = false;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        bottomSafeAreaInsetIsPositive = ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.bottom ?: 0.0) > 0.0;
-      });
+  static BOOL bottomSafeAreaInsetIsPositive = false;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+     dispatch_sync(dispatch_get_main_queue(), ^{
+      bottomSafeAreaInsetIsPositive = ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.bottom ?: 0.0) > 0.0;
     });
+  });
     
-    return bottomSafeAreaInsetIsPositive;
-  }
-  
-  return false;
+  return bottomSafeAreaInsetIsPositive;
 }
 
 + (UIInterfaceOrientationMask)maskFromOrientation:(UIInterfaceOrientation)orientation

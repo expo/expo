@@ -29,6 +29,7 @@ interface State {
   textStyle?: StyleProp<TextStyle>;
   linkStyle?: StyleProp<TextStyle>;
   appVerificationDisabledForTesting: boolean;
+  languageCode: string;
 }
 
 // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
@@ -45,6 +46,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     textStyle: undefined,
     linkStyle: undefined,
     appVerificationDisabledForTesting: false,
+    languageCode: 'en',
   };
 
   recaptchaVerifier: FirebaseAuthApplicationVerifier | null = null;
@@ -57,6 +59,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
       firebaseConfig,
       inProgress,
       appVerificationDisabledForTesting,
+      languageCode,
       textStyle,
       linkStyle,
     } = this.state;
@@ -73,7 +76,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         />
         <ListButton
           onPress={() =>
-            this.setState(state => ({
+            this.setState((state) => ({
               attemptInvisibleVerification: !state.attemptInvisibleVerification,
             }))
           }
@@ -83,7 +86,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         />
         <ListButton
           onPress={() =>
-            this.setState(state => ({
+            this.setState((state) => ({
               appVerificationDisabledForTesting: !state.appVerificationDisabledForTesting,
             }))
           }
@@ -93,27 +96,36 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         />
         <ListButton
           onPress={() =>
-            this.setState(state => ({ title: state.title ? undefined : 'Prove you are human!' }))
+            this.setState((state) => ({
+              languageCode: state.languageCode === 'en' ? 'zh-CN' : 'en',
+            }))
+          }
+          title={`Toggle languageCode (${languageCode})`}
+        />
+        <ListButton
+          onPress={() =>
+            this.setState((state) => ({ title: state.title ? undefined : 'Prove you are human!' }))
           }
           title={`Toggle custom title (${title ? 'On' : 'Off'})`}
         />
         <ListButton
           onPress={() =>
-            this.setState(state => ({ cancelLabel: state.cancelLabel ? undefined : 'Close' }))
+            this.setState((state) => ({ cancelLabel: state.cancelLabel ? undefined : 'Close' }))
           }
           title={`Toggle custom cancel label (${cancelLabel ? 'On' : 'Off'})`}
         />
         <FirebaseRecaptchaVerifierModal
-          ref={ref => (this.recaptchaVerifier = ref)}
+          ref={(ref) => (this.recaptchaVerifier = ref)}
           appVerificationDisabledForTesting={appVerificationDisabledForTesting}
           attemptInvisibleVerification={attemptInvisibleVerification}
+          languageCode={languageCode}
           {...modalProps}
         />
 
         <HeadingText>reCAPTCHA banner</HeadingText>
         <ListButton
           onPress={() =>
-            this.setState(state => ({
+            this.setState((state) => ({
               textStyle: state.textStyle ? undefined : styles.invisibleRecaptchaText,
             }))
           }
@@ -121,7 +133,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         />
         <ListButton
           onPress={() =>
-            this.setState(state => ({
+            this.setState((state) => ({
               linkStyle: state.linkStyle ? undefined : styles.invisibleRecaptchaLink,
             }))
           }

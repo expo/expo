@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.unimodules.core.arguments.MapArguments;
+import expo.modules.core.arguments.MapArguments;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +33,7 @@ import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
+import expo.modules.notifications.notifications.triggers.YearlyTrigger;
 
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {
@@ -99,7 +100,7 @@ public class NotificationSerializer {
     return serializedContent;
   }
 
-  private static Bundle toBundle(@Nullable JSONObject notification) {
+  public static Bundle toBundle(@Nullable JSONObject notification) {
     if (notification == null) {
       return null;
     }
@@ -177,6 +178,12 @@ public class NotificationSerializer {
       bundle.putInt("weekday", ((WeeklyTrigger) trigger).getWeekday());
       bundle.putInt("hour", ((WeeklyTrigger) trigger).getHour());
       bundle.putInt("minute", ((WeeklyTrigger) trigger).getMinute());
+    } else if (trigger instanceof YearlyTrigger) {
+      bundle.putString("type", "yearly");
+      bundle.putInt("day", ((YearlyTrigger) trigger).getDay());
+      bundle.putInt("month", ((YearlyTrigger) trigger).getMonth());
+      bundle.putInt("hour", ((YearlyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((YearlyTrigger) trigger).getMinute());
     } else {
       bundle.putString("type", "unknown");
     }

@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
+#import <ExpoModulesCore/EXExportedModule.h>
 
-@interface EXSegment : UMExportedModule
+@interface EXSegment : EXExportedModule
 
-- (void)setEnabled:(BOOL)enabled withResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject;
+- (void)setEnabled:(BOOL)enabled withResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject;
 
 @end

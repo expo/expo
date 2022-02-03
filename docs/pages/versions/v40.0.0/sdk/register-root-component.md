@@ -40,21 +40,21 @@ No return value.
 ### I created my project before SDK 18 and I want to remove `registerRootComponent`, how do I do this?
 
 - Before continuing, make sure your project is running on SDK 18 or later.
-- Open up `main.js` (or if you changed it, whatever your `"main"` is in `package.json`).
+- Open up **main.js** (or if you changed it, whatever your `"main"` is in **package.json**).
 - Set `"main"` to `"node_modules/expo/AppEntry.js"`.
-- Delete the `registerRootComponent` call from `main.js` and put `export default` before your root component's class declaration.
-- Rename `main.js` to `App.js`.
+- Delete the `registerRootComponent` call from **main.js** and put `export default` before your root component's class declaration.
+- Rename **main.js** to **App.js**.
 
 ### What if I want to name my main app file something other than App.js?
 
-You can set the `"main"` in `package.json` to any file within your
+You can set the `"main"` in **package.json** to any file within your
 project. If you do this, then you need to use `registerRootComponent`;
 `export default` will not make this component the root for the Expo app
 if you are using a custom entry file.
 
 For example, let's say you want to make `"src/main.js"` the entry file
 for your app -- maybe you don't like having JavaScript files in the
-project root, for example. First, set this in `package.json`:
+project root, for example. First, set this in **package.json**:
 
 ```javascript
 {

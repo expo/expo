@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 
-import org.unimodules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
@@ -54,7 +54,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     stopAlarm();
 
     // Cancel pending intent.
-    getTaskManagerUtils().cancelTaskIntent(getContext(), mTask.getAppId(), mTask.getName());
+    getTaskManagerUtils().cancelTaskIntent(getContext(), mTask.getAppScopeKey(), mTask.getName());
 
     mTask = null;
     mPendingIntent = null;

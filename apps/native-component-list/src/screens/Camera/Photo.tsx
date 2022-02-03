@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as FaceDetector from 'expo-face-detector';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -31,15 +31,15 @@ export default class Photo extends React.Component<
 
   toggleSelection = () => {
     this.setState(
-      state => ({ selected: !state.selected }),
+      (state) => ({ selected: !state.selected }),
       () => this.props.onSelectionToggle(this.props.uri, this.state.selected)
     );
   };
 
   detectFace = () =>
     FaceDetector.detectFacesAsync(this.props.uri, {
-      detectLandmarks: FaceDetector.Constants.Landmarks.none,
-      runClassifications: FaceDetector.Constants.Classifications.all,
+      detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
+      runClassifications: FaceDetector.FaceDetectorClassifications.all,
     })
       .then(this.facesDetected)
       .catch(this.handleFaceDetectionError);

@@ -1,12 +1,22 @@
-# Expo Tools
+# Expotools
+A set of commands and libraries for working within the Expo repository.
 
-## Versioning Android
+Expotools is a CLI and library that contains internal Expo tooling. It is used as a library in CI and as a CLI to:
+  - Test and develop CI locally
+  - Run tests locally
+  - Assist with the release process
 
-1. Run `gulp android-add-rn-version --abi=XX.X.X` in `tools`.
-2. Add the new `expoview-abiXX_X_X` project as a dependency of `android/app/build.gradle`.
-3. Open `android/versioned-abis/expoview-abiXX_X_X/build.gradle` and add missing `expo-payments-stripe` and `expo-constants` dependencies.
-4. Remove `abiXX_X_X/expo/modules/print/PrintDocumentAdapter*Callback.java`.
-5. Fix `abiXX_X_X.….R` (compilation will error) references and change them to `abiXX_X_X.host.exp.exponent.R`.
-6. Open `VersionedUtils.java` and change two last arguments of `ExponentPackage` constructor to `null`s.
-7. Open `PayFlow.java` in `abiXX_X_X` and fix `BuildConfig` reference (import `abiXX_X_X.host.exp.….BuildConfig`).
-8. Open `ExponentPackage.java` in `abiXX_X_X` and remove offending line with `ExponentKernelModuleProvider` in `createNativeModules`.
+## Prerequisites
+Run `bundle install` in the root to install all required Ruby gems.
+
+To support versioning react-native for Android, [patchelf](https://github.com/NixOS/patchelf) is required. On macOS, could run `brew install patchelf` to install.
+
+## Usage
+Run `expotools` or `et` from the Expo repository to run the latest version of expotools. This automatically rebuilds the code according to the latest sources.
+
+For example, running `et --help` will display all the available commands.
+
+## Development
+Build the code once using `yarn build`.
+
+`yarn watch` will watch for code changes and rebuild the code each time you save. The standard workflow for developing expotools is to leave `yarn watch` open in one tab and run `./bin/expotools COMMAND` in the other. Running `./bin/expotools` avoids the update check that happens when calling `expotools` or `et`.

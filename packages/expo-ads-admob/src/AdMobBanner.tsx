@@ -1,8 +1,8 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, ViewProps } from 'react-native';
 
-type PropsType = React.ComponentProps<typeof View> & {
+type PropsType = ViewProps & {
   /**
    * AdMob iOS library banner size constants
    * (https://developers.google.com/admob/ios/banner)
@@ -32,7 +32,7 @@ type PropsType = React.ComponentProps<typeof View> & {
   /**
    * Additional request params added to underlying request for the ad.
    */
-  additionalRequestParams?: { [key: string]: string };
+  additionalRequestParams?: Record<string, string>;
 
   /**
    * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
@@ -75,7 +75,7 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
     this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
 
   render() {
-    const additionalRequestParams: { [key: string]: string } = {
+    const additionalRequestParams: Record<string, string> = {
       ...this.props.additionalRequestParams,
     };
     if (!this.props.servePersonalizedAds) {

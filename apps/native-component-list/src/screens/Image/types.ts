@@ -19,6 +19,8 @@ export type ImageTestProps = ImageProps | ImageTestPropsFn;
 export interface ImageTest {
   name: string;
   props: ImageTestProps;
+  loadOnDemand?: boolean;
+  testInformation?: string;
 }
 
 export interface ImageTestGroup {

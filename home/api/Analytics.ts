@@ -11,53 +11,44 @@ export const events = {
   USER_LOGGED_IN: 'USER_LOGGED_IN',
   USER_LOGGED_OUT: 'USER_LOGGED_OUT',
   USER_CREATED_ACCOUNT: 'USER_CREATED_ACCOUNT',
-  USER_RESET_PASSWORD: 'USER_RESET_PASSWORD',
-  USER_LINKED_SOCIAL: 'USER_LINKED_SOCIAL',
-  USER_UPDATED_EMAIL: 'USER_UPDATED_EMAIL',
-  USER_UPDATED_PROFILE: 'USER_UPDATED_PROFILE',
-  USER_UPDATED_LINKS: 'USER_UPDATED_SOCIAL_LINKS',
-  USER_UPDATED_PRIVACY: 'USER_UPDATED_PRIVACY',
-  USER_REMOVED_PROJECT: 'USER_REMOVED_PROJECT',
-  USER_OPENED_CREATION: 'USER_OPENED_CREATION',
-  USER_UPDATED_SETTINGS: 'USER_UPDATED_SETTINGS',
 };
 
 const canUseAmplitude = Environment.isProduction && apiKey;
 
-export function initialize(): void {
+export async function initialize(): Promise<void> {
   if (isInitialized || !canUseAmplitude) {
     return;
   }
 
-  Amplitude.initialize(apiKey);
+  await Amplitude.initializeAsync(apiKey);
   isInitialized = true;
 }
 
-export function identify(id: string | null, options?: TrackingOptions) {
+export async function identify(id: string | null, options?: TrackingOptions): Promise<void> {
   initialize();
   const properties = normalizeTrackingOptions(options);
 
   if (!canUseAmplitude) return;
   if (id) {
-    Amplitude.setUserId(id);
+    await Amplitude.setUserIdAsync(id);
     if (properties) {
-      Amplitude.setUserProperties(properties);
+      await Amplitude.setUserPropertiesAsync(properties);
     }
   } else {
-    Amplitude.clearUserProperties();
+    await Amplitude.clearUserPropertiesAsync();
   }
 }
 
-export function track(event: string, options?: TrackingOptions): void {
+export async function track(event: string, options?: TrackingOptions): Promise<void> {
   initialize();
   const properties = normalizeTrackingOptions(options);
 
   if (!canUseAmplitude) return;
 
   if (properties) {
-    Amplitude.logEventWithProperties(event, properties);
+    await Amplitude.logEventWithPropertiesAsync(event, properties);
   } else {
-    Amplitude.logEvent(event);
+    await Amplitude.logEventAsync(event);
   }
 }
 

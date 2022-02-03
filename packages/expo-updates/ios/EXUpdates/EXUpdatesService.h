@@ -4,17 +4,17 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
-#import <UMCore/UMInternalModule.h>
+#import <ExpoModulesCore/EXInternalModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
-@protocol EXUpdatesInterface
+@protocol EXUpdatesModuleInterface
 
 @property (nonatomic, readonly) EXUpdatesConfig *config;
 @property (nonatomic, readonly) EXUpdatesDatabase *database;
-@property (nonatomic, readonly) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readonly) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *directory;
 
 @property (nullable, nonatomic, readonly, strong) EXUpdatesUpdate *launchedUpdate;
@@ -25,10 +25,11 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 @property (nonatomic, readonly, assign) BOOL canRelaunch;
 
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion;
+- (void)resetSelectionPolicy;
 
 @end
 
-@interface EXUpdatesService : NSObject <UMInternalModule, EXUpdatesInterface>
+@interface EXUpdatesService : NSObject <EXInternalModule, EXUpdatesModuleInterface>
 
 @end
 

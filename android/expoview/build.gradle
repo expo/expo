@@ -1,49 +1,81 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
-apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'maven-publish'
 apply plugin: 'de.undercouch.download'
+apply plugin: 'kotlin-kapt'
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '39.0.0'
+version = '44.0.0'
 
-
-//Upload android library to maven with javadoc and android sources
-configurations {
-  deployerJars
-}
-
-//Creating sources with comments
+// Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
   from android.sourceSets.main.java.srcDirs
 }
 
-//Put the androidSources and javadoc to the artifacts
-artifacts {
-  archives androidSourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      configuration = configurations.deployerJars
-      repository(url: mavenLocal().url) {
-        //if your repository needs authentication
-        // authentication(userName: "username", password: "password")
+afterEvaluate {
+  publishing {
+    publications {
+      // use `versionedRelease` configuration when publishing to maven
+      versionedRelease(MavenPublication) {
+        from components.versionedRelease
+        // Add additional sourcesJar to artifacts
+        artifact(androidSourcesJar)
+      }
+    }
+    repositories {
+      maven {
+        url = mavenLocal().url
       }
     }
   }
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
+// WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
+
+// reanimated
+
+def debugNativeLibraries = false
+
+import java.nio.file.Paths
+
+import de.undercouch.gradle.tasks.download.Download
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.apache.tools.ant.filters.ReplaceTokens
+
+def reactProperties = new Properties()
+def reactNative = new File("$projectDir/../../versioned-react-native")
+
+// WHEN_VERSIONING_REMOVE_FROM_HERE
+reactNative = new File("$projectDir/..")
+// WHEN_VERSIONING_REMOVE_TO_HERE
+
+file("$reactNative/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+
+def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
+def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
+def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
+def GLOG_VERSION = reactProperties.getProperty("GLOG_VERSION")
+def REACT_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
+def REACT_NATIVE_PATH = reactNative.absolutePath
+def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
+def RN_SO_DIR = "$reactNative/ReactAndroid/build/react-ndk/exported"
+def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
+def FOR_HERMES = false
+def CMAKE_TOOLCHAIN_FILE = "-DCMAKE_TOOLCHAIN_FILE=${getNdkBuildFullPath()}/../build/cmake/android.toolchain.cmake"
+def ABI_FILTERS = System.getenv("NDK_ABI_FILTERS") ?: 'arm64-v8a, armeabi-v7a, x86, x86_64'
+// WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
+
 
 buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
   repositories {
     // If you have maven { url "https://jitpack.io" } as your resolving url,
     // then Jitpack will only return the POM for the Android dependency causing the Gradle sync to fail.
@@ -56,7 +88,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
   }
 }
 
@@ -66,40 +98,83 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
   }
 
+  buildFeatures {
+    viewBinding true
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 1
     versionName "1.0"
+
+    /* WHEN_VERSIONING_UNCOMMENT_FROM_HERE
+    missingDimensionStrategy('versioning', 'versioned')
+    WHEN_VERSIONING_UNCOMMENT_TO_HERE */
 
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
     ]
     // WHEN_VERSIONING_REMOVE_TO_HERE
-    ndk {
-      moduleName("reanimated")
+
+    // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
+    externalNativeBuild {
+      cmake {
+        arguments "-DANDROID_STL=c++_shared",
+            "-DREACT_NATIVE_TARGET_VERSION=${REACT_VERSION}",
+            "-DANDROID_TOOLCHAIN=clang",
+            "${CMAKE_TOOLCHAIN_FILE}",
+            "-DBOOST_VERSION=${BOOST_VERSION}",
+            "-DFOR_HERMES=${FOR_HERMES}",
+            "-DREACT_NATIVE_PATH=${REACT_NATIVE_PATH}",
+            "-DRN_SO_DIR=${RN_SO_DIR}",
+            "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
+            "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
+        abiFilters = []
+        abiFilters.addAll(ABI_FILTERS.split(',').collect { (it as String).trim() })
+      }
     }
+
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
   }
 
   // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
-  tasks.withType(JavaCompile) {
-    compileTask ->
-      compileTask.dependsOn(packageNdkLibs)
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
+  packagingOptions {
+    println "Native libs debug enabled: ${debugNativeLibraries}"
+    doNotStrip debugNativeLibraries ? "**/**/*.so" : ''
+
+    // Gradle will add cmake target dependencies into packaging.
+    // Theses files are intermediated linking files to build reanimated and should not be in final package.
+    excludes = [
+      "**/libc++_shared.so",
+      "**/libreactnativejni.so",
+      "**/libglog.so",
+      "**/libjscexecutor.so",
+      "**/libfbjni.so",
+      "**/libfolly_json.so",
+      "**/libhermes.so",
+    ]
   }
 
   configurations {
     extractHeaders
-    extractJNI
+    extractSO
   }
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
@@ -109,6 +184,23 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
+  // WHEN_VERSIONING_REMOVE_FROM_HERE
+  flavorDimensions "versioning"
+  productFlavors {
+    versioned {
+      dimension "versioning"
+    }
+    unversioned {
+      getIsDefault().set(true)
+      dimension "versioning"
+    }
+  }
+  // WHEN_VERSIONING_REMOVE_TO_HERE
+
+  // use `versionedRelease` configuration when publishing to maven
+  defaultPublishConfig "versionedRelease"
+
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -130,7 +222,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
         it.toLowerCase().contains("release")
       } ? "release" : "debug"
 
-      workingDir '../../tools/expotools/bin'
+      workingDir '../../tools/bin'
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
@@ -149,14 +241,13 @@ configurations.all {
   }
 }
 
-// Import gradle helpers for unimodules.
-apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'androidx.multidex:multidex:2.0.0'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
   testImplementation 'junit:junit:4.12'
 
@@ -166,7 +257,7 @@ dependencies {
   // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 
   extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-  extractJNI("com.facebook.fbjni:fbjni:0.0.2")
+  extractSO("com.facebook.fbjni:fbjni:0.0.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
@@ -177,34 +268,20 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:39.0.0'
-  addUnimodulesDependencies([
-      modulesPaths : ['../../packages'],
-      configuration: 'compileOnly',
-      target       : 'react-native',
-      exclude      : [
-        'expo-module-template',
-        'expo-in-app-purchases',
-        'expo-gl-cpp-legacy'
-      ]
-  ])
+  api 'com.facebook.react:react-native:44.0.0'
+  compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
-  // Universal modules
-  // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  addUnimodulesDependencies([
-      modulesPaths : ['../../packages'],
-      configuration: 'api',
-      target       : 'react-native',
-      exclude      : [
-          'expo-module-template',
-          'expo-in-app-purchases',
-      ]
-  ])
+  def hermesPath = "../../node_modules/hermes-engine/android/";
+  debugImplementation files(hermesPath + "hermes-debug.aar")
+  releaseImplementation files(hermesPath + "hermes-release.aar")
+
+  // Expo modules
+  api project(':expo')
 
   // expo-random is no longer a unimodule
   api project(':expo-random')
@@ -212,18 +289,15 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
-  // BEGIN_SDK_40
-  api 'host.exp:reactandroid-abi40_0_0:1.0.0'
-  // END_SDK_40
-  // BEGIN_SDK_39
-  api 'host.exp:reactandroid-abi39_0_0:1.0.0'
-  // END_SDK_39
-  // BEGIN_SDK_38
-  api 'host.exp:reactandroid-abi38_0_0:1.0.0'
-  // END_SDK_38
-  // BEGIN_SDK_37
-  api 'host.exp:reactandroid-abi37_0_0:1.0.0'
-  // END_SDK_37
+  // BEGIN_SDK_44
+  versionedApi 'host.exp:reactandroid-abi44_0_0:1.0.0'
+  // END_SDK_44
+  // BEGIN_SDK_43
+  versionedApi 'host.exp:reactandroid-abi43_0_0:1.0.0'
+  // END_SDK_43
+  // BEGIN_SDK_42
+  versionedApi 'host.exp:reactandroid-abi42_0_0:1.0.0'
+  // END_SDK_42
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -263,10 +337,10 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+  api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
-  api 'com.airbnb.android:lottie:2.5.6'
+  api 'com.airbnb.android:lottie:3.4.0'
   compileOnly 'io.branch.sdk.android:library:4.1.0'
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
@@ -280,8 +354,6 @@ dependencies {
   api 'com.google.firebase:firebase-core:17.2.3'
   api 'com.google.firebase:firebase-messaging:20.2.4'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:10.2.1'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // Used only in Expo Go, see Analytics.java
@@ -299,40 +371,29 @@ dependencies {
   api 'com.android.installreferrer:installreferrer:1.0'
 
   //dbflow
-  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
+
+  // stripe-react-native
+  implementation 'com.stripe:stripe-android:18.1.0'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+  implementation 'com.google.android.material:material:1.3.0'
+
+  // react-native-webview
+  implementation "androidx.webkit:webkit:1.4.0"
 }
 
 
 // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 
 // reanimated
-
-import java.nio.file.Paths
-
-import de.undercouch.gradle.tasks.download.Download
-import org.apache.tools.ant.taskdefs.condition.Os
-import org.apache.tools.ant.filters.ReplaceTokens
-
-def reactProperties = new Properties()
-def reactNative = new File("$projectDir/../../versioned-react-native")
-
-// WHEN_VERSIONING_REMOVE_FROM_HERE
-reactNative = new File("$projectDir/..")
-// WHEN_VERSIONING_REMOVE_TO_HERE
-
-file("$reactNative/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-
-def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
-def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
-def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
-def GLOG_VERSION = reactProperties.getProperty("GLOG_VERSION")
 
 // We download various C++ open-source dependencies into downloads.
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
@@ -529,16 +590,29 @@ def findNdkBuildFullPath() {
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
+  if (System.getenv("ANDROID_NDK_HOME") != null) {
+    def ndkDir = System.getenv("ANDROID_NDK_HOME")
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
+
+  // Left for the legacy reasons, use the previous one.
   if (System.getenv("ANDROID_NDK") != null) {
     def ndkDir = System.getenv("ANDROID_NDK")
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
-  def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-
-  if (ndkDir) {
-    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  try {
+    def ndkDir = android.ndkDirectory.absolutePath
+    if (ndkDir) {
+      return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+  } catch (InvalidUserDataException e) {
+    throw new GradleScriptException(
+        "Default side-by-side NDK installation is not found.\n" +
+            "Set \$ANDROID_NDK_HOME environment variable correctly or setup ndk.dir in local.properties.", e
+    )
   }
+
   return null
 }
 
@@ -547,14 +621,14 @@ def getNdkBuildFullPath() {
   if (ndkBuildFullPath == null) {
     throw new GradleScriptException(
         "ndk-build binary cannot be found, check if you've set " +
-            "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
+            "\$ANDROID_NDK_HOME environment variable correctly or if ndk.dir is " +
             "setup in local.properties",
         null)
   }
   if (!new File(ndkBuildFullPath).canExecute()) {
     throw new GradleScriptException(
         "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
+            "Check that the \$ANDROID_NDK_HOME environment variable, or ndk.dir in local.properties, is set correctly.\n" +
             "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
         null)
   }
@@ -626,62 +700,55 @@ task extractAARHeaders {
   }
 }
 
-task extractJNIFiles {
+task extractSOFiles {
   doLast {
-    configurations.extractJNI.files.each {
+    println "extractSOFiles"
+    configurations.extractSO.files.each {
       def file = it.absoluteFile
+      println file
       def packageName = file.name.tokenize('-')[0]
       copy {
         from zipTree(file)
         into "$reactNative/ReactAndroid/src/main/jni/first-party/$packageName/"
-        include "jni/**/*"
+        include "jni/**/*.so"
       }
     }
   }
 }
 
-task buildReanimated(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog, prepareHermes, extractAARHeaders, extractJNIFiles], type: Exec) {
-  inputs.dir("src/main/JNI")
-  inputs.dir("src/main/cpp")
-  inputs.dir("src/main/Common")
-  outputs.dir("$buildDir/reanimated-ndk/all")
-  commandLine(getNdkBuildFullPath(),
-      "NDK_PROJECT_PATH=null",
-      "NDK_APPLICATION_MK=$projectDir/src/main/JNI/Application.mk",
-      "NDK_OUT=" + temporaryDir,
-      "NDK_LIBS_OUT=$buildDir/reanimated-ndk/all",
-      "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
-      "JSI_PATH=$reactNative/ReactCommon/jsi",
-      "REACT_COMMON_DIR=$reactNative/ReactCommon",
-      "REACT_SRC_DIR=$reactNative/ReactAndroid/src/main/java/com/facebook/react",
-      "FIRST_PARTY=$reactNativeThirdParty/../first-party",
-      "REACT_NATIVE_JNI=$reactNative/ReactAndroid/src/main/jni/react/jni",
-      "REACT_NATIVE_REACT=$reactNative/ReactAndroid/src/main/jni/react",
-      "-C", file("src/main/JNI").absolutePath,
-      "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
-  )
-}
-
-
-task cleanNdkLibs(type: Exec) {
-  ignoreExitValue(true)
-  errorOutput(new ByteArrayOutputStream())
-  commandLine(getNdkBuildFullPath(),
-      "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
-      "-C", file("src/main/JNI").absolutePath,
-      "clean")
-  doLast {
-    def aar_path = "$buildDir/outputs/aar";
-    file(aar_path).delete()
-    println("Deleted aar output dir at ${file(aar_path)}")
+project.afterEvaluate {
+  def nativeBuildTask = tasks.findByName("externalNativeBuildRelease")
+  if (nativeBuildTask) {
+    packageNdkLibs.dependsOn nativeBuildTask
   }
 }
 
-task packageNdkLibs(dependsOn: buildReanimated, type: Copy) {
+task packageNdkLibs(type: Copy) {
   from("$buildDir/reanimated-ndk/all")
   include("**/lib*reanimated*.so")
-  include("**/lib*turbomodulejsijni*.so")
+  if (REACT_VERSION < 64) {
+    include("**/lib*turbomodulejsijni*.so")
+  }
   into("$projectDir/src/main/jniLibs")
+}
+
+task prepareThirdPartyNdkHeaders(dependsOn: [downloadNdkBuildDependencies, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog]) {
+}
+
+
+// pre-native build pipeline
+
+tasks.whenTaskAdded { task ->
+  if (task.name.contains('externalNativeBuild')) {
+    task.dependsOn(prepareThirdPartyNdkHeaders)
+    extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
+    extractSOFiles.dependsOn(prepareThirdPartyNdkHeaders)
+    task.dependsOn(extractAARHeaders)
+    task.dependsOn(extractSOFiles)
+    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+  } else if (task.name.startsWith('generateJsonModel')) {
+    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+  }
 }
 
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE

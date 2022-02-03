@@ -19,10 +19,10 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <SnackInline label='Pedometer' dependencies={['expo-sensors']} >
 
-```js
+```jsx
 import React from 'react';
-import { Pedometer } from 'expo-sensors';
 import { StyleSheet, Text, View } from 'react-native';
+import { Pedometer } from 'expo-sensors';
 
 export default class App extends React.Component {
   state = {
@@ -90,6 +90,7 @@ export default class App extends React.Component {
   }
 }
 
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -98,6 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+/* @end */
 ```
 
 </SnackInline>
@@ -118,7 +120,7 @@ Returns whether the pedometer is enabled on the device.
 
 ### `Pedometer.getStepCountAsync(start, end)`
 
-Get the step count between two dates.
+**iOS only.** Get the step count between two dates.
 
 #### Arguments
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-localization",
-  "version": "9.1.0",
+  "version": "12.0.0",
   "description": "Provides an interface for native user localization information.",
   "main": "build/Localization.js",
   "types": "build/Localization.d.ts",
@@ -34,17 +34,17 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/localization/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/localization/",
   "jest": {
     "preset": "expo-module-scripts"
   },
   "dependencies": {
     "rtl-detect": "^1.0.2"
   },
-  "peerDependencies": {
-    "@unimodules/core": "~5.1.2"
-  },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

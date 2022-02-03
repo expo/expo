@@ -1,11 +1,7 @@
-import { css } from '@emotion/core';
 import * as React from 'react';
 
-const CONTAINER_STYLE = css`
-  background-color: rgba(225, 228, 23, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
-`;
+import { P } from '~/components/base/paragraph';
+import { CONTAINER_STYLE } from '~/components/plugins/VersionedRedirectNotification';
 
 const PossibleRedirectNotification: React.FC<{ newUrl: string }> = ({ newUrl }) => {
   const [targetId, setTargetId] = React.useState<string | null>(null);
@@ -23,8 +19,10 @@ const PossibleRedirectNotification: React.FC<{ newUrl: string }> = ({ newUrl }) 
   if (targetId) {
     return (
       <div css={CONTAINER_STYLE}>
-        ⚠️ The information you are looking for (addressed by <em>"{targetId}"</em>) has moved.{' '}
-        <a href={`${newUrl}#${targetId}`}>Continue to the new location.</a>
+        <P>
+          ⚠️ The information you are looking for (addressed by <em>"{targetId}"</em>) has moved.{' '}
+          <a href={`${newUrl}#${targetId}`}>Continue to the new location.</a>
+        </P>
       </div>
     );
   } else {

@@ -9,4 +9,7 @@ export async function downloadAsync(uri, hash, type, name) {
 export function getManifest() {
     return {};
 }
+export function getManifest2() {
+    return {};
+}
 //# sourceMappingURL=PlatformUtils.web.js.map

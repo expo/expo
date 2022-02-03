@@ -27,6 +27,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     } | null;
     get type(): string;
     verify(): Promise<string>;
+    _reset(...args: any): void;
     private onVisibleLoad;
     private onInvisibleLoad;
     private onFullChallenge;
@@ -37,3 +38,4 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=FirebaseRecaptchaVerifierModal.d.ts.map

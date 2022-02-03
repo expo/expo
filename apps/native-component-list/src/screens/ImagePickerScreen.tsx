@@ -1,126 +1,74 @@
 import { Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Image, Platform, ScrollView, View, StyleSheet } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import SimpleActionDemo from '../components/SimpleActionDemo';
 import TitleSwitch from '../components/TitledSwitch';
 
-async function requestPermissionAsync(permission: Permissions.PermissionType) {
+async function requestCameraPermissionAsync() {
   // Image Picker doesn't need permissions in the web
   if (Platform.OS === 'web') {
     return true;
   }
-  const { status } = await Permissions.askAsync(permission);
+  const { status } = await ImagePicker.requestCameraPermissionsAsync();
   return status === 'granted';
 }
 
-interface State {
-  selection?: ImagePicker.ImagePickerResult;
-  base64Enabled: boolean;
-  compressionEnabled: boolean;
+async function requestMediaLibraryPermissionAsync() {
+  // Image Picker doesn't need permissions in the web
+  if (Platform.OS === 'web') {
+    return true;
+  }
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  return status === 'granted';
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class ImagePickerScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'ImagePicker',
-  };
+function ImagePickerScreen() {
+  const [base64Enabled, setB64Enabled] = React.useState(false);
+  const [selection, setSelection] = React.useState<ImagePicker.ImagePickerResult | undefined>(
+    undefined
+  );
+  const [compressionEnabled, setCompressionEnabled] = React.useState(false);
 
-  readonly state: State = {
-    base64Enabled: false,
-    compressionEnabled: false,
-  };
-
-  showCamera = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    await requestPermissionAsync(Permissions.CAMERA);
+  const showCamera = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
+    await requestCameraPermissionAsync();
+    const time = Date.now();
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes,
       allowsEditing,
-      quality: this.state.compressionEnabled ? 0.1 : 1.0,
-      base64: this.state.base64Enabled,
+      quality: compressionEnabled ? 0.1 : 1.0,
+      base64: base64Enabled,
     });
+    console.log(`Duration: ${Date.now() - time}ms`);
+    console.log(`Results:`, result);
     if (result.cancelled) {
-      this.setState({ selection: undefined });
+      setSelection(undefined);
     } else {
-      this.setState({ selection: result });
+      setSelection(result);
     }
   };
 
-  showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    await requestPermissionAsync(Permissions.MEDIA_LIBRARY);
+  const showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
+    await requestMediaLibraryPermissionAsync();
+    const time = Date.now();
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes,
       allowsEditing,
-      base64: this.state.base64Enabled,
-      quality: this.state.compressionEnabled ? 0.1 : 1.0,
+      base64: base64Enabled,
+      quality: compressionEnabled ? 0.1 : 1.0,
     });
+    console.log(`Duration: ${Date.now() - time}ms`);
+    console.log(`Results:`, result);
     if (result.cancelled) {
-      this.setState({ selection: undefined });
+      setSelection(undefined);
     } else {
-      this.setState({ selection: result });
+      setSelection(result);
     }
   };
-  render() {
-    return (
-      <ScrollView style={styles.mainContainer}>
-        <TitleSwitch
-          style={{ marginVertical: 8 }}
-          title="With base64"
-          setValue={value => this.setState({ base64Enabled: value })}
-          value={this.state.base64Enabled}
-        />
-        <TitleSwitch
-          style={{ marginVertical: 8 }}
-          title="Compression"
-          setValue={value => this.setState({ compressionEnabled: value })}
-          value={this.state.compressionEnabled}
-        />
-
-        <ListButton
-          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.All)}
-          title="Take photo or video"
-        />
-        <ListButton
-          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.Images)}
-          title="Take photo"
-        />
-        <ListButton
-          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.Videos)}
-          title="Take video"
-        />
-        <ListButton
-          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.All, true)}
-          title="Open camera and edit"
-        />
-        <ListButton
-          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.All)}
-          title="Pick photo or video"
-        />
-        <ListButton
-          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.Images)}
-          title="Pick photo"
-        />
-        <ListButton
-          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.Videos)}
-          title="Pick video"
-        />
-        <ListButton
-          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.Images, true)}
-          title="Pick photo and edit"
-        />
-
-        {this._maybeRenderSelection()}
-      </ScrollView>
-    );
-  }
-
-  _maybeRenderSelection = () => {
-    const { selection } = this.state;
-
+  const renderSelection = () => {
     if (!selection || selection.cancelled) {
       return;
     }
@@ -148,7 +96,80 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
       </View>
     );
   };
+
+  return (
+    <ScrollView style={styles.mainContainer}>
+      <SimpleActionDemo
+        title="requestMediaLibraryPermissionsAsync"
+        action={() => ImagePicker.requestMediaLibraryPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="getMediaLibraryPermissionsAsync"
+        action={() => ImagePicker.getMediaLibraryPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="requestCameraPermissionsAsync"
+        action={() => ImagePicker.requestCameraPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="getCameraPermissionsAsync"
+        action={() => ImagePicker.getCameraPermissionsAsync()}
+      />
+
+      <TitleSwitch
+        style={{ marginVertical: 8, marginTop: 20 }}
+        title="With base64"
+        setValue={(value) => setB64Enabled(value)}
+        value={base64Enabled}
+      />
+      <TitleSwitch
+        style={{ marginVertical: 8 }}
+        title="Compression"
+        setValue={(value) => setCompressionEnabled(value)}
+        value={compressionEnabled}
+      />
+
+      <ListButton
+        onPress={() => showCamera(ImagePicker.MediaTypeOptions.All)}
+        title="Take photo or video"
+      />
+      <ListButton
+        onPress={() => showCamera(ImagePicker.MediaTypeOptions.Images)}
+        title="Take photo"
+      />
+      <ListButton
+        onPress={() => showCamera(ImagePicker.MediaTypeOptions.Videos)}
+        title="Take video"
+      />
+      <ListButton
+        onPress={() => showCamera(ImagePicker.MediaTypeOptions.All, true)}
+        title="Open camera and edit"
+      />
+      <ListButton
+        onPress={() => showPicker(ImagePicker.MediaTypeOptions.All)}
+        title="Pick photo or video"
+      />
+      <ListButton
+        onPress={() => showPicker(ImagePicker.MediaTypeOptions.Images)}
+        title="Pick photo"
+      />
+      <ListButton
+        onPress={() => showPicker(ImagePicker.MediaTypeOptions.Videos)}
+        title="Pick video"
+      />
+      <ListButton
+        onPress={() => showPicker(ImagePicker.MediaTypeOptions.Images, true)}
+        title="Pick photo and edit"
+      />
+
+      {renderSelection()}
+    </ScrollView>
+  );
 }
+
+ImagePickerScreen.navigationOptions = {
+  title: 'ImagePicker',
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -188,3 +209,5 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
 });
+
+export default ImagePickerScreen;

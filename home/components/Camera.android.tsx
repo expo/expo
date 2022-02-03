@@ -106,7 +106,7 @@ const useComponentDimensions = (): [Dimensions | null, (e: any) => void] => {
   const [dimensions, setDimensions] = useState<Dimensions | null>(null);
 
   const onLayout = useCallback(
-    event => {
+    (event) => {
       const { width, height } = event.nativeEvent.layout;
       setDimensions({ width, height });
     },

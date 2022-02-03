@@ -3,6 +3,7 @@
 exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -43,6 +44,7 @@ Object {
 export function myFunc(foo: T | null) {
   return foo && foo.a && foo.a.b && foo.a.b.c;
 }",
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;
@@ -50,6 +52,7 @@ export function myFunc(foo: T | null) {
 exports[`lints: fixtures/typescript-analysis-01.ts 1`] = `
 Object {
   "errorCount": 1,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -72,6 +75,7 @@ for (const b in arr) {
   sum += b;
 }
 export { sum };",
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -79,6 +83,7 @@ export { sum };",
 exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -113,6 +118,7 @@ Object {
   return a || b;
 }
 ",
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;
@@ -120,6 +126,7 @@ Object {
 exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -138,6 +145,7 @@ Object {
   "source": "export function wat() {
   throw 3;
 }",
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;

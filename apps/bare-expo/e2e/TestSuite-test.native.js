@@ -9,7 +9,7 @@ let TESTS = [
   // 'FileSystem',
   // 'Font',
   'Permissions',
-  'Blur',
+  // 'Blur',
   'LinearGradient',
   'Constants',
   // 'Contacts',
@@ -36,11 +36,15 @@ describe('test-suite', () => {
     it(
       `passes ${testName}`,
       async () => {
+        const platform = device.getPlatform();
         await device.launchApp({
           newInstance: true,
           url: `bareexpo://test-suite/run?tests=${testName}`,
         });
-        await sleepAsync(100);
+
+        const launchWaitingTime = platform === 'ios' ? 100 : 3000;
+        await sleepAsync(launchWaitingTime);
+
         await detoxExpect(element(by.id('test_suite_container'))).toExist();
         try {
           await waitFor(element(by.id('test_suite_text_results')))
@@ -50,14 +54,18 @@ describe('test-suite', () => {
           // test hasn't completed within the timeout
           // continue and log the intermediate results
         }
-        const attributes = await element(by.id('test_suite_final_results')).getAttributes();
 
-        const input = attributes.text;
-
-        expectResults({
-          testName,
-          input,
-        });
+        if (platform === 'ios') {
+          const attributes = await element(by.id('test_suite_final_results')).getAttributes();
+          const input = attributes.text;
+          expectResults({
+            testName,
+            input,
+          });
+        } else {
+          // Platforms do no support `getAttributes()`, using text matching instead
+          await detoxExpect(element(by.id('test_suite_text_results'))).toHaveText('Complete: 0 tests failed.');
+        }
       },
       MIN_TIME * 1.5
     );

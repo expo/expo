@@ -1,1 +1,0 @@
-../../../FirebaseCore/Firebase/Core/Private/FIRAnalyticsConfiguration.h

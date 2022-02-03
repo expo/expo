@@ -1,19 +1,22 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import NextLink from 'next/link';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 type LinkProps = {
   href?: string;
 };
 
 const STYLES_EXTERNAL_LINK = css`
-  color: ${Constants.expoColors.primary[500]};
+  color: ${theme.link.default};
   font-size: inherit;
 
   :hover {
     text-decoration: underline;
+  }
+
+  code {
+    color: ${theme.link.default};
   }
 `;
 

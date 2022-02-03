@@ -28,6 +28,7 @@ import versioned.host.exp.exponent.modules.api.netinfo.types.ConnectionType;
 @SuppressWarnings("deprecation")
 public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver {
     private final ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
+    public static final String CONNECTIVITY_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
 
     public BroadcastReceiverConnectivityReceiver(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -37,7 +38,7 @@ public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver 
     @Override
     public void register() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(CONNECTIVITY_ACTION);
         getReactContext().registerReceiver(mConnectivityBroadcastReceiver, filter);
         mConnectivityBroadcastReceiver.setRegistered(true);
         updateAndSendConnectionType();
@@ -117,7 +118,7 @@ public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver 
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action != null && action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            if (action != null && action.equals(CONNECTIVITY_ACTION)) {
                 updateAndSendConnectionType();
             }
         }

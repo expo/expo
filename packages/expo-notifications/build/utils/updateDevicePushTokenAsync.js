@@ -1,6 +1,6 @@
 import { computeNextBackoffInterval } from '@ide/backoff';
-import { CodedError, Platform, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
+import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ServerRegistrationModule from '../ServerRegistrationModule';
 const updateDevicePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 export async function updateDevicePushTokenAsync(signal, token) {
@@ -10,7 +10,7 @@ export async function updateDevicePushTokenAsync(signal, token) {
             getDeviceIdAsync(),
         ]);
         const body = {
-            deviceId,
+            deviceId: deviceId.toLowerCase(),
             development,
             deviceToken: token.data,
             appId: Application.applicationId,
@@ -58,7 +58,7 @@ export async function updateDevicePushTokenAsync(signal, token) {
     let retriesCount = 0;
     const initialBackoff = 500; // 0.5 s
     const backoffOptions = {
-        maxBackoff: 2 * 60 * 1000,
+        maxBackoff: 2 * 60 * 1000, // 2 minutes
     };
     let nextBackoffInterval = computeNextBackoffInterval(initialBackoff, retriesCount, backoffOptions);
     while (shouldTry && !signal.aborted) {
@@ -69,7 +69,7 @@ export async function updateDevicePushTokenAsync(signal, token) {
         if (shouldTry && !signal.aborted) {
             nextBackoffInterval = computeNextBackoffInterval(initialBackoff, retriesCount, backoffOptions);
             retriesCount += 1;
-            await new Promise(resolve => setTimeout(resolve, nextBackoffInterval));
+            await new Promise((resolve) => setTimeout(resolve, nextBackoffInterval));
         }
     }
 }

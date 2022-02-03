@@ -1,7 +1,7 @@
 {
   "name": "expo-image",
   "title": "Expo Image",
-  "version": "1.0.0-alpha.0",
+  "version": "0.2.0",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -15,7 +15,7 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "homepage": "https://docs.expo.io/versions/latest/sdk/image/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/image/",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -26,11 +26,11 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "peerDependencies": {
-    "react": "^16.8.1",
-    "react-native": ">=0.60.0-rc.0 <1.0.x"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

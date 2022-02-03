@@ -2,13 +2,13 @@ import React from 'react';
 import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
 /**
  * This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
- * your screen. The App Store Guidelines require you to use this component to start the sign in
- * process instead of a custom button. You can customize the design of the button using the
- * properties. You should start the sign in process when the `onPress` property is called.
+ * your screen. The App Store Guidelines require you to use this component to start the
+ * authentication process instead of a custom button. Limited customization of the button is
+ * available via the provided properties.
  *
- * You should only attempt to render this if `AppleAuthentication.isAvailableAsync()` resolves to
- * true. This component will render nothing if it is not available and you will get a warning if
- * `__DEV__ === true`.
+ * You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#isavailableasync)
+ * resolves to `true`. This component will render nothing if it is not available, and you will get
+ * a warning in development mode (`__DEV__ === true`).
  *
  * The properties of this component extend from `View`; however, you should not attempt to set
  * `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against
@@ -16,9 +16,13 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * predefined color styles and the `cornerRadius` property to change the border radius of the
  * button.
  *
+ * Make sure to attach height and width via the style props as without these styles, the button will
+ * not appear on the screen.
+ *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-declare const AppleAuthenticationButton: React.FunctionComponent<AppleAuthenticationButtonProps>;
+declare const AppleAuthenticationButton: React.FC<AppleAuthenticationButtonProps>;
 export default AppleAuthenticationButton;
+//# sourceMappingURL=AppleAuthenticationButton.d.ts.map

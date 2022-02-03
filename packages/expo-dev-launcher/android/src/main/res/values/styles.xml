@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="Theme.DevLauncher.LauncherActivity" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:backgroundDimEnabled">false</item>
+    <item name="android:windowAnimationStyle">@null</item>
+  </style>
+
+  <style name="Theme.DevLauncher.ErrorActivity" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="colorPrimary">@color/dev_launcher_primary</item>
+    <item name="colorPrimaryDark">@color/dev_launcher_colorPrimaryDark</item>
+    <item name="colorAccent">@color/dev_launcher_colorAccentDark</item>
+    <item name="android:windowBackground">@color/dev_launcher_backgroundColor</item>
+  </style>
+</resources>

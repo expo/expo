@@ -4,3 +4,4 @@ declare const _default: {
     recoveredProps: string | null;
 };
 export default _default;
+//# sourceMappingURL=ExpoErrorRecovery.web.d.ts.map

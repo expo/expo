@@ -3,7 +3,7 @@
 #import <EXAppleAuthentication/EXAppleAuthenticationRequest.h>
 #import <EXAppleAuthentication/EXAppleAuthenticationMappings.h>
 
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXAppleAuthenticationRequest ()
 
@@ -82,13 +82,13 @@
   }
 
   NSDictionary *response = @{
-                         @"fullName": UMNullIfNil(fullName),
-                         @"email": UMNullIfNil(credential.email),
+                         @"fullName": EXNullIfNil(fullName),
+                         @"email": EXNullIfNil(credential.email),
                          @"user": credential.user,
                          @"realUserStatus": [EXAppleAuthenticationMappings exportRealUserStatus:credential.realUserStatus],
-                         @"state": UMNullIfNil(credential.state),
-                         @"authorizationCode": UMNullIfNil(authorizationCode),
-                         @"identityToken": UMNullIfNil(identityToken),
+                         @"state": EXNullIfNil(credential.state),
+                         @"authorizationCode": EXNullIfNil(authorizationCode),
+                         @"identityToken": EXNullIfNil(identityToken),
                          };
 
   if (_callback) {

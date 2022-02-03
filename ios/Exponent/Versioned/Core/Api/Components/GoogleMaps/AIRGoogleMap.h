@@ -54,6 +54,7 @@
 @property (nonatomic, assign) BOOL scrollEnabled;
 @property (nonatomic, assign) BOOL zoomEnabled;
 @property (nonatomic, assign) BOOL rotateEnabled;
+@property (nonatomic, assign) BOOL scrollDuringRotateOrZoomEnabled;
 @property (nonatomic, assign) BOOL pitchEnabled;
 @property (nonatomic, assign) BOOL zoomTapEnabled;
 @property (nonatomic, assign) BOOL showsUserLocation;
@@ -69,8 +70,8 @@
 - (void)didTapPolygon:(GMSPolygon *)polygon;
 - (void)didTapAtCoordinate:(CLLocationCoordinate2D)coordinate;
 - (void)didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate;
-- (void)didChangeCameraPosition:(GMSCameraPosition *)position;
-- (void)idleAtCameraPosition:(GMSCameraPosition *)position;
+- (void)didChangeCameraPosition:(GMSCameraPosition *)position isGesture:(BOOL)isGesture;
+- (void)idleAtCameraPosition:(GMSCameraPosition *)position isGesture:(BOOL)isGesture;
 - (void)didTapPOIWithPlaceID:(NSString *)placeID name:(NSString *) name location:(CLLocationCoordinate2D) location;
 - (NSArray *)getMapBoundaries;
 

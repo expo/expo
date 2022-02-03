@@ -1,1 +1,0 @@
-../../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h

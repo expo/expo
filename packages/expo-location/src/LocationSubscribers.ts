@@ -1,4 +1,4 @@
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
 import { LocationCallback, LocationHeadingCallback } from './Location.types';
@@ -82,7 +82,7 @@ export const HeadingSubscriber = new Subscriber<LocationHeadingCallback>(
 );
 
 /**
- * Necessary for some unit tests.
+ * @private Necessary for some unit tests.
  */
 export function _getCurrentWatchId(): number {
   return nextWatchId;

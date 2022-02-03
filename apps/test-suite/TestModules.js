@@ -1,7 +1,7 @@
 'use strict';
 
-import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 
 import ExponentTest from './ExponentTest';
 import { isDeviceFarm } from './utils/Environment';
@@ -70,11 +70,15 @@ export function getTestModules() {
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
     require('./tests/FirebaseRecaptcha'),
+    require('./tests/FirebaseJSSDKCompat'),
+    require('./tests/FirebaseJSSDK'),
+    require('./tests/ImageManipulator'),
     optionalRequire(() => require('./tests/SQLite'))
   );
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
+    modules.push(require('./tests/Hermes'));
   }
 
   if (global.DETOX) {
@@ -85,7 +89,7 @@ export function getTestModules() {
       require('./tests/SecureStore'),
       require('./tests/SMS'),
       require('./tests/StoreReview'),
-      require('./tests/NewNotifications')
+      require('./tests/Notifications')
     );
     return modules;
   }
@@ -95,7 +99,8 @@ export function getTestModules() {
       require('./tests/Contacts'),
       // require('./tests/SVG'),
       require('./tests/Localization'),
-      optionalRequire(() => require('./tests/NewNotifications')),
+      require('./tests/Recording'),
+      optionalRequire(() => require('./tests/Notifications')),
       LocationTestScreen
     );
 
@@ -122,11 +127,12 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/Payments')),
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
     optionalRequire(() => require('./tests/FBBannerAd')),
-    optionalRequire(() => require('./tests/NewNotifications'))
+    optionalRequire(() => require('./tests/Notifications')),
+    optionalRequire(() => require('./tests/NavigationBar')),
+    optionalRequire(() => require('./tests/SystemUI'))
   );
 
   if (!isDeviceFarm()) {
@@ -150,7 +156,6 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
-    modules.push(optionalRequire(() => require('./tests/Notifications')));
 
     modules.push(optionalRequire(() => require('./tests/Battery')));
     if (Constants.isDevice) {
@@ -163,8 +168,9 @@ export function getTestModules() {
     modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));
+
     // The Camera tests are flaky on iOS, i.e. they fail randomly
-    if (Constants.isDevice && Platform.OS === 'android') {
+    if (Constants.isDevice) {
       modules.push(CameraTestScreen);
     }
   }
@@ -172,5 +178,7 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
-  return modules.filter(Boolean).sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
+  return modules
+    .filter(Boolean)
+    .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 }

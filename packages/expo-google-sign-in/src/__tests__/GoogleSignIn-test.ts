@@ -1,3 +1,5 @@
+import { Platform } from 'expo-modules-core';
+
 import * as GoogleSignIn from '../GoogleSignIn';
 
 /* More tests are in test-suite */
@@ -16,19 +18,25 @@ it(`has constants`, () => {
 });
 
 it(`can invoke any function`, async () => {
-  GoogleSignIn.allowInClient();
-  GoogleSignIn.getCurrentUser();
-  await GoogleSignIn.signInSilentlyAsync();
-  await Promise.all([
-    GoogleSignIn.askForPlayServicesAsync(),
-    GoogleSignIn.getPlayServiceAvailability(),
-    GoogleSignIn.initAsync(),
-    GoogleSignIn.isSignedInAsync(),
-    GoogleSignIn.isConnectedAsync(),
-    GoogleSignIn.signInAsync(),
-    GoogleSignIn.signOutAsync(),
-    GoogleSignIn.disconnectAsync(),
-    GoogleSignIn.getCurrentUserAsync(),
-    GoogleSignIn.getPhotoAsync(),
-  ]);
+  try {
+    GoogleSignIn.allowInClient();
+    GoogleSignIn.getCurrentUser();
+    await GoogleSignIn.signInSilentlyAsync();
+    await Promise.all([
+      GoogleSignIn.askForPlayServicesAsync(),
+      GoogleSignIn.getPlayServiceAvailability(),
+      GoogleSignIn.initAsync(),
+      GoogleSignIn.isSignedInAsync(),
+      GoogleSignIn.isConnectedAsync(),
+      GoogleSignIn.signInAsync(),
+      GoogleSignIn.signOutAsync(),
+      GoogleSignIn.disconnectAsync(),
+      GoogleSignIn.getCurrentUserAsync(),
+      GoogleSignIn.getPhotoAsync(),
+    ]);
+  } catch (e) {
+    if (Platform.OS === 'web') {
+      expect(e.code).toBe('ERR_UNAVAILABLE');
+    }
+  }
 });

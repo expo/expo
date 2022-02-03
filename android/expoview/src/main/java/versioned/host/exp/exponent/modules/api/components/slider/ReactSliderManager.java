@@ -7,6 +7,7 @@
 
 package versioned.host.exp.exponent.modules.api.components.slider;
 
+import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -149,6 +150,9 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     view.setOnSeekBarChangeListener(null);
     view.setValue(value);
     view.setOnSeekBarChangeListener(ON_CHANGE_LISTENER);
+    if (view.isAccessibilityFocused() && Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+      view.setupAccessibility((int)value);
+    }
   }
 
   @ReactProp(name = "minimumValue", defaultDouble = 0d)
@@ -184,7 +188,12 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     if (color == null) {
       progress.clearColorFilter();
     } else {
-      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+        progress.setColorFilter(new PorterDuffColorFilter((int)color, PorterDuff.Mode.SRC_IN));
+      }
+      else {
+        progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      }
     }
   }
 
@@ -204,7 +213,12 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     if (color == null) {
       background.clearColorFilter();
     } else {
-      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+        background.setColorFilter(new PorterDuffColorFilter((int)color, PorterDuff.Mode.SRC_IN));
+      }
+      else {
+        background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      }
     }
   }
 

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/EXFont/ABI37_0_0EXFont/ABI37_0_0EXFontManager.h

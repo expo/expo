@@ -33,7 +33,7 @@
 static NSString *const RCTMapViewKey = @"MapView";
 
 
-@interface AIRGoogleMapManager() <GMSMapViewDelegate, GMSIndoorDisplayDelegate>
+@interface AIRGoogleMapManager() <GMSMapViewDelegate>
 {
   BOOL didCallOnMapReady;
 }
@@ -51,8 +51,6 @@ RCT_EXPORT_MODULE()
   map.isAccessibilityElement = NO;
   map.accessibilityElementsHidden = NO;
   map.settings.consumesGesturesInView = NO;
-  map.indoorDisplay.delegate = self;
-  self.map = map;
 
   UIPanGestureRecognizer *drag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleMapDrag:)];
   [drag setMinimumNumberOfTouches:1];
@@ -78,6 +76,7 @@ RCT_EXPORT_VIEW_PROPERTY(showsTraffic, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(zoomEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(rotateEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(scrollDuringRotateOrZoomEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(zoomTapEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
@@ -262,6 +261,7 @@ RCT_EXPORT_METHOD(animateToBearing:(nonnull NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(fitToElements:(nonnull NSNumber *)reactTag
+                  edgePadding:(nonnull NSDictionary *)edgePadding
                   animated:(BOOL)animated)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -276,9 +276,20 @@ RCT_EXPORT_METHOD(fitToElements:(nonnull NSNumber *)reactTag
 
       for (AIRGoogleMapMarker *marker in mapView.markers)
         bounds = [bounds includingCoordinate:marker.realMarker.position];
-
-      GMSCameraUpdate *cameraUpdate = [GMSCameraUpdate fitBounds:bounds withPadding:55.0f];
-
+        
+        GMSCameraUpdate* cameraUpdate;
+        
+        if ([edgePadding count] != 0) {
+            // Set Map viewport
+            CGFloat top = [RCTConvert CGFloat:edgePadding[@"top"]];
+            CGFloat right = [RCTConvert CGFloat:edgePadding[@"right"]];
+            CGFloat bottom = [RCTConvert CGFloat:edgePadding[@"bottom"]];
+            CGFloat left = [RCTConvert CGFloat:edgePadding[@"left"]];
+            
+            cameraUpdate = [GMSCameraUpdate fitBounds:bounds withEdgeInsets:UIEdgeInsetsMake(top, left, bottom, right)];
+        } else {
+            cameraUpdate = [GMSCameraUpdate fitBounds:bounds withPadding:55.0f];
+        }
       if (animated) {
         [mapView animateWithCameraUpdate: cameraUpdate];
       } else {
@@ -554,11 +565,11 @@ RCT_EXPORT_METHOD(setIndoorActiveLevelIndex:(nonnull NSNumber *)reactTag
       RCTLogError(@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view);
     } else {
       AIRGoogleMap *mapView = (AIRGoogleMap *)view;
-      if (!self.map.indoorDisplay) {
+      if (!mapView.indoorDisplay) {
         return;
       }
-      if ( levelIndex < [self.map.indoorDisplay.activeBuilding.levels count]) {
-        mapView.indoorDisplay.activeLevel = self.map.indoorDisplay.activeBuilding.levels[levelIndex];
+      if ( levelIndex < [mapView.indoorDisplay.activeBuilding.levels count]) {
+        mapView.indoorDisplay.activeLevel = mapView.indoorDisplay.activeBuilding.levels[levelIndex];
       }
     }
   }];
@@ -570,6 +581,10 @@ RCT_EXPORT_METHOD(setIndoorActiveLevelIndex:(nonnull NSNumber *)reactTag
 
 - (NSDictionary *)constantsToExport {
   return @{ @"legalNotice": [GMSServices openSourceLicenseInfo] };
+}
+
+- (void)mapView:(GMSMapView *)mapView willMove:(BOOL)gesture{
+    self.isGesture = gesture;
 }
 
 - (void)mapViewDidStartTileRendering:(GMSMapView *)mapView {
@@ -604,12 +619,12 @@ RCT_EXPORT_METHOD(setIndoorActiveLevelIndex:(nonnull NSNumber *)reactTag
 
 - (void)mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position {
   AIRGoogleMap *googleMapView = (AIRGoogleMap *)mapView;
-  [googleMapView didChangeCameraPosition:position];
+  [googleMapView didChangeCameraPosition:position isGesture:self.isGesture];
 }
 
 - (void)mapView:(GMSMapView *)mapView idleAtCameraPosition:(GMSCameraPosition *)position {
   AIRGoogleMap *googleMapView = (AIRGoogleMap *)mapView;
-  [googleMapView idleAtCameraPosition:position];
+  [googleMapView idleAtCameraPosition:position isGesture:self.isGesture];
 }
 
 - (UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker {
@@ -639,63 +654,6 @@ RCT_EXPORT_METHOD(setIndoorActiveLevelIndex:(nonnull NSNumber *)reactTag
 - (void)mapView:(GMSMapView *)mapView didDragMarker:(GMSMarker *)marker {
   AIRGMSMarker *aMarker = (AIRGMSMarker *)marker;
   [aMarker.fakeMarker didDragMarker:aMarker];
-}
-
-- (void) didChangeActiveBuilding: (nullable GMSIndoorBuilding *) building {
-  if (!building) {
-    if (!self.map.onIndoorBuildingFocused) {
-      return;
-    }
-    self.map.onIndoorBuildingFocused(@{
-                                      @"IndoorBuilding": @{
-                                          @"activeLevelIndex": @0,
-                                          @"underground": @false,
-                                          @"levels": [[NSMutableArray alloc]init]
-                                      }
-    });
-  }
-  NSInteger i = 0;
-  NSMutableArray *arrayLevels = [[NSMutableArray alloc]init];
-  for (GMSIndoorLevel *level in building.levels) {
-    [arrayLevels addObject: @{
-                              @"index": @(i),
-                              @"name" : level.name,
-                              @"shortName" : level.shortName,
-                            }
-    ];
-    i++;
-  }
-  if (!self.map.onIndoorBuildingFocused) {
-    return;
-  }
-  self.map.onIndoorBuildingFocused(@{
-                                    @"IndoorBuilding": @{
-                                        @"activeLevelIndex": @(building.defaultLevelIndex),
-                                        @"underground": @(building.underground),
-                                        @"levels": arrayLevels
-                                    }
-                                  }
-  );
-}
-
-- (void) didChangeActiveLevel: (nullable GMSIndoorLevel *) 	level {
-  if (!self.map.onIndoorLevelActivated || !self.map.indoorDisplay  || !level) {
-    return;
-  }
-  NSInteger i = 0;
-  for (GMSIndoorLevel *buildingLevel in self.map.indoorDisplay.activeBuilding.levels) {
-    if (buildingLevel.name == level.name && buildingLevel.shortName == level.shortName) {
-      break;
-    }
-    i++;
-  }
-  self.map.onIndoorLevelActivated(@{
-                                  @"IndoorLevel": @{
-                                    @"activeLevelIndex": @(i),
-                                    @"name": level.name,
-                                    @"shortName": level.shortName
-                                  }
-  });
 }
 
 - (void)mapView:(GMSMapView *)mapView

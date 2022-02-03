@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -27,7 +27,7 @@ export default class Photo extends React.Component<
 
   toggleSelection = () => {
     this.setState(
-      state => ({ selected: !state.selected }),
+      (state) => ({ selected: !state.selected }),
       () => this.props.onSelectionToggle(this.props.uri, this.state.selected)
     );
   };

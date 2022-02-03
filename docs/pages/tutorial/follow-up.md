@@ -42,15 +42,15 @@ This is the way you position and size the components on your screen. Learn more 
 
 ## Configuring your app with app.json
 
-We covered the basic minimal configuration, but you learn more about about customizing your [app icon](../guides/app-icons.md) and [splash screen](../guides/splash-screens.md) in their respective guides. Learn more about other properties you can configure in [app.json property reference](../workflow/configuration.md)
+We covered the basic minimal configuration, but you learn more about customizing your [app icon](../guides/app-icons.md) and [splash screen](../guides/splash-screens.md) in their respective guides. Learn more about other properties you can configure in [app.json property reference](../workflow/configuration.md)
 
 ### How to verify your Learning
 
-- You will typically be referred back to `app.json` as part of guides that explain how to accomplish specific tasks, as such there isn't much you need to learn beyond its existence and how to use specific properties as the need arises.
+- You will typically be referred back to **app.json** as part of guides that explain how to accomplish specific tasks, as such there isn't much you need to learn beyond its existence and how to use specific properties as the need arises.
 
 <br />
 
-# Topics that we didn't cover and you will soon care about
+# Topics that you will soon care about
 
 ## Standalone apps & deployment
 

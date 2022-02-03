@@ -2,7 +2,7 @@
 
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
 #import <Foundation/Foundation.h>
-#import <UMCore/UMInternalModule.h>
+#import <ExpoModulesCore/EXInternalModule.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
@@ -13,14 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXUpdatesBindingDelegate
 
-- (EXUpdatesConfig *)configForExperienceId:(NSString *)experienceId;
-- (id<EXUpdatesSelectionPolicy>)selectionPolicyForExperienceId:(NSString *)experienceId;
-- (nullable EXUpdatesUpdate *)launchedUpdateForExperienceId:(NSString *)experienceId;
-- (nullable NSDictionary *)assetFilesMapForExperienceId:(NSString *)experienceId;
-- (BOOL)isUsingEmbeddedAssetsForExperienceId:(NSString *)experienceId;
-- (BOOL)isStartedForExperienceId:(NSString *)experienceId;
-- (BOOL)isEmergencyLaunchForExperienceId:(NSString *)experienceId;
-- (void)requestRelaunchForExperienceId:(NSString *)experienceId withCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion;
+- (EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey;
+- (EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey;
+- (nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey;
+- (nullable NSDictionary *)assetFilesMapForScopeKey:(NSString *)scopeKey;
+- (BOOL)isUsingEmbeddedAssetsForScopeKey:(NSString *)scopeKey;
+- (BOOL)isStartedForScopeKey:(NSString *)scopeKey;
+- (BOOL)isEmergencyLaunchForScopeKey:(NSString *)scopeKey;
+- (void)requestRelaunchForScopeKey:(NSString *)scopeKey withCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion;
 
 @end
 
@@ -31,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXUpdatesBinding : EXUpdatesService <UMInternalModule>
+@interface EXUpdatesBinding : EXUpdatesService <EXInternalModule>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId updatesKernelService:(id<EXUpdatesBindingDelegate>)updatesKernelService databaseKernelService:(id<EXUpdatesDatabaseBindingDelegate>)databaseKernelService;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey updatesKernelService:(id<EXUpdatesBindingDelegate>)updatesKernelService databaseKernelService:(id<EXUpdatesDatabaseBindingDelegate>)databaseKernelService;
 
 @end
 

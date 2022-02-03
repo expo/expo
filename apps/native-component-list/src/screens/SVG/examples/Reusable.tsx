@@ -4,19 +4,8 @@ import * as Svg from 'react-native-svg';
 
 import Example from './Example';
 
-const {
-  Defs,
-  G,
-  Path,
-  Use,
-  Symbol,
-  Circle,
-  ClipPath,
-  LinearGradient,
-  RadialGradient,
-  Stop,
-  Rect,
-} = Svg;
+const { Defs, G, Path, Use, Symbol, Circle, ClipPath, LinearGradient, RadialGradient, Stop, Rect } =
+  Svg;
 
 class UseExample extends React.Component {
   static title = 'Reuse svg code';

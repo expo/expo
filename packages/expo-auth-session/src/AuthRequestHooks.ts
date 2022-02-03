@@ -14,9 +14,16 @@ export function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discover
   const [discovery, setDiscovery] = useState<DiscoveryDocument | null>(null);
 
   useEffect(() => {
-    resolveDiscoveryAsync(issuerOrDiscovery).then(discovery => {
-      setDiscovery(discovery);
+    let isAllowed = true;
+    resolveDiscoveryAsync(issuerOrDiscovery).then((discovery) => {
+      if (isAllowed) {
+        setDiscovery(discovery);
+      }
     });
+
+    return () => {
+      isAllowed = false;
+    };
   }, [issuerOrDiscovery]);
 
   return discovery;
@@ -29,9 +36,10 @@ export function useLoadedAuthRequest(
 ): AuthRequest | null {
   const [request, setRequest] = useState<AuthRequest | null>(null);
   const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
-  const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [
-    config.extraParams,
-  ]);
+  const extraParamsString = useMemo(
+    () => JSON.stringify(config.extraParams || {}),
+    [config.extraParams]
+  );
   useEffect(
     () => {
       let isMounted = true;
@@ -40,7 +48,6 @@ export function useLoadedAuthRequest(
         const request = new AuthRequestInstance(config);
         request.makeAuthUrlAsync(discovery).then(() => {
           if (isMounted) {
-            // @ts-ignore
             setRequest(request);
           }
         });

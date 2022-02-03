@@ -22,11 +22,15 @@ export default class MediaDetailsScreen extends React.Component<Props> {
 
   state = {
     details: null,
+    detailsWithoutDownloadingFromNetwork: null,
   };
 
   componentDidMount() {
     const { asset } = this.props.route.params;
-    MediaLibrary.getAssetInfoAsync(asset).then(details => {
+    MediaLibrary.getAssetInfoAsync(asset, { shouldDownloadFromNetwork: false }).then((details) => {
+      this.setState({ detailsWithoutDownloadingFromNetwork: details });
+    });
+    MediaLibrary.getAssetInfoAsync(asset).then((details) => {
       this.setState({ details });
     });
   }
@@ -95,7 +99,7 @@ export default class MediaDetailsScreen extends React.Component<Props> {
   }
 
   render() {
-    const { details } = this.state;
+    const { details, detailsWithoutDownloadingFromNetwork } = this.state;
     const { asset, album } = this.props.route.params!;
 
     return (
@@ -131,6 +135,13 @@ export default class MediaDetailsScreen extends React.Component<Props> {
           <View style={styles.details}>
             <HeadingText>MediaLibrary.getAssetInfoAsync(assetId)</HeadingText>
             <MonoText>{JSON.stringify(details, null, 2)}</MonoText>
+          </View>
+        )}
+
+        {detailsWithoutDownloadingFromNetwork && (
+          <View style={styles.details}>
+            <HeadingText>{`MediaLibrary.getAssetInfoAsync(assetId, { shouldDownloadFromNetwork: false })`}</HeadingText>
+            <MonoText>{JSON.stringify(detailsWithoutDownloadingFromNetwork, null, 2)}</MonoText>
           </View>
         )}
       </ScrollView>

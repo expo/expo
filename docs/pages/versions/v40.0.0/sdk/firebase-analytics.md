@@ -26,13 +26,13 @@ When using the web-platform, you'll also need to run `expo install firebase`, wh
 To use this package, the native Firebase configurations need to be added to your app.
 [Please follow this guide on how to set up native Firebase.](/guides/setup-native-firebase)
 
-## Expo client: Limitations & configuration
+## Expo Go: Limitations & configuration
 
-The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since the standard Expo client loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
+The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since the standard Expo Go loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
 
-Instead, the standard Expo client relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use `logEvent` to record events.
+Instead, the standard Expo Go relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use `logEvent` to record events.
 
-You may want to use Firebase Analytics in Expo client to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To set this up, ensure that the Firebase web configuration is set in `app.json` and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
+You may want to use Firebase Analytics in Expo Go to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To set this up, ensure that the Firebase web configuration is set in **app.json** and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
 
 **app.json**
 
@@ -52,7 +52,7 @@ You may want to use Firebase Analytics in Expo client to verify that you are log
 }
 ```
 
-> This limitation only applies to the Expo client in the App/Play store, standalone builds, custom clients & bare apps support the full native Firebase Analytics experience.
+> This limitation only applies to the Expo Go app in the App and Play stores; standalone builds, custom clients & bare apps support the full native Firebase Analytics experience.
 
 ## Optional: Enable AdSupport in Bare Workflow
 
@@ -167,7 +167,7 @@ identify the areas in your app where users spend their time and how they interac
 #### Example
 
 ```js
-await Analytics.setCurrentScreen('GiveGithubStarsScreen');
+await Analytics.setCurrentScreen('GiveGitHubStarsScreen');
 ```
 
 ### setSessionTimeoutDuration
@@ -281,12 +281,12 @@ await Analytics.setUserProperties({
 setUnavailabilityLogging(isEnabled: boolean): void
 ```
 
-Enables or disables the warning and log messages when using Firebase Analytics on the Expo client.
+Enables or disables the warning and log messages when using Firebase Analytics on the Expo Go app.
 
-Firebase Analytics is not available on the Expo client and therefore logs the requests to the console
+Firebase Analytics is not available on the Expo Go app and therefore logs the requests to the console
 for development purposes. To test Firebase Analytics, create a stand-alone build or custom client.
 This function can be called to disable the warning and log messages when using Firebase Analytics
-on the Expo client.
+on Expo Go.
 
 #### Parameters
 
@@ -297,7 +297,7 @@ on the Expo client.
 #### Example
 
 ```ts
-// Disable the warning & log messages on the Expo client
+// Disable the warning & log messages on Expo Go
 Analytics.setUnavailabilityLogging(false);
 ```
 
@@ -307,9 +307,9 @@ Analytics.setUnavailabilityLogging(false);
 setDebugModeEnabled(isEnabled: boolean): Promise<void>
 ```
 
-Enables debug mode _(Expo client only)_ so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+Enables debug mode _(Expo Go only)_ so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
 
-This option is **only available on the standard Expo client**. When using a standalone build, the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
+This option is **only available on the standard Expo Go**. When using a standalone build, the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
 
 # Examples
 

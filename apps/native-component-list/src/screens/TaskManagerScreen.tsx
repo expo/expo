@@ -2,7 +2,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
@@ -10,7 +10,7 @@ import MonoText from '../components/MonoText';
 
 export default function TaskManagerScreen(props: {
   navigation: StackNavigationProp<{
-    BackgroundLocationMap: undefined;
+    BackgroundLocation: undefined;
     Geofencing: undefined;
     BackgroundFetch: undefined;
   }>;
@@ -24,7 +24,7 @@ export default function TaskManagerScreen(props: {
 
   const onFocus = React.useCallback(() => {
     let isActive = true;
-    TaskManager.getRegisteredTasksAsync().then(tasks => {
+    TaskManager.getRegisteredTasksAsync().then((tasks) => {
       if (isActive) setTasks(tasks);
     });
     return () => (isActive = false);
@@ -73,11 +73,15 @@ export default function TaskManagerScreen(props: {
   const renderNavigationButtons = () => {
     return (
       <View>
+        <Text>
+          Note: this screen may not work properly for you, work is needed to investigate further and
+          improve it
+        </Text>
         <Button
           style={styles.button}
           buttonStyle={{ backgroundColor: 'green' }}
           title="Go to background location screen"
-          onPress={() => props.navigation.navigate('BackgroundLocationMap')}
+          onPress={() => props.navigation.navigate('BackgroundLocation')}
         />
         <Button
           style={styles.button}

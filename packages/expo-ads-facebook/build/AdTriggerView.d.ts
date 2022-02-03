@@ -13,3 +13,4 @@ export default class AdTriggerView<P extends TouchableProps = React.ComponentPro
     _renderDefaultInteractiveComponent(props: P): React.ReactElement<P>;
 }
 export {};
+//# sourceMappingURL=AdTriggerView.d.ts.map

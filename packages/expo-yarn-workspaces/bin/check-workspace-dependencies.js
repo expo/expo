@@ -6,18 +6,18 @@ const process = require('process');
 const spawnSync = require('../common/cross-spawn-sync');
 
 function checkWorkspaceDependencies() {
-  let workspacesInfo = getWorkspacesInfo();
+  const workspacesInfo = getWorkspacesInfo();
   if (!workspacesInfo) {
     console.error(`Couldn't generate Yarn's workspace root information.`);
     return false;
   }
 
-  let count = countMismatchedWorkspaceDependencies(workspacesInfo);
+  const count = countMismatchedWorkspaceDependencies(workspacesInfo);
   if (count === 0) {
     console.log(`✅  Verified that all workspace dependencies are symlinked.`);
     return true;
   } else {
-    let singular = count === 1;
+    const singular = count === 1;
     console.warn(
       `⚠️  Found ${count} ${
         singular ? 'dependency' : 'dependencies'
@@ -25,17 +25,17 @@ function checkWorkspaceDependencies() {
     );
   }
 
-  for (let workspaceName in workspacesInfo) {
-    let workspaceInfo = workspacesInfo[workspaceName];
-    let { mismatchedWorkspaceDependencies } = workspaceInfo;
+  for (const workspaceName in workspacesInfo) {
+    const workspaceInfo = workspacesInfo[workspaceName];
+    const { mismatchedWorkspaceDependencies } = workspaceInfo;
     if (mismatchedWorkspaceDependencies.length) {
-      let singular = mismatchedWorkspaceDependencies.length === 1;
+      const singular = mismatchedWorkspaceDependencies.length === 1;
       console.warn(
         `   ${workspaceName} has ${mismatchedWorkspaceDependencies.length} ${
           singular ? 'dependency' : 'dependencies'
         } that ${singular ? `isn't` : `aren't`} symlinked:`
       );
-      for (let dependency of mismatchedWorkspaceDependencies) {
+      for (const dependency of mismatchedWorkspaceDependencies) {
         console.warn(`     ${dependency}`);
       }
     }
@@ -45,7 +45,7 @@ function checkWorkspaceDependencies() {
 }
 
 function getWorkspacesInfo() {
-  let result = spawnSync('yarn', ['--silent', 'workspaces', 'info']);
+  const result = spawnSync('yarn', ['--silent', 'workspaces', 'info']);
 
   if (result.error) {
     console.error(`Could not run yarn: ${result.error.message}`);
@@ -59,8 +59,8 @@ function getWorkspacesInfo() {
 
   if (result.status !== 0) {
     console.error(`yarn exited with status code ${result.status}:`);
-    let stdout = result.stdout.toString();
-    let stderr = result.stderr.toString();
+    const stdout = result.stdout.toString();
+    const stderr = result.stderr.toString();
     if (stdout) {
       console.error(stdout);
     }
@@ -74,8 +74,8 @@ function getWorkspacesInfo() {
     return JSON.parse(result.stdout);
   } catch (e) {
     console.error(`yarn did not print valid JSON:`);
-    let stdout = result.stdout.toString();
-    let stderr = result.stderr.toString();
+    const stdout = result.stdout.toString();
+    const stderr = result.stderr.toString();
     if (stdout) {
       console.error(stdout);
     }
@@ -88,7 +88,7 @@ function getWorkspacesInfo() {
 
 function countMismatchedWorkspaceDependencies(workspacesInfo) {
   let count = 0;
-  for (let workspaceName in workspacesInfo) {
+  for (const workspaceName in workspacesInfo) {
     count += workspacesInfo[workspaceName].mismatchedWorkspaceDependencies.length;
   }
   return count;

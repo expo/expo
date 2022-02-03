@@ -188,7 +188,7 @@ export default class EventsScreen extends React.Component<Props, State> {
   render() {
     const events = this.state.events.length ? (
       <View>
-        {this.state.events.map(event => (
+        {this.state.events.map((event) => (
           <EventRow
             event={event}
             key={`${event.id}${event.startDate}`}

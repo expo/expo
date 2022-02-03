@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import <Firebase/Firebase.h>
 
 @interface EXFaceEncoder : NSObject
 
@@ -16,6 +15,6 @@
 - (instancetype)initWithRotationTransform:(EXFaceDetectionAngleTransformBlock)transform;
 - (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(EXFaceDetectionAngleTransformBlock)rotationTransform;
 
-- (NSDictionary *)encode:(FIRVisionFace *)face;
+- (NSDictionary *)encode:(MLKFace *)face;
 
 @end

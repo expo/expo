@@ -1,4 +1,6 @@
 import LocalStorage from '../storage/LocalStorage';
+import { HistoryItem } from '../types';
+import { Manifest } from '../types/Manifest';
 import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
@@ -21,10 +23,11 @@ export default {
     };
   },
 
-  addHistoryItem(manifestUrl: string, manifest: Record<string, any>): AppThunk {
+  addHistoryItem(manifestUrl: string, manifest: Manifest): AppThunk {
     return async (dispatch: AppDispatch) => {
-      const historyItem = {
-        bundleUrl: manifest.bundleUrl,
+      const historyItem: HistoryItem = {
+        // TODO(wschurman): audit for new manifests
+        bundleUrl: manifest && 'bundleUrl' in manifest ? manifest.bundleUrl : '',
         manifestUrl,
         manifest,
         url: manifestUrl,
@@ -32,7 +35,7 @@ export default {
       };
 
       let history = await LocalStorage.getHistoryAsync();
-      history = history.filter(item => item.url !== historyItem.url);
+      history = history.filter((item) => item.url !== historyItem.url);
       history.unshift(historyItem);
       await LocalStorage.saveHistoryAsync(history);
 

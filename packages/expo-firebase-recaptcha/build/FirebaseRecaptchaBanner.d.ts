@@ -5,3 +5,4 @@ interface Props extends ViewProps {
 }
 export default function FirebaseRecaptchaBanner(props: Props): JSX.Element;
 export {};
+//# sourceMappingURL=FirebaseRecaptchaBanner.d.ts.map

@@ -1,5 +1,5 @@
 ---
-title: Using Custom Fonts
+title: Fonts
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
@@ -19,8 +19,14 @@ $ expo install expo-font @expo-google-fonts/inter
 
 After that, you can integrate this in your project by using the `useFonts` hook in the root of your app.
 
-```js
+<SnackInline
+label="Google Fonts"
+dependencies={['expo-app-loading', '@expo-google-fonts/inter']}>
+
+```jsx
 import React from 'react';
+import { View, Text } from 'react-native';
+import AppLoading from 'expo-app-loading';
 import { useFonts, Inter_900Black } from '@expo-google-fonts/inter';
 
 export default function App() {
@@ -32,9 +38,15 @@ export default function App() {
     return <AppLoading />;
   }
 
-  return <Text style={{ fontFamily: 'Inter_900Black' }}>Inter Black</Text>;
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontFamily: 'Inter_900Black', fontSize: 40 }}>Inter Black</Text>
+    </View>
+  );
 }
 ```
+
+</SnackInline>
 
 ## A minimal but complete working example
 
@@ -42,15 +54,15 @@ To create a new project including this example, run `npx create-react-native-app
 
 <SnackInline
 label="Custom Font"
-dependencies={['expo-font']}
+dependencies={['expo-font', 'expo-app-loading']}
 files={{
     'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
   }}>
 
-```js
+```jsx
 import React from 'react';
 import { Text, View } from 'react-native';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 
 export default props => {
@@ -60,14 +72,14 @@ export default props => {
 
   if (!fontsLoaded) {
     return <AppLoading />;
-  } else {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>Inter Black</Text>
-        <Text style={{ fontSize: 40 }}>Platform Default</Text>
-      </View>
-    );
   }
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>Inter Black</Text>
+      <Text style={{ fontSize: 40 }}>Platform Default</Text>
+    </View>
+  );
 };
 ```
 
@@ -75,7 +87,7 @@ export default props => {
 
 When you load it on your device, you should see something like this:
 
-<img src="/static/images/font-example-custom-font.png" style={{maxWidth: 305}} />
+<img src="/static/images/font-example-custom-font.jpg" style={{maxWidth: 305}} />
 
 Inter Black is very bold and dark and pretty distinctive so you should be able to tell if you're able to
 get the example working right, or if something is wrong. If the platform default font looks a little different
@@ -92,7 +104,7 @@ one of those formats.
 
 These are the only font formats that work consistently in Expo across web, Android, and iOS.
 
-If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and `.otf` files are often smaller than `.ttf` files and sometimes OTF files will render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
+If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and **.otf** files are often smaller than **.ttf** files and sometimes OTF files will render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
 
 ### Beyond OTF and TTF
 
@@ -158,12 +170,12 @@ To do this, just replace the `require('./assets/fonts/MyFont.otf')` with the URL
 
 Here is a minimal, complete example.
 
-<SnackInline label='Remote Font' dependencies={['expo-font']}>
+<SnackInline label='Remote Font' dependencies={['expo-font', 'expo-app-loading']}>
 
-```js
+```jsx
 import React from 'react';
 import { Text, View } from 'react-native';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 
 export default props => {
@@ -172,14 +184,14 @@ export default props => {
   });
   if (!fontsLoaded) {
     return <AppLoading />;
-  } else {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
-        <Text>Platform Default</Text>
-      </View>
-    );
   }
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
+      <Text>Platform Default</Text>
+    </View>
+  );
 };
 ```
 
@@ -193,15 +205,15 @@ If you don't want to use the `useFonts` hook (for example, maybe you prefer clas
 
 <SnackInline
 label="Font loadAsync"
-dependencies={['expo-font']}
+dependencies={['expo-font', 'expo-app-loading']}
 files={{
     'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
   }}>
 
-```js
+```jsx
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 
 let customFonts = {
@@ -224,17 +236,17 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (this.state.fontsLoaded) {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Platform Default</Text>
-          <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
-          <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
-        </View>
-      );
-    } else {
+    if (!this.state.fontsLoaded) {
       return <AppLoading />;
     }
+
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Platform Default</Text>
+        <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
+        <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
+      </View>
+    );
   }
 }
 ```

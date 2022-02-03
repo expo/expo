@@ -1,4 +1,4 @@
-import { useRoute, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Share, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -7,20 +7,20 @@ import * as UrlUtils from '../utils/UrlUtils';
 import * as Icons from './Icons';
 
 export default function ShareProjectButton(
-  props: Partial<React.ComponentProps<typeof TouchableOpacity>>
+  props: Partial<React.ComponentProps<typeof TouchableOpacity>> & {
+    fullName: string;
+  }
 ) {
   const theme = useTheme();
-  const route = useRoute();
   const onPress = React.useCallback(() => {
-    const { username, slug } = route.params as any;
-    const url = `exp://${Config.api.host}/@${username}/${slug}`;
+    const url = `exp://${Config.api.host}/${props.fullName}`;
     const message = UrlUtils.normalizeUrl(url);
     Share.share({
       title: url,
       message,
       url: message,
     });
-  }, [route.params]);
+  }, [props.fullName]);
 
   return (
     <TouchableOpacity style={[styles.container, props.style]} onPress={onPress}>

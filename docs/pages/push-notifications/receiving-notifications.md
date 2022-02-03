@@ -86,3 +86,11 @@ On Android, users can set certain OS-level settings (**usually** revolving aroun
 Event listeners added using `addNotificationReceivedListener` and `addNotificationResponseReceivedListener` will receive an object when a notification is received or interacted with, respectively. See the [documentation](../versions/latest/sdk/notifications.md#notification) for information on these objects.
 
 There are two different subscriptions for this so that you can easily address cases where a notification comes in while your app is open and foregrounded, **and** cases where a notification comes in while your app is backgrounded or closed, and the user taps on the notification.
+
+## Next steps
+
+Now that you're able to send & receive notifications, read through all of [`expo-notifications`'s feature set](../versions/latest/sdk/notifications.md) to get a sense of the possibilities!
+
+## See also
+
+- Having trouble? Visit [Expo's notification FAQ page](./faq.md)

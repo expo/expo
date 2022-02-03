@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android emulator />
 
 ## Installation
 
@@ -37,7 +37,7 @@ Starts the specified activity. The method will return a promise which resolves w
 
 #### Arguments
 
-- **activityAction (_string_)** -- The action to be performed, e.g. `IntentLauncher.ACTION_WIRELESS_SETTINGS`. There are a few pre-defined constants you can use for this parameter. You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/master/packages/expo-intent-launcher/src/IntentLauncher.ts). **Required**
+- **activityAction (_string_)** -- The action to be performed, e.g. `IntentLauncher.ACTION_WIRELESS_SETTINGS`. There are a few pre-defined constants you can use for this parameter. You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/tree/main/packages/expo-intent-launcher/src/IntentLauncher.ts). **Required**
 - **intentParams ([`IntentLauncherParams`](#typeintentlauncherparams))** -- An object of intent parameters.
 
 #### Returns

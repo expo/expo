@@ -27,7 +27,7 @@ export async function test(t) {
           t.expect(asset.name).toMatch(new RegExp(`${name}.*\.${type}`));
           t.expect(asset.type).toBe(type);
           console.log(asset);
-          Object.keys(more).forEach(member => t.expect(asset[member]).toBe(more[member]));
+          Object.keys(more).forEach((member) => t.expect(asset[member]).toBe(more[member]));
         });
 
         t.it("when downloaded, has a 'file://' localUri", async () => {

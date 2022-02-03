@@ -59,22 +59,34 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
           expect(DEFAULT_APP_OPTIONS).toBeDefined();
           expect(DEFAULT_APP_OPTIONS.appId).not.toBeNull();
           expect(DEFAULT_APP_OPTIONS.appId.indexOf(`:${Platform.OS}:`)).toBeGreaterThan(0);
-          expect(DEFAULT_APP_OPTIONS.messagingSenderId).not.toBeNull();
-          expect(DEFAULT_APP_OPTIONS.messagingSenderId.length).toBeGreaterThan(10);
-          expect(DEFAULT_APP_OPTIONS.apiKey).not.toBeNull();
-          expect(DEFAULT_APP_OPTIONS.apiKey.length).toBeGreaterThan(30);
-          expect(DEFAULT_APP_OPTIONS.projectId).not.toBeNull();
-          expect(DEFAULT_APP_OPTIONS.projectId.length).toBeGreaterThan(2);
+
+          if (Platform.OS === 'android') {
+            // These are empty values for default app in Firebase Android SDK.
+            // Just to check the keys are existed.
+            expect(DEFAULT_APP_OPTIONS.messagingSenderId).toBeDefined();
+            expect(DEFAULT_APP_OPTIONS.apiKey).toBeDefined();
+            expect(DEFAULT_APP_OPTIONS.projectId).toBeDefined();
+            expect(DEFAULT_APP_OPTIONS.storageBucket).toBeDefined();
+            expect(DEFAULT_APP_OPTIONS.databaseURL).toBeDefined();
+          } else {
+            expect(DEFAULT_APP_OPTIONS.messagingSenderId).not.toBeNull();
+            expect(DEFAULT_APP_OPTIONS.messagingSenderId.length).toBeGreaterThan(10);
+            expect(DEFAULT_APP_OPTIONS.apiKey).not.toBeNull();
+            expect(DEFAULT_APP_OPTIONS.apiKey.length).toBeGreaterThan(30);
+            expect(DEFAULT_APP_OPTIONS.projectId).not.toBeNull();
+            expect(DEFAULT_APP_OPTIONS.projectId.length).toBeGreaterThan(2);
+            expect(DEFAULT_APP_OPTIONS.storageBucket).not.toBeNull();
+            expect(DEFAULT_APP_OPTIONS.storageBucket.indexOf('appspot.com')).toBeGreaterThan(0);
+            expect(DEFAULT_APP_OPTIONS.databaseURL).not.toBeNull();
+            expect(DEFAULT_APP_OPTIONS.databaseURL.indexOf('firebaseio.com')).toBeGreaterThan(0);
+          }
+
           if (Platform.OS === 'ios') {
             expect(DEFAULT_APP_OPTIONS.clientId).not.toBeNull();
             expect(DEFAULT_APP_OPTIONS.clientId.indexOf('googleusercontent.com')).toBeGreaterThan(
               0
             );
           }
-          expect(DEFAULT_APP_OPTIONS.storageBucket).not.toBeNull();
-          expect(DEFAULT_APP_OPTIONS.storageBucket.indexOf('appspot.com')).toBeGreaterThan(0);
-          expect(DEFAULT_APP_OPTIONS.databaseURL).not.toBeNull();
-          expect(DEFAULT_APP_OPTIONS.databaseURL.indexOf('firebaseio.com')).toBeGreaterThan(0);
         } catch (e) {
           error = e;
         }

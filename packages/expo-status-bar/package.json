@@ -1,6 +1,6 @@
 {
   "name": "expo-status-bar",
-  "version": "1.0.3",
+  "version": "1.2.0",
   "description": "Provides the same interface as the React Native StatusBar API, but with slightly different defaults to work great in Expo environments.",
   "main": "build/StatusBar.js",
   "types": "build/StatusBar.d.ts",
@@ -28,9 +28,9 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/status-bar/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
   "devDependencies": {
-    "expo-module-scripts": "^1.2.0"
+    "expo-module-scripts": "^2.0.0"
   },
   "jest": {
     "preset": "expo-module-scripts/enzyme"

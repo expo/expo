@@ -3,14 +3,16 @@ title: FileSystem
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-file-system'
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
+**`expo-file-system`** provides access to a file system stored locally on the device. Within Expo Go, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
 
-<img src="/static/images/sdk/file-system/file-system-diagram.png" style={{maxWidth: 850, maxHeight: 600, marginBottom:"5em", display: "block", marginLeft: "auto", marginRight: "auto"}} />
+<!-- TODO: update this image so we don't have to force a white background on it -->
+<ImageSpotlight alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"  src="/static/images/sdk/file-system/file-system-diagram.png" style={{ maxWidth: 850, maxHeight: 600 }} containerStyle={{ backgroundColor: "#fff" }} />
 
 <PlatformsSection android emulator ios simulator />
 
@@ -87,9 +89,10 @@ try {
 <SnackInline
 label="Managing Giphy's"
 templateId="filesystem/App"
+dependencies={['expo-file-system']}
 files={{
-    'GifFetching.ts': 'filesystem/GifFetching.ts',
-    'GifManagement.ts': 'filesystem/GifManagement.ts'
+    'GifFetching.ts': 'filesystem/gifFetching.ts',
+    'GifManagement.ts': 'filesystem/gifManagement.ts'
   }}>
 
 ```typescript
@@ -198,11 +201,11 @@ These values can be used to define how sessions work on iOS.
 
 - **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
 
-### `FileSystem.FileSystemUploadOptions`
+### `FileSystem.FileSystemUploadType`
 
-- **FileSystem.FileSystemUploadOptions.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
+- **FileSystem.FileSystemUploadType.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
 
-- **FileSystem.FileSystemUploadOptions.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
+- **FileSystem.FileSystemUploadType.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
 
 #### How to handle such requests?
 
@@ -422,7 +425,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
   - **sessionType (_FileSystemSessionType_)** -- (iOS only) A session type. Determines if tasks can be handled in the background. On Android, sessions always work in the background and you can't change it. Defaults to `FileSystemSessionType.BACKGROUND`.
 
-  - **uploadType (_FileSystemUploadOptions_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
+  - **uploadType (_FileSystemUploadType_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
 
   If `uploadType` is equal `FileSystemUploadType.MULTIPART`, more options are available:
 

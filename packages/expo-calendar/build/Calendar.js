@@ -1,6 +1,5 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoCalendar from './ExpoCalendar';
 export var DayOfTheWeek;
 (function (DayOfTheWeek) {
@@ -28,14 +27,25 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
+// @needsAudit
 /**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
  *
- * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device.
+ * Currently, this resolves `true` on iOS and Android only.
  */
 export async function isAvailableAsync() {
     return !!ExpoCalendar.getCalendarsAsync;
 }
+// @needsAudit
+/**
+ * Gets an array of calendar objects with details about the different calendars stored on the device.
+ * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
+ * a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
+ * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app). **Note:** if not
+ * defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
+ * @return An array of [calendar objects](#calendar 'Calendar') matching the provided entity type (if provided).
+ */
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -45,6 +55,12 @@ export async function getCalendarsAsync(entityType) {
     }
     return ExpoCalendar.getCalendarsAsync(entityType);
 }
+// @needsAudit
+/**
+ * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
+ * @param details A map of details for the calendar to be created.
+ * @return A string representing the ID of the newly created calendar.
+ */
 export async function createCalendarAsync(details = {}) {
     if (!ExpoCalendar.saveCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'createCalendarAsync');
@@ -53,6 +69,13 @@ export async function createCalendarAsync(details = {}) {
     const newDetails = { ...details, id: undefined, color };
     return ExpoCalendar.saveCalendarAsync(newDetails);
 }
+// @needsAudit
+/**
+ * Updates the provided details of an existing calendar stored on the device. To remove a property,
+ * explicitly set it to `null` in `details`.
+ * @param id ID of the calendar to update.
+ * @param details A map of properties to be updated.
+ */
 export async function updateCalendarAsync(id, details = {}) {
     if (!ExpoCalendar.saveCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'updateCalendarAsync');
@@ -87,6 +110,11 @@ export async function updateCalendarAsync(id, details = {}) {
     const newDetails = { ...details, id, color };
     return ExpoCalendar.saveCalendarAsync(newDetails);
 }
+// @needsAudit
+/**
+ * Deletes an existing calendar and all associated events/reminders/attendees from the device. __Use with caution.__
+ * @param id ID of the calendar to delete.
+ */
 export async function deleteCalendarAsync(id) {
     if (!ExpoCalendar.deleteCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'deleteCalendarAsync');
@@ -96,6 +124,17 @@ export async function deleteCalendarAsync(id) {
     }
     return ExpoCalendar.deleteCalendarAsync(id);
 }
+// @needsAudit
+/**
+ * Returns all events in a given set of calendars over a specified time period. The filtering has
+ * slightly different behavior per-platform - on iOS, all events that overlap at all with the
+ * `[startDate, endDate]` interval are returned, whereas on Android, only events that begin on or
+ * after the `startDate` and end on or before the `endDate` will be returned.
+ * @param calendarIds Array of IDs of calendars to search for events in.
+ * @param startDate Beginning of time period to search for events in.
+ * @param endDate End of time period to search for events in.
+ * @return A promise which fulfils with an array of [`Event`](#event) objects matching the search criteria.
+ */
 export async function getEventsAsync(calendarIds, startDate, endDate) {
     if (!ExpoCalendar.getEventsAsync) {
         throw new UnavailabilityError('Calendar', 'getEventsAsync');
@@ -111,7 +150,16 @@ export async function getEventsAsync(calendarIds, startDate, endDate) {
     }
     return ExpoCalendar.getEventsAsync(stringifyIfDate(startDate), stringifyIfDate(endDate), calendarIds);
 }
-export async function getEventAsync(id, { futureEvents = false, instanceStartDate } = {}) {
+// @needsAudit
+/**
+ * Returns a specific event selected by ID. If a specific instance of a recurring event is desired,
+ * the start date of this instance must also be provided, as instances of recurring events do not
+ * have their own unique and stable IDs on either iOS or Android.
+ * @param id ID of the event to return.
+ * @param recurringEventOptions A map of options for recurring events.
+ * @return A promise which fulfils with an [`Event`](#event) object matching the provided criteria, if one exists.
+ */
+export async function getEventAsync(id, recurringEventOptions = {}) {
     if (!ExpoCalendar.getEventByIdAsync) {
         throw new UnavailabilityError('Calendar', 'getEventAsync');
     }
@@ -119,19 +167,27 @@ export async function getEventAsync(id, { futureEvents = false, instanceStartDat
         throw new Error('getEventAsync must be called with an id (string) of the target event');
     }
     if (Platform.OS === 'ios') {
-        return ExpoCalendar.getEventByIdAsync(id, instanceStartDate);
+        return ExpoCalendar.getEventByIdAsync(id, recurringEventOptions.instanceStartDate);
     }
     else {
         return ExpoCalendar.getEventByIdAsync(id);
     }
 }
-export async function createEventAsync(calendarId, { id, ...details } = {}) {
+// @needsAudit
+/**
+ * Creates a new event on the specified calendar.
+ * @param calendarId ID of the calendar to create this event in.
+ * @param eventData A map of details for the event to be created.
+ * @return A promise which fulfils with a string representing the ID of the newly created event.
+ */
+export async function createEventAsync(calendarId, eventData = {}) {
     if (!ExpoCalendar.saveEventAsync) {
         throw new UnavailabilityError('Calendar', 'createEventAsync');
     }
     if (!calendarId) {
         throw new Error('createEventAsync must be called with an id (string) of the target calendar');
     }
+    const { id, ...details } = eventData;
     if (Platform.OS === 'android') {
         if (!details.startDate) {
             throw new Error('createEventAsync requires a startDate (Date)');
@@ -146,7 +202,15 @@ export async function createEventAsync(calendarId, { id, ...details } = {}) {
     };
     return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
-export async function updateEventAsync(id, details = {}, { futureEvents = false, instanceStartDate } = {}) {
+// @needsAudit
+/**
+ * Updates the provided details of an existing calendar stored on the device. To remove a property,
+ * explicitly set it to `null` in `details`.
+ * @param id ID of the event to be updated.
+ * @param details A map of properties to be updated.
+ * @param recurringEventOptions A map of options for recurring events.
+ */
+export async function updateEventAsync(id, details = {}, recurringEventOptions = {}) {
     if (!ExpoCalendar.saveEventAsync) {
         throw new UnavailabilityError('Calendar', 'updateEventAsync');
     }
@@ -163,29 +227,55 @@ export async function updateEventAsync(id, details = {}, { futureEvents = false,
             console.warn('updateEventAsync was called with one or more read-only properties, which will not be updated');
         }
     }
+    const { futureEvents = false, instanceStartDate } = recurringEventOptions;
     const newDetails = { ...details, id, instanceStartDate };
     return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), { futureEvents });
 }
-export async function deleteEventAsync(id, { futureEvents = false, instanceStartDate } = {}) {
+// @needsAudit
+/**
+ * Deletes an existing event from the device. Use with caution.
+ * @param id ID of the event to be deleted.
+ * @param recurringEventOptions A map of options for recurring events.
+ */
+export async function deleteEventAsync(id, recurringEventOptions = {}) {
     if (!ExpoCalendar.deleteEventAsync) {
         throw new UnavailabilityError('Calendar', 'deleteEventAsync');
     }
     if (!id) {
         throw new Error('deleteEventAsync must be called with an id (string) of the target event');
     }
+    const { futureEvents = false, instanceStartDate } = recurringEventOptions;
     return ExpoCalendar.deleteEventAsync({ id, instanceStartDate }, { futureEvents });
 }
-export async function getAttendeesForEventAsync(id, { futureEvents = false, instanceStartDate } = {}) {
+// @needsAudit
+/**
+ * Gets all attendees for a given event (or instance of a recurring event).
+ * @param id ID of the event to return attendees for.
+ * @param recurringEventOptions A map of options for recurring events.
+ * @return A promise which fulfils with an array of [`Attendee`](#attendee) associated with the
+ * specified event.
+ */
+export async function getAttendeesForEventAsync(id, recurringEventOptions = {}) {
     if (!ExpoCalendar.getAttendeesForEventAsync) {
         throw new UnavailabilityError('Calendar', 'getAttendeesForEventAsync');
     }
     if (!id) {
         throw new Error('getAttendeesForEventAsync must be called with an id (string) of the target event');
     }
+    const { instanceStartDate } = recurringEventOptions;
     // Android only takes an ID, iOS takes an object
     const params = Platform.OS === 'ios' ? { id, instanceStartDate } : id;
     return ExpoCalendar.getAttendeesForEventAsync(params);
 }
+// @needsAudit
+/**
+ * Creates a new attendee record and adds it to the specified event. Note that if `eventId` specifies
+ * a recurring event, this will add the attendee to every instance of the event.
+ * @param eventId ID of the event to add this attendee to.
+ * @param details A map of details for the attendee to be created.
+ * @return A string representing the ID of the newly created attendee record.
+ * @platform android
+ */
 export async function createAttendeeAsync(eventId, details = {}) {
     if (!ExpoCalendar.saveAttendeeForEventAsync) {
         throw new UnavailabilityError('Calendar', 'createAttendeeAsync');
@@ -207,7 +297,14 @@ export async function createAttendeeAsync(eventId, details = {}) {
     }
     const newDetails = { ...details, id: undefined };
     return ExpoCalendar.saveAttendeeForEventAsync(newDetails, eventId);
-} // Android
+}
+// @needsAudit
+/**
+ * Updates an existing attendee record. To remove a property, explicitly set it to `null` in `details`.
+ * @param id ID of the attendee record to be updated.
+ * @param details A map of properties to be updated.
+ * @platform android
+ */
 export async function updateAttendeeAsync(id, details = {}) {
     if (!ExpoCalendar.saveAttendeeForEventAsync) {
         throw new UnavailabilityError('Calendar', 'updateAttendeeAsync');
@@ -217,13 +314,25 @@ export async function updateAttendeeAsync(id, details = {}) {
     }
     const newDetails = { ...details, id };
     return ExpoCalendar.saveAttendeeForEventAsync(newDetails, null);
-} // Android
+}
+// @needsAudit
+/**
+ * Gets an instance of the default calendar object.
+ * @return A promise resolving to the [Calendar](#calendar) object that is the user's default calendar.
+ * @platform ios
+ */
 export async function getDefaultCalendarAsync() {
     if (!ExpoCalendar.getDefaultCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'getDefaultCalendarAsync');
     }
     return ExpoCalendar.getDefaultCalendarAsync();
-} // iOS
+}
+// @needsAudit
+/**
+ * Deletes an existing attendee record from the device. __Use with caution.__
+ * @param id ID of the attendee to delete.
+ * @platform android
+ */
 export async function deleteAttendeeAsync(id) {
     if (!ExpoCalendar.deleteAttendeeAsync) {
         throw new UnavailabilityError('Calendar', 'deleteAttendeeAsync');
@@ -232,7 +341,19 @@ export async function deleteAttendeeAsync(id) {
         throw new Error('deleteAttendeeAsync must be called with an id (string) of the target event');
     }
     return ExpoCalendar.deleteAttendeeAsync(id);
-} // Android
+}
+// @needsAudit
+/**
+ * Returns a list of reminders matching the provided criteria. If `startDate` and `endDate` are defined,
+ * returns all reminders that overlap at all with the [startDate, endDate] interval - i.e. all reminders
+ * that end after the `startDate` or begin before the `endDate`.
+ * @param calendarIds Array of IDs of calendars to search for reminders in.
+ * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`.
+ * @param startDate Beginning of time period to search for reminders in. Required if `status` is defined.
+ * @param endDate End of time period to search for reminders in. Required if `status` is defined.
+ * @return A promise which fulfils with an array of [`Reminder`](#reminder) objects matching the search criteria.
+ * @platform ios
+ */
 export async function getRemindersAsync(calendarIds, status, startDate, endDate) {
     if (!ExpoCalendar.getRemindersAsync) {
         throw new UnavailabilityError('Calendar', 'getRemindersAsync');
@@ -247,7 +368,14 @@ export async function getRemindersAsync(calendarIds, status, startDate, endDate)
         throw new Error('getRemindersAsync must be called with a non-empty array of calendarIds to search');
     }
     return ExpoCalendar.getRemindersAsync(stringifyIfDate(startDate) || null, stringifyIfDate(endDate) || null, calendarIds, status || null);
-} // iOS
+}
+// @needsAudit
+/**
+ * Returns a specific reminder selected by ID.
+ * @param id ID of the reminder to return.
+ * @return A promise which fulfils with a [`Reminder`](#reminder) matching the provided ID, if one exists.
+ * @platform ios
+ */
 export async function getReminderAsync(id) {
     if (!ExpoCalendar.getReminderByIdAsync) {
         throw new UnavailabilityError('Calendar', 'getReminderAsync');
@@ -256,17 +384,35 @@ export async function getReminderAsync(id) {
         throw new Error('getReminderAsync must be called with an id (string) of the target reminder');
     }
     return ExpoCalendar.getReminderByIdAsync(id);
-} // iOS
-export async function createReminderAsync(calendarId, { id, ...details } = {}) {
+}
+// @needsAudit
+/**
+ * Creates a new reminder on the specified calendar.
+ * @param calendarId ID of the calendar to create this reminder in (or `null` to add the calendar to
+ * the OS-specified default calendar for reminders).
+ * @param reminder A map of details for the reminder to be created
+ * @return A promise which fulfils with a string representing the ID of the newly created reminder.
+ * @platform ios
+ */
+export async function createReminderAsync(calendarId, reminder = {}) {
     if (!ExpoCalendar.saveReminderAsync) {
         throw new UnavailabilityError('Calendar', 'createReminderAsync');
     }
+    const { id, ...details } = reminder;
     const newDetails = {
         ...details,
         calendarId: calendarId === null ? undefined : calendarId,
     };
     return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
-} // iOS
+}
+// @needsAudit
+/**
+ * Updates the provided details of an existing reminder stored on the device. To remove a property,
+ * explicitly set it to `null` in `details`.
+ * @param id ID of the reminder to be updated.
+ * @param details A map of properties to be updated.
+ * @platform ios
+ */
 export async function updateReminderAsync(id, details = {}) {
     if (!ExpoCalendar.saveReminderAsync) {
         throw new UnavailabilityError('Calendar', 'updateReminderAsync');
@@ -279,7 +425,13 @@ export async function updateReminderAsync(id, details = {}) {
     }
     const newDetails = { ...details, id };
     return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
-} // iOS
+}
+// @needsAudit
+/**
+ * Deletes an existing reminder from the device. __Use with caution.__
+ * @param id ID of the reminder to be deleted.
+ * @platform ios
+ */
 export async function deleteReminderAsync(id) {
     if (!ExpoCalendar.deleteReminderAsync) {
         throw new UnavailabilityError('Calendar', 'deleteReminderAsync');
@@ -288,13 +440,27 @@ export async function deleteReminderAsync(id) {
         throw new Error('deleteReminderAsync must be called with an id (string) of the target reminder');
     }
     return ExpoCalendar.deleteReminderAsync(id);
-} // iOS
+}
+// @needsAudit @docsMissing
+/**
+ * @return A promise which fulfils with an array of [`Source`](#source) objects all sources for
+ * calendars stored on the device.
+ * @platform ios
+ */
 export async function getSourcesAsync() {
     if (!ExpoCalendar.getSourcesAsync) {
         throw new UnavailabilityError('Calendar', 'getSourcesAsync');
     }
     return ExpoCalendar.getSourcesAsync();
-} // iOS
+}
+// @needsAudit
+/**
+ * Returns a specific source selected by ID.
+ * @param id ID of the source to return.
+ * @return A promise which fulfils with an array of [`Source`](#source) object matching the provided
+ * ID, if one exists.
+ * @platform ios
+ */
 export async function getSourceAsync(id) {
     if (!ExpoCalendar.getSourceByIdAsync) {
         throw new UnavailabilityError('Calendar', 'getSourceAsync');
@@ -303,7 +469,13 @@ export async function getSourceAsync(id) {
         throw new Error('getSourceAsync must be called with an id (string) of the target source');
     }
     return ExpoCalendar.getSourceByIdAsync(id);
-} // iOS
+}
+// @needsAudit
+/**
+ * Sends an intent to open the specified event in the OS Calendar app.
+ * @param id ID of the event to open.
+ * @platform android
+ */
 export function openEventInCalendar(id) {
     if (!ExpoCalendar.openEventInCalendar) {
         console.warn(`openEventInCalendar is not available on platform: ${Platform.OS}`);
@@ -314,37 +486,90 @@ export function openEventInCalendar(id) {
     }
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
+// @needsAudit
 /**
- * @deprecated Use `requestCalendarPermissionsAsync()` instead
+ * @deprecated Deprecated. Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
  */
 export async function requestPermissionsAsync() {
     console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');
     return requestCalendarPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Checks user's permissions for accessing user's calendars.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ */
 export async function getCalendarPermissionsAsync() {
     if (!ExpoCalendar.getCalendarPermissionsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
     }
     return ExpoCalendar.getCalendarPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Checks user's permissions for accessing user's reminders.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
+ */
 export async function getRemindersPermissionsAsync() {
     if (!ExpoCalendar.getRemindersPermissionsAsync) {
         throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAsync');
     }
     return ExpoCalendar.getRemindersPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Asks the user to grant permissions for accessing user's calendars.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ */
 export async function requestCalendarPermissionsAsync() {
     if (!ExpoCalendar.requestCalendarPermissionsAsync) {
         throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
     }
     return await ExpoCalendar.requestCalendarPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Asks the user to grant permissions for accessing user's reminders.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
+ * @platform ios
+ */
 export async function requestRemindersPermissionsAsync() {
     if (!ExpoCalendar.requestRemindersPermissionsAsync) {
         throw new UnavailabilityError('Calendar', 'requestRemindersPermissionsAsync');
     }
     return await ExpoCalendar.requestRemindersPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Check or request permissions to access the calendar.
+ * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export const useCalendarPermissions = createPermissionHook({
+    getMethod: getCalendarPermissionsAsync,
+    requestMethod: requestCalendarPermissionsAsync,
+});
+// @needsAudit
+/**
+ * Check or request permissions to access reminders.
+ * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export const useRemindersPermissions = createPermissionHook({
+    getMethod: getRemindersPermissionsAsync,
+    requestMethod: requestRemindersPermissionsAsync,
+});
 export const EntityTypes = {
     EVENT: 'event',
     REMINDER: 'reminder',
@@ -360,7 +585,7 @@ export const Availability = {
     BUSY: 'busy',
     FREE: 'free',
     TENTATIVE: 'tentative',
-    UNAVAILABLE: 'unavailable',
+    UNAVAILABLE: 'unavailable', // iOS
 };
 export const CalendarType = {
     LOCAL: 'local',
@@ -394,7 +619,7 @@ export const AttendeeRole = {
     ORGANIZER: 'organizer',
     PERFORMER: 'performer',
     SPEAKER: 'speaker',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AttendeeStatus = {
     UNKNOWN: 'unknown',
@@ -406,7 +631,7 @@ export const AttendeeStatus = {
     COMPLETED: 'completed',
     IN_PROCESS: 'inProcess',
     INVITED: 'invited',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AttendeeType = {
     UNKNOWN: 'unknown',
@@ -416,7 +641,7 @@ export const AttendeeType = {
     RESOURCE: 'resource',
     OPTIONAL: 'optional',
     REQUIRED: 'required',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AlarmMethod = {
     ALARM: 'alarm',

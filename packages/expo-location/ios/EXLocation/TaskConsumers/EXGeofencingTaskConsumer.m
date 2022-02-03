@@ -4,7 +4,7 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLErrorDomain.h>
 
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
 #import <UMTaskManagerInterface/UMTaskInterface.h>
@@ -52,7 +52,7 @@
 - (void)reset
 {
   [self stopMonitoringAllRegions];
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     self->_locationManager = nil;
     self->_task = nil;
   }];
@@ -60,7 +60,7 @@
 
 - (void)startMonitoringRegionsForTask:(id<UMTaskInterface>)task
 {
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = [CLLocationManager new];
     NSMutableDictionary *regionStates = [NSMutableDictionary new];
     NSDictionary *options = [task options];
@@ -95,7 +95,7 @@
 
 - (void)stopMonitoringAllRegions
 {
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     for (CLRegion *region in self->_locationManager.monitoredRegions) {
       [self->_locationManager stopMonitoringForRegion:region];
     }

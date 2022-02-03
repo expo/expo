@@ -1,3 +1,3 @@
-import { PermissionStatus, } from 'unimodules-permissions-interface';
+import { PermissionStatus, } from 'expo-modules-core';
 export { PermissionStatus };
 //# sourceMappingURL=Permissions.types.js.map

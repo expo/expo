@@ -3,12 +3,16 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - master
+      - main
     paths:
       - .github/workflows/web.yml
       - yarn.lock
       - apps/**
       - packages/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -25,12 +29,12 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: '14.4.0'
+          node-version: '14.17'
       - run: yarn global add expo-cli@3
       - name: Cache Node.js modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/node_modules
           key: ${{ runner.OS }}-node_modules-${{ hashFiles('yarn.lock') }}

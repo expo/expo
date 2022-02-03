@@ -1,9 +1,20 @@
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 export declare type AdLogLevel = 'none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification';
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+declare function getPermissionsAsync(): Promise<PermissionResponse>;
 declare const _default: {
     /**
      * Contains hash of the device id
      */
     readonly currentDeviceHash: string;
+    requestPermissionsAsync: typeof requestPermissionsAsync;
+    getPermissionsAsync: typeof getPermissionsAsync;
+    usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+    /**
+     * Sets whether Facebook SDK should enable advertising tracking.
+     */
+    setAdvertiserTrackingEnabled(enabled: boolean): void;
     /**
      * Registers given device with `deviceHash` to receive test Facebook ads.
      */
@@ -30,3 +41,4 @@ declare const _default: {
     setUrlPrefix(urlPrefix: string): void;
 };
 export default _default;
+//# sourceMappingURL=AdSettings.d.ts.map

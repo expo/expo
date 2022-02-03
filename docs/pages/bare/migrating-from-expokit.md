@@ -20,4 +20,4 @@ The cleanest way to migrate your project is to initialize a new project with the
 - Ensure your JS tests pass.
 - Copy custom native code (if any) to your new project.
 - Copy and configure native assets (splash screens, icons).
-- Compare configuration files like `Info.plist` and `AndroidManifest.xml` between projects, update the new project as necessary.
+- Compare configuration files like **Info.plist** and **AndroidManifest.xml** between projects, update the new project as necessary.

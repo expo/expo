@@ -10,11 +10,12 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '10.0'
+  s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
   s.source_files   = 'EXInAppPurchases/**/*.{h,m}'
   s.preserve_paths = 'EXInAppPurchases/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'UMCore'
+  s.dependency 'ExpoModulesCore'
 end

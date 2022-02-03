@@ -1,6 +1,5 @@
-import { CodedError } from '@unimodules/core';
 import compareUrls from 'compare-urls';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { CodedError, Platform } from 'expo-modules-core';
 import { AppState, Dimensions, AppStateStatus } from 'react-native';
 
 import {
@@ -53,22 +52,21 @@ export default {
     url: string,
     browserParams: WebBrowserOpenOptions = {}
   ): Promise<WebBrowserResult> {
-    if (!canUseDOM) return { type: WebBrowserResultType.CANCEL };
+    if (!Platform.isDOMAvailable) return { type: WebBrowserResultType.CANCEL };
     const { windowName = '_blank', windowFeatures } = browserParams;
     const features = getPopupFeaturesString(windowFeatures);
     window.open(url, windowName, features);
     return { type: WebBrowserResultType.OPENED };
   },
   dismissAuthSession() {
-    if (!canUseDOM) return;
+    if (!Platform.isDOMAvailable) return;
     dismissPopup();
   },
-  maybeCompleteAuthSession({
-    skipRedirectCheck,
-  }: {
-    skipRedirectCheck?: boolean;
-  }): { type: 'success' | 'failed'; message: string } {
-    if (!canUseDOM) {
+  maybeCompleteAuthSession({ skipRedirectCheck }: { skipRedirectCheck?: boolean }): {
+    type: 'success' | 'failed';
+    message: string;
+  } {
+    if (!Platform.isDOMAvailable) {
       return {
         type: 'failed',
         message: 'Cannot use expo-web-browser in a non-browser environment',
@@ -106,7 +104,7 @@ export default {
       );
     }
     // Send the URL back to the opening window.
-    parent.postMessage({ url, expoSender: handle }, parent.location);
+    parent.postMessage({ url, expoSender: handle }, parent.location.toString());
     return { type: 'success', message: `Attempting to complete auth` };
 
     // Maybe set timer to throw an error if the window is still open after attempting to complete.
@@ -117,7 +115,7 @@ export default {
     redirectUrl?: string,
     openOptions?: WebBrowserOpenOptions
   ): Promise<WebBrowserAuthSessionResult> {
-    if (!canUseDOM) return { type: WebBrowserResultType.CANCEL };
+    if (!Platform.isDOMAvailable) return { type: WebBrowserResultType.CANCEL };
 
     redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
 
@@ -144,7 +142,7 @@ export default {
       }
     }
 
-    return new Promise(async resolve => {
+    return new Promise(async (resolve) => {
       // Create a listener for messages sent from the popup
       const listener = (event: MessageEvent) => {
         if (!event.isTrusted) return;
@@ -203,7 +201,7 @@ export default {
 
 // Crypto
 function isCryptoAvailable(): boolean {
-  if (!canUseDOM) return false;
+  if (!Platform.isDOMAvailable) return false;
   return !!(window?.crypto as any);
 }
 

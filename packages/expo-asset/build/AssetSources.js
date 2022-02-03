@@ -1,9 +1,9 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
-import { manifestBaseUrl, getManifest } from './PlatformUtils';
+import { manifestBaseUrl, getManifest, getManifest2 } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest
 const assetMapOverride = getManifest().assetMapOverride;
 /**
@@ -20,7 +20,7 @@ export function selectAssetSource(meta) {
     // This logic is based on that of AssetSourceResolver, with additional support for file hashes and
     // explicitly provided URIs
     const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
-    const index = meta.scales.findIndex(s => s === scale);
+    const index = meta.scales.findIndex((s) => s === scale);
     const hash = meta.fileHashes ? meta.fileHashes[index] || meta.fileHashes[0] : meta.hash;
     // Allow asset processors to directly provide the URL to load
     const uri = meta.fileUris ? meta.fileUris[index] || meta.fileUris[0] : meta.uri;
@@ -42,6 +42,16 @@ export function selectAssetSource(meta) {
         const uri = meta.httpServerLocation + suffix;
         return { uri, hash };
     }
+    // For assets during development using manifest2, we use the development server's URL origin
+    const manifest2 = getManifest2();
+    if (manifest2?.extra?.expoGo?.developer) {
+        const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
+        baseUrl.set('pathname', meta.httpServerLocation + suffix);
+        return {
+            uri: baseUrl.href,
+            hash,
+        };
+    }
     // For assets during development, we use the development server's URL origin
     if (getManifest().developer) {
         const baseUrl = new URL(getManifest().bundleUrl);
@@ -50,7 +60,7 @@ export function selectAssetSource(meta) {
     }
     // Production CDN URIs are based on each asset file hash
     return {
-        uri: `https://d1wp6m56sqw74a.cloudfront.net/~assets/${encodeURIComponent(hash)}`,
+        uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`,
         hash,
     };
 }

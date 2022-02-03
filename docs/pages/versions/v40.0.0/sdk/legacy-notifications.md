@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo/src/Notif
 import SnackInline from '~/components/plugins/SnackInline';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> ⚠️ **This API is deprecated and will be removed in the SDK 40. Please, check [the new notification module](notifications.md).**
+> ⚠️ **This API is deprecated and will be removed in SDK 41. Please use [the new notification module](notifications.md). [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).**
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
@@ -18,9 +18,9 @@ The `Notifications` API from **`expo`** provides access to remote notifications 
 
 ## Installation
 
-This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
+This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/main/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
-> 💡 Please note that the [expo-notifications library for bare workflow](https://github.com/expo/expo/tree/master/packages/expo-notifications) has a different API from the Notifications API explained on this page, which is for the managed workflow. These APIs will be unified in an upcoming SDK release.
+> 💡 Please note that the [new `expo-notifications` library](https://github.com/expo/expo/tree/main/packages/expo-notifications) has a different API from the legacy Notifications API explained on this page. This API is deprecated and will be removed in SDK 41. [Here's a guide to help make the transition to the new library as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
 ## API
 
@@ -30,11 +30,11 @@ import { Notifications } from 'expo';
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
-<SnackInline label='Push Notifications' templateId='pushnotifications' dependencies={['expo-constants', 'expo-permissions']}>
+<SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions']}>
 
-```js
+```jsx
 import React from 'react';
-import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, Vibration, Platform } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
@@ -57,7 +57,7 @@ export default class AppContainer extends React.Component {
         alert('Failed to get push token for push notification!');
         return;
       }
-      token = await Notifications.getExpoPushTokenAsync();
+      const token = await Notifications.getExpoPushTokenAsync();
       console.log(token);
       this.setState({ expoPushToken: token });
     } else {
@@ -81,27 +81,56 @@ export default class AppContainer extends React.Component {
 
   _handleNotification = notification => {
     Vibration.vibrate();
-    console.log(notification);
     this.setState({ notification: notification });
+    console.log(notification);
+  };
+
+  sendNotification = async () => {
+    const message = {
+      to: this.state.expoPushToken,
+      sound: 'default',
+      title: 'Original Title',
+      body: 'And here is the body!',
+      data: { data: 'goes here' },
+    };
+
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
   };
 
   render() {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'space-around',
-        }}>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <View style={styles.container}>
+        <View style={styles.message}>
           <Text>Origin: {this.state.notification.origin}</Text>
           <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
-        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+        <Button title={'Press to Send Notification'} onPress={this.sendNotification} />
       </View>
     );
   }
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  message: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

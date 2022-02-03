@@ -1,21 +1,10 @@
 /* eslint-disable */
 // @ts-nocheck
 import DateTimePicker from '@react-native-community/datetimepicker';
-import SegmentedControl from '@react-native-community/segmented-control';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import moment from 'moment';
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-  Text,
-  StatusBar,
-  Button,
-  Platform,
-  TextInput,
-  useColorScheme,
-} from 'react-native';
+import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const ThemedText = props => {
@@ -153,6 +142,12 @@ const DateTimePickerScreen = () => {
           </ThemedText>
           <Button testID="hidePicker" onPress={() => setShow(false)} title="hide picker" />
         </View>
+        {Platform.OS === 'android' && (
+          <Text style={{ padding: 8, textAlign: 'center', color: 'grey' }}>
+            Please ensure that each of the displays are distinct. If not, it's likely that this
+            change must be applied: expo/expo PR #12563
+          </Text>
+        )}
         {show && (
           <DateTimePicker
             testID="dateTimePicker"

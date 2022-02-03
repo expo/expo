@@ -32,7 +32,8 @@
   // we inform the current update context about where we are called from by setting the
   // current call id - this will ensure that memoization is correct for function nodes.
   _prevCallID = self.updateContext.callID;
-  self.updateContext.callID = [NSString stringWithFormat:@"%@/%@", self.updateContext.callID, [self.nodeID stringValue]];
+  NSNumber *nodeID = ((NSNumber*)self.nodeID);
+  self.updateContext.callID = [NSString stringWithFormat:@"%@/%@", self.updateContext.callID, [nodeID stringValue]];
   
   // A CallFuncNode has a reference to a function node which holds the node graph that should
   // be updated. A Function node has a list of ParamNodes which are basically nodes that can
@@ -41,7 +42,8 @@
   for (NSUInteger i = 0; i < _params.count; i++) {
     NSNumber *paramID = [_params objectAtIndex:i];
     DevMenuREAParamNode *param = (DevMenuREAParamNode *)[self.nodesManager findNodeByID:paramID];
-    [param beginContext:_args[i] prevCallID:_prevCallID];
+    NSNumber *prevCallID = (NSNumber *)_prevCallID;
+    [param beginContext:_args[i] prevCallID:prevCallID];
   }
 }
 

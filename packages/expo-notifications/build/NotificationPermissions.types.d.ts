@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
 export declare enum IosAlertStyle {
     NONE = 0,
     BANNER = 1,
@@ -16,6 +16,7 @@ export declare enum IosAuthorizationStatus {
     PROVISIONAL = 3,
     EPHEMERAL = 4
 }
+export { PermissionHookOptions };
 export interface NotificationPermissionsStatus extends PermissionResponse {
     android?: {
         importance: number;
@@ -53,3 +54,4 @@ export interface NotificationPermissionsRequest {
     ios?: IosNotificationPermissionsRequest;
     android?: AndroidNotificationPermissionRequest;
 }
+//# sourceMappingURL=NotificationPermissions.types.d.ts.map

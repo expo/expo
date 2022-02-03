@@ -8,17 +8,18 @@ type PropsType = {
   style?: ViewStyle;
   imageProps: ImageProps;
   ImageComponent: React.ComponentType<any>;
+  loadOnDemand?: boolean;
 };
 
 export default class ImageTestView extends React.PureComponent<PropsType> {
   render() {
-    const { imageProps, ImageComponent } = this.props;
+    const { imageProps, ImageComponent, loadOnDemand } = this.props;
     const { style, defaultStyle, source, ...otherImageProps } = imageProps;
     return (
       <View style={styles.container}>
         <ImageComponent
           style={[defaultStyle || styles.image, defaultStyle ? undefined : this.props.style, style]}
-          source={source || defaultImage}
+          source={source && !loadOnDemand ? source : defaultImage}
           {...otherImageProps}
         />
       </View>

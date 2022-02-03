@@ -10,7 +10,7 @@ The [`Audio.Sound`](audio.md) objects and [`Video`](video.md) components share a
 
 Note that for `Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
-Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
+Try the [playlist example app](http://expo.dev/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -35,7 +35,7 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 ```javascript
 const playbackObject = new Audio.Sound();
 // OR
-const playbackObject = await Audio.Sound.createAsync(
+const { sound: playbackObject } = await Audio.Sound.createAsync(
   { uri: 'http://foo/bar.mp3' },
   { shouldPlay: true }
 );

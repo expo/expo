@@ -1,4 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
@@ -28,9 +28,11 @@ const Canvas = React.forwardRef(
     createElement('canvas', { ...props, ref })
 );
 
-const CanvasWrapper: React.FunctionComponent<ViewProps & {
-  canvasRef: React.Ref<HTMLCanvasElement>;
-}> = ({ pointerEvents, children, ...props }) => {
+const CanvasWrapper: React.FunctionComponent<
+  ViewProps & {
+    canvasRef: React.Ref<HTMLCanvasElement>;
+  }
+> = ({ pointerEvents, children, ...props }) => {
   const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
 
   const ref = React.useRef<View>(null);
@@ -54,7 +56,7 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
   function getSize(): { width: number; height: number } {
     if (size) {
       return size;
-    } else if (!ref.current || !canUseDOM) {
+    } else if (!ref.current || !Platform.isDOMAvailable) {
       return { width: 0, height: 0 };
     }
     const element = getElement(ref.current);
@@ -62,7 +64,7 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
     return { width, height };
   }
 
-  function onLayout(event: LayoutChangeEvent): void {
+  const onLayout = (event: LayoutChangeEvent) => {
     const {
       nativeEvent: {
         layout: { width, height },
@@ -76,7 +78,7 @@ const CanvasWrapper: React.FunctionComponent<ViewProps & {
         props.onLayout(event);
       }
     }
-  }
+  };
 
   React.useEffect(() => {
     if (ref.current != null) {

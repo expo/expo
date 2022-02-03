@@ -9,8 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 
-import org.unimodules.core.arguments.MapArguments;
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.arguments.MapArguments;
+import expo.modules.core.arguments.ReadableArguments;
 
 import java.util.List;
 

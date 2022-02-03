@@ -2,12 +2,12 @@
 /**
  * A web-only module for ponyfilling the UserMedia API.
  */
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from 'expo-modules-core';
 export const userMediaRequested = false;
 export const mountedInstances = [];
 async function requestLegacyUserMediaAsync(props) {
-    const optionalSource = id => ({ optional: [{ sourceId: id }] });
-    const constraintToSourceId = constraint => {
+    const optionalSource = (id) => ({ optional: [{ sourceId: id }] });
+    const constraintToSourceId = (constraint) => {
         const { deviceId } = constraint;
         if (typeof deviceId === 'string') {
             return deviceId;
@@ -20,12 +20,12 @@ async function requestLegacyUserMediaAsync(props) {
         }
         return null;
     };
-    const sources = await new Promise(resolve => 
+    const sources = await new Promise((resolve) => 
     // @ts-ignore: https://caniuse.com/#search=getSources Chrome for Android (78) & Samsung Internet (10.1) use this
-    MediaStreamTrack.getSources(sources => resolve(sources)));
+    MediaStreamTrack.getSources((sources) => resolve(sources)));
     let audioSource = null;
     let videoSource = null;
-    sources.forEach(source => {
+    sources.forEach((source) => {
         if (source.kind === 'audio') {
             audioSource = source.id;
         }
@@ -83,7 +83,7 @@ export async function getUserMediaAsync(constraints) {
 export function canGetUserMedia() {
     return (
     // SSR
-    canUseDOM &&
+    Platform.isDOMAvailable &&
         // Has any form of media API
         !!((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
             navigator['mozGetUserMedia'] ||
@@ -103,9 +103,9 @@ async function supportsCameraType(labels, type, devices) {
         }
         devices = await navigator.mediaDevices.enumerateDevices();
     }
-    const cameras = devices.filter(t => t.kind === 'videoinput');
-    const [hasCamera] = cameras.filter(camera => labels.some(label => camera.label.toLowerCase().includes(label)));
-    const [isCapable] = cameras.filter(camera => {
+    const cameras = devices.filter((t) => t.kind === 'videoinput');
+    const [hasCamera] = cameras.filter((camera) => labels.some((label) => camera.label.toLowerCase().includes(label)));
+    const [isCapable] = cameras.filter((camera) => {
         if (!('getCapabilities' in camera)) {
             return null;
         }

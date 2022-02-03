@@ -21,7 +21,7 @@ Provides access to the system's UI for selecting documents from the available pr
 
 ### Managed workflow
 
-For iOS, outside of the Expo client, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your `app.json` file as specified [here](../../../workflow/configuration.md#ios).
+For iOS, outside of the Expo Go app, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your **app.json** file as specified [here](../../../workflow/configuration.md#ios).
 
 In addition, you'll also need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple developer interface](https://developer.apple.com/account/ios/identifier/bundle).
 
@@ -47,7 +47,7 @@ import * as DocumentPicker from 'expo-document-picker';
 
 Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem.md#expofilesystemcachedirectory).
 
-> **Note for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `getDocumentAsync` in `componentDidMount`, for example, will **not** work as intended.
+> **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `getDocumentAsync` in `componentDidMount`, for example, will **not** work as intended. The `cancel` event will not be returned in the browser due to platform restrictions and inconsistencies across browsers.
 
 #### Arguments
 

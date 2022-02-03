@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { BlurProps } from './BlurView.types';
-declare class BlurView extends React.Component<BlurProps> {
+import { BlurViewProps } from './BlurView.types';
+export default class BlurView extends React.Component<BlurViewProps> {
     render(): JSX.Element;
 }
-export default BlurView;
+//# sourceMappingURL=BlurView.android.d.ts.map

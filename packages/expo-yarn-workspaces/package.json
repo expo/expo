@@ -1,20 +1,30 @@
 {
   "name": "expo-yarn-workspaces",
-  "version": "1.2.1",
+  "version": "1.7.0",
   "description": "A private package for working with Yarn workspaces within the Expo repository",
   "author": "Expo",
   "license": "MIT",
   "main": "index.js",
-  "private": true,
   "bin": {
     "expo-yarn-workspaces": "./bin/expo-yarn-workspaces.js"
   },
+  "files": [
+    "index.js",
+    "webpack.js",
+    "common/*",
+    "bin/*"
+  ],
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "pretest": "cd workspace-template && yarn",
+    "test": "jest ."
   },
   "dependencies": {
-    "debug": "^4.1.1",
-    "find-yarn-workspace-root": "~2.0.0",
+    "@expo/metro-config": "~0.3.7",
+    "@expo/webpack-config": "~0.16.14",
+    "debug": "^4.3.2",
+    "find-yarn-workspace-root": "^2.0.0",
+    "glob": "^7.1.7",
     "minimist": "^1.2.5",
     "mkdirp": "^0.5.1"
   }

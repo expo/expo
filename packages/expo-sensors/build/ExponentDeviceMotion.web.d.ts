@@ -1,3 +1,4 @@
+import { getPermissionsAsync, requestPermissionsAsync } from './utils/isSensorEnabledAsync.web';
 declare const _default: {
     readonly name: string;
     /**
@@ -6,7 +7,10 @@ declare const _default: {
     readonly Gravity: number;
     isAvailableAsync(): Promise<boolean>;
     _handleMotion(motion: any): void;
+    getPermissionsAsync: typeof getPermissionsAsync;
+    requestPermissionsAsync: typeof requestPermissionsAsync;
     startObserving(): void;
     stopObserving(): void;
 };
 export default _default;
+//# sourceMappingURL=ExponentDeviceMotion.web.d.ts.map

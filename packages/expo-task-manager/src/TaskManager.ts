@@ -1,23 +1,26 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoTaskManager from './ExpoTaskManager';
 
+// @needsAudit @docsMissing
 /**
- * Error object that can be received through TaskManagerTaskBody when the task fails.
+ * Error object that can be received through [`TaskManagerTaskBody`](#taskmanagertaskbody) when the
+ * task fails.
  */
 export interface TaskManagerError {
   code: string | number;
   message: string;
 }
 
+// @needsAudit
 /**
  * Represents the object that is passed to the task executor.
  */
-export interface TaskManagerTaskBody {
+export interface TaskManagerTaskBody<T = object> {
   /**
    * An object of data passed to the task executor. Its properties depends on the type of the task.
    */
-  data: object;
+  data: T;
 
   /**
    * Error object if the task failed or `null` otherwise.
@@ -27,12 +30,29 @@ export interface TaskManagerTaskBody {
   /**
    * Additional details containing unique ID of task event and name of the task.
    */
-  executionInfo: {
-    eventId: string;
-    taskName: string;
-  };
+  executionInfo: TaskManagerTaskBodyExecutionInfo;
 }
 
+// @needsAudit
+/**
+ * Additional details about execution provided in `TaskManagerTaskBody`.
+ */
+export interface TaskManagerTaskBodyExecutionInfo {
+  /**
+   * __(iOS only)__ State of the application.
+   */
+  appState?: 'active' | 'background' | 'inactive';
+  /**
+   * Unique ID of task event.
+   */
+  eventId: string;
+  /**
+   * Name of the task.
+   */
+  taskName: string;
+}
+
+// @needsAudit
 /**
  * Represents an already registered task.
  */
@@ -55,9 +75,11 @@ export interface TaskManagerTask {
 
 /**
  * @deprecated Use `TaskManagerTask` instead.
+ * @hidden
  */
 export interface RegisteredTask extends TaskManagerTask {}
 
+// @needsAudit
 /**
  * Type of task executor – a function that handles the task.
  */
@@ -71,12 +93,16 @@ function _validateTaskName(taskName) {
   }
 }
 
+// @needsAudit
 /**
- * Method that you use to define a task – it saves given task executor under given task name
- * which must be correlated with the task name used when registering the task.
+ * Defines task function. It must be called in the global scope of your JavaScript bundle.
+ * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.
+ * This limitation is due to the fact that when the application is launched in the background,
+ * we need to spin up your JavaScript app, run your task and then shut down — no views are mounted
+ * in this scenario.
  *
  * @param taskName Name of the task. It must be the same as the name you provided when registering the task.
- * @param taskExecutor A function that handles the task.
+ * @param taskExecutor A function that will be invoked when the task with given `taskName` is executed.
  */
 export function defineTask(taskName: string, taskExecutor: TaskManagerTaskExecutor) {
   if (!taskName || typeof taskName !== 'string') {
@@ -90,6 +116,7 @@ export function defineTask(taskName: string, taskExecutor: TaskManagerTaskExecut
   tasks.set(taskName, taskExecutor);
 }
 
+// @needsAudit
 /**
  * Checks whether the task is already defined.
  *
@@ -99,11 +126,14 @@ export function isTaskDefined(taskName: string): boolean {
   return tasks.has(taskName);
 }
 
+// @needsAudit
 /**
- * Checks whether the task has been registered.
+ * Determine whether the task is registered. Registered tasks are stored in a persistent storage and
+ * preserved between sessions.
  *
  * @param taskName Name of the task.
- * @returns A promise resolving to boolean value. If `false` then even if the task is defined, it won't be called because it's not registered.
+ * @returns A promise which fulfills with a `boolean` value whether or not the task with given name
+ * is already registered.
  */
 export async function isTaskRegisteredAsync(taskName: string): Promise<boolean> {
   if (!ExpoTaskManager.isTaskRegisteredAsync) {
@@ -114,10 +144,14 @@ export async function isTaskRegisteredAsync(taskName: string): Promise<boolean> 
   return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
 
+// @needsAudit
 /**
- * Retrieves an `options` object for provided `taskName`.
+ * Retrieves `options` associated with the task, that were passed to the function registering the task
+ * (eg. `Location.startLocationUpdatesAsync`).
  *
  * @param taskName Name of the task.
+ * @return A promise which fulfills with the `options` object that was passed while registering task
+ * with given name or `null` if task couldn't be found.
  */
 export async function getTaskOptionsAsync<TaskOptions>(taskName: string): Promise<TaskOptions> {
   if (!ExpoTaskManager.getTaskOptionsAsync) {
@@ -128,10 +162,30 @@ export async function getTaskOptionsAsync<TaskOptions>(taskName: string): Promis
   return ExpoTaskManager.getTaskOptionsAsync(taskName);
 }
 
+// @needsAudit
 /**
- * Provides informations about registered tasks.
+ * Provides information about tasks registered in the app.
  *
- * @returns Returns a promise resolving to an array containing all tasks registered by the app.
+ * @returns A promise which fulfills with an array of tasks registered in the app. Example:
+ * ```json
+ * [
+ *   {
+ *     taskName: 'location-updates-task-name',
+ *     taskType: 'location',
+ *     options: {
+ *       accuracy: Location.Accuracy.High,
+ *       showsBackgroundLocationIndicator: false,
+ *     },
+ *   },
+ *   {
+ *     taskName: 'geofencing-task-name',
+ *     taskType: 'geofencing',
+ *     options: {
+ *       regions: [...],
+ *     },
+ *   },
+ * ]
+ * ```
  */
 export async function getRegisteredTasksAsync(): Promise<TaskManagerTask[]> {
   if (!ExpoTaskManager.getRegisteredTasksAsync) {
@@ -141,10 +195,14 @@ export async function getRegisteredTasksAsync(): Promise<TaskManagerTask[]> {
   return ExpoTaskManager.getRegisteredTasksAsync();
 }
 
+// @needsAudit
 /**
- * Unregisters the task. Tasks are usually registered by other modules (e.g. expo-location).
+ * Unregisters task from the app, so the app will not be receiving updates for that task anymore.
+ * _It is recommended to use methods specialized by modules that registered the task, eg.
+ * [`Location.stopLocationUpdatesAsync`](./location/#expolocationstoplocationupdatesasynctaskname)._
  *
- * @param taskName Name of the task.
+ * @param taskName Name of the task to unregister.
+ * @return A promise which fulfills as soon as the task is unregistered.
  */
 export async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (!ExpoTaskManager.unregisterTaskAsync) {
@@ -155,9 +213,11 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
   await ExpoTaskManager.unregisterTaskAsync(taskName);
 }
 
+// @needsAudit
 /**
- * Unregisters all tasks registered by the app. You may want to call this when the user is
+ * Unregisters all tasks registered for the running app. You may want to call this when the user is
  * signing out and you no longer need to track his location or run any other background tasks.
+ * @return A promise which fulfills as soon as all tasks are completely unregistered.
  */
 export async function unregisterAllTasksAsync(): Promise<void> {
   if (!ExpoTaskManager.unregisterAllTasksAsync) {
@@ -200,6 +260,12 @@ if (ExpoTaskManager) {
   );
 }
 
+// @needsAudit
+/**
+ * Determine if the `TaskManager` API can be used in this app.
+ * @return A promise fulfills with `true` if the API can be used, and `false` otherwise.
+ * On the web it always returns `false`.
+ */
 export async function isAvailableAsync(): Promise<boolean> {
   return await ExpoTaskManager.isAvailableAsync();
 }

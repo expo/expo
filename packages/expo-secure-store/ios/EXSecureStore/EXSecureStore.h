@@ -1,7 +1,7 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 typedef NS_ENUM(NSInteger, EXSecureStoreAccessible) {
   EXSecureStoreAccessibleAfterFirstUnlock = 0,
@@ -13,6 +13,6 @@ typedef NS_ENUM(NSInteger, EXSecureStoreAccessible) {
   EXSecureStoreAccessibleWhenUnlockedThisDeviceOnly = 6
 };
 
-@interface EXSecureStore : UMExportedModule
+@interface EXSecureStore : EXExportedModule
 
 @end

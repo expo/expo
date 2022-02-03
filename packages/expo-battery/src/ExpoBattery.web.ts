@@ -1,10 +1,10 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform } from 'expo-modules-core';
 
 import { BatteryState } from './Battery.types';
 
 const emitter = new EventEmitter({} as any);
 
-declare var navigator: Navigator;
+declare let navigator: Navigator;
 
 interface BatteryManager extends BatteryManagerEventTarget {
   readonly charging: boolean;

@@ -3,28 +3,28 @@
 #if __has_include(<EXFacebook/EXFacebook.h>)
 #import "EXScopedFacebook.h"
 #import <FBSDKCoreKit/FBSDKSettings.h>
-#import <UMCore/UMAppLifecycleService.h>
+#import <ExpoModulesCore/EXAppLifecycleService.h>
 #import <FBSDKCoreKit/FBSDKApplicationDelegate.h>
 
 @interface EXFacebook (ExportedMethods)
 
 - (void)initializeAsync:(NSDictionary *)options
-               resolver:(UMPromiseResolveBlock)resolve
-               rejecter:(UMPromiseRejectBlock)reject;
+               resolver:(EXPromiseResolveBlock)resolve
+               rejecter:(EXPromiseRejectBlock)reject;
 
 - (void)logInWithReadPermissionsWithConfig:(NSDictionary *)config
-                                  resolver:(UMPromiseResolveBlock)resolve
-                                  rejecter:(UMPromiseRejectBlock)reject;
+                                  resolver:(EXPromiseResolveBlock)resolve
+                                  rejecter:(EXPromiseRejectBlock)reject;
 
-- (void)logOutAsync:(UMPromiseResolveBlock)resolve
-           rejecter:(UMPromiseRejectBlock)reject;
+- (void)logOutAsync:(EXPromiseResolveBlock)resolve
+           rejecter:(EXPromiseRejectBlock)reject;
 
-- (void)getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve
-                   rejecter:(UMPromiseRejectBlock)reject;
+- (void)getAuthenticationCredentialAsync:(EXPromiseResolveBlock)resolve
+                   rejecter:(EXPromiseRejectBlock)reject;
 
 - (void)setAutoInitEnabled:(BOOL)enabled
-                  resolver:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject;
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject;
 
 @end
 
@@ -39,22 +39,22 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 @end
 
-// Expo client-only EXFacebook module, which ensures that Facebook SDK configurations
-// of different experiences don't collide.
+// Expo Go-only EXFacebook module, which ensures that Facebook SDK configurations
+// of different projects don't collide.
 
 @implementation EXScopedFacebook : EXFacebook
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsManifest *)manifest
 {
   if (self = [super init]) {
-    NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), experienceId];
+    NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), scopeKey];
     _settings = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
 
     BOOL hasPreviouslySetAutoInitEnabled = [_settings boolForKey:AUTO_INIT_KEY];
-    BOOL manifestDefinesAutoInitEnabled = [params[@"manifest"][@"facebookAutoInitEnabled"] boolValue];
-    
+    BOOL manifestDefinesAutoInitEnabled = manifest.facebookAutoInitEnabled;
+
     NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-    NSString *manifestFacebookAppId = params[@"manifest"][@"facebookAppId"];
+    NSString *manifestFacebookAppId = manifest.facebookAppId;
 
     if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
       // This happens even before the app foregrounds, which mimics
@@ -64,10 +64,10 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
         [FBSDKApplicationDelegate initializeSDK:nil];
         _isInitialized = YES;
         if (manifestFacebookAppId) {
-          UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
+          EXLogInfo(@"Overriding Facebook App ID with Expo Go's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
         }
       } else {
-        UMLogWarn(@"FacebookAutoInit is enabled, but no FacebookAppId has been provided. Facebook SDK initialization aborted.");
+        EXLogWarn(@"FacebookAutoInit is enabled, but no FacebookAppId has been provided. Facebook SDK initialization aborted.");
       }
     }
   }
@@ -75,24 +75,24 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 }
 
 - (void)initializeAsync:(NSDictionary *)options
-               resolver:(UMPromiseResolveBlock)resolve
-               rejecter:(UMPromiseRejectBlock)reject
+               resolver:(EXPromiseResolveBlock)resolve
+               rejecter:(EXPromiseRejectBlock)reject
 {
   _isInitialized = YES;
   if (options[@"appId"]) {
-    UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
+    EXLogInfo(@"Overriding Facebook App ID with Expo Go's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
   }
 
   NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-  
+
   NSMutableDictionary *nativeOptions = [NSMutableDictionary dictionaryWithDictionary:options];
   // Overwrite the incoming app id with the Expo Facebook SDK app id.
   nativeOptions[@"appId"] = scopedFacebookAppId;
-  
+
   [super initializeAsync:nativeOptions resolver:resolve rejecter:reject];
 }
 
-- (void)setAutoInitEnabled:(BOOL)enabled resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)setAutoInitEnabled:(BOOL)enabled resolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   if (enabled) {
     [_settings setBool:enabled forKey:AUTO_INIT_KEY];
@@ -102,7 +102,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   [super setAutoInitEnabled:enabled resolver:resolve rejecter:reject];
 }
 
-- (void)logInWithReadPermissionsWithConfig:(NSDictionary *)config resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)logInWithReadPermissionsWithConfig:(NSDictionary *)config resolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
@@ -112,7 +112,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   [super logInWithReadPermissionsWithConfig:config resolver:resolve rejecter:reject];
 }
 
-- (void)getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)getAuthenticationCredentialAsync:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
@@ -122,7 +122,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   [super getAuthenticationCredentialAsync:resolve rejecter:reject];
 }
 
-- (void)logOutAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)logOutAsync:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
@@ -132,15 +132,17 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   [super logOutAsync:resolve rejecter:reject];
 }
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  id<UMAppLifecycleService> appLifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
+  [super setModuleRegistry:moduleRegistry];
+
+  id<EXAppLifecycleService> appLifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
   [appLifecycleService registerAppLifecycleListener:self];
 }
 
-# pragma mark - UMAppLifecycleListener
+# pragma mark - EXAppLifecycleListener
 
 - (void)onAppBackgrounded {
   // Save SDK settings state

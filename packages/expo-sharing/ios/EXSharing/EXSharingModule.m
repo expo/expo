@@ -1,46 +1,46 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXSharing/EXSharingModule.h>
-#import <UMCore/UMUtilitiesInterface.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMFileSystemInterface/UMFilePermissionModuleInterface.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXFilePermissionModuleInterface.h>
 
 @interface EXSharingModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 
-@property (nonatomic, strong) UMPromiseResolveBlock pendingResolver;
+@property (nonatomic, strong) EXPromiseResolveBlock pendingResolver;
 
 @end
 
 @implementation EXSharingModule
 
-UM_EXPORT_MODULE(ExpoSharing);
+EX_EXPORT_MODULE(ExpoSharing);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(shareAsync,
+EX_EXPORT_METHOD_AS(shareAsync,
                     fileUrl:(NSString *)fileUrl
                     params:(NSDictionary *)params
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (_documentInteractionController) {
     NSString *errorMessage = @"Another item is being shared. Await the `shareAsync` request and then share the item again.";
-    reject(@"E_SHARING_MUL", errorMessage, UMErrorWithMessage(errorMessage));
+    reject(@"E_SHARING_MUL", errorMessage, EXErrorWithMessage(errorMessage));
     return;
   }
 
   NSURL *url = [NSURL URLWithString:fileUrl];
 
-  id<UMFilePermissionModuleInterface> filePermissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFilePermissionModuleInterface)];
-  if (filePermissionsModule && !([filePermissionsModule getPathPermissions:url.path] & UMFileSystemPermissionRead)) {
+  id<EXFilePermissionModuleInterface> filePermissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFilePermissionModuleInterface)];
+  if (filePermissionsModule && !([filePermissionsModule getPathPermissions:url.path] & EXFileSystemPermissionRead)) {
     NSString *errorMessage = @"You don't have access to provided file.";
-    reject(@"E_SHARING_PERM", errorMessage, UMErrorWithMessage(errorMessage));
+    reject(@"E_SHARING_PERM", errorMessage, EXErrorWithMessage(errorMessage));
     return;
   }
 
@@ -48,11 +48,11 @@ UM_EXPORT_METHOD_AS(shareAsync,
   _documentInteractionController.delegate = self;
   _documentInteractionController.UTI = params[@"UTI"];
 
-  UIViewController *viewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController];
+  UIViewController *viewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     UIView *rootView = [viewController view];
     if ([self.documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:rootView animated:YES]) {
       self.pendingResolver = resolve;

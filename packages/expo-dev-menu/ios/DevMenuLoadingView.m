@@ -8,7 +8,7 @@
 
 + (NSString *)moduleName
 {
-  return @"RCTDevLoadingView";
+  return @"DevLoadingView";
 }
 
 + (void)setEnabled:(BOOL)enabled {}

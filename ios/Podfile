@@ -1,44 +1,53 @@
 require_relative './podfile_helpers.rb'
-require_relative '../packages/react-native-unimodules/cocoapods.rb'
 require_relative '../react-native-lab/react-native/scripts/react_native_pods'
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '10.0'
+platform :ios, '12.0'
 inhibit_all_warnings!
 
-target 'Exponent' do
+# Disable expo-updates auto create manifest in podspec script_phase
+$expo_updates_create_manifest = false
+
+abstract_target 'Expo Go' do
   # Expo Client dependencies
   pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'GoogleMaps', '~> 3.6'
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
-  pod 'lottie-ios', '~> 2.5.0'
-  pod 'JKBigInteger2', '0.0.5'
+  pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
+  pod 'MBProgressHUD', '~> 1.2.0'
 
-  # Unimodules
-  use_unimodules!({
-    modules_paths: ['../packages'],
+  # Expo modules
+  use_expo_modules!({
     exclude: [
       'expo-module-template',
       'expo-in-app-purchases',
-      'expo-payments-stripe',
+      'expo-dev-menu',
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+      'expo-dev-client'
+    ],
+    # Modules for which to include Tests subspec
+    tests: [
+      'expo-modules-core',
+      'expo-updates',
+      'expo-manifests',
+      'expo-json-utils',
+      'expo-structured-headers',
     ],
     flags: {
       :inhibit_warnings => false
     }
   })
 
-  # Expo modules that are not unimodules
-  pod 'EXRandom', path: '../packages/expo-random/ios'
+  # Install vendored pods.
+  use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'
-
-  # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
-  # and install ReactABIXX_0_0 pods with all versioned unimodules.
-  use_versioned_abis!
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
@@ -49,12 +58,16 @@ target 'Exponent' do
 
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
+
       # Run postinstalls actions for versioned dependencies.
       # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
       run_versioned_postinstalls!(pod_name, target_installation_result)
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+
+        # Fix building failures on M1
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
       end
 
       if pod_name == 'Branch'
@@ -76,6 +89,17 @@ target 'Exponent' do
     end
   end
 
+  # Target for development, contains only unversioned code
+  target 'Expo Go (unversioned)' do
+  end
+
+  # Release target additionally includes versioned SDKs
+  target 'Expo Go (versioned)' do
+    # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
+    # and install ReactABIXX_0_0 pods with all versioned unimodules.
+    use_versioned_abis!
+  end
+
   # Test targets
   target 'ExponentIntegrationTests' do
     inherit! :search_paths
@@ -83,5 +107,8 @@ target 'Exponent' do
 
   target 'Tests' do
     inherit! :search_paths
+
+    pod 'Quick', :podspec => './Quick.podspec'
+    pod 'Nimble', :podspec => './Nimble.podspec'
   end
 end

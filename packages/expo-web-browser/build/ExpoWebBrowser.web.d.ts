@@ -3,7 +3,7 @@ declare const _default: {
     readonly name: string;
     openBrowserAsync(url: string, browserParams?: WebBrowserOpenOptions): Promise<WebBrowserResult>;
     dismissAuthSession(): void;
-    maybeCompleteAuthSession({ skipRedirectCheck, }: {
+    maybeCompleteAuthSession({ skipRedirectCheck }: {
         skipRedirectCheck?: boolean | undefined;
     }): {
         type: 'success' | 'failed';
@@ -13,3 +13,4 @@ declare const _default: {
 };
 export default _default;
 export declare function featureObjectToString(features: Record<string, any>): string;
+//# sourceMappingURL=ExpoWebBrowser.web.d.ts.map

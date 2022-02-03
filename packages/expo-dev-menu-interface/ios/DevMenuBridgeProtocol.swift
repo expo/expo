@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+
 @objc
 public protocol DevMenuBridgeProtocol {
   @objc
@@ -9,5 +11,5 @@ public protocol DevMenuBridgeProtocol {
   optional func modulesConforming(toProtocol: Protocol) -> [AnyObject]
 
   @objc
-  optional func requestReload() -> Void
+  optional func requestReload()
 }

@@ -5,19 +5,20 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.permissions.PermissionsStatus;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import androidx.core.app.NotificationManagerCompat;
 
-import static org.unimodules.interfaces.permissions.PermissionsResponse.CAN_ASK_AGAIN_KEY;
-import static org.unimodules.interfaces.permissions.PermissionsResponse.EXPIRES_KEY;
-import static org.unimodules.interfaces.permissions.PermissionsResponse.GRANTED_KEY;
-import static org.unimodules.interfaces.permissions.PermissionsResponse.PERMISSION_EXPIRES_NEVER;
-import static org.unimodules.interfaces.permissions.PermissionsResponse.STATUS_KEY;
+import expo.modules.interfaces.permissions.PermissionsStatus;
+
+import static expo.modules.interfaces.permissions.PermissionsResponse.CAN_ASK_AGAIN_KEY;
+import static expo.modules.interfaces.permissions.PermissionsResponse.EXPIRES_KEY;
+import static expo.modules.interfaces.permissions.PermissionsResponse.GRANTED_KEY;
+import static expo.modules.interfaces.permissions.PermissionsResponse.PERMISSION_EXPIRES_NEVER;
+import static expo.modules.interfaces.permissions.PermissionsResponse.STATUS_KEY;
 
 public class NotificationPermissionsModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationPermissionsModule";
@@ -53,7 +54,7 @@ public class NotificationPermissionsModule extends ExportedModule {
     Bundle permissions = new Bundle();
 
     permissions.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
-    permissions.putBoolean(CAN_ASK_AGAIN_KEY, true);
+    permissions.putBoolean(CAN_ASK_AGAIN_KEY, areEnabled);
     permissions.putString(STATUS_KEY, status.getStatus());
     permissions.putBoolean(GRANTED_KEY, PermissionsStatus.GRANTED == status);
 

@@ -1,25 +1,15 @@
 import * as Network from 'expo-network';
 import * as React from 'react';
-import { Platform, ScrollView, TextInput } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 
 import MonoText from '../components/MonoText';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function NetworkScreen() {
-  const [name, setName] = React.useState('');
   const isMounted = React.useRef(true);
-  const [customMacAddress, setCustomMacAddress] = React.useState('');
   const [airplaneMode] = useResolvedValue(Network.isAirplaneModeEnabledAsync);
   const [networkState] = useResolvedValue(Network.getNetworkStateAsync);
   const [ip, ipError] = useResolvedValue(Network.getIpAddressAsync);
-  const [macAddress] = useResolvedValue(Network.getMacAddressAsync);
-  // Test two common interface names on Android.
-  const [eth0MacAddress] = useResolvedValue(
-    (): Promise<string> => Network.getMacAddressAsync('eth0')
-  );
-  const [wlan0MacAddress] = useResolvedValue(
-    (): Promise<string> => Network.getMacAddressAsync('wlan0')
-  );
 
   React.useEffect(() => {
     if (ipError) alert(ipError.message);
@@ -31,17 +21,6 @@ export default function NetworkScreen() {
       isMounted.current = false;
     };
   }, []);
-  React.useEffect(() => {
-    Network.getMacAddressAsync(name || null)
-      .then(address => {
-        if (isMounted.current) {
-          setCustomMacAddress(address);
-        }
-      })
-      .catch(() => {
-        setCustomMacAddress('');
-      });
-  }, [name]);
 
   return (
     <ScrollView style={{ padding: 10 }}>
@@ -51,24 +30,15 @@ export default function NetworkScreen() {
             ipAddress: ip,
             networkState,
             airplaneModeEnabled: airplaneMode,
-            macAddress,
-            eth0_macAddress: eth0MacAddress,
-            wlan0_macAddress: wlan0MacAddress,
-            custom_macAddress: customMacAddress,
           },
           null,
           2
         )}
       </MonoText>
-      {Platform.OS === 'android' && (
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Mac Address interface name"
-          value={name}
-          onChangeText={setName}
-        />
-      )}
+      <Text>
+        💡 <Text style={{ fontWeight: 'bold' }}>airplaneModeEnabled</Text> is only supported on
+        Android. It should be <Text style={{ fontWeight: 'bold' }}>null</Text> on iOS.
+      </Text>
     </ScrollView>
   );
 }

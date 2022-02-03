@@ -9,3 +9,4 @@ declare const _default: {
     serializeLogDataAsync: typeof serializeLogDataAsync;
 };
 export default _default;
+//# sourceMappingURL=LogSerialization.d.ts.map

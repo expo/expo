@@ -4,6 +4,7 @@ import UIKit
 
 class DevMenuViewController: UIViewController {
   static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
+  static let ContentDidAppearNotification = Notification.Name("RCTContentDidAppearNotification")
 
   private let manager: DevMenuManager
   private var reactRootView: DevMenuRootView?
@@ -71,20 +72,22 @@ class DevMenuViewController: UIViewController {
 
   // MARK: private
 
-  private func initialProps() -> [String : Any] {
+  private func initialProps() -> [String: Any] {
     return [
       "enableDevelopmentTools": true,
       "showOnboardingView": manager.shouldShowOnboarding(),
       "devMenuItems": manager.serializedDevMenuItems(),
+      "devMenuScreens": manager.serializedDevMenuScreens(),
       "appInfo": manager.session?.appInfo ?? [:],
-      "uuid": UUID.init().uuidString
+      "uuid": UUID.init().uuidString,
+      "openScreen": manager.session?.openScreen ?? NSNull()
     ]
   }
 
   // RCTRootView assumes it is created on a loading bridge.
   // in our case, the bridge has usually already loaded. so we need to prod the view.
   private func forceRootViewToRenderHack() {
-    if !hasCalledJSLoadedNotification, let bridge = manager.appInstance?.bridge {
+    if !hasCalledJSLoadedNotification, let bridge = manager.appInstance.bridge {
       let notification = Notification(name: DevMenuViewController.JavaScriptDidLoadNotification, object: nil, userInfo: ["bridge": bridge])
 
       reactRootView?.javaScriptDidLoad(notification)
@@ -93,7 +96,7 @@ class DevMenuViewController: UIViewController {
   }
 
   private func maybeRebuildRootView() {
-    guard let bridge = manager.appInstance?.bridge else {
+    guard let bridge = manager.appInstance.bridge else {
       return
     }
     if reactRootView?.bridge != bridge {

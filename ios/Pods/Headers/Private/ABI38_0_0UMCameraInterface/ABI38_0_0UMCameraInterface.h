@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/UMCameraInterface/ABI38_0_0UMCameraInterface/ABI38_0_0UMCameraInterface.h

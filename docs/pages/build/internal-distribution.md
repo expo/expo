@@ -3,96 +3,139 @@ title: Internal distribution
 ---
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { theme } from '@expo/styleguide'
 
-Uploading your app to TestFlight and Google Play beta can be time consuming and can be limiting (e.g. TestFlight can only have one active build at a time). You can skip these services entirely by building binaries that can be downloaded and installed to physical devices directly from a web browser. EAS Build can help you with this by providing sharable URLs for your builds with instructions on how to get them running, so you can just share one URL with a teammate and it'll include all of the information they need to test the app.
+Uploading your app to TestFlight and Google Play beta can be time consuming (e.g. waiting for the build to run through static analysis before becoming available to testers) and limiting (e.g. TestFlight can only have one active build at a time). Both Android and iOS provide alternative mechanisms to distribute apps directly to testers, so they can download and install them to physical devices directly from a web browser as soon as the builds are completed.
 
-> 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to adhoc <!--and enterprise --> provisioning profiles. We'll talk more about this later in this doc.
+EAS Build can help you with this by providing sharable URLs for your builds with instructions on how to get them running, so you can share a single URL with a teammate that'll include all of the information they need to test the app.
 
-## Setting up internal distribution
+> 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
 
-### Configuring a build profile
+<div style={{marginTop: 30}} />
 
-Open up `eas.json` and add a new build profile for iOS and/or Android.
+<h1>Setting up internal distribution</h1>
+
+The following three steps will guide you through adding internal distribution to a project that is [already set up to build with EAS Build](setup.md). It will only take a few minutes in total to: configure the project, add a couple of test iOS devices to a provisioning profile, and start builds for Android and iOS.
+
+<div style={{marginTop: -10}} />
+
+## 1. Configure a build profile
+
+Open up **eas.json** and add a new build profile for iOS and/or Android.
 
 ```json
 {
-  "builds": {
-    "android": {
-      "preview": {
-        /* @info valid values: store, internal. defaults to store */
-        "distribution": "internal",
-        /* @end */
-        "workflow": "generic"
-      }
-    },
-    "ios": {
-      "preview": {
-        /* @info valid values: store, internal. defaults to store */
-        "distribution": "internal",
-        /* @end */
-        "workflow": "generic"
+  "build": {
+    "preview": {
+      "distribution": "internal"
+    }
+  }
+}
+```
+
+### Android
+
+Please note that if you override the `gradleCommand` on Android, you should ensure that it produces an `apk` rather than an `aab`, so it is directly installable to an Android device.
+
+### iOS
+
+The configuration above tells EAS Build that you would like to use ad hoc distribution, which is available for all paid Apple developer accounts. It is not available for free accounts.
+
+<div style={{marginTop: -10}} />
+
+<details><summary><h4>🏙 Do you have an Apple Developer Enterprise Program membership?</h4></summary>
+<p>
+
+The following will only work if you have an Apple account with Apple Developer Enterprise Program membership. While using Enterprise provisioning, you can sign your app using a `universal` or `adhoc` provisioning profile. We recommend `universal` because it does not require you to register your devices with Apple, which is the main benefit of using Enterprise provisioning.
+
+```json
+{
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        /* @info Valid values: universal, adhoc */
+        "enterpriseProvisioning": "universal" /* @end */
+
       }
     }
   }
 }
 ```
 
-### Configuring app signing credentials for Android
+</p>
+</details>
 
-This is no different from configuring app signing credentials for other types of builds.
+## 2. Configure app signing
 
-### Configuring app signing credentials for iOS
+### 2.1 Configure app signing credentials for Android
 
-<!--
-(@dsokal) this is not implemented yet
+Android does not restrict distribution of applications &mdash; the operating system is capable of installing any compatible `apk` file. As a result, configuring app signing credentials for internal distribution is no different from other types of builds. The main benefit of using internal distribution in this case is to have an easily shareable URL to provide to testers for downloading the app.
 
-#### Enterprise provisioning
+### 2.2 Configure app signing credentials for iOS
 
-If you plan on using enterprise provisioning, please sign in to the account with [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/). You probably don't have this, and it's expensive (\$299 USD per year) and takes time to acquire, so you will likely be using adhoc provisioning &mdash; this works on any normal paid Apple developer account.
--->
+Apple restricts distribution of applications on iPhones and iPads, so we will need to build the app with an ad hoc provisioning profile that explicitly lists the devices that the application can run on.
 
-<!--
-(@dsokal) this is not implemented yet
+An alternative to ad hoc provisioning is enterprise provisioning, which requires a special Apple Developer membership that costs $299 USD per year. Enterprise provisioning allows you to run the application on any device without any sort of device registration.
 
-#### Setting up enterprise provisioning
+#### Setting up ad hoc provisioning
 
-If you do have an Apple enterprise account, this makes internal distribution much easier for users who want to install your app for the first time. Once they install the profile to their device they can access the app right away. One limitation of using an enterprise provisioning profile is that you will need to have a distinct bundle identifier from the one that you use to publish your app to the App Store. (@brentvatne: after this is a bad idea intentionally, we should probably have a config option, i'm just putting it there so we have something for now) We recommend setting your bundle identifier for internal distribution and committing that change on another branch. After that, whenever you want to create a preview branch you can check out that branch and rebase against the branch you'd like to create a build for.
--->
+Apps signed with an ad hoc provisioning profile can be installed by any iOS device whose unique identifier (UDID) is registered with the provisioning profile.
 
-#### Setting up adhoc provisioning
-
-Apps signed with an adhoc provisioning profile can be installed by any iOS device whose unique identifier (UDID) is registered with the provisioning profile.
-
-Setting up adhoc provisioning consists of two steps. In the first step, you'll register all devices you want to run your app on. Run the following command to generate a URL (and QR code, for convenience) that you can open on your devices to register them to be eligible for internal distribution.
+Setting up ad hoc provisioning consists of two steps. In the first step, you'll register devices that you want to be able to install your app. Run the following command to generate a URL (and QR code, for convenience) that you can open on your devices, and then follow the instructions on the registration page.
 
 <TerminalBlock cmd={['# Register Apple Devices for internal distribution', 'eas device:create']} />
 
-When all of your devices are registered, the next step is to run a build. The build command will guide you through the credentials (provisioning profile) generation process.
+You can register new devices at any time, but builds that were created before the device was registered will not run on newly registered devices; only builds that are created after the device is registered will be installable.
 
-#### Advanced flow: Using credentials.json
+The next step is to generate or update the provisioning profile. When you proceed to running a build, you will be guided through this process.
 
-**Using credentials.json?** If you are using local credentials, make sure you point your `credentials.json` to an ad-hoc <!-- or enterprise -->provisioning profile that you generate through the Apple Developer portal. Beware that EAS CLI does only a limited validation of your local credentials. Use at your own risk!
+<details><summary><h4>🏙 Are you setting up enterprise provisioning?</h4></summary>
+<p>
 
-### Run a build with the internal build profile
+Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple developer account.
+
+If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
+
+If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
+  
+- In managed projects, use **app.config.js** to dynamically switch identifiers.
+- In bare projects, create a separate `scheme` for each bundle identifier and specify the scheme name in separate build profiles.
+
+</p>
+</details>
+
+<div style={{marginTop: -20}} />
+
+<details><summary><h4>🔐 Are you using manual local credentials?</h4></summary>
+<p>
+
+If so, make sure to point your **credentials.json** to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer Portal (either update an existing credentials.json used for another type of distribution or replace it with a new one that points to the appropriate provisioning profile). Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
+
+</p>
+</details>
+
+
+## 3. Run a build with the internal build profile
 
 Now that we have set up our build profile and app signing, running a build for internal distribution is just like any other build.
 
 <TerminalBlock cmd={['# Create iOS and Android builds for internal distribution', 'eas build --profile preview --platform all']} />
 
-If you choose to let EAS CLI manage your adhoc provisioning profile, we will show you the list of all devices registered so far. You will then be prompted to confirm you want to proceed with those devices.
+> If you're using ad hoc provisioning but you haven't registered any devices yet, you'll be asked to register them now (or exit the current command and run `eas device:add` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and continue.
 
-When the build completes, you will be given a URL that you can share with your team (provided that they have an Expo account and are part of your organization <!-- (@dsokal) we'll change this requirement so everyone who knows the URL can install the app -->) to download and install the app.
+When the build completes, you will be given a URL that you can share with your team to download and install the app.
+
+## 4. Installing and running the build
+
+Press the "Install" button on the build page and follow the instructions presented in the modal.
+
+## 5. Automation on CI (_optional_)
+
+It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag; however, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple in order for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci.md).
 
 <!--
 (@dsokal) this is not implemented yet
 
-If the device you would like to distribute to is not currently registered, you can choose to register it now (or exit the current command and run `eas device:add` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and press return to continue. You should see that your new device registration has been detected and added to the profile.
-
-You can add another if you like, otherwise continue.
--->
-
-<!--
-(@dsokal) this is not implemented yet
-
-When using iOS adhoc provisioning managed by Expo, if a teammate navigates to this URL on an iOS device that is not yet registered, they will be able to register their device and initiate a new build to include the updated profile that will run on their device. If the adhoc provisioning profile is not managed by Expo, the user will be asked to contact the organization admin in order to add their device UDID and create a new build compatible with their device.
+When using iOS ad hoc provisioning managed by Expo, if a teammate navigates to this URL on an iOS device that is not yet registered, they will be able to register their device and initiate a new build to include the updated profile that will run on their device. If the ad hoc provisioning profile is not managed by Expo, the user will be asked to contact the organization admin in order to add their device UDID and create a new build compatible with their device.
 -->

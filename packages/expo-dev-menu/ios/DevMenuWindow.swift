@@ -12,6 +12,7 @@ class DevMenuWindow: UIWindow {
     self.rootViewController = DevMenuViewController(manager: manager)
     self.backgroundColor = UIColor.clear
     self.bounds = UIScreen.main.bounds
+    self.windowLevel = .statusBar
     self.isHidden = true
   }
 

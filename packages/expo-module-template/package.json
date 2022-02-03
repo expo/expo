@@ -1,12 +1,10 @@
 {
   "name": "expo-module-template",
-  "version": "8.5.0",
+  "version": "10.3.0",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",
-  "scripts": {
-    "build": "tsc"
-  },
+  "scripts": {},
   "keywords": [
     "react-native",
     "expo",
@@ -22,12 +20,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "expo": "*"
   }
 }

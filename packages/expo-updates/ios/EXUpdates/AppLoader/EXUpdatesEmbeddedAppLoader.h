@@ -17,6 +17,7 @@ extern NSString * const EXUpdatesBareEmbeddedBundleFileType;
                                                 database:(nullable EXUpdatesDatabase *)database;
 
 - (void)loadUpdateFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                                           onAsset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                                            success:(EXUpdatesAppLoaderSuccessBlock)success
                                              error:(EXUpdatesAppLoaderErrorBlock)error;
 

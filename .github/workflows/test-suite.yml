@@ -3,7 +3,7 @@ name: Test Suite
 on:
   workflow_dispatch: {}
   push:
-    branches: [master, 'sdk-*']
+    branches: [main, 'sdk-*']
     paths:
       - .github/workflows/test-suite.yml
       - apps/bare-expo/**
@@ -11,7 +11,6 @@ on:
       - packages/**
       - yarn.lock
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/test-suite.yml
       - apps/bare-expo/**
@@ -19,63 +18,113 @@ on:
       - packages/**
       - yarn.lock
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   web:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/setup-node@v2-beta
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v2
         with:
-          node-version: '14.4.0'
-      - uses: actions/checkout@v2
+          node-version: '14.17'
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
       - run: yarn global add expo-cli
       - run: yarn test:web
         working-directory: apps/bare-expo
-      - uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_web }}
         with:
-          channel: '#platform-web'
+          channel: '#expo-web'
           status: ${{ job.status }}
-          fields: author,job,message,ref
-          author_name: test suite web
+          fields: job,message,ref,eventName,author,took
+          author_name: Test Suite (Web)
 
   ios:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
-      - uses: actions/checkout@v2
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
         with:
           submodules: true
-      - run: brew tap wix/brew
-      - run: brew install applesimutils
-      - run: brew install watchman
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - name: 🔨 Switch to Xcode 13.0
+        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
+      - name: 🍺 Install required tools
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+          brew install watchman
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - name: Clean Detox
+          bundler-cache: true
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
+        with:
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
+      - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
+        uses: actions/cache@v2
+        id: pods-cache
+        with:
+          path: 'apps/bare-expo/ios/Pods'
+          key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+          # restore-keys: |
+          #   ${{ runner.os }}-bare-expo-pods-
+      - name: 🕵️ Debug CocoaPods lockfiles
+        run: git diff Podfile.lock Pods/Manifest.lock
+        working-directory: apps/bare-expo/ios
+        continue-on-error: true
+      - name: ⚛️ Display React Native config
+        run: yarn react-native config
+        working-directory: apps/bare-expo
+      - name: 🌳 Display pod environment
+        run: pod env
+        working-directory: apps/bare-expo/ios
+      - name: 🥥 Install pods in apps/bare-expo/ios
+        run: pod install
+        working-directory: apps/bare-expo/ios
+      - name: 🧹 Clean Detox
         run: yarn detox:clean
         working-directory: apps/bare-expo
-      - name: Build iOS project for Detox
+      - name: 🏗️ Build iOS project for Detox
         run: yarn ios:detox:build:release
         working-directory: apps/bare-expo
         timeout-minutes: 30
@@ -88,13 +137,87 @@ jobs:
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts
-      - uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
-          channel: '#platform-ios'
+          channel: '#expo-ios'
           status: ${{ job.status }}
-          fields: author,job,message,ref
-          author_name: test suite ios
+          fields: job,message,ref,eventName,author,took
+          author_name: Test Suite (iOS)
+
+  android:
+    runs-on: macos-11
+    env:
+      NDK_ABI_FILTERS: x86_64
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: 🍺 Install required tools
+        run: |
+          brew install watchman
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
+        with:
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-v20210625-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-v20210625
+      - name: ⚛️ Display React Native config
+        run: yarn react-native config
+        working-directory: apps/bare-expo
+      - name: 🧹 Clean Detox
+        run: yarn detox:clean
+        working-directory: apps/bare-expo
+      - name: 🏗️ Build Android project for Detox
+        run: yarn android:detox:build:release
+        working-directory: apps/bare-expo
+        timeout-minutes: 35
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
+      - name: Run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          avd-name: bare-expo
+          script: yarn android:detox:test:release
+          working-directory: ./apps/bare-expo
+      - name: Store images of build failures
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: bare-expo-artifacts
+          path: apps/bare-expo/artifacts
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+        with:
+          channel: '#expo-android'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Test Suite (Android)

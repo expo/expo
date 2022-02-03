@@ -1,8 +1,9 @@
-import { CodedError } from '@unimodules/core';
 import * as AppAuth from 'expo-app-auth';
 import Constants from 'expo-constants';
+import { CodedError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 const isInExpo = Constants.appOwnership === 'expo';
+/** @deprecated `expo-google-app-auth` is deprecated in favor of `expo-auth-session`. [Learn more](https://docs.expo.dev/guides/authentication/#google). */
 export function getPlatformGUID(config) {
     const { clientId } = config;
     const iosClientId = isInExpo ? config.iosClientId : config.iosStandaloneAppClientId;
@@ -51,7 +52,7 @@ function isValidGUID(guid) {
     return { isValid: true };
 }
 function guidFromClientId(clientId) {
-    const clientIdComponents = clientId.split('.').filter(component => component.includes('-'));
+    const clientIdComponents = clientId.split('.').filter((component) => component.includes('-'));
     const guid = clientIdComponents[0];
     const { isValid, reason } = isValidGUID(guid);
     if (!isValid) {
@@ -61,6 +62,8 @@ function guidFromClientId(clientId) {
 }
 /**
  * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
+ *
+ * @deprecated `expo-google-app-auth` is deprecated in favor of `expo-auth-session`. [Learn more](https://docs.expo.dev/guides/authentication/#google).
  *
  * Get started in:
  * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
@@ -134,6 +137,7 @@ export async function logInAsync(config) {
         throw error;
     }
 }
+/** @deprecated `expo-google-app-auth` is deprecated in favor of `expo-auth-session` (`AuthSession.revokeAsync()`). [Learn more](https://docs.expo.dev/guides/authentication/#google). */
 export async function logOutAsync({ accessToken, ...inputConfig }) {
     const guid = getPlatformGUID(inputConfig);
     const clientId = `${guid}.apps.googleusercontent.com`;

@@ -3,21 +3,21 @@
 #import <UIKit/UIKit.h>
 #import <EventKit/EventKit.h>
 
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 #import <EXCalendar/EXCalendar.h>
 #import <EXCalendar/EXCalendarConverter.h>
 #import <EXCalendar/EXCalendarPermissionRequester.h>
 #import <EXCalendar/EXRemindersPermissionRequester.h>
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 @interface EXCalendar ()
 
 @property (nonatomic, strong) EKEventStore *eventStore;
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic) EKEntityMask permittedEntities;
 
 @end
@@ -33,12 +33,12 @@
   return self;
 }
 
-UM_EXPORT_MODULE(ExpoCalendar);
+EX_EXPORT_MODULE(ExpoCalendar);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[
                                                     [EXCalendarPermissionRequester new],
                                                     [EXRemindersPermissionRequester new]
                                                     ]
@@ -60,10 +60,10 @@ UM_EXPORT_MODULE(ExpoCalendar);
 #pragma mark -
 #pragma mark Event Store Accessors
 
-UM_EXPORT_METHOD_AS(getCalendarsAsync,
+EX_EXPORT_METHOD_AS(getCalendarsAsync,
                     getCalendarsAsync:(NSString *)typeString
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSArray *calendars;
   if (!typeString) {
@@ -101,9 +101,9 @@ UM_EXPORT_METHOD_AS(getCalendarsAsync,
   resolve([EXCalendarConverter serializeCalendars:calendars]);
 }
 
-UM_EXPORT_METHOD_AS(getDefaultCalendarAsync,
-                    getDefaultCalendarAsync:(UMPromiseResolveBlock)resolve
-                    rejector:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getDefaultCalendarAsync,
+                    getDefaultCalendarAsync:(EXPromiseResolveBlock)resolve
+                    rejector:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
@@ -116,10 +116,10 @@ UM_EXPORT_METHOD_AS(getDefaultCalendarAsync,
   resolve([EXCalendarConverter serializeCalendar:defaultCalendar]);
 }
 
-UM_EXPORT_METHOD_AS(saveCalendarAsync,
+EX_EXPORT_METHOD_AS(saveCalendarAsync,
                     saveCalendarAsync:(NSDictionary *)details
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
@@ -165,7 +165,7 @@ UM_EXPORT_METHOD_AS(saveCalendarAsync,
   }
 
   if (color) {
-    calendar.CGColor = [UMUtilities UIColor:color].CGColor;
+    calendar.CGColor = [EXUtilities UIColor:color].CGColor;
   } else if (details[@"color"] == [NSNull null]) {
     calendar.CGColor = nil;
   }
@@ -181,10 +181,10 @@ UM_EXPORT_METHOD_AS(saveCalendarAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(deleteCalendarAsync,
+EX_EXPORT_METHOD_AS(deleteCalendarAsync,
                     deleteCalendarAsync:(NSString *)calendarId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
@@ -208,20 +208,20 @@ UM_EXPORT_METHOD_AS(deleteCalendarAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(getEventsAsync,
+EX_EXPORT_METHOD_AS(getEventsAsync,
                     getEventsAsync:(NSString *)startDateStr
                     endDate:(NSString *)endDateStr
                     calendars:(NSArray *)calendars
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
   }
 
   NSMutableArray *eventCalendars;
-  NSDate *startDate = [UMUtilities NSDate:startDateStr];
-  NSDate *endDate = [UMUtilities NSDate:endDateStr];
+  NSDate *startDate = [EXUtilities NSDate:startDateStr];
+  NSDate *endDate = [EXUtilities NSDate:endDateStr];
 
   if (calendars.count) {
     eventCalendars = [[NSMutableArray alloc] init];
@@ -249,17 +249,17 @@ UM_EXPORT_METHOD_AS(getEventsAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(getEventByIdAsync,
+EX_EXPORT_METHOD_AS(getEventByIdAsync,
                     getEventByIdAsync:(NSString *)eventId
                     startDate:(NSString *)startDateStr
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
   }
 
-  NSDate *startDate = [UMUtilities NSDate:startDateStr];
+  NSDate *startDate = [EXUtilities NSDate:startDateStr];
   EKEvent *calendarEvent = [self _getEventWithId:eventId startDate:startDate];
 
   if (calendarEvent) {
@@ -271,11 +271,11 @@ UM_EXPORT_METHOD_AS(getEventByIdAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(saveEventAsync,
+EX_EXPORT_METHOD_AS(saveEventAsync,
                     saveEventAsync:(NSDictionary *)details
                     options:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
@@ -286,9 +286,9 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
   NSString *eventId = details[@"id"];
   NSString *title = details[@"title"];
   NSString *location = details[@"location"];
-  NSDate *startDate = [UMUtilities NSDate:details[@"startDate"]];
-  NSDate *endDate = [UMUtilities NSDate:details[@"endDate"]];
-  NSDate *instanceStartDate = [UMUtilities NSDate:details[@"instanceStartDate"]];
+  NSDate *startDate = [EXUtilities NSDate:details[@"startDate"]];
+  NSDate *endDate = [EXUtilities NSDate:details[@"endDate"]];
+  NSDate *instanceStartDate = [EXUtilities NSDate:details[@"instanceStartDate"]];
   NSNumber *allDay = details[@"allDay"];
   NSString *notes = details[@"notes"];
   NSString *timeZone = details[@"timeZone"];
@@ -420,11 +420,11 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(deleteEventAsync,
+EX_EXPORT_METHOD_AS(deleteEventAsync,
                     deleteEventAsync:(NSDictionary *)event
                     options:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
@@ -436,7 +436,7 @@ UM_EXPORT_METHOD_AS(deleteEventAsync,
     span = EKSpanFutureEvents;
   }
 
-  NSDate *instanceStartDate = [UMUtilities NSDate:event[@"instanceStartDate"]];
+  NSDate *instanceStartDate = [EXUtilities NSDate:event[@"instanceStartDate"]];
 
   EKEvent *calendarEvent = [self _getEventWithId:event[@"id"] startDate:instanceStartDate];
 
@@ -456,16 +456,16 @@ UM_EXPORT_METHOD_AS(deleteEventAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(getAttendeesForEventAsync,
+EX_EXPORT_METHOD_AS(getAttendeesForEventAsync,
                     getAttendeesForEventAsync:(NSDictionary *)event
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkCalendarPermissions:reject]) {
     return;
   }
 
-  NSDate *instanceStartDate = [UMUtilities NSDate:event[@"instanceStartDate"]];
+  NSDate *instanceStartDate = [EXUtilities NSDate:event[@"instanceStartDate"]];
 
   EKEvent *item = [self _getEventWithId:event[@"id"] startDate:instanceStartDate];
 
@@ -482,21 +482,21 @@ UM_EXPORT_METHOD_AS(getAttendeesForEventAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(getRemindersAsync,
+EX_EXPORT_METHOD_AS(getRemindersAsync,
                     getRemindersAsync:(NSString * _Nullable)startDateStr
                     endDate:(NSString * _Nullable)endDateStr
                     calendars:(NSArray *)calendars
                     status:(NSString * _Nullable)status
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkRemindersPermissions:reject]) {
     return;
   }
 
   NSMutableArray *reminderCalendars;
-  NSDate *startDate = [UMUtilities NSDate:startDateStr];
-  NSDate *endDate = [UMUtilities NSDate:endDateStr];
+  NSDate *startDate = [EXUtilities NSDate:startDateStr];
+  NSDate *endDate = [EXUtilities NSDate:endDateStr];
 
   if (calendars.count) {
     reminderCalendars = [[NSMutableArray alloc] init];
@@ -532,10 +532,10 @@ UM_EXPORT_METHOD_AS(getRemindersAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(getReminderByIdAsync,
+EX_EXPORT_METHOD_AS(getReminderByIdAsync,
                     getReminderByIdAsync:(NSString *)reminderId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkRemindersPermissions:reject]) {
     return;
@@ -558,10 +558,10 @@ UM_EXPORT_METHOD_AS(getReminderByIdAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(saveReminderAsync,
+EX_EXPORT_METHOD_AS(saveReminderAsync,
                     saveReminderAsync:(NSDictionary *)details
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkRemindersPermissions:reject]) {
     return;
@@ -570,9 +570,9 @@ UM_EXPORT_METHOD_AS(saveReminderAsync,
   EKReminder *reminder = nil;
   NSString *calendarId = details[@"calendarId"];
   NSString *reminderId = details[@"id"];
-  NSDate *startDate = [UMUtilities NSDate:details[@"startDate"]];
-  NSDate *dueDate = [UMUtilities NSDate:details[@"dueDate"]];
-  NSDate *completionDate = [UMUtilities NSDate:details[@"completionDate"]];
+  NSDate *startDate = [EXUtilities NSDate:details[@"startDate"]];
+  NSDate *dueDate = [EXUtilities NSDate:details[@"dueDate"]];
+  NSDate *completionDate = [EXUtilities NSDate:details[@"completionDate"]];
   NSNumber *completed = details[@"completed"];
   NSString *title = details[@"title"];
   NSString *location = details[@"location"];
@@ -693,10 +693,10 @@ UM_EXPORT_METHOD_AS(saveReminderAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(deleteReminderAsync,
+EX_EXPORT_METHOD_AS(deleteReminderAsync,
                     deleteReminderAsync:(NSString *)reminderId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkRemindersPermissions:reject]) {
     return;
@@ -720,9 +720,9 @@ UM_EXPORT_METHOD_AS(deleteReminderAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(getSourcesAsync,
-                    getSourcesAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getSourcesAsync,
+                    getSourcesAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSArray *sources = [self.eventStore sources];
 
@@ -740,10 +740,10 @@ UM_EXPORT_METHOD_AS(getSourcesAsync,
   resolve(serializedSources);
 }
 
-UM_EXPORT_METHOD_AS(getSourceByIdAsync,
+EX_EXPORT_METHOD_AS(getSourceByIdAsync,
                     getSourceByIdAsync:(NSString *)sourceId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   EKSource *source = [self.eventStore sourceWithIdentifier:sourceId];
   if (!source) {
@@ -756,41 +756,41 @@ UM_EXPORT_METHOD_AS(getSourceByIdAsync,
   resolve([EXCalendarConverter serializeSource:source]);
 }
 
-UM_EXPORT_METHOD_AS(getCalendarPermissionsAsync,
-                    getCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getCalendarPermissionsAsync,
+                    getCalendarPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXCalendarPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
-                    requestCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
+                    requestCalendarPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXCalendarPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
-                    getRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
+                    getRemindersPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXRemindersPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
-                    requestRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
+                    requestRemindersPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXRemindersPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
@@ -835,7 +835,7 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
 {
   EKAlarm *calendarEventAlarm = nil;
 
-  NSDate *date = [UMUtilities NSDate:alarm[@"absoluteDate"]];
+  NSDate *date = [EXUtilities NSDate:alarm[@"absoluteDate"]];
   NSNumber *relativeOffset = alarm[@"relativeOffset"];
 
   if (date) {
@@ -907,7 +907,7 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   }
 
   if (recurrenceRule[@"endDate"]) {
-      endDate = [UMUtilities NSDate:recurrenceRule[@"endDate"]];
+      endDate = [EXUtilities NSDate:recurrenceRule[@"endDate"]];
   }
 
   NSMutableArray *daysOfTheWeek = nil;
@@ -981,7 +981,7 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return EKEventAvailabilityNotSupported;
 }
 
-- (BOOL)_checkPermissions:(EKEntityType)entity reject:(UMPromiseRejectBlock)reject
+- (BOOL)_checkPermissions:(EKEntityType)entity reject:(EXPromiseRejectBlock)reject
 {
   if (_eventStore && _permittedEntities & entity) {
     return YES;
@@ -1012,12 +1012,12 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return YES;
 }
 
-- (BOOL)_checkCalendarPermissions:(UMPromiseRejectBlock)reject
+- (BOOL)_checkCalendarPermissions:(EXPromiseRejectBlock)reject
 {
   return [self _checkPermissions:EKEntityTypeEvent reject:reject];
 }
 
-- (BOOL)_checkRemindersPermissions:(UMPromiseRejectBlock)reject
+- (BOOL)_checkRemindersPermissions:(EXPromiseRejectBlock)reject
 {
   return [self _checkPermissions:EKEntityTypeReminder reject:reject];
 }

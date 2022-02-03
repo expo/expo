@@ -1,6 +1,6 @@
 package expo.modules.notifications.tokens;
 
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import NotificationPresenter from './NotificationPresenterModule';
 export default async function dismissAllNotificationsAsync() {
     if (!NotificationPresenter.dismissAllNotificationsAsync) {

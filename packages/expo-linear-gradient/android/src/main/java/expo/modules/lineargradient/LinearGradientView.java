@@ -1,7 +1,5 @@
 package expo.modules.lineargradient;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
@@ -28,43 +26,31 @@ public class LinearGradientView extends View {
     super(context);
   }
 
-  public void setStartPosition(final ArrayList<Double> startPos) {
-    mStartPos = new float[]{startPos.get(0).floatValue(), startPos.get(1).floatValue()};
+  public void setStartPosition(final float x, final float y) {
+    mStartPos = new float[]{x, y};
     drawGradient();
   }
 
-  public void setEndPosition(final ArrayList<Double> endPos) {
-    mEndPos = new float[]{endPos.get(0).floatValue(), endPos.get(1).floatValue()};
+  public void setEndPosition(final float x, final float y) {
+    mEndPos = new float[]{x, y};
     drawGradient();
   }
 
-  public void setColors(final ArrayList<Double> colors) {
-    int[] _colors = new int[colors.size()];
-    for (int i=0; i < _colors.length; i++)
-    {
-      _colors[i] = colors.get(i).intValue();
+  public void setColors(final int[] colors) {
+    mColors = colors;
+    drawGradient();
+  }
+
+  public void setLocations(final float[] locations) {
+    mLocations = locations;
+    drawGradient();
+  }
+
+  public void setBorderRadii(final float[] borderRadii) {
+    for (int i = 0; i < borderRadii.length; i++) {
+      borderRadii[i] = toPixelFromDIP(borderRadii[i]);
     }
-    mColors = _colors;
-    drawGradient();
-  }
-
-  public void setLocations(final ArrayList<Double> locations) {
-    float[] _locations = new float[locations.size()];
-    for (int i=0; i < _locations.length; i++)
-    {
-      _locations[i] = locations.get(i).floatValue();
-    }
-    mLocations = _locations;
-    drawGradient();
-  }
-
-  public void setBorderRadii(final ArrayList<Double> borderRadii) {
-    float[] _radii = new float[borderRadii.size()];
-    for (int i=0; i < _radii.length; i++)
-    {
-       _radii[i] = toPixelFromDIP(borderRadii.get(i).floatValue());
-    }
-    mBorderRadii = _radii;
+    mBorderRadii = borderRadii;
     updatePath();
     drawGradient();
   }
@@ -74,9 +60,9 @@ public class LinearGradientView extends View {
   // having code similar to this littered throughout modules
   private float toPixelFromDIP(float value) {
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        value,
-        getContext().getResources().getDisplayMetrics()
+      TypedValue.COMPLEX_UNIT_DIP,
+      value,
+      getContext().getResources().getDisplayMetrics()
     );
   }
 
@@ -92,13 +78,13 @@ public class LinearGradientView extends View {
     if (mColors == null || (mLocations != null && mColors.length != mLocations.length))
       return;
     LinearGradient mShader = new LinearGradient(
-        mStartPos[0] * mSize[0],
-        mStartPos[1] * mSize[1],
-        mEndPos[0] * mSize[0],
-        mEndPos[1] * mSize[1],
-        mColors,
-        mLocations,
-        Shader.TileMode.CLAMP);
+      mStartPos[0] * mSize[0],
+      mStartPos[1] * mSize[1],
+      mEndPos[0] * mSize[0],
+      mEndPos[1] * mSize[1],
+      mColors,
+      mLocations,
+      Shader.TileMode.CLAMP);
     mPaint.setShader(mShader);
     invalidate();
   }
@@ -111,9 +97,9 @@ public class LinearGradientView extends View {
     mPathForBorderRadius.reset();
     mTempRectForBorderRadius.set(0f, 0f, (float) mSize[0], (float) mSize[1]);
     mPathForBorderRadius.addRoundRect(
-        mTempRectForBorderRadius,
-        mBorderRadii,
-        Path.Direction.CW);
+      mTempRectForBorderRadius,
+      mBorderRadii,
+      Path.Direction.CW);
   }
 
   @Override

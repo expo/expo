@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
   @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Should not call EXAppFetcher#start -- use a subclass instead" userInfo:nil];
 }
 
-- (void)fetchJSBundleWithManifest:(NSDictionary *)manifest
+- (void)fetchJSBundleWithManifest:(EXManifestsManifest *)manifest
                     cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
                   timeoutInterval:(NSTimeInterval)timeoutInterval
                          progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   EXJavaScriptResource *jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self.dataSource bundleResourceNameForAppFetcher:self withManifest:manifest]
                                                                             remoteUrl:[EXApiUtil bundleUrlFromManifest:manifest]
-                                                                      devToolsEnabled:[[self class] areDevToolsEnabledWithManifest:manifest]];
+                                                                      devToolsEnabled:manifest.isUsingDeveloperTool];
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
   jsResource.requestTimeoutInterval = timeoutInterval;
 
@@ -55,30 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
   [jsResource loadResourceWithBehavior:cacheBehavior progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
 }
 
-+ (NSString *)experienceIdWithManifest:(NSDictionary * _Nonnull)manifest
++ (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(EXManifestsManifest * _Nonnull)manifest
 {
-  id experienceIdJsonValue = manifest[@"id"];
-  if (experienceIdJsonValue) {
-    RCTAssert([experienceIdJsonValue isKindOfClass:[NSString class]], @"Manifest contains an id which is not a string: %@", experienceIdJsonValue);
-    return experienceIdJsonValue;
-  }
-  return nil;
-}
-
-+ (BOOL)areDevToolsEnabledWithManifest:(NSDictionary * _Nonnull)manifest
-{
-  NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-  BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-  return (isDeployedFromTool);
-}
-
-+ (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(NSDictionary * _Nonnull)manifest
-{
-  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[[self class] experienceIdWithManifest:manifest]]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:manifest.scopeKey]) {
     // if this experience id encountered a loading error before, discard any cache we might have
     return EXCachedResourceWriteToCache;
   }
-  if ([[self class] areDevToolsEnabledWithManifest:manifest]) {
+  if (manifest.isUsingDeveloperTool) {
     return EXCachedResourceNoCache;
   }
   return EXCachedResourceWriteToCache;

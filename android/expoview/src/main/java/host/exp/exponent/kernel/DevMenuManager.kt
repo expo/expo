@@ -27,7 +27,6 @@ import javax.inject.Inject
 import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
 
-
 private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
 
 /**
@@ -43,13 +42,13 @@ class DevMenuManager {
   private val devMenuModulesRegistry = WeakHashMap<ExperienceActivity, DevMenuModuleInterface>()
 
   @Inject
-  internal val kernel: Kernel? = null
+  internal lateinit var kernel: Kernel
 
   @Inject
-  internal val exponentSharedPreferences: ExponentSharedPreferences? = null
+  internal lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(DevMenuManager::class.java, this)
+    NativeModuleDepsProvider.instance.inject(DevMenuManager::class.java, this)
     EventBus.getDefault().register(this)
   }
 
@@ -91,9 +90,9 @@ class DevMenuManager {
 
         // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
         // Otherwise, touches and other gestures may not work correctly.
-        kernel?.reactInstanceManager?.onHostResume(activity)
+        kernel.reactInstanceManager?.onHostResume(activity)
       } catch (exception: Exception) {
-        Log.e("ExpoDevMenu", exception.message)
+        Log.e("ExpoDevMenu", exception.message ?: "No error message.")
       }
     }
   }
@@ -125,8 +124,7 @@ class DevMenuManager {
    * Does nothing if the current activity is not of type [ExperienceActivity].
    */
   fun hideInCurrentActivity() {
-    val currentActivity = ExperienceActivity.getCurrentActivity()
-
+    val currentActivity = ExperienceActivity.currentActivity
     if (currentActivity != null) {
       hideInActivity(currentActivity)
     }
@@ -136,7 +134,7 @@ class DevMenuManager {
    * Toggles dev menu visibility in given experience activity.
    */
   fun toggleInActivity(activity: ExperienceActivity) {
-    if (isDevMenuVisible() && activity.hasReactView(reactRootView)) {
+    if (isDevMenuVisible() && reactRootView != null && activity.hasReactView(reactRootView!!)) {
       requestToClose(activity)
     } else {
       showInActivity(activity)
@@ -152,15 +150,18 @@ class DevMenuManager {
       return
     }
 
-    ExponentKernelModule.queueEvent("ExponentKernel.requestToCloseDevMenu", Arguments.createMap(), object : ExponentKernelModuleProvider.KernelEventCallback {
-      override fun onEventSuccess(result: ReadableMap) {
-        hideInActivity(activity)
-      }
+    ExponentKernelModule.queueEvent(
+      "ExponentKernel.requestToCloseDevMenu", Arguments.createMap(),
+      object : ExponentKernelModuleProvider.KernelEventCallback {
+        override fun onEventSuccess(result: ReadableMap) {
+          hideInActivity(activity)
+        }
 
-      override fun onEventFailure(errorMessage: String) {
-        hideInActivity(activity)
+        override fun onEventFailure(errorMessage: String?) {
+          hideInActivity(activity)
+        }
       }
-    })
+    )
   }
 
   /**
@@ -202,7 +203,7 @@ class DevMenuManager {
     getCurrentDevMenuModule()?.let {
       try {
         val manifestUrl = it.getManifestUrl()
-        kernel?.reloadVisibleExperience(manifestUrl, false)
+        kernel.reloadVisibleExperience(manifestUrl, false)
       } catch (reloadingException: Exception) {
         reloadingException.printStackTrace()
         // If anything goes wrong here, we can fall back to plain JS reload.
@@ -223,7 +224,7 @@ class DevMenuManager {
    * Checks whether the dev menu is shown over given experience activity.
    */
   fun isShownInActivity(activity: ExperienceActivity): Boolean {
-    return reactRootView != null && activity.hasReactView(reactRootView)
+    return reactRootView != null && activity.hasReactView(reactRootView!!)
   }
 
   /**
@@ -231,14 +232,14 @@ class DevMenuManager {
    * Onboarding is a screen that shows the dev menu to the user that opens any experience for the first time.
    */
   fun isOnboardingFinished(): Boolean {
-    return exponentSharedPreferences?.getBoolean(ExponentSharedPreferences.IS_ONBOARDING_FINISHED_KEY) ?: false
+    return exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_ONBOARDING_FINISHED_KEY) ?: false
   }
 
   /**
    * Sets appropriate setting in shared preferences that user's onboarding has finished.
    */
   fun setIsOnboardingFinished(isOnboardingFinished: Boolean = true) {
-    exponentSharedPreferences?.setBoolean(ExponentSharedPreferences.IS_ONBOARDING_FINISHED_KEY, isOnboardingFinished)
+    exponentSharedPreferences.setBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_ONBOARDING_FINISHED_KEY, isOnboardingFinished)
   }
 
   /**
@@ -247,7 +248,7 @@ class DevMenuManager {
    */
   fun maybeResumeHostWithActivity(activity: ExperienceActivity) {
     if (isShownInActivity(activity)) {
-      kernel?.reactInstanceManager?.onHostResume(activity)
+      kernel.reactInstanceManager?.onHostResume(activity)
     }
   }
 
@@ -302,7 +303,7 @@ class DevMenuManager {
   @Throws(Exception::class)
   private fun prepareRootView(initialProps: Bundle): ReactRootView {
     // Throw an exception in case the kernel is not initialized yet.
-    if (kernel?.reactInstanceManager == null) {
+    if (kernel.reactInstanceManager == null) {
       throw Exception("Kernel's React instance manager is not initialized yet.")
     }
 
@@ -341,7 +342,7 @@ class DevMenuManager {
    * Returns current activity if it's of type [ExperienceActivity], or null otherwise.
    */
   private fun getCurrentExperienceActivity(): ExperienceActivity? {
-    return ExperienceActivity.getCurrentActivity()
+    return ExperienceActivity.currentActivity
   }
 
   /**
@@ -355,7 +356,7 @@ class DevMenuManager {
    * Handles shake gesture which simply toggles the dev menu.
    */
   private fun onShakeGesture() {
-    val currentActivity = ExperienceActivity.getCurrentActivity()
+    val currentActivity = ExperienceActivity.currentActivity
 
     if (currentActivity != null) {
       toggleInActivity(currentActivity)
@@ -364,7 +365,7 @@ class DevMenuManager {
 
   private fun tryToPauseHostActivity(activity: ExperienceActivity) {
     try {
-      kernel?.reactInstanceManager?.onHostPause(activity)
+      kernel.reactInstanceManager?.onHostPause(activity)
     } catch (e: AssertionError) {
       // nothing
     }

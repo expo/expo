@@ -3,12 +3,16 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesRemoteAppLoader ()
 
 @property (nonatomic, strong) EXUpdatesFileDownloader *downloader;
+@property (nonatomic, strong) EXUpdatesUpdate *remoteUpdate;
+
+@property (nonatomic, strong) dispatch_queue_t completionQueue;
 
 @end
 static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteAppLoader";
@@ -22,25 +26,59 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
 {
   if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
     _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
+    _completionQueue = completionQueue;
   }
   return self;
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
   self.manifestBlock = manifestBlock;
-  self.successBlock = success;
+  self.assetBlock = assetBlock;
   self.errorBlock = error;
-  [_downloader downloadManifestFromURL:url withDatabase:self.database cacheDirectory:self.directory successBlock:^(EXUpdatesUpdate *update) {
-    [self startLoadingFromManifest:update];
-  } errorBlock:^(NSError *error, NSURLResponse *response) {
-    if (self.errorBlock) {
-      self.errorBlock(error);
+
+  EX_WEAKIFY(self)
+  self.successBlock = ^(EXUpdatesUpdate * _Nullable update) {
+    EX_STRONGIFY(self)
+    // even if update is nil (meaning we didn't load a new update),
+    // we want to persist the header data from _remoteUpdate
+    if (self->_remoteUpdate) {
+      dispatch_async(self.database.databaseQueue, ^{
+        NSError *metadataError;
+        [self.database setMetadataWithManifest:self->_remoteUpdate error:&metadataError];
+        dispatch_async(self->_completionQueue, ^{
+          if (metadataError) {
+            NSLog(@"Error persisting header data to disk: %@", metadataError.localizedDescription);
+            error(metadataError);
+          } else {
+            success(update);
+          }
+        });
+      });
+    } else {
+      success(update);
     }
-  }];
+  };
+
+  dispatch_async(self.database.databaseQueue, ^{
+    NSError *headersError;
+    NSDictionary *extraHeaders = [self.database serverDefinedHeadersWithScopeKey:self.config.scopeKey error:&headersError];
+    if (headersError) {
+      NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
+    }
+    [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(EXUpdatesUpdate *update) {
+      self->_remoteUpdate = update;
+      [self startLoadingFromManifest:update];
+    } errorBlock:^(NSError *error) {
+      if (self.errorBlock) {
+        self.errorBlock(error);
+      }
+    }];
+  });
 }
 
 - (void)downloadAsset:(EXUpdatesAsset *)asset
@@ -59,11 +97,15 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
         return;
       }
 
-      [self->_downloader downloadFileFromURL:asset.url toPath:[urlOnDisk path] successBlock:^(NSData *data, NSURLResponse *response) {
+      [self->_downloader downloadFileFromURL:asset.url
+                                      toPath:[urlOnDisk path]
+                                extraHeaders:asset.extraRequestHeaders ?: @{}
+                                successBlock:^(NSData *data, NSURLResponse *response) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           [self handleAssetDownloadWithData:data response:response asset:asset];
         });
-      } errorBlock:^(NSError *error, NSURLResponse *response) {
+      }
+                                  errorBlock:^(NSError *error) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           [self handleAssetDownloadWithError:error asset:asset];
         });

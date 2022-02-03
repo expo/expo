@@ -3,6 +3,7 @@
 #if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
 #import "EXScopedFirebaseCore.h"
 #import <EXFirebaseCore/EXFirebaseCore+FIROptions.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 @interface NSObject (Private)
 - (NSString*)_methodDescription;
@@ -12,7 +13,7 @@
   NSDictionary* _protectedAppNames;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsManifest *)manifest constantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
     return [super init];
@@ -24,20 +25,20 @@
     @"[DEFAULT]": @YES
   }];
   _protectedAppNames = protectedAppNames;
-  
+
   // Make sure the [DEFAULT] app is initialized
   NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
   if (path && ![FIRApp defaultApp]) {
     [FIRApp configure];
   }
   if ([FIRApp defaultApp]) [protectedAppNames setValue:@YES forKey:[FIRApp defaultApp].name];
-  
+
   // Determine project app name & options
-  NSString *encodedExperienceId = [self.class encodedResourceName:experienceId];
-  NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedExperienceId];
-  NSDictionary* googleServicesFile = [self.class googleServicesFileFromConstantsManifest:constantsBinding];
+  NSString *encodedScopeKey = [self.class encodedResourceName:scopeKey];
+  NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedScopeKey];
+  NSDictionary* googleServicesFile = [self.class googleServicesFileFromManifest:manifest];
   FIROptions* options = [self.class optionsWithGoogleServicesFile:googleServicesFile];
-  
+
   // Delete all previously created (project) apps, except for the currently
   // loaded project and the "protected" ones
   NSDictionary<NSString *,FIRApp *>* apps = [FIRApp allApps];
@@ -46,7 +47,7 @@
     if (!protectedAppNames[name] && (!options || ![name isEqualToString:appName])) {
       [[FIRApp appNamed:name] deleteApp:^(BOOL success) {
         if (!success) {
-          UMLogWarn(@"Failed to delete Firebase app: %@", name);
+          EXLogWarn(@"Failed to delete Firebase app: %@", name);
         }
       }];
     }
@@ -60,7 +61,7 @@
 
 - (BOOL)isAppAccessible:(nonnull NSString *)name
 {
-  // Deny access to the protected default app on the Expo client
+  // Deny access to the protected default app on the Expo Go
   if (_protectedAppNames && _protectedAppNames[name]) {
     return NO;
   }
@@ -77,23 +78,20 @@
   return [base64 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 }
 
-+ (nullable NSDictionary *)googleServicesFileFromConstantsManifest:(nullable id<UMConstantsInterface>)constants
++ (nullable NSDictionary *)googleServicesFileFromManifest:(EXManifestsManifest *)manifest
 {
   // load GoogleService-Info.plist from manifest
   @try {
-    if (constants == nil) return nil;
-    NSDictionary* manifest = constants.constants[@"manifest"];
-    NSDictionary* ios = manifest ? manifest[@"ios"] : nil;
-    NSString* googleServicesFile = ios ? ios[@"googleServicesFile"] : nil;
+    NSString* googleServicesFile = manifest.iosGoogleServicesFile;
     if (!googleServicesFile) return nil;
     NSData *data = [[NSData alloc] initWithBase64EncodedString:googleServicesFile options:0];
     NSError* error;
     NSDictionary* plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&error];
-    if (error) UMLogWarn(@"Invalid googleServicesFile: %@", error);
+    if (error) EXLogWarn(@"Invalid googleServicesFile: %@", error);
     return plist;
   }
   @catch(NSException* exception) {
-    UMLogWarn(@"Invalid googleServicesFile: %@", exception);
+    EXLogWarn(@"Invalid googleServicesFile: %@", exception);
     return nil;
   }
 }
@@ -101,9 +99,9 @@
 + (nullable FIROptions *)optionsWithGoogleServicesFile:(nullable NSDictionary *)plist
 {
   if (!plist) return nil;
-  
+
   FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:plist[@"GOOGLE_APP_ID"] GCMSenderID:plist[@"GCM_SENDER_ID"]];
-         
+
   firOptions.APIKey = plist[@"API_KEY"];
   firOptions.bundleID = plist[@"BUNDLE_ID"];
   firOptions.clientID = plist[@"CLIENT_ID"];
@@ -112,7 +110,7 @@
   firOptions.androidClientID = plist[@"ANDROID_CLIENT_ID"];
   firOptions.databaseURL = plist[@"DATABASE_URL"];
   firOptions.storageBucket = plist[@"STORAGE_BUCKET"];
-  
+
   return firOptions;
 }
 

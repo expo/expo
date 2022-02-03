@@ -64,6 +64,26 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         expect(error).not.toBeNull();
       });
     });
+    describe('logEvent() - with `items` arrays', async () => {
+      itWhenConfigured(`runs`, async () => {
+        let error = null;
+        try {
+          await Analytics.logEvent('add_to_cart', { items: [{ id: 'foo', name: 'bar' }] });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeNull();
+      });
+      itWhenNotConfigured('fails when not configured', async () => {
+        let error = null;
+        try {
+          await Analytics.logEvent('add_to_cart', { items: [{ id: 'foo', name: 'bar' }] });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
+    });
     describe('setCurrentScreen()', async () => {
       itWhenConfigured(`runs`, async () => {
         let error = null;
@@ -85,22 +105,15 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
       });
     });
     describe('setSessionTimeoutDuration()', async () => {
-      itWhenConfigured(
-        Platform.select({ android: 'runs', default: 'throws unavailable' }),
-        async () => {
-          let error = null;
-          try {
-            await Analytics.setSessionTimeoutDuration(190000);
-          } catch (e) {
-            error = e;
-          }
-          if (Platform.OS === 'android') {
-            expect(error).toBeNull();
-          } else {
-            expect(error).not.toBeNull();
-          }
+      itWhenConfigured('runs', async () => {
+        let error = null;
+        try {
+          await Analytics.setSessionTimeoutDuration(190000);
+        } catch (e) {
+          error = e;
         }
-      );
+        expect(error).toBeNull();
+      });
       itWhenNotConfigured(`fails when not configured`, async () => {
         let error = null;
         try {
@@ -108,7 +121,11 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         } catch (e) {
           error = e;
         }
-        expect(error).not.toBeNull();
+        if ((!isExpoClient && Platform.OS === 'android') || Platform.OS === 'ios') {
+          expect(error).not.toBeNull();
+        } else {
+          expect(error).toBeNull();
+        }
       });
     });
     describe('setUserId()', async () => {

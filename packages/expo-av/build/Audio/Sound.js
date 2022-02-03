@@ -1,46 +1,30 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 export class Sound {
-    constructor() {
-        this._loaded = false;
-        this._loading = false;
-        this._key = null;
-        this._lastStatusUpdate = null;
-        this._lastStatusUpdateTime = null;
-        this._subscriptions = [];
-        this._eventEmitter = new EventEmitter(ExponentAV);
-        this._coalesceStatusUpdatesInMillis = 100;
-        this._onPlaybackStatusUpdate = null;
-        this._internalStatusUpdateCallback = ({ key, status, }) => {
-            if (this._key === key) {
-                this._callOnPlaybackStatusUpdateForNewStatus(status);
-            }
-        };
-        this._internalErrorCallback = ({ key, error }) => {
-            if (this._key === key) {
-                this._errorCallback(error);
-            }
-        };
-        this._errorCallback = (error) => {
-            this._clearSubscriptions();
-            this._loaded = false;
-            this._key = null;
-            this._callOnPlaybackStatusUpdateForNewStatus(getUnloadedStatus(error));
-        };
-        // ### Unified playback API ### (consistent with Video.js)
-        // All calls automatically call onPlaybackStatusUpdate as a side effect.
-        // Get status API
-        this.getStatusAsync = async () => {
-            if (this._loaded) {
-                return this._performOperationAndHandleStatusAsync(() => ExponentAV.getStatusForSound(this._key));
-            }
-            const status = getUnloadedStatus();
-            this._callOnPlaybackStatusUpdateForNewStatus(status);
-            return status;
-        };
-    }
+    _loaded = false;
+    _loading = false;
+    _key = null;
+    _lastStatusUpdate = null;
+    _lastStatusUpdateTime = null;
+    _subscriptions = [];
+    _eventEmitter = new EventEmitter(ExponentAV);
+    _coalesceStatusUpdatesInMillis = 100;
+    _onPlaybackStatusUpdate = null;
+    _onMetadataUpdate = null;
+    _onAudioSampleReceived = null;
+    /** @deprecated Use `Sound.createAsync()` instead */
+    static create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
+        console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
+        return Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);
+    };
+    static createAsync = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
+        const sound = new Sound();
+        sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        const status = await sound.loadAsync(source, initialStatus, downloadFirst);
+        return { sound, status };
+    };
     // Internal methods
     _callOnPlaybackStatusUpdateForNewStatus(status) {
         const shouldDismissBasedOnCoalescing = this._lastStatusUpdateTime &&
@@ -63,20 +47,83 @@ export class Sound {
             throw new Error('Cannot complete operation because sound is not loaded.');
         }
     }
+    _updateAudioSampleReceivedCallback() {
+        if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
+            if (Platform.OS === 'ios') {
+                throw new Error('Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.');
+            }
+            else {
+                throw new UnavailabilityError('expo-av', 'setOnAudioSampleReceived');
+            }
+        }
+        if (this._key == null) {
+            throw new Error('Cannot set Audio Sample Buffer callback when the Sound instance has not been successfully loaded/initialized!');
+        }
+        if (typeof this._key !== 'number') {
+            throw new Error(`Cannot set Audio Sample Buffer callback when Sound instance key is of type ${typeof this
+                ._key}! (expected: number)`);
+        }
+        global.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
+    }
+    _internalStatusUpdateCallback = ({ key, status, }) => {
+        if (this._key === key) {
+            this._callOnPlaybackStatusUpdateForNewStatus(status);
+        }
+    };
+    _internalMetadataUpdateCallback = ({ key, metadata, }) => {
+        if (this._key === key) {
+            this._onMetadataUpdate?.(metadata);
+        }
+    };
+    _internalErrorCallback = ({ key, error }) => {
+        if (this._key === key) {
+            this._errorCallback(error);
+        }
+    };
     // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
     _subscribeToNativeEvents() {
         if (this._loaded) {
-            this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback));
+            this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback), this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback));
             this._subscriptions.push(this._eventEmitter.addListener('ExponentAV.onError', this._internalErrorCallback));
         }
     }
     _clearSubscriptions() {
-        this._subscriptions.forEach(e => e.remove());
+        this._subscriptions.forEach((e) => e.remove());
         this._subscriptions = [];
     }
+    _errorCallback = (error) => {
+        this._clearSubscriptions();
+        this._loaded = false;
+        this._key = null;
+        this._callOnPlaybackStatusUpdateForNewStatus(getUnloadedStatus(error));
+    };
+    // ### Unified playback API ### (consistent with Video.js)
+    // All calls automatically call onPlaybackStatusUpdate as a side effect.
+    // Get status API
+    getStatusAsync = async () => {
+        if (this._loaded) {
+            return this._performOperationAndHandleStatusAsync(() => ExponentAV.getStatusForSound(this._key));
+        }
+        const status = getUnloadedStatus();
+        this._callOnPlaybackStatusUpdateForNewStatus(status);
+        return status;
+    };
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
         this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
         this.getStatusAsync();
+    }
+    setOnMetadataUpdate(onMetadataUpdate) {
+        this._onMetadataUpdate = onMetadataUpdate;
+    }
+    /**
+     * Sets a function to be called during playback, receiving the audio sample as parameter.
+     * @param callback a function taking the {@link AudioSample} as parameter
+     */
+    setOnAudioSampleReceived(callback) {
+        this._onAudioSampleReceived = callback;
+        if (this._key != null) {
+            this._updateAudioSampleReceivedCallback();
+        }
     }
     // Loading / unloading API
     async loadAsync(source, initialStatus = {}, downloadFirst = true) {
@@ -86,7 +133,7 @@ export class Sound {
         }
         if (!this._loaded) {
             this._loading = true;
-            const { nativeSource, fullInitialStatus, } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
+            const { nativeSource, fullInitialStatus } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
             // This is a workaround, since using load with resolve / reject seems to not work.
             return new Promise((resolve, reject) => {
                 const loadSuccess = (result) => {
@@ -102,9 +149,7 @@ export class Sound {
                     this._loading = false;
                     reject(error);
                 };
-                ExponentAV.loadForSound(nativeSource, fullInitialStatus)
-                    .then(loadSuccess)
-                    .catch(loadError);
+                ExponentAV.loadForSound(nativeSource, fullInitialStatus).then(loadSuccess).catch(loadError);
             });
         }
         else {
@@ -140,17 +185,17 @@ export class Sound {
             shouldPlay: true,
         }));
     }
+    // Methods of the Playback interface that are set via PlaybackMixin
+    playAsync;
+    playFromPositionAsync;
+    pauseAsync;
+    stopAsync;
+    setPositionAsync;
+    setRateAsync;
+    setVolumeAsync;
+    setIsMutedAsync;
+    setIsLoopingAsync;
+    setProgressUpdateIntervalAsync;
 }
-/** @deprecated Use `Sound.createAsync()` instead */
-Sound.create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
-    console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
-    return Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);
-};
-Sound.createAsync = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
-    const sound = new Sound();
-    sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-    const status = await sound.loadAsync(source, initialStatus, downloadFirst);
-    return { sound, status };
-};
 Object.assign(Sound.prototype, PlaybackMixin);
 //# sourceMappingURL=Sound.js.map

@@ -1,8 +1,8 @@
 import {
-  PermissionResponse as UMPermissionResponse,
+  PermissionResponse as EXPermissionResponse,
   PermissionStatus,
   PermissionExpiration,
-} from 'unimodules-permissions-interface';
+} from 'expo-modules-core';
 
 export type PermissionType =
   | 'camera'
@@ -11,6 +11,8 @@ export type PermissionType =
   | 'mediaLibraryWriteOnly'
   | 'audioRecording'
   | 'location'
+  | 'locationForeground'
+  | 'locationBackground'
   | 'userFacingNotifications'
   | 'notifications'
   | 'contacts'
@@ -19,7 +21,7 @@ export type PermissionType =
   | 'motion'
   | 'systemBrightness';
 
-export interface PermissionResponse extends UMPermissionResponse {
+export interface PermissionResponse extends EXPermissionResponse {
   permissions: PermissionMap;
 }
 
@@ -27,7 +29,7 @@ export interface PermissionMap {
   [permissionType: string /* PermissionType */]: PermissionInfo;
 }
 
-export interface PermissionInfo extends UMPermissionResponse {
+export interface PermissionInfo extends EXPermissionResponse {
   /**
    * iOS only - Permission.MEDIA_LIBRARY/MEDIA_LIBRARY_WRITE_ONLY
    */

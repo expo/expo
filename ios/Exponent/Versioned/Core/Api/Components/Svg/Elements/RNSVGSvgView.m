@@ -25,22 +25,24 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
+#if !TARGET_OS_OSX // Not available on macOS
         // This is necessary to ensure that [self setNeedsDisplay] actually triggers
         // a redraw when our parent transitions between hidden and visible.
         self.contentMode = UIViewContentModeRedraw;
+#endif
         rendered = false;
     }
     return self;
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RNSVGView *)subview atIndex:(NSInteger)atIndex
 {
     [super insertReactSubview:subview atIndex:atIndex];
     [self insertSubview:subview atIndex:atIndex];
     [self invalidate];
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RNSVGView *)subview
 {
     [super removeReactSubview:subview];
     [self invalidate];
@@ -66,7 +68,7 @@
 
 - (void)invalidate
 {
-    UIView* parent = self.superview;
+    RNSVGPlatformView* parent = self.superview;
     if ([parent isKindOfClass:[RNSVGNode class]]) {
         if (!rendered) {
             return;
@@ -190,7 +192,7 @@
         _invviewBoxTransform = CGAffineTransformIdentity;
     }
 
-    for (UIView *node in self.subviews) {
+    for (RNSVGView *node in self.subviews) {
         if ([node isKindOfClass:[RNSVGNode class]]) {
             RNSVGNode *svg = (RNSVGNode *)node;
             [svg renderTo:context
@@ -203,7 +205,7 @@
 
 - (void)drawRect:(CGRect)rect
 {
-    UIView* parent = self.superview;
+    RNSVGPlatformView* parent = self.superview;
     if ([parent isKindOfClass:[RNSVGNode class]]) {
         return;
     }
@@ -214,7 +216,7 @@
     _boundingBox = rect;
     CGContextRef context = UIGraphicsGetCurrentContext();
 
-    for (UIView *node in self.subviews) {
+    for (RNSVGPlatformView *node in self.subviews) {
         if ([node isKindOfClass:[RNSVGNode class]]) {
             RNSVGNode *svg = (RNSVGNode *)node;
             if (svg.responsible && !self.responsible) {
@@ -228,7 +230,7 @@
     [self drawToContext:context withRect:rect];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RNSVGPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     CGPoint transformed = point;
     if (self.align) {
@@ -243,7 +245,7 @@
             node.active = NO;
         }
 
-        UIView *hitChild = [node hitTest:transformed withEvent:event];
+        RNSVGPlatformView *hitChild = [node hitTest:transformed withEvent:event];
 
         if (hitChild) {
             node.active = YES;
@@ -279,7 +281,7 @@
     return base64;
 }
 
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+- (void)reactSetInheritedBackgroundColor:(RNSVGColor *)inheritedBackgroundColor
 {
     self.backgroundColor = inheritedBackgroundColor;
 }

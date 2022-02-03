@@ -2,10 +2,7 @@ module.exports = function(api) {
   api.cache(true);
 
   const moduleResolverConfig = {
-    alias: {
-      '~expo': 'expo',
-      expo: require.resolve('./moduleResolvers/expoResolver.js'),
-    },
+    alias: {},
   };
 
   // We'd like to get rid of `native-component-list` being a part of the final bundle.
@@ -19,6 +16,9 @@ module.exports = function(api) {
   return {
     // [Custom] Needed for decorators
     presets: ['babel-preset-expo'],
-    plugins: [['babel-plugin-module-resolver', moduleResolverConfig]],
+    plugins: [
+      'react-native-reanimated/plugin',
+      ['babel-plugin-module-resolver', moduleResolverConfig],
+    ],
   };
 };

@@ -1,18 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`makeUrl queries makes url "" 1`] = `"exp://exp.host/@test/test"`;
+exports[`createURL bare makes url "" 1`] = `"demo://"`;
 
-exports[`makeUrl queries makes url "path/into/app" 1`] = `"exp://exp.host/@test/test/--/path/into/app"`;
+exports[`createURL bare makes url "path/into/app" 1`] = `"demo://path/into/app"`;
 
-exports[`makeUrl queries makes url {"emptyParam": ""} 1`] = `"exp://exp.host/@test/test/--/some/path?emptyParam="`;
+exports[`createURL bare makes url {"emptyParam": ""} 1`] = `"demo://some/path?emptyParam="`;
 
-exports[`makeUrl queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://exp.host/@test/test/--/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`createURL bare makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"demo://some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
 
-exports[`makeUrl queries makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://exp.host/@test/test/--/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`createURL bare makes url {"lotsOfSlashes": "/////"} 1`] = `"demo://some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
 
-exports[`makeUrl queries makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://exp.host/@test/test/--/some/path?shouldEscape=%25252b%252520"`;
+exports[`createURL bare makes url {"shouldEscape": "%2b%20"} 1`] = `"demo://some/path?shouldEscape=%25252b%252520"`;
 
-exports[`makeUrl queries makes url {"undefinedParam": undefined} 1`] = `"exp://exp.host/@test/test/--/some/path"`;
+exports[`createURL bare makes url {"undefinedParam": undefined} 1`] = `"demo://some/path"`;
+
+exports[`createURL bare uses triple slashes 1`] = `"demo:///some/path"`;
+
+exports[`createURL queries makes url "" 1`] = `"exp://exp.host/@test/test"`;
+
+exports[`createURL queries makes url "path/into/app" 1`] = `"exp://exp.host/@test/test/--/path/into/app"`;
+
+exports[`createURL queries makes url {"emptyParam": ""} 1`] = `"exp://exp.host/@test/test/--/some/path?emptyParam="`;
+
+exports[`createURL queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://exp.host/@test/test/--/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+
+exports[`createURL queries makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://exp.host/@test/test/--/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+
+exports[`createURL queries makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://exp.host/@test/test/--/some/path?shouldEscape=%25252b%252520"`;
+
+exports[`createURL queries makes url {"undefinedParam": undefined} 1`] = `"exp://exp.host/@test/test/--/some/path"`;
 
 exports[`parse parses "custom://" 1`] = `
 Object {

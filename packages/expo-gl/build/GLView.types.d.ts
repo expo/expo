@@ -1,6 +1,5 @@
 import { Component, ComponentClass } from 'react';
 import { ViewProps } from 'react-native';
-import WebGL2RenderingContext from './WebGL2RenderingContext';
 export declare type SurfaceCreateEvent = {
     nativeEvent: {
         exglCtxId: number;
@@ -25,8 +24,9 @@ export declare type GLSnapshot = {
     height: number;
 };
 export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
-    __exglCtxId: number;
+    contextId: number;
     endFrameEXP(): void;
+    flushEXP(): void;
     __expoSetLogging(option: GLLoggingOption): void;
 }
 export declare type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;
@@ -75,3 +75,4 @@ export declare enum GLLoggingOption {
      */
     ALL = 15
 }
+//# sourceMappingURL=GLView.types.d.ts.map

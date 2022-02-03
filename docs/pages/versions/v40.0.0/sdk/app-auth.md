@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { H3 } from '~/components/plugins/Headings';
 import { InlineCode } from '~/components/base/code';
 
-> ⚠️ For web support and more authentication methods, use the new [**AuthSession**](auth-session.md) API
+> ⚠️ This package is deprecated in favor of [**AuthSession**](auth-session.md). Check out the [authentication guides](../../../guides/authentication.md) to learn how to migrate your existing authentication today.
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
@@ -18,7 +18,7 @@ Many services that let you authenticate with them or login with them, like GitHu
 
 If you are trying to implement sign in with [Google](google-sign-in.md) or [Facebook](facebook.md), there are special modules in the Expo SDK for those (though this module will work).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -30,9 +30,9 @@ If you are trying to implement sign in with [Google](google-sign-in.md) or [Face
 
 You will want to decide on a URI scheme for your app, this will correspond to the prefix before `://` in a URI. Ex: If your scheme is `mychat` then a link to your app would be `mychat://`.
 
-The scheme only applies to standalone apps and you need to re-build the standalone app for the change to take effect. In the Expo client app you can deep link using `exp://ADDRESS:PORT` where `ADDRESS` is often `127.0.0.1` and `PORT` is often `19000` - the URL is printed when you run `expo start`.
+The scheme only applies to standalone apps and you need to re-build the standalone app for the change to take effect. In the Expo Go app you can deep link using `exp://ADDRESS:PORT` where `ADDRESS` is often `127.0.0.1` and `PORT` is often `19000` - the URL is printed when you run `expo start`.
 
-If you want to test with your custom scheme you will need to run `expo build:ios -t simulator` or `expo build:android` and install the resulting binaries in your emulators. You can register for a scheme in your `app.json` by adding a string under the scheme key:
+If you want to test with your custom scheme you will need to run `expo build:ios -t simulator` or `expo build:android` and install the resulting binaries in your emulators. You can register for a scheme in your **app.json** by adding a string under the scheme key:
 
 ```json
 {
@@ -48,11 +48,11 @@ To create a scheme that is appropriate for the environment, be sure to use `Link
 import { Linking } from 'expo';
 
 const prefix = Linking.makeUrl('/');
-// Expo client: `exp://ADDRESS:PORT`
+// Expo Go: `exp://ADDRESS:PORT`
 // Standalone: `myapp://`
 ```
 
-For more info on [Linking in Expo](../../../workflow/linking.md).
+For more info on [Linking in Expo](../../../guides/linking.md).
 
 ## Bare Workflow
 
@@ -185,7 +185,7 @@ The [`AuthSession`](auth-session.md) API is built on top of [`expo-web-browser`]
 
 ### react-native-app-auth
 
-The `expo-app-auth` module is based on [react-native-app-auth](https://github.com/FormidableLabs/react-native-app-auth) by the incredible React.js consulting firm [Formidable](https://formidable.com/). The documentation and questions there may prove helpful. `expo-app-auth` provides a few extra features to make native app auth work inside a sand-boxed Expo client environment.
+The `expo-app-auth` module is based on [react-native-app-auth](https://github.com/FormidableLabs/react-native-app-auth) by the incredible React.js consulting firm [Formidable](https://formidable.com/). The documentation and questions there may prove helpful. `expo-app-auth` provides a few extra features to make native app auth work inside a sand-boxed Expo Go environment.
 
 ## API
 
@@ -297,13 +297,13 @@ await AppAuth.revokeAsync(config, options);
 
 ### `AppAuth.OAuthRedirect`
 
-Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
+Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your **app.json**. However, for apps running in Expo Go, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
 
 ### `AppAuth.URLSchemes`
 
 > iOS only
 
-A list of URL Schemes from the `info.plist`
+A list of URL Schemes from the **Info.plist**
 
 ## Types
 

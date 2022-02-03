@@ -1,9 +1,9 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <Foundation/Foundation.h>
 
-@interface EXFirebaseAnalytics : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXFirebaseAnalytics : EXExportedModule <EXModuleRegistryConsumer>
 
 @end

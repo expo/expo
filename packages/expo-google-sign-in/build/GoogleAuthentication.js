@@ -1,5 +1,11 @@
 import GoogleAuthData from './GoogleAuthData';
 class GoogleAuthentication extends GoogleAuthData {
+    clientId;
+    accessToken;
+    accessTokenExpirationDate;
+    refreshToken;
+    idToken;
+    idTokenExpirationDate;
     constructor(options) {
         super(options);
         const { clientId, accessToken, accessTokenExpirationDate, refreshToken, idToken, idTokenExpirationDate, } = options;

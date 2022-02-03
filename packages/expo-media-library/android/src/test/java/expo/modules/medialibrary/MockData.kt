@@ -30,6 +30,17 @@ internal data class MockAsset(
   )
 }
 
+/*
+  Projection column order:
+  Bucket ID, Bucket Display Name
+ */
+internal data class MockAlbum(
+  val id: String,
+  val name: String,
+) {
+  fun toColumnArray() = arrayOf(id, name)
+}
+
 internal object MockData {
   const val MOCK_ALBUM_ID = "album12"
 
@@ -38,7 +49,7 @@ internal object MockData {
     name = "img1.jpg",
     path = "images/img1.jpg",
     mediaType = MEDIA_TYPE_IMAGE,
-    width = 100, 
+    width = 100,
     height = 200,
     createdDate = 12345678,
     modifiedDate = 23456789,
@@ -66,12 +77,17 @@ internal object MockData {
     name = "song3.mp3",
     path = "audio/song3.mp3",
     mediaType = MEDIA_TYPE_AUDIO,
-    width = 0, 
+    width = 0,
     height = 0,
     createdDate = 12345678,
     modifiedDate = 23456789,
     orientation = null,
     duration = 10000,
     albumId = null
+  )
+
+  val mockAlbum = MockAlbum(
+    id = MOCK_ALBUM_ID,
+    name = "TestAlbum"
   )
 }

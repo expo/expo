@@ -324,13 +324,11 @@
     label = CNLabelContactRelationAssistant;
   else if ([label isEqualToString:[CNLabeledValue localizedStringForLabel:CNLabelContactRelationPartner]])
     label = CNLabelContactRelationPartner;
+  else if ([label isEqualToString:[CNLabeledValue localizedStringForLabel:CNLabelContactRelationSon]])
+    label = CNLabelContactRelationSon;
+  else if ([label isEqualToString:[CNLabeledValue localizedStringForLabel:CNLabelContactRelationDaughter]])
+    label = CNLabelContactRelationDaughter;
   
-  if (@available(iOS 11.0, *)) {
-    if ([label isEqualToString:[CNLabeledValue localizedStringForLabel:CNLabelContactRelationSon]])
-      label = CNLabelContactRelationSon;
-    else if ([label isEqualToString:[CNLabeledValue localizedStringForLabel:CNLabelContactRelationDaughter]])
-      label = CNLabelContactRelationDaughter;
-  }
   return label;
 }
 

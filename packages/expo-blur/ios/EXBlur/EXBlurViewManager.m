@@ -1,26 +1,31 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXBlur/EXBlurView.h>
 #import <EXBlur/EXBlurViewManager.h>
-#import <UMCore/UMUIManager.h>
+#import <ExpoModulesCore/EXUIManager.h>
+
+#if __has_include(<EXBlur/EXBlur-Swift.h>)
+#import <EXBlur/EXBlur-Swift.h>
+#else
+#import "EXBlur-Swift.h"
+#endif
 
 @interface EXBlurViewManager ()
 
-@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
+@property (weak, nonatomic) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXBlurViewManager
 
-UM_EXPORT_MODULE(ExpoBlurViewManager);
+EX_EXPORT_MODULE(ExpoBlurViewManager);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry {
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   _moduleRegistry = moduleRegistry;
 }
 
 - (UIView *)view
 {
-  return [[EXBlurView alloc] init];
+  return [EXBlurView new];
 }
 
 - (NSString *)viewName
@@ -28,42 +33,31 @@ UM_EXPORT_MODULE(ExpoBlurViewManager);
   return @"ExpoBlurView";
 }
 
-UM_VIEW_PROPERTY(tint, NSString *, EXBlurView)
+EX_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 {
   [view setTint:value];
-  [view didSetProps:@[@"tint"]];
 }
 
-UM_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
+EX_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
-  [view setIntensity:value];
-  [view didSetProps:@[@"intensity"]];
+  [view setIntensity:[value doubleValue] / 100];
 }
 
-UM_EXPORT_METHOD_AS(updateProps,
-                    updateProps:(NSDictionary *)props
-                    onViewOfId:(id)viewId
-                    resolve:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+EX_EXPORT_METHOD_AS(setNativeProps,
+                    setNativeProps:(NSDictionary *)nativeProps
+                    forViewWithTag:(id)viewTag
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] executeUIBlock:^(id view) {
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXBlurView class]]) {
       EXBlurView *blurView = view;
-      NSMutableArray *changedProps = [NSMutableArray new];
-      if (props[@"intensity"] && ![props[@"intensity"] isEqual:blurView.intensity]) {
-        [blurView setIntensity:props[@"intensity"]];
-        [changedProps addObject:@"intensity"];
-      }
-      if (props[@"tint"] && ![props[@"tint"] isEqual:blurView.tint]) {
-        [blurView setTint:props[@"tint"]];
-        [changedProps addObject:@"tint"];
-      }
-      [blurView didSetProps:changedProps];
-      resolver([NSNull null]);
+      if (nativeProps[@"intensity"]) { [blurView setIntensity:[nativeProps[@"intensity"] floatValue] / 100]; }
+      if (nativeProps[@"tint"]) { [blurView setTint:nativeProps[@"tint"]]; }
     } else {
-      rejecter(@"E_INVALID_VIEW", @"Invalid view found for requested tag", nil);
+      reject(@"E_INVALID_VIEW", [NSString stringWithFormat:@"Invalid view returned from registry, expected EXBlurView, got: %@", view], nil);
     }
-  } forView:viewId ofClass:[EXBlurView class]];
+  } forView:viewTag ofClass:[EXBlurView class]];
 }
 
 @end

@@ -1,5 +1,4 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
-import { canUseViewport, canUseEventListeners } from 'fbjs/lib/ExecutionEnvironment';
+import { SyntheticPlatformEmitter, Platform } from 'expo-modules-core';
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, } from './ScreenOrientation.types';
 const OrientationLockAPIToWeb = {
@@ -18,8 +17,10 @@ const OrientationWebToAPI = {
     [WebOrientation.LANDSCAPE_PRIMARY]: Orientation.LANDSCAPE_LEFT,
     [WebOrientation.LANDSCAPE_SECONDARY]: Orientation.LANDSCAPE_RIGHT,
 };
-const { screen } = canUseViewport && window;
-const orientation = canUseViewport && (screen.orientation || screen.msOrientation || null);
+const screen = Platform.canUseViewport ? window.screen : {};
+const orientation = Platform.canUseViewport
+    ? screen.orientation || screen.msOrientation || null
+    : null;
 async function emitOrientationEvent() {
     const [orientationLock, orientation] = await Promise.all([
         getOrientationLockAsync(),
@@ -30,7 +31,7 @@ async function emitOrientationEvent() {
         orientationInfo: { orientation },
     });
 }
-if (canUseEventListeners) {
+if (Platform.canUseEventListeners) {
     if (orientation && orientation.addEventListener) {
         orientation.addEventListener('change', emitOrientationEvent);
     }

@@ -5,3 +5,4 @@ declare const _default: {
     stopObserving(): void;
 };
 export default _default;
+//# sourceMappingURL=ExpoBarometer.web.d.ts.map

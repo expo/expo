@@ -7,7 +7,7 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues
-                      forExperienceId:(NSString *)experienceId
+                forScopeKey:(NSString *)scopeKey
                         isDevelopment:(BOOL)isDevelopment NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -97,3 +97,4 @@ export declare type FacebookNativeInitializationOptions = {
     appName?: string;
 };
 export declare type FacebookInitializationOptions = FacebookSDKScriptURLOptions & FacebookSDKInitializationOptions & FacebookNativeInitializationOptions;
+//# sourceMappingURL=Facebook.types.d.ts.map

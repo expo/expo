@@ -16,7 +16,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 @implementation EXUserNotificationManager
 
-- (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId
+- (EXPendingNotification *)initialNotification
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     return _pendingNotification;
@@ -27,12 +27,12 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 # pragma mark - EXNotificationsIdentifiersManager
 
-- (NSString *)internalIdForIdentifier:(NSString *)identifier experienceId:(nonnull NSString *)experienceId
+- (NSString *)internalIdForIdentifier:(NSString *)identifier scopeKey:(nonnull NSString *)scopeKey
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     return identifier;
   }
-  return [NSString stringWithFormat:@"%@%@%@", experienceId, scopedIdentifierSeparator, identifier];
+  return [NSString stringWithFormat:@"%@%@%@", scopeKey, scopedIdentifierSeparator, identifier];
 }
 
 - (NSString *)exportedIdForInternalIdentifier:(NSString *)identifier
@@ -61,10 +61,10 @@ static NSString * const scopedIdentifierSeparator = @":";
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   if (visibleApp) {
-    NSDictionary *visibleAppManifest = visibleApp.appLoader.manifest;
-    if (visibleAppManifest && visibleAppManifest[@"notification"] && visibleAppManifest[@"notification"][@"iosDisplayInForeground"]) {
+    EXManifestsManifest *visibleAppManifest = visibleApp.appLoader.manifest;
+    if (visibleAppManifest && visibleAppManifest.notificationPreferences && visibleAppManifest.notificationPreferences[@"iosDisplayInForeground"]) {
       // If user specifically set `notification.iosDisplayInForeground` in `app.json`.
-      shouldDisplayInForeground = [visibleAppManifest[@"notification"][@"iosDisplayInForeground"] boolValue];
+      shouldDisplayInForeground = [visibleAppManifest.notificationPreferences[@"iosDisplayInForeground"] boolValue];
     }
   }
 

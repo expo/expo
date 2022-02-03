@@ -2,36 +2,40 @@
 #import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraPermissionRequester.h>
+#import <EXCamera/EXCameraCameraPermissionRequester.h>
+#import <EXCamera/EXCameraMicrophonePermissionRequester.h>
 
-#import <UMCore/UMUIManager.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXUIManager.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 @interface EXCameraManager ()
 
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<UMUIManager> uiManager;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXUIManager> uiManager;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @end
 
 @implementation EXCameraManager
 
-UM_EXPORT_MODULE(ExponentCameraManager);
+EX_EXPORT_MODULE(ExponentCameraManager);
 
 - (NSString *)viewName
 {
   return @"ExponentCamera";
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
-  _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXCameraPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXCameraPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXCameraCameraPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXCameraMicrophonePermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (UIView *)view
@@ -73,7 +77,15 @@ UM_EXPORT_MODULE(ExponentCameraManager);
                @"cinematic": @(EXCameraVideoStabilizationModeCinematic),
                @"auto": @(EXCameraAVCaptureVideoStabilizationModeAuto)
                },
+           @"VideoCodec": @{
+               @"H264": @(EXCameraVideoCodecH264),
+               @"HEVC": @(EXCameraVideoCodecHEVC),
+               @"JPEG": @(EXCameraVideoCodecJPEG),
+               @"AppleProRes422": @(EXCameraVideoCodecAppleProRes422),
+               @"AppleProRes4444": @(EXCameraVideoCodecAppleProRes4444),
+              },
            };
+         
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -102,7 +114,7 @@ UM_EXPORT_MODULE(ExponentCameraManager);
            };
 }
 
-UM_VIEW_PROPERTY(type, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(type, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (view.presetCamera != longValue) {
@@ -111,7 +123,7 @@ UM_VIEW_PROPERTY(type, NSNumber *, EXCamera)
   }
 }
 
-UM_VIEW_PROPERTY(flashMode, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(flashMode, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (longValue != view.flashMode) {
@@ -120,17 +132,17 @@ UM_VIEW_PROPERTY(flashMode, NSNumber *, EXCamera)
   }
 }
 
-UM_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
+EX_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
 {
   [view updateFaceDetectorSettings:value];
 }
 
-UM_VIEW_PROPERTY(barCodeScannerSettings, NSDictionary *, EXCamera)
+EX_VIEW_PROPERTY(barCodeScannerSettings, NSDictionary *, EXCamera)
 {
   [view setBarCodeScannerSettings:value];
 }
 
-UM_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (longValue != view.autoFocus) {
@@ -139,7 +151,7 @@ UM_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
   }
 }
 
-UM_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
 {
   float floatValue = [value floatValue];
   if (fabsf(view.focusDepth - floatValue) > FLT_EPSILON) {
@@ -148,7 +160,7 @@ UM_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
   }
 }
 
-UM_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
 {
   double doubleValue = [value doubleValue];
   if (fabs(view.zoom - doubleValue) > DBL_EPSILON) {
@@ -157,7 +169,7 @@ UM_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
   }
 }
 
-UM_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (longValue != view.whiteBalance) {
@@ -166,12 +178,12 @@ UM_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
   }
 }
 
-UM_VIEW_PROPERTY(pictureSize, NSString *, EXCamera) {
+EX_VIEW_PROPERTY(pictureSize, NSString *, EXCamera) {
   [view setPictureSize:[[self class] pictureSizes][value]];
   [view updatePictureSize];
 }
 
-UM_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
 {
   bool boolValue = [value boolValue];
   if ([view isDetectingFaces] != boolValue) {
@@ -179,7 +191,7 @@ UM_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
   }
 }
 
-UM_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
+EX_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
 {
   bool boolValue = [value boolValue];
   if ([view isScanningBarCodes] != boolValue) {
@@ -187,11 +199,11 @@ UM_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
   }
 }
 
-UM_EXPORT_METHOD_AS(takePicture,
+EX_EXPORT_METHOD_AS(takePicture,
                     takePictureWithOptions:(NSDictionary *)options
                     reactTag:(nonnull NSNumber *)reactTag
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_IPHONE_SIMULATOR
   __weak EXCameraManager *weakSelf = self;
@@ -239,11 +251,11 @@ UM_EXPORT_METHOD_AS(takePicture,
 
 }
 
-UM_EXPORT_METHOD_AS(record,
+EX_EXPORT_METHOD_AS(record,
                     recordWithOptions:(NSDictionary *)options
                     reactTag:(nonnull NSNumber *)reactTag
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
@@ -262,25 +274,25 @@ UM_EXPORT_METHOD_AS(record,
 #pragma clang diagnostic pop
 }
 
-UM_EXPORT_METHOD_AS(stopRecording,
+EX_EXPORT_METHOD_AS(stopRecording,
                     stopRecordingOfReactTag:(nonnull NSNumber *)reactTag
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view stopRecording];
       resolve(nil);
     } else {
-      UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
+      EXLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:reactTag ofClass:[EXCamera class]];
 }
 
-UM_EXPORT_METHOD_AS(resumePreview,
+EX_EXPORT_METHOD_AS(resumePreview,
                     resumePreview:(nonnull NSNumber *)tag
-                         resolver:(UMPromiseResolveBlock)resolve
-                         rejecter:(UMPromiseRejectBlock)reject)
+                         resolver:(EXPromiseResolveBlock)resolve
+                         rejecter:(EXPromiseRejectBlock)reject)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
@@ -293,16 +305,16 @@ UM_EXPORT_METHOD_AS(resumePreview,
       [view resumePreview];
       resolve(nil);
     } else {
-      UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
+      EXLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
 #pragma clang diagnostic pop
 }
 
-UM_EXPORT_METHOD_AS(pausePreview,
+EX_EXPORT_METHOD_AS(pausePreview,
                     pausePreview:(nonnull NSNumber *)tag
-                        resolver:(UMPromiseResolveBlock)resolve
-                         rejecter:(UMPromiseRejectBlock)reject)
+                        resolver:(EXPromiseResolveBlock)resolve
+                         rejecter:(EXPromiseRejectBlock)reject)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
@@ -315,37 +327,107 @@ UM_EXPORT_METHOD_AS(pausePreview,
       [view pausePreview];
       resolve(nil);
     } else {
-      UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
+      EXLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
 #pragma clang diagnostic pop
 }
 
-UM_EXPORT_METHOD_AS(getAvailablePictureSizes,
+EX_EXPORT_METHOD_AS(getAvailablePictureSizes,
                      getAvailablePictureSizesWithRatio:(NSString *)ratio
                                                    tag:(nonnull NSNumber *)tag
-                                              resolver:(UMPromiseResolveBlock)resolve
-                                              rejecter:(UMPromiseRejectBlock)reject)
+                                              resolver:(EXPromiseResolveBlock)resolve
+                                              rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([[[self class] pictureSizes] allKeys]);
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAvailableVideoCodecsAsync,
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  AVCaptureSession *session = [AVCaptureSession new];   
+  [session beginConfiguration];
+
+  NSError *error = nil;
+  AVCaptureDevice *captureDevice = [EXCameraUtils deviceWithMediaType:AVMediaTypeVideo preferringPosition: AVCaptureDevicePositionFront];
+  AVCaptureDeviceInput *captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];   
+ 
+  if ([session canAddInput:captureDeviceInput]) {
+     [session addInput:captureDeviceInput];
+  }
+
+  [session commitConfiguration];
+
+  AVCaptureMovieFileOutput *movieFileOutput = [AVCaptureMovieFileOutput new];
+  if ([session canAddOutput:movieFileOutput]) {
+    [session addOutput:movieFileOutput];
+  }
+  
+  resolve([movieFileOutput availableVideoCodecTypes]);
+}
+
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXCameraPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXCameraPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+
+EX_EXPORT_METHOD_AS(getCameraPermissionsAsync,
+                    getCameraPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXCameraCameraPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+
+EX_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
+                    requestCameraPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXCameraCameraPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+
+
+EX_EXPORT_METHOD_AS(getMicrophonePermissionsAsync,
+                    getMicrophonePermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXCameraMicrophonePermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+
+EX_EXPORT_METHOD_AS(requestMicrophonePermissionsAsync,
+                    requestMicrophonePermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXCameraMicrophonePermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
 }

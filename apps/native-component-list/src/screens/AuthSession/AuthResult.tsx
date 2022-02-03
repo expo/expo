@@ -11,7 +11,7 @@ export function AuthResult({ result }: any) {
   }
   return (
     <View>
-      {Object.keys(result).map(key => {
+      {Object.keys(result).map((key) => {
         const value = result[key];
         if (['_', '#', ''].includes(key)) return null;
 
@@ -50,7 +50,7 @@ export function AuthSection({
         disabled={disabled}
         status={result?.type}
         url={request?.url}
-        onPress={color =>
+        onPress={(color) =>
           promptAsync({
             useProxy,
             // Tint the controller
@@ -84,7 +84,8 @@ export function KVText({ k, v, href, ...props }: any) {
   }
   return (
     <Text {...props} style={{ color: '#999' }} numberOfLines={2}>
-      <B>{k}</B> {v}
+      <Text>{k}: </Text>
+      {JSON.stringify(v, null, '\t')}
     </Text>
   );
 }

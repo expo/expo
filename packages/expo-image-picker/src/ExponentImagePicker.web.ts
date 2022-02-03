@@ -1,13 +1,13 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
 import { v4 } from 'uuid';
 
 import {
+  ExpandImagePickerResult,
+  ImageInfo,
+  ImagePickerMultipleResult,
   ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
-  ImagePickerMultipleResult,
-  ImageInfo,
-  ExpandImagePickerResult,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -24,21 +24,33 @@ export default {
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
+    base64 = false,
   }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+    // SSR guard
+    if (!Platform.isDOMAvailable) {
+      return { cancelled: true };
+    }
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
+      base64,
     });
   },
 
   async launchCameraAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
+    base64 = false,
   }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+    // SSR guard
+    if (!Platform.isDOMAvailable) {
+      return { cancelled: true };
+    }
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
       capture: true,
+      base64,
     });
   },
 
@@ -77,6 +89,7 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
+  base64,
 }: T): Promise<ExpandImagePickerResult<T>> {
   const mediaTypeFormat = MediaTypeInput[mediaTypes];
 
@@ -97,20 +110,19 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
     input.addEventListener('change', async () => {
       if (input.files) {
         if (!allowsMultipleSelection) {
-          const img: ImageInfo = await readFile(input.files[0]);
+          const img: ImageInfo = await readFile(input.files[0], { base64 });
           resolve({
-            cancelled: false,
             ...img,
           } as ExpandImagePickerResult<T>);
         } else {
-          const imgs: ImageInfo[] = await Promise.all(Array.from(input.files).map(readFile));
+          const imgs: ImageInfo[] = await Promise.all(
+            Array.from(input.files).map((file) => readFile(file, { base64 }))
+          );
           resolve({
             cancelled: false,
             selected: imgs,
           } as ExpandImagePickerResult<T>);
         }
-      } else {
-        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
       }
       document.body.removeChild(input);
     });
@@ -120,7 +132,7 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
   });
 }
 
-function readFile(targetFile: Blob): Promise<ImageInfo> {
+function readFile(targetFile: Blob, options: { base64: boolean }): Promise<ImageInfo> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => {
@@ -133,16 +145,24 @@ function readFile(targetFile: Blob): Promise<ImageInfo> {
           uri,
           width: 0,
           height: 0,
+          cancelled: false,
         });
 
-      if (typeof target?.result === 'string') {
+      if (typeof uri === 'string') {
         const image = new Image();
-        image.src = target.result;
+        image.src = uri;
         image.onload = () =>
           resolve({
             uri,
             width: image.naturalWidth ?? image.width,
             height: image.naturalHeight ?? image.height,
+            cancelled: false,
+            // The blob's result cannot be directly decoded as Base64 without
+            // first removing the Data-URL declaration preceding the
+            // Base64-encoded data. To retrieve only the Base64 encoded string,
+            // first remove data:*/*;base64, from the result.
+            // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
+            ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
           });
         image.onerror = () => returnRaw();
       } else {

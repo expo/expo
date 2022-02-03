@@ -1,6 +1,6 @@
 import * as Calendar from 'expo-calendar';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { UnavailabilityError } from '@unimodules/core';
 
 import * as TestUtils from '../TestUtils';
 
@@ -25,13 +25,13 @@ async function createTestCalendarAsync(patch = {}) {
 
 async function getCalendarByIdAsync(calendarId) {
   const calendars = await Calendar.getCalendarsAsync();
-  return calendars.find(calendar => calendar.id === calendarId);
+  return calendars.find((calendar) => calendar.id === calendarId);
 }
 
 async function pickCalendarSourceIdAsync() {
   if (Platform.OS === 'ios') {
     const sources = await Calendar.getSourcesAsync();
-    const mainSource = sources.find(source => source.name === 'iCloud') || sources[0];
+    const mainSource = sources.find((source) => source.name === 'iCloud') || sources[0];
     return mainSource && mainSource.id;
   }
 }
@@ -62,11 +62,12 @@ async function createTestAttendeeAsync(eventId) {
 
 async function getAttendeeByIdAsync(eventId, attendeeId) {
   const attendees = await Calendar.getAttendeesForEventAsync(eventId);
-  return attendees.find(attendee => attendee.id === attendeeId);
+  return attendees.find((attendee) => attendee.id === attendeeId);
 }
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   function testCalendarShape(calendar) {
@@ -79,7 +80,7 @@ export async function test(t) {
     t.expect(typeof calendar.allowsModifications).toBe('boolean');
 
     t.expect(Array.isArray(calendar.allowedAvailabilities)).toBe(true);
-    calendar.allowedAvailabilities.forEach(availability => {
+    calendar.allowedAvailabilities.forEach((availability) => {
       t.expect(Object.values(Calendar.Availability)).toContain(availability);
     });
 
@@ -97,12 +98,12 @@ export async function test(t) {
       calendar.timeZone && t.expect(typeof calendar.timeZone).toBe('string');
 
       t.expect(Array.isArray(calendar.allowedReminders)).toBe(true);
-      calendar.allowedReminders.forEach(reminder => {
+      calendar.allowedReminders.forEach((reminder) => {
         t.expect(Object.values(Calendar.AlarmMethod)).toContain(reminder);
       });
 
       t.expect(Array.isArray(calendar.allowedAttendeeTypes)).toBe(true);
-      calendar.allowedAttendeeTypes.forEach(attendeeType => {
+      calendar.allowedAttendeeTypes.forEach((attendeeType) => {
         t.expect(Object.values(Calendar.AttendeeType)).toContain(attendeeType);
       });
 
@@ -273,7 +274,7 @@ export async function test(t) {
         await Calendar.deleteCalendarAsync(calendarId);
 
         const calendars = await Calendar.getCalendarsAsync();
-        t.expect(calendars.findIndex(calendar => calendar.id === calendarId)).toBe(-1);
+        t.expect(calendars.findIndex((calendar) => calendar.id === calendarId)).toBe(-1);
       });
     });
 
@@ -348,7 +349,7 @@ export async function test(t) {
     t.describe('getEventsAsync()', () => {
       let calendarId, eventId;
 
-      t.beforeAll(async () => {
+      t.beforeEach(async () => {
         calendarId = await createTestCalendarAsync();
         eventId = await createTestEventAsync(calendarId);
       });
@@ -366,7 +367,7 @@ export async function test(t) {
         testEventShape(events[0]);
       });
 
-      t.afterAll(async () => {
+      t.afterEach(async () => {
         await Calendar.deleteCalendarAsync(calendarId);
       });
     });
@@ -460,7 +461,7 @@ export async function test(t) {
 
           t.expect(Array.isArray(attendees)).toBe(true);
 
-          const newAttendee = attendees.find(attendee => attendee.id === attendeeId);
+          const newAttendee = attendees.find((attendee) => attendee.id === attendeeId);
 
           t.expect(newAttendee).toBeDefined();
           testAttendeeShape(newAttendee);
@@ -538,9 +539,7 @@ export async function test(t) {
         });
       });
     } else {
-      expectMethodsToReject([
-        'getSourcesAsync',
-      ]);
+      expectMethodsToReject(['getSourcesAsync']);
     }
   });
 }

@@ -1,5 +1,3 @@
-import omit from 'lodash/omit';
-import nullthrows from 'nullthrows';
 import * as React from 'react';
 import { findNodeHandle, Image, NativeMethods, StyleSheet, View } from 'react-native';
 
@@ -107,7 +105,8 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   }
 
   setNativeProps(nativeProps: VideoNativeProps) {
-    const nativeVideo = nullthrows(this._nativeRef.current);
+    const nativeVideo = this._nativeRef.current;
+    if (!nativeVideo) throw new Error(`native video reference is not defined.`);
     nativeVideo.setNativeProps(nativeProps);
   }
 
@@ -196,10 +195,8 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     initialStatus: AVPlaybackStatusToSet = {},
     downloadFirst: boolean = true
   ): Promise<AVPlaybackStatus> => {
-    const {
-      nativeSource,
-      fullInitialStatus,
-    } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
+    const { nativeSource, fullInitialStatus } =
+      await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
     return this._performOperationAndHandleStatusAsync((tag: number) =>
       ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus)
     );
@@ -316,7 +313,6 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
 
   _renderPoster = () =>
     this.props.usePoster && this.state.showPoster ? (
-      // @ts-ignore: the react-native type declarations are overly restrictive
       <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource!} />
     ) : null;
 
@@ -346,24 +342,22 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
       'volume',
       'isMuted',
       'isLooping',
-    ].forEach(prop => {
+    ].forEach((prop) => {
       if (prop in this.props) {
         status[prop] = this.props[prop];
       }
     });
 
     // Replace selected native props
-    // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: VideoNativeProps = {
-      ...omit(
-        this.props,
+      ...omit(this.props, [
         'source',
         'onPlaybackStatusUpdate',
         'usePoster',
         'posterSource',
         'posterStyle',
-        ...Object.keys(status)
-      ),
+        ...Object.keys(status),
+      ]),
       style: StyleSheet.flatten([_STYLES.base, this.props.style]),
       source,
       resizeMode: nativeResizeMode,
@@ -383,6 +377,14 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
       </View>
     );
   }
+}
+
+function omit(props: Record<string, any>, propNames: string[]) {
+  const copied = { ...props };
+  for (const propName of propNames) {
+    delete copied[propName];
+  }
+  return copied;
 }
 
 Object.assign(Video.prototype, PlaybackMixin);

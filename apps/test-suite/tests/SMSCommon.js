@@ -51,12 +51,12 @@ const numbers = ['0123456789', '9876543210'];
 
 export async function loadAttachmentsAsync(expect) {
   const files = [pngFile, gifFile, audioFile];
-  await Promise.all(files.map(file => loadAndSaveFile(file, expect)));
+  await Promise.all(files.map((file) => loadAndSaveFile(file, expect)));
 }
 
 export async function cleanupAttachmentsAsync(expect) {
   const files = [pngFile, gifFile, audioFile];
-  await Promise.all(files.map(file => cleanupFile(file, expect)));
+  await Promise.all(files.map((file) => cleanupFile(file, expect)));
 }
 
 export async function testSMSComposeWithSingleImageAttachment(expect) {
@@ -97,4 +97,12 @@ export async function testSMSComposeWithAudioAttachment(expect) {
       },
     ],
   });
+}
+
+export async function testSMSComposeWithNullRecipient() {
+  await SMS.sendSMSAsync(null, 'test with null recipient, no attachments', null);
+}
+
+export async function testSMSComposeWithUndefinedRecipient() {
+  await SMS.sendSMSAsync(undefined, 'test with undefined recipient, no attachments', null);
 }

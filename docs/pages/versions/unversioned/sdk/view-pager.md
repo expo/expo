@@ -1,37 +1,38 @@
 ---
 title: ViewPager
-sourceCodeUrl: 'https://github.com/react-native-community/react-native-viewpager'
+sourceCodeUrl: 'https://github.com/callstack/react-native-pager-view'
+packageName: 'react-native-pager-view'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
-**`@react-native-community/viewpager`** exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
+**`react-native-pager-view`** exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 
-<Video file={"sdk/viewpager.mp4"} loop={"false"}/>
+<Video file={"sdk/viewpager.mp4"} loop={false}/>
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-<InstallSection packageName="@react-native-community/viewpager" href="https://github.com/react-native-community/react-native-viewpager#linking" />
+<APIInstallSection href="https://github.com/callstack/react-native-pager-view#linking" />
 
 ## Usage
 
-See full documentation at [react-native-community/react-native-viewpager](https://github.com/react-native-community/react-native-viewpager).
+See full documentation at [callstack/react-native-pager-view](https://github.com/callstack/react-native-pager-view).
 
 ## Basic Example
 
 ```js
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import ViewPager from '@react-native-community/viewpager';
+import PagerView from 'react-native-pager-view';
 
 const MyPager = () => {
   return (
     <View style={{ flex: 1 }}>
-      <ViewPager style={styles.viewPager} initialPage={0}>
+      <PagerView style={styles.viewPager} initialPage={0}>
         <View style={styles.page} key="1">
           <Text>First page</Text>
           <Text>Swipe ➡️</Text>
@@ -42,7 +43,7 @@ const MyPager = () => {
         <View style={styles.page} key="3">
           <Text>Third page</Text>
         </View>
-      </ViewPager>
+      </PagerView>
     </View>
   );
 };

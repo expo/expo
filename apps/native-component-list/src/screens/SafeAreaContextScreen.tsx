@@ -27,7 +27,7 @@ export default function SafeAreaContextScreen({
   if (focused === 'hook') {
     return (
       <SafeAreaInsetsContext.Consumer>
-        {consumerInsets => (
+        {(consumerInsets) => (
           <ScrollView
             style={{ flex: 1 }}
             contentContainerStyle={{

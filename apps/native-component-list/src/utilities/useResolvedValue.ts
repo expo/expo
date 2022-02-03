@@ -8,12 +8,12 @@ export function useResolvedValue<T>(method: () => Promise<T>): [T | null, Error 
     let isMounted = true;
 
     method()
-      .then(value => {
+      .then((value) => {
         if (isMounted) {
           setValue(value);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (isMounted) {
           setError(error);
         }

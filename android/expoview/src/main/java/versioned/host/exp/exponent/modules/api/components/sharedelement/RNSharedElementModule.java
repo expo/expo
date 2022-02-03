@@ -1,27 +1,28 @@
 package versioned.host.exp.exponent.modules.api.components.sharedelement;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.module.annotations.ReactModule;
 
 @ReactModule(name = RNSharedElementModule.MODULE_NAME)
 public class RNSharedElementModule extends ReactContextBaseJavaModule {
   public static final String MODULE_NAME = "RNSharedElementTransition";
-  static String LOG_TAG = "RNSharedElementModule";
+  // private final static String LOG_TAG = "RNSharedElementModule";
 
-  private RNSharedElementNodeManager mNodeManager;
+  private final RNSharedElementNodeManager mNodeManager;
 
   public RNSharedElementModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mNodeManager = new RNSharedElementNodeManager(reactContext);
   }
 
+  @NonNull
   @Override
   public String getName() {
     return MODULE_NAME;
@@ -39,11 +40,8 @@ public class RNSharedElementModule extends ReactContextBaseJavaModule {
     // start- and end props are set on the Transition view.
     final ReactApplicationContext context = getReactApplicationContext();
     final UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
-    uiManager.prependUIBlock(new UIBlock() {
-      @Override
-      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-        mNodeManager.setNativeViewHierarchyManager(nativeViewHierarchyManager);
-      }
-    });
+    uiManager.prependUIBlock(mNodeManager::setNativeViewHierarchyManager);
+
+    promise.resolve(true);
   }
 }

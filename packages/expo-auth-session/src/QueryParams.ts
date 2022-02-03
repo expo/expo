@@ -5,9 +5,10 @@ export function buildQueryString(input: Record<string, string>): string {
   return qs.stringify(input);
 }
 
-export function getQueryParams(
-  url: string
-): { errorCode: string | null; params: { [key: string]: string } } {
+export function getQueryParams(url: string): {
+  errorCode: string | null;
+  params: { [key: string]: string };
+} {
   const parts = url.split('#');
   const hash = parts[1];
   const partsWithoutHash = parts[0].split('?');

@@ -4,7 +4,7 @@ import android.app.NotificationChannelGroup;
 import android.content.Context;
 import android.os.Build;
 
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.arguments.ReadableArguments;
 
 import java.util.List;
 

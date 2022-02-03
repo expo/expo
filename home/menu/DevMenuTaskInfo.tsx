@@ -10,10 +10,8 @@ type Props = {
 };
 
 class DevMenuTaskInfo extends React.PureComponent<Props, any> {
-  _maybeRenderDevServerName() {
-    const { task } = this.props;
-    const devServerName =
-      task && task.manifest && task.manifest.developer ? task.manifest.developer.tool : null;
+  _maybeRenderDevServerName(manifest: Record<string, any>) {
+    const devServerName = manifest && manifest.developer ? manifest.developer.tool : null;
 
     if (devServerName) {
       return (
@@ -29,10 +27,11 @@ class DevMenuTaskInfo extends React.PureComponent<Props, any> {
   render() {
     const { task } = this.props;
     const taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
-    const iconUrl = task.manifest && task.manifest.iconUrl;
-    const taskName = task.manifest && task.manifest.name;
+    const manifest = task.manifestString && JSON.parse(task.manifestString);
+    const iconUrl = manifest && manifest.iconUrl;
+    const taskName = manifest && manifest.name;
     const taskNameStyles = taskName ? styles.taskName : [styles.taskName, { color: '#c5c6c7' }];
-    const sdkVersion = task.manifest && task.manifest.sdkVersion;
+    const sdkVersion = manifest && manifest.sdkVersion;
 
     return (
       <View style={styles.taskMetaRow}>
@@ -55,7 +54,7 @@ class DevMenuTaskInfo extends React.PureComponent<Props, any> {
               SDK: <Text style={styles.taskSdkVersionBold}>{sdkVersion}</Text>
             </StyledText>
           )}
-          {this._maybeRenderDevServerName()}
+          {this._maybeRenderDevServerName(manifest)}
         </View>
       </View>
     );

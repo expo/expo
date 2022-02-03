@@ -2,8 +2,9 @@
 
 API_LEVEL=$1
 emulator_name="bare-expo"
+ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-$ANDROID_HOME}
 
-if $ANDROID_HOME/tools/android list avd | grep -q $emulator_name; then
+if $ANDROID_SDK_ROOT/tools/android list avd | grep -q $emulator_name; then
     echo " ☛  Found an existing an emulator named ${emulator_name}"
     exit 0;
 fi
@@ -23,10 +24,10 @@ then
 fi
 
 echo " ☛  Downloading the Android image to create an emulator..."
-echo no | $ANDROID_HOME/tools/bin/sdkmanager $PACKAGE
+echo no | $ANDROID_SDK_ROOT/tools/bin/sdkmanager $PACKAGE
 
 echo " ☛  Creating the emulator..."
-echo no | $ANDROID_HOME/tools/bin/avdmanager \
+echo no | $ANDROID_SDK_ROOT/tools/bin/avdmanager \
     --verbose \
     create avd \
     --force \

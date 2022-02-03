@@ -13,7 +13,7 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 + (instancetype)sharedEnvironment;
 
 /**
- *  Whether the app is running as a detached/standalone app (true) or as a browser/Expo Client (false).
+ *  Whether the app is running as a detached/standalone app (true) or as Expo Go (false).
  */
 @property (nonatomic, readonly) BOOL isDetached;
 

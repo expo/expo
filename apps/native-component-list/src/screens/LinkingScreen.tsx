@@ -1,3 +1,4 @@
+import Constants, { AppOwnership } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import React from 'react';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
@@ -5,6 +6,16 @@ import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
+
+async function canOpenURL(url: string): Promise<boolean> {
+  if (
+    Constants.appOwnership === AppOwnership.Expo ||
+    Constants.appOwnership === AppOwnership.Guest
+  ) {
+    return true;
+  }
+  return Linking.canOpenURL(url);
+}
 
 function TextInputButton({ text }: { text: string }) {
   const [link, setLink] = React.useState<string>(text);
@@ -17,20 +28,20 @@ function TextInputButton({ text }: { text: string }) {
 
   const onChangeText = async (text: string) => {
     let parsedTextResult = '';
-    const canOpenURL = await Linking.canOpenURL(text);
-    if (canOpenURL) {
+    const supported = await canOpenURL(text);
+    if (supported) {
       const parsedText = await Linking.parse(text);
       parsedTextResult = JSON.stringify(parsedText, null, 2);
     }
 
     setLink(text);
     setParsed(parsedTextResult);
-    setCanOpen(canOpenURL);
+    setCanOpen(supported);
   };
 
   const handleClick = async () => {
     try {
-      const supported = await Linking.canOpenURL(link);
+      const supported = await canOpenURL(link);
 
       if (supported) {
         Linking.openURL(link);
@@ -57,7 +68,7 @@ function TextInputButton({ text }: { text: string }) {
 }
 
 export default function LinkingScreen() {
-  const url = Linking.useUrl();
+  const url = Linking.useURL();
 
   React.useEffect(() => {
     if (url) {
@@ -75,9 +86,9 @@ export default function LinkingScreen() {
       />
       {url && <TextInputButton text={Linking.makeUrl('deep-link')} />}
       <TextInputButton text="https://github.com/search?q=Expo" />
-      <TextInputButton text="https://www.expo.io" />
-      <TextInputButton text="http://www.expo.io" />
-      <TextInputButton text="http://expo.io" />
+      <TextInputButton text="https://www.expo.dev" />
+      <TextInputButton text="http://www.expo.dev" />
+      <TextInputButton text="http://expo.dev" />
       <TextInputButton text="fb://notifications" />
       <TextInputButton text="geo:37.484847,-122.148386" />
       <TextInputButton text="tel:9876543210" />

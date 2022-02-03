@@ -1,18 +1,18 @@
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-community/async-storage';
+import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { usePermissions } from '@use-expo/permissions';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Modal, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
+import usePermissions from '../../utilities/usePermissions';
 
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
@@ -74,7 +74,7 @@ function reducer(state: State, action: Partial<State>): State {
 }
 
 export default function BackgroundLocationMapScreen(props: Props) {
-  const [permission] = usePermissions(Permissions.LOCATION, { ask: true });
+  const [permission] = usePermissions(Location.requestForegroundPermissionsAsync);
 
   React.useEffect(() => {
     (async () => {
@@ -85,7 +85,7 @@ export default function BackgroundLocationMapScreen(props: Props) {
     })();
   }, [props.navigation]);
 
-  if (!permission?.granted) {
+  if (!permission) {
     return (
       <Text style={styles.errorText}>
         Location permissions are required in order to use this feature. You can manually enable them
@@ -105,6 +105,12 @@ function BackgroundLocationMapView() {
     let subscription: EventSubscription | null = null;
     let isMounted = true;
     (async () => {
+      if ((await Location.getBackgroundPermissionsAsync()).status !== 'granted') {
+        console.log(
+          'Missing background location permissions. Make sure it is granted in the OS Settings.'
+        );
+        return;
+      }
       const { coords } = await Location.getCurrentPositionAsync();
       const isTracking = await Location.hasStartedLocationUpdatesAsync(LOCATION_UPDATES_TASK);
       const task = (await TaskManager.getRegisteredTasksAsync()).find(
@@ -143,12 +149,18 @@ function BackgroundLocationMapView() {
         subscription.remove();
       }
     };
-  }, [state.accuracy]);
+  }, [state.accuracy, state.isTracking]);
 
   useFocusEffect(onFocus);
 
   const startLocationUpdates = React.useCallback(
     async (acc = state.accuracy) => {
+      if ((await Location.getBackgroundPermissionsAsync()).status !== 'granted') {
+        console.log(
+          'Missing background location permissions. Make sure it is granted in the OS Settings.'
+        );
+        return;
+      }
       await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {
         accuracy: acc,
         activityType: state.activityType ?? undefined,
@@ -270,16 +282,13 @@ function BackgroundLocationMapView() {
     );
   }, [state.savedLocations]);
 
-  if (!state.initialRegion) {
-    return null;
-  }
-
   return (
     <View style={styles.screen}>
+      <PermissionsModal />
       <MapView
         ref={mapViewRef}
         style={styles.mapView}
-        initialRegion={state.initialRegion}
+        initialRegion={state.initialRegion ?? undefined}
         showsUserLocation>
         {renderPolyline()}
       </MapView>
@@ -334,6 +343,54 @@ function BackgroundLocationMapView() {
     </View>
   );
 }
+
+const PermissionsModal = () => {
+  const [showPermissionsModal, setShowPermissionsModal] = React.useState(true);
+  const [permission] = usePermissions(Location.getBackgroundPermissionsAsync);
+
+  return (
+    <Modal
+      animationType="slide"
+      transparent={false}
+      visible={!permission && showPermissionsModal}
+      onRequestClose={() => {
+        setShowPermissionsModal(!showPermissionsModal);
+      }}>
+      <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'center' }}>
+        <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={styles.modalHeader}>Background location access</Text>
+
+          <Text style={styles.modalText}>
+            This app collects location data to enable updating the MapView in the background even
+            when the app is closed or not in use. Otherwise, your location on the map will only be
+            updated while the app is foregrounded.
+          </Text>
+          <Text style={styles.modalText}>
+            This data is not used for anything other than updating the position on the map, and this
+            data is never shared with anyone.
+          </Text>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Button
+            title="Request background location permission"
+            style={styles.button}
+            onPress={async () => {
+              // Need both background and foreground permissions
+              await Location.requestForegroundPermissionsAsync();
+              await Location.requestBackgroundPermissionsAsync();
+              setShowPermissionsModal(!showPermissionsModal);
+            }}
+          />
+          <Button
+            title="Continue without background location permission"
+            style={styles.button}
+            onPress={() => setShowPermissionsModal(!showPermissionsModal)}
+          />
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 BackgroundLocationMapScreen.navigationOptions = {
   title: 'Background location',
@@ -413,4 +470,6 @@ const styles = StyleSheet.create({
     color: 'rgba(0,0,0,0.7)',
     margin: 20,
   },
+  modalHeader: { padding: 12, fontSize: 20, fontWeight: '800' },
+  modalText: { padding: 8, fontWeight: '600' },
 });

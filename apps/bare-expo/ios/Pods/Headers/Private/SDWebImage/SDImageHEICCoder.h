@@ -1,1 +1,0 @@
-../../../SDWebImage/SDWebImage/Core/SDImageHEICCoder.h

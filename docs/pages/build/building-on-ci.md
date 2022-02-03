@@ -1,18 +1,29 @@
 ---
-title: Trigger builds from CI
+title: Triggering builds from CI
 ---
 
-This document outlines how to trigger builds on EAS for your app from a CI environment, such as GitHub Actions.
+import { InlineCode } from '~/components/base/code';
+
+This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions.
 
 Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
 
-## Prerequisite: run a successful build from your local machine
+## Prerequisites
+
+### Run a successful build from your local machine
 
 To trigger EAS builds from a CI environment, we first need to configure our app for EAS Build and successfully run a build from our local machine for each platform that we'd like to support on CI.
 
-If you have run `eas build -p [all|ios|android]` successfuly before, then you can continue.
+If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
 
-If you haven't done this yet, please refer to the [Setup](setup.md) guide and return here when you're ready.
+If you haven't done this yet, please refer to the [Creating your first build](setup.md) guide and return here when you're ready.
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+Learn how to [build standalone apps on your CI with our classic build service](/classic/turtle-cli.md).
+
+</p>
+</details>
 
 ## Configure your app for CI
 
@@ -32,11 +43,11 @@ npm install --save-dev eas-cli
 
 > 💡 Make sure to update this dependency frequently to stay up to date with the EAS API interface. -->
 
-### Provide a personal access token to authentiate with your Expo account on CI
+### Provide a personal access token to authenticate with your Expo account on CI
 
-Next, we need to authenticate as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
+Next, we need to ensure that we can authenticate ourselves on CI as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
 
-See [the guide for personal access tokens](https://docs.expo.io/accounts/personal/#personal-access-tokens) to learn how to create access tokens.
+See [the guide for personal access tokens](/accounts/programmatic-access.md#personal-account-personal-access-tokens) to learn how to create access tokens.
 
 ### Trigger new builds
 
@@ -67,7 +78,7 @@ before_script:
 
 jobs:
   include:
-    - stage: deploy
+    - stage: build
       node_js: lts/*
       script:
         - npm ci
@@ -79,7 +90,7 @@ jobs:
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -145,26 +156,17 @@ version: 2.1
 executors:
   default:
     docker:
-      - image: circleci/node:10
+      - image: cimg/node:lts
     working_directory: ~/my-app
-
-commands:
-  attach_project:
-    steps:
-      - attach_workspace:
-          at: ~/my-app
 
 jobs:
   eas_build:
     executor: default
     steps:
       - checkout
-      - attach_project
-
       - run:
           name: Install dependencies
           command: npm ci
-
       - run:
           name: Trigger build
           command: npx eas-cli build --platform all --non-interactive
@@ -189,36 +191,30 @@ workflows:
 ```yaml
 name: EAS Build
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
-  workflow_dispatch:
-
 jobs:
   build:
     name: Install and build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          node-version: 10.x
-
-      - name: Setup Expo
-        uses: expo/expo-github-action@v5
+          node-version: 16.x
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v7
         with:
-          expo-version: 3.x
-          expo-token: ${{ secrets.EXPO_TOKEN }}
-          expo-cache: true
-
+          expo-version: 5.x
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
       - name: Install dependencies
         run: npm ci
-
       - name: Build on EAS
-        run: npx eas-cli build --platform all --non-interactive
+        run: eas build --platform all --non-interactive
 ```
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.

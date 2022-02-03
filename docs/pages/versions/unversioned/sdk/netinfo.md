@@ -1,9 +1,10 @@
 ---
 title: NetInfo
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-netinfo'
+packageName: '@react-native-community/netinfo'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`@react-native-community/netinfo`** allows you to get information about connection type and connection quality.
@@ -12,7 +13,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="@react-native-community/netinfo" href="https://github.com/react-native-community/react-native-netinfo#getting-started" />
+<APIInstallSection href="https://github.com/react-native-community/react-native-netinfo#getting-started" />
 
 ## API
 
@@ -42,5 +43,29 @@ const unsubscribe = NetInfo.addEventListener(state => {
 // To unsubscribe to these update, just use:
 unsubscribe();
 ```
+
+## Accessing the SSID
+
+In order to access the `ssid` property (available under `state.details.ssid`), there are few additional configuration steps:
+
+#### Android & iOS
+
+- Request location permissions with [`Location.requestPermissionsAsync()`](location.md#locationrequestpermissionsasync)
+
+#### iOS only
+
+- Add the `com.apple.developer.networking.wifi-info` entitlement to your app.json file under `ios.entitlements`:
+
+```json
+  "ios": {
+    "entitlements": {
+      "com.apple.developer.networking.wifi-info": "true"
+    }
+  }
+```
+
+- Check the **Access WiFi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list)
+
+- Rebuild your app with `expo build:ios`
 
 Read the [react-native-netinfo docs](https://github.com/react-native-community/react-native-netinfo#react-native-communitynetinfo) for more information on the API and usage.

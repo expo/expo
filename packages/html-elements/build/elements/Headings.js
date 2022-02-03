@@ -10,7 +10,7 @@ function createHeadingComponent(level) {
         default: {},
     });
     return forwardRef((props, ref) => {
-        return (React.createElement(Text, Object.assign({}, nativeProps, { accessibilityRole: "header" }, props, { style: [styles[`h${level}`], props.style], ref: ref })));
+        return (React.createElement(Text, { ...nativeProps, accessibilityRole: "header", ...props, style: [styles[`h${level}`], props.style], ref: ref }));
     });
 }
 export const H1 = createHeadingComponent(1);

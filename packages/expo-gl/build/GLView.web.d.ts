@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { WebGLObject } from './GLView';
 import { BaseGLViewProps, ComponentOrHandle, GLSnapshot, SnapshotOptions } from './GLView.types';
 export interface GLViewProps extends BaseGLViewProps {
     onContextCreate: (gl: WebGLRenderingContext) => void;
@@ -33,3 +34,4 @@ export declare class GLView extends React.Component<GLViewProps> {
     createCameraTextureAsync(): Promise<void>;
     destroyObjectAsync(glObject: WebGLObject): Promise<void>;
 }
+//# sourceMappingURL=GLView.web.d.ts.map

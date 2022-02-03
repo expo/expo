@@ -1,22 +1,149 @@
 ---
 title: Audio
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
+packageName: 'expo-av'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-av`** allows you to implement audio playback and recording in your app.
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
+Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-<InstallSection packageName="expo-av" />
+<APIInstallSection />
+
+## Usage
+
+### Playing sounds
+
+<SnackInline
+label='Playing sounds'
+dependencies={['expo-av', 'expo-asset']}
+files={{
+    'assets/Hello.mp3': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/c9c43b458d6daa9771a7287cae9f5b47'
+  }}>
+
+```jsx
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Audio } from 'expo-av';
+
+export default function App() {
+  const [sound, setSound] = React.useState();
+
+  async function playSound() {
+    console.log('Loading Sound');
+    /* @info */ const { sound } = await Audio.Sound.createAsync(
+      /* @end */ require('./assets/Hello.mp3')
+    );
+    setSound(sound);
+
+    console.log('Playing Sound');
+    await /* @info */ sound.playAsync(); /* @end */
+  }
+
+  React.useEffect(() => {
+    return sound
+      ? () => {
+          console.log('Unloading Sound');
+          /* @info Always unload the Sound after using it to prevent memory leaks.*/ sound.unloadAsync(); /* @end */
+        }
+      : undefined;
+  }, [sound]);
+
+  return (
+    <View style={styles.container}>
+      <Button title="Play Sound" onPress={playSound} />
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 10,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
+
+### Recording sounds
+
+<SnackInline label='Recording sounds' dependencies={['expo-av', 'expo-asset']}>
+
+```jsx
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Audio } from 'expo-av';
+
+export default function App() {
+  const [recording, setRecording] = React.useState();
+
+  async function startRecording() {
+    try {
+      console.log('Requesting permissions..');
+      /* @info */ await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      }); /* @end */
+
+      console.log('Starting recording..');
+      /* @info */ const { recording } = await Audio.Recording.createAsync(
+        /* @end */ Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    console.log('Stopping recording..');
+    setRecording(undefined);
+    /* @info */ await recording.stopAndUnloadAsync();
+    const uri = recording.getURI(); /* @end */
+
+    console.log('Recording stopped and stored at', uri);
+  }
+
+  return (
+    <View style={styles.container}>
+      <Button
+        title={recording ? 'Stop Recording' : 'Start Recording'}
+        onPress={recording ? stopRecording : startRecording}
+      />
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 10,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -28,7 +155,7 @@ import { Audio } from 'expo-av';
 
 ### `Audio.requestPermissionsAsync()`
 
-Asks the user to grant permissions for audio recording. Alias for `Permissions.askAsync(Permissions.AUDIO_RECORDING)`.
+Asks the user to grant permissions for audio recording.
 
 #### Returns
 
@@ -36,7 +163,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Audio.getPermissionsAsync()`
 
-Checks user's permissions for audio recording. Alias for `Permissions.getAsync(Permissions.AUDIO_RECORDING)`.
+Checks user's permissions for audio recording.
 
 #### Returns
 
@@ -68,7 +195,7 @@ We provide this API to customize the audio experience on iOS and Android.
 
   - `playsInSilentModeIOS` : a boolean selecting if your experience's audio should play in silent mode on iOS. This value defaults to `false`.
   - `allowsRecordingIOS` : a boolean selecting if recording is enabled on iOS. This value defaults to `false`. NOTE: when this flag is set to `true`, playback may be routed to the phone receiver instead of to the speaker.
-  - `staysActiveInBackground` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background. This value defaults to `false`. **This is not available in Expo client for iOS, it will only work in standalone apps**. To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background-ios) to add `UIBackgroundMode` to your app configuration.
+  - `staysActiveInBackground` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background. This value defaults to `false`. **This is not available in Expo Go for iOS, it will only work in standalone apps**. To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background-ios) to add `UIBackgroundModes` to your app configuration.
   - `interruptionModeIOS` : an enum selecting how your experience's audio should interact with the audio from other apps on iOS:
     - `INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS` : This is the default option. If this option is set, your experience's audio is mixed with audio playing in background apps.
     - `INTERRUPTION_MODE_IOS_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
@@ -100,9 +227,9 @@ A `Promise` that will reject if the audio mode could not be enabled for the devi
 
 #### Playing or recording audio in background (iOS)
 
-On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your **app.json** configuration.
 
-See an example of `app.json` that enables audio playback in background:
+See an example of **app.json** that enables audio playback in background:
 
 ```json
 {
@@ -134,15 +261,15 @@ A newly constructed instance of `Audio.Sound`.
 #### Example
 
 ```javascript
-const soundObject = new Audio.Sound();
+const sound = new Audio.Sound();
 try {
-  await soundObject.loadAsync(require('./assets/sounds/hello.mp3'));
-  await soundObject.playAsync();
+  await sound.loadAsync(require('./assets/sounds/hello.mp3'));
+  await sound.playAsync();
   // Your sound is playing!
 
   // Don't forget to unload the sound from memory
   // when you are done using the Sound object
-  await soundObject.unloadAsync();
+  await sound.unloadAsync();
 } catch (error) {
   // An error occurred!
 }
@@ -154,12 +281,18 @@ A static convenience method to construct and load a sound is also provided:
 
   Creates and loads a sound from source, with optional `initialStatus`, `onPlaybackStatusUpdate`, and `downloadFirst`.
 
-  This is equivalent to the following:
-
   ```javascript
-  const soundObject = new Audio.Sound();
-  soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-  await soundObject.loadAsync(source, initialStatus, downloadFirst);
+  const { sound } = await Audio.Sound.createAsync(
+    source,
+    initialStatus,
+    onPlaybackStatusUpdate,
+    downloadFirst
+  );
+
+  // Which is equivalent to the following:
+  const sound = new Audio.Sound();
+  sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+  await sound.loadAsync(source, initialStatus, downloadFirst);
   ```
 
   #### Parameters
@@ -188,15 +321,24 @@ A static convenience method to construct and load a sound is also provided:
 
   ```javascript
   try {
-    const {
-      sound: soundObject,
-      status,
-    } = await Audio.Sound.createAsync(require('./assets/sounds/hello.mp3'), { shouldPlay: true });
+    const { sound: soundObject, status } = await Audio.Sound.createAsync(
+      require('./assets/sounds/hello.mp3'),
+      { shouldPlay: true }
+    );
     // Your sound is playing!
   } catch (error) {
     // An error occurred!
   }
   ```
+
+On the `soundObject` reference, the following API is provided:
+
+- `soundObject.setOnMetadataUpdate(onMetadataUpdate)` _[iOS only]_
+  Sets a function to be called whenever the metadata (of type `AVMetadata`, details below) of the sound object, if any, changes.
+
+  #### Parameters
+
+  - **onMetadataUpdate (_function_)** -- A function taking a single object of type `AVMetadata` (described below) as a parameter.
 
 The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](av.md) for further information:
 
@@ -230,7 +372,19 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 - `soundObject.setProgressUpdateIntervalAsync(millis)`
 
+## `AVMetadata`
+
+Object passed to the `onMetadataUpdate` function. It has the following keys:
+
+- `title`: a string with the title of the sound object. This key is optional.
+
 ## Recording sounds
+
+> **Notes on web usage:**
+>
+> - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012)
+> - MediaRecorder encoding options and other configurations are inconsistent across browsers, utilising a Polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder) or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
+> - Web browsers require sites to be served securely in order for them to listen to a mic. See [MediaDevices#getUserMedia Security](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#security) for more details.
 
 ### `Audio.Recording`
 
@@ -255,6 +409,54 @@ try {
 }
 ```
 
+A static convenience method to construct and start a recording is also provided:
+
+- `Audio.Recording.createAsync(options, onRecordingStatusUpdate = null, progressUpdateIntervalMillis = null)`
+
+  Creates and starts a recording using the given options, with optional `onRecordingStatusUpdate` and `progressUpdateIntervalMillis`.
+
+  ```javascript
+  const { recording, status } = await Audio.Recording.createAsync(
+    options,
+    onRecordingStatusUpdate,
+    progressUpdateIntervalMillis
+  );
+
+  // Which is equivalent to the following:
+  const recording = new Audio.Recording();
+  await recording.prepareToRecordAsync(options);
+  recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+  await recording.startAsync();
+  ```
+
+  #### Parameters
+
+  - **options (_RecordingOptions_)** -- Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to, the recorder will be created with options `Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`. See below for details on `RecordingOptions`.
+
+  - **onRecordingStatusUpdate (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
+
+  - **progressUpdateIntervalMillis (_number_)** -- The interval between calls of `onRecordingStatusUpdate`. This value defaults to 500 milliseconds.
+
+  #### Returns
+
+  A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
+
+  - `recording` : the newly created and started `Recording` object.
+  - `status` : the `RecordingStatus` of the `Recording` object. See the [AV documentation](av.md) for further information.
+
+  #### Example
+
+  ```javascript
+  try {
+    const { recording: recordingObject, status } = await Audio.Recording.createAsync(
+      Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+    );
+    // You are now recording!
+  } catch (error) {
+    // An error occurred!
+  }
+  ```
+
 - `recordingInstance.getStatusAsync()`
 
   Gets the `status` of the `Recording`.
@@ -273,6 +475,7 @@ try {
   - `canRecord` : a boolean set to `true`.
   - `isRecording` : a boolean describing if the `Recording` is currently recording.
   - `durationMillis` : the current duration of the recorded audio.
+  - `metering` : a number that's the most recent reading of the loudness in dB. The value ranges from –160 dBFS, indicating minimum power, to 0 dBFS, indicating maximum power. Present or not based on Recording options. See `RecordingOptions` for more information.
 
   After `stopAndUnloadAsync()` is called, the `status` will be as follows:
 
@@ -346,11 +549,11 @@ try {
 
 - `recordingInstance.getURI()`
 
-  Gets the local URI of the `Recording`. Note that this will only succeed once the `Recording` is prepared to record.
+  Gets the local URI of the `Recording`. Note that this will only succeed once the `Recording` is prepared to record. On web, this will not return the URI until the recording is finished.
 
   #### Returns
 
-  A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record.
+  A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record (or, on Web, if the recording has not finished).
 
 - `recordingInstance.createNewLoadedSoundAsync()`
 
@@ -382,6 +585,10 @@ We provide the following preset options for convenience, as used in the example 
 We also provide the ability to define your own custom recording options, but **we recommend you use the presets, as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.** You will have to test your custom options on iOS and Android to make sure it's working. In the future, we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets) and the advanced use-case possible (by exposing all the functionality available in native). As always, feel free to ping us on the forums or Slack with any questions.
 
 In order to define your own custom recording options, you must provide a dictionary of the following key value pairs.
+
+- `isMeteringEnabled` : a boolean that determines whether audio level information will be part of the status object under the "metering" key.
+
+- `keepAudioActiveHint` : a boolean that hints to keep the audio active after `prepareToRecordAsync` completes. Setting this value can improve the speed at which the recording starts. Only set this value to `true` when you call `startAsync` immediately after `prepareToRecordAsync`. This value is automatically set when using `Audio.recording.createAsync()`.
 
 - `android` : a dictionary of key-value pairs for the Android platform. This key is required.
 
@@ -569,6 +776,7 @@ For reference, following are the definitions of the two preset examples of `Reco
 
 ```javascript
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.m4a',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
@@ -590,6 +798,7 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.3gp',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,

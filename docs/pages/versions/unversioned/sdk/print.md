@@ -1,10 +1,13 @@
 ---
 title: Print
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-print'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-print'
+packageName: 'expo-print'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-print`** provides an API for iOS (AirPrint) and Android printing functionality.
 
@@ -12,7 +15,98 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-print" />
+<APIInstallSection />
+
+## Usage
+
+<SnackInline label='Print usage' dependencies={['expo-print', 'expo-sharing']}>
+
+```jsx
+import * as React from 'react';
+import { View, StyleSheet, Button, Platform, Text } from 'react-native';
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
+
+const html = `
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+  </head>
+  <body style="text-align: center;">
+    <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
+      Hello Expo!
+    </h1>
+    <img
+      src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
+      style="width: 90vw;" />
+  </body>
+</html>
+`;
+
+export default function App() {
+  const [selectedPrinter, setSelectedPrinter] = React.useState();
+
+  const print = async () => {
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    /* @info */ await Print.printAsync({
+      html,
+      printerUrl: selectedPrinter?.url, // iOS only
+    });/* @end */
+
+  }
+
+  const printToFile = async () => {
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    /* @info */const { uri } = await Print.printToFileAsync({
+      html
+    });
+    /* @end */console.log('File has been saved to:', uri);
+    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+  }
+
+  const selectPrinter = async () => {
+    /* @info */const printer = await Print.selectPrinterAsync(); // iOS only
+    /* @end */
+    setSelectedPrinter(printer);
+  }
+
+  return (
+    <View style={styles.container}>
+      <Button title='Print' onPress={print}  />
+      <View style={styles.spacer} />
+      <Button title='Print to PDF file' onPress={printToFile}/>
+      {Platform.OS === 'ios' &&
+        <>
+          <View style={styles.spacer} />
+          <Button title='Select printer' onPress={selectPrinter}/>
+          <View style={styles.spacer} />
+          {selectedPrinter ? <Text style={styles.printer}>{`Selected printer: ${selectedPrinter.name}`}</Text> : undefined}
+        </>
+      }
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    flexDirection: 'column',
+    padding: 8,
+  },
+  spacer: {
+    height: 8
+  },
+  printer: {
+    textAlign: 'center',
+  }
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -20,57 +114,56 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as Print from 'expo-print';
 ```
 
-### `Print.printAsync(options)`
+<APISection packageName="expo-print" apiName="Print" />
 
-Prints a document or HTML, on web this prints the HTML from the page.
+## Local images
 
-> **Note**: On iOS, printing from HTML source **doesn't** support local asset URLs (due to `WKWebView` limitations). As a workaround you can use inlined base64-encoded strings. See [this comment](https://github.com/expo/expo/issues/7940#issuecomment-657111033) for more details.
+On iOS, printing from HTML source doesn't support local asset URLs (due to WKWebView limitations). Instead, images need to be converted to base64 and inlined into the HTML.
 
-#### Arguments
+```js
+import { Asset } from 'expo-asset';
+import { printAsync } from 'expo-print';
+import { manipulateAsync } from 'expo-image-manipulator';
 
-- **options (_object_)** -- A map defining what should be printed:
-  - **uri (_string_)** -- URI of a PDF file to print. Remote, local (ex. selected via `DocumentPicker`) or base64 data URI starting with `data:application/pdf;base64,`. This only supports PDF, not other types of document (e.g. images). **Available on Android and iOS only.**
-  - **html (_string_)** -- HTML string to print. **Available on Android and iOS only.**
-  - **width (_number_)** -- Width of the single page in pixels. Defaults to `612` which is a width of US Letter paper format with 72 PPI. **Available only with `html` option.**
-  - **height (_number_)** -- Height of the single page in pixels. Defaults to `792` which is a height of US Letter paper format with 72 PPI. **Available only with `html` option.**
-  - **markupFormatterIOS (_string_)** -- **Available on iOS only.** Alternative to `html` option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter) instead of WebView. Might be removed in the future releases.
-  - **printerUrl (_string_)** -- **Available on iOS only.** URL of the printer to use. Returned from `selectPrinterAsync`.
-  - **orientation (_string_)** -- **Available on iOS only.** The orientation of the printed content, `Print.Orientation.portrait` or `Print.Orientation.landscape`.
+async function generateHTML() {
+  const asset = Asset.fromModule(require('../../assets/logo.png'));
+  const image = await manipulateAsync(
+    asset.localUri ?? asset.uri,
+    [],
+    { base64: true }
+  );
+  return `
+    <html>
+      <img
+        src="data:image/jpeg;base64,${image.base64}"
+        style="width: 90vw;" />
+    </html>
+  `;
+}
 
-#### Returns
-
-- Resolves to an empty promise if printing started.
-
-### `Print.printToFileAsync(options)`
-
-Prints HTML to PDF file and saves it to [app's cache directory](filesystem.md#expofilesystemcachedirectory). On web this method opens the print dialog.
-
-#### Arguments
-
-- **options (_object_)** -- A map of options:
-  - **html (_string_)** -- HTML string to print into PDF file.
-  - **width (_number_)** -- Width of the single page in pixels. Defaults to `612` which is a width of US Letter paper format with 72 PPI.
-  - **height (_number_)** -- Height of the single page in pixels. Defaults to `792` which is a height of US Letter paper format with 72 PPI.
-  - **base64 (_boolean_)** -- Whether to include base64 encoded string of the file in the returned object.
-
-#### Returns
-
-- Resolves to an object with following keys:
-  - **uri (_string_)** -- A URI to the printed PDF file.
-  - **numberOfPages (_number_)** -- Number of pages that were needed to render given content.
-  - **base64 (_string_)** -- Base64 encoded string containing the data of the PDF file. **Available only if `base64` option is truthy.** It doesn't include data URI prefix `data:application/pdf;base64,`.
-
-### `Print.selectPrinterAsync()`
-
-**Available on iOS only.** Chooses a printer that can be later used in `printAsync`.
-
-#### Returns
-
-- Resolves to an object containing `name` and `url` of the selected printer.
+async function print() {
+  const html = await generateHTML();
+  await printAsync({ html });
+}
+```
 
 ## Page margins
 
-If you're using `html` option in `printAsync` or `printToFileAsync`, the resulting print might contain page margins (it depends on WebView engine).
+**On iOS** you can set the page margins using the `margins` option:
+
+```js
+const { uri } = await Print.printToFileAsync({
+  html: 'This page is printed with margins',
+  margins: {
+    left: 20,
+    top: 50,
+    right: 20,
+    bottom: 100
+  }
+});
+```
+
+**On Android**, if you're using `html` option in `printAsync` or `printToFileAsync`, the resulting print might contain page margins (it depends on the WebView engine).
 They are set by `@page` style block and you can override them in your HTML code:
 
 ```html

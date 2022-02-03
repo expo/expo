@@ -1,10 +1,10 @@
-import { CodedError, UnavailabilityError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import * as React from 'react';
 import { Dimensions } from 'react-native';
 
 import Canvas from './Canvas';
+import { WebGLObject } from './GLView';
 import {
   BaseGLViewProps,
   ComponentOrHandle,
@@ -110,7 +110,7 @@ async function getBlobFromWebGLRenderingContext(
   } else if (isOffscreenCanvas(canvas)) {
     blob = await canvas.convertToBlob({ quality: options.compress, type: options.format });
   } else {
-    blob = await new Promise(resolve => {
+    blob = await new Promise((resolve) => {
       canvas.toBlob((blob: Blob | null) => resolve(blob), options.format, options.compress);
     });
   }
@@ -128,7 +128,7 @@ export class GLView extends React.Component<GLViewProps> {
   gl?: WebGLRenderingContext;
 
   static async createContextAsync(): Promise<WebGLRenderingContext | null> {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
       return null;
     }
     const canvas = document.createElement('canvas');

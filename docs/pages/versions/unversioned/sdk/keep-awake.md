@@ -1,9 +1,11 @@
 ---
 title: KeepAwake
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-keep-awake'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-keep-awake'
+packageName: 'expo-keep-awake'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -13,7 +15,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-keep-awake" />
+<APIInstallSection />
 
 ## Usage
 
@@ -81,26 +83,4 @@ export default class KeepAwakeExample extends React.Component {
 import KeepAwake from 'expo-keep-awake';
 ```
 
-## Methods
-
-### `useKeepAwake(tag?)`
-
-A React hook to keep the screen awake for as long as the owner component is mounted. The optionally provided `tag` argument is used when activating and deactivating the keep-awake feature. If unspecified, the default tag is used. See the documentation for `activateKeepAwake` below to learn more about the `tag` argument.
-
-### `activateKeepAwake(tag?)`
-
-Prevents the screen from sleeping until `deactivateKeepAwake` is called with the same `tag` value.
-
-If the `tag` argument is specified, the screen will not sleep until you call `deactivateKeepAwake` with the same `tag` argument. When using multiple `tags` for activation you'll have to deactivate each one in order to re-enable screen sleep. If `tag` is unspecified, the default tag is used.
-
-#### Arguments
-
-- **tag (_string_)** -- **optional** -- Tag to lock screen sleep prevention. If not provided, the default tag is used.
-
-### `deactivateKeepAwake(tag?)`
-
-Releases the lock on screen-sleep prevention associated with the given `tag` value. If `tag` is unspecified, it defaults to the same default tag that `activateKeepAwake` uses.
-
-#### Arguments
-
-- **tag (_string_)** -- **optional** -- Tag to release the lock on screen sleep prevention. If not provided, the default tag is used.
+<APISection packageName="expo-keep-awake" apiName="KeepAwake" />

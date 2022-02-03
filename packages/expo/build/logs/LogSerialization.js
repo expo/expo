@@ -58,24 +58,19 @@ async function serializeLogDataAsync(data, level) {
     };
 }
 function _stringifyLogData(data) {
-    return data.map(item => {
-        if (typeof item === 'string') {
-            return item;
+    return data.map((item) => {
+        // define the max length for log msg to be first 10000 characters
+        const LOG_MESSAGE_MAX_LENGTH = 10000;
+        const result = typeof item === 'string' ? item : prettyFormat(item, { plugins: [ReactNodeFormatter] });
+        // check the size of string returned
+        if (result.length > LOG_MESSAGE_MAX_LENGTH) {
+            let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
+            // truncate the result string to the max length
+            truncatedResult += `...(truncated to the first ${LOG_MESSAGE_MAX_LENGTH} characters)`;
+            return truncatedResult;
         }
         else {
-            // define the max length for log msg to be first 10000 characters
-            const LOG_MESSAGE_MAX_LENGTH = 10000;
-            const result = prettyFormat(item, { plugins: [ReactNodeFormatter] });
-            // check the size of string returned
-            if (result.length > LOG_MESSAGE_MAX_LENGTH) {
-                let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
-                // truncate the result string to the max length
-                truncatedResult += `...(truncated to the first ${LOG_MESSAGE_MAX_LENGTH} characters)`;
-                return truncatedResult;
-            }
-            else {
-                return result;
-            }
+            return result;
         }
     });
 }
@@ -91,7 +86,8 @@ async function _serializeErrorAsync(error, message) {
     return { message, stack: formattedStack };
 }
 async function _symbolicateErrorAsync(error) {
-    const parsedStack = parseErrorStack(error);
+    // @ts-ignore: parseErrorStack accepts nullable string after RN 0.64 but @types/react-native does not updated yet.
+    const parsedStack = parseErrorStack(error?.stack);
     let symbolicatedStack;
     try {
         // @ts-ignore: symbolicateStackTrace has different real/Flow declaration
@@ -110,7 +106,7 @@ async function _symbolicateErrorAsync(error) {
 }
 function _formatStack(stack) {
     return stack
-        .map(frame => {
+        .map((frame) => {
         let line = `${frame.file}:${frame.lineNumber}`;
         if (frame.column != null) {
             line += `:${frame.column}`;
@@ -161,7 +157,7 @@ function _captureConsoleStackTrace() {
     }
     catch (error) {
         let stackLines = error.stack.split('\n');
-        const consoleMethodIndex = stackLines.findIndex(frame => frame.includes(EXPO_CONSOLE_METHOD_NAME));
+        const consoleMethodIndex = stackLines.findIndex((frame) => frame.includes(EXPO_CONSOLE_METHOD_NAME));
         if (consoleMethodIndex !== -1) {
             stackLines = stackLines.slice(consoleMethodIndex + 1);
             error.stack = stackLines.join('\n');
@@ -170,7 +166,9 @@ function _captureConsoleStackTrace() {
     }
 }
 function _getProjectRoot() {
-    return Constants.manifest?.developer?.projectRoot ?? null;
+    return (Constants.manifest?.developer?.projectRoot ??
+        Constants.manifest2?.extra?.expoGo?.developer?.projectRoot ??
+        null);
 }
 export default {
     serializeLogDataAsync,

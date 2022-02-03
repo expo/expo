@@ -4,8 +4,9 @@ import { Alert, Platform, ScrollView } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import SimpleActionDemo from '../components/SimpleActionDemo';
 
-const appId = '1201211719949057';
+const appId = '1696089354000816';
 
 export default class FacebookLoginScreen extends React.Component {
   static navigationOptions = {
@@ -17,7 +18,7 @@ export default class FacebookLoginScreen extends React.Component {
   };
 
   render() {
-    const permissions = ['public_profile', 'email', 'user_friends'];
+    const permissions = ['public_profile', 'email'];
 
     return (
       <ScrollView style={{ padding: 10 }}>
@@ -27,13 +28,17 @@ export default class FacebookLoginScreen extends React.Component {
           }
           title="Initialize Facebook SDK"
         />
-        <ListButton
-          onPress={async () => await Facebook.setAutoInitEnabledAsync(true)}
-          title="Set autoinit to true"
+        <SimpleActionDemo
+          title="get tracking permissions"
+          action={async () => await Facebook.getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="request tracking permissions"
+          action={async () => await Facebook.requestPermissionsAsync()}
         />
         <ListButton
-          onPress={async () => await Facebook.setAutoInitEnabledAsync(false)}
-          title="Set autoinit to false"
+          onPress={async () => await Facebook.setAutoInitEnabledAsync(true)}
+          title="Set autoinit to true (should show deprecation warning)"
         />
         <ListButton
           onPress={() => this._testFacebookLogin(permissions)}
@@ -68,7 +73,11 @@ export default class FacebookLoginScreen extends React.Component {
         ]);
       }
     } catch (e) {
-      Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
+      Alert.alert(
+        'Error!',
+        `It is possible that you are not included in the Facebook test app (id: ${appId}).\n\nRaw Message: ${e.message}.`,
+        [{ text: 'OK', onPress: () => {} }]
+      );
     }
   };
 }

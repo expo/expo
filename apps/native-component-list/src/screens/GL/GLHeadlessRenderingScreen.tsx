@@ -41,7 +41,7 @@ void main() {
 let contrastLocation: WebGLUniformLocation | null;
 
 // create and prepare GL context
-const glPromise = GLView.createContextAsync().then(async gl => {
+const glPromise = GLView.createContextAsync().then(async (gl) => {
   // Compile vertex and fragment shaders
   const vertShader = gl.createShader(gl.VERTEX_SHADER)!;
   gl.shaderSource(vertShader, vertShaderSource);

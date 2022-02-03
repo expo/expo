@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 export declare type CalendarFormatType = typeof CalendarFormats.Gregorian | typeof CalendarFormats.Buddhist | typeof CalendarFormats.Chinese | typeof CalendarFormats.Coptic | typeof CalendarFormats.EthiopicAmeteMihret | typeof CalendarFormats.EthiopicAmeteAlem | typeof CalendarFormats.Hebrew | typeof CalendarFormats.ISO8601 | typeof CalendarFormats.Indian | typeof CalendarFormats.Islamic | typeof CalendarFormats.IslamicCivil | typeof CalendarFormats.Japanese | typeof CalendarFormats.Persian | typeof CalendarFormats.RepublicOfChina | typeof CalendarFormats.IslamicTabular | typeof CalendarFormats.IslamicUmmAlQura;
 export declare type ContainerType = typeof ContainerTypes.Local | typeof ContainerTypes.Exchange | typeof ContainerTypes.CardDAV | typeof ContainerTypes.Unassigned;
 export declare type ContactType = typeof ContactTypes.Person | typeof ContactTypes.Company;
@@ -262,3 +262,4 @@ export declare const ContactTypes: {
     Person: string;
     Company: string;
 };
+//# sourceMappingURL=Contacts.d.ts.map

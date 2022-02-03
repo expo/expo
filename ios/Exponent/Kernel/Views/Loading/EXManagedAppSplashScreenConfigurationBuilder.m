@@ -16,7 +16,7 @@ static const NSString *kImageResizeModeCover = @"cover";
 
 @implementation EXManagedAppSplashScreenConfigurationBuilder
 
-+ (EXManagedAppSplashScreenConfiguration *)parseManifest:(NSDictionary *)manifest
++ (EXManagedAppSplashScreenConfiguration *)parseManifest:(EXManifestsManifest *)manifest
 {
   UIColor *backgroundColor = [[self class] parseBackgroundColor:manifest];
   NSString *imageUrl = [[self class] parseImageUrl:manifest];
@@ -26,73 +26,30 @@ static const NSString *kImageResizeModeCover = @"cover";
                                                                 imageResizeMode:imageResizeMode];
 }
 
-+ (UIColor * _Nonnull)parseBackgroundColor:(NSDictionary *)manifest
++ (UIColor * _Nonnull)parseBackgroundColor:(EXManifestsManifest *)manifest
 {
   // TODO: (@bbarthec) backgroundColor is recommended to be in HEX format for now, but it should be any css-valid format
-  NSString *hexString = [[self class] getStringFromManifest:manifest
-                                                      paths:@[
-                                                        @[kManifestIosKey, kManifestSplashKey, kManifestBackgroundColorKey],
-                                                        @[kManifestSplashKey, kManifestBackgroundColorKey],
-                                                      ]];
+  NSString *hexString = manifest.iosSplashBackgroundColor;
   UIColor *color = [EXUtil colorWithHexString:hexString];
   if (color) {
     return color;
   }
-  
+
   return [UIColor whiteColor];
 }
 
-+ (NSString * _Nullable)parseImageUrl:(NSDictionary *)manifest
++ (NSString * _Nullable)parseImageUrl:(EXManifestsManifest *)manifest
 {
-  return [[self class] getStringFromManifest:manifest
-                                       paths:@[
-                                         [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad
-                                           ? @[kManifestIosKey, kManifestSplashKey, kManifestTabletImageUrlKey]
-                                           : @[],
-                                         @[kManifestIosKey, kManifestSplashKey, kManifestImageUrlKey],
-                                         @[kManifestSplashKey, kManifestImageUrlKey],
-                                       ]];
+  return manifest.iosSplashImageUrl;
 }
 
-+ (EXSplashScreenImageResizeMode)parseImageResizeMode:(NSDictionary *)manifest
++ (EXSplashScreenImageResizeMode)parseImageResizeMode:(EXManifestsManifest *)manifest
 {
-  NSString *resizeMode = [[self class] getStringFromManifest:manifest
-                                                       paths:@[
-                                                         @[kManifestIosKey, kManifestSplashKey, kManifestResizeModeKey],
-                                                         @[kManifestSplashKey, kManifestResizeModeKey],
-                                                       ]];
+  NSString *resizeMode = manifest.iosSplashImageResizeMode;
   if ([kImageResizeModeCover isEqualToString:resizeMode]) {
     return EXSplashScreenImageResizeModeCover;
   }
   return EXSplashScreenImageResizeModeContain;
-}
-
-+ (NSString * _Nullable)getStringFromManifest:(NSDictionary *)manifest
-                                        paths:(NSArray<NSArray<const NSString *> *> *)paths
-{
-  for (NSArray<const NSString *> *path in paths) {
-    NSString *result = [[self class] getStringFromManifest:manifest path:path];
-    if (result) {
-      return result;
-    }
-  }
-  return nil;
-}
-
-+ (NSString * _Nullable)getStringFromManifest:(NSDictionary *)manifest
-                                         path:(NSArray<const NSString *> *)path
-{
-  NSDictionary *json = manifest;
-  for (int i = 0; i < path.count; i++) {
-    BOOL isLastKey = i == path.count - 1;
-    const NSString *key = path[i];
-    id value = json[key];
-    if (isLastKey && [value isKindOfClass:[NSString class]]) {
-      return value;
-    }
-    json = value;
-  }
-  return nil;
 }
 
 @end

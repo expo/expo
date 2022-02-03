@@ -5,6 +5,8 @@
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
 #import <EXLocation/EXLocationPermissionRequester.h>
+#import <EXLocation/EXForegroundPermissionRequester.h>
+#import <EXLocation/EXBackgroundLocationPermissionRequester.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -14,10 +16,10 @@
 #import <CoreLocation/CLError.h>
 #import <CoreLocation/CLCircularRegion.h>
 
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
@@ -30,15 +32,15 @@ NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXLocationDelegate*> *delegates;
 @property (nonatomic, strong) NSMutableSet<EXLocationDelegate *> *retainedDelegates;
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMTaskManagerInterface> tasksManager;
 
 @end
 
 @implementation EXLocation
 
-UM_EXPORT_MODULE(ExpoLocation);
+EX_EXPORT_MODULE(ExpoLocation);
 
 - (instancetype)init
 {
@@ -49,12 +51,17 @@ UM_EXPORT_MODULE(ExpoLocation);
   return self;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
+
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[
+    [EXLocationPermissionRequester new],
+    [EXForegroundPermissionRequester new],
+    [EXBackgroundLocationPermissionRequester new]
+  ] withPermissionsManager:_permissionsManager];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -63,7 +70,7 @@ UM_EXPORT_MODULE(ExpoLocation);
   return dispatch_get_main_queue();
 }
 
-# pragma mark - UMEventEmitter
+# pragma mark - EXEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -75,9 +82,9 @@ UM_EXPORT_MODULE(ExpoLocation);
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getProviderStatusAsync,
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getProviderStatusAsync,
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@{
             @"locationServicesEnabled": @([CLLocationManager locationServicesEnabled]),
@@ -86,12 +93,12 @@ UM_EXPORT_METHOD_AS(getProviderStatusAsync,
 }
 
 
-UM_EXPORT_METHOD_AS(getCurrentPositionAsync,
+EX_EXPORT_METHOD_AS(getCurrentPositionAsync,
                     options:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (![self checkPermissions:reject]) {
+  if (![self checkForegroundPermissions:reject]) {
     return;
   }
 
@@ -121,13 +128,13 @@ UM_EXPORT_METHOD_AS(getCurrentPositionAsync,
   [locMgr requestLocation];
 }
 
-UM_EXPORT_METHOD_AS(watchPositionImplAsync,
+EX_EXPORT_METHOD_AS(watchPositionImplAsync,
                     watchId:(nonnull NSNumber *)watchId
                     options:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (![self checkPermissions:reject]) {
+  if (![self checkForegroundPermissions:reject]) {
     return;
   }
 
@@ -160,12 +167,12 @@ UM_EXPORT_METHOD_AS(watchPositionImplAsync,
   resolve([NSNull null]);
 }
 
-UM_EXPORT_METHOD_AS(getLastKnownPositionAsync,
+EX_EXPORT_METHOD_AS(getLastKnownPositionAsync,
                     getLastKnownPositionWithOptions:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (![self checkPermissions:reject]) {
+  if (![self checkForegroundPermissions:reject]) {
     return;
   }
   CLLocation *location = [[self locationManagerWithOptions:nil] location];
@@ -178,12 +185,11 @@ UM_EXPORT_METHOD_AS(getLastKnownPositionAsync,
 }
 
 // Watch method for getting compass updates
-UM_EXPORT_METHOD_AS(watchDeviceHeading,
+EX_EXPORT_METHOD_AS(watchDeviceHeading,
                     watchHeadingWithWatchId:(nonnull NSNumber *)watchId
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject) {
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
-    reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject) {
+  if (![self checkForegroundPermissions:reject]) {
     return;
   }
 
@@ -229,10 +235,10 @@ UM_EXPORT_METHOD_AS(watchDeviceHeading,
   resolve([NSNull null]);
 }
 
-UM_EXPORT_METHOD_AS(removeWatchAsync,
+EX_EXPORT_METHOD_AS(removeWatchAsync,
                     watchId:(nonnull NSNumber *)watchId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   EXLocationDelegate *delegate = _delegates[watchId];
 
@@ -246,10 +252,10 @@ UM_EXPORT_METHOD_AS(removeWatchAsync,
   resolve([NSNull null]);
 }
 
-UM_EXPORT_METHOD_AS(geocodeAsync,
+EX_EXPORT_METHOD_AS(geocodeAsync,
                     address:(nonnull NSString *)address
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   CLGeocoder *geocoder = [[CLGeocoder alloc] init];
 
@@ -276,10 +282,10 @@ UM_EXPORT_METHOD_AS(geocodeAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
+EX_EXPORT_METHOD_AS(reverseGeocodeAsync,
                     locationMap:(nonnull NSDictionary *)locationMap
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   CLGeocoder *geocoder = [[CLGeocoder alloc] init];
   CLLocation *location = [[CLLocation alloc] initWithLatitude:[locationMap[@"latitude"] floatValue] longitude:[locationMap[@"longitude"] floatValue]];
@@ -291,14 +297,15 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
         NSDictionary *address = @{
                                   @"city": UMNullIfNil(placemark.locality),
                                   @"district": UMNullIfNil(placemark.subLocality),
-                                  @"street": UMNullIfNil(placemark.thoroughfare),
-                                  @"region": UMNullIfNil(placemark.administrativeArea),
-                                  @"subregion": UMNullIfNil(placemark.subAdministrativeArea),
-                                  @"country": UMNullIfNil(placemark.country),
-                                  @"postalCode": UMNullIfNil(placemark.postalCode),
-                                  @"name": UMNullIfNil(placemark.name),
-                                  @"isoCountryCode": UMNullIfNil(placemark.ISOcountryCode),
-                                  @"timezone": UMNullIfNil(placemark.timeZone.name),
+                                  @"streetNumber": UMNullIfNil(placemark.subThoroughfare),
+                                  @"street": EXNullIfNil(placemark.thoroughfare),
+                                  @"region": EXNullIfNil(placemark.administrativeArea),
+                                  @"subregion": EXNullIfNil(placemark.subAdministrativeArea),
+                                  @"country": EXNullIfNil(placemark.country),
+                                  @"postalCode": EXNullIfNil(placemark.postalCode),
+                                  @"name": EXNullIfNil(placemark.name),
+                                  @"isoCountryCode": EXNullIfNil(placemark.ISOcountryCode),
+                                  @"timezone": EXNullIfNil(placemark.timeZone.name),
                                   };
         [results addObject:address];
       }
@@ -313,29 +320,69 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXLocationPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXLocationPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(hasServicesEnabledAsync,
-                    hasServicesEnabled:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getForegroundPermissionsAsync,
+                    getForegroundPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXForegroundPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+EX_EXPORT_METHOD_AS(requestForegroundPermissionsAsync,
+                    requestForegroundPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXForegroundPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+EX_EXPORT_METHOD_AS(getBackgroundPermissionsAsync,
+                    getBackgroundPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXBackgroundLocationPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+EX_EXPORT_METHOD_AS(requestBackgroundPermissionsAsync,
+                    requestBackgroundPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXBackgroundLocationPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+EX_EXPORT_METHOD_AS(hasServicesEnabledAsync,
+                    hasServicesEnabled:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   BOOL servicesEnabled = [CLLocationManager locationServicesEnabled];
   resolve(@(servicesEnabled));
@@ -343,13 +390,18 @@ UM_EXPORT_METHOD_AS(hasServicesEnabledAsync,
 
 # pragma mark - Background location
 
-UM_EXPORT_METHOD_AS(startLocationUpdatesAsync,
+EX_EXPORT_METHOD_AS(startLocationUpdatesAsync,
                     startLocationUpdatesForTaskWithName:(nonnull NSString *)taskName
                     withOptions:(nonnull NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
-  if (![self checkPermissions:reject] || ![self checkTaskManagerExists:reject] || ![self checkBackgroundServices:reject]) {
+  // There are two ways of starting this service.
+  // 1. As a background location service, this requires the background location permission.
+  // 2. As a user-initiated foreground service, this does NOT require the background location permission.
+  // Unfortunately, we cannot distinguish between those cases.
+  // So we only check foreground permission which needs to be granted in both cases.
+  if (![self checkForegroundPermissions:reject] || ![self checkTaskManagerExists:reject] || ![self checkBackgroundServices:reject]) {
     return;
   }
   if (![CLLocationManager significantLocationChangeMonitoringAvailable]) {
@@ -365,10 +417,10 @@ UM_EXPORT_METHOD_AS(startLocationUpdatesAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
+EX_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
                     stopLocationUpdatesForTaskWithName:(NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self checkTaskManagerExists:reject]) {
     return;
@@ -382,10 +434,10 @@ UM_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(hasStartedLocationUpdatesAsync,
+EX_EXPORT_METHOD_AS(hasStartedLocationUpdatesAsync,
                     hasStartedLocationUpdatesForTaskWithName:(nonnull NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self checkTaskManagerExists:reject]) {
     return;
@@ -396,13 +448,13 @@ UM_EXPORT_METHOD_AS(hasStartedLocationUpdatesAsync,
 
 # pragma mark - Geofencing
 
-UM_EXPORT_METHOD_AS(startGeofencingAsync,
+EX_EXPORT_METHOD_AS(startGeofencingAsync,
                     startGeofencingWithTaskName:(nonnull NSString *)taskName
                     withOptions:(nonnull NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
-  if (![self checkPermissions:reject] || ![self checkTaskManagerExists:reject]) {
+  if (![self checkBackgroundPermissions:reject] || ![self checkTaskManagerExists:reject]) {
     return;
   }
   if (![CLLocationManager isMonitoringAvailableForClass:[CLCircularRegion class]]) {
@@ -417,10 +469,10 @@ UM_EXPORT_METHOD_AS(startGeofencingAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(stopGeofencingAsync,
+EX_EXPORT_METHOD_AS(stopGeofencingAsync,
                     stopGeofencingWithTaskName:(nonnull NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self checkTaskManagerExists:reject]) {
     return;
@@ -434,10 +486,10 @@ UM_EXPORT_METHOD_AS(stopGeofencingAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
+EX_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
                     hasStartedGeofencingForTaskWithName:(NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![self checkTaskManagerExists:reject]) {
     return;
@@ -464,20 +516,33 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
   return locMgr;
 }
 
-- (BOOL)checkPermissions:(UMPromiseRejectBlock)reject
+- (BOOL)checkForegroundPermissions:(EXPromiseRejectBlock)reject
 {
   if (![CLLocationManager locationServicesEnabled]) {
     reject(@"E_LOCATION_SERVICES_DISABLED", @"Location services are disabled", nil);
     return NO;
   }
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
-    reject(@"E_NO_PERMISSIONS", @"LOCATION permission is required to do this operation.", nil);
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXForegroundPermissionRequester class]]) {
+    reject(@"E_NO_PERMISSIONS", @"LOCATION_FOREGROUND permission is required to do this operation.", nil);
     return NO;
   }
   return YES;
 }
 
-- (BOOL)checkTaskManagerExists:(UMPromiseRejectBlock)reject
+- (BOOL)checkBackgroundPermissions:(EXPromiseRejectBlock)reject
+{
+  if (![CLLocationManager locationServicesEnabled]) {
+    reject(@"E_LOCATION_SERVICES_DISABLED", @"Location services are disabled", nil);
+    return NO;
+  }
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXBackgroundLocationPermissionRequester class]]) {
+    reject(@"E_NO_PERMISSIONS", @"LOCATION_BACKGROUND permission is required to do this operation.", nil);
+    return NO;
+  }
+  return YES;
+}
+
+- (BOOL)checkTaskManagerExists:(EXPromiseRejectBlock)reject
 {
   if (_tasksManager == nil) {
     reject(@"E_TASKMANAGER_NOT_FOUND", @"`expo-task-manager` module is required to use background services.", nil);
@@ -486,7 +551,7 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
   return YES;
 }
 
-- (BOOL)checkBackgroundServices:(UMPromiseRejectBlock)reject
+- (BOOL)checkBackgroundServices:(EXPromiseRejectBlock)reject
 {
   if (![_tasksManager hasBackgroundModeEnabled:@"location"]) {
     reject(@"E_BACKGROUND_SERVICES_DISABLED", @"Background Location has not been configured. To enable it, add `location` to `UIBackgroundModes` in Info.plist file.", nil);

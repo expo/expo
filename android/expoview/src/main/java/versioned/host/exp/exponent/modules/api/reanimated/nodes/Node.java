@@ -1,12 +1,9 @@
 package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 
-import android.util.SparseArray;
-
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 import versioned.host.exp.exponent.modules.api.reanimated.UpdateContext;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-
 import javax.annotation.Nullable;
 
 public abstract class Node {
@@ -41,7 +37,8 @@ public abstract class Node {
   protected abstract @Nullable Object evaluate();
 
   public final @Nullable Object value() {
-    if (!mLastLoopID.containsKey(mUpdateContext.callID) || mLastLoopID.get(mUpdateContext.callID) < mUpdateContext.updateLoopID) {
+    if (!mLastLoopID.containsKey(mUpdateContext.callID)
+        || mLastLoopID.get(mUpdateContext.callID) < mUpdateContext.updateLoopID) {
       mLastLoopID.put(mUpdateContext.callID, mUpdateContext.updateLoopID);
       Object result = evaluate();
       mMemoizedValue.put(mUpdateContext.callID, result);
@@ -91,7 +88,7 @@ public abstract class Node {
   }
 
   public void onDrop() {
-    //noop
+    // noop
   }
 
   protected final void dangerouslyRescheduleEvaluate() {
@@ -104,7 +101,8 @@ public abstract class Node {
     markUpdated();
   }
 
-  private static void findAndUpdateNodes(Node node, Set<Node> visitedNodes, Stack<FinalNode> finalNodes) {
+  private static void findAndUpdateNodes(
+      Node node, Set<Node> visitedNodes, Stack<FinalNode> finalNodes) {
     if (visitedNodes.contains(node)) {
       return;
     } else {

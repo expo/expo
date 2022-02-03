@@ -1,3 +1,5 @@
 # react-native-unimodules
 
-Learn more about this library and learn how to install it on the [Installing react-native-unimodules documentation page](https://docs.expo.io/bare/installing-unimodules/).
+## ⚠️ Deprecated
+
+This package is now deprecated in favor of `expo`. If you're looking for how to migrate your apps, you can follow this guide: https://expo.fyi/expo-modules-migration

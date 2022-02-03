@@ -156,11 +156,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     id batchedBridge = [destinationBridge batchedBridge];
     id moduleData = [batchedBridge moduleDataForName:moduleName];
     
-    // React Native before SDK 11 didn't strip the "RCT" prefix from module names
-    if (!moduleData && ![moduleName hasPrefix:@"RCT"]) {
-      moduleData = [batchedBridge moduleDataForName:[@"RCT" stringByAppendingString:moduleName]];
-    }
-    
     if (moduleData) {
       return [moduleData instance];
     }
@@ -175,10 +170,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (BOOL)sendNotification:(EXPendingNotification *)notification
 {
-  EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord] ?: [_appRegistry newestRecordWithExperienceId:notification.experienceId];
+  EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord] ?: [_appRegistry newestRecordWithScopeKey:notification.scopeKey];
 
   // This allows home app record to receive notification events as well.
-  if (!destinationApp && [_appRegistry.homeAppRecord.experienceId isEqualToString:notification.experienceId]) {
+  if (!destinationApp && [_appRegistry.homeAppRecord.scopeKey isEqualToString:notification.scopeKey]) {
     destinationApp = _appRegistry.homeAppRecord;
   }
 
@@ -189,10 +184,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     return success;
   } else {
     // no app is currently running for this experience id.
-    // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
+    // if we're Expo Go, we can query Home for a past experience in the user's history, and route the notification there.
     if (_browserController) {
       __weak typeof(self) weakSelf = self;
-      [_browserController getHistoryUrlForExperienceId:notification.experienceId completion:^(NSString *urlString) {
+      [_browserController getHistoryUrlForScopeKey:notification.scopeKey completion:^(NSString *urlString) {
         if (urlString) {
           NSURL *url = [NSURL URLWithString:urlString];
           if (url) {
@@ -201,7 +196,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         }
       }];
       // If we're here, there's no active app in appRegistry matching notification.experienceId
-      // and we are in Expo Client, since _browserController is not nil.
+      // and we are in Expo Go, since _browserController is not nil.
       // If so, we can return YES (meaning "notification has been successfully dispatched")
       // because we pass the notification as initialProps in completion handler
       // of getHistoryUrlForExperienceId:. If urlString passed to completion handler is empty,
@@ -285,9 +280,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   }
 }
 
-- (void)reloadAppWithExperienceId:(NSString *)experienceId
+- (void)reloadAppWithScopeKey:(NSString *)scopeKey
 {
-  EXKernelAppRecord *appRecord = [_appRegistry newestRecordWithExperienceId:experienceId];
+  EXKernelAppRecord *appRecord = [_appRegistry newestRecordWithScopeKey:scopeKey];
   if (_browserController) {
     [self createNewAppWithUrl:appRecord.appLoader.manifestUrl initialProps:nil];
   } else if (_appRegistry.standaloneAppRecord && appRecord == _appRegistry.standaloneAppRecord) {
@@ -295,9 +290,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   }
 }
 
-- (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId
+- (void)reloadAppFromCacheWithScopeKey:(NSString *)scopeKey
 {
-  EXKernelAppRecord *appRecord = [_appRegistry newestRecordWithExperienceId:experienceId];
+  EXKernelAppRecord *appRecord = [_appRegistry newestRecordWithScopeKey:scopeKey];
   [appRecord.viewController reloadFromCache];
 }
 

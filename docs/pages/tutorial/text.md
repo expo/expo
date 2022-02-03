@@ -5,11 +5,11 @@ title: Styling text
 import SnackInline from '~/components/plugins/SnackInline';
 import Highlight from '~/components/plugins/Highlight';
 
-> 👶🏻 We believe in "learning by doing" and so this tutorial emphasizes **doing** over _explaining_. If you find yourself typing code that you do not understand, do not worry &mdash; we will link to you to appropriate resources to help you get a deeper understanding at the end of the tutorial.
+> 👶🏻 We believe in "learning by doing" and so this tutorial emphasizes **doing** over _explaining_. If you find yourself typing code that you do not understand, do not worry &mdash; we will link you to appropriate resources to help you get a deeper understanding at the end of the tutorial.
 
 Let's change the text that's currently instructing us to "Open up App.js to start working on your app!" to instead instruct our users how to use the app. The app doesn't yet do anything but we can pretend that it does, such is the way of programming.
 
-Change your code according to the following example. Throughout the tutorial, any important code or code that has changed between examples will be <Highlight>highlighted in yellow</Highlight>. You can hover on the highlights (on desktop) or tap them (on mobile) to see more context on the change.
+Change your code according to the following example. Throughout the tutorial, any important code or code that has changed between examples will be <Highlight>highlighted in yellow</Highlight>. You can hover over the highlights (on desktop) or tap them (on mobile) to see more context on the change.
 
 <SnackInline label="Updated text">
 
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 
 > 😳 **Wait, what is this "Try this example on Snack" button!?**
 >
-> Snack is a web-based editor that works similar to a managed Expo project. It's a great way to share code snippets with people and try things out without needing to get a project running on your own computer with `expo-cli`. Go ahead, press the button. You will see the above code running in it. Switch between iOS, Android, or web. Open it on your device in the Expo client by pressing the "Run" button.
+> Snack is a web-based editor that works similar to a managed Expo project. It's a great way to share code snippets with people and try things out without needing to get a project running on your own computer with `expo-cli`. Go ahead, press the button. You will see the above code running in it. Switch between iOS, Android, or web. Open it on your device in the Expo Go app by pressing the "Run" button.
 
 ## Adding style
 

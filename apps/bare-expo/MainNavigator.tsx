@@ -23,7 +23,7 @@ type NativeComponentListExportsType = null | {
   };
 };
 
-function optionalRequire(requirer: () => { default: React.ComponentType }) {
+export function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
   } catch (e) {
@@ -60,7 +60,7 @@ const Tab = createBottomTabNavigator();
 const Switch = createStackNavigator();
 
 const linking = {
-  prefixes: [Platform.select({ web: Linking.makeUrl('/'), default: 'bareexpo://' })],
+  prefixes: [Platform.select({ web: Linking.createURL('/', { scheme: 'bareexpo' }), default: 'bareexpo://' })],
   config: {
     screens: {
       main: {

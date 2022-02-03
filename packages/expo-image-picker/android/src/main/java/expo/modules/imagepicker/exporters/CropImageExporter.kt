@@ -9,9 +9,11 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 
-class CropImageExporter(private val mRotation: Int,
-                        private val mCropRect: Rect,
-                        private val mBase64: Boolean) : ImageExporter {
+class CropImageExporter(
+  private val mRotation: Int,
+  private val mCropRect: Rect,
+  private val mBase64: Boolean
+) : ImageExporter {
 
   // Note: Crop activity saves the result to the output file. So, we don't need to do it.
   override fun export(source: Uri, output: File, exporterListener: Listener) {

@@ -11,7 +11,7 @@ export const A = forwardRef(({ href, target, ...props }: LinkProps, ref) => {
       target,
     },
     default: {
-      onPress: event => {
+      onPress: (event) => {
         props.onPress && props.onPress(event);
         if (Platform.OS !== 'web' && href !== undefined) {
           Linking.openURL(href);

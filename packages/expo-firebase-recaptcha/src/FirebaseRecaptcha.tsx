@@ -1,13 +1,14 @@
-import { CodedError } from '@unimodules/core';
-import { DEFAULT_WEB_APP_OPTIONS, IFirebaseOptions } from 'expo-firebase-core';
+import { DEFAULT_WEB_APP_OPTIONS, FirebaseOptions } from 'expo-firebase-core';
+import { CodedError } from 'expo-modules-core';
 import * as React from 'react';
 
 import { WebView } from './WebView';
 
 interface Props extends React.ComponentProps<typeof WebView> {
-  firebaseConfig?: IFirebaseOptions;
+  firebaseConfig?: FirebaseOptions;
   firebaseVersion?: string;
   appVerificationDisabledForTesting?: boolean;
+  languageCode?: string;
   onLoad?: () => any;
   onError?: () => any;
   onVerify: (token: string) => any;
@@ -17,9 +18,10 @@ interface Props extends React.ComponentProps<typeof WebView> {
 }
 
 function getWebviewSource(
-  firebaseConfig: IFirebaseOptions,
+  firebaseConfig: FirebaseOptions,
   firebaseVersion?: string,
   appVerificationDisabledForTesting: boolean = false,
+  languageCode?: string,
   invisible?: boolean
 ) {
   firebaseVersion = firebaseVersion || '8.0.0';
@@ -73,6 +75,7 @@ function getWebviewSource(
         type: 'load'
       }));
       firebase.auth().settings.appVerificationDisabledForTesting = ${appVerificationDisabledForTesting};
+      ${languageCode ? `firebase.auth().languageCode = '${languageCode}';` : ''}
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("${
         invisible ? 'recaptcha-btn' : 'recaptcha-cont'
       }", {
@@ -115,12 +118,14 @@ function getWebviewSource(
       }
     });
   </script>
-  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit" onerror="onError()"></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${
+    languageCode ?? ''
+  }" onerror="onError()"></script>
 </body></html>`,
   };
 }
 
-function validateFirebaseConfig(firebaseConfig?: IFirebaseOptions) {
+function validateFirebaseConfig(firebaseConfig?: FirebaseOptions) {
   if (!firebaseConfig) {
     throw new CodedError(
       'ERR_FIREBASE_RECAPTCHA_CONFIG',
@@ -141,6 +146,7 @@ export default function FirebaseRecaptcha(props: Props) {
     firebaseConfig,
     firebaseVersion,
     appVerificationDisabledForTesting,
+    languageCode,
     onVerify,
     onLoad,
     onError,
@@ -181,10 +187,11 @@ export default function FirebaseRecaptcha(props: Props) {
         firebaseConfig,
         firebaseVersion,
         appVerificationDisabledForTesting,
+        languageCode,
         invisible
       )}
       onError={onError}
-      onMessage={event => {
+      onMessage={(event) => {
         const data = JSON.parse(event.nativeEvent.data);
         switch (data.type) {
           case 'load':

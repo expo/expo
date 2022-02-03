@@ -1,15 +1,30 @@
-type ModalStackRoutes = {
-  SignIn: object;
-  SignUp: object;
+export type ModalStackRoutes = {
   QRCode: object;
 };
 
-export type AllStackRoutes = {
+export type ProjectsStackRoutes = {
   Projects: object;
-  Profile: { username?: string };
+};
+
+export type ProfileStackRoutes = {
+  Profile: object;
+  ProfileAllProjects: object;
+  ProfileAllSnacks: object;
+  Account: { accountName: string };
   UserSettings: object;
-  ExploreAndSearch: object;
-  ProjectsForUser: { username: string; belongsToCurrentUser?: boolean };
-  SnacksForUser: { username: string; belongsToCurrentUser?: boolean };
-  Experience: { username: string; slug: string };
-} & ModalStackRoutes;
+  ProjectsForAccount: { accountName: string };
+  SnacksForAccount: { accountName: string };
+  Project: { id: string };
+};
+
+export type DiagnosticsStackRoutes = {
+  Diagnostics: object;
+  Audio: object;
+  Location: object;
+  Geofencing: object;
+};
+
+export type AllStackRoutes = ProfileStackRoutes &
+  ProjectsStackRoutes &
+  ModalStackRoutes &
+  DiagnosticsStackRoutes;

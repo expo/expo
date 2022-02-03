@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font';
 function uriFromFontSource(asset) {

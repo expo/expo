@@ -7,14 +7,14 @@ it(`defines a manifest`, () => {
   expect(typeof Constants.manifest).toBe('object');
 });
 
-it(`defines a linking URI and URL`, () => {
+it(`defines a linking URI`, () => {
   expect(typeof Constants.linkingUri).toBe('string');
-  expect(Constants.linkingUri).toBe(Constants.linkingUrl);
 });
 
 describe(`manifest`, () => {
   const fakeManifest = { id: '@jester/manifest' };
   const fakeManifest2 = { id: '@jester/manifest2' };
+  const fakeManifestNew = { id: 'fakeid', metadata: {} };
 
   beforeEach(() => {
     jest.resetModules();
@@ -22,7 +22,7 @@ describe(`manifest`, () => {
 
   afterEach(() => {
     jest.dontMock('../ExponentConstants');
-    jest.dontMock('@unimodules/core');
+    jest.dontMock('expo-modules-core');
   });
 
   // mock console.warn
@@ -43,8 +43,8 @@ describe(`manifest`, () => {
   }
 
   function mockNativeModulesProxy(mockValues: object) {
-    jest.doMock('@unimodules/core', () => {
-      const UnimodulesCore = jest.requireActual('@unimodules/core');
+    jest.doMock('expo-modules-core', () => {
+      const UnimodulesCore = jest.requireActual('expo-modules-core');
       return {
         ...UnimodulesCore,
         NativeModulesProxy: {
@@ -56,8 +56,8 @@ describe(`manifest`, () => {
   }
 
   function mockExpoUpdates(mockValues: object) {
-    jest.doMock('@unimodules/core', () => {
-      const UnimodulesCore = jest.requireActual('@unimodules/core');
+    jest.doMock('expo-modules-core', () => {
+      const UnimodulesCore = jest.requireActual('expo-modules-core');
       return {
         ...UnimodulesCore,
         NativeModulesProxy: {
@@ -145,9 +145,27 @@ describe(`manifest`, () => {
     expect(console.warn).not.toHaveBeenCalled();
   });
 
+  it(`does not have manifest2 when manifest is a classic manifest`, () => {
+    mockExponentConstants({ manifest: fakeManifest });
+    mockExpoUpdates({ manifest: fakeManifest });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(ConstantsWithMock.manifest2).toBeNull();
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it(`has manifest2 when manifest is a new manifest`, () => {
+    mockExponentConstants({ manifest: fakeManifestNew });
+    mockExpoUpdates({ manifest: fakeManifestNew });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.manifest).toBeNull();
+    expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
   // web will only ever be in bare environment
   if (Platform.OS !== 'web') {
-    [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach(env => {
+    [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach((env) => {
       it(`throws an error if manifest is falsey when Constants.executionEnvironment is ${env}`, () => {
         mockExponentConstants({
           manifest: null,

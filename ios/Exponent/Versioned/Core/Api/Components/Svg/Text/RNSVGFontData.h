@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+
+#import "RNSVGUIKit.h"
 
 #import "RNSVGTextProperties.h"
 #import "RNSVGPropHelper.h"

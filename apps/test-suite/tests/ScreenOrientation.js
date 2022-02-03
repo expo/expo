@@ -8,7 +8,7 @@ export const name = 'ScreenOrientation';
 // Wait until we are in desiredOrientation
 // Fail if we are not in a validOrientation
 const applyAsync = ({ desiredOrientationLock, desiredOrientations, validOrientations }) => {
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     let subscriptionCancelled = false;
     const subscription = ScreenOrientation.addOrientationChangeListener(
       ({ orientationInfo, orientationLock }) => {
@@ -113,7 +113,7 @@ export function test(t) {
       t.it(
         'Register for the callback, set to landscape orientation and get the correct orientation',
         async () => {
-          const callListenerAsync = new Promise(async function(resolve, reject) {
+          const callListenerAsync = new Promise(async function (resolve, reject) {
             // Register for screen orientation changes
             ScreenOrientation.addOrientationChangeListener(({ orientationInfo }) => {
               const { orientation } = orientationInfo;

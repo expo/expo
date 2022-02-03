@@ -1,7 +1,0 @@
-{
-  "name": "unimodules-react-native-adapter",
-  "platforms": ["ios", "android"],
-  "android": {
-    "packages": []
-  }
-}

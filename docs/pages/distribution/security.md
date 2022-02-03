@@ -6,7 +6,7 @@ Before you enter outside credentials or provide other sensitive data to third-pa
 
 Most data stored by Expo — credentials or otherwise — is encrypted at rest by our cloud provider, Google Cloud. Credentials are additionally encrypted using [KMS](https://cloud.google.com/kms/). Credentials are only unencrypted for as long as we need them in memory in the standalone app builders or push notification services. Credentials are always encrypted in our databases, message queues, and other less transient parts of the system.
 
-All of the data related to the information explained below can be downloaded and removed from Expo servers (if it is stored there at all in the first place), and some of it may be available through other locations such as the Apple Developer portal.
+All of the data related to the information explained below can be downloaded and removed from Expo servers (if it is stored there at all in the first place), and some of it may be available through other locations such as the Apple Developer Portal.
 
 ## iOS Push Notification credentials
 
@@ -53,7 +53,7 @@ Disable Keychain support with the environment variable `EXPO_NO_KEYCHAIN=1`. You
 
 ### Changing Apple ID Password in Keychain
 
-To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver.[Your Apple ID]" (ex. `deliver.bacon@expo.io`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
+To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver.[Your Apple ID]" (ex. `deliver.bacon@expo.dev`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
 
 ### Consequences if compromised
 

@@ -48,5 +48,5 @@ This document will guide you through the process of creating a versioned snapsho
 
     **Why:** At this point you should be done with all the steps for which you would use automated tools. However, in some places the versioning script isn't perfect and may produce incorrect or incomplete results.
 
-    **How:** Open `/android` project in Android Studio and try to run `app` on a device or in an emulator. Fix any issues that prevent the app from building and running.
+    **How:** Open `/android` project in Android Studio, select `versionedDebug` flavor in _Build Variants_ pane and try to run `app` on a device or in an emulator. Fix any issues that prevent the app from building and running.
       * Keep track of any issues you need to fix, and update the versioning scripts so that you don't have to fix them again in the future!

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="splash_screen_text" translatable="false">DEVELOPMENT CLIENT</string>
+
+  <string name="dev_launcher_error_header" translatable="false">There was a problem loading the project.</string>
+  <string name="dev_launcher_error_details" translatable="false">This development build encountered the following error.</string>
+
+  <string name="dev_launcher_reload" translatable="false">Reload</string>
+  <string name="dev_launcher_go_to_home" translatable="false">Go to home</string>
+</resources>

@@ -5,7 +5,7 @@ import SpecResult from './SpecResult';
 
 export default function SuiteResult({ r, depth }) {
   const renderSpecResult = React.useMemo(
-    () => r => {
+    () => (r) => {
       const status = r.get('status');
       const key = r.get('id');
       const description = r.get('description');
@@ -24,7 +24,7 @@ export default function SuiteResult({ r, depth }) {
   );
 
   const renderSuiteResult = React.useMemo(
-    () => r => <SuiteResult key={r.get('result').get('id')} r={r} depth={depth + 1} />,
+    () => (r) => <SuiteResult key={r.get('result').get('id')} r={r} depth={depth + 1} />,
     [depth]
   );
 

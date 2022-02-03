@@ -4,7 +4,7 @@ Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/local-authentication.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/local-authentication.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/local-authentication/)
 
 # Installation in managed Expo projects
@@ -13,7 +13,7 @@ For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -24,6 +24,13 @@ expo install expo-local-authentication
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package.
+
+Add `NSFaceIDUsageDescription` to your `Info.plist`:
+
+```xml
+<key>NSFaceIDUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use FaceID</string>
+```
 
 ### Configure for Android
 

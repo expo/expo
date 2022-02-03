@@ -14,11 +14,12 @@ function getStatusEmoji(status) {
 
 export default function SpecResult({ status = Statuses.Running, description, failedExpectations }) {
   const renderExpectations = React.useMemo(
-    () => (e, i) => (
-      <Text testID="test_suite_text_spec_exception" key={i}>
-        {e.get('message')}
-      </Text>
-    ),
+    () => (e, i) =>
+      (
+        <Text testID="test_suite_text_spec_exception" key={i}>
+          {e.get('message')}
+        </Text>
+      ),
     []
   );
 

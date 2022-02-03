@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI39_0_0/Expo/EXCellular/ABI39_0_0EXCellular/ABI39_0_0EXCellularModule.h

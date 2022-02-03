@@ -1,17 +1,32 @@
-import * as React from 'react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 
-const getAnalyticsScript = (id: string) => {
-  return `
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', '${id}', {cookieDomain: 'auto', siteSpeedSampleRate: 100});
-ga('send', 'pageview');
-`.replace(/\n/g, '');
-};
+export function LoadAnalytics({ id }: { id: string }) {
+  return (
+    <Head>
+      <script defer src={`https://www.googletagmanager.com/gtag/js?id=${id}`} />
+    </Head>
+  );
+}
 
-export const GoogleScript: React.FC<{ id: string }> = props => {
-  const markup = { __html: getAnalyticsScript(props.id) };
-  return <script dangerouslySetInnerHTML={markup} />;
-};
+export function TrackPageView({ id }: { id: string }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handlePageViewTracking = (url: string) => {
+      window?.gtag?.('config', id, {
+        page_path: url,
+        transport_type: 'beacon',
+        anonymize_ip: true,
+      });
+    };
+
+    router.events.on('routeChangeComplete', handlePageViewTracking);
+    return () => {
+      router.events.off('routeChangeComplete', handlePageViewTracking);
+    };
+  }, [router.events]);
+
+  return <noscript />;
+}
