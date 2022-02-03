@@ -29,7 +29,7 @@ As mentioned in the introduction, there are some URL schemes for core functional
 | `sms`            | Open SMS app, eg: `sms:+123456789`           | ✅  | ✅      |
 | `https` / `http` | Open web browser app, eg: `https://expo.io`  | ✅  | ✅      |
 
-> ⚠️ iOS Simulators do not support the `mailto` and `tel` schemes.
+> ⚠️ iOS Simulators do not support the `mailto` and `tel` schemes because they do not include the Phone or Mail applications.
 
 ### Opening links from your app
 
