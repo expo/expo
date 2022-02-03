@@ -31,8 +31,8 @@ Before getting real-time updates on errors and making your app generally incredi
 1. [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need them later.
 
    - **organization name** is available in your `Organization settings` tab
-   - **project name** is available in your project's `Settings` > `General Settings` tab
-   - **`DSN`** is available in your project's `Settings` > `Client Keys` tab
+   - **project name** is available in your project's `Settings` > `Projects` tab (find it in the list)
+   - **`DSN`** is avalable in your project's `Settings` > `Projects` > **Project name** > `Client Keys (DSN)` tab
 
 2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
 
