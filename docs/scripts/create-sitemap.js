@@ -18,9 +18,9 @@ module.exports = function createSitemap({
   pathsPriority = [],
   pathsHidden = [],
 }) {
-  if (!pathMap) return console.log(`⚠️ Couldn't generate sitemap, no 'pathMap' provided`);
-  if (!domain) return console.log(`⚠️ Couldn't generate sitemap, no 'domain' provided`);
-  if (!output) return console.log(`⚠️ Couldn't generate sitemap, no 'output' provided`);
+  if (!pathMap) throw new Error(`⚠️ Couldn't generate sitemap, no 'pathMap' provided`);
+  if (!domain) throw new Error(`⚠️ Couldn't generate sitemap, no 'domain' provided`);
+  if (!output) throw new Error(`⚠️ Couldn't generate sitemap, no 'output' provided`);
 
   // Make sure both hidden and prioritized paths are prefixed with slash
   pathsPriority = pathsPriority.map(pathWithStartingSlash);
@@ -49,7 +49,7 @@ module.exports = function createSitemap({
   urls.forEach(url => sitemap.write({ url }));
   sitemap.end();
 
-  console.log(`📝 Generated sitemap with ${urls.length} entries`);
+  return urls;
 };
 
 function pathWithTrailingSlash(url) {
