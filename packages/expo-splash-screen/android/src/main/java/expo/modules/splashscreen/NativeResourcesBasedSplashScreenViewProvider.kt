@@ -1,6 +1,7 @@
 package expo.modules.splashscreen
 
 import android.content.Context
+import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 
 // this needs to stay for versioning to work
@@ -23,6 +24,12 @@ class NativeResourcesBasedSplashScreenViewProvider(
 
     splashScreenView.imageView.setImageResource(getImageResource())
     splashScreenView.configureImageViewResizeMode(resizeMode)
+    splashScreenView.also { view -> view.layoutParams= RelativeLayout.LayoutParams(
+      RelativeLayout.LayoutParams.MATCH_PARENT,
+      RelativeLayout.LayoutParams.MATCH_PARENT,
+    ).apply {
+      setMargins(context.resources.getInteger(R.integer.expo_splash_screen_left),context.resources.getInteger(R.integer.expo_splash_screen_top), context.resources.getInteger(R.integer.expo_splash_screen_right), context.resources.getInteger(R.integer.expo_splash_screen_bottom))
+    } }
 
     return splashScreenView
   }
