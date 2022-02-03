@@ -1,15 +1,15 @@
 'use strict';
 
 import { Asset } from 'expo-asset';
-import * as FS from 'expo-file-system';
 import Constants from 'expo-constants';
-import { Platform } from '@unimodules/core';
+import * as FS from 'expo-file-system';
+import { Platform } from 'expo-modules-core';
 
 export const name = 'FileSystem';
 
 export async function test({ describe, expect, it, ...t }) {
   describe('FileSystem', () => {
-    const throws = async run => {
+    const throws = async (run) => {
       let error = null;
       try {
         await run();
@@ -24,7 +24,6 @@ export async function test({ describe, expect, it, ...t }) {
         it('throws out-of-scope exceptions', async () => {
           const p = FS.documentDirectory;
 
-          await throws(() => FS.getInfoAsync(p + '../hello/world'));
           await throws(() => FS.readAsStringAsync(p + '../hello/world'));
           await throws(() => FS.writeAsStringAsync(p + '../hello/world', ''));
           await throws(() => FS.deleteAsync(p + '../hello/world'));
@@ -48,40 +47,33 @@ export async function test({ describe, expect, it, ...t }) {
       return;
     }
 
-    it(
-      'delete(idempotent) -> !exists -> download(md5, uri) -> exists ' + '-> delete -> !exists',
-      async () => {
-        const localUri = FS.documentDirectory + 'download1.png';
+    it('delete(idempotent) -> !exists -> download(md5, uri) -> exists -> delete -> !exists', async () => {
+      const localUri = FS.documentDirectory + 'download1.png';
 
-        const assertExists = async expectedToExist => {
-          let { exists } = await FS.getInfoAsync(localUri);
-          if (expectedToExist) {
-            expect(exists).toBeTruthy();
-          } else {
-            expect(exists).not.toBeTruthy();
-          }
-        };
+      const assertExists = async (expectedToExist) => {
+        const { exists } = await FS.getInfoAsync(localUri);
+        if (expectedToExist) {
+          expect(exists).toBeTruthy();
+        } else {
+          expect(exists).not.toBeTruthy();
+        }
+      };
 
-        await FS.deleteAsync(localUri, { idempotent: true });
-        await assertExists(false);
+      await FS.deleteAsync(localUri, { idempotent: true });
+      await assertExists(false);
 
-        const {
-          md5,
-          headers,
-        } = await FS.downloadAsync(
-          'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
-          localUri,
-          { md5: true }
-        );
-        expect(md5).toBe('1e02045c10b8f1145edc7c8375998f87');
-        await assertExists(true);
-        expect(headers['Content-Type']).toBe('image/png');
+      const { md5, headers } = await FS.downloadAsync(
+        'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
+        localUri,
+        { md5: true }
+      );
+      expect(md5).toBe('1e02045c10b8f1145edc7c8375998f87');
+      await assertExists(true);
+      expect(headers['Content-Type']).toBe('image/png');
 
-        await FS.deleteAsync(localUri);
-        await assertExists(false);
-      },
-      9000
-    );
+      await FS.deleteAsync(localUri);
+      await assertExists(false);
+    }, 9000);
 
     it('Can read/write Base64', async () => {
       const asset = await Asset.fromModule(require('../assets/icons/app.png'));
@@ -126,9 +118,7 @@ export async function test({ describe, expect, it, ...t }) {
     it('download(md5, uri) -> read -> delete -> !exists -> read[error]', async () => {
       const localUri = FS.documentDirectory + 'download1.txt';
 
-      const {
-        md5,
-      } = await FS.downloadAsync(
+      const { md5 } = await FS.downloadAsync(
         'https://s3-us-west-1.amazonaws.com/test-suite-data/text-file.txt',
         localUri,
         { md5: true }
@@ -157,7 +147,7 @@ export async function test({ describe, expect, it, ...t }) {
       const { exists } = await FS.getInfoAsync(localUri);
       expect(exists).not.toBeTruthy();
 
-      const writeAndVerify = async expected => {
+      const writeAndVerify = async (expected) => {
         await FS.writeAsStringAsync(localUri, expected);
         const string = await FS.readAsStringAsync(localUri);
         expect(string).toBe(expected);
@@ -386,9 +376,7 @@ export async function test({ describe, expect, it, ...t }) {
 
       await FS.deleteAsync(localUri, { idempotent: true });
 
-      const {
-        md5,
-      } = await FS.downloadAsync(
+      const { md5 } = await FS.downloadAsync(
         'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
         localUri,
         { md5: true }
@@ -420,8 +408,8 @@ export async function test({ describe, expect, it, ...t }) {
     it('download(network failure)', async () => {
       const localUri = FS.documentDirectory + 'download1.png';
 
-      const assertExists = async expectedToExist => {
-        let { exists } = await FS.getInfoAsync(localUri);
+      const assertExists = async (expectedToExist) => {
+        const { exists } = await FS.getInfoAsync(localUri);
         if (expectedToExist) {
           expect(exists).toBeTruthy();
         } else {
@@ -449,8 +437,8 @@ export async function test({ describe, expect, it, ...t }) {
     it('download(404)', async () => {
       const localUri = FS.documentDirectory + 'download1.png';
 
-      const assertExists = async expectedToExist => {
-        let { exists } = await FS.getInfoAsync(localUri);
+      const assertExists = async (expectedToExist) => {
+        const { exists } = await FS.getInfoAsync(localUri);
         if (expectedToExist) {
           expect(exists).toBeTruthy();
         } else {
@@ -461,7 +449,7 @@ export async function test({ describe, expect, it, ...t }) {
       await FS.deleteAsync(localUri, { idempotent: true });
       await assertExists(false);
 
-      const { status } = await FS.downloadAsync('https://expo.io/404', localUri, {
+      const { status } = await FS.downloadAsync('https://github.com/omg1231sdfaljs', localUri, {
         md5: true,
       });
       await assertExists(true);

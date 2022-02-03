@@ -1,15 +1,22 @@
-import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import InstallationIdProvider from './InstallationIdProvider';
+import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
+import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
+import ServerRegistrationModule from './ServerRegistrationModule';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
 export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
-    const experienceId = options.experienceId || (Constants.manifest && Constants.manifest.id);
-    if (!experienceId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId found. If it can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself.");
+    const experienceId = options.experienceId ||
+        Constants.manifest?.originalFullName ||
+        Constants.manifest2?.extra?.expoClient?.originalFullName ||
+        Constants.manifest?.id;
+    const projectId = options.projectId ||
+        Constants.manifest2?.extra?.eas?.projectId ||
+        Constants.manifest?.projectId;
+    if (!experienceId && !projectId) {
+        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself.");
     }
     const applicationId = options.applicationId || Application.applicationId;
     if (!applicationId) {
@@ -17,14 +24,15 @@ export default async function getExpoPushTokenAsync(options = {}) {
     }
     const type = options.type || getTypeOfToken(devicePushToken);
     const development = options.development || (await shouldUseDevelopmentNotificationService());
-    const url = options.url || `${options.baseUrl || productionBaseUrl}push/getExpoPushToken`;
+    const baseUrl = options.baseUrl ?? productionBaseUrl;
+    const url = options.url ?? `${baseUrl}push/getExpoPushToken`;
     const body = {
         type,
-        deviceId,
+        deviceId: deviceId.toLowerCase(),
         development,
-        experienceId,
         appId: applicationId,
         deviceToken: getDeviceToken(devicePushToken),
+        ...(projectId ? { projectId } : { experienceId }),
     };
     const response = await fetch(url, {
         method: 'POST',
@@ -32,7 +40,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
             'content-type': 'application/json',
         },
         body: JSON.stringify(body),
-    }).catch(error => {
+    }).catch((error) => {
         throw new CodedError('ERR_NOTIFICATIONS_NETWORK_ERROR', `Error encountered while fetching Expo token: ${error}.`);
     });
     if (!response.ok) {
@@ -47,6 +55,17 @@ export default async function getExpoPushTokenAsync(options = {}) {
         throw new CodedError('ERR_NOTIFICATIONS_SERVER_ERROR', `Error encountered while fetching Expo token, expected an OK response, received: ${statusInfo} (body: "${body}").`);
     }
     const expoPushToken = getExpoPushToken(await parseResponse(response));
+    try {
+        if (options.url || options.baseUrl) {
+            console.debug(`[expo-notifications] Since the URL endpoint to register in has been customized in the options, expo-notifications won't try to auto-update the device push token on the server.`);
+        }
+        else {
+            await setAutoServerRegistrationEnabledAsync(true);
+        }
+    }
+    catch (e) {
+        console.warn('[expo-notifications] Could not enable automatically registering new device tokens with the Expo notification service', e);
+    }
     return {
         type: 'expo',
         data: expoPushToken,
@@ -76,12 +95,13 @@ function getExpoPushToken(data) {
     }
     return data.data.expoPushToken;
 }
+// Same as in DevicePushTokenAutoRegistration
 async function getDeviceIdAsync() {
     try {
-        if (!InstallationIdProvider.getInstallationIdAsync) {
-            throw new UnavailabilityError('InstallationIdProvider', 'getInstallationIdAsync');
+        if (!ServerRegistrationModule.getInstallationIdAsync) {
+            throw new UnavailabilityError('ExpoServerRegistrationModule', 'getInstallationIdAsync');
         }
-        return await InstallationIdProvider.getInstallationIdAsync();
+        return await ServerRegistrationModule.getInstallationIdAsync();
     }
     catch (e) {
         throw new CodedError('ERR_NOTIF_DEVICE_ID', `Could not have fetched installation ID of the application: ${e}.`);
@@ -93,6 +113,7 @@ function getDeviceToken(devicePushToken) {
     }
     return JSON.stringify(devicePushToken.data);
 }
+// Same as in DevicePushTokenAutoRegistration
 async function shouldUseDevelopmentNotificationService() {
     if (Platform.OS === 'ios') {
         try {
@@ -107,6 +128,7 @@ async function shouldUseDevelopmentNotificationService() {
     }
     return false;
 }
+// Same as in DevicePushTokenAutoRegistration
 function getTypeOfToken(devicePushToken) {
     switch (devicePushToken.type) {
         case 'ios':

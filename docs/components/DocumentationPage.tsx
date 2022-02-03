@@ -1,6 +1,7 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import some from 'lodash/some';
-import Router from 'next/router';
+import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
@@ -8,7 +9,6 @@ import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
-import DocumentationPageContext from '~/components/DocumentationPageContext';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationSidebarRight, {
   SidebarRightComponentType,
@@ -17,17 +17,18 @@ import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 import navigation from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
-import { VERSIONS } from '~/constants/versions';
-import { NavigationRoute, Url } from '~/types/common';
+import { usePageApiVersion } from '~/providers/page-api-version';
+import { NavigationRoute } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
-  background: #fff;
+  background: ${theme.background.default};
   margin: 0 auto;
   padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${Constants.expoColors.semantic.border};
-    border-bottom: 0px;
+    border: 0;
+    height: 0.01rem;
+    background-color: ${theme.border.default};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -47,20 +48,22 @@ const HIDDEN_ON_DESKTOP = css`
   }
 `;
 
-type Props = {
-  url: Url;
+type Props = React.PropsWithChildren<{
+  router: NextRouter;
   title: string;
-  asPath: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
-};
+  /** If the page should not show up in the Algolia Docsearch results */
+  hideFromSearch?: boolean;
+  version: string;
+}>;
 
 type State = {
   isMenuActive: boolean;
   isMobileSearchActive: boolean;
 };
 
-export default class DocumentationPage extends React.Component<Props, State> {
+class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   state = {
     isMenuActive: false,
     isMobileSearchActive: false,
@@ -74,17 +77,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
       if (this.layoutRef.current) {
         window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
       }
-      window.NProgress.start();
     });
-
-    Router.events.on('routeChangeComplete', () => {
-      window.NProgress.done();
-    });
-
-    Router.events.on('routeChangeError', () => {
-      window.NProgress.done();
-    });
-
     window.addEventListener('resize', this.handleResize);
   }
 
@@ -96,18 +89,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
       window.scrollTo(0, 0);
     }
-  };
-
-  private handleSetVersion = (version: string) => {
-    let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
-
-    if (!newPath.endsWith('/')) {
-      newPath += '/';
-    }
-
-    // note: we can do this without validating if the page exists or not.
-    // the error page will redirect users to the versioned-index page when a page doesn't exists.
-    Router.push(newPath);
   };
 
   private handleShowMenu = () => {
@@ -136,55 +117,64 @@ export default class DocumentationPage extends React.Component<Props, State> {
   };
 
   private isReferencePath = () => {
-    return this.props.url.pathname.startsWith('/versions');
+    return this.props.router.pathname.startsWith('/versions');
   };
 
   private isGeneralPath = () => {
     return some(navigation.generalDirectories, name =>
-      this.props.url.pathname.startsWith(`/${name}`)
+      this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
   private isGettingStartedPath = () => {
     return (
-      this.props.url.pathname === '/' ||
-      some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
+      this.props.router.pathname === '/' ||
+      some(navigation.startingDirectories, name =>
+        this.props.router.pathname.startsWith(`/${name}`)
+      )
+    );
+  };
+
+  private isFeaturePreviewPath = () => {
+    return some(navigation.featurePreviewDirectories, name =>
+      this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
   private isPreviewPath = () => {
     return some(navigation.previewDirectories, name =>
-      this.props.url.pathname.startsWith(`/${name}`)
+      this.props.router.pathname.startsWith(`/${name}`)
+    );
+  };
+
+  private isEasPath = () => {
+    return some(navigation.easDirectories, name =>
+      this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
   private getCanonicalUrl = () => {
     if (this.isReferencePath()) {
-      return `https://docs.expo.io${Utilities.replaceVersionInUrl(
-        this.props.url.pathname,
+      return `https://docs.expo.dev${Utilities.replaceVersionInUrl(
+        this.props.router.pathname,
         'latest'
       )}`;
     } else {
-      return `https://docs.expo.io/${this.props.url.pathname}`;
+      return `https://docs.expo.dev${this.props.router.pathname}`;
     }
   };
 
-  private getVersion = () => {
-    let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
-    if (!version || VERSIONS.indexOf(version) === -1) {
-      version = VERSIONS[0];
-    }
-    if (!version) {
-      version = 'latest';
+  private getAlgoliaTag = () => {
+    if (this.props.hideFromSearch === true) {
+      return null;
     }
 
-    return version;
+    return this.isReferencePath() ? this.props.version : 'none';
   };
 
   private getRoutes = (): NavigationRoute[] => {
     if (this.isReferencePath()) {
-      const version = this.getVersion();
-      return navigation.reference[version];
+      return navigation.reference[this.props.version];
     } else {
       return navigation[this.getActiveTopLevelSection()];
     }
@@ -197,8 +187,12 @@ export default class DocumentationPage extends React.Component<Props, State> {
       return 'general';
     } else if (this.isGettingStartedPath()) {
       return 'starting';
+    } else if (this.isFeaturePreviewPath()) {
+      return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
+    } else if (this.isEasPath()) {
+      return 'eas';
     }
 
     return 'general';
@@ -206,16 +200,11 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
-
-    const version = this.getVersion();
     const routes = this.getRoutes();
-
-    const isReferencePath = this.isReferencePath();
 
     const headerElement = (
       <DocumentationHeader
         activeSection={this.getActiveTopLevelSection()}
-        version={version}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
         isAlgoliaSearchHidden={this.state.isMenuActive}
@@ -225,16 +214,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
       />
     );
 
-    const sidebarElement = (
-      <DocumentationSidebar
-        url={this.props.url}
-        asPath={this.props.asPath}
-        routes={routes}
-        version={version}
-        onSetVersion={this.handleSetVersion}
-        isVersionSelectorHidden={!isReferencePath}
-      />
-    );
+    const sidebarElement = <DocumentationSidebar router={this.props.router} routes={routes} />;
 
     const handleContentScroll = (contentScrollPosition: number) => {
       window.requestAnimationFrame(() => {
@@ -245,6 +225,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
     };
 
     const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
+
+    const algoliaTag = this.getAlgoliaTag();
 
     return (
       <DocumentationNestedScrollLayout
@@ -258,24 +240,49 @@ export default class DocumentationPage extends React.Component<Props, State> {
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
+          {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
+          <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content="https://docs.expo.dev/static/images/og.png" />
+          <meta property="og:image:url" content="https://docs.expo.dev/static/images/og.png" />
+          <meta
+            property="og:image:secure_url"
+            content="https://docs.expo.dev/static/images/og.png"
+          />
+          <meta property="og:locale" content="en_US" />
+          <meta property="og:site_name" content="Expo Documentation" />
+          <meta
+            property="og:description"
+            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
+          />
 
-          {(version === 'unversioned' || this.isPreviewPath()) && (
+          <meta name="twitter:site" content="@expo" />
+          <meta name="twitter:card" content="summary" />
+          <meta property="twitter:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta
+            name="twitter:description"
+            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
+          />
+          <meta
+            property="twitter:image"
+            content="https://docs.expo.dev/static/images/twitter.png"
+          />
+
+          {(this.props.version === 'unversioned' || this.isPreviewPath()) && (
             <meta name="robots" content="noindex" />
           )}
-          {version !== 'unversioned' && <link rel="canonical" href={this.getCanonicalUrl()} />}
+          {this.props.version !== 'unversioned' && (
+            <link rel="canonical" href={this.getCanonicalUrl()} />
+          )}
         </Head>
 
         {!this.state.isMenuActive ? (
           <div css={STYLES_DOCUMENT}>
             <H1>{this.props.title}</H1>
-            <DocumentationPageContext.Provider value={{ version }}>
-              {this.props.children}
-            </DocumentationPageContext.Provider>
+            {this.props.children}
             <DocumentationFooter
+              router={this.props.router}
               title={this.props.title}
-              url={this.props.url}
-              asPath={this.props.asPath}
               sourceCodeUrl={this.props.sourceCodeUrl}
             />
           </div>
@@ -283,28 +290,24 @@ export default class DocumentationPage extends React.Component<Props, State> {
           <div>
             <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>
               <H1>{this.props.title}</H1>
-              <DocumentationPageContext.Provider value={{ version }}>
-                {this.props.children}
-              </DocumentationPageContext.Provider>
+              {this.props.children}
               <DocumentationFooter
+                router={this.props.router}
                 title={this.props.title}
-                asPath={this.props.asPath}
                 sourceCodeUrl={this.props.sourceCodeUrl}
               />
             </div>
             <div css={HIDDEN_ON_DESKTOP}>
-              <DocumentationSidebar
-                url={this.props.url}
-                asPath={this.props.asPath}
-                routes={routes}
-                version={version}
-                onSetVersion={this.handleSetVersion}
-                isVersionSelectorHidden={!isReferencePath}
-              />
+              <DocumentationSidebar router={this.props.router} routes={routes} />
             </div>
           </div>
         )}
       </DocumentationNestedScrollLayout>
     );
   }
+}
+
+export default function DocumentationPage(props: Omit<Props, 'version'>) {
+  const { version } = usePageApiVersion();
+  return <DocumentationPageWithApiVersion {...props} version={version} />;
 }

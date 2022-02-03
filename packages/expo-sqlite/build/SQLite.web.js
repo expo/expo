@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 export function openDatabase(name, version = '1.0', description = name, size = 1, callback) {
     const typedWindow = window;
     if ('openDatabase' in typedWindow && typedWindow.openDatabase) {

@@ -1,9 +1,9 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMAppLifecycleService.h>
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMEventEmitterService.h>
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXAppLifecycleService.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <EXScreenOrientation/EXScreenOrientationModule.h>
 #import <EXScreenOrientation/EXScreenOrientationUtilities.h>
@@ -16,13 +16,13 @@ static NSString *const EXScreenOrientationDidUpdateDimensions = @"expoDidUpdateD
 @interface EXScreenOrientationModule ()
 
 @property (nonatomic, weak) EXScreenOrientationRegistry *screenOrientationRegistry;
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
 @end
 
 @implementation EXScreenOrientationModule
 
-UM_EXPORT_MODULE(ExpoScreenOrientation);
+EX_EXPORT_MODULE(ExpoScreenOrientation);
 
 -(void)dealloc
 {
@@ -30,18 +30,23 @@ UM_EXPORT_MODULE(ExpoScreenOrientation);
   [_screenOrientationRegistry moduleWillDeallocate:self];
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  [[moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  
   _screenOrientationRegistry = [moduleRegistry getSingletonModuleForName:@"ScreenOrientationRegistry"];
+  [[moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+
+  // TODO: This shouldn't be here, but it temporarily fixes
+  // https://github.com/expo/expo/issues/13641 and https://github.com/expo/expo/issues/11558
+  // We're going to redesign this once we drop support for multiple apps being open in Expo Go at the same time.
+  // Then we probably won't need the screen orientation registry at all. (@tsapeta)
+  [self onAppForegrounded];
 }
 
-UM_EXPORT_METHOD_AS(lockAsync,
+EX_EXPORT_METHOD_AS(lockAsync,
                     lockAsync:(NSNumber *)orientationLock
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   UIInterfaceOrientationMask orientationMask = [EXScreenOrientationUtilities importOrientationLock:orientationLock];
   
@@ -56,10 +61,10 @@ UM_EXPORT_METHOD_AS(lockAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(lockPlatformAsync,
+EX_EXPORT_METHOD_AS(lockPlatformAsync,
                     lockPlatformAsync:(NSArray <NSNumber *> *)allowedOrientations
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // combine all the allowedOrientations into one bitmask
   UIInterfaceOrientationMask allowedOrientationsMask = 0;
@@ -81,16 +86,16 @@ UM_EXPORT_METHOD_AS(lockPlatformAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getOrientationLockAsync,
-                    getOrientationLockAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getOrientationLockAsync,
+                    getOrientationLockAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([EXScreenOrientationUtilities exportOrientationLock:[_screenOrientationRegistry currentOrientationMask]]);
 }
 
-UM_EXPORT_METHOD_AS(getPlatformOrientationLockAsync,
-                    getPlatformOrientationLockAsyncResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPlatformOrientationLockAsync,
+                    getPlatformOrientationLockAsyncResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   UIInterfaceOrientationMask orientationMask = [_screenOrientationRegistry currentOrientationMask];
   NSDictionary *maskToOrienationMap = @{
@@ -111,10 +116,10 @@ UM_EXPORT_METHOD_AS(getPlatformOrientationLockAsync,
   resolve(allowedOrientations);
 }
 
-UM_EXPORT_METHOD_AS(supportsOrientationLockAsync,
+EX_EXPORT_METHOD_AS(supportsOrientationLockAsync,
                     supportsOrientationLockAsync:(NSNumber *)orientationLock
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   UIInterfaceOrientationMask orientationMask = [EXScreenOrientationUtilities importOrientationLock:orientationLock];
  
@@ -125,9 +130,9 @@ UM_EXPORT_METHOD_AS(supportsOrientationLockAsync,
   resolve(@NO);
 }
 
-UM_EXPORT_METHOD_AS(getOrientationAsync,
-                    getOrientationAsyncResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getOrientationAsync,
+                    getOrientationAsyncResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([EXScreenOrientationUtilities exportOrientation:[_screenOrientationRegistry currentOrientation]]);
 }
@@ -151,8 +156,8 @@ UM_EXPORT_METHOD_AS(getOrientationAsync,
     @"orientationLock": [EXScreenOrientationUtilities exportOrientationLock:[_screenOrientationRegistry currentOrientationMask]],
     @"orientationInfo": @{
       @"orientation": [EXScreenOrientationUtilities exportOrientation:orientation],
-      @"verticalSizeClass": UMNullIfNil(@(currentTraitCollection.verticalSizeClass)),
-      @"horizontalSizeClass": UMNullIfNil(@(currentTraitCollection.horizontalSizeClass)),
+      @"verticalSizeClass": EXNullIfNil(@(currentTraitCollection.verticalSizeClass)),
+      @"horizontalSizeClass": EXNullIfNil(@(currentTraitCollection.horizontalSizeClass)),
     }
   }];
 }

@@ -1,0 +1,121 @@
+import 'abort-controller/polyfill';
+import { UnavailabilityError } from 'expo-modules-core';
+
+import ServerRegistrationModule from './ServerRegistrationModule';
+import { addPushTokenListener } from './TokenEmitter';
+import { DevicePushToken } from './Tokens.types';
+import getDevicePushTokenAsync from './getDevicePushTokenAsync';
+import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
+
+let lastAbortController: AbortController | null = null;
+async function updatePushTokenAsync(token: DevicePushToken) {
+  // Abort current update process
+  lastAbortController?.abort();
+  lastAbortController = new AbortController();
+  return await updateDevicePushTokenAsyncWithSignal(lastAbortController.signal, token);
+}
+
+/**
+ * Encapsulates device server registration data
+ */
+export type DevicePushTokenRegistration = {
+  isEnabled: boolean;
+};
+
+/**
+ * Sets the registration information so that the device push token gets pushed
+ * to the given registration endpoint
+ * @param registration Registration endpoint to inform of new tokens
+ */
+export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
+  // We are overwriting registration, so we shouldn't let
+  // any pending request complete.
+  lastAbortController?.abort();
+
+  if (!ServerRegistrationModule.setRegistrationInfoAsync) {
+    throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
+  }
+
+  await ServerRegistrationModule.setRegistrationInfoAsync(
+    enabled ? JSON.stringify({ isEnabled: enabled }) : null
+  );
+}
+
+/**
+ * This function is exported only for testing purposes.
+ */
+export async function __handlePersistedRegistrationInfoAsync(
+  registrationInfo: string | null | undefined
+) {
+  if (!registrationInfo) {
+    // No registration info, nothing to do
+    return;
+  }
+
+  let registration: DevicePushTokenRegistration | null = null;
+  try {
+    registration = JSON.parse(registrationInfo);
+  } catch (e) {
+    console.warn(
+      '[expo-notifications] Error encountered while fetching registration information for auto token updates.',
+      e
+    );
+  }
+
+  if (!registration?.isEnabled) {
+    // Registration is invalid or not enabled, nothing more to do
+    return;
+  }
+
+  try {
+    // Since the registration is enabled, fetching a "new" device token
+    // shouldn't be a problem.
+    const latestDevicePushToken = await getDevicePushTokenAsync();
+    await updatePushTokenAsync(latestDevicePushToken);
+  } catch (e) {
+    console.warn(
+      '[expo-notifications] Error encountered while updating server registration with latest device push token.',
+      e
+    );
+  }
+}
+
+if (ServerRegistrationModule.getRegistrationInfoAsync) {
+  // A global scope (to get all the updates) device push token
+  // subscription, never cleared.
+  addPushTokenListener(async (token) => {
+    try {
+      // Before updating the push token on server we always check if we should
+      // Since modules can't change their method availability while running, we
+      // can assert it's defined.
+      const registrationInfo = await ServerRegistrationModule.getRegistrationInfoAsync!();
+
+      if (!registrationInfo) {
+        // Registration is not enabled
+        return;
+      }
+
+      const registration: DevicePushTokenRegistration | null = JSON.parse(registrationInfo);
+      if (registration?.isEnabled) {
+        // Dispatch an abortable task to update
+        // registration with new token.
+        await updatePushTokenAsync(token);
+      }
+    } catch (e) {
+      console.warn(
+        '[expo-notifications] Error encountered while updating server registration with latest device push token.',
+        e
+      );
+    }
+  });
+
+  // Verify if persisted registration
+  // has successfully uploaded last known
+  // device push token. If not, retry.
+  ServerRegistrationModule.getRegistrationInfoAsync().then(__handlePersistedRegistrationInfoAsync);
+} else {
+  console.warn(
+    `[expo-notifications] Error encountered while fetching auto-registration state, new tokens will not be automatically registered on server.`,
+    new UnavailabilityError('ServerRegistrationModule', 'getRegistrationInfoAsync')
+  );
+}

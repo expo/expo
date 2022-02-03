@@ -82,7 +82,7 @@ export default function GeofencingScreen() {
     let isActive = true;
 
     (async () => {
-      await Location.requestPermissionsAsync();
+      await Location.requestForegroundPermissionsAsync();
 
       const { coords } = await Location.getCurrentPositionAsync();
       const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
@@ -148,7 +148,7 @@ export default function GeofencingScreen() {
   };
 
   const renderRegions = React.useCallback(() => {
-    return state.geofencingRegions.map(region => {
+    return state.geofencingRegions.map((region) => {
       return (
         // @ts-ignore
         <MapView.Circle

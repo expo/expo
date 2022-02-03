@@ -1,9 +1,9 @@
 import { ActionSheetOptions } from '@expo/react-native-action-sheet';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import React from 'react';
 import { Text, TextStyle, View } from 'react-native';
 
-const icon = (name: string) => <MaterialCommunityIcons key={name} name={name} size={24} />;
+const icon = (name: string) => <MaterialCommunityIcons key={name} name={name as any} size={24} />;
 
 interface Props {
   title: string;
@@ -80,7 +80,7 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
         titleTextStyle, // Android only
         messageTextStyle, // Android only
       },
-      buttonIndex => {
+      (buttonIndex) => {
         // Do something here depending on the button index selected
         onSelection(buttonIndex);
       }

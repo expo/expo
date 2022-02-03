@@ -28,8 +28,8 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
 - (void)switchTasks;
-- (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Updates.reload
-- (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache
+- (void)reloadAppWithScopeKey:(NSString *)scopeKey; // called by Updates.reload
+- (void)reloadAppFromCacheWithScopeKey:(NSString *)scopeKey; // called by Updates.reloadFromCache
 - (void)reloadVisibleApp; // called in development whenever the app is reloaded
 
 /**
@@ -53,11 +53,6 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
  *  Send the given url to this app (via the RN Linking module) and foreground it.
  */
 - (void)sendUrl:(NSString *)url toAppRecord:(EXKernelAppRecord *)app;
-
-/**
- *  An id that uniquely identifies this installation of Exponent.
- */
-+ (NSString *)deviceInstallUUID;
 
 - (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord;
 

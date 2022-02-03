@@ -113,7 +113,7 @@
     self.frame = bounds;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+- (RNSVGPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
     CGPoint transformed = CGPointApplyAffineTransform(point, self.invmatrix);
     transformed =  CGPointApplyAffineTransform(transformed, self.invTransform);
     RNSVGNode const* template = [self.svgView getDefinedTemplate:self.href];
@@ -122,7 +122,7 @@
     } else if (self.active) {
         return self;
     }
-    UIView const* hitChild = [template hitTest:transformed withEvent:event];
+    RNSVGPlatformView const* hitChild = [template hitTest:transformed withEvent:event];
     if (hitChild) {
         self.active = YES;
         return self;

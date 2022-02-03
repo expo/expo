@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 const mockFontMetadata = {
   hash: 'cafecafecafecafecafecafecafecafe',
@@ -12,7 +12,7 @@ describe('selectAssetSource', () => {
   beforeEach(() => {
     _mockConstants({
       experienceUrl: 'https://example.com/app/expo-manifest.json',
-      manifest: {
+      __unsafeNoWarnManifest: {
         assetMapOverride: {
           d00dd00dd00dd00dd00dd00dd00dd00d: { name: 'overridden', type: 'mp4' },
         },
@@ -29,14 +29,14 @@ describe('selectAssetSource', () => {
 
     const source = AssetSources.selectAssetSource(mockFontMetadata);
     expect(source.uri).toBe(
-      'https://d1wp6m56sqw74a.cloudfront.net/~assets/cafecafecafecafecafecafecafecafe'
+      'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe'
     );
     expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
   });
 
   it(`returns a URI based on the bundle's URL in development`, () => {
     _mockConstants({
-      manifest: {
+      __unsafeNoWarnManifest: {
         developer: {},
         bundleUrl: 'https://exp.direct:19001/src/App.js',
       },
@@ -47,6 +47,29 @@ describe('selectAssetSource', () => {
     const source = AssetSources.selectAssetSource(mockFontMetadata);
     expect(source.uri).toBe(
       `https://exp.direct:19001/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+    );
+    expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+  });
+
+  it(`returns a manifest2 URI based on the bundle's URL in development`, () => {
+    _mockConstants({
+      __unsafeNoWarnManifest2: {
+        extra: {
+          expoGo: {
+            developer: {
+              tool: 'expo-cli',
+            },
+            debuggerHost: '127.0.0.1:19000',
+          },
+        },
+      },
+    });
+
+    const AssetSources = require('../AssetSources');
+    const source = AssetSources.selectAssetSource(mockFontMetadata);
+
+    expect(source.uri).toBe(
+      `http://127.0.0.1:19000/assets/test.ttf?platform=ios&hash=cafecafecafecafecafecafecafecafe`
     );
     expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
   });
@@ -95,7 +118,7 @@ describe('selectAssetSource', () => {
     });
 
     expect(source.uri).toBe(
-      'https://d1wp6m56sqw74a.cloudfront.net/~assets/c0dec0dec0dec0dec0dec0dec0dec0de'
+      'https://classic-assets.eascdn.net/~assets/c0dec0dec0dec0dec0dec0dec0dec0de'
     );
     expect(source.hash).toBe('c0dec0dec0dec0dec0dec0dec0dec0de');
   });

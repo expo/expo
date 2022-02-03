@@ -1,9 +1,9 @@
 'use strict';
 
-import React from 'react';
-import { forEach } from 'lodash';
-import { Video } from 'expo-av';
 import { Asset } from 'expo-asset';
+import { Video } from 'expo-av';
+import { forEach } from 'lodash';
+import React from 'react';
 import { Platform } from 'react-native';
 
 import { waitFor, retryForStatus, mountAndWaitFor as originalMountAndWaitFor } from './helpers';
@@ -43,7 +43,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     let instance = null;
-    const refSetter = ref => {
+    const refSetter = (ref) => {
       instance = ref;
     };
 
@@ -57,10 +57,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
 
     const testPropValues = (propName, values, moreTests) =>
       t.describe(`Video.props.${propName}`, () => {
-        forEach(values, value =>
+        forEach(values, (value) =>
           t.it(`sets it to \`${value}\``, async () => {
             let instance = null;
-            const refSetter = ref => {
+            const refSetter = (ref) => {
               instance = ref;
             };
             const element = React.createElement(Video, {
@@ -81,7 +81,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
 
     const testNoCrash = (propName, values) =>
       t.describe(`Video.props.${propName}`, () => {
-        forEach(values, value =>
+        forEach(values, (value) =>
           t.it(`setting to \`${value}\` doesn't crash`, async () => {
             const element = React.createElement(Video, { style, source, [propName]: value });
             await mountAndWaitFor(element, 'onLoad');
@@ -91,10 +91,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
 
     const testPropSetter = (propName, propSetter, values, moreTests) =>
       t.describe(`Video.${propSetter}`, () => {
-        forEach(values, value =>
+        forEach(values, (value) =>
           t.it(`sets it to \`${value}\``, async () => {
             let instance = null;
-            const refSetter = ref => {
+            const refSetter = (ref) => {
               instance = ref;
             };
             const element = React.createElement(Video, {
@@ -368,13 +368,13 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.naturalSize.width).toBeDefined();
         t.expect(status.naturalSize.height).toBeDefined();
         t.expect(status.naturalSize.orientation).toBe('portrait');
-      })
+      });
     });
 
     t.describe('Video fullscreen player', () => {
       t.it('presents the player and calls callback func', async () => {
         const fullscreenUpdates = [];
-        const onFullscreenUpdate = event => fullscreenUpdates.push(event.fullscreenUpdate);
+        const onFullscreenUpdate = (event) => fullscreenUpdates.push(event.fullscreenUpdate);
 
         await mountAndWaitFor(
           <Video
@@ -414,7 +414,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
               <Video style={style} source={source} ref={refSetter} />,
               'onReadyForDisplay'
             );
-            instance.presentFullscreenPlayer().catch(error => {
+            instance.presentFullscreenPlayer().catch((error) => {
               presentationError = error;
             });
             await instance.dismissFullscreenPlayer();
@@ -601,7 +601,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           positionMillis: status.durationMillis - 500,
         });
         await retryForStatus(instance, { isPlaying: true });
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           setTimeout(() => {
             t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
               t.jasmine.objectContaining({ didJustFinish: true })
@@ -621,7 +621,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           progressUpdateIntervalMillis: 10,
         };
         await mountAndWaitFor(<Video {...props} />);
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         await retryForStatus(instance, { isBuffering: false, isLoaded: true });
         // Verify that status-update doesn't get called periodically when not started
         const beforeCount = onPlaybackStatusUpdate.calls.count();
@@ -633,13 +633,13 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           positionMillis: status.durationMillis - 500,
         });
         await retryForStatus(instance, { isPlaying: true });
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         await retryForStatus(instance, { isPlaying: false });
         const duringCount = onPlaybackStatusUpdate.calls.count() - beforeCount;
         t.expect(duringCount).toBeGreaterThan(50);
 
         // Wait a bit longer and verify it doesn't get called anymore
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         const afterCount = onPlaybackStatusUpdate.calls.count() - beforeCount - duringCount;
         t.expect(afterCount).toBeLessThan(3);
       });
@@ -737,7 +737,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isPlaying: true });
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 500));
         await instance.pauseAsync();
         await retryForStatus(instance, { isPlaying: false });
         const { positionMillis } = await instance.getStatusAsync();
@@ -784,7 +784,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           shouldPlay: true,
           positionMillis: status.durationMillis - 500,
         });
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           setTimeout(() => {
             t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
               t.jasmine.objectContaining({ didJustFinish: true })
@@ -808,7 +808,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           shouldPlay: true,
           positionMillis: status.durationMillis - 500,
         });
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           setTimeout(() => {
             t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
               t.jasmine.objectContaining({ didJustFinish: true })
@@ -843,7 +843,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           shouldPlay: true,
           positionMillis: status.durationMillis - 500,
         });
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           setTimeout(() => {
             t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
               t.jasmine.objectContaining({ didJustFinish: true })
@@ -875,6 +875,17 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.describe('Video.stopAsync', () => {
+      let originalTimeout;
+
+      t.beforeAll(async () => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 6;
+      });
+
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+
       t.it('stops a playing video', async () => {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);

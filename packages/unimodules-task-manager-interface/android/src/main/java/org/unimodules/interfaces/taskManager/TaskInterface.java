@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface TaskInterface {
   String getName();
-  String getAppId();
+  String getAppScopeKey();
   String getAppUrl();
   TaskConsumerInterface getConsumer();
   Map<String, Object> getOptions();

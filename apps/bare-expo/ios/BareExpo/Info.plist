@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -17,60 +15,29 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>bareexpo</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bareexpo</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>OAuthRedirect</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
+				<string>msauth.dev.expo.Payments</string>
+				<string>com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e</string>
 				<string>dev.expo.Payments</string>
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>google</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>azure</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>msauth.dev.expo.Payments</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb145668956753819</string>
+				<string>fb1696089354000816</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0.0</string>
+	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -92,6 +59,8 @@
 	<string>Allow bare-expo to use the camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow bare-expo experiences to access your contacts</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Allow bare-expo to use Face ID</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Allow bare-expo to use your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -108,6 +77,8 @@
 	<string>Give bare-expo periences permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow bare-expo to access your reminders</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Allow Expo projects to use data for tracking the user or the device</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -121,10 +92,26 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIRequiresFullScreen</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>BareExpo</string>
+	<key>FacebookAppID</key>
+  	<string>1696089354000816</string>
+	<key>FacebookDisplayName</key>
+	<string>Expo APIs</string>
 </dict>
 </plist>

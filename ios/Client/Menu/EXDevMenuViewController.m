@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTRootView.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 #import "EXDevMenuViewController.h"
 #import "EXDevMenuManager.h"
@@ -93,9 +94,20 @@
 - (NSDictionary *)_getInitialPropsForVisibleApp
 {
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
+  NSString *manifestString = nil;
+  EXManifestsManifest *manifest = visibleApp.appLoader.manifest;
+  if (manifest && [NSJSONSerialization isValidJSONObject:manifest.rawManifestJSON]) {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:manifest.rawManifestJSON options:0 error:&error];
+    if (jsonData) {
+      manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    } else {
+      EXLogWarn(@"Failed to serialize JSON manifest: %@", error);
+    }
+  }
   NSDictionary *task = @{
     @"manifestUrl": visibleApp.appLoader.manifestUrl.absoluteString,
-    @"manifest": (visibleApp.appLoader.manifest) ? visibleApp.appLoader.manifest : [NSNull null],
+    @"manifestString": manifestString ?: [NSNull null],
   };
 
   return @{

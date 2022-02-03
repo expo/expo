@@ -12,97 +12,103 @@ const providers: Record<string, any> = {
   facebook: {
     name: 'Facebook',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/facebook.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/facebook.png?raw=true',
     color: '#1877F2',
+  },
+  imgur: {
+    name: 'Imgur',
+    image:
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/imgur.png?raw=true',
+    color: '#1BB76E',
   },
   uber: {
     name: 'Uber',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/uber.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/uber.png?raw=true',
     color: '#000',
   },
   google: {
     name: 'Google',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/google.png?raw=true',
     color: '#4285F4',
   },
   google_firebase: {
     name: 'Google Firebase',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/google.png?raw=true',
     color: '#4285F4',
   },
   azure: {
     name: 'Azure',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/azure.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/azure.png?raw=true',
     color: '#0089D6',
   },
   fitbit: {
     name: 'FitBit',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/fitbit.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/fitbit.png?raw=true',
     color: '#00B0B9',
   },
   reddit: {
     name: 'Reddit',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/reddit.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/reddit.png?raw=true',
     color: '#FF4500',
   },
   dropbox: {
     name: 'Dropbox',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/dropbox.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/dropbox.png?raw=true',
     color: '#0061FF',
   },
   coinbase: {
     name: 'Coinbase',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/coinbase.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/coinbase.png?raw=true',
     color: '#0667D0',
   },
   github: {
     name: 'Github',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/github.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/github.png?raw=true',
     color: '#181717',
   },
   slack: {
     name: 'Slack',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/slack.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/slack.png?raw=true',
     color: '#4A154B',
   },
   spotify: {
     name: 'Spotify',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/spotify.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/spotify.png?raw=true',
     color: '#1ED760',
   },
   strava: {
     name: 'Strava',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/strava.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/strava.png?raw=true',
     color: '#FC4C02',
   },
   twitch: {
     name: 'Twitch',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/twitch.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/twitch.png?raw=true',
     color: '#9146FF',
   },
   okta: {
     name: 'Okta',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/okta.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/okta.png?raw=true',
     color: '#007DC1',
   },
   identity4: {
     name: 'Identity 4',
     image:
-      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/identity4.png?raw=true',
+      'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/identity4.png?raw=true',
     color: '#F78C40',
   },
 };

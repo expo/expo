@@ -1,8 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import MonoText from '../components/MonoText';
+
+// https://github.com/expo/expo/issues/10599
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 function incrementColor(color: string, step: number) {
   const intColor = parseInt(color.substr(1), 16);
@@ -34,7 +37,7 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
   componentDidMount() {
     // @ts-expect-error: TS resolves node types first
     this._interval = setInterval(() => {
-      this.setState(state => ({
+      this.setState((state) => ({
         count: state.count + 1,
         colorTop: incrementColor(state.colorTop, 1),
         colorBottom: incrementColor(state.colorBottom, -1),
@@ -56,6 +59,10 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
           alignItems: 'stretch',
           paddingVertical: 10,
         }}>
+        <AnimatedLinearGradient
+          style={{ display: 'none' }}
+          colors={[this.state.colorTop, this.state.colorBottom]}
+        />
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />
@@ -101,8 +108,8 @@ const ControlPointTest: React.FunctionComponent<{
   start?: [number, number];
   end?: [number, number];
 }> = ({ start = [0.5, 0], end = [0, 1] }) => {
-  const startInfo = `start={[${start.map(point => +point.toFixed(2)).join(', ')}]}`;
-  const endInfo = `end={[${end.map(point => +point.toFixed(2)).join(', ')}]}`;
+  const startInfo = `start={[${start.map((point) => +point.toFixed(2)).join(', ')}]}`;
+  const endInfo = `end={[${end.map((point) => +point.toFixed(2)).join(', ')}]}`;
 
   return (
     <Container title="Control Points">
@@ -123,7 +130,7 @@ const ControlPointTest: React.FunctionComponent<{
 };
 
 const ColorsTest = ({ colors }: { colors: string[] }) => {
-  const info = colors.map(value => `"${value}"`).join(', ');
+  const info = colors.map((value) => `"${value}"`).join(', ');
   return (
     <Container title="Colors">
       <MonoText>{`colors={[${info}]}`}</MonoText>
@@ -133,7 +140,7 @@ const ColorsTest = ({ colors }: { colors: string[] }) => {
 };
 
 const LocationsTest: React.FunctionComponent<{ locations: number[] }> = ({ locations }) => {
-  const locationsInfo = locations.map(location => +location.toFixed(2)).join(', ');
+  const locationsInfo = locations.map((location) => +location.toFixed(2)).join(', ');
   return (
     <Container title="Locations">
       <MonoText>{`locations={[${locationsInfo}]}`}</MonoText>

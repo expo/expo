@@ -3,18 +3,11 @@
 #import <EXFacebook/EXFacebookAppDelegate.h>
 #import <EXFacebook/EXFacebook.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
-#import <UMCore/UMAppDelegateWrapper.h>
 #import <objc/runtime.h>
 
 @implementation EXFacebookAppDelegate
 
-UM_REGISTER_SINGLETON_MODULE(EXFacebookAppDelegate)
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
-{
-   return [[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];
-}
+EX_REGISTER_SINGLETON_MODULE(EXFacebookAppDelegate)
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {

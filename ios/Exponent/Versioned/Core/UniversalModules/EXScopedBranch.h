@@ -2,8 +2,8 @@
 
 #if __has_include(<EXBranch/RNBranch.h>)
 #import <EXBranch/RNBranch.h>
-#import <UMCore/UMInternalModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXInternalModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,11 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXScopedBranch : RNBranch <UMModuleRegistryConsumer, UMInternalModule>
+@interface EXScopedBranch : RNBranch <EXModuleRegistryConsumer, EXInternalModule>
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey;
 
 @end
 

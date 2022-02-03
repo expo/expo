@@ -7,7 +7,7 @@ It's the idea of automating as much as you can, like running tests or creating n
 
 CI/CD is a relatively broad idea and can get as complex as you can make it.
 In this guide, we will create a basic setup for testing (CI) and deployments (CD).
-Also, the configuration for Bitbucket Pipelines, Gitlab CI, and Travis CI are provided.
+Also, the configuration for Bitbucket Pipelines, GitLab CI, and Travis CI are provided.
 Other CI/CD vendors can be used too; everything is executable through CLI.
 
 ## Test with Jest
@@ -51,14 +51,12 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027881" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027881" target="_blank">See it in action</a>
 
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -80,9 +78,7 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -109,9 +105,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -149,14 +143,12 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027970" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027970" target="_blank">See it in action</a>
 
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -179,9 +171,7 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -210,9 +200,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -221,7 +209,7 @@ pipelines:
 
 Now that we have a proper CI workflow in place, we will focus on the Continuous Deployment (CD) part.
 In this process, we will make a new build and push it to Expo.
-Combined with Over The Air (OTA) updates, this can create a simple but effective CD infrastructure.
+Combined with updates, this can create a simple but effective CD infrastructure.
 Just like the CI part, we first need to install the dependencies.
 After this, we need to authenticate at Expo and "publish" a new build.
 
@@ -257,6 +245,8 @@ If you don't want to expose the password in the login script, set the `EXPO_CLI_
 ```sh
 $ npx expo login --non-interactive -u <EXPO USERNAME>
 ```
+
+Alternatively, you can [generate an access token under your Expo account settings](/accounts/programmatic-access.md) and configure it as an environment variable named `EXPO_TOKEN`.
 
 ### Publish new builds
 
@@ -300,14 +290,12 @@ jobs:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a>
 
 </p>
 </details>
 
-<details><summary>Gitlab CI</summary>
+<details><summary>GitLab CI</summary>
 <p>
 
 ```yaml
@@ -337,9 +325,7 @@ expo-deployments:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -378,9 +364,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -448,22 +432,23 @@ Here are some extra links that might help you further.
 
 ### Useful subjects
 
-- [Release channels](../../distribution/release-channels/)
-- [Building standalone apps](../../distribution/building-standalone-apps/)
-- [Configuring OTA Updates](../configuring-ota-updates/)
+- [Release channels](../distribution/release-channels.md)
+- [Creating your first build](/build/setup.md)
+- [Triggering builds from CI](/build/building-on-ci.md)
+- [Configuring Updates](configuring-updates.md)
 
 ### Official documentation CI/CD vendors
 
-- [Gitlab CI](https://docs.gitlab.com/ce/ci/)
+- [GitLab CI](https://docs.gitlab.com/ce/ci/)
 - [Travis CI](https://docs.travis-ci.com/)
 - [Bitbucket Pipelines](https://confluence.atlassian.com/bitbucket/build-test-and-deploy-with-pipelines-792496469.html)
 
 ### Extra tutorials
 
-- [Setting up Expo and Bitbucket Pipelines](https://blog.expo.io/setting-up-expo-and-bitbucket-pipelines-8995ef036a18)
+- [Setting up Expo and Bitbucket Pipelines](https://blog.expo.dev/setting-up-expo-and-bitbucket-pipelines-8995ef036a18)
 
 ### Example repositories from this guide
 
-- [Github](https://github.com/bycedric/expo-guide-ci)
-- [Gitlab](https://gitlab.com/byCedric/expo-guide-ci)
+- [GitHub](https://github.com/bycedric/expo-guide-ci)
+- [GitLab](https://gitlab.com/byCedric/expo-guide-ci)
 - [Bitbucket](https://bitbucket.org/byCedric/expo-guide-ci)

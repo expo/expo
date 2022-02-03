@@ -2,14 +2,8 @@ package expo.modules.notifications.service.delegates
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Base64
 import expo.modules.notifications.notifications.model.NotificationRequest
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InvalidClassException
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 
 /**
  * A fairly straightforward [SharedPreferences] wrapper to be used by [NotificationSchedulingHelper].
@@ -31,8 +25,8 @@ class SharedPreferencesNotificationsStore(context: Context) {
    *
    * @param identifier Identifier of the notification.
    * @return Notification information: request and trigger.
-   * @throws JSONException          Thrown if notification request could not have been interpreted as a JSON object.
-   * @throws IOException            Thrown if there is an error when fetching trigger from the storage.
+   * @throws JSONException Thrown if notification request could not have been interpreted as a JSON object.
+   * @throws IOException Thrown if there is an error when fetching trigger from the storage.
    * @throws ClassNotFoundException Thrown if there is an error when interpreting trigger fetched from the storage.
    */
   @Throws(IOException::class, ClassNotFoundException::class)
@@ -82,7 +76,6 @@ class SharedPreferencesNotificationsStore(context: Context) {
       )
       .apply()
 
-
   /**
    * Removes notification info for given identifier.
    *
@@ -95,7 +88,7 @@ class SharedPreferencesNotificationsStore(context: Context) {
    * Perform notification removal on provided [SharedPreferences.Editor] instance. Can be reused
    * to batch deletion.
    *
-   * @param editor     Editor to apply changes onto
+   * @param editor Editor to apply changes onto
    * @param identifier Notification identifier
    * @return Returns a reference to the same Editor object, so you can
    * chain put calls together.

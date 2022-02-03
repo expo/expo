@@ -1,20 +1,87 @@
 ---
 title: SplashScreen
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-splash-screen'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-splash-screen'
+packageName: 'expo-splash-screen'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `SplashScreen` module tells the splash screen to remain visible until it has been explicitly told to hide. This is useful to do some work behind the scenes before displaying your app (eg: make API calls) and to animated your splash screen (eg: fade out or slide away, or switch from a static splash screen to an animated splash screen).
 
-Read more about [creating a splash screen image](../../guides/splash-screens/), or [quickly generate an icon and splash screen on the web](https://buildicon.netlify.app/)
+Read more about [creating a splash screen image](../../../guides/splash-screens.md), or [quickly generate an icon and splash screen on the web](https://buildicon.netlify.app/)
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-<InstallSection packageName="expo-splash-screen" />
+<APIInstallSection />
+
+## Usage
+
+This example shows how to keep the splash screen visible while loading app resources and then hide the splash screen when the app has rendered some initial content.
+
+```js
+import React, { useCallback, useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import { Entypo } from '@expo/vector-icons';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+
+export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Keep the splash screen visible while we fetch resources
+        await SplashScreen.preventAutoHideAsync();
+        // Pre-load fonts, make any API calls you need to do here
+        await Font.loadAsync(Entypo.font);
+        // Artificially delay for two seconds to simulate a slow loading
+        // experience. Please remove this if you copy and paste the code!
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        // Tell the application to render
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      // This tells the splash screen to hide immediately! If we call this after
+      // `setAppIsReady`, then we may see a blank screen while the app is
+      // loading its initial state and rendering its first pixels. So instead,
+      // we hide the splash screen once we know the root view has already
+      // performed layout.
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
+
+  return (
+    <View
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+      onLayout={onLayoutRootView}>
+      <Text>SplashScreen Demo! 👋</Text>
+      <Entypo name="rocket" size={30} />
+    </View>
+  );
+}
+```
+
+### Animating the splash screen
+
+Refer to the [with-splash-screen example](https://github.com/expo/examples/tree/master/with-splash-screen) to see how to apply any arbitrary animations to your splash screen, such as a fade out. You can initialize a new project from this example by running `npx create-react-native-app -t with-splash-screen`.
 
 ## API
 
@@ -22,144 +89,4 @@ Read more about [creating a splash screen image](../../guides/splash-screens/), 
 import * as SplashScreen from 'expo-splash-screen';
 ```
 
-### `SplashScreen.preventAutoHideAsync()`
-
-Makes the native splash screen (configured in `app.json`) stay visible until `hideAsync` is called.
-
-### `SplashScreen.hideAsync()`
-
-Hides the native splash screen.
-
-## Example: keep splash screen open while loading data
-
-```js
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
-
-export default class App extends React.Component {
-  state = {
-    appIsReady: false,
-  };
-
-  async componentDidMount() {
-    // Prevent native splash screen from autohiding
-    try {
-      await SplashScreen.preventAutoHideAsync();
-    } catch (e) {
-      console.warn(e);
-    }
-    this.prepareResources();
-  }
-
-  /**
-   * Method that serves to load resources and make API calls
-   */
-  prepareResources = async () => {
-    try {
-      await performAPICalls();
-      await downloadAssets();
-    } catch (e) {
-      console.warn(e);
-    } finally {
-      this.setState({ appIsReady: true }, async () => {
-        await SplashScreen.hideAsync();
-      });
-    }
-  };
-
-  render() {
-    if (!this.state.appIsReady) {
-      return null;
-    }
-
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>SplashScreen Demo! 👋</Text>
-      </View>
-    );
-  }
-}
-
-// Put any code you need to prepare your app in these functions
-async function performAPICalls() {}
-async function downloadAssets() {}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#aabbcc',
-  },
-  text: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-});
-```
-
-## Example: switch from static to gif splash screen
-
-```js
-import React from 'react';
-import { Image, Text, View } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
-import { Asset } from 'expo-asset';
-
-export default class App extends React.Component {
-  state = {
-    isReady: false,
-  };
-
-  componentDidMount() {
-    SplashScreen.preventAutoHideAsync();
-  }
-
-  render() {
-    if (!this.state.isReady) {
-      return (
-        <View style={{ flex: 1 }}>
-          <Image
-            source={require('./assets/images/splash.gif')}
-            onLoad={this._cacheResourcesAsync}
-          />
-        </View>
-      );
-    }
-
-    return (
-      <View style={{ flex: 1 }}>
-        <Image source={require('./assets/images/expo-icon.png')} />
-        <Image source={require('./assets/images/slack-icon.png')} />
-      </View>
-    );
-  }
-
-  _cacheSplashResourcesAsync = async () => {
-    const gif = require('./assets/images/splash.gif');
-    return Asset.fromModule(gif).downloadAsync();
-  };
-
-  _cacheResourcesAsync = async () => {
-    SplashScreen.hideAsync();
-
-    try {
-      const images = [
-        require('./assets/images/expo-icon.png'),
-        require('./assets/images/slack-icon.png'),
-      ];
-
-      const cacheImages = images.map(image => {
-        return Asset.fromModule(image).downloadAsync();
-      });
-
-      await Promise.all(cacheImages);
-    } catch (e) {
-      console.warn(e);
-    } finally {
-      this.setState({ isReady: true });
-    }
-  };
-}
-```
+<APISection packageName="expo-splash-screen" apiName="SplashScreen" />

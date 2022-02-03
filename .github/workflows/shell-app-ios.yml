@@ -9,53 +9,68 @@ on:
   schedule:
     - cron: '20 5 * * 2,4,6'
   pull_request:
-    branches: [ master ]
     paths:
       - .github/workflows/shell-app-ios.yml
       - .ruby-version
+      - exponent-view-template
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Switch to Xcode 12.1
-        run: sudo xcode-select --switch /Applications/Xcode_12.1.app
-      - name: Get cache key of git lfs files
-        id: git-lfs
-        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
-      - uses: actions/cache@v2
-        with:
-          path: .git/lfs
-          key: ${{ steps.git-lfs.outputs.sha256 }}
-      - run: git lfs pull
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
-      - run: expotools ios-generate-dynamic-macros
-      - uses: ruby/setup-ruby@v1
+      - name: 🔨 Switch to Xcode 13.0
+        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
+      - name: 🍺 Setup
+        run: |
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+          echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - uses: actions/cache@v1
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
         with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-      - name: Build iOS shell app for real devices
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Yarn install
+        run: yarn install --frozen-lockfile
+      - name: ♻️ Restore tools/node_modules from cache
+        uses: actions/cache@v2
+        with:
+          path: 'tools/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
+      - name: 🍏 Generate dynamic macros
+        run: expotools ios-generate-dynamic-macros
+      - name: 📦 Build iOS shell app for real devices
         timeout-minutes: 30
-        run: expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - name: Build iOS shell app for simulators
+        run: |
+          expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+      - name: 📦 Build iOS shell app for simulators
         timeout-minutes: 30
-        run: expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - name: Set tarball name
+        run: |
+          expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+      - name: ✏️ Set tarball name
         id: tarball
         run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}.tar.gz"
-      - name: Package release tarball
+      - name: 🤐 Package release tarball
         run: |
-          # Hotfix for until https://github.com/expo/expo-cli/pull/2608 lands
-          mv ../shellAppBase-builds .
           tar \
             -zcf ${{ steps.tarball.outputs.filename }} \
             package.json \
@@ -63,7 +78,7 @@ jobs:
             shellAppBase-builds \
             shellAppWorkspaces \
             ios
-      - name: Upload shell app tarball to S3
+      - name: 🚀 Upload shell app tarball to S3
         if: ${{ github.event.inputs.upload == 'upload' }}
         timeout-minutes: 40
         env:
@@ -72,23 +87,16 @@ jobs:
         run: |
           aws s3 cp --acl public-read ${{ steps.tarball.outputs.filename }} s3://exp-artifacts
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
-          echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
+          echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/main/shellTarballs/ios"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
-      - uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-') || github.event_name == 'schedule')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_IOS }}
         with:
-          channel: '#platform-ios'
-          status: custom
-          fields: author,commit,ref,workflow
-          custom_payload: |
-            {
-              username: 'github-actions',
-              icon_emoji: ':octocat:',
-              attachments: [{
-                color: 'danger',
-                text: `${process.env.AS_WORKFLOW}@${process.env.AS_REF} failed: ${(process.env.AS_EVENT_NAME === 'schedule') ? 'scheduled build' : process.env.AS_COMMIT + ' by ' + process.env.AS_AUTHOR}`,
-              }]
-            }
+          channel: '#expo-ios'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Shell App (iOS)

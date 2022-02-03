@@ -13,17 +13,16 @@ const alteredBaseConfig = {
 };
 
 it(`lints`, async () => {
-  const report = await lintAsync(
+  const results = await lintAsync(
     {
       baseConfig: alteredBaseConfig,
-      configFile,
+      overrideConfigFile: configFile,
       fix: true,
       ignore: false,
       useEslintrc: false,
     },
     ['__tests__/fixtures/*typescript-analysis*']
   );
-  const { results } = report;
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);
     delete result.filePath;

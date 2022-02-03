@@ -18,7 +18,7 @@ of the native Firebase App.
 ## Configuration
 
 To use this package, Firebase needs to be configured for your app.
-[Please follow this guide on how to configure native Firebase.](../../guides/setup-native-firebase)
+[Please follow this guide on how to configure native Firebase.](../../../guides/setup-native-firebase.md)
 
 > No explicit calls to `expo-firebase-core` are required to initialize Firebase. This library will auto-initialize the Firebase app when a valid configuration exists.
 
@@ -26,7 +26,7 @@ To use this package, Firebase needs to be configured for your app.
 
 At the moment, only Firebase Analytics is supported natively. We are working on bringing more native Firebase packages to Expo, stay tuned :)
 
-- [expo-firebase-analytics](../firebase-analytics)
+- [expo-firebase-analytics](firebase-analytics.md)
 
 ## API
 
@@ -40,13 +40,13 @@ import * as FirebaseCore from 'expo-firebase-core';
 
 Name of the default Firebase app (e.g. `[DEFAULT]`).
 
-On the Expo client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
+In Expo Go, a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
 
 ### `FirebaseCore.DEFAULT_APP_OPTIONS`
 
 Firebase options with which the default app was initialized. If no Google services configuration was provided, `undefined` is returned.
 
-Depending on the platform, the options are read from the following files and `app.json` keys.
+Depending on the platform, the options are read from the following files and **app.json** keys.
 
 | Platform | File                       | App.json key                 |
 | -------- | -------------------------- | ---------------------------- |
@@ -72,7 +72,7 @@ console.log(FirebaseCore.DEFAULT_APP_OPTIONS);
 
 ### `FirebaseCore.DEFAULT_WEB_APP_OPTIONS`
 
-The default Firebase options as defined in `web.config.firebase` in `app.json`.
+The default Firebase options as defined in `web.config.firebase` in **app.json**.
 
 This constant is useful when you want to use the Firebase JS SDK on native.
 

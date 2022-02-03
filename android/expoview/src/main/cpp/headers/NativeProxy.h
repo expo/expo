@@ -1,22 +1,29 @@
 #pragma once
 
+#include <ReactCommon/CallInvokerHolder.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
+#include <react/jni/JavaScriptExecutorHolder.h>
 #include <react/jni/WritableNativeMap.h>
-#include "NativeReanimatedModule.h"
-#include <ReactCommon/CallInvokerHolder.h>
+
 #include <memory>
+#include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
-
-#include "Scheduler.h"
 #include "AndroidScheduler.h"
+#include "JNIHelper.h"
+#include "LayoutAnimations.h"
+#include "NativeReanimatedModule.h"
+#include "Scheduler.h"
 
 namespace reanimated {
 
 using namespace facebook;
+using namespace facebook::jni;
 
 class AnimationFrameCallback : public HybridClass<AnimationFrameCallback> {
  public:
@@ -29,19 +36,19 @@ class AnimationFrameCallback : public HybridClass<AnimationFrameCallback> {
 
   static void registerNatives() {
     javaClassStatic()->registerNatives({
-        makeNativeMethod("onAnimationFrame", AnimationFrameCallback::onAnimationFrame),
+        makeNativeMethod(
+            "onAnimationFrame", AnimationFrameCallback::onAnimationFrame),
     });
   }
 
  private:
   friend HybridBase;
 
-  AnimationFrameCallback(std::function<void(double)> callback)
+  explicit AnimationFrameCallback(std::function<void(double)> callback)
       : callback_(std::move(callback)) {}
 
   std::function<void(double)> callback_;
 };
-
 
 class EventHandler : public HybridClass<EventHandler> {
  public:
@@ -49,12 +56,12 @@ class EventHandler : public HybridClass<EventHandler> {
       "Lversioned/host/exp/exponent/modules/api/reanimated/NativeProxy$EventHandler;";
 
   void receiveEvent(
-     jni::alias_ref<JString> eventKey,
-     jni::alias_ref<react::WritableMap> event) {
-     std::string eventAsString = "{NativeMap:null}";
-     if (event != nullptr) {
-        eventAsString = event->toString();
-     }
+      jni::alias_ref<JString> eventKey,
+      jni::alias_ref<react::WritableMap> event) {
+    std::string eventAsString = "{NativeMap:null}";
+    if (event != nullptr) {
+      eventAsString = event->toString();
+    }
     handler_(eventKey->toString(), eventAsString);
   }
 
@@ -67,24 +74,24 @@ class EventHandler : public HybridClass<EventHandler> {
  private:
   friend HybridBase;
 
-  EventHandler(std::function<void(std::string,std::string)> handler)
+  explicit EventHandler(std::function<void(std::string, std::string)> handler)
       : handler_(std::move(handler)) {}
 
-  std::function<void(std::string,std::string)> handler_;
+  std::function<void(std::string, std::string)> handler_;
 };
-
 
 class NativeProxy : public jni::HybridClass<NativeProxy> {
  public:
   static auto constexpr kJavaDescriptor =
       "Lversioned/host/exp/exponent/modules/api/reanimated/NativeProxy;";
   static jni::local_ref<jhybriddata> initHybrid(
-        jni::alias_ref<jhybridobject> jThis,
-        jlong jsContext,
-        jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder,
-        jni::alias_ref<AndroidScheduler::javaobject> scheduler);
+      jni::alias_ref<jhybridobject> jThis,
+      jlong jsContext,
+      jni::alias_ref<facebook::react::CallInvokerHolder::javaobject>
+          jsCallInvokerHolder,
+      jni::alias_ref<AndroidScheduler::javaobject> scheduler,
+      jni::alias_ref<LayoutAnimations::javaobject> layoutAnimations);
   static void registerNatives();
-
 
  private:
   friend HybridBase;
@@ -93,23 +100,24 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker_;
   std::shared_ptr<NativeReanimatedModule> _nativeReanimatedModule;
   std::shared_ptr<Scheduler> scheduler_;
+  jni::global_ref<LayoutAnimations::javaobject> layoutAnimations;
 
   void installJSIBindings();
   bool isAnyHandlerWaitingForEvent(std::string);
   void requestRender(std::function<void(double)> onRender);
-  void registerEventHandler(std::function<void(std::string,std::string)> handler);
+  void registerEventHandler(
+      std::function<void(std::string, std::string)> handler);
   void updateProps(jsi::Runtime &rt, int viewTag, const jsi::Object &props);
   void scrollTo(int viewTag, double x, double y, bool animated);
+  void setGestureState(int handlerTag, int newState);
   std::vector<std::pair<std::string, double>> measure(int viewTag);
 
   explicit NativeProxy(
       jni::alias_ref<NativeProxy::jhybridobject> jThis,
       jsi::Runtime *rt,
       std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker,
-      std::shared_ptr<Scheduler> scheduler);
+      std::shared_ptr<Scheduler> scheduler,
+      jni::global_ref<LayoutAnimations::javaobject> _layoutAnimations);
 };
 
-
-
-
-}
+} // namespace reanimated

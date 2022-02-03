@@ -27,7 +27,7 @@ export declare class TokenResponse implements TokenResponseConfig {
      *
      * @param params
      */
-    static fromQueryParams(params: Record<string, string>): TokenResponse;
+    static fromQueryParams(params: Record<string, any>): TokenResponse;
     accessToken: string;
     tokenType: TokenType;
     expiresIn?: number;
@@ -161,3 +161,4 @@ export declare function revokeAsync(config: RevokeTokenRequestConfig, discovery:
  */
 export declare function fetchUserInfoAsync(config: Pick<TokenResponse, 'accessToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'userInfoEndpoint'>): Promise<Record<string, any>>;
 export {};
+//# sourceMappingURL=TokenRequest.d.ts.map

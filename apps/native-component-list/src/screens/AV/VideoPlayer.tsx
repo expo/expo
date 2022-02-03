@@ -1,9 +1,9 @@
-import SegmentedControl from '@react-native-community/segmented-control';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { AVPlaybackStatus, ResizeMode, Video, VideoFullscreenUpdateEvent } from 'expo-av';
 import React from 'react';
-import { StyleProp, Text, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, Text, View, ViewStyle } from 'react-native';
 
 import { Colors } from '../../constants';
 import Player from './Player';
@@ -60,12 +60,13 @@ export default function VideoPlayer(props: {
   const setRateAsync = async (rate: number, shouldCorrectPitch: boolean) =>
     video.current?.setRateAsync(rate, shouldCorrectPitch);
 
-  const toggleNativeControls = () => setUseNativeControls(useNativeControls => !useNativeControls);
+  const toggleNativeControls = () =>
+    setUseNativeControls((useNativeControls) => !useNativeControls);
 
   const openFullscreen = () => video.current?.presentFullscreenPlayer();
 
   const changeSource = () => {
-    setIndex(index => (index + 1) % props.sources.length);
+    setIndex((index) => (index + 1) % props.sources.length);
   };
 
   return (
@@ -89,15 +90,15 @@ export default function VideoPlayer(props: {
       setIsLoopingAsync={setIsLoopingAsync}
       setIsMutedAsync={setIsMutedAsync}
       setRateAsync={setRateAsync}
-      setVolume={volume => video.current?.setVolumeAsync(volume)}
+      setVolume={(volume) => video.current?.setVolumeAsync(volume)}
       extraButtons={[
+        () => <ResizeModeSegmentedControl key="resizeModeControl" onValueChange={setResizeMode} />,
         {
           iconName: 'options',
           title: 'Native controls',
           onPress: toggleNativeControls,
           active: useNativeControls,
         },
-        () => <ResizeModeSegmentedControl onValueChange={setResizeMode} />,
         {
           iconName: 'resize',
           title: 'Open full screen',
@@ -133,6 +134,46 @@ function ResizeModeSegmentedControl({
     cover: ResizeMode.COVER,
   };
   const [index, setIndex] = React.useState(1);
+  let control;
+  if (Platform.OS === 'ios') {
+    control = (
+      <SegmentedControl
+        values={Object.keys(resizeMap)}
+        fontStyle={{ color: Colors.tintColor }}
+        selectedIndex={index}
+        tintColor="white"
+        onChange={(event) => {
+          setIndex(event.nativeEvent.selectedSegmentIndex);
+        }}
+        onValueChange={(value) => {
+          const mappedValue = resizeMap[value];
+          if (mappedValue) {
+            onValueChange(mappedValue);
+          }
+        }}
+      />
+    );
+  } else {
+    // Segmented control looks broken in this situation outside of iOS, so use text instead
+    control = Object.keys(resizeMap).map((mode, i) => (
+      <Text
+        onPress={() => {
+          setIndex(i);
+          onValueChange(resizeMap[mode]!);
+        }}
+        key={mode}
+        style={{
+          textAlign: 'center',
+          color: Colors.tintColor,
+          fontWeight: index === i ? 'bold' : 'normal',
+          marginTop: i === 0 ? 0 : 8,
+          fontSize: 12,
+        }}>
+        {mode}
+      </Text>
+    ));
+    control = <View style={{ marginTop: -5 }}>{control}</View>;
+  }
   return (
     <View
       style={{
@@ -142,31 +183,19 @@ function ResizeModeSegmentedControl({
         justifyContent: 'flex-end',
         flex: 1,
       }}>
-      <SegmentedControl
-        values={Object.keys(resizeMap)}
-        fontStyle={{ color: Colors.tintColor }}
-        selectedIndex={index}
-        tintColor="white"
-        onChange={event => {
-          setIndex(event.nativeEvent.selectedSegmentIndex);
-        }}
-        onValueChange={value => {
-          const mappedValue = resizeMap[value];
-          if (mappedValue) {
-            onValueChange(mappedValue);
-          }
-        }}
-      />
-      <Text
-        style={{
-          textAlign: 'center',
-          fontWeight: 'bold',
-          color: Colors.tintColor,
-          marginTop: 8,
-          fontSize: 12,
-        }}>
-        Resize Mode
-      </Text>
+      {control}
+      {Platform.OS === 'ios' ? (
+        <Text
+          style={{
+            textAlign: 'center',
+            fontWeight: 'bold',
+            color: Colors.tintColor,
+            marginTop: 8,
+            fontSize: 12,
+          }}>
+          Resize Mode
+        </Text>
+      ) : null}
     </View>
   );
 }

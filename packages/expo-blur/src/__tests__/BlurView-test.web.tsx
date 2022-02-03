@@ -44,3 +44,9 @@ it(`supports Animated API`, () => {
   // This test ensures that the current version of RNW in Expo works with expo-blur.
   Animated.createAnimatedComponent(BlurView);
 });
+
+it(`intensity is capped at 100`, () => {
+  const withNativeBlur = mount(<BlurView intensity={3737} tint="light" />);
+  expect(getStyleProp(withNativeBlur.find('div'), 'backdropFilter')).toContain('blur(20px)');
+  expect(getStyleProp(withNativeBlur.find('div'), 'backgroundColor')).toContain('0.78');
+});

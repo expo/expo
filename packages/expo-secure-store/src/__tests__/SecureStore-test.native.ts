@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy } from 'expo-modules-core';
 
 import * as SecureStore from '../SecureStore';
 

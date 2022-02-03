@@ -1,5 +1,4 @@
 import React from 'react';
-export declare const A: React.ComponentType<React.PropsWithChildren<Pick<import("react-native").TextProps & React.ClassAttributes<typeof import("react-native").Text>, "allowFontScaling" | "ellipsizeMode" | "lineBreakMode" | "numberOfLines" | "onLayout" | "onTextLayout" | "onPress" | "onLongPress" | "testID" | "nativeID" | "maxFontSizeMultiplier" | "adjustsFontSizeToFit" | "minimumFontScale" | "suppressHighlighting" | "selectable" | "selectionColor" | "textBreakStrategy" | "accessible" | "accessibilityActions" | "accessibilityLabel" | "accessibilityState" | "accessibilityHint" | "accessibilityValue" | "onAccessibilityAction" | "accessibilityComponentType" | "accessibilityLiveRegion" | "importantForAccessibility" | "accessibilityElementsHidden" | "accessibilityTraits" | "accessibilityViewIsModal" | "onAccessibilityEscape" | "onAccessibilityTap" | "onMagicTap" | "accessibilityIgnoresInvertColors" | "key" | "ref"> & import("../primitives/Text").WebTextProps & {
-    href?: string | undefined;
-    target?: string | undefined;
-}>>;
+import { LinkProps } from './Text.types';
+export declare const A: React.ComponentType<LinkProps>;
+//# sourceMappingURL=Anchor.d.ts.map

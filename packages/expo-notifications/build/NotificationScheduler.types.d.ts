@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from '@unimodules/core';
+import { ProxyNativeModule } from 'expo-modules-core';
 import { NotificationRequest, NotificationContentInput } from './Notifications.types';
 export interface NotificationSchedulerModule extends ProxyNativeModule {
     getAllScheduledNotificationsAsync?: () => Promise<NotificationRequest[]>;
@@ -48,9 +48,18 @@ export interface WeeklyTriggerInput {
     hour: number;
     minute: number;
 }
+export interface YearlyTriggerInput {
+    type: 'yearly';
+    channelId?: string;
+    day: number;
+    month: number;
+    hour: number;
+    minute: number;
+}
 export interface DateTriggerInput {
     type: 'date';
     channelId?: string;
     timestamp: number;
 }
-export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput;
+export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput;
+//# sourceMappingURL=NotificationScheduler.types.d.ts.map

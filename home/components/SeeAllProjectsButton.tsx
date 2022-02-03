@@ -40,7 +40,7 @@ export default class SeeAllProjectsButton extends React.Component<Props> {
                 ? { uri: app.iconUrl }
                 : require('../assets/placeholder-app-icon.png');
               return (
-                <FadeIn key={i} placeholderColor="#eee">
+                <FadeIn key={i}>
                   <Image source={image} style={styles.appIcon} />
                 </FadeIn>
               );

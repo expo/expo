@@ -1,5 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus, Platform } from 'expo-modules-core';
 
 import {
   NativeNotificationPermissionsRequest,
@@ -40,7 +39,7 @@ async function resolvePermissionAsync({
 }: {
   shouldAsk: boolean;
 }): Promise<NotificationPermissionsStatus> {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return convertPermissionStatus('denied');
   }
 
@@ -57,9 +56,7 @@ async function resolvePermissionAsync({
           }
         }
         // Some browsers require a callback argument and some return a Promise
-        Notification.requestPermission(resolveOnce)
-          ?.then(resolveOnce)
-          ?.catch(reject);
+        Notification.requestPermission(resolveOnce)?.then(resolveOnce)?.catch(reject);
       });
     }
     return convertPermissionStatus(status);

@@ -1,8 +1,9 @@
 'use strict';
 
+const cloneDeep = require('lodash/cloneDeep');
 const isEqual = require('lodash/isEqual');
 // Derive the Expo Jest preset from the React Native one
-const jestPreset = require('react-native/jest-preset');
+const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 // transform
 if (!jestPreset.transform) {
@@ -27,7 +28,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
   console.warn(`Expected react-native/jest-preset to define a transformIgnorePatterns array`);
 } else if (
   !isEqual(jestPreset.transformIgnorePatterns, [
-    'node_modules/(?!(jest-)?react-native|@react-native-community)',
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
   ])
 ) {
   console.warn(
@@ -37,7 +38,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
 
 // Also please keep `testing-with-jest.md` file up to date
 jestPreset.transformIgnorePatterns = [
-  'node_modules/(?!(jest-)?react-native|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
+  'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
 ];
 
 // setupFiles

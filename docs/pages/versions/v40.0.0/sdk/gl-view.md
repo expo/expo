@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-gl'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
@@ -13,6 +14,69 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ## Installation
 
 <InstallSection packageName="expo-gl" />
+
+## Usage
+
+<SnackInline label='Basic GL usage' dependencies={['expo-gl']}>
+
+```js
+import React from 'react';
+import { View } from 'react-native';
+import { GLView } from 'expo-gl';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <GLView style={{ width: 300, height: 300 }} onContextCreate={onContextCreate} />
+    </View>
+  );
+}
+
+function onContextCreate(gl) {
+  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+  gl.clearColor(0, 1, 1, 1);
+
+  // Create vertex shader (shape & position)
+  const vert = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(
+    vert,
+    `
+    void main(void) {
+      gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+      gl_PointSize = 150.0;
+    }
+  `
+  );
+  gl.compileShader(vert);
+
+  // Create fragment shader (color)
+  const frag = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(
+    frag,
+    `
+    void main(void) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+  `
+  );
+  gl.compileShader(frag);
+
+  // Link together into a program
+  const program = gl.createProgram();
+  gl.attachShader(program, vert);
+  gl.attachShader(program, frag);
+  gl.linkProgram(program);
+  gl.useProgram(program);
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.POINTS, 0, 1);
+
+  gl.flush();
+  gl.endFrameEXP();
+}
+```
+
+</SnackInline>
 
 ## API
 
@@ -76,7 +140,7 @@ Takes a snapshot of the framebuffer and saves it as a file to app's cache direct
   - **format (_string_)** -- Either `'jpeg'`, `'png'` or `'webp'` (_Android only_ for the latter). Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
   - **compress (_number_)** -- A value in range 0 - 1 specifying compression level of the result image. 1 means no compression and 0 the highest compression. Defaults to `1.0`.
 
-> **Note:** When using WebP format, the iOS version will print a warning, and generate a `'png'` file instead. It is recommendable to use platform dependant code in this case. You can refer to the [documentation on platform specifi code](https://docs.expo.io/versions/latest/react-native/platform-specific-code/).
+> **Note:** When using WebP format, the iOS version will print a warning, and generate a `'png'` file instead. It is recommendable to use platform dependant code in this case. You can refer to the [documentation on platform specific code](/versions/latest/react-native/platform-specific-code/).
 
 #### Returns
 
@@ -125,4 +189,4 @@ For efficiency reasons the current implementations of the methods don't perform 
 
 ## Remote Debugging & GLView
 
-This API does not function as intended with remote debugging enabled. The React Native debugger runs Javascript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).
+This API does not function as intended with remote debugging enabled. The React Native debugger runs JavaScript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).

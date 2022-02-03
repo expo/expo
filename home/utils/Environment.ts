@@ -4,8 +4,14 @@ import semver from 'semver';
 
 import * as Kernel from '../kernel/Kernel';
 
+const PRODUCTION_EXPONENT_HOME_PROJECT_ID = '6b6c6660-df76-11e6-b9b4-59d1587e6774';
+
 const isProduction = !!(
-  Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
+  (Constants.manifest?.originalFullName === '@exponent/home' ||
+    Constants.manifest?.id === '@exponent/home' ||
+    Constants.manifest?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID ||
+    Constants.manifest2?.extra?.eas?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID) &&
+  (Constants.manifest?.publishedTime || Constants.manifest2?.extra?.expoClient?.publishedTime)
 );
 
 const IOSClientReleaseType = Kernel.iosClientReleaseType;
@@ -16,17 +22,18 @@ const IsIOSRestrictedBuild =
 
 const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
+// Constants.supportedExpoSdks is not guaranteed to be sorted!
+const sortedSupportedExpoSdks = SupportedExpoSdks.sort();
+
 let lowestSupportedSdkVersion: number = -1;
 
 if (SupportedExpoSdks.length > 0) {
-  lowestSupportedSdkVersion = semver.major(SupportedExpoSdks[0]);
+  lowestSupportedSdkVersion = semver.major(sortedSupportedExpoSdks[0]);
 }
 
 const supportedSdksString = `SDK${
   SupportedExpoSdks.length === 1 ? ':' : 's:'
-} ${SupportedExpoSdks.map(semver.major)
-  .sort((a, b) => a - b)
-  .join(', ')}`;
+} ${sortedSupportedExpoSdks.map((sdk) => semver.major(sdk)).join(', ')}`;
 
 export default {
   isProduction,

@@ -1,8 +1,10 @@
 import Constants from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
+import getInstallationIdAsync from '../environment/getInstallationIdAsync';
 import LogSerialization from './LogSerialization';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -66,7 +68,7 @@ async function enqueueRemoteLogAsync(
   });
 
   // Send the logs asynchronously (system errors are emitted with transport error events) and throw an uncaught error
-  _sendRemoteLogsAsync().catch(error => {
+  _sendRemoteLogsAsync().catch((error) => {
     setImmediate(() => {
       throw error;
     });
@@ -82,7 +84,7 @@ async function _sendRemoteLogsAsync(): Promise<void> {
   // for another policy (ex: throttling) this is where to to implement it.
   const batch = _logQueue.splice(0);
 
-  const { logUrl } = Constants.manifest;
+  const logUrl = Constants.manifest?.logUrl ?? Constants.manifest2?.extra?.expoGo?.logUrl;
   if (typeof logUrl !== 'string') {
     throw new Error('The Expo project manifest must specify `logUrl`');
   }
@@ -109,8 +111,9 @@ async function _sendNextLogBatchAsync(batch: LogEntry[], logUrl: string): Promis
     Connection: 'keep-alive',
     'Proxy-Connection': 'keep-alive',
     Accept: 'application/json',
-    'Device-Id': Constants.installationId,
+    'Device-Id': await getInstallationIdAsync(),
     'Session-Id': _sessionId,
+    'Expo-Platform': Platform.OS,
   };
   if (Constants.deviceName) {
     headers['Device-Name'] = Constants.deviceName;
@@ -163,7 +166,7 @@ export function __waitForEmptyLogQueueAsync(): Promise<void> {
     return Promise.resolve();
   }
 
-  _completionPromise = new Promise(resolve => {
+  _completionPromise = new Promise((resolve) => {
     _resolveCompletion = () => {
       invariant(!_isSendingLogs, `Must not be sending logs at completion`);
       invariant(!_logQueue.length, `Log queue must be empty at completion`);

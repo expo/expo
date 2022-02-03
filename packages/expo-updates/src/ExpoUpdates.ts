@@ -1,2 +1,2 @@
-import { NativeModulesProxy } from '@unimodules/core';
-export default NativeModulesProxy.ExpoUpdates || ({} as any);
+import { NativeModulesProxy } from 'expo-modules-core';
+export default NativeModulesProxy.ExpoUpdates ?? ({} as any);

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXKeepAwake/ABI38_0_0EXKeepAwake/ABI38_0_0EXKeepAwake.h

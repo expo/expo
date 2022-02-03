@@ -27,7 +27,7 @@ export default function ScreenCaptureScreen() {
     }
   }, [isEnabled]);
 
-  useScreenCapture(() => setTimestamps(timestamps => timestamps.concat([new Date()])));
+  useScreenCapture(() => setTimestamps((timestamps) => timestamps.concat([new Date()])));
 
   return (
     <View style={styles.container}>
@@ -39,7 +39,7 @@ export default function ScreenCaptureScreen() {
       <Text>Take a screenshot to test if the listener works.</Text>
       <FlatList
         data={timestamps}
-        keyExtractor={item => item.getTime() + '-'}
+        keyExtractor={(item) => item.getTime() + '-'}
         renderItem={({ item }) => <MonoText>{item.toLocaleTimeString()}</MonoText>}
       />
     </View>

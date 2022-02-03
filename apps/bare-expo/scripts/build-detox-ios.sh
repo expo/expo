@@ -14,7 +14,7 @@ UseModernBuildSystem=${2:-"NO"}
 
 xcodebuild \
   -workspace ios/BareExpo.xcworkspace \
-  -scheme BareExpo \
+  -scheme BareExpoDetox \
   -configuration "$configuration" \
   -sdk iphonesimulator \
   -arch x86_64 \

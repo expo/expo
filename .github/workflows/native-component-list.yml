@@ -3,17 +3,22 @@ name: Native Component List app
 on:
   workflow_dispatch: {}
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -22,13 +27,13 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '14.17'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -39,13 +44,14 @@ jobs:
         working-directory: apps/native-component-list
       - run: yarn lint --max-warnings 0
         working-directory: apps/native-component-list
-      - uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master')
-        with:
-          channel: '#api'
-          status: ${{ job.status }}
-          author_name: native-component-list/build
-          fields: author,job,message,ref
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/main')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+        with:
+          channel: '#expo-sdk'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Build Native Component List

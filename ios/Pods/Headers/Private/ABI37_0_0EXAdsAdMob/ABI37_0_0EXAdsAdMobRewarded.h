@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/EXAdsAdMob/ABI37_0_0EXAdsAdMob/ABI37_0_0EXAdsAdMobRewarded.h

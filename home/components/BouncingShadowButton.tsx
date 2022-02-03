@@ -15,7 +15,7 @@ export default function BouncingShadowButton({ onPress, children }: Props) {
 
   const scale = React.useMemo(() => new Animated.Value(1), []);
 
-  const onStateChanged = React.useCallback(active => {
+  const onStateChanged = React.useCallback((active) => {
     if (active) {
       Animated.spring(scale, { useNativeDriver: true, toValue: 0.95 }).start();
     } else {

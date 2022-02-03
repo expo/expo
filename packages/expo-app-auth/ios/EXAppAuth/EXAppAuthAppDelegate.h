@@ -2,11 +2,11 @@
 
 #import <Foundation/Foundation.h>
 #import <EXAppAuth/EXAppAuth.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXAppAuthAppDelegate : UMSingletonModule <UIApplicationDelegate>
+@interface EXAppAuthAppDelegate : EXSingletonModule <UIApplicationDelegate>
 
 @end
 

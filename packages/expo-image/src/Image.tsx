@@ -1,3 +1,4 @@
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import React from 'react';
 import {
   AccessibilityProps,
@@ -9,7 +10,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import ExpoImage from './ExpoImage';
+import ExpoImage, { ExpoImageModule } from './ExpoImage';
 import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
 
 const DEFAULT_RESIZE_MODE = 'cover';
@@ -26,7 +27,14 @@ export interface ImageProps extends AccessibilityProps {
   // or not.
   source?: ImageSourcePropType | null;
   style?: StyleProp<ImageStyle>;
+  defaultSource?: ImageSourcePropType | null;
+  loadingIndicatorSource?: ImageSourcePropType | null;
   resizeMode?: ImageResizeMode;
+  /**
+   * @Android only
+   */
+  blurRadius?: number;
+  fadeDuration?: number;
 
   onLoadStart?: () => void;
   onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
@@ -44,7 +52,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
   static getDerivedStateFromProps(props: ImageProps) {
     return {
       onLoad: props.onLoadEnd
-        ? e => {
+        ? (e) => {
             if (props.onLoad) {
               props.onLoad(e);
             }
@@ -52,7 +60,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
           }
         : props.onLoad,
       onError: props.onLoadEnd
-        ? e => {
+        ? (e) => {
             if (props.onError) {
               props.onError(e);
             }
@@ -60,6 +68,17 @@ export default class Image extends React.Component<ImageProps, ImageState> {
           }
         : props.onError,
     };
+  }
+
+  /**
+   * **Available on @Android only.** Caching the image that can be later used in ImageView
+   * @return an empty promise.
+   */
+  static async prefetch(url: string): Promise<void> {
+    if (Platform.OS !== 'android') {
+      throw new UnavailabilityError('Image', 'prefetch');
+    }
+    return await ExpoImageModule.prefetch(url);
   }
 
   state = {

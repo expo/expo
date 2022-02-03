@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,8 +26,20 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
     if (!config.hasEmbeddedUpdate) {
       embeddedManifest = nil;
     } else if (!embeddedManifest) {
-      NSString *path = [[NSBundle mainBundle] pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
+      NSBundle *frameworkBundle = [NSBundle bundleForClass:[self class]];
+      NSURL *bundleUrl = [frameworkBundle.resourceURL URLByAppendingPathComponent:@"EXUpdates.bundle"];
+      NSBundle *bundle = [NSBundle bundleWithURL:bundleUrl];
+      NSString *path = [bundle pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
+
+      // Fallback to main bundle if the embedded manifest is not found in EXUpdates.bundle. This is a special case
+      // to support the existing structure of Expo "shell apps"
+      if (!manifestData) {
+        path = [[NSBundle mainBundle] pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
+        manifestData = [NSData dataWithContentsOfFile:path];
+      }
+
+      // Not found in EXUpdates.bundle or main bundle
       if (!manifestData) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:@"The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
@@ -59,6 +72,7 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
 }
 
 - (void)loadUpdateFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                                           onAsset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                                            success:(EXUpdatesAppLoaderSuccessBlock)success
                                              error:(EXUpdatesAppLoaderErrorBlock)error
 {
@@ -66,6 +80,7 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
                                                                       database:self.database];
   if (embeddedManifest) {
     self.manifestBlock = manifestBlock;
+    self.assetBlock = assetBlock;
     self.successBlock = success;
     self.errorBlock = error;
     [self startLoadingFromManifest:embeddedManifest];
@@ -87,9 +102,7 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
       });
     } else {
       NSAssert(asset.mainBundleFilename, @"embedded asset mainBundleFilename must be nonnull");
-      NSString *bundlePath = asset.mainBundleDir
-        ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
-        : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
+      NSString *bundlePath = [EXUpdatesUtils pathForBundledAsset:asset];
       NSAssert(bundlePath, @"NSBundle must contain the expected assets");
 
       if (!bundlePath) {
@@ -113,6 +126,8 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
+               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {

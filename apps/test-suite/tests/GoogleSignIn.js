@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Localization from 'expo-localization';
+import { Platform } from 'expo-modules-core';
 import { Image } from 'react-native';
 
 import { alertAndWaitForResponse } from './helpers';
@@ -51,7 +51,7 @@ export async function test({
     it('has constants', () => {
       function validateConstants(constants) {
         expect(constants).toBeDefined();
-        Object.values(constants).map(constant => {
+        Object.values(constants).map((constant) => {
           expect(typeof constant).toBe('string');
         });
       }

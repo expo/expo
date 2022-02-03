@@ -1,9 +1,10 @@
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import { Audio, AVMetadata, AVPlaybackStatus } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
+import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 
 type PlaybackSource =
@@ -33,6 +34,7 @@ interface State {
   volume: number;
   isMuted: boolean;
   shouldCorrectPitch: boolean;
+  metadata: AVMetadata;
 }
 
 export default class AudioPlayer extends React.Component<Props, State> {
@@ -46,6 +48,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     rate: 1,
     volume: 1,
     shouldCorrectPitch: false,
+    metadata: {},
   };
 
   _sound?: Audio.Sound;
@@ -63,6 +66,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   componentWillUnmount() {
     if (this._sound) {
+      this._clearJsiAudioSampleCallback();
       this._sound.unloadAsync();
     }
   }
@@ -72,6 +76,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     try {
       await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 150 });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
+      soundObject.setOnMetadataUpdate(this._updateMetadata);
       const status = await soundObject.getStatusAsync();
       this._updateStateToStatus(status);
       this._sound = soundObject;
@@ -86,9 +91,18 @@ export default class AudioPlayer extends React.Component<Props, State> {
     this.setState(status);
   };
 
-  _playAsync = async () => this._sound!.playAsync();
+  _updateMetadata = (metadata: AVMetadata) => {
+    this.setState({ metadata });
+  };
 
-  _pauseAsync = async () => this._sound!.pauseAsync();
+  _playAsync = async () => {
+    this._sound!.playAsync();
+  };
+
+  _pauseAsync = async () => {
+    this._clearJsiAudioSampleCallback();
+    this._sound!.pauseAsync();
+  };
 
   _replayAsync = async () => this._sound!.replayAsync();
 
@@ -108,6 +122,14 @@ export default class AudioPlayer extends React.Component<Props, State> {
     await this._sound!.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
   };
 
+  _clearJsiAudioSampleCallback = () => {
+    // it throws UnavailabilityError when platform is not supported
+    // ignore this, we set it here to null anyway
+    try {
+      this._sound?.setOnAudioSampleReceived(null);
+    } catch (_e) {}
+  };
+
   render() {
     return (
       <Player
@@ -121,6 +143,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
         setRateAsync={this._setRateAsync}
         setIsMutedAsync={this._setIsMutedAsync}
         setVolume={this._setVolumeAsync}
+        extraIndicator={<JsiAudioBar isPlaying={this.state.isPlaying} sound={this._sound!} />}
       />
     );
   }

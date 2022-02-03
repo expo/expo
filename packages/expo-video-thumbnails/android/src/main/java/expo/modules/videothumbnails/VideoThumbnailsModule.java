@@ -8,20 +8,23 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.webkit.URLUtil;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.utilities.FileUtilities;
-import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
-import org.unimodules.interfaces.filesystem.Permission;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.utilities.FileUtilities;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.modules.interfaces.filesystem.Permission;
 
 public class VideoThumbnailsModule extends ExportedModule {
   private static final String TAG = "ExpoVideoThumbnails";
@@ -51,11 +54,13 @@ public class VideoThumbnailsModule extends ExportedModule {
   private static class GetThumbnailAsyncTask extends AsyncTask<Void, Void, Bitmap> {
     private String mSourceFilename;
     private ReadableArguments mVideoOptions;
+    private Context mContext;
     Exception mError;
 
-    GetThumbnailAsyncTask(String sourceFilename, ReadableArguments videoOptions) {
+    GetThumbnailAsyncTask(String sourceFilename, ReadableArguments videoOptions, Context context) {
       mSourceFilename = sourceFilename;
       mVideoOptions = videoOptions;
+      mContext = context;
     }
 
     @Override
@@ -65,10 +70,15 @@ public class VideoThumbnailsModule extends ExportedModule {
       try {
         if (URLUtil.isFileUrl(mSourceFilename)) {
           retriever.setDataSource(Uri.decode(mSourceFilename).replace("file://", ""));
+        } else if (URLUtil.isContentUrl(mSourceFilename)) {
+          Uri fileUri = Uri.parse(mSourceFilename);
+          FileDescriptor fileDescriptor = mContext.getContentResolver().openFileDescriptor(fileUri, "r").getFileDescriptor();
+          FileInputStream inputStream = new FileInputStream(fileDescriptor);
+          retriever.setDataSource(inputStream.getFD());
         } else {
           retriever.setDataSource(mSourceFilename, mVideoOptions.getMap(KEY_HEADERS, new HashMap<String, String>()));
         }
-      } catch (RuntimeException e) {
+      } catch (IOException | RuntimeException e) {
         mError = e;
         return null;
       }
@@ -94,7 +104,7 @@ public class VideoThumbnailsModule extends ExportedModule {
       return;
     }
 
-    GetThumbnailAsyncTask getThumbnailAsyncTask = new GetThumbnailAsyncTask(sourceFilename, videoOptions) {
+    GetThumbnailAsyncTask getThumbnailAsyncTask = new GetThumbnailAsyncTask(sourceFilename, videoOptions, getContext()) {
       @Override
       protected void onPostExecute(Bitmap thumbnail) {
         if (thumbnail == null || mError != null) {

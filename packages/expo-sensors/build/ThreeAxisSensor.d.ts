@@ -9,3 +9,4 @@ export interface ThreeAxisMeasurement {
  */
 export default class ThreeAxisSensor extends DeviceSensor<ThreeAxisMeasurement> {
 }
+//# sourceMappingURL=ThreeAxisSensor.d.ts.map

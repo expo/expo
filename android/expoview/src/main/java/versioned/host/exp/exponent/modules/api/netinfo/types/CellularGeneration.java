@@ -16,7 +16,8 @@ public enum CellularGeneration {
     // We need to prefix these with "CG_" because they cannot start with numbers
     CG_2G("2g"),
     CG_3G("3g"),
-    CG_4G("4g");
+    CG_4G("4g"),
+    CG_5G("5g");
 
     public final String label;
 
@@ -49,6 +50,8 @@ public enum CellularGeneration {
             case TelephonyManager.NETWORK_TYPE_HSPAP:
             case TelephonyManager.NETWORK_TYPE_LTE:
                 return CellularGeneration.CG_4G;
+            case TelephonyManager.NETWORK_TYPE_NR:
+                return CellularGeneration.CG_5G;
             case TelephonyManager.NETWORK_TYPE_UNKNOWN:
             default:
                 return null;

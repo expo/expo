@@ -8,6 +8,7 @@
 
 typedef void (^DevMenuREAOnAnimationCallback)(CADisplayLink *displayLink);
 typedef void (^DevMenuREANativeAnimationOp)(RCTUIManager *uiManager);
+typedef void (^DevMenuREAEventHandler)(NSString *eventName, id<RCTEvent> event);
 
 @interface DevMenuREANodesManager : NSObject
 
@@ -31,9 +32,11 @@ typedef void (^DevMenuREANativeAnimationOp)(RCTUIManager *uiManager);
 
 - (void)postOnAnimation:(DevMenuREAOnAnimationCallback)clb;
 - (void)postRunUpdatesAfterAnimation;
+- (void)registerEventHandler:(DevMenuREAEventHandler)eventHandler;
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
                                viewName:(NSString *) viewName
-                            nativeProps:(NSMutableDictionary *)nativeProps;
+                            nativeProps:(NSMutableDictionary *)nativeProps
+                       trySynchronously:(BOOL)trySync;
 - (void)getValue:(DevMenuREANodeID)nodeID
         callback:(RCTResponseSenderBlock)callback;
 
@@ -69,6 +72,13 @@ typedef void (^DevMenuREANativeAnimationOp)(RCTUIManager *uiManager);
 
 - (void)configureProps:(nonnull NSSet<NSString *> *)nativeProps
                uiProps:(nonnull NSSet<NSString *> *)uiProps;
+
+- (void)updateProps:(nonnull NSDictionary *)props
+      ofViewWithTag:(nonnull NSNumber *)viewTag
+           withName:(nonnull NSString *)viewName;
+
+- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
+          propName:(nonnull NSString *)propName;
 
 // events
 

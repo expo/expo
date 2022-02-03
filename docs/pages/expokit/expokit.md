@@ -2,7 +2,7 @@
 title: Developing With ExpoKit
 ---
 
-> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../../bare/customizing/) instead.**
+> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.**
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.
@@ -12,7 +12,7 @@ native iOS/Android project.
 To create an ExpoKit project:
 
 1.  Create a pure-JS project with Expo CLI (also projects that were created with exp, XDE or create-react-native-app will work)
-2.  Then use [`expo eject`](../eject/) to add ExpoKit (choose the "ExpoKit" option).
+2.  Then use [`expo eject`](eject.md) to add ExpoKit (choose the "ExpoKit" option).
 
 Make sure to perform these steps before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
 
@@ -22,14 +22,14 @@ By this point you should have a JS app which additionally contains `ios` and `an
 
 ### 1. Check JS dependencies
 
-- Your project's `package.json` should contain a `react-native` dependency pointing at Expo's fork of React Native. This should already be configured for you.
+- Your project's **package.json** should contain a `react-native` dependency pointing at Expo's fork of React Native. This should already be configured for you.
 - Your JS dependencies should already be installed (via `npm install` or `yarn`).
 
 ### 2. Run the project with Expo CLI
 
 Run `expo start` from the project directory.
 
-This step ensures that the React Native packager is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
+This step ensures that the Metro bundler is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
 
 > Note: Before building for release, you **must** run `expo publish` to serve your app's JS bundle in TestFlight and production.
 
@@ -46,11 +46,11 @@ Once it's running, the iOS app should automatically request your JS bundle from 
 
 ### 4. Android: Build and run
 
-Open the `android` directory in Android Studio, then build and run the project on an Android device or emulator.
+Open the **android** directory in Android Studio, then build and run the project on an Android device or emulator.
 
 When opening the project, Android Studio may prompt you to upgrade the version of Gradle or other build tools, but don't do this as you may get unexpected results. ExpoKit always ships with the latest supported versions of all build tools.
 
-If you prefer to use the command line, you can run `./gradlew installDebug` from inside the `android` directory to build the project and install it on the running device/emulator.
+If you prefer to use the command line, you can run `./gradlew installDebug` from inside the **android** directory to build the project and install it on the running device/emulator.
 
 Once the Android project is running, it should automatically request your development url from Expo CLI. You can develop your project normally from here.
 
@@ -126,7 +126,7 @@ If upgrading from SDK 32 or below:
      require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
      use_unimodules!
    ```
-   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/master/packages/react-native-unimodules).
+   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/main/packages/react-native-unimodules).
 3. Upgrade CocoaPods to some version higher or equal 1.6. (At the moment of writing the latest version is 1.7.1, we have tested it works. You will probably need to run `gem update cocoapods`, but the exact command will depend on your setup.)
 4. Change the whole `post_install` block at the bottom of the `Podfile` to
 
@@ -183,8 +183,8 @@ If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` cl
 
 If you have never made any edits to your Expo-generated `AppDelegate` files, then you can just replace them with these new template files:
 
-- [AppDelegate.h](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.h)
-- [AppDelegate.m](https://github.com/expo/expo/blob/master/exponent-view-template/ios/exponent-view-template/AppDelegate.m)
+- [AppDelegate.h](https://github.com/expo/expo/tree/main/exponent-view-template/ios/exponent-view-template/AppDelegate.h)
+- [AppDelegate.m](https://github.com/expo/expo/tree/main/exponent-view-template/ios/exponent-view-template/AppDelegate.m)
 
 If you override any `AppDelegate` methods to add custom behavior, you'll need to either refactor your `AppDelegate` to subclass `EXStandaloneAppDelegate` and call `super` methods when necessary, or start with the new template files above and add your custom logic again (be sure to keep the calls to `super` methods).
 
@@ -192,12 +192,12 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 
 ### Android
 
-- Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
-- Update your version of expokit in `package.json` to the version in `expokitNpmPackage` and yarn/npm install.
-- If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
+- Go to https://expo.dev/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
+- Update your version of expokit in **package.json** to the version in `expokitNpmPackage` and yarn/npm install.
+- If upgrading to SDK 31 or below, go to **MainActivity.java** and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from **MainActivity.java**.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 - Go to `android/app/build.gradle` (same file) and replace `api 'com.facebook.react:react-native:[OLD SDK VERSION]'` with `api 'com.facebook.react:react-native:[NEW SDK VERSION]'`.
-- Go to `android/app/build.gradle` (same file) and upgrade JSC version by replcaing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
+- Go to `android/app/build.gradle` (same file) and upgrade JSC version by replacing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
 
 If upgrading from SDK34:
 
@@ -371,14 +371,14 @@ If upgrading from SDK31 or below:
    api 'host.exp.exponent:expo-background-fetch:+'
    ```
 
-2. Ensure that in `MainActivity.java`, `expoPackages` method looks like this:
+2. Ensure that in **MainActivity.java**, `expoPackages` method looks like this:
    ```java
    @Override
    public List<Package> expoPackages() {
      return ((MainApplication) getApplication()).getExpoPackages();
    }
    ```
-3. In `MainApplication.java`, replace
+3. In **MainApplication.java**, replace
    ```java
    public class MainApplication extends ExpoApplication {
    ```
@@ -386,7 +386,7 @@ If upgrading from SDK31 or below:
    ```java
    public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface<ReactPackage> {
    ```
-4. Add the following lines in `MainApplication.java`:
+4. Add the following lines in **MainApplication.java**:
 
    ```java
    import org.unimodules.core.interfaces.Package;

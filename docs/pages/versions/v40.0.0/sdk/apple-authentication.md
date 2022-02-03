@@ -25,7 +25,7 @@ Beginning with iOS 13, any app that includes third-party authentication options 
 5. If you chose a different app to be the primary, you'll also need to open up the configuration page for your current app, enable the "Sign In with Apple" capability, click "Edit" and choose the "Group with an existing primary App ID" option. Save this configuration as well.
 6. Next, go to the "Keys" page and register a new key. Add the "Sign In with Apple" capability, and make sure to choose the correct primary app on the configuration screen.
 7. Finally, when you want to make a standalone build to test with, run `expo build:ios --clear-provisioning-profile --revoke-credentials` so that your provisioning profile is regenerated with the new entitlement.
-8. (Optional) If you'd like to localize the button text, you can add `"CFBundleAllowMixedLocalizations": true` to your `ios.infoPlist` property [in your app.json](https://docs.expo.io/workflow/configuration/#ios). Note: The localized value will only appear in your standalone app.
+8. (Optional) If you'd like to localize the button text, you can add `"CFBundleAllowMixedLocalizations": true` to your `ios.infoPlist` property [in your app.json](/workflow/configuration/#ios). Note: The localized value will only appear in your standalone app.
 
 ## Usage
 
@@ -63,7 +63,7 @@ function YourComponent() {
 
 ## Development and Testing
 
-You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into the Expo client, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
+You can test this library in development in the iOS Expo Go without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into Expo Go, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
 
 You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
 
@@ -76,36 +76,6 @@ Apple's response includes a signed JWT with information about the user. To ensur
 ```js
 import * as AppleAuthentication from 'expo-apple-authentication';
 ```
-
-**[Methods](#methods)**
-
-- [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync)
-- [`AppleAuthentication.signInAsync(options)`](#appleauthenticationsigninasyncoptions)
-- [`AppleAuthentication.getCredentialStateAsync(user)`](#appleauthenticationgetcredentialstateasyncuser)
-
-**[Components](#components)**
-
-- [`AppleAuthentication.AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton)
-
-**[Prop Types](#appleauthenticationappleauthenticationbuttonprops)**
-
-- [`AppleAuthentication.AppleAuthenticationButtonProps`](#appleauthenticationappleauthenticationbuttonprops)
-
-**[Enum Types](#enum-types)**
-
-- [`AppleAuthentication.AppleAuthenticationButtonStyle`](#appleauthenticationappleauthenticationbuttonstyle)
-- [`AppleAuthentication.AppleAuthenticationButtonType`](#appleauthenticationappleauthenticationbuttontype)
-- [`AppleAuthentication.AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate)
-- [`AppleAuthentication.AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope)
-- [`AppleAuthentication.AppleAuthenticationUserDetectionStatus`](#appleauthenticationappleauthenticationuserdetectionstatus)
-
-**[Object Types](#object-types)**
-
-- [`AppleAuthentication.AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential)
-- [`AppleAuthentication.AppleAuthenticationFullName`](#appleauthenticationappleauthenticationfullname)
-- [`AppleAuthentication.AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions)
-
-**[Error Codes](#error-codes)**
 
 ## Methods
 
@@ -123,7 +93,7 @@ Sends a request to the operating system to initiate the Apple authentication flo
 
 You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime.
 
-Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](../securestore/), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
+Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](securestore.md), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
 
 #### Arguments
 

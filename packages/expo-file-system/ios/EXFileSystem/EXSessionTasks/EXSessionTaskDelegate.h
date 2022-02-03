@@ -1,15 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXSessionTaskDelegate : NSObject
 
-@property (nonatomic, strong, readonly) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong, readonly) UMPromiseRejectBlock reject;
+@property (nonatomic, strong, readonly) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong, readonly) EXPromiseRejectBlock reject;
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject;
+- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject;
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location;
 
@@ -21,6 +21,11 @@
                               totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite;
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data;
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
+                                didSendBodyData:(int64_t)bytesSent
+                                 totalBytesSent:(int64_t)totalBytesSent
+                       totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend;
 
 - (NSDictionary *)parseServerResponse:(NSURLResponse *)response;
 

@@ -3,9 +3,10 @@ title: Walkthrough
 sidebar_title: Walkthrough
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 
-There's no need to install anything or even understand everything here, this page is meant to give you an overview of some of the big pieces of building a managed app. In the same way that getting a quick tour of Paris won't make you an expert on Paris, this walkthrough serves to help you identify a few landmarks and the most important areas in the managed workflow. You can do a walkthrough of the [bare workflow](../../bare/exploring-bare-workflow/) later on.
+There's no need to install anything or even understand everything here, this page is meant to give you an overview of some of the big pieces of building a managed app. In the same way that getting a quick tour of Paris won't make you an expert on Paris, this walkthrough serves to help you identify a few landmarks and the most important areas in the managed workflow. You can do a walkthrough of the [bare workflow](../bare/exploring-bare-workflow.md) later on.
 
 ## Initialize a project
 
@@ -21,13 +22,13 @@ Now we just run `yarn start` (or `npm start` if you prefer that package manager)
 
 <Video file="exploring-managed/start.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android, or in your web browser
+## Open the project with the Expo Go app on iOS or Android, or in your web browser
 
-To run the app we don’t need to build any native code because it runs in the [Expo client](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../../workflow/ios-simulator/) or on any connected [Android emulator](../../workflow/android-studio-emulator/) or device. You can also download it from the App Store and Play Store.
+To run the app we don’t need to build any native code because it runs in the [Expo Go](https://expo.dev/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
 
 <Video file="exploring-managed/open.mp4" />
 
-<!-- The Expo client asks the server you started with `expo start` for a copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), and inspecting elements. -->
+<!-- the Expo Go app asks the server you started with `expo start` for a copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), and inspecting elements. -->
 
 If you close the `expo-cli` or turn off your computer, you won't be able to access the app from your device anymore. We'll see how you can make it always available later on.
 
@@ -37,9 +38,7 @@ Let's scroll through the [API Reference](/versions/latest/) to find packages tha
 
 Let's say we had mockups for our app that look like the following:
 
-<div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10}}>
-<img src="/static/images/exploring-managed/mockups.png" alt="Mockups of app screens" />
-</div>
+<ImageSpotlight alt="Mockups of app screens" src="/static/images/exploring-managed/mockups.png" />
 
 > _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear), but let's pretend they are mockups for the sake of demonstration._
 
@@ -51,51 +50,51 @@ We have to start somewhere so let’s start with the `ImagePicker`. There’s a 
 
 <Video file="exploring-managed/picker.mp4" />
 
-At the risk of evoking the [How To Draw an Owl meme](https://knowyourmeme.com/memes/how-to-draw-an-owl), let's jump right ahead to when the app is complete. To get from where we started to here you will need to read the React and React Native documentation as needed to build parts of your app, but that's too much to cover in this particular article. Find out about learning resources [here](../../next-steps/additional-resources/).
+At the risk of evoking the [How To Draw an Owl meme](https://knowyourmeme.com/memes/how-to-draw-an-owl), let's jump right ahead to when the app is complete. To get from where we started to here you will need to read the React and React Native documentation as needed to build parts of your app, but that's too much to cover in this particular article. Find out about learning resources [here](../next-steps/additional-resources.md).
 
 <Video file="exploring-managed/done.mp4" />
 
-We can make a separate version of the app for web to just guide people to our app in the app stores, for when we have them up there. We can create a different entry point for the app by creating `App.web.js` and then build it there.
+We can make a separate version of the app for web to just guide people to our app in the app stores, for when we have them up there. We can create a different entry point for the app by creating **App.web.js** and then build it there.
 
 <Video file="exploring-managed/web.mp4" spaceAfter />
 
-## Configure the app with `app.json`
+## Configure the app with **app.json**
 
-In a managed app we don’t have the native iOS or Android projects to poke around and modify, this is managed by Expo for us. So when we want to change configuration like the icon and splash screen image we can use `app.json`.
+In a managed app we don’t have the native iOS or Android projects to poke around and modify, this is managed by Expo for us. So when we want to change configuration like the icon and splash screen image we can use **app.json**.
 
 <Video file="exploring-managed/config.mp4" spaceAfter />
 
 ## Publish and share your app
 
-To share the app with teammates we can run `expo publish` and we’ll build the JavaScript bundle and upload all of the assets to a CDN. [Read more about publishing here](../../workflow/publishing/).
+To share the app with teammates we can run `expo publish` and we’ll build the JavaScript bundle and upload all of the assets to a CDN. [Read more about publishing here](../workflow/publishing.md).
 
 <Video file="exploring-managed/publish.mp4" spaceAfter={30} />
 
-> _Note: Running `expo publish` will upload your app artifacts to Expo's CDN (powered by CloudFront). If you would rather host everything on your own servers, read about how to do this in [Hosting Updates on Your Servers](../../distribution/hosting-your-app/)._
+> _Note: Running `expo publish` will upload your app artifacts to Expo's CDN (powered by CloudFront). If you would rather host everything on your own servers, read about how to do this in [Hosting Updates on Your Servers](../distribution/hosting-your-app.md)._
 
 You may have noticed that when we ran `expo publish` the CLI warned us about optimizing assets. We can run `npx expo-optimize` to do this, and it’ll make our assets a bit more lean if possible. Republish after this to reap the rewards.
 
 <Video file="exploring-managed/optimize.mp4" />
 
-Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.io/@notbrent/blearexp](https://expo.io/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
+Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.dev/@notbrent/blearexp](https://expo.dev/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project **app.json**.
 
-On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app from within the Expo client is to do a custom build of the Expo iOS client. [Read more about that here](../../guides/adhoc-builds/).
+On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.dev/developer-services), in which case your teammates can open your projects as well.
 
 ## Building and deploying
 
 ### iOS and the Apple App Store
 
-Before we run the build, we need to set a `bundleIdentifier` in `app.json` (["What does bundle identifier mean?"](https://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project)).
+Before we run the build, we need to set a `bundleIdentifier` in **app.json** (["What does bundle identifier mean?"](https://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project)).
 
 <Video file="exploring-managed/bundleid.mp4" />
 
-Now when we run `expo build:ios` it will kick off a build with the Expo build service. We will be prompted to enter our Apple developer credentials, and then we’ll just hit enter a couple of times to let Expo handle the distribution certificate, push key, and provisioning profile. You can also provide all of this yourself, which you might want to do if you are moving an existing app to the managed workflow. ([Concerned about security?](../../distribution/security/))
+Now when we run `expo build:ios` it will kick off a build with the Expo build service. We will be prompted to enter our Apple developer credentials, and then we’ll just hit enter a couple of times to let Expo handle the distribution certificate, push key, and provisioning profile. You can also provide all of this yourself, which you might want to do if you are moving an existing app to the managed workflow. ([Concerned about security?](../distribution/security.md))
 
 <Video file="exploring-managed/buildios.mp4" spaceAfter={30} />
 
-> _Note: Running `expo build:[ios/android]` uses the Expo build service &mdash; if you would rather run builds on your own infrastructure, read about how to do this in [Building Standalone Apps on Your CI](../../distribution/turtle-cli/)_
+> _Note: Running `expo build:[ios/android]` uses the Expo build service &mdash; if you would rather run builds on your own infrastructure, read about how to do this in [Building Standalone Apps on Your CI](../distribution/turtle-cli.md)_
 
-Now you can use [Application Loader](https://help.apple.com/itc/apploader/) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../../distribution/app-stores/).
+Now you can use [Transporter](https://apps.apple.com/app/transporter/id1450874784) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../distribution/app-stores.md).
 
 <Video file="exploring-managed/uploadios.mp4" spaceAfter />
 
@@ -105,11 +104,11 @@ Android builds follow a similar process to iOS builds, but we are going to restr
 
 <Video file="exploring-managed/package.mp4" />
 
-We’ll build an [Android App Bundle (`.aab`)](https://developer.android.com/platform/technology/app-bundle) here because we want a more lean binary for the Play Store, but if you want to install the binary on a local device for testing, leave out the `--app-bundle` flag and you’ll get a `.apk` file instead.
+We’ll build an [Android App Bundle (**.aab**)](https://developer.android.com/platform/technology/app-bundle) here because we want a more lean binary for the Play Store, but if you want to install the binary on a local device for testing, leave out the `--app-bundle` flag and you’ll get a **.apk** file instead.
 
 <Video file="exploring-managed/buildandroid.mp4" />
 
-Now we need to create the app in the Google Play Console and upload it through the web interface manually. After the first time you have uploaded the app, subsequent uploads can be done with `expo upload:android`. [Read more about deploying to app stores](../../distribution/app-stores/).
+Now we need to create the app in the Google Play Console and upload it through the web interface manually. After the first time you have uploaded the app, subsequent uploads can be done with `expo upload:android`. [Read more about deploying to app stores](../distribution/app-stores.md).
 
 ### Building and deploying to the web
 
@@ -117,23 +116,23 @@ Run `expo build:web` then upload the `web-build` directory to any host capable o
 
 <Video file="exploring-managed/buildweb.mp4" spaceAfter />
 
-## Updating the app over the air
+## Updating the app
 
 Once your app is out for testing or on the stores you probably don’t want to have to repeat the process again to make some small changes. In this case, we noticed that we weren’t asking for camera roll permissions before saving the image, so if you tried to save an image before picking one from the camera roll then it wouldn’t work. To ship an update, we just need to run `expo publish` again.
 
 <Video file="exploring-managed/update.mp4" />
 
-When we built our Android app bundle above, we told it to point to a specific Android release channel ([learn more about release channels](../../distribution/release-channels/)). To publish an update to the Android app we then need to update that release channel too.
+When we built our Android app bundle above, we told it to point to a specific Android release channel ([learn more about release channels](../distribution/release-channels.md)). To publish an update to the Android app we then need to update that release channel too.
 
 <Video file="exploring-managed/updatechannel.mp4" />
 
-To determine the rules for when apps will download and apply these updates, [read about configuring OTA updates](../../guides/configuring-ota-updates/).
+To determine the rules for when apps will download and apply these updates, [read about configuring updates](../guides/configuring-updates.md).
 
 We frequently release updates to the [Expo SDK](/versions/latest/). If you decide to update your app to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 
 ## Sending notifications
 
-An [in-depth guide](../../push-notifications/overview/) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.io/notifications).
+An [in-depth guide](../push-notifications/overview.md) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.dev/notifications).
 
 <Video file="exploring-managed/notify.mp4" />
 
@@ -141,4 +140,4 @@ An [in-depth guide](../../push-notifications/overview/) to setting up push notif
 
 You are now, at a very high level, familiar with the steps you would go through to create an app with the Expo managed workflow.
 
-Let's move on to [learn about the limitations](../../introduction/why-not-expo/).
+Let's move on to [learn about the limitations](../introduction/why-not-expo.md).

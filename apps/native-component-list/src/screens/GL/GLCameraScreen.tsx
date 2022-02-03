@@ -1,4 +1,4 @@
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 import * as GL from 'expo-gl';
 import { GLView } from 'expo-gl';
 import * as Permissions from 'expo-permissions';
@@ -39,7 +39,7 @@ class GLCameraScreen extends React.Component<{}, State> {
 
   readonly state: State = {
     zoom: 0,
-    type: Camera.Constants.Type.back,
+    type: CameraType.back,
   };
 
   _rafID?: number;
@@ -126,22 +126,19 @@ class GLCameraScreen extends React.Component<{}, State> {
   };
 
   toggleFacing = () => {
-    this.setState(state => ({
-      type:
-        state.type === Camera.Constants.Type.back
-          ? Camera.Constants.Type.front
-          : Camera.Constants.Type.back,
+    this.setState((state) => ({
+      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
     }));
   };
 
   zoomOut = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1,
     }));
   };
 
   zoomIn = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1,
     }));
   };
@@ -153,12 +150,12 @@ class GLCameraScreen extends React.Component<{}, State> {
           style={StyleSheet.absoluteFill}
           type={this.state.type}
           zoom={this.state.zoom}
-          ref={ref => (this.camera = ref!)}
+          ref={(ref) => (this.camera = ref!)}
         />
         <GLView
           style={StyleSheet.absoluteFill}
           onContextCreate={this.onContextCreate}
-          ref={ref => (this.glView = ref!)}
+          ref={(ref) => (this.glView = ref!)}
         />
 
         <View style={styles.buttons}>

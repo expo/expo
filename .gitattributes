@@ -1,11 +1,8 @@
 *.pbxproj binary linguist-generated
 ios/Exponent.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
 apps/bare-expo/ios/BareExpo.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
-nix/**/gemset.nix -diff linguist-generated
+apps/bare-sandbox/ios/bare-sandbox.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
+templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj merge=union -text diff linguist-generated
 packages/*/build/** -diff linguist-generated
+packages/*/plugin/build/** -diff linguist-generated
 packages/@*/*/build/** -diff linguist-generated
-ios/Pods/FBAudienceNetwork/Static/FBAudienceNetwork.framework/FBAudienceNetwork filter=lfs diff=lfs merge=lfs -text
-ios/Pods/GoogleMobileVision/Detector/Frameworks/GoogleMobileVision.framework/GoogleMobileVision filter=lfs diff=lfs merge=lfs -text
-ios/Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework-Current/GoogleMobileAds.framework/GoogleMobileAds filter=lfs diff=lfs merge=lfs -text
-ios/Pods/GoogleMaps/Maps/Frameworks/GoogleMapsCore.framework/GoogleMapsCore filter=lfs diff=lfs merge=lfs -text
-ios/Pods/FirebaseMLVisionFaceModel/Frameworks/FirebaseMLVisionFaceModel.framework/FirebaseMLVisionFaceModel filter=lfs diff=lfs merge=lfs -text

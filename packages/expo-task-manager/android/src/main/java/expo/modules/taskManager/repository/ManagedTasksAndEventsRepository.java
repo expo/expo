@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 /**
  * Standard implementation of {@link TasksAndEventsRepository} to be used in managed workflow.
  *
- * It maps <code>appId</code> to its tasks and events, and allows to retrieve them accordingly.
+ * It maps <code>appScopeKey</code> to its tasks and events, and allows to retrieve them accordingly.
  */
 public class ManagedTasksAndEventsRepository implements TasksAndEventsRepository {
 
@@ -30,28 +30,28 @@ public class ManagedTasksAndEventsRepository implements TasksAndEventsRepository
   private static Map<String, Map<String, TaskInterface>> sTasks;
 
   @Override
-  public void putEvents(String appId, List<Bundle> events) {
-    sEvents.put(appId, events);
+  public void putEvents(String appScopeKey, List<Bundle> events) {
+    sEvents.put(appScopeKey, events);
   }
 
   @Override
-  public void putEventForAppId(String appId, Bundle body) {
-    sEvents.get(appId).add(body);
+  public void putEventForAppScopeKey(String appScopeKey, Bundle body) {
+    sEvents.get(appScopeKey).add(body);
   }
 
   @Override
-  public boolean hasEvents(String appId) {
-    return sEvents.containsKey(appId);
+  public boolean hasEvents(String appScopeKey) {
+    return sEvents.containsKey(appScopeKey);
   }
 
   @Override
-  public void removeEvents(String appId) {
-    sEvents.remove(appId);
+  public void removeEvents(String appScopeKey) {
+    sEvents.remove(appScopeKey);
   }
 
   @Override
-  public List<Bundle> getEvents(String appId) {
-    return sEvents.get(appId);
+  public List<Bundle> getEvents(String appScopeKey) {
+    return sEvents.get(appScopeKey);
   }
 
   @Override
@@ -66,40 +66,40 @@ public class ManagedTasksAndEventsRepository implements TasksAndEventsRepository
 
   @NonNull
   @Override
-  public Set<String> allAppIdsWithTasks() {
+  public Set<String> allAppScopeKeysWithTasks() {
     return sTasks.keySet();
   }
 
   @Override
-  public Map<String, TaskInterface> getTasks(String appId) {
-    return sTasks.get(appId);
+  public Map<String, TaskInterface> getTasks(String appScopeKey) {
+    return sTasks.get(appScopeKey);
   }
 
   @Override
-  public boolean hasTasks(String appId) {
-    return sTasks.containsKey(appId);
+  public boolean hasTasks(String appScopeKey) {
+    return sTasks.containsKey(appScopeKey);
   }
 
   @Override
-  public void putTasks(String appId, Map<String, TaskInterface> tasks) {
-    sTasks.put(appId, tasks);
+  public void putTasks(String appScopeKey, Map<String, TaskInterface> tasks) {
+    sTasks.put(appScopeKey, tasks);
   }
 
   @Override
-  public void removeTasks(String appId) {
-    sTasks.remove(appId);
+  public void removeTasks(String appScopeKey) {
+    sTasks.remove(appScopeKey);
   }
 
   @Override
-  public void removeTask(String appId, String taskName) {
-    if (sTasks.containsKey(appId)) {
-      Objects.requireNonNull(sTasks.get(appId)).remove(taskName);
+  public void removeTask(String appScopeKey, String taskName) {
+    if (sTasks.containsKey(appScopeKey)) {
+      Objects.requireNonNull(sTasks.get(appScopeKey)).remove(taskName);
     }
   }
 
   @Override
-  public void persistTasksForAppId(SharedPreferences preferences, String appId) {
-    tasksPersistence.persistTasksForAppId(preferences, appId, getTasks(appId));
+  public void persistTasksForAppScopeKey(SharedPreferences preferences, String appScopeKey) {
+    tasksPersistence.persistTasksForAppScopeKey(preferences, appScopeKey, getTasks(appScopeKey));
   }
 
   @Override

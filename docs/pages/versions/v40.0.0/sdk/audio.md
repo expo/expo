@@ -5,18 +5,145 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-av'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-av`** allows you to implement audio playback and recording in your app.
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
+Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/8721' }} />
 
 ## Installation
 
 <InstallSection packageName="expo-av" />
+
+## Usage
+
+### Playing sounds
+
+<SnackInline
+label='Playing sounds'
+dependencies={['expo-av', 'expo-asset']}
+files={{
+    'assets/Hello.mp3': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/c9c43b458d6daa9771a7287cae9f5b47'
+  }}>
+
+```jsx
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Audio } from 'expo-av';
+
+export default function App() {
+  const [sound, setSound] = React.useState();
+
+  async function playSound() {
+    console.log('Loading Sound');
+    /* @info */ const { sound } = await Audio.Sound.createAsync(
+      /* @end */ require('./assets/Hello.mp3')
+    );
+    setSound(sound);
+
+    console.log('Playing Sound');
+    await /* @info */ sound.playAsync(); /* @end */
+  }
+
+  React.useEffect(() => {
+    return sound
+      ? () => {
+          console.log('Unloading Sound');
+          /* @info Always unload the Sound after using it to prevent memory leaks.*/ sound.unloadAsync(); /* @end */
+        }
+      : undefined;
+  }, [sound]);
+
+  return (
+    <View style={styles.container}>
+      <Button title="Play Sound" onPress={playSound} />
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 10,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
+
+### Recording sounds
+
+<SnackInline label='Recording sounds' dependencies={['expo-av', 'expo-asset']}>
+
+```jsx
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Audio } from 'expo-av';
+
+export default function App() {
+  const [recording, setRecording] = React.useState();
+
+  async function startRecording() {
+    try {
+      console.log('Requesting permissions..');
+      /* @info */ await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      }); /* @end */
+
+      console.log('Starting recording..');
+      /* @info */ const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.startAsync(); /* @end */
+
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    console.log('Stopping recording..');
+    setRecording(undefined);
+    /* @info */ await recording.stopAndUnloadAsync();
+    const uri = recording.getURI(); /* @end */
+
+    console.log('Recording stopped and stored at', uri);
+  }
+
+  return (
+    <View style={styles.container}>
+      <Button
+        title={recording ? 'Stop Recording' : 'Start Recording'}
+        onPress={recording ? stopRecording : startRecording}
+      />
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 10,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -32,7 +159,7 @@ Asks the user to grant permissions for audio recording. Alias for `Permissions.a
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Audio.getPermissionsAsync()`
 
@@ -40,7 +167,7 @@ Checks user's permissions for audio recording. Alias for `Permissions.getAsync(P
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ## Enabling Audio and customizing Audio Mode
 
@@ -68,7 +195,7 @@ We provide this API to customize the audio experience on iOS and Android.
 
   - `playsInSilentModeIOS` : a boolean selecting if your experience's audio should play in silent mode on iOS. This value defaults to `false`.
   - `allowsRecordingIOS` : a boolean selecting if recording is enabled on iOS. This value defaults to `false`. NOTE: when this flag is set to `true`, playback may be routed to the phone receiver instead of to the speaker.
-  - `staysActiveInBackground` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background. This value defaults to `false`. **This is not available in Expo client for iOS, it will only work in standalone apps**. To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background-ios) to add `UIBackgroundMode` to your app configuration.
+  - `staysActiveInBackground` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background. This value defaults to `false`. **This is not available in Expo Go for iOS, it will only work in standalone apps**. To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background-ios) to add `UIBackgroundModes` to your app configuration.
   - `interruptionModeIOS` : an enum selecting how your experience's audio should interact with the audio from other apps on iOS:
     - `INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS` : This is the default option. If this option is set, your experience's audio is mixed with audio playing in background apps.
     - `INTERRUPTION_MODE_IOS_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
@@ -100,9 +227,9 @@ A `Promise` that will reject if the audio mode could not be enabled for the devi
 
 #### Playing or recording audio in background (iOS)
 
-On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your **app.json** configuration.
 
-See an example of `app.json` that enables audio playback in background:
+See an example of **app.json** that enables audio playback in background:
 
 ```json
 {
@@ -134,15 +261,15 @@ A newly constructed instance of `Audio.Sound`.
 #### Example
 
 ```javascript
-const soundObject = new Audio.Sound();
+const sound = new Audio.Sound();
 try {
-  await soundObject.loadAsync(require('./assets/sounds/hello.mp3'));
-  await soundObject.playAsync();
+  await sound.loadAsync(require('./assets/sounds/hello.mp3'));
+  await sound.playAsync();
   // Your sound is playing!
 
   // Don't forget to unload the sound from memory
   // when you are done using the Sound object
-  await soundObject.unloadAsync();
+  await sound.unloadAsync();
 } catch (error) {
   // An error occurred!
 }
@@ -154,12 +281,18 @@ A static convenience method to construct and load a sound is also provided:
 
   Creates and loads a sound from source, with optional `initialStatus`, `onPlaybackStatusUpdate`, and `downloadFirst`.
 
-  This is equivalent to the following:
-
   ```javascript
-  const soundObject = new Audio.Sound();
-  soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-  await soundObject.loadAsync(source, initialStatus, downloadFirst);
+  const { sound } = await Audio.Sound.createAsync(
+    source,
+    initialStatus,
+    onPlaybackStatusUpdate,
+    downloadFirst
+  );
+
+  // Which is equivalent to the following:
+  const sound = new Audio.Sound();
+  sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+  await sound.loadAsync(source, initialStatus, downloadFirst);
   ```
 
   #### Parameters
@@ -169,11 +302,11 @@ A static convenience method to construct and load a sound is also provided:
     - A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a media file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
       The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
     - `require('path/to/file')` for an audio file asset in the source code directory.
-    - An [`Asset`](../asset/) object for an audio file asset.
+    - An [`Asset`](asset.md) object for an audio file asset.
 
-  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
+  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.md) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
+  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.md) for details on the functionality provided by `onPlaybackStatusUpdate`
 
   - **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
@@ -182,7 +315,7 @@ A static convenience method to construct and load a sound is also provided:
   A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
 
   - `sound` : the newly created and loaded `Sound` object.
-  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](../av/) for further information.
+  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.md) for further information.
 
   #### Example
 
@@ -198,7 +331,7 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
-The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](../av/) for further information:
+The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](av.md) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -236,7 +369,7 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync` must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync` at any given time.
 
-Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](../permissions/) for more details. Additionally, audio recording is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
+Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](permissions.md) for more details. Additionally, audio recording is [not supported in the iOS Simulator](../../../workflow/ios-simulator.md#limitations).
 
 #### Returns
 
@@ -358,16 +491,16 @@ try {
 
   #### Parameters
 
-  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
+  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.md) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
+  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.md) for details on the functionality provided by `onPlaybackStatusUpdate`
 
   #### Returns
 
   A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
 
   - `sound` : the newly created and loaded `Sound` object.
-  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](../av/) for further information.
+  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.md) for further information.
 
 ### `RecordingOptions`
 

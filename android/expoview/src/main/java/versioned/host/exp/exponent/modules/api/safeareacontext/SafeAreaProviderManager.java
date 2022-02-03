@@ -68,6 +68,9 @@ public class SafeAreaProviderManager extends ViewGroupManager<SafeAreaProvider> 
     }
 
     View contentView = decorView.findViewById(android.R.id.content);
+    if (contentView == null) {
+      return null;
+    }
     EdgeInsets insets = SafeAreaUtils.getSafeAreaInsets(decorView);
     Rect frame = SafeAreaUtils.getFrame(decorView, contentView);
     if (insets == null || frame == null) {

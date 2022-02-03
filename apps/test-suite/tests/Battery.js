@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import * as Battery from 'expo-battery';
 import * as Device from 'expo-device';
+import { Platform } from 'expo-modules-core';
 
 export const name = 'Battery';
 
@@ -24,7 +24,7 @@ export async function test({ describe, it, expect, jasmine }) {
     if (isAvailable) {
       describe(`getBatteryLevelAsync()`, () => {
         it(`returns a number between 0 and 1`, async () => {
-          let batteryLevel = await Battery.getBatteryLevelAsync();
+          const batteryLevel = await Battery.getBatteryLevelAsync();
           expect(batteryLevel).toEqual(jasmine.any(Number));
           expect(batteryLevel).toBeLessThanOrEqual(1);
           expect(batteryLevel).toBeGreaterThan(0);

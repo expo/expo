@@ -7,7 +7,9 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+
+#import "RNSVGUIKit.h"
+
 #import "RNSVGContainer.h"
 #import "RNSVGCGFCRule.h"
 #import "RNSVGSvgView.h"

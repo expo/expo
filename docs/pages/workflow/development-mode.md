@@ -1,11 +1,10 @@
 ---
 title: Development and Production Mode
-old_permalink: /versions/v12.0.0/guides/development-mode.html
-previous___FILE: ./up-and-running.md
-next___FILE: ./configuration.md
+sidebar_title: Development and Production
 ---
 
 import Video from '~/components/plugins/Video'
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 Your project will always run in one of two modes: development or production. By default, running your project locally with `expo start` runs it in development mode, whereas a published project (via `expo publish`), or any standalone apps, will run in production mode.
 
@@ -13,7 +12,7 @@ Production mode [minifies your code](https://www.imperva.com/learn/performance/m
 
 ## Development Mode
 
-React Native includes some very useful tools for development: remote JavaScript debugging in Chrome, live reload, hot reloading, and an element inspector similar to the beloved inspector that you use in Chrome. If you want to see how to use those tools, see our [debugging documentation](../debugging/). Development mode also performs validations while your app is running to give you warnings if, for example, you're using a deprecated property or if you forgot to pass a required property into a component. This video shows the Element Inspector and Performance Monitor in action, on both Android and iOS simulators:
+React Native includes some very useful tools for development: remote JavaScript debugging in Chrome, live reload, hot reloading, and an element inspector similar to the beloved inspector that you use in Chrome. If you want to see how to use those tools, see our [debugging documentation](debugging.md). Development mode also performs validations while your app is running to give you warnings if, for example, you're using a deprecated property or if you forgot to pass a required property into a component. This video shows the Element Inspector and Performance Monitor in action, on both Android and iOS simulators:
 
 <Video file="dev-prod/devMode.mp4" />
 
@@ -33,6 +32,7 @@ In the terminal with your project running in Expo CLI (initiate this with `expo 
 
 The Developer Menu gives you access to a host of features that make development and debugging much easier. Invoking it depends on the device where you are running your application:
 
+- Terminal UI: Press `m` in the terminal to open the menu on connected iOS and Android
 - iOS Device: Shake the device a little bit.
 - iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
 - Android Device: Shake the device vertically a little bit.
@@ -47,8 +47,6 @@ Production mode is most useful for two things:
 
 The easiest way to simulate how your project will run on end users' devices is with the command
 
-```
-expo start --no-dev --minify
-```
+<TerminalBlock cmd={['expo start --no-dev --minify']} />
 
-Besides running in production mode (which tells the React Native packager to set the `__DEV__` environment variable to `false`, among a few other things) the `--minify` flag will minify your app, meaning it will get rid of any unnecessary data (comments, formatting, unused code). If you're getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.
+Besides running in production mode (which tells the Metro bundler to set the `__DEV__` environment variable to `false`, among a few other things) the `--minify` flag will minify your app, meaning it will get rid of any unnecessary data (comments, formatting, unused code). If you're getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.

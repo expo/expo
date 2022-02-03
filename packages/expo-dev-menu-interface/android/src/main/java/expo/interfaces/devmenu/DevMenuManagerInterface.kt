@@ -5,12 +5,16 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReadableMap
+import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
+import expo.interfaces.devmenu.items.DevMenuDataSourceItem
+import kotlinx.coroutines.CoroutineScope
 
 interface DevMenuManagerInterface {
   /**
    * Opens the dev menu in provided [activity]
    */
-  fun openMenu(activity: Activity)
+  fun openMenu(activity: Activity, screen: String? = null)
 
   /**
    * Closes the dev menu.
@@ -53,12 +57,17 @@ interface DevMenuManagerInterface {
    * Finds and dispatches action with provided [actionId].
    * If such action doesn't exist, ignore it.
    */
-  fun dispatchAction(actionId: String)
+  fun dispatchCallable(actionId: String, args: ReadableMap?)
 
   /**
    * @return a list of dev menu items serialized to the [Bundle].
    */
   fun serializedItems(): List<Bundle>
+
+  /**
+   * @return a list of dev menu screens serialized to the [Bundle].
+   */
+  fun serializedScreens(): List<Bundle>
 
   /**
    * @return a instance of [DevMenuSessionInterface] that keeps the details of the currently opened dev menu session,
@@ -76,4 +85,38 @@ interface DevMenuManagerInterface {
    * @return the dev menu application host.
    */
   fun getMenuHost(): ReactNativeHost
+
+  /**
+   * Synchronizes [ReactInstanceManager] from delegate with one saved in [DevMenuManger].
+   */
+  fun synchronizeDelegate()
+
+  /**
+   * Set the current screen on which all action will be dispatched.
+   */
+  fun setCurrentScreen(screen: String?)
+
+  /**
+   * @return a instance of [DevMenuExpoApiClientInterface]
+   */
+  fun getExpoApiClient(): DevMenuExpoApiClientInterface
+
+  /**
+   * Sends an event to the delegate's bridge if exists.
+   */
+  fun sendEventToDelegateBridge(eventName: String, eventData: Any?)
+
+  /**
+   * Whether delegate was initialized
+   */
+  fun isInitialized(): Boolean
+
+  /**
+   * Whether to automatically show the dev menu on app load. Defaults to true if not set.
+   */
+  fun setCanLaunchDevMenuOnStart(shouldAutoLaunch: Boolean)
+
+  suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem>
+
+  val coroutineScope: CoroutineScope
 }

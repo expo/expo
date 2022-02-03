@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { SNACK_URL, getSnackFiles } from '../../common/snack';
 
-import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { ExternalLink } from '~/components/icons/ExternalLink';
+import { PageApiVersionContext } from '~/providers/page-api-version';
 
 const DEFAULT_PLATFORM = 'android';
 const LATEST_VERSION = `v${require('../../package.json').version}`;
@@ -15,10 +15,12 @@ type Props = {
   templateId?: string;
   files?: Record<string, string>;
   platforms?: string[];
+  buttonTitle?: string;
+  contentHidden?: boolean;
 };
 
 export default class SnackInline extends React.Component<Props> {
-  static contextType = DocumentationPageContext;
+  static contextType = PageApiVersionContext;
   contentRef = React.createRef<HTMLDivElement>();
 
   static defaultProps = {
@@ -64,13 +66,18 @@ export default class SnackInline extends React.Component<Props> {
   };
 
   private getCode = () => {
-    return this.contentRef.current ? this.contentRef.current.textContent : '';
+    const code = this.contentRef.current ? this.contentRef.current.textContent || '' : '';
+    return code.replace(/%%placeholder-start%%.*%%placeholder-end%%/g, '');
   };
 
   render() {
     return (
       <div>
-        <div ref={this.contentRef}>{this.props.children}</div>
+        <div
+          ref={this.contentRef}
+          style={this.props.contentHidden ? { display: 'none' } : undefined}>
+          {this.props.children}
+        </div>
         <form action={SNACK_URL} method="POST" target="_blank">
           <input
             type="hidden"
@@ -98,7 +105,7 @@ export default class SnackInline extends React.Component<Props> {
             />
           )}
           <button className="snack-inline-example-button" disabled={!this.state.ready}>
-            <ExternalLink size={16} /> Try this example on Snack
+            <ExternalLink size={16} /> {this.props.buttonTitle || 'Try this example on Snack'}
           </button>
         </form>
       </div>

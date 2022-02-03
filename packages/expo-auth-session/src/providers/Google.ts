@@ -321,15 +321,12 @@ export function useAuthRequest(
     }
 
     // has a code to exchange and doesn't have an authentication yet.
-    const couldAutoExchange =
-      result?.type === 'success' && result.params.code && !result.authentication;
-
-    return couldAutoExchange;
+    return result?.type === 'success' && result.params.code && !result.authentication;
   }, [config.shouldAutoExchangeCode, result?.type]);
 
   useEffect(() => {
     let isMounted = true;
-    if (!fullResult && shouldAutoExchangeCode && result?.type === 'success') {
+    if (shouldAutoExchangeCode && result?.type === 'success') {
       const exchangeRequest = new AccessTokenRequest({
         clientId,
         clientSecret: config.clientSecret,
@@ -337,17 +334,15 @@ export function useAuthRequest(
         scopes: config.scopes,
         code: result.params.code,
         extraParams: {
-          // @ts-ignore: allow for instances where PKCE is disabled
-          code_verifier: request.codeVerifier,
+          code_verifier: request?.codeVerifier || '',
         },
       });
-      exchangeRequest.performAsync(discovery).then(authentication => {
+      exchangeRequest.performAsync(discovery).then((authentication) => {
         if (isMounted) {
           setFullResult({
             ...result,
             params: {
-              // @ts-ignore: provide a singular interface for getting the id_token across all workflows that request it.
-              id_token: authentication.idToken,
+              id_token: authentication?.idToken || '',
               access_token: authentication.accessToken,
               ...result.params,
             },
@@ -356,7 +351,7 @@ export function useAuthRequest(
         }
       });
     } else {
-      setFullResult(fullResult ?? result);
+      setFullResult(result);
     }
     return () => {
       isMounted = false;
@@ -368,7 +363,7 @@ export function useAuthRequest(
     config.clientSecret,
     config.scopes?.join(','),
     request?.codeVerifier,
-    fullResult,
+    result,
   ]);
 
   return [request, fullResult, promptAsync];

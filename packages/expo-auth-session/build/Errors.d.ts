@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 /**
  * Server response error.
  */
@@ -59,3 +59,4 @@ export declare class AuthError extends ResponseError {
 export declare class TokenError extends ResponseError {
     constructor(response: ResponseErrorConfig);
 }
+//# sourceMappingURL=Errors.d.ts.map

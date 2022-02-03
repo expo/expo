@@ -20,9 +20,9 @@ type Props = {
 // When rendered inside bottom sheet, touchables from RN don't work on Android, but the ones from GH don't work on iOS.
 const TouchableOpacity = Platform.OS === 'android' ? TouchableOpacityGH : TouchableOpacityRN;
 
-const KEYBOARD_CODES = {
-  ios: '\u2318D',
-  android: '\u2318M on MacOS or Ctrl+M on other platforms',
+const KEYBOARD_CODES: { [key: string]: string } = {
+  ios: '^\u2318Z',
+  android: '\u2318M on macOS or Ctrl+M on other platforms',
 };
 
 const MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
@@ -38,7 +38,7 @@ const ONBOARDING_MESSAGE = (() => {
   } else {
     fragment = `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
   }
-  return `Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
+  return `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
 })();
 
 class DevMenuOnboarding extends React.PureComponent<Props, any> {

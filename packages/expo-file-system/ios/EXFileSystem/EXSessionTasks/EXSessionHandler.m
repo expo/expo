@@ -2,7 +2,7 @@
 
 #import <EXFileSystem/EXSessionHandler.h>
 
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXSessionHandler ()
 
@@ -12,7 +12,7 @@
 
 @implementation EXSessionHandler
 
-UM_REGISTER_SINGLETON_MODULE(SessionHandler);
+EX_REGISTER_SINGLETON_MODULE(SessionHandler);
 
 - (instancetype)init
 {

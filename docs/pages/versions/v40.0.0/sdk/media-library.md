@@ -16,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Configuration
 
-In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)) is added automatically.
+In managed apps, the permission to access images or videos ([`Permissions.MEDIA_LIBRARY`](permissions.md#permissionsmedia_library)) is added automatically.
 
 ## API
 
@@ -54,7 +54,7 @@ A promise that either rejects if the method is unavailable (meaning the device i
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](camera.md). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
@@ -73,7 +73,7 @@ An object representing an [asset](#asset).
 
 Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
 
-On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours **Info.plist** should have `NSPhotoLibraryAddUsageDescription` key.
 
 #### Arguments
 
@@ -90,10 +90,10 @@ Fetches a page of assets matching the provided criteria.
   - **first (_number_)** -- The maximum number of items on a single page. Defaults to 20.
   - **after (_string_)** -- Asset ID of the last item returned on the previous page.
   - **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
-  - **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order. Note that if the `SortBy.default` key is used, then `ascending` argument will not matter.
+  - **sortBy (_array_)** -- An array of [SortBy](#medialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order. Note that if the `SortBy.default` key is used, then `ascending` argument will not matter.
     Earlier items have higher priority when sorting out the results.
     If empty, this method will use the default sorting that is provided by the platform.
-  - **mediaType (_array_)** -- An array of [MediaType](#expomedialibrarymediatype) types. By default `MediaType.photo` is set.
+  - **mediaType (_array_)** -- An array of [MediaType](#medialibrarymediatype) types. By default `MediaType.photo` is set.
   - **createdAfter (_Date_ | _number_)** -- Date object or Unix timestamp in milliseconds limiting returned assets only to those that were created after this date.
   - **createdBefore (_Date_ | _number_)** -- Similarly as `createdAfter`, but limits assets only to those that were created before specified date.
 
@@ -195,7 +195,7 @@ In case they're copied you should keep in mind that `getAssetsAsync` will return
 
 #### Arguments
 
-- **assets (_array_)** -- Array of [assets](#assets) to add.
+- **assets (_array_)** -- Array of [assets](#asset) to add.
 - **album (_string_ | _Album_)** -- [Album](#album) or its ID, to which the assets will be added.
 - **copyAssets (_boolean_)** -- Whether to copy assets to the new album instead of move them. Defaults to `true`. (**Android only**)
 
@@ -211,7 +211,7 @@ On Android, album will be automatically deleted if there are no more assets insi
 
 #### Arguments
 
-- **assets (_array_)** -- Array of [assets](#assets) to remove from album.
+- **assets (_array_)** -- Array of [assets](#asset) to remove from album.
 - **album (_string_ | _Album_)** -- [Album](#album) or its ID, from which the assets will be removed.
 
 #### Returns
@@ -233,13 +233,14 @@ Subscribes for updates in user's media library.
 #### Arguments
 
 - **listener (_function_)** -- A callback that is fired when any assets have been inserted or deleted from the library, or when the user changes which assets they're allowing access to. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object containing following keys:
+
   - **hasIncrementalChanges (_boolean_)** -- Whether the media library's changes could be described as "incremental changes". `true` indicates the changes are described by the `insertedAssets`, `deletedAssets` and `updatedAssets` values. `false` indicates that the scope of changes is too large and you should perform a full assets reload (eg. a user has changed access to individual assets in the media library).
 
   Available only if `hasIncrementalChanges` is `true`:
 
-  - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
-  - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
-  - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).
+  - **insertedAssets (_array_)** -- Array of [assets](#asset) that have been inserted to the library.
+  - **deletedAssets (_array_)** -- Array of [assets](#asset) that have been deleted from the library.
+  - **updatedAssets (_array_)** -- Array of [assets](#asset) that have been updated or completed downloading from network storage (iCloud in iOS).
 
 #### Returns
 
@@ -253,7 +254,7 @@ Removes all listeners.
 
 ### `MediaLibrary.CameraRollPermissionResponse`
 
-`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library

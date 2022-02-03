@@ -10,7 +10,7 @@ export const INTERRUPTION_MODE_ANDROID_DO_NOT_MIX = 1;
 export const INTERRUPTION_MODE_ANDROID_DUCK_OTHERS = 2;
 // Returns true if value is in validValues, and false if not.
 const _isValueValid = (value, validValues) => {
-    return validValues.filter(validValue => validValue === value).length > 0;
+    return validValues.filter((validValue) => validValue === value).length > 0;
 };
 const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
     for (const key in defaultAudioMode) {

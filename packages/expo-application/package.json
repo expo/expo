@@ -1,6 +1,6 @@
 {
   "name": "expo-application",
-  "version": "2.4.0",
+  "version": "4.0.1",
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "main": "build/Application.js",
   "types": "build/Application.d.ts",
@@ -28,11 +28,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/application/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/application/",
+  "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   },
   "peerDependencies": {
-    "@unimodules/core": "*"
+    "expo": "*"
   }
 }

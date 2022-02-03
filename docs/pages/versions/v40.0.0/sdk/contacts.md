@@ -21,11 +21,11 @@ In Managed apps, `Contacts` requires `Permissions.CONTACTS`.
 
 ## Usage
 
-<SnackInline label='Basic Contacts Usage' templateId='contacts' dependencies={['expo-contacts']}>
+<SnackInline label='Basic Contacts Usage' dependencies={['expo-contacts']}>
 
-```js
+```jsx
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import * as Contacts from 'expo-contacts';
 
 export default function App() {
@@ -46,17 +46,22 @@ export default function App() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+    <View style={styles.container}>
       <Text>Contacts Module Example</Text>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
@@ -83,7 +88,7 @@ Asks the user to grant permissions for accessing contacts data. Alias for `Permi
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Contacts.getPermissionsAsync()`
 
@@ -91,7 +96,7 @@ Checks user's permissions for accessing contacts data. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Contacts.getContactsAsync(contactQuery)`
 
@@ -165,7 +170,7 @@ Contacts.addContactAsync(contact: Contact, containerId: string): Promise<string>
 
 Creates a new contact and adds it to the system.
 
-> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](../../distribution/building-standalone-apps/) and add permission through there.
+> **Note**: For Android users, the Expo Go app does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](../../../distribution/building-standalone-apps.md) and add permission through there.
 
 **Parameters**
 
@@ -563,7 +568,7 @@ A set of fields that define information about a single entity.
 | thumbnail               | `Image`                   | Deprecated: Use `image`                                        | ❌   | ❌      |
 | previousLastName        | `string`                  | Deprecated: Use `maidenName`                                   | ❌   | ❌      |
 
-> \*On iOS 13 and up, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes). The Expo client app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple here](https://developer.apple.com/contact/request/contact-note-field), set the [`ios.accessesContactNotes`](../../config/app/#accessescontactnotes) field in app.json to `true`, and [build your app as a standalone app](/distribution/building-standalone-apps/).
+> \*On iOS 13 and up, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes). The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple here](https://developer.apple.com/contact/request/contact-note-field), set the [`ios.accessesContactNotes`](../config/app.md#accessescontactnotes) field in app.json to `true`, and [build your app as a standalone app](../../../distribution/building-standalone-apps.md).
 
 ### Group
 

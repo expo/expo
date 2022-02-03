@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageProps, View } from 'react-native';
+import { ImageProps, ViewProps } from 'react-native';
 
 import {
   AVPlaybackNativeSource,
@@ -22,12 +22,12 @@ export enum ResizeMode {
 
 export type VideoReadyForDisplayEvent = {
   naturalSize: VideoNaturalSize;
-  status: AVPlaybackStatus;
+  status?: AVPlaybackStatus;
 };
 
 export type VideoFullscreenUpdateEvent = {
   fullscreenUpdate: 0 | 1 | 2 | 3;
-  status: AVPlaybackStatus;
+  status?: AVPlaybackStatus;
 };
 
 export type VideoProps = {
@@ -69,7 +69,7 @@ export type VideoProps = {
   translateX?: number;
   translateY?: number;
   rotation?: number;
-} & React.ComponentProps<typeof View>;
+} & ViewProps;
 
 export type VideoNativeProps = {
   source?: AVPlaybackNativeSource | null;
@@ -82,7 +82,7 @@ export type VideoNativeProps = {
   onReadyForDisplay?: (event: { nativeEvent: VideoReadyForDisplayEvent }) => void;
   onFullscreenUpdate?: (event: { nativeEvent: VideoFullscreenUpdateEvent }) => void;
   useNativeControls?: boolean;
-} & React.ComponentProps<typeof View>;
+} & ViewProps;
 
 export type VideoState = {
   showPoster: boolean;

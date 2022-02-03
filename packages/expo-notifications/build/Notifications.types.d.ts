@@ -81,6 +81,13 @@ export interface WeeklyNotificationTrigger {
     hour: number;
     minute: number;
 }
+export interface YearlyNotificationTrigger {
+    type: 'yearly';
+    day: number;
+    month: number;
+    hour: number;
+    minute: number;
+}
 export interface FirebaseRemoteMessage {
     collapseKey: string | null;
     data: {
@@ -126,7 +133,7 @@ export interface FirebaseRemoteMessage {
 export interface UnknownNotificationTrigger {
     type: 'unknown';
 }
-export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | WeeklyNotificationTrigger | UnknownNotificationTrigger;
+export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | WeeklyNotificationTrigger | YearlyNotificationTrigger | UnknownNotificationTrigger;
 export declare type ChannelAwareTriggerInput = {
     channelId: string;
 };
@@ -152,11 +159,19 @@ export interface WeeklyTriggerInput {
     minute: number;
     repeats: true;
 }
+export interface YearlyTriggerInput {
+    channelId?: string;
+    day: number;
+    month: number;
+    hour: number;
+    minute: number;
+    repeats: true;
+}
 export declare type DateTriggerInput = Date | number | {
     channelId?: string;
     date: Date | number;
 };
-export declare type SchedulableNotificationTriggerInput = DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | CalendarTriggerInput;
+export declare type SchedulableNotificationTriggerInput = DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput | CalendarTriggerInput;
 export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | SchedulableNotificationTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
@@ -282,3 +297,4 @@ export interface NotificationCategory {
     };
 }
 export {};
+//# sourceMappingURL=Notifications.types.d.ts.map

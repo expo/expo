@@ -1,6 +1,6 @@
 # Creating Versioned Expo SDK for Android
 
-This document will guide you through the process of creating a versioned snapshot of Expo SDK solely for Expo client's use.
+This document will guide you through the process of creating a versioned snapshot of Expo SDK solely for Expo Go's use.
 
 1. **Ensure that `@expo/xdl` dependency is up-to-date**
 
@@ -8,9 +8,9 @@ This document will guide you through the process of creating a versioned snapsho
 
     **How:** See if there are any [waiting pull requests on the XDL repository](https://github.com/expo/expo-cli/pulls). See if there are any changes to XDL that aren't published to NPM. See if latest version of `@expo/xdl` is required in `tools/package.json`. Ensure that `node_modules` are up-to-date by running `yarn` in `tools`.
 
-2. **Ensure native code for any to-be-deprecated SDKs is removed from Expo client**
+2. **Ensure native code for any to-be-deprecated SDKs is removed from Expo Go**
 
-    **Why:** Expo client contains native code for multiple SDKs (that's one of its purposes). Often (if not always) when releasing a new version of Expo we drop the last one (smaller maintenance burden).
+    **Why:** Expo Go contains native code for multiple SDKs (that's one of its purposes). Often (if not always) when releasing a new version of Expo we drop the last one (smaller maintenance burden).
 
     **How:** Any directory pointers from now on will assume current working directory is `android`.
       - Run `et remove-sdk-version -p android` and choose the SDK to remove from the list. This script removes versioned code for given SDK version and removes almost all references to this version in source files. Any references that the script couldn't remove automatically will be shown at the end of the script - iterate through them and decide what to do with each one, most of them can be just removed if the code is no longer used.
@@ -25,11 +25,11 @@ This document will guide you through the process of creating a versioned snapsho
 
 4. **`android/{ReactAndroid,ReactCommon}` are up-to-date (to `react-native` submodule)**
 
-    **Why:** Those folders hold the code that is used to build the Client, to build packages for ejected projects, to test unimodules and `expoview`. It is a copy of `react-native` code with some Expo-specific modifications to it (eg. to exception handling, to HTTP client fetching). See `android/tools/…/ReactAndroidCodeTransformer.java` for more details.
+    **Why:** Those folders hold the code that is used to build Expo Go, to build packages for ejected projects, to test unimodules and `expoview`. It is a copy of `react-native` code with some Expo-specific modifications to it (e.g. to exception handling, to HTTP client fetching). See `android/tools/…/ReactAndroidCodeTransformer.java` for more details.
 
     **How:** Run `et update-react-native` that will execute the `ReactAndroidCodeTransformer` mentioned, which, in turn, copies files from `react-native` submodule and applies modifications.
 
-5. **Build a custom version of React Native for the new SDK to be included in Expo client**
+5. **Build a custom version of React Native for the new SDK to be included in Expo Go**
 
     **Why:** It's impossible to have multiple versions of same classes in one application, but at the same time we want to have multiple versions of React Native in one application. So we prefix class packages with `abiXX_X_X.` and package standalone libraries.
 
@@ -48,5 +48,5 @@ This document will guide you through the process of creating a versioned snapsho
 
     **Why:** At this point you should be done with all the steps for which you would use automated tools. However, in some places the versioning script isn't perfect and may produce incorrect or incomplete results.
 
-    **How:** Open `/android` project in Android Studio and try to run `app` on a device or in an emulator. Fix any issues that prevent the app from building and running.
+    **How:** Open `/android` project in Android Studio, select `versionedDebug` flavor in _Build Variants_ pane and try to run `app` on a device or in an emulator. Fix any issues that prevent the app from building and running.
       * Keep track of any issues you need to fix, and update the versioning scripts so that you don't have to fix them again in the future!

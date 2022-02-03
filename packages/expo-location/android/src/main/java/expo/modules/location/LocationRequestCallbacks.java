@@ -2,7 +2,7 @@ package expo.modules.location;
 
 import android.location.Location;
 
-import org.unimodules.core.errors.CodedException;
+import expo.modules.core.errors.CodedException;
 
 abstract class LocationRequestCallbacks {
   public void onLocationChanged(Location location) {}

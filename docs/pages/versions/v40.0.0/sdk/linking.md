@@ -10,7 +10,7 @@ This module allows your app to interact with other apps via deep links. It provi
 
 This module is an extension of the React Native [Linking module](https://reactnative.dev/docs/linking.html), meaning that all methods in the RN module can be accessed via `Linking`, on top of the extra methods provided by Expo (detailed here). **These methods only apply to the managed workflow, you cannot use them in a bare React Native app**.
 
-For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../workflow/linking/).
+For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../../guides/linking.md).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -26,14 +26,29 @@ import * as Linking from 'expo-linking';
 
 ## Methods
 
-### `Linking.makeUrl(path, queryParams)`
+### `Linking.makeUrl(path, options, scheme)`
 
-Helper method for constructing a deep link into your app, given an optional path and set of query parameters.
+Helper method for constructing a deep link into your app, given an optional path and set of query parameters. Creates a URI scheme with three slashes (`scheme:///`) in standalone apps.
 
 #### Arguments
 
 - **path (_string_)** -- Any path into your app.
 - **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
+- **scheme (_string_)** -- Optional URI protocol to use in the URL `<scheme>:///`, when undefined the scheme will be chosen from the Expo config (app.config.js or app.json).
+
+#### Returns
+
+A URL string which points to your app with the given deep link information.
+
+### `Linking.createURL(path, options)`
+
+**This method is only available in `expo-linking@2.0.1` and higher**. Helper method for constructing a deep link into your app, given an optional path and set of query parameters. Creates a URI scheme with two slashes by default (`scheme://`).
+
+#### Arguments
+
+- **path (_string_)** -- Any path into your app.
+- **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
+- **scheme (_string_)** -- Optional URI protocol to use in the URL `<scheme>://`, when undefined the scheme will be chosen from the Expo config (app.config.js or app.json).
 
 #### Returns
 
@@ -45,7 +60,7 @@ Helper method for parsing out deep link information from a URL.
 
 #### Arguments
 
-- **url (_string_)** -- A URL that points to the currently running experience (e.g. an output of `Linking.makeUrl()`).
+- **url (_string_)** -- A URL that points to the currently running experience (e.g. an output of `Linking.createURL()`).
 
 #### Returns
 

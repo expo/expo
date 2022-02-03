@@ -1,10 +1,9 @@
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 export const Info: React.FC<{ size?: number; fill?: string }> = ({
   size = 24,
-  fill = Constants.expoColors.gray[600],
+  fill = theme.icon.default,
 }) => (
   <svg
     aria-label="check"

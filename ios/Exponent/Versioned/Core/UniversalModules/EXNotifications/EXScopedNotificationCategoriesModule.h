@@ -3,12 +3,17 @@
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
 
 #import <EXNotifications/EXNotificationCategoriesModule.h>
+#import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedNotificationCategoriesModule : EXNotificationCategoriesModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey;
+
++ (void)maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                                                 scopeKey:(NSString *)scopeKey
+                                                                         isInExpoGo:(BOOL)isInExpoGo;
 
 @end
 

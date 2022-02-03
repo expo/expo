@@ -29,11 +29,11 @@ class MainScreen extends React.Component<Props> {
         style={styles.list}
         data={data}
         ItemSeparatorComponent={ItemSeparator}
-        keyExtractor={item => item}
-        renderItem={props => (
+        keyExtractor={(item) => item}
+        renderItem={(props) => (
           <MainScreenItem
             item={props.item}
-            onPressItem={key => this.props.navigation.navigate(key)}
+            onPressItem={(key) => this.props.navigation.navigate(key)}
           />
         )}
       />
@@ -72,7 +72,7 @@ const ExampleApp = () => (
         </Stack.Navigator>
       )}
     </SwitchStack.Screen>
-    {Object.keys(SCREENS).map(key => (
+    {Object.keys(SCREENS).map((key) => (
       <SwitchStack.Screen key={key} name={key} {...SCREENS[key]} />
     ))}
   </SwitchStack.Navigator>

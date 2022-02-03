@@ -1,9 +1,10 @@
 ---
 title: Sensors
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
+packageName: 'expo-sensors'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-sensors`** provides various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, and step count.
@@ -12,7 +13,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-sensors" />
+<APIInstallSection />
 
 ## API
 
@@ -31,8 +32,8 @@ import {
 
 For more information, please see the documentation for the sensor you are interested in:
 
-- [Accelerometer](../accelerometer/)
-- [Barometer](../barometer/)
-- [Gyroscope](../gyroscope/)
-- [Magnetometer](../magnetometer/)
-- [Pedometer](../pedometer/)
+- [Accelerometer](accelerometer.md)
+- [Barometer](barometer.md)
+- [Gyroscope](gyroscope.md)
+- [Magnetometer](magnetometer.md)
+- [Pedometer](pedometer.md)

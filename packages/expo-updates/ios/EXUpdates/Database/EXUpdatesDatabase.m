@@ -1,6 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesDatabase.h>
+#import <EXUpdates/EXUpdatesDatabase+Tests.h>
+#import <EXUpdates/EXUpdatesDatabaseInitialization.h>
+#import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
 #import <sqlite3.h>
 
@@ -9,12 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesDatabase ()
 
 @property (nonatomic, assign) sqlite3 *db;
-@property (nonatomic, readwrite, strong) NSLock *lock;
 
 @end
 
-static NSString * const EXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
-static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
+static NSString * const EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
+static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
+static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData";
 
 @implementation EXUpdatesDatabase
 
@@ -30,48 +32,13 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
 
 - (BOOL)openDatabaseInDirectory:(NSURL *)directory withError:(NSError ** _Nullable)error
 {
+  dispatch_assert_queue(_databaseQueue);
   sqlite3 *db;
-  NSURL *dbUrl = [directory URLByAppendingPathComponent:EXUpdatesDatabaseFilename];
-  BOOL shouldInitializeDatabase = ![[NSFileManager defaultManager] fileExistsAtPath:[dbUrl path]];
-  int resultCode = sqlite3_open([[dbUrl path] UTF8String], &db);
-  if (resultCode != SQLITE_OK) {
-    NSLog(@"Error opening SQLite db: %@", [self _errorFromSqlite:_db].localizedDescription);
-    sqlite3_close(db);
-
-    if (resultCode == SQLITE_CORRUPT || resultCode == SQLITE_NOTADB) {
-      NSString *archivedDbFilename = [NSString stringWithFormat:@"%f-%@", [[NSDate date] timeIntervalSince1970], EXUpdatesDatabaseFilename];
-      NSURL *destinationUrl = [directory URLByAppendingPathComponent:archivedDbFilename];
-      NSError *err;
-      if ([[NSFileManager defaultManager] moveItemAtURL:dbUrl toURL:destinationUrl error:&err]) {
-        NSLog(@"Moved corrupt SQLite db to %@", archivedDbFilename);
-        if (sqlite3_open([[dbUrl absoluteString] UTF8String], &db) != SQLITE_OK) {
-          if (error != nil) {
-            *error = [self _errorFromSqlite:_db];
-          }
-          return NO;
-        }
-        shouldInitializeDatabase = YES;
-      } else {
-        NSString *description = [NSString stringWithFormat:@"Could not move existing corrupt database: %@", [err localizedDescription]];
-        if (error != nil) {
-          *error = [NSError errorWithDomain:EXUpdatesDatabaseErrorDomain
-                                       code:1004
-                                   userInfo:@{ NSLocalizedDescriptionKey: description, NSUnderlyingErrorKey: err }];
-        }
-        return NO;
-      }
-    } else {
-      if (error != nil) {
-        *error = [self _errorFromSqlite:_db];
-      }
-      return NO;
-    }
+  if (![EXUpdatesDatabaseInitialization initializeDatabaseWithLatestSchemaInDirectory:directory database:&db error:error]) {
+    return NO;
   }
+  NSAssert(db, @"Database appears to have initialized successfully, but there is no handle");
   _db = db;
-
-  if (shouldInitializeDatabase) {
-    return [self _initializeDatabase:error];
-  }
   return YES;
 }
 
@@ -86,82 +53,24 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   [self closeDatabase];
 }
 
-- (BOOL)_initializeDatabase:(NSError **)error
-{
-  NSAssert(_db, @"Missing database handle");
-  dispatch_assert_queue(_databaseQueue);
-
-  NSString * const createTableStmts = @"\
-   PRAGMA foreign_keys = ON;\
-   CREATE TABLE \"updates\" (\
-   \"id\"  BLOB UNIQUE,\
-   \"scope_key\"  TEXT NOT NULL,\
-   \"commit_time\"  INTEGER NOT NULL,\
-   \"runtime_version\"  TEXT NOT NULL,\
-   \"launch_asset_id\" INTEGER,\
-   \"metadata\"  TEXT,\
-   \"status\"  INTEGER NOT NULL,\
-   \"keep\"  INTEGER NOT NULL,\
-   PRIMARY KEY(\"id\"),\
-   FOREIGN KEY(\"launch_asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
-   );\
-   CREATE TABLE \"assets\" (\
-   \"id\"  INTEGER PRIMARY KEY AUTOINCREMENT,\
-   \"url\"  TEXT,\
-   \"key\"  TEXT NOT NULL UNIQUE,\
-   \"headers\"  TEXT,\
-   \"type\"  TEXT NOT NULL,\
-   \"metadata\"  TEXT,\
-   \"download_time\"  INTEGER NOT NULL,\
-   \"relative_path\"  TEXT NOT NULL,\
-   \"hash\"  BLOB NOT NULL,\
-   \"hash_type\"  INTEGER NOT NULL,\
-   \"marked_for_deletion\"  INTEGER NOT NULL\
-   );\
-   CREATE TABLE \"updates_assets\" (\
-   \"update_id\"  BLOB NOT NULL,\
-   \"asset_id\" INTEGER NOT NULL,\
-   FOREIGN KEY(\"update_id\") REFERENCES \"updates\"(\"id\") ON DELETE CASCADE,\
-   FOREIGN KEY(\"asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
-   );\
-   CREATE TABLE \"json_data\" (\
-   \"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
-   \"key\" TEXT NOT NULL,\
-   \"value\" TEXT NOT NULL,\
-   \"last_updated\" INTEGER NOT NULL,\
-   \"scope_key\" TEXT NOT NULL\
-   );\
-   CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\");\
-   CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id\");\
-   CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
-   ";
-
-  char *errMsg;
-  if (sqlite3_exec(_db, [createTableStmts UTF8String], NULL, NULL, &errMsg) != SQLITE_OK) {
-    if (error != nil) {
-      *error = [self _errorFromSqlite:_db];
-    }
-    sqlite3_free(errMsg);
-    return NO;
-  };
-  return YES;
-}
-
 # pragma mark - insert and update
 
 - (void)addUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"metadata\", \"status\" , \"keep\")\
-  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1);";
+  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\", \"successful_launch_count\", \"failed_launch_count\")\
+  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9);";
 
   [self _executeSql:sql
            withArgs:@[
                       update.updateId,
                       update.scopeKey,
-                      @([update.commitTime timeIntervalSince1970] * 1000),
+                      update.commitTime,
                       update.runtimeVersion,
-                      update.metadata ?: [NSNull null],
-                      @(EXUpdatesUpdateStatusPending)
+                      update.manifestJSON ?: [NSNull null],
+                      @(update.status),
+                      update.lastAccessed,
+                      @(update.successfulLaunchCount),
+                      @(update.failedLaunchCount)
                       ]
               error:error];
 }
@@ -175,19 +84,21 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
     NSAssert(asset.filename, @"asset filename should be nonnull");
     NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"marked_for_deletion\")\
-    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0);";
+    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"extra_request_headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"expected_hash\", \"marked_for_deletion\")\
+    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0);";
     if ([self _executeSql:assetInsertSql
                  withArgs:@[
-                          asset.key,
+                          asset.key ?: [NSNull null],
                           asset.url ? asset.url.absoluteString : [NSNull null],
                           asset.headers ?: [NSNull null],
+                          asset.extraRequestHeaders ?: [NSNull null],
                           asset.type,
                           asset.metadata ?: [NSNull null],
-                          @(asset.downloadTime.timeIntervalSince1970 * 1000),
+                          asset.downloadTime,
                           asset.filename,
                           asset.contentHash,
-                          @(EXUpdatesDatabaseHashTypeSha1)
+                          @(EXUpdatesDatabaseHashTypeSha1),
+                          asset.expectedHash ?: [NSNull null],
                           ]
                     error:error] == nil) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
@@ -215,6 +126,10 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
 
 - (BOOL)addExistingAsset:(EXUpdatesAsset *)asset toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error
 {
+  if (!asset.key) {
+    return NO;
+  }
+
   BOOL success;
 
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
@@ -251,16 +166,18 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   NSAssert(asset.filename, @"asset filename should be nonnull");
   NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"type\" = ?3, \"metadata\" = ?4, \"download_time\" = ?5, \"relative_path\" = ?6, \"hash\" = ?7, \"url\" = ?8 WHERE \"key\" = ?1;";
+  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"extra_request_headers\" = ?3, \"type\" = ?4, \"metadata\" = ?5, \"download_time\" = ?6, \"relative_path\" = ?7, \"hash\" = ?8, \"expected_hash\" = ?9, \"url\" = ?10 WHERE \"key\" = ?1;";
   [self _executeSql:assetUpdateSql
            withArgs:@[
-                      asset.key,
+                      asset.key ?: [NSNull null],
                       asset.headers ?: [NSNull null],
+                      asset.extraRequestHeaders ?: [NSNull null],
                       asset.type,
                       asset.metadata ?: [NSNull null],
-                      @(asset.downloadTime.timeIntervalSince1970 * 1000),
+                      asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
+                      asset.expectedHash,
                       asset.url ? asset.url.absoluteString : [NSNull null]
                       ]
               error:error];
@@ -269,13 +186,25 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
 - (void)mergeAsset:(EXUpdatesAsset *)asset withExistingEntry:(EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error
 {
   // if the existing entry came from an embedded manifest, it may not have a URL in the database
-  if (asset.url && !existingAsset.url) {
+  BOOL shouldUpdate = false;
+  if (asset.url && (!existingAsset.url || ![asset.url isEqual:existingAsset.url])) {
     existingAsset.url = asset.url;
+    shouldUpdate = true;
+  }
+  
+  if (asset.extraRequestHeaders && (!existingAsset.extraRequestHeaders || ![asset.extraRequestHeaders isEqualToDictionary:existingAsset.extraRequestHeaders])) {
+    existingAsset.extraRequestHeaders = asset.extraRequestHeaders;
+    shouldUpdate = true;
+  }
+  
+  if (shouldUpdate) {
     [self updateAsset:existingAsset error:error];
   }
+  
   // all other properties should be overridden by database values
   asset.filename = existingAsset.filename;
   asset.contentHash = existingAsset.contentHash;
+  asset.expectedHash = existingAsset.expectedHash;
   asset.downloadTime = existingAsset.downloadTime;
 }
 
@@ -293,10 +222,47 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
               error:error];
 }
 
+- (void)markUpdateAccessed:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.lastAccessed = [NSDate date];
+  NSString * const updateSql = @"UPDATE updates SET last_accessed = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[update.lastAccessed, update.updateId] error:error];
+}
+
+- (void)incrementSuccessfulLaunchCountForUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.successfulLaunchCount++;
+  NSString * const updateSql = @"UPDATE updates SET successful_launch_count = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[@(update.successfulLaunchCount), update.updateId] error:error];
+}
+
+- (void)incrementFailedLaunchCountForUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.failedLaunchCount++;
+  NSString * const updateSql = @"UPDATE updates SET failed_launch_count = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[@(update.failedLaunchCount), update.updateId] error:error];
+}
+
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
   NSString * const updateSql = @"UPDATE updates SET scope_key = ?1 WHERE id = ?2;";
   [self _executeSql:updateSql withArgs:@[scopeKey, update.updateId] error:error];
+}
+
+- (void)markMissingAssets:(NSArray<EXUpdatesAsset *> *)assets error:(NSError ** _Nullable)error
+{
+  sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+
+  NSString * const updatesSql = @"UPDATE updates SET status = ?1 WHERE id IN\
+    (SELECT DISTINCT update_id FROM updates_assets WHERE asset_id = ?2);";
+  for (EXUpdatesAsset *asset in assets) {
+    if ([self _executeSql:updatesSql withArgs:@[@(EXUpdatesUpdateStatusPending), @(asset.assetId)] error:error] == nil) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+
+  sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
 }
 
 # pragma mark - delete
@@ -342,6 +308,17 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
     return nil;
   }
 
+  // check for duplicate rows representing a single file on disk
+  NSString * const update3Sql = @"UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (\
+  SELECT relative_path\
+  FROM assets\
+  WHERE marked_for_deletion = 0\
+  );";
+  if ([self _executeSql:update3Sql withArgs:nil error:error] == nil) {
+    sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    return nil;
+  }
+
   NSString * const selectSql = @"SELECT * FROM assets WHERE marked_for_deletion = 1;";
   NSArray<NSDictionary *> *rows = [self _executeSql:selectSql withArgs:nil error:error];
   if (!rows) {
@@ -369,8 +346,8 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
 
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT * FROM updates WHERE scope_key = ?1;";
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
+  NSString * const sql = @"SELECT * FROM updates;";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
   if (!rows) {
     return nil;
   }
@@ -382,11 +359,30 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   return launchableUpdates;
 }
 
+- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(EXUpdatesUpdateStatus)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM updates WHERE status = ?1;";
+
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[@(status)] error:error];
+  if (!rows) {
+    return nil;
+  }
+
+  NSMutableArray<EXUpdatesUpdate *> *updates = [NSMutableArray new];
+  for (NSDictionary *row in rows) {
+    [updates addObject:[self _updateWithRow:row config:config]];
+  }
+  return updates;
+}
+
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
+  // if an update has successfully launched at least once, we treat it as launchable
+  // even if it has also failed to launch at least once
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
   WHERE scope_key = ?1\
+  AND (successful_launch_count > 0 OR failed_launch_count < 1)\
   AND status IN (%li, %li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded, (long)EXUpdatesUpdateStatusDevelopment];
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
@@ -415,9 +411,27 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   }
 }
 
+- (nullable NSArray<EXUpdatesAsset *> *)allAssetsWithError:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM assets;";
+
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
+  if (!rows) {
+    return nil;
+  }
+
+  NSMutableArray<EXUpdatesAsset *> *assets = [NSMutableArray arrayWithCapacity:rows.count];
+
+  for (NSDictionary *row in rows) {
+    [assets addObject:[self _assetWithRow:row]];
+  }
+
+  return assets;
+}
+
 - (nullable NSArray<EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT assets.id, \"key\", url, type, relative_path, assets.metadata, launch_asset_id\
+  NSString * const sql = @"SELECT assets.*, launch_asset_id\
   FROM assets\
   INNER JOIN updates_assets ON updates_assets.asset_id = assets.id\
   INNER JOIN updates ON updates_assets.update_id = updates.id\
@@ -437,8 +451,12 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   return assets;
 }
 
-- (nullable EXUpdatesAsset *)assetWithKey:(NSString *)key error:(NSError ** _Nullable)error
+- (nullable EXUpdatesAsset *)assetWithKey:(nullable NSString *)key error:(NSError ** _Nullable)error
 {
+  if (!key) {
+    return nil;
+  }
+
   NSString * const sql = @"SELECT * FROM assets WHERE \"key\" = ?1 LIMIT 1;";
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[key] error:error];
@@ -449,175 +467,161 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   }
 }
 
+# pragma mark - json data
+
+- (nullable NSDictionary *)_jsonDataWithKey:(NSString *)key scopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM json_data WHERE \"key\" = ?1 AND \"scope_key\" = ?2";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[key, scopeKey] error:error];
+  if (rows && [rows count]) {
+    id value = rows[0][@"value"];
+    if (value && [value isKindOfClass:[NSString class]]) {
+      NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
+      if (!(error && *error) && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
+        return jsonObject;
+      }
+    }
+  }
+  return nil;
+}
+
+- (BOOL)_setJsonData:(NSDictionary *)data withKey:(NSString *)key scopeKey:(NSString *)scopeKey isInTransaction:(BOOL)isInTransaction error:(NSError ** _Nullable)error
+{
+  if (!isInTransaction) {
+    sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+  }
+  NSString * const deleteSql = @"DELETE FROM json_data WHERE \"key\" = ?1 AND \"scope_key\" = ?2";
+  if ([self _executeSql:deleteSql withArgs:@[key, scopeKey] error:error] == nil) {
+    if (!isInTransaction) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    }
+    return NO;
+  }
+
+  NSString * const insertSql = @"INSERT INTO json_data (\"key\", \"value\", \"last_updated\", \"scope_key\") VALUES (?1, ?2, ?3, ?4);";
+  if ([self _executeSql:insertSql withArgs:@[key, data, @(NSDate.date.timeIntervalSince1970 * 1000), scopeKey] error:error] == nil) {
+    if (!isInTransaction) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    }
+    return NO;
+  }
+  if (!isInTransaction) {
+    sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
+  }
+
+  return YES;
+}
+
+- (nullable NSDictionary *)serverDefinedHeadersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey error:error];
+}
+
+- (nullable NSDictionary *)manifestFiltersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
+}
+
+- (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey error:error];
+}
+
+- (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:serverDefinedHeaders withKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey isInTransaction:NO error:error];
+}
+
+- (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:manifestFilters withKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey isInTransaction:NO error:error];
+}
+
+- (void)setMetadataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error
+{
+  sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+  if (updateManifest.serverDefinedHeaders) {
+    if (![self _setJsonData:updateManifest.serverDefinedHeaders
+                   withKey:EXUpdatesDatabaseServerDefinedHeadersKey
+                  scopeKey:updateManifest.scopeKey
+           isInTransaction:YES
+                     error:error]) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+  if (updateManifest.manifestFilters) {
+    if (![self _setJsonData:updateManifest.manifestFilters
+                   withKey:EXUpdatesDatabaseManifestFiltersKey
+                  scopeKey:updateManifest.scopeKey
+           isInTransaction:YES
+                     error:error]) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+  sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
+}
+
+- (void)setStaticBuildData:(NSDictionary *)staticBuildData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:staticBuildData withKey:EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey isInTransaction:NO error:error];
+}
+
 # pragma mark - helper methods
 
 - (nullable NSArray<NSDictionary *> *)_executeSql:(NSString *)sql withArgs:(nullable NSArray *)args error:(NSError ** _Nullable)error
 {
   NSAssert(_db, @"Missing database handle");
   dispatch_assert_queue(_databaseQueue);
-  sqlite3_stmt *stmt;
-  if (sqlite3_prepare_v2(_db, [sql UTF8String], -1, &stmt, NULL) != SQLITE_OK) {
-    if (error != nil) {
-      *error = [self _errorFromSqlite:_db];
-    }
-    return nil;
-  }
-  if (args) {
-    if (![self _bindStatement:stmt withArgs:args]) {
-      if (error != nil) {
-        *error = [self _errorFromSqlite:_db];
-      }
-      return nil;
-    }
-  }
-
-  NSMutableArray *rows = [NSMutableArray arrayWithCapacity:0];
-  NSMutableArray *columnNames = [NSMutableArray arrayWithCapacity:0];
-
-  int columnCount = 0;
-  BOOL didFetchColumns = NO;
-  int result;
-  BOOL hasMore = YES;
-  BOOL didError = NO;
-  while (hasMore) {
-    result = sqlite3_step(stmt);
-    switch (result) {
-      case SQLITE_ROW: {
-        if (!didFetchColumns) {
-          // get all column names once at the beginning
-          columnCount = sqlite3_column_count(stmt);
-
-          for (int i = 0; i < columnCount; i++) {
-            [columnNames addObject:[NSString stringWithUTF8String:sqlite3_column_name(stmt, i)]];
-          }
-          didFetchColumns = YES;
-        }
-        NSMutableDictionary *entry = [NSMutableDictionary dictionary];
-        for (int i = 0; i < columnCount; i++) {
-          id columnValue = [self _getValueWithStatement:stmt column:i];
-          entry[columnNames[i]] = columnValue;
-        }
-        [rows addObject:entry];
-        break;
-      }
-      case SQLITE_DONE:
-        hasMore = NO;
-        break;
-      default:
-        didError = YES;
-        hasMore = NO;
-        break;
-    }
-  }
-
-  if (didError && error != nil) {
-    *error = [self _errorFromSqlite:_db];
-  }
-
-  sqlite3_finalize(stmt);
-
-  return didError ? nil : rows;
-}
-
-- (id)_getValueWithStatement:(sqlite3_stmt *)stmt column:(int)column
-{
-  int columnType = sqlite3_column_type(stmt, column);
-  switch (columnType) {
-    case SQLITE_INTEGER:
-      return @(sqlite3_column_int64(stmt, column));
-    case SQLITE_FLOAT:
-      return @(sqlite3_column_double(stmt, column));
-    case SQLITE_BLOB:
-      NSAssert(sqlite3_column_bytes(stmt, column) == 16, @"SQLite BLOB value should be a valid UUID");
-      return [[NSUUID alloc] initWithUUIDBytes:sqlite3_column_blob(stmt, column)];
-    case SQLITE_TEXT:
-      return [[NSString alloc] initWithBytes:(char *)sqlite3_column_text(stmt, column)
-                                      length:sqlite3_column_bytes(stmt, column)
-                                    encoding:NSUTF8StringEncoding];
-  }
-  return [NSNull null];
-}
-
-- (BOOL)_bindStatement:(sqlite3_stmt *)stmt withArgs:(NSArray *)args
-{
-  __block BOOL success = YES;
-  [args enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-    if ([obj isKindOfClass:[NSUUID class]]) {
-      uuid_t bytes;
-      [((NSUUID *)obj) getUUIDBytes:bytes];
-      if (sqlite3_bind_blob(stmt, (int)idx + 1, bytes, 16, SQLITE_TRANSIENT) != SQLITE_OK) {
-        success = NO;
-        *stop = YES;
-      }
-    } else if ([obj isKindOfClass:[NSNumber class]]) {
-      if (sqlite3_bind_int64(stmt, (int)idx + 1, [((NSNumber *)obj) longLongValue]) != SQLITE_OK) {
-        success = NO;
-        *stop = YES;
-      }
-    } else if ([obj isKindOfClass:[NSDictionary class]]) {
-      NSError *error;
-      NSData *jsonData = [NSJSONSerialization dataWithJSONObject:(NSDictionary *)obj options:kNilOptions error:&error];
-      if (!error && sqlite3_bind_text(stmt, (int)idx + 1, jsonData.bytes, (int)jsonData.length, SQLITE_TRANSIENT) != SQLITE_OK) {
-        success = NO;
-        *stop = YES;
-      }
-    } else if ([obj isKindOfClass:[NSNull class]]) {
-      if (sqlite3_bind_null(stmt, (int)idx + 1) != SQLITE_OK) {
-        success = NO;
-        *stop = YES;
-      }
-    } else {
-      // convert to string
-      NSString *string = [obj isKindOfClass:[NSString class]] ? (NSString *)obj : [obj description];
-      NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-      if (sqlite3_bind_text(stmt, (int)idx + 1, data.bytes, (int)data.length, SQLITE_TRANSIENT) != SQLITE_OK) {
-        success = NO;
-        *stop = YES;
-      }
-    }
-  }];
-  return success;
+  return [EXUpdatesDatabaseUtils executeSql:sql withArgs:args onDatabase:_db error:error];
 }
 
 - (NSError *)_errorFromSqlite:(struct sqlite3 *)db
 {
-  int code = sqlite3_errcode(db);
-  int extendedCode = sqlite3_extended_errcode(db);
-  NSString *message = [NSString stringWithUTF8String:sqlite3_errmsg(db)];
-  return [NSError errorWithDomain:EXUpdatesDatabaseErrorDomain
-                              code:extendedCode
-                          userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Error code %i: %@ (extended error code %i)", code, message, extendedCode]}];
+  return [EXUpdatesDatabaseUtils errorFromSqlite:db];
 }
 
 - (EXUpdatesUpdate *)_updateWithRow:(NSDictionary *)row config:(EXUpdatesConfig *)config
 {
   NSError *error;
-  id metadata = nil;
-  id rowMetadata = row[@"metadata"];
-  if ([rowMetadata isKindOfClass:[NSString class]]) {
-    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Update metadata should be a valid JSON object");
+  id manifest = nil;
+  id rowManifest = row[@"manifest"];
+  if ([rowManifest isKindOfClass:[NSString class]]) {
+    manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowManifest dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    NSAssert(!error && manifest && [manifest isKindOfClass:[NSDictionary class]], @"Update manifest should be a valid JSON object");
   }
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithId:row[@"id"]
                                                  scopeKey:row[@"scope_key"]
-                                               commitTime:[NSDate dateWithTimeIntervalSince1970:[(NSNumber *)row[@"commit_time"] doubleValue] / 1000]
+                                               commitTime:[EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"commit_time"]]
                                            runtimeVersion:row[@"runtime_version"]
-                                                 metadata:metadata
+                                                 manifest:manifest
                                                    status:(EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
                                                      keep:[(NSNumber *)row[@"keep"] boolValue]
                                                    config:config
                                                  database:self];
+  update.lastAccessed = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"last_accessed"]];
+  update.successfulLaunchCount = [(NSNumber *)row[@"successful_launch_count"] integerValue];
+  update.failedLaunchCount = [(NSNumber *)row[@"failed_launch_count"] integerValue];
   return update;
 }
 
 - (EXUpdatesAsset *)_assetWithRow:(NSDictionary *)row
 {
-  NSError *error;
+  NSError *metadataDeserializationError;
   id metadata = nil;
   id rowMetadata = row[@"metadata"];
   if ([rowMetadata isKindOfClass:[NSString class]]) {
-    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Asset metadata should be a valid JSON object");
+    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&metadataDeserializationError];
+    NSAssert(!metadataDeserializationError && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Asset metadata should be a valid JSON object");
+  }
+  
+  NSError *extraRequestHeadersDeserializationError;
+  id extraRequestHeaders = nil;
+  id rowExtraRequestHeaders = row[@"extra_request_headers"];
+  if ([rowExtraRequestHeaders isKindOfClass:[NSString class]]) {
+    extraRequestHeaders = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowExtraRequestHeaders dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&extraRequestHeadersDeserializationError];
+    NSAssert(!extraRequestHeadersDeserializationError && extraRequestHeaders && [extraRequestHeaders isKindOfClass:[NSDictionary class]], @"Asset extra_request_headers should be a valid JSON object");
   }
 
   id launchAssetId = row[@"launch_asset_id"];
@@ -626,12 +630,19 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   if (rowUrl && [rowUrl isKindOfClass:[NSString class]]) {
     url = [NSURL URLWithString:rowUrl];
   }
+  NSString *key;
+  if (row[@"key"] && row[@"key"] != NSNull.null) {
+    key = row[@"key"];
+  }
 
-  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:row[@"key"] type:row[@"type"]];
+  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
+  asset.assetId = [(NSNumber *)row[@"id"] unsignedIntegerValue];
   asset.url = url;
-  asset.downloadTime = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)row[@"download_time"] doubleValue] / 1000)];
+  asset.extraRequestHeaders = extraRequestHeaders;
+  asset.downloadTime = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
   asset.filename = row[@"relative_path"];
   asset.contentHash = row[@"hash"];
+  asset.expectedHash = row[@"expected_hash"];
   asset.metadata = metadata;
   asset.isLaunchAsset = (launchAssetId && [launchAssetId isKindOfClass:[NSNumber class]])
     ? [(NSNumber *)launchAssetId isEqualToNumber:(NSNumber *)row[@"id"]]

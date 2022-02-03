@@ -1,11 +1,16 @@
 import { Platform } from 'react-native';
 
+export enum ColorTheme {
+  LIGHT = 'light',
+  DARK = 'dark',
+}
+
 const tintColor = '#4e9bde';
 const darkTintColor = '#1a74b3';
 const error = '#dc3545';
 
 export default {
-  light: {
+  [ColorTheme.LIGHT]: {
     absolute: '#fff',
     text: '#242c39',
     tintColor,
@@ -32,7 +37,7 @@ export default {
     separator: '#f4f4f5',
     refreshControl: undefined,
   },
-  dark: {
+  [ColorTheme.DARK]: {
     absolute: '#000',
     text: '#fff',
     tintColor: darkTintColor,

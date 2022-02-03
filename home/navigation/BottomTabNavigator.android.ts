@@ -2,14 +2,14 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { ComponentProps } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Colors from '../constants/Colors';
+import Colors, { ColorTheme } from '../constants/Colors';
 
 const BottomTabNavigator = createMaterialBottomTabNavigator();
 
 export default BottomTabNavigator;
 
 export const getNavigatorProps = (props: {
-  theme: string;
+  theme: ColorTheme;
 }): Partial<ComponentProps<typeof BottomTabNavigator.Navigator>> => ({
   shifting: true,
   activeColor: Colors[props.theme].tabIconSelected,

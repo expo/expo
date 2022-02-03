@@ -17,39 +17,49 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label="Basic WebBrowser usage" templateId="web-browser" dependencies={["expo-web-browser", "expo-constants"]}>
+<SnackInline label="Basic WebBrowser usage" dependencies={["expo-web-browser", "expo-constants"]}>
 
-```js
-import React, { Component } from 'react';
-import { Button, Text, View } from 'react-native';
+```jsx
+import React, { useState } from 'react';
+import { Button, Text, View, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+/* @hide */
+import Constants from 'expo-constants';
+/* @end */
 
-export default class App extends Component {
-  state = {
-    result: null,
+export default function App() {
+  const [result, setResult] = useState(null);
+
+  const _handlePressButtonAsync = async () => {
+    let result = await WebBrowser.openBrowserAsync('https://expo.dev');
+    setResult(result);
   };
-
-  render() {
-    return (
-      <View>
-        <Button title="Open WebBrowser" onPress={this._handlePressButtonAsync} />
-        <Text>{this.state.result && JSON.stringify(this.state.result)}</Text>
-      </View>
-    );
-  }
-
-  _handlePressButtonAsync = async () => {
-    let result = await WebBrowser.openBrowserAsync('https://expo.io');
-    this.setState({ result });
-  };
+  return (
+    <View style={styles.container}>
+      <Button title="Open WebBrowser" onPress={_handlePressButtonAsync} />
+      <Text>{result && JSON.stringify(result)}</Text>
+    </View>
+  );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
 
 ### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../workflow/linking/#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../guides/linking.md#handling-links-into-your-app).
 
 ## API
 
@@ -120,13 +130,13 @@ How this works on web:
 🚨 On mobile web, Chrome and Safari will block any call to [`window.open()`][d-windowopen] which takes too long to fire after a user interaction. This method must be invoked immediately after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
 
 [d-windowopen]: https://developer.mozilla.org/en-US/docs/Web/API/Window/open
-[d-appstate]: https://docs.expo.io/versions/latest/react-native/appstate/
-[d-linking]: https://docs.expo.io/versions/latest/sdk/linking/
+[d-appstate]: /versions/latest/react-native/appstate/
+[d-linking]: /versions/latest/sdk/linking/
 
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser. This should be a login page.
-- **redirectUrl (_string_)** -- **optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#expoconstantslinkinguri)
+- **redirectUrl (_string_)** -- **optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](constants.md#expoconstantslinkinguri)
 - **browserParams (_object_)** -- **optional**: an object with the same keys as [`openBrowserAsync`'s `browserParams` object](#webbrowseropenbrowserasyncurl). If there is no native AuthSession implementation available (which is the case on Android) these params will be used in the browser polyfill. If there is a native AuthSession implementation, these params will be ignored.
 
 Returns a Promise:

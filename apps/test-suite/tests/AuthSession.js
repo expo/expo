@@ -26,7 +26,7 @@ export async function test({ describe, it, expect, jasmine }) {
 
   describe('PKCE', () => {
     it(`creates the expected challenge for a valid code`, async () => {
-      const code = await PKCE.generateRandomAsync(43);
+      const code = PKCE.generateRandom(43);
       const challenge = await PKCE.deriveChallengeAsync(code);
       expect(challenge).toBeTruthy();
       // No `==` in the base64 encoded result.
@@ -34,8 +34,8 @@ export async function test({ describe, it, expect, jasmine }) {
     });
 
     it(`generateRandom produces different values`, async () => {
-      const code1 = await PKCE.generateRandomAsync(10);
-      const code2 = await PKCE.generateRandomAsync(10);
+      const code1 = PKCE.generateRandom(10);
+      const code2 = PKCE.generateRandom(10);
       expect(code1).not.toEqual(code2);
     });
 

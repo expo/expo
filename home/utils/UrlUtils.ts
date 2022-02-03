@@ -45,6 +45,12 @@ export function toExp(httpUrl: string): string {
   return url.format(components);
 }
 
+export function toExps(httpUrl: string): string {
+  const components = url.parse(httpUrl);
+  components.protocol = 'exps:';
+  return url.format(components);
+}
+
 export function conformsToExpoProtocol(str: string): boolean {
   if (!str) {
     return false;
@@ -55,7 +61,10 @@ export function conformsToExpoProtocol(str: string): boolean {
     return true;
   } else if (str.startsWith('exp://')) {
     return true;
-  } else if (str.startsWith('https://expo.io/') || str.startsWith(`${Config.api.origin}/`)) {
+  } else if (
+    str.startsWith(`${Config.website.origin}/`) ||
+    str.startsWith(`${Config.api.origin}/`)
+  ) {
     return true;
   }
 

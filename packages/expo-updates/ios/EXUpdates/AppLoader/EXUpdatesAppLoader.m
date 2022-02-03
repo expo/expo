@@ -4,7 +4,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -52,6 +52,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   _existingAssets = [NSMutableArray new];
   _updateManifest = nil;
   _manifestBlock = nil;
+  _assetBlock = nil;
   _successBlock = nil;
   _errorBlock = nil;
 }
@@ -60,6 +61,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
@@ -77,7 +79,9 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 {
   if (![self _shouldStartLoadingUpdate:updateManifest]) {
     if (_successBlock) {
-      _successBlock(nil);
+      dispatch_async(_completionQueue, ^{
+        self->_successBlock(nil);
+      });
     }
     return;
   }
@@ -172,6 +176,9 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
           [self downloadAsset:asset];
         } else {
           NSError *mergeError;
+          // merge fields from existing database entry into our current asset object
+          // retaining the original object since it's used in self->_assetsToLoad
+          // (this is different from on Android, where we keep the database-sourced object instead)
           [self->_database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
           if (mergeError) {
             NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);
@@ -201,6 +208,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_existingAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
   if (![self->_assetsToLoad count]) {
     [self _finish];
   }
@@ -214,6 +222,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_erroredAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
   if (![self->_assetsToLoad count]) {
     [self _finish];
   }
@@ -228,9 +237,10 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
   }
-  asset.contentHash = [EXUpdatesUtils sha256WithData:data];
+  asset.contentHash = [EXUpdatesUtils hexEncodedSHA256WithData:data];
   asset.downloadTime = [NSDate date];
   [self->_finishedAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
 
   if (![self->_assetsToLoad count]) {
     [self _finish];
@@ -243,6 +253,19 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 - (BOOL)_shouldStartLoadingUpdate:(EXUpdatesUpdate *)updateManifest
 {
   return _manifestBlock(updateManifest);
+}
+
+/**
+ * This should only be called on threads that have acquired self->_arrayLock
+ */
+- (void)_notifyProgressWithAsset:(EXUpdatesAsset *)asset
+{
+  if (_assetBlock) {
+    _assetBlock(asset,
+                _finishedAssets.count + _existingAssets.count,
+                _erroredAssets.count,
+                _finishedAssets.count + _existingAssets.count + _erroredAssets.count + _assetsToLoad.count);
+  }
 }
 
 - (void)_finishWithError:(NSError *)error
@@ -265,8 +288,9 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       if (!existingAssetFound) {
         // the database and filesystem have gotten out of sync
         // do our best to create a new entry for this file even though it already existed on disk
+        // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
         NSData *contents = [NSData dataWithContentsOfURL:[self->_directory URLByAppendingPathComponent:existingAsset.filename]];
-        existingAsset.contentHash = [EXUpdatesUtils sha256WithData:contents];
+        existingAsset.contentHash = [EXUpdatesUtils hexEncodedSHA256WithData:contents];
         existingAsset.downloadTime = [NSDate date];
         [self->_finishedAssets addObject:existingAsset];
       }

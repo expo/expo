@@ -1,8 +1,9 @@
 ---
 title: Sending Notifications with APNs & FCM
+hideFromSearch: true
 ---
 
-Communicating directly with APNs and FCM is much more complicated than sending notifications through [Expo's push notification service](../sending-notifications/), so you should only use this feature if you're prepared to undertake that complexity. Here are a few things you'll have to handle yourself if you choose to write your own server for FCM and APNs:
+Communicating directly with APNs and FCM is much more complicated than sending notifications through [Expo's push notification service](sending-notifications.md), so you should only use this feature if you're prepared to undertake that complexity. Here are a few things you'll have to handle yourself if you choose to write your own server for FCM and APNs:
 
 - Differentiating between native iOS & Android device tokens on your backend
 - Twice the amount of backend code to write and maintain (code for communicating with FCM, and then code for communicating with APNs)
@@ -12,7 +13,7 @@ That being said, sometimes you need finer-grained control over your notification
 
 ## How do I write my own APNs & FCM servers?
 
-Before we begin communicating directly with APNs & FCM, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](../../versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](../../versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+Before we begin communicating directly with APNs & FCM, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](../versions/latest/sdk/notifications.md#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](../versions/latest/sdk/notifications.md#getdevicepushtokenasync-devicepushtoken).
 
 ```diff
 import * as Notifications from 'expo-notifications';
@@ -28,7 +29,7 @@ Now that you have your native device token, we can start to implement our server
 
 > This documentation is based off of [Google's documentation](https://firebase.google.com/docs/cloud-messaging/http-server-ref), and we're just going to cover the basics here to get you started.
 
-Communicating with FCM is as simple as sending a POST request, but before sending or receiving any notifications, you'll need to follow the steps [in this documentation](../using-fcm/) to configure FCM (and get your `FCM-SERVER-KEY`).
+Communicating with FCM is as simple as sending a POST request, but before sending or receiving any notifications, you'll need to follow the steps [in this documentation](using-fcm.md) to configure FCM (and get your `FCM-SERVER-KEY`).
 
 > Note: the following example uses FCM's legacy HTTP API, since the credentials setup for that is the same as it is for the Expo notications service, so there's no additional work needed on your part. If you'd rather use FCM's HTTP v1 API, follow [this migration guide](https://firebase.google.com/docs/cloud-messaging/migrate-v1).
 
@@ -44,6 +45,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
     priority: 'normal',
     data: {
       experienceId: '@yourExpoUsername/yourProjectSlug',
+      scopeKey: '@yourExpoUsername/yourProjectSlug',
       title: "\uD83D\uDCE7 You've got mail",
       message: 'Hello world! \uD83C\uDF10',
     },
@@ -51,13 +53,13 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
 });
 ```
 
-**The `experienceId` field is required**, otherwise your notifications will not go through to your app. FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../../versions/latest/sdk/notifications/#firebaseremotemessage).
+**The `experienceId` and `scopeKey` fields are required**, otherwise your notifications will not go through to your app. FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../versions/latest/sdk/notifications.md#firebaseremotemessage).
 
 > FCM also provides some server-side libraries in a few languages you can use instead of raw `fetch` requests. [See here for more info](https://firebase.google.com/docs/cloud-messaging/send-message#node.js).
 
 ### Where can I find my FCM server key?
 
-Your FCM server key can be found by making sure you've followed [this documentation](../using-fcm/), and under `Uploading Server Credentials`, instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the example above).
+Your FCM server key can be found by making sure you've followed [this documentation](using-fcm.md), and under `Uploading Server Credentials`, instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the example above).
 
 ## APNs Server
 
@@ -120,7 +122,8 @@ request.write(
         body: 'Hello world! \uD83C\uDF10',
       },
     },
-    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo client app
+    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
+    scopeKey: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
   })
 );
 request.end();
@@ -152,6 +155,7 @@ The examples above show bare minimum notification requests, which aren't that ex
   },
   "body": { object of key-value pairs },
   "experienceId": "@yourExpoUsername/yourProjectSlug",
+  "scopeKey": "@yourExpoUsername/yourProjectSlug",
 }
 ```
 
@@ -164,6 +168,7 @@ The examples above show bare minimum notification requests, which aren't that ex
   "priority": "normal" || "high",
   "data": {
     "experienceId": "@yourExpoUsername/yourProjectSlug",
+    "scopeKey": "@yourExpoUsername/yourProjectSlug",
     "title": title of your message,
     "message": body of your message,
     "channelId": the android channel ID associated with this notification,
@@ -172,7 +177,7 @@ The examples above show bare minimum notification requests, which aren't that ex
     "link": the link this notification should open,
     "sound": boolean or the custom sound file you'd like to play,
     "vibrate": "true" | "false" | number[],
-    "priority": AndroidNotificationPriority, // https://docs.expo.io/versions/latest/sdk/notifications/#androidnotificationpriority
+    "priority": AndroidNotificationPriority, // https://docs.expo.dev/versions/latest/sdk/notifications/#androidnotificationpriority
     "badge": the number to set the icon badge to,
     "body": { object of key-value pairs }
   }
@@ -225,13 +230,16 @@ admin.messaging().sendToDevice(
       // ⚠️ Notice the schema of this payload is different
       // than that of Firebase SDK. What is there called "body"
       // here is a "message". For more info see:
-      // https://docs.expo.io/versions/latest/sdk/notifications/#android-push-notification-payload-specification
+      // https://docs.expo.dev/versions/latest/sdk/notifications/#android-push-notification-payload-specification
 
-      body: {        // ⚠️ As per Android payload format specified above, the
-        photoId: 42, // additional "data" should be placed under "body" key.
-      }
+      body:                              // ⚠️ As per Android payload format specified above, the
+        JSON.stringify({ photoId: 42 }), // additional "data" should be placed under "body" key.
     },
   },
   options
 );
 ```
+
+## Next steps
+
+Now that you can send notifications to your app, set your app up for [receiving notifications and taking action based on those events](./receiving-notifications.md)!

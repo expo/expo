@@ -25,11 +25,11 @@ In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording require
 
 > ⚠️ Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
-<SnackInline label='Basic Camera usage' templateId='camera' dependencies={['expo-camera']}>
+<SnackInline label='Basic Camera usage' dependencies={['expo-camera']}>
 
-```js
+```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 
 export default function App() {
@@ -50,20 +50,11 @@ export default function App() {
     return <Text>No access to camera</Text>;
   }
   return (
-    <View style={{ flex: 1 }}>
-      <Camera style={{ flex: 1 }} type={type}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'transparent',
-            flexDirection: 'row',
-          }}>
+    <View style={styles.container}>
+      <Camera style={styles.camera} type={type}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={{
-              flex: 0.1,
-              alignSelf: 'flex-end',
-              alignItems: 'center',
-            }}
+            style={styles.button}
             onPress={() => {
               setType(
                 type === Camera.Constants.Type.back
@@ -71,13 +62,39 @@ export default function App() {
                   : Camera.Constants.Type.back
               );
             }}>
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
+            <Text style={styles.text}> Flip </Text>
           </TouchableOpacity>
         </View>
       </Camera>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    margin: 20,
+  },
+  button: {
+    flex: 0.1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
@@ -155,11 +172,11 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 ### `onFacesDetected`
 
-**(_function_)** Callback invoked with results of face detection on the preview. See [FaceDetector documentation](../facedetector/#event-shape) for details.
+**(_function_)** Callback invoked with results of face detection on the preview. See [FaceDetector documentation](facedetector.md#event-shape) for details.
 
 ### `faceDetectorSettings`
 
-**(_Object_)** A settings object passed directly to an underlying module providing face detection features. See [FaceDetector documentation](../facedetector/#settings) for details.
+**(_Object_)** A settings object passed directly to an underlying module providing face detection features. See [FaceDetector documentation](facedetector.md#settings) for details.
 
 ### `onMountError`
 
@@ -171,7 +188,7 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 ### `onBarCodeScanned`
 
-**(_function_)** Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](../bar-code-scanner/#supported-formats) for supported values.
+**(_function_)** Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](bar-code-scanner.md#supported-formats) for supported values.
 
 ### `barCodeTypes`
 
@@ -179,7 +196,7 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 ### `barCodeScannerSettings`
 
-**(_object_)** Settings exposed by [`BarCodeScanner`](../bar-code-scanner/) module. Supported settings: [**barCodeTypes**].
+**(_object_)** Settings exposed by [`BarCodeScanner`](bar-code-scanner.md) module. Supported settings: [**barCodeTypes**].
 
 ```javascript
 <Camera
@@ -226,7 +243,7 @@ snap = async () => {
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation (if **options.skipProcessing** flag is not enabled) and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
 
-> **Note**: Make sure to wait for the [`onCameraReady`](./#oncameraready) callback before calling this method.
+> **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
 
 #### Arguments
 
@@ -245,7 +262,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (useable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
 
 On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser. The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings), if available.
 
@@ -307,7 +324,7 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `getPermissionsAsync()`
 
@@ -315,7 +332,7 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ## Web Support
 

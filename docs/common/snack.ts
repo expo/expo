@@ -1,4 +1,4 @@
-export const SNACK_URL = 'https://snack.expo.io';
+export const SNACK_URL = 'https://snack.expo.dev';
 // export const SNACK_URL = 'http://snack.expo.test';
 
 type Config = {

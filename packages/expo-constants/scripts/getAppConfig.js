@@ -1,4 +1,4 @@
-const { getPublicExpoConfig } = require('@expo/config');
+const { getConfig } = require('@expo/config');
 const fs = require('fs');
 const path = require('path');
 
@@ -13,5 +13,10 @@ if (fs.existsSync(path.join(possibleProjectRoot, 'package.json'))) {
   projectRoot = path.resolve(possibleProjectRoot, '..');
 }
 
-const publicExp = getPublicExpoConfig(projectRoot, { skipSDKVersionRequirement: true });
-fs.writeFileSync(path.join(destinationDir, 'app.config'), JSON.stringify(publicExp));
+process.chdir(projectRoot);
+
+const { exp } = getConfig(projectRoot, {
+  isPublicConfig: true,
+  skipSDKVersionRequirement: true,
+});
+fs.writeFileSync(path.join(destinationDir, 'app.config'), JSON.stringify(exp));

@@ -1,79 +1,60 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="dev.expo.payments">
-
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
-  <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
-  <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
-  <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-  <uses-permission android:name="android.permission.USE_FINGERPRINT" />
-  <uses-permission android:name="android.permission.VIBRATE" />
-  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-
-  <!-- These require runtime permissions on M -->
-  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-  <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.READ_CONTACTS" />
-  <uses-permission android:name="android.permission.READ_CALENDAR" />
-  <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.RECORD_AUDIO" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-  <!-- END OPTIONAL PERMISSIONS -->
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.expo.payments">
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/>
+  <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+  <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.READ_CONTACTS"/>
+  <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+  <uses-permission android:name="android.permission.READ_CALENDAR"/>
+  <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
   <application
-    android:name=".MainApplication"
-    android:allowBackup="false"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:theme="@style/AppTheme"
-    android:usesCleartextTraffic="true">
-
-    <!-- [Custom] Expo Facebook -->
-    <meta-data
-      android:name="com.facebook.sdk.ApplicationId"
-      android:value="@string/facebook_app_id" />
-    <!-- [Custom] End Expo Facebook -->
-
-    <!-- [Custom] Expo Notifications -->
-    <meta-data
-      android:name="expo.modules.notifications.default_notification_icon"
-      android:resource="@drawable/ic_stat_notifications" />
-    <meta-data
-      android:name="expo.modules.notifications.large_notification_icon"
-      android:resource="@mipmap/ic_launcher_round" />
-    <meta-data
-      android:name="expo.modules.notifications.default_notification_color"
-      android:resource="@color/notification_icon_color" />
-    <!-- [Custom] End Expo Notifications -->
-
-    <activity
-      android:name=".MainActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:name=".MainApplication"
+      android:allowBackup="true"
+      android:icon="@mipmap/ic_launcher"
       android:label="@string/app_name"
-      android:launchMode="singleTask"
-      android:windowSoftInputMode="adjustResize">
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:theme="@style/AppTheme"
+      android:networkSecurityConfig="@xml/network_security_config">
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+    <meta-data android:name="expo.modules.notifications.default_notification_icon" android:resource="@drawable/ic_stat_notifications"/>
+    <meta-data android:name="expo.modules.notifications.large_notification_icon" android:resource="@mipmap/ic_launcher_round"/>
+    <meta-data android:name="expo.modules.notifications.default_notification_color" android:resource="@color/notification_icon_color"/>
+    <meta-data android:name="com.facebook.sdk.ApplicationName" android:value="Expo APIs"/>
+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize" android:label="@string/app_name" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
-      <!-- [Custom] Deep linking -->
       <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data android:scheme="bareexpo" />
-        <data android:scheme="fb145668956753819" />
-        <data android:scheme="com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2" />
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="bareexpo"/>
+        <data android:scheme="com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"/>
+        <data android:scheme="dev.expo.payments"/>
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+    <activity android:name="com.facebook.CustomTabActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="fb629712900716487"/>
+      </intent-filter>
+    </activity>
   </application>
 </manifest>

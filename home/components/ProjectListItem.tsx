@@ -6,7 +6,6 @@ import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
 import Badge from './Badge';
-import { Experience } from './ExperienceView.types';
 import ListItem from './ListItem';
 import { StyledText } from './Text';
 
@@ -16,7 +15,12 @@ type Props = React.ComponentProps<typeof ListItem> & {
   releaseChannel?: string;
   username?: string;
   sdkVersion?: string;
-  experienceInfo?: Pick<Experience, 'username' | 'slug'>;
+  experienceInfo?: {
+    id: string;
+    username: string;
+    slug: string;
+  };
+  onPressUsername?: (username: string) => void;
 };
 
 function ProjectListItem({
@@ -42,29 +46,26 @@ function ProjectListItem({
   }, [isExpired, releaseChannel]);
 
   const handlePress = () => {
-    // Open the project info page when it's stale.
-    if (isExpired && props.experienceInfo) {
-      handleLongPress();
-      return;
+    if (props.experienceInfo) {
+      navigation.navigate('Project', { id: props.experienceInfo.id });
+    } else if (url) {
+      Linking.openURL(UrlUtils.normalizeUrl(url));
     }
-    Linking.openURL(UrlUtils.normalizeUrl(url));
   };
 
   const handleLongPress = () => {
-    if (props.experienceInfo) {
-      navigation.navigate('Experience', props.experienceInfo);
-    } else {
-      const message = UrlUtils.normalizeUrl(url);
-      Share.share({
-        title: url,
-        message,
-        url: message,
-      });
-    }
+    const message = UrlUtils.normalizeUrl(url);
+    Share.share({
+      title: url,
+      message,
+      url: message,
+    });
   };
 
   const handlePressUsername = () => {
-    navigation.navigate('Profile', { username });
+    if (props.onPressUsername && username) {
+      props.onPressUsername(username);
+    }
   };
 
   const renderExtraText = React.useCallback(
@@ -87,7 +88,7 @@ function ProjectListItem({
       onLongPress={handleLongPress}
       rightContent={renderRightContent()}
       {...props}
-      imageSize={sdkVersionNumber ? 56 : 40}
+      imageSize={56}
       renderExtraText={renderExtraText}
       subtitle={username || subtitle}
       onPressSubtitle={username ? handlePressUsername : undefined}

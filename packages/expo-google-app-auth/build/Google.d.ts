@@ -73,9 +73,12 @@ export declare type LogInResult = {
     refreshToken: string | null;
     user: GoogleUser;
 };
+/** @deprecated `expo-google-app-auth` is deprecated in favor of `expo-auth-session`. [Learn more](https://docs.expo.dev/guides/authentication/#google). */
 export declare function getPlatformGUID(config: GoogleLogInConfig): string;
 /**
  * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
+ *
+ * @deprecated `expo-google-app-auth` is deprecated in favor of `expo-auth-session`. [Learn more](https://docs.expo.dev/guides/authentication/#google).
  *
  * Get started in:
  * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
@@ -84,6 +87,8 @@ export declare function getPlatformGUID(config: GoogleLogInConfig): string;
  * @param config
  */
 export declare function logInAsync(config: GoogleLogInConfig): Promise<LogInResult>;
+/** @deprecated `expo-google-app-auth` is deprecated in favor of `expo-auth-session` (`AuthSession.revokeAsync()`). [Learn more](https://docs.expo.dev/guides/authentication/#google). */
 export declare function logOutAsync({ accessToken, ...inputConfig }: GoogleLogInConfig & {
     accessToken: string;
 }): Promise<any>;
+//# sourceMappingURL=Google.d.ts.map

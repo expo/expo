@@ -1,7 +1,7 @@
-import { NativeModulesProxy } from '@unimodules/core';
 import computeMd5 from 'blueimp-md5';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
+import { NativeModulesProxy } from 'expo-modules-core';
 import { getManifestBaseUrl } from './AssetUris';
 // Constants.appOwnership is only available in managed apps (Expo client and standalone)
 export const IS_MANAGED_ENV = !!Constants.appOwnership;
@@ -22,7 +22,10 @@ export function getLocalAssets() {
     return NativeModulesProxy.ExpoUpdates?.localAssets ?? {};
 }
 export function getManifest() {
-    return Constants.manifest ?? {};
+    return Constants.__unsafeNoWarnManifest ?? {};
+}
+export function getManifest2() {
+    return Constants.__unsafeNoWarnManifest2;
 }
 // Compute manifest base URL if available
 export const manifestBaseUrl = Constants.experienceUrl

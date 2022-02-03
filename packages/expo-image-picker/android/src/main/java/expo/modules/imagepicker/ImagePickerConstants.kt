@@ -23,6 +23,9 @@ object ImagePickerConstants {
   const val MISSING_URL_MESSAGE = "Intent doesn't contain `url`."
   const val ERR_CAN_NOT_OPEN_CROP = "ERR_CAN_NOT_OPEN_CROP"
   const val CAN_NOT_OPEN_CROP_MESSAGE = "Can not open the crop tool."
+  const val COROUTINE_CANCELED = "Coroutine canceled by module destruction."
+  const val PROMISES_CANCELED = "Module destroyed, all promises canceled."
+  const val UNKNOWN_EXCEPTION = "Unknown exception."
 
   const val OPTION_QUALITY = "quality"
   const val OPTION_ALLOWS_EDITING = "allowsEditing"
@@ -32,8 +35,6 @@ object ImagePickerConstants {
   const val OPTION_EXIF = "exif"
   const val OPTION_VIDEO_MAX_DURATION = "videoMaxDuration"
 
-  // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
-  // separately so we skip them in this list.
   val exifTags = arrayOf(
     arrayOf("string", ExifInterface.TAG_ARTIST),
     arrayOf("int", ExifInterface.TAG_BITS_PER_SAMPLE),
@@ -123,6 +124,7 @@ object ImagePickerConstants {
     arrayOf("int", ExifInterface.TAG_SUBJECT_LOCATION),
     arrayOf("string", ExifInterface.TAG_USER_COMMENT),
     arrayOf("int", ExifInterface.TAG_WHITE_BALANCE),
+    arrayOf("double", ExifInterface.TAG_GPS_ALTITUDE),
     arrayOf("int", ExifInterface.TAG_GPS_ALTITUDE_REF),
     arrayOf("string", ExifInterface.TAG_GPS_AREA_INFORMATION),
     arrayOf("double", ExifInterface.TAG_GPS_DOP),
@@ -136,9 +138,12 @@ object ImagePickerConstants {
     arrayOf("double", ExifInterface.TAG_GPS_DEST_LONGITUDE),
     arrayOf("string", ExifInterface.TAG_GPS_DEST_LONGITUDE_REF),
     arrayOf("int", ExifInterface.TAG_GPS_DIFFERENTIAL),
+    arrayOf("string", ExifInterface.TAG_GPS_H_POSITIONING_ERROR),
     arrayOf("double", ExifInterface.TAG_GPS_IMG_DIRECTION),
     arrayOf("string", ExifInterface.TAG_GPS_IMG_DIRECTION_REF),
+    arrayOf("double", ExifInterface.TAG_GPS_LATITUDE),
     arrayOf("string", ExifInterface.TAG_GPS_LATITUDE_REF),
+    arrayOf("double", ExifInterface.TAG_GPS_LONGITUDE),
     arrayOf("string", ExifInterface.TAG_GPS_LONGITUDE_REF),
     arrayOf("string", ExifInterface.TAG_GPS_MAP_DATUM),
     arrayOf("string", ExifInterface.TAG_GPS_MEASURE_MODE),
@@ -166,4 +171,3 @@ object ImagePickerConstants {
     arrayOf("int", ExifInterface.TAG_RW2_ISO)
   )
 }
-

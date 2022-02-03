@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
-import { Platform } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 
 import { waitFor } from './helpers';
 
@@ -9,6 +9,12 @@ const validHttpUrl = 'http://expo.io/';
 const validHttpsUrl = 'https://expo.io/';
 const validExpUrl = 'exp://expo.io/@community/native-component-list';
 const redirectingBackendUrl = 'https://backend-xxswjknyfi.now.sh/?linkingUri=';
+
+// Because the root navigator of test-suite doesn't have a matching screen for URL, it will warn.
+// This is expected as all tests are wrapped in `screens/TestScreen.js`, and not defined as separate screens.
+LogBox.ignoreLogs([
+  'navigation state parsed from the URL contains routes not present in the root navigator',
+]);
 
 export const name = 'Linking';
 

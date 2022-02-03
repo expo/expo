@@ -2,7 +2,7 @@ package expo.modules.notifications.notifications.categories.serializers;
 
 import android.os.Bundle;
 
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.ArrayList;
 import java.util.Collections;

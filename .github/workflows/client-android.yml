@@ -9,8 +9,9 @@ on:
       releaseGooglePlay:
         description: 'type "release-google-play" to confirm release to Google Play'
         required: false
+  schedule:
+    - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
   pull_request:
-    branches: [ master ]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**
@@ -20,7 +21,7 @@ on:
       - .ruby-version
       - yarn.lock
   push:
-    branches: [ master, sdk-* ]
+    branches: [main, sdk-*]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**
@@ -30,28 +31,47 @@ on:
       - .ruby-version
       - yarn.lock
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - uses: ruby/setup-ruby@v1
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore node modules in tools
+        uses: actions/cache@v2
+        with:
+          path: tools/node_modules
+          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
+      - name: 🧶 Yarn install
+        run: yarn install --frozen-lockfile
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: sudo apt-get install git-crypt
-      - name: decrypt secrets if possible
+      - name: 🐙 Install git-crypt
+        run: sudo apt-get install git-crypt
+      - name: 🔓 Decrypt secrets if possible
         env:
           GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
         run: |
@@ -60,76 +80,97 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - uses: actions/cache@v1
+      - name: ♻️ Restore Gradle caches
+        uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - uses: actions/cache@v2
+      - name: ♻️ Restore Android NDK from cache
+        uses: actions/cache@v2
         id: cache-android-ndk
         with:
           path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
           key: ${{ runner.os }}-ndk-19.2.5345600
           restore-keys: |
             ${{ runner.os }}-ndk-
-      - name: Install NDK
+      - name: 🛠 Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: Build APK
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+      - name: 🔎 Check which flavor to build
+        id: flavor
+        uses: dorny/paths-filter@v2
+        with:
+          # this action fails when base is not set on schedule event
+          base: ${{ github.ref }}
+          filters: |
+            versioned:
+              - android/versioned-abis/**
+              - android/versioned-react-native/**
+              - android/expoview/src/versioned/**
+              - android/expoview/src/main/java/versioned/**
+              - android/**/*.gradle
+      - name: 🏭 Build APK
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ExponentKey
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          IS_APP_BUNDLE:  ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
+          IS_RELEASE_BUILD: ${{ github.event.inputs.releaseAPK == 'release-apk' || github.event.inputs.releaseGooglePlay == 'release-google-play' }}
+          IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
         run: |
+          if [ "$IS_RELEASE_BUILD" == "false" ]; then
+            export NDK_ABI_FILTERS="x86_64"
+            BUILD_TYPE="Debug"
+            echo "Using ABI filters: $NDK_ABI_FILTERS"
+          else
+            BUILD_TYPE="Release"
+          fi
+          [[ "$IS_VERSIONED_FLAVOR" == "true" ]] && FLAVOR="Versioned" || FLAVOR="Unversioned"
+          echo "Building with $FLAVOR flavor"
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"
-            fastlane android build build_type:Release sign:false
+            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR sign:false
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            fastlane android build build_type:Release
+            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR aab:$IS_APP_BUNDLE
           fi
-      - uses: actions/upload-artifact@v2
+      - name: 💾 Upload APK artifact
+        uses: actions/upload-artifact@v2
         with:
           name: android-apk
           path: android/app/build/outputs/apk
-      - name: Store daemon logs for debugging crashes
+      - name: 💾 Store daemon logs for debugging crashes
         if: failure()
         uses: actions/upload-artifact@v2
         with:
           name: gradle-daemon-logs
           path: ~/.gradle/daemon
-      - name: Upload APK to S3 and update staging versions endpoint
+      - name: 📤 Upload APK to S3 and update staging versions endpoint
         if: ${{ github.event.inputs.releaseAPK == 'release-apk' }}
         run: bin/expotools client-build --platform android --release
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
-      - name: Upload APK to Google Play and release to production
+          EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
+      - name: 📤 Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
-        run: fastlane android prod_release
+        run: bin/fastlane android prod_release
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.SUPPLY_JSON_KEY_DATA }}
-      - uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
         with:
-          channel: '#platform-android'
-          status: custom
-          fields: author,commit,ref,workflow
-          custom_payload: |
-            {
-              username: 'github-actions',
-              icon_emoji: ':octocat:',
-              attachments: [{
-                color: 'danger',
-                text: `${process.env.AS_WORKFLOW}@${process.env.AS_REF} failed: ${process.env.AS_COMMIT} by ${process.env.AS_AUTHOR}`,
-              }]
-            }
+          channel: '#expo-android'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Expo Go (Android)

@@ -3,7 +3,7 @@ import invariant from 'invariant';
 
 import {
   CameraType,
-  CapturedPicture,
+  CameraCapturedPicture,
   ImageSize,
   ImageType,
   WebCameraSettings,
@@ -248,10 +248,10 @@ export function capture(
   video: HTMLVideoElement,
   settings: MediaTrackSettings,
   config: CameraPictureOptions
-): CapturedPicture {
+): CameraCapturedPicture {
   const base64 = captureImage(video, config);
 
-  const capturedPicture: CapturedPicture = {
+  const capturedPicture: CameraCapturedPicture = {
     uri: base64,
     base64,
     width: 0,
@@ -278,7 +278,7 @@ export async function syncTrackCapabilities(
 ): Promise<void> {
   if (stream?.getVideoTracks) {
     await Promise.all(
-      stream.getVideoTracks().map(track => onCapabilitiesReady(cameraType, track, settings))
+      stream.getVideoTracks().map((track) => onCapabilitiesReady(cameraType, track, settings))
     );
   }
 }
@@ -363,10 +363,10 @@ export function stopMediaStream(stream: MediaStream | null) {
     return;
   }
   if (stream.getAudioTracks) {
-    stream.getAudioTracks().forEach(track => track.stop());
+    stream.getAudioTracks().forEach((track) => track.stop());
   }
   if (stream.getVideoTracks) {
-    stream.getVideoTracks().forEach(track => track.stop());
+    stream.getVideoTracks().forEach((track) => track.stop());
   }
   if (isMediaStreamTrack(stream)) {
     stream.stop();
@@ -384,7 +384,7 @@ export function setVideoSource(
   } else if (typeof (video as any).mozSrcObject !== 'undefined') {
     (video as any).mozSrcObject = stream;
   } else if (stream && createObjectURL) {
-    video.src = createObjectURL(stream);
+    video.src = createObjectURL(stream as MediaSource | Blob);
   }
 
   if (!stream) {
@@ -433,14 +433,8 @@ function validatedConstrainedValue<T>(props: {
   settings: WebCameraSettings;
   cameraType: string;
 }): T | undefined {
-  const {
-    constraintKey,
-    settingsKey,
-    convertedSetting,
-    capabilities,
-    settings,
-    cameraType,
-  } = props;
+  const { constraintKey, settingsKey, convertedSetting, capabilities, settings, cameraType } =
+    props;
   const setting = settings[settingsKey];
   if (
     Array.isArray(capabilities[constraintKey]) &&

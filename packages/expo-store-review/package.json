@@ -1,6 +1,6 @@
 {
   "name": "expo-store-review",
-  "version": "2.3.0",
+  "version": "5.1.0",
   "description": "ExpoStoreReview standalone module",
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",
@@ -28,15 +28,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/storereview/",
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "expo-constants": "~9.0.0",
-    "expo-linking": "~1.0.1",
-    "react": "*",
-    "react-native": "*"
-  },
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
+  "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

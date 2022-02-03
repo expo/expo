@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.ViewManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
 
 public class GLViewManager extends ViewManager<GLView> {
   private ModuleRegistry mModuleRegistry;

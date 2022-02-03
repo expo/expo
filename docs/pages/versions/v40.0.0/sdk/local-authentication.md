@@ -40,7 +40,7 @@ Determine what kinds of authentications are available on the device.
 
 #### Returns
 
-Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported. If neither authentication type is supported, returns an empty array.
+Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION, IRIS}`. A value of `1` indicates fingerprint support, `2` indicates facial recognition support, and `3` indicates iris recognition support (Android-only). Devices can support multiple authentication methods- i.e. `[1,2]` means the device supports both fingerprint and facial recognition. If none are supported, this method returns an empty array.
 
 ### `LocalAuthentication.isEnrolledAsync()`
 
@@ -54,7 +54,7 @@ Returns a promise resolving to boolean value indicating whether the device has s
 
 Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).
 
-> **Note:** Apple requires apps which use FaceID to provide a description of why they use this API. If you try to use FaceID on an iPhone with FaceID without providing `infoPlist.NSFaceIDUsageDescription` in `app.json`, the module will authenticate using device passcode. For more information about usage descriptions on iOS, see [Deploying to App Stores](../../distribution/app-stores#system-permissions-dialogs-on-ios).
+> **Note:** Apple requires apps which use FaceID to provide a description of why they use this API. If you try to use FaceID on an iPhone with FaceID without providing `infoPlist.NSFaceIDUsageDescription` in **app.json**, the module will authenticate using device passcode. For more information about usage descriptions on iOS, see [Deploying to App Stores](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
 #### Arguments
 

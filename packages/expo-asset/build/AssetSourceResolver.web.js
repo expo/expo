@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
 function getBasePath({ httpServerLocation }) {
@@ -14,9 +14,14 @@ function getScaledAssetPath(asset) {
     const scale = AssetSourceResolver.pickScale(asset.scales, getScale());
     const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
     const assetDir = getBasePath(asset);
-    return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
+    return assetDir + '/' + asset.name + scaleSuffix + (asset.type ? `.${asset.type}` : '');
 }
 export default class AssetSourceResolver {
+    serverUrl;
+    // where the jsbundle is being run from
+    jsbundleUrl;
+    // the asset to resolve
+    asset;
     constructor(serverUrl, jsbundleUrl, asset) {
         this.serverUrl = serverUrl;
         this.jsbundleUrl = jsbundleUrl;
@@ -47,7 +52,7 @@ export default class AssetSourceResolver {
         return this.fromSource(getScaledAssetPath(this.asset));
     }
     scaledAssetURLNearBundle() {
-        const path = this.jsbundleUrl || 'file://';
+        const path = this.jsbundleUrl || '';
         return this.fromSource(path + getScaledAssetPath(this.asset));
     }
     resourceIdentifierWithoutScale() {

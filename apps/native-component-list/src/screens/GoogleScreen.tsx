@@ -50,7 +50,7 @@ export default function GoogleLoginScreen() {
           <TextInput
             style={styles.input}
             placeholder={Localization.locale}
-            onChangeText={text => onChangeLanguage(text)}
+            onChangeText={(text) => onChangeLanguage(text)}
             value={language}
           />
         </View>
@@ -59,7 +59,7 @@ export default function GoogleLoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="you@gmail.com"
-            onChangeText={text => onChangeLoginHint(text)}
+            onChangeText={(text) => onChangeLoginHint(text)}
             value={loginHint}
           />
         </View>

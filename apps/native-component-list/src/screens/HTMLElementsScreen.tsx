@@ -95,7 +95,8 @@ function LayoutArticle() {
 function TextArticle() {
   return (
     <CustomArticle title="Text">
-      <A href="https://expo.io/" target="_blank">
+      {/* @ts-ignore */}
+      <A href="https://expo.dev/" target="_blank">
         Anchor
       </A>
       <P>Paragraph</P>
@@ -103,6 +104,7 @@ function TextArticle() {
       <Strong>Strong</Strong>
       <Mark>Mark</Mark>
       <Code>Code</Code>
+      {/* @ts-ignore */}
       <Time>Feb 2020</Time>
       <I>Italic</I>
       <EM>Emphasize</EM>

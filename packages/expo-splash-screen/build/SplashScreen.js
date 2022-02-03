@@ -1,24 +1,8 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import ExpoSplashScreen from './ExpoSplashScreen';
+// @needsAudit
 /**
- * Makes the native splash screen stay visible until `SplashScreen.hideAsync()` is called.
- * It has to be called before any view is rendered.
- *
- * @example
- * ```typescript
- * // top level component
- *
- * SplashScreen.preventAutoHideAsync()
- *  .then(result => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
- *  .catch(console.warn); // it's good to explicitly catch and inspect any error
- *
- * class App extends React.Component {
- *   ...
- *   // Hide SplashScreen once your app content is ready to be displayed.
- *   await SplashScreen.hideAsync()
- *   ...
- * }
- * ```
+ * Makes the native splash screen (configured in `app.json`) remain visible until `hideAsync` is called.
  */
 export async function preventAutoHideAsync() {
     if (!ExpoSplashScreen.preventAutoHideAsync) {
@@ -26,6 +10,12 @@ export async function preventAutoHideAsync() {
     }
     return await ExpoSplashScreen.preventAutoHideAsync();
 }
+// @needsAudit
+/**
+ * Hides the native splash screen immediately. Be careful to ensure that your app has content ready
+ * to display when you hide the splash screen, or you may see a blank screen briefly. See the
+ * ["Usage"](#usage) section for an example.
+ */
 export async function hideAsync() {
     if (!ExpoSplashScreen.hideAsync) {
         throw new UnavailabilityError('expo-splash-screen', 'hideAsync');
@@ -34,6 +24,7 @@ export async function hideAsync() {
 }
 /**
  * @deprecated Use `SplashScreen.hideAsync()` instead
+ * @ignore
  */
 export function hide() {
     console.warn('SplashScreen.hide() is deprecated in favour of SplashScreen.hideAsync()');
@@ -41,6 +32,7 @@ export function hide() {
 }
 /**
  * @deprecated Use `SplashScreen.preventAutoHideAsync()` instead
+ * @ignore
  */
 export function preventAutoHide() {
     console.warn('SplashScreen.preventAutoHide() is deprecated in favour of SplashScreen.preventAutoHideAsync()');

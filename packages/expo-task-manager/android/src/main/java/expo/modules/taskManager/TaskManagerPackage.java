@@ -2,10 +2,10 @@ package expo.modules.taskManager;
 
 import android.content.Context;
 
-import org.unimodules.core.BasePackage;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.BasePackage;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.util.Collections;
 import java.util.List;

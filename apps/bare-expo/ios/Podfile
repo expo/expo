@@ -1,71 +1,83 @@
-require 'json'
-
 install! 'cocoapods',
-         :generate_multiple_pod_projects => true,
-         :incremental_installation => true
+         generate_multiple_pod_projects: true,
+         incremental_installation: true
 source 'https://cdn.cocoapods.org/'
-platform :ios, '10.0'
+platform :ios, '12.0'
 inhibit_all_warnings!
 
-# Get the package.json for the excluded modules
-package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
-
-# [Custom] Add target the root modules in the workspace
-modules_path = '../../../node_modules'
-# [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
-# expected (you may get `'React/<File>.h' file not found` when building)
-rnPrefix = '../../../react-native-lab/react-native'
-
 # Import the auto-linking packages
-require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
-require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
-require_relative "#{rnPrefix}/scripts/react_native_pods"
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
-target 'BareExpo' do
+require 'json'
+podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
-  # react-native-cli auto-linking
-  config = use_native_modules!
+abstract_target 'BareExpoMain' do
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
-  use_react_native!(:path => rnPrefix)
-
-  # Auto-linking
-  use_unimodules!(
-    {
-      modules_paths: %w[../../../packages], # [Custom] Prevent the bundling of template code and stripe
-      exclude: package['excludedUnimodules'],
-      flags: { inhibit_warnings: false }
-    }
+  use_expo_modules!(
+    tests: [
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+    ],
   )
 
-  pod 'EXDevMenu', path: '../../../packages/expo-dev-menu', :configurations => :debug
-  pod 'expo-image', path: '../../../packages/expo-image'
-  pod 'EXRandom', path: '../../../packages/expo-random/ios'
-  pod 'expo-development-client', path: '../../../packages/expo-development-client'
+  config = use_native_modules!
 
-  # Enables Flipper.
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  use_flipper!('Flipper' => '~> 0.62.0') # should match the version of your Flipper client app
-  # Note that we don't call `flipper_post_install`. 
-  # It causes problems with cocoapods. We add the FB_SONARKIT_ENABLED manually instead.
- 
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
+  )
+
   # Fix Google Sign-in and Flipper
   post_install do |installer|
+    # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
+    react_native_post_install(installer) if installer.pods_project
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-        
-        if pod_name == 'Flipper' or pod_name == 'Flipper-Folly' or pod_name == 'Flipper-RSocket'
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+
+        if (pod_name == 'Flipper') || (pod_name == 'Flipper-Folly') || (pod_name == 'Flipper-RSocket')
           # Fix `Typedef redefinition with different types ('uint8_t' (aka 'unsigned char') vs 'enum clockid_t')`
           # See https://github.com/react-native-community/upgrade-support/issues/91 and https://github.com/facebook/flipper/issues/834
           config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
         else
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
         end
       end
     end
   end
 
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
+
+  target 'BareExpo' do
+    # Enables Flipper.
+
+    # Uncomment to opt-in to using Flipper
+    # Note that we don't call `flipper_post_install`.
+    # It causes problems with cocoapods. We add the FB_SONARKIT_ENABLED manually instead.
+
+    # if !ENV['CI']
+    #   use_flipper!({ 'Flipper-Folly' => '2.5.3', 'Flipper' => '0.87.0', 'Flipper-RSocket' => '1.3.1' })
+    # end
+  end
+
+  target 'BareExpoDetox' do
+  end
+
   target 'BareExpoTests' do
     inherit! :search_paths
+
+    pod 'Quick', :podspec => './../../../ios/Quick.podspec'
+    pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

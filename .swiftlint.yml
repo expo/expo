@@ -1,0 +1,240 @@
+# See all available rules: https://realm.github.io/SwiftLint/rule-directory.html
+
+# Don't use `included` parameter even though we'd like to limit which paths should be linted.
+# When it's set, all paths passed as arguments to the command are ignored.
+
+# SwiftLint by default isn't efficient in excluding, `--use-alternative-excluding` flag makes it faster.
+excluded:
+  - .direnv
+  - android
+  - apps
+  - bin
+  - docs
+  - exponent-view-template
+  - fastlane
+  - guides
+  - home
+  - ios/Pods
+  - ios/vendored
+  - ios/versioned
+  - ios/versioned-react-native
+  - node_modules
+  - packages/*/ios/Tests
+  - packages/*/ios/UITests
+  - packages/expo-module-template
+  - react-native-lab
+  - scripts
+  - secrets
+  - template-files
+  - tools
+
+# Enable rules that are turned off by default. Run `swiftlint rules` to see what's available to opt-in.
+opt_in_rules:
+  - anyobject_protocol
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - conditional_returns_on_newline
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - multiline_literal_brackets
+  - multiline_parameters
+  - multiline_parameters_brackets
+  - number_separator
+  - prefer_zero_over_explicit_init
+  - redundant_nil_coalescing
+  - unneeded_parentheses_in_closure_argument
+  - unowned_variable_capture
+  - unused_declaration
+  - unused_import
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+  - yoda_condition
+
+# Disable some rules that are turned on by default.
+disabled_rules:
+  - reduce_boolean
+  - todo
+  - weak_delegate
+
+# Prefer using AnyObject over class for class-only protocols.
+anyobject_protocol: warning
+
+# Closure end should have the same indentation as the line that started it.
+closure_end_indentation: warning
+
+# Closure expressions should have a single space inside each brace.
+closure_spacing: warning
+
+# All elements in a collection literal should be vertically aligned.
+collection_alignment:
+  severity: warning
+  align_colons: false
+
+# if, for, guard, switch, while, and catch statements shouldn’t unnecessarily wrap their conditionals or arguments in parentheses.
+control_statement: warning
+
+# Limits the complexity of function bodies.
+cyclomatic_complexity:
+  warning: 12
+  error: 20
+  ignores_case_statements: true
+
+# Prefer checking `isEmpty` over comparing collection to an empty array or dictionary literal.
+empty_collection_literal: warning
+
+# Prefer checking `isEmpty` over comparing count to zero.
+empty_count:
+  severity: warning
+  only_after_dot: true
+
+# When using trailing closures, empty parentheses should be avoided after the method call.
+empty_parentheses_with_trailing_closure: warning
+
+# Prefer checking `isEmpty` over comparing string to an empty string literal.
+empty_string: warning
+
+# Functions bodies should not span too many lines.
+function_body_length:
+  warning: 80
+  error: 100
+
+# Identifier names should only contain alphanumeric characters and start with a lowercase character or should only
+# contain capital letters. In an exception to the above, variable names may start with a capital letter when they are
+# declared static and immutable. Variable names should not be too long or too short.
+identifier_name:
+  min_length: 1
+  max_length:
+    warning: 35
+    error: 50
+  validates_start_with_lowercase: false
+  allowed_symbols: ['_']
+
+# Files should not contain leading whitespace.
+leading_whitespace: warning
+
+# Struct-scoped constants are preferred over legacy global constants.
+legacy_constant: warning
+
+# Swift constructors are preferred over legacy convenience functions.
+legacy_constructor: warning
+
+# Lines should not span too many characters.
+line_length:
+  warning: 160
+  error: 200
+  ignores_urls: true
+  ignores_function_declarations: false
+  ignores_comments: false
+  ignores_interpolated_strings: true
+
+# MARK comment should be in valid format. e.g. `// MARK: ...` or `// MARK: - ...`
+mark: warning
+
+# Multiline literals should have their surrounding brackets in a new line.
+multiline_literal_brackets: warning
+
+# Functions and methods parameters should be either on the same line, or one per line.
+multiline_parameters:
+  severity: warning
+
+# Multiline parameters should have their surrounding brackets in a new line.
+multiline_parameters_brackets: warning
+
+# Underscores should be used as thousand separator in large decimal numbers.
+number_separator:
+  severity: warning
+  minimum_length: 0
+
+# A doc comment should be attached to a declaration.
+orphaned_doc_comment: warning
+
+# Prefer `.zero` over explicit init with zero parameters (e.g. `CGPoint(x: 0, y: 0)`).
+prefer_zero_over_explicit_init: warning
+
+# When declaring properties in protocols, the order of accessors should be `get set`.
+protocol_property_accessors_order: warning
+
+# nil coalescing operator is only evaluated if the lhs is nil, coalescing operator with nil as rhs is redundant.
+redundant_nil_coalescing: warning
+
+# Initializing an optional variable with nil is redundant.
+redundant_optional_initialization: warning
+
+# Files should have a single trailing newline.
+trailing_newline: warning
+
+# Lines should not have trailing semicolons.
+trailing_semicolon: warning
+
+# Lines should not have trailing whitespace.
+trailing_whitespace:
+  severity: warning
+  ignores_empty_lines: false
+  ignores_comments: false
+
+# Type bodies should not span too many lines.
+type_body_length:
+  warning: 200
+  error: 350
+
+# Type name should only contain alphanumeric characters, start with an uppercase character and span between 3 and 35 characters in length.
+type_name:
+  min_length: 3
+  max_length:
+    warning: 40
+    error: 50
+
+# Parentheses are not needed when declaring closure arguments.
+unneeded_parentheses_in_closure_argument: warning
+
+# Prefer capturing references as weak to avoid potential crashes.
+unowned_variable_capture: warning
+
+# Unused reference in a capture list should be removed.
+unused_capture_list: warning
+
+# Unused parameter in a closure should be replaced with `_`.
+unused_closure_parameter: warning
+
+# Declarations should be referenced at least once within all files linted.
+unused_declaration:
+  severity: warning
+  include_public_and_open: false
+
+# When the index or the item is not used, `.enumerated()` can be removed.
+unused_enumerated: warning
+
+# All imported modules should be required to make the file compile.
+unused_import:
+  severity: warning
+
+# Prefer `!= nil` over `let _ =`
+unused_optional_binding:
+  severity: warning
+  ignore_optional_try: false
+
+# Setter value is not used.
+unused_setter_value: warning
+
+# Function parameters should be aligned vertically if they’re in multiple lines in a method call.
+vertical_parameter_alignment_on_call: warning
+
+# Limit vertical whitespace to a single empty line.
+vertical_whitespace:
+  severity: warning
+  max_empty_lines: 1
+
+# Don’t include vertical whitespace (empty line) before closing braces.
+vertical_whitespace_closing_braces: warning
+
+# Don’t include vertical whitespace (empty line) after opening braces.
+vertical_whitespace_opening_braces: warning
+
+# Prefer `-> Void` over `-> ()`.
+void_return: warning
+
+# The variable should be placed on the left, the constant on the right of a comparison operator.
+yoda_condition: warning

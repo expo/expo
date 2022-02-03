@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleAuthentication from './GoogleAuthentication';

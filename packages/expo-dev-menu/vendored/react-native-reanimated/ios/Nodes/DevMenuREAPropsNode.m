@@ -72,7 +72,7 @@
        props:uiProps];
     }
     if (nativeProps.count > 0) {
-      [self.nodesManager enqueueUpdateViewOnNativeThread:_connectedViewTag viewName:_connectedViewName nativeProps:nativeProps];
+      [self.nodesManager enqueueUpdateViewOnNativeThread:_connectedViewTag viewName:_connectedViewName nativeProps:nativeProps trySynchronously:NO];
     }
     if (jsProps.count > 0) {
       [self.nodesManager.reanimatedModule

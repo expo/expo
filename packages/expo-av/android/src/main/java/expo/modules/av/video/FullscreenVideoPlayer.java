@@ -10,8 +10,8 @@ import android.widget.FrameLayout;
 
 import java.lang.ref.WeakReference;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.services.KeepAwakeManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.services.KeepAwakeManager;
 import expo.modules.av.player.PlayerData;
 
 public class FullscreenVideoPlayer extends Dialog {

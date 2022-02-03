@@ -3,9 +3,9 @@
 #import <CoreLocation/CLLocation.h>
 #import <CoreLocation/CLLocationManager.h>
 
-#import <UMCore/UMEventEmitter.h>
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 // Location accuracies
 typedef NS_ENUM(NSUInteger, EXLocationAccuracy) {
@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger, EXGeofencingRegionState) {
   EXGeofencingRegionStateOutside = 2,
 };
 
-@interface EXLocation : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer>
+@interface EXLocation : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer>
 
 + (NSDictionary *)exportLocation:(CLLocation *)location;
 + (CLLocationAccuracy)CLLocationAccuracyFromOption:(EXLocationAccuracy)accuracy;

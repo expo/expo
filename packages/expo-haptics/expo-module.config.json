@@ -1,0 +1,7 @@
+{
+  "name": "expo-haptics",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modulesClassNames": ["HapticsModule"]
+  }
+}

@@ -57,13 +57,17 @@ class ExpoConstant extends React.Component<{ value?: any; name: string }, State>
   }
 }
 
+// Ignore deprecated properties
+const IGNORED_CONSTANTS = ['__unsafeNoWarnManifest', 'linkingUrl'];
+
 export default class ConstantsScreen extends React.PureComponent {
   render() {
     return (
       <ScrollView style={{ padding: 10, flex: 1, backgroundColor: Colors.greyBackground }}>
         {Object.keys(Constants)
+          .filter((value) => !IGNORED_CONSTANTS.includes(value))
           .sort()
-          .map(key => {
+          .map((key) => {
             if (typeof Constants[key] === 'function') return null;
             return <ExpoConstant name={key} key={key} />;
           })}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-declare type Props = React.ComponentProps<typeof View> & {
+declare type Props = React.ComponentPropsWithRef<typeof View> & {
     iconSize: number;
     iconColor?: string;
     orientation: 'horizontal' | 'vertical';
@@ -16,3 +16,4 @@ export default class AdOptionsView extends React.Component<Props> {
 export declare type NativeAdOptionsView = React.Component<Props>;
 export declare const NativeAdOptionsView: React.ComponentType<any>;
 export {};
+//# sourceMappingURL=AdOptionsView.d.ts.map

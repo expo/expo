@@ -77,4 +77,4 @@ export default function App() {
 
 ## Up next
 
-Our app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](../../tutorial/configuration/).
+Our app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](../tutorial/configuration.md).

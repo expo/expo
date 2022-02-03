@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { View } from 'react-native';
+import React from 'react';
+import { ViewProps } from 'react-native';
 declare type AppEvent = {
     [eventName: string]: any;
 };
-declare type PropsType = React.ComponentProps<typeof View> & {
+declare type PropsType = ViewProps & {
     /**
      * AdMob iOS library banner size constants
      * (https://developers.google.com/admob/ios/banner)
@@ -25,9 +25,7 @@ declare type PropsType = React.ComponentProps<typeof View> & {
     /**
      * Additional request params added to underlying request for the ad.
      */
-    additionalRequestParams?: {
-        [key: string]: string;
-    };
+    additionalRequestParams?: Record<string, string>;
     /**
      * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
      * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
@@ -74,3 +72,4 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=PublisherBanner.d.ts.map

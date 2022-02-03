@@ -5,8 +5,9 @@ Object {
   "Accept": "application/json",
   "Connection": "keep-alive",
   "Content-Type": "application/json",
-  "Device-Id": "a01650bb-918d-40be-87be-cf376ab6189f",
+  "Device-Id": "i-am-unique",
   "Device-Name": "Test Phone",
+  "Expo-Platform": "android",
   "Proxy-Connection": "keep-alive",
   "Session-Id": "c0d50576-7ddc-4196-8b1d-01c2d1786631",
 }

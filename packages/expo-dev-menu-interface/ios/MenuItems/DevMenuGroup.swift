@@ -1,31 +1,37 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+
 @objc
-open class DevMenuGroup: DevMenuItem {
-  let groupName: String
-  var items: [DevMenuItem] = []
+open class DevMenuGroup: DevMenuScreenItem, DevMenuItemsContainerProtocol {
+  let container = DevMenuItemsContainer()
 
   @objc
-  public init(withName name: String?) {
-    self.groupName = name ?? ""
+  public init() {
     super.init(type: .Group)
   }
 
   @objc
-  convenience public init() {
-    self.init(withName: nil)
+  public func addItem(_ item: DevMenuScreenItem) {
+    container.addItem(item)
+  }
+
+  public func getRootItems() -> [DevMenuScreenItem] {
+    return container.getRootItems()
+  }
+
+  public func getAllItems() -> [DevMenuScreenItem] {
+    return container.getAllItems()
+  }
+
+  public func serializeItems() -> [[String: Any]] {
+    return container.serializeItems()
   }
 
   @objc
-  open func addItem(_ item: DevMenuItem) {
-    items.append(item)
-  }
-
-  @objc
-  open override func serialize() -> [String : Any] {
+  public override func serialize() -> [String: Any] {
     var dict = super.serialize()
-    dict["groupName"] = groupName
-    dict["items"] = items.map({ $0.serialize() })
+    dict["items"] = serializeItems()
     return dict
   }
 }

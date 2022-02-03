@@ -88,6 +88,7 @@
       [self->_expectToPostDeviceToken fulfill];
     }];
     [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:@"@exponent/home"
+                                                   easProjectId:nil
                                                     deviceToken:token
                                               completionHandler:^(NSString * _Nullable expoPushToken, NSError * _Nullable error) {
                                                 XCTAssertNil(error, @"Unexpected error while fetching Expo push token: %@", error.localizedDescription);

@@ -47,7 +47,7 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     });
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     // Make sure it gets expanded once we receive new identifier.
     if (prevProps.uuid !== this.props.uuid) {
       this.expand();
@@ -63,7 +63,7 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     this.ref.current && this.ref.current.snapTo(0);
 
     // Use setTimeout until there is a better solution to execute something once the sheet is fully collapsed.
-    return new Promise(resolve => setTimeout(resolve, 300));
+    return new Promise((resolve) => setTimeout(resolve, 300));
   };
 
   collapseAndClose = async () => {

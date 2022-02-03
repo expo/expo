@@ -2,6 +2,7 @@
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTEventDispatcher.h>
 
 @interface DevMenuRNGestureHandlerManager : NSObject
 

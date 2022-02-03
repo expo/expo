@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-screen-ca
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded, as well as be notified if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
 
@@ -23,62 +24,69 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ## Usage
 
-### Example: prevent screen capture hook
+### Example: hook
 
-<!-- prettier-ignore -->
+<SnackInline label="Screen Capture hook" dependencies={["expo-screen-capture"]}>
+
 ```javascript
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default function ScreenCaptureExample {
-  /* @info As long as this component is mounted, the screen cannot captured */
+export default function ScreenCaptureExample() {
   usePreventScreenCapture();
-  /* @end */
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>This is an unrecordable screen!</Text>
+      <Text>As long as this component is mounted, this screen is unrecordable!</Text>
     </View>
   );
 }
 ```
 
+</SnackInline>
+
 ### Example: functions
 
-<!-- prettier-ignore -->
-```javascript
+<SnackInline label="Screen Capture functions" dependencies={["expo-screen-capture", "expo-permissions"]}>
+
+```js
 import * as ScreenCapture from 'expo-screen-capture';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, View, Platform } from 'react-native';
 
 export default class ScreenCaptureExample extends React.Component {
-  componentDidMount() {
-    /* @info The provided function will be run whenever a screenshot of your app is taken. */
-    ScreenCapture.addScreenshotListener(() => {
-      alert('Thanks for screenshotting my beautiful app 😊');
-    }); /* @end */
+  async componentDidMount() {
+    // This permission is only required on Android
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status === 'granted') {
+      ScreenCapture.addScreenshotListener(() => {
+        alert('Thanks for screenshotting my beautiful app 😊');
+      });
+    }
   }
 
   render() {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button onPress={this._activate}>Activate</Button>
-        <Button onPress={this._deactivate}>Deactivate</Button>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
+        <Button title="Activate" onPress={this._activate} />
+        <Button title="Deactivate" onPress={this._deactivate} />
       </View>
     );
   }
 
   _activate = async () => {
-    /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
-    await ScreenCapture.preventScreenCaptureAsync(); /* @end */
+    await ScreenCapture.preventScreenCaptureAsync();
   };
 
   _deactivate = async () => {
-    /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
-    await ScreenCapture.allowScreenCaptureAsync(); /* @end */
+    await ScreenCapture.allowScreenCaptureAsync();
   };
 }
 ```
+
+</SnackInline>
 
 ## API
 
@@ -116,7 +124,7 @@ Re-allows the user to screen record or screenshot your app. If you haven't calle
 
 ### `addScreenshotListener(listener)`
 
-Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission- you can request this with [`Permissions.askAsync(Permissions.MEDIA_LIBRARY)`](../sdk/permissions/#permissionsmedia_library).
+Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission- you can request this with [`Permissions.askAsync(Permissions.MEDIA_LIBRARY)`](permissions.md#permissionsmedia_library).
 
 #### Arguments
 

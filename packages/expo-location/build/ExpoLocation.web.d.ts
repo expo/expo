@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 /**
  * Gets the permission details. The implementation is not very good as it actually requests
@@ -20,7 +20,12 @@ declare const _default: {
     watchPositionImplAsync(watchId: string, options: LocationOptions): Promise<string>;
     getPermissionsAsync: typeof getPermissionsAsync;
     requestPermissionsAsync(): Promise<PermissionResponse>;
+    requestForegroundPermissionsAsync(): Promise<PermissionResponse>;
+    requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
+    getForegroundPermissionsAsync(): Promise<PermissionResponse>;
+    getBackgroundPermissionsAsync(): Promise<PermissionResponse>;
     startObserving(): void;
     stopObserving(): void;
 };
 export default _default;
+//# sourceMappingURL=ExpoLocation.web.d.ts.map

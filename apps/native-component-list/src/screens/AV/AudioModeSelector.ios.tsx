@@ -58,7 +58,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
     modeA.staysActiveInBackground === modeB.staysActiveInBackground;
 
   _setMode = (interruptionModeIOS: number) => () =>
-    this.setState(state => ({ modeToSet: { ...state.modeToSet, interruptionModeIOS } }));
+    this.setState((state) => ({ modeToSet: { ...state.modeToSet, interruptionModeIOS } }));
 
   _renderToggle = ({
     title,
@@ -89,7 +89,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         disabled={disabled}
         value={value !== undefined ? value : Boolean(this.state.modeToSet[valueName])}
         onValueChange={() =>
-          this.setState(state => ({
+          this.setState((state) => ({
             modeToSet: { ...state.modeToSet, [valueName]: !state.modeToSet[valueName] },
           }))
         }

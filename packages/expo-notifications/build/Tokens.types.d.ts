@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 export interface NativeDevicePushToken {
     type: 'ios' | 'android';
     data: string;
@@ -24,3 +24,4 @@ export interface ExpoPushToken {
     data: string;
 }
 export {};
+//# sourceMappingURL=Tokens.types.d.ts.map

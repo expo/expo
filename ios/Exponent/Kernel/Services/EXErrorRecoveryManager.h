@@ -21,30 +21,30 @@
  *  Associate arbitrary developer info with this experience id. If the experience recovers from an
  *  error, we can pass this info to the new instance of the experience.
  */
-- (void)setDeveloperInfo: (NSDictionary *)developerInfo forExperienceid: (NSString *)experienceId;
-- (NSDictionary *)developerInfoForExperienceId: (NSString *)experienceId;
+- (void)setDeveloperInfo:(NSDictionary *)developerInfo forScopeKey:(NSString *)scopeKey;
+- (NSDictionary *)developerInfoForScopeKey: (NSString *)scopeKey;
 
 /**
  *  Associate an error with an experience id. This will never be cleared until the next
  *  call to `experienceFinishedLoadingWithId:`.
  */
-- (void)setError: (NSError *)error forExperienceId: (NSString *)experienceId;
+- (void)setError: (NSError *)error forScopeKey:(NSString *)scopeKey;
 
 /**
- *  Indicate that a JS bundle has successfully loaded for this experience id.
+ *  Indicate that a JS bundle has successfully loaded for this experience.
  */
-- (void)experienceFinishedLoadingWithId:(NSString *)experienceId;
+- (void)experienceFinishedLoadingWithScopeKey:(NSString *)scopeKey;
 
 /**
- *  True if any bridge for this experience id had an error, and has not successfully loaded
+ *  True if any bridge for this experience had an error, and has not successfully loaded
  *  since the error was reported.
  */
-- (BOOL)experienceIdIsRecoveringFromError:(NSString *)experienceId;
+- (BOOL)scopeKeyIsRecoveringFromError:(NSString *)scopeKey;
 
 /**
- *  True if this error object (by `isEqual:`) has been registered for any experience id.
+ *  True if this error object (by `isEqual:`) has been registered for any experience.
  */
-- (BOOL)errorBelongsToExperience: (NSError *)error;
+- (BOOL)errorBelongsToExperience:(NSError *)error;
 
 /**
  *  Returns any existing app record for this error. Since error state persists between reloads until cleared,
@@ -55,12 +55,12 @@
 /**
  *  Whether we want to auto-reload this experience if it encounters a fatal error.
  */
-- (BOOL)experienceIdShouldReloadOnError: (NSString *)experienceId;
+- (BOOL)experienceShouldReloadOnError:(NSString *)scopeKey;
 
 /**
  *  Back off to a less aggressive autoreload buffer time.
  *  The longer the time, the longer a experience must wait before a fatal JS error triggers auto reload
- *  via `experienceIdShouldReloadOnError:`.
+ *  via `experienceShouldReloadOnError:`.
  */
 - (void)increaseAutoReloadBuffer;
 

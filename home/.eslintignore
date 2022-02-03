@@ -2,3 +2,5 @@
 /__generated__/
 /babel.config.js
 /metro.config.js
+graphql/types.ts
+/**/*.generated.ts

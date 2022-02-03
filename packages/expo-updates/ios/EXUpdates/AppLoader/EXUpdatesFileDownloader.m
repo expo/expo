@@ -1,13 +1,40 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
+#import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
+#import <EXUpdates/EXUpdatesMultipartStreamReader.h>
+#import <EXUpdates/EXUpdatesParameterParser.h>
+#import <EXUpdates/EXUpdatesManifestHeaders.h>
+
+#if __has_include(<EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>)
+#import <EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
 NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
+
+NSString * const EXUpdatesMultipartManifestPartName = @"manifest";
+NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
+
+NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
+const NSInteger EXUpdatesFileDownloaderErrorCodeFileWriteError = 1002;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestVerificationError = 1003;
+const NSInteger EXUpdatesFileDownloaderErrorCodeNoCompatibleUpdateError = 1009;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMismatchedManifestFiltersError = 1021;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestParseError = 1022;
+const NSInteger EXUpdatesFileDownloaderErrorCodeInvalidResponseError = 1040;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestStringError = 1041;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestJSONError = 1042;
+const NSInteger EXUpdatesFileDownloaderErrorCodeManifestSignatureError = 1043;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMultipartParsingError = 1044;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMultipartMissingManifestError = 1045;
+const NSInteger EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError = 1047;
+const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048;
 
 @interface EXUpdatesFileDownloader () <NSURLSessionDataDelegate>
 
@@ -55,112 +82,429 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 
 - (void)downloadFileFromURL:(NSURL *)url
                      toPath:(NSString *)destinationPath
+               extraHeaders:(NSDictionary *)extraHeaders
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  [self downloadDataFromURL:url successBlock:^(NSData *data, NSURLResponse *response) {
+  [self downloadDataFromURL:url extraHeaders:extraHeaders successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *error;
     if ([data writeToFile:destinationPath options:NSDataWritingAtomic error:&error]) {
       successBlock(data, response);
     } else {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:1002
+                                     code:EXUpdatesFileDownloaderErrorCodeFileWriteError
                                  userInfo:@{
                                    NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Could not write to path %@: %@", destinationPath, error.localizedDescription],
                                    NSUnderlyingErrorKey: error
                                  }
-                  ], response);
+                  ]);
     }
   } errorBlock:errorBlock];
 }
 
-- (void)downloadManifestFromURL:(NSURL *)url
-                   withDatabase:(EXUpdatesDatabase *)database
-                 cacheDirectory:(NSURL *)cacheDirectory
-                   successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
-                     errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
+- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders
 {
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-                                                         cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                                     timeoutInterval:EXUpdatesDefaultTimeoutInterval];
-  [self _setManifestHTTPHeaderFields:request];
-  [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
-    NSError *err;
-    id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
-    if (err) {
-      errorBlock(err, response);
-      return;
-    }
+  NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
 
-    NSDictionary *manifest = [self _extractManifest:parsedJson error:&err];
-    if (err) {
-      errorBlock(err, response);
-      return;
-    }
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
+  [self _setManifestHTTPHeaderFields:request withExtraHeaders:extraHeaders];
 
-    id innerManifestString = manifest[@"manifestString"];
-    id signature = manifest[@"signature"];
-    BOOL isSigned = innerManifestString != nil && signature != nil;
-
-    // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
-    // We should treat these manifests as unsigned rather than signed with an invalid signature.
-    if (isSigned && [signature isKindOfClass:[NSString class]] && [(NSString *)signature isEqualToString:@"UNSIGNED"]) {
-      isSigned = NO;
-
-      NSError *err;
-      manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-      NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-      NSMutableDictionary *mutableManifest = [manifest mutableCopy];
-      mutableManifest[@"isVerified"] = @(NO);
-      manifest = [mutableManifest copy];
-    }
-
-    if (isSigned) {
-      NSAssert([innerManifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
-      NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
-      [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
-                                     signature:(NSString *)signature
-                                        config:self->_config
-                                cacheDirectory:cacheDirectory
-                                  successBlock:^(BOOL isValid) {
-                                                  if (isValid) {
-                                                    NSError *err;
-                                                    id innerManifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-                                                    NSAssert(!err && innerManifest && [innerManifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-                                                    NSMutableDictionary *mutableInnerManifest = [(NSDictionary *)innerManifest mutableCopy];
-                                                    mutableInnerManifest[@"isVerified"] = @(YES);
-                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableInnerManifest copy]
-                                                                                                           config:self->_config
-                                                                                                         database:database];
-                                                    successBlock(update);
-                                                  } else {
-                                                    NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
-                                                    errorBlock(error, response);
-                                                  }
-                                                }
-                                    errorBlock:^(NSError *error) {
-                                                  errorBlock(error, response);
-                                                }
-      ];
-    } else {
-      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest
-                                                             config:self->_config
-                                                           database:database];
-      successBlock(update);
-    }
-  } errorBlock:errorBlock];
+  return request;
 }
 
-- (void)downloadDataFromURL:(NSURL *)url
-               successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
-                 errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
+- (NSURLRequest *)createGenericRequestWithURL:(NSURL *)url extraHeaders:(NSDictionary *)extraHeaders
 {
   // pass any custom cache policy onto this specific request
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
 
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
-  [self _setHTTPHeaderFields:request];
+  [self _setHTTPHeaderFields:request extraHeaders:extraHeaders];
+  
+  return request;
+}
 
+- (void)parseManifestResponse:(NSHTTPURLResponse *)httpResponse
+                     withData:(NSData *)data
+                     database:(EXUpdatesDatabase *)database
+                 successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
+                   errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock {
+  NSDictionary *headerDictionary = [httpResponse allHeaderFields];
+  id contentTypeRaw;
+  for (NSString *key in headerDictionary) {
+    if ([key caseInsensitiveCompare: @"content-type"] == NSOrderedSame) {
+      contentTypeRaw = headerDictionary[key];
+    }
+  }
+  
+  NSString *contentType;
+  if (contentTypeRaw != nil && [contentTypeRaw isKindOfClass:[NSString class]]) {
+    contentType = contentTypeRaw;
+  } else {
+    contentType = @"";
+  }
+  
+  if ([[contentType lowercaseString] hasPrefix:@"multipart/"]) {
+    NSDictionary<NSString *, NSString *> *contentTypeParameters = [[EXUpdatesParameterParser new] parseParameterString:contentType withDelimiter:';'];
+    NSString *boundaryParameterValue = contentTypeParameters[@"boundary"];
+    
+    if (boundaryParameterValue == nil) {
+      NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                           code:EXUpdatesFileDownloaderErrorCodeMissingMultipartBoundaryError
+                                       userInfo:@{
+        NSLocalizedDescriptionKey: @"Missing boundary in multipart manifest content-type",
+      }];
+      errorBlock(error);
+      return;
+    }
+    
+    return [self parseMultipartManifestResponse:httpResponse
+                                       withData:data
+                                       database:database
+                                       boundary:boundaryParameterValue
+                                   successBlock:successBlock
+                                     errorBlock:errorBlock];
+  } else {
+    // can use valueForHTTPHeaderField after dropping iOS 12 support
+    NSDictionary *responseHeaders = [httpResponse allHeaderFields];
+    EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
+                                                                                     serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
+                                                                                          manifestFilters:responseHeaders[@"expo-manifest-filters"]
+                                                                                        manifestSignature:responseHeaders[@"expo-manifest-signature"]
+                                                                                                signature:responseHeaders[@"expo-signature"]];
+    
+    return [self parseManifestBodyData:data
+                       manifestHeaders:manifestHeaders
+                            extensions:@{}
+                              database:database
+                          successBlock:successBlock
+                            errorBlock:errorBlock];
+  }
+}
+
+- (void)parseMultipartManifestResponse:(NSHTTPURLResponse *)httpResponse
+                              withData:(NSData *)data
+                              database:(EXUpdatesDatabase *)database
+                              boundary:(NSString *)boundary
+                          successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
+                            errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock {
+  NSInputStream *inputStream = [[NSInputStream alloc] initWithData:data];
+  EXUpdatesMultipartStreamReader *reader = [[EXUpdatesMultipartStreamReader alloc] initWithInputStream:inputStream boundary:boundary];
+
+  __block NSDictionary *manifestPartHeaders = nil;
+  __block NSData *manifestPartData = nil;
+  __block NSData *extensionsData = nil;
+
+  BOOL completed = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
+    id contentDispositionRaw;
+    for (NSString *key in headers) {
+      if ([key caseInsensitiveCompare: @"content-disposition"] == NSOrderedSame) {
+        contentDispositionRaw = headers[key];
+      }
+    }
+    
+    NSString *contentDisposition = nil;
+    if (contentDispositionRaw != nil && [contentDispositionRaw isKindOfClass:[NSString class]]) {
+      contentDisposition = contentDispositionRaw;
+    }
+    
+    if (contentDisposition != nil) {
+      NSDictionary<NSString *, NSString *> *contentDispositionParameters = [[EXUpdatesParameterParser new] parseParameterString:contentDisposition withDelimiter:';'];
+      NSString *contentDispositionNameFieldValue = contentDispositionParameters[@"name"];
+      if (contentDispositionNameFieldValue != nil) {
+        if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartManifestPartName]) {
+          manifestPartHeaders = headers;
+          manifestPartData = content;
+        } else if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartExtensionsPartName]) {
+          extensionsData = content;
+        }
+      }
+    }
+  }];
+  
+  if (!completed) {
+    NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                         code:EXUpdatesFileDownloaderErrorCodeMultipartParsingError
+                                     userInfo:@{
+      NSLocalizedDescriptionKey: @"Could not read multipart manifest response",
+    }];
+    errorBlock(error);
+    return;
+  }
+  
+  if (manifestPartHeaders == nil || manifestPartData == nil) {
+    NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                         code:EXUpdatesFileDownloaderErrorCodeMultipartMissingManifestError
+                                     userInfo:@{
+      NSLocalizedDescriptionKey: @"Multipart manifest response missing manifest part",
+    }];
+    errorBlock(error);
+    return;
+  }
+  
+  NSDictionary *extensions;
+  if (extensionsData != nil) {
+    NSError *extensionsParsingError;
+    id parsedExtensions = [NSJSONSerialization JSONObjectWithData:extensionsData options:kNilOptions error:&extensionsParsingError];
+    if (extensionsParsingError) {
+      errorBlock(extensionsParsingError);
+      return;
+    }
+    
+    if ([parsedExtensions isKindOfClass:[NSDictionary class]]) {
+      extensions = parsedExtensions;
+    } else {
+      NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                           code:EXUpdatesFileDownloaderErrorCodeMultipartParsingError
+                                       userInfo:@{
+        NSLocalizedDescriptionKey: @"Failed to parse multipart manifest extensions",
+      }];
+      errorBlock(error);
+      return;
+    }
+  }
+  
+  NSDictionary *responseHeaders = [httpResponse allHeaderFields];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
+                                                                                   serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
+                                                                                        manifestFilters:responseHeaders[@"expo-manifest-filters"]
+                                                                                      manifestSignature:responseHeaders[@"expo-manifest-signature"]
+                                                                                              signature:manifestPartHeaders[@"expo-signature"]];
+
+  return [self parseManifestBodyData:manifestPartData
+                     manifestHeaders:manifestHeaders
+                          extensions:extensions
+                            database:database
+                        successBlock:successBlock
+                          errorBlock:errorBlock];
+}
+
+- (void)parseManifestBodyData:(NSData *)manifestBodyData
+              manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                   extensions:(NSDictionary *)extensions
+                     database:(EXUpdatesDatabase *)database
+                 successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
+                   errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock {
+  id headerSignature = manifestHeaders.manifestSignature;
+  
+  NSError *error;
+  id manifestBodyJson = [NSJSONSerialization JSONObjectWithData:manifestBodyData options:kNilOptions error:&error];
+  if (error) {
+    errorBlock(error);
+    return;
+  }
+
+  NSDictionary *updateResponseDictionary = [self _extractUpdateResponseDictionary:manifestBodyJson error:&error];
+  if (error) {
+    errorBlock(error);
+    return;
+  }
+
+  id bodyManifestString = updateResponseDictionary[@"manifestString"];
+  id bodySignature = updateResponseDictionary[@"signature"];
+  BOOL isSignatureInBody = bodyManifestString != nil && bodySignature != nil;
+
+  id signature = isSignatureInBody ? bodySignature : headerSignature;
+  id manifestString = isSignatureInBody ? bodyManifestString : [[NSString alloc] initWithData:manifestBodyData encoding:NSUTF8StringEncoding];
+    
+  // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
+  // We should treat these manifests as unsigned rather than signed with an invalid signature.
+  BOOL isUnsignedFromXDL = [(NSString *)signature isEqualToString:@"UNSIGNED"];
+
+  if (![manifestString isKindOfClass:[NSString class]]) {
+    errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                   code:EXUpdatesFileDownloaderErrorCodeManifestStringError
+                               userInfo:@{
+                                 NSLocalizedDescriptionKey: @"manifestString should be a string",
+                               }
+                ]);
+    return;
+  }
+  NSDictionary *manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+  if (error || !manifest || ![manifest isKindOfClass:[NSDictionary class]]) {
+    errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                   code:EXUpdatesFileDownloaderErrorCodeManifestJSONError
+                               userInfo:@{
+                                 NSLocalizedDescriptionKey: @"manifest should be a valid JSON object",
+                               }
+                ]);
+    return;
+  }
+
+    
+  if (signature != nil && !isUnsignedFromXDL) {
+    if (![signature isKindOfClass:[NSString class]]) {
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeManifestSignatureError
+                                 userInfo:@{
+                                   NSLocalizedDescriptionKey: @"signature should be a string",
+                                 }
+                  ]);
+      return;
+    }
+    [EXUpdatesCrypto verifySignatureWithData:(NSString *)manifestString
+                                   signature:(NSString *)signature
+                                      config:self->_config
+                                successBlock:^(BOOL isValid) {
+                                                if (isValid) {
+                                                  [self _createUpdateWithManifest:manifest
+                                                                 manifestBodyData:manifestBodyData
+                                                                  manifestHeaders:manifestHeaders
+                                                                       extensions:extensions
+                                                                         database:database
+                                                                       isVerified:YES
+                                                                     successBlock:successBlock
+                                                                       errorBlock:errorBlock];
+                                                } else {
+                                                  NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                                                                       code:EXUpdatesFileDownloaderErrorCodeManifestVerificationError
+                                                                                   userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
+                                                  errorBlock(error);
+                                                }
+                                              }
+                                  errorBlock:^(NSError *error) {
+                                                errorBlock(error);
+                                              }
+    ];
+  } else {
+    [self _createUpdateWithManifest:manifest
+                   manifestBodyData:manifestBodyData
+                    manifestHeaders:manifestHeaders
+                         extensions:extensions
+                           database:database
+                         isVerified:NO
+                       successBlock:successBlock
+                         errorBlock:errorBlock];
+  }
+}
+
+- (void)downloadManifestFromURL:(NSURL *)url
+                   withDatabase:(EXUpdatesDatabase *)database
+                   extraHeaders:(nullable NSDictionary *)extraHeaders
+                   successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
+                     errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
+{
+  NSURLRequest *request = [self createManifestRequestWithURL:url extraHeaders:extraHeaders];
+  [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
+    if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeInvalidResponseError
+                                 userInfo:@{
+                                   NSLocalizedDescriptionKey: @"response must be a NSHTTPURLResponse",
+                                 }
+                  ]);
+      return;
+    }
+    return [self parseManifestResponse:(NSHTTPURLResponse *)response
+                              withData:data
+                              database:database
+                          successBlock:successBlock
+                            errorBlock:errorBlock];
+  } errorBlock:errorBlock];
+}
+
+- (void)_createUpdateWithManifest:(NSDictionary *)manifest
+                 manifestBodyData:(NSData *)manifestBodyData
+                  manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                       extensions:(NSDictionary *)extensions
+                         database:(EXUpdatesDatabase *)database
+                       isVerified:(BOOL)isVerified
+                     successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
+                       errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
+{
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  if (codeSigningConfiguration) {
+    NSError *error;
+    EXUpdatesSignatureHeaderInfo *signatureHeaderInfo = [[EXUpdatesSignatureHeaderInfo alloc] initWithSignatureHeader:manifestHeaders.signature
+                                                                                                                error:&error];
+    if (error) {
+      NSString *message;
+      if (error.code == EXUpdatesSignatureHeaderInfoErrorMissingSignatureHeader) {
+        message = @"No expo-signature header specified";
+      } else if (error.code == EXUpdatesSignatureHeaderInfoErrorStructuredFieldParseError) {
+        message = @"expo-signature structured header parsing failed";
+      } else if (error.code == EXUpdatesSignatureHeaderInfoErrorSigMissing) {
+        message = @"Structured field sig not found in expo-signature header";
+      }
+      
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
+      return;
+    }
+    
+    BOOL isSignatureValid = [codeSigningConfiguration verifySignatureHeaderInfoWithSignatureHeaderInfo:signatureHeaderInfo
+                                                                                            signedData:manifestBodyData
+                                                                                                 error:&error].boolValue;
+    if (error) {
+      NSString *message;
+      if (error.code == EXUpdatesCodeSigningConfigurationErrorKeyIdMismatchError) {
+        message = @"Key with keyid from signature not found in client configuration";
+      } else if (error.code == EXUpdatesCodeSigningConfigurationErrorSignatureEncodingError) {
+        message = @"Signature in header has invalid encoding";
+      } else if (error.code == EXUpdatesCodeSigningConfigurationErrorSecurityFrameworkError) {
+        message = @"Signature verification failed due to security framework error";
+      }
+      
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
+      return;
+    }
+    
+    if (!isSignatureValid) {
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
+      return;
+    }
+  }
+  
+  NSMutableDictionary *mutableManifest = manifest.mutableCopy;
+  if (_config.expectsSignedManifest) {
+    // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
+    mutableManifest[@"isVerified"] = @(isVerified);
+  }
+
+  NSError *error;
+  EXUpdatesUpdate *update;
+  @try {
+    update = [EXUpdatesUpdate updateWithManifest:mutableManifest
+                                 manifestHeaders:manifestHeaders
+                                      extensions:extensions
+                                          config:_config
+                                        database:database
+                                           error:&error];
+  }
+  @catch (NSException *exception) {
+    // Catch any assertions related to parsing the manifest JSON,
+    // this will ensure invalid manifests can be easily debugged.
+    // For example, this will catch nullish sdkVersion assertions.
+    error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                code:EXUpdatesFileDownloaderErrorCodeManifestParseError
+                            userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
+  }
+  
+  if (error) {
+    errorBlock(error);
+    return;
+  }
+
+  if (![EXUpdatesSelectionPolicies doesUpdate:update matchFilters:update.manifestFilters]) {
+    NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                         code:EXUpdatesFileDownloaderErrorCodeMismatchedManifestFiltersError
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Downloaded manifest is invalid; provides filters that do not match its content"}];
+    errorBlock(error);
+  } else {
+    successBlock(update);
+  }
+}
+
+- (void)downloadDataFromURL:(NSURL *)url
+               extraHeaders:(NSDictionary *)extraHeaders
+               successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
+                 errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
+{
+  NSURLRequest *request = [self createGenericRequestWithURL:url extraHeaders:extraHeaders];
   [self _downloadDataWithRequest:request successBlock:successBlock errorBlock:errorBlock];
 }
 
@@ -171,7 +515,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   NSURLSessionDataTask *task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-      if (httpResponse.statusCode != 200) {
+      if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300) {
         NSStringEncoding encoding = [self _encodingFromResponse:response];
         NSString *body = [[NSString alloc] initWithData:data encoding:encoding];
         error = [self _errorFromResponse:httpResponse body:body];
@@ -179,7 +523,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     }
 
     if (error) {
-      errorBlock(error, response);
+      errorBlock(error);
     } else {
       successBlock(data, response);
     }
@@ -187,7 +531,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   [task resume];
 }
 
-- (nullable NSDictionary *)_extractManifest:(id)parsedJson error:(NSError **)error
+- (nullable NSDictionary *)_extractUpdateResponseDictionary:(id)parsedJson error:(NSError **)error
 {
   if ([parsedJson isKindOfClass:[NSDictionary class]]) {
     return (NSDictionary *)parsedJson;
@@ -205,15 +549,22 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 
   if (error) {
-    *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1009 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible update found at %@. Only %@ are supported.", _config.updateUrl.absoluteString, _config.sdkVersion]}];
+    *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                 code:EXUpdatesFileDownloaderErrorCodeNoCompatibleUpdateError
+                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible update found at %@. Only %@ are supported.", _config.updateUrl.absoluteString, _config.sdkVersion]}];
   }
   return nil;
 }
 
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request
+                extraHeaders:(NSDictionary *)extraHeaders
 {
+  for (NSString *key in extraHeaders) {
+    [request setValue:extraHeaders[key] forHTTPHeaderField:key];
+  }
+  
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
-  [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
+  [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
 
   for (NSString *key in _config.requestHeaders) {
@@ -221,11 +572,32 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 }
 
-- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request
+- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withExtraHeaders:(nullable NSDictionary *)extraHeaders
 {
-  [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
+  // apply extra headers before anything else, so they don't override preset headers
+  if (extraHeaders) {
+    for (NSString *key in extraHeaders) {
+      id value = extraHeaders[key];
+      if ([value isKindOfClass:[NSString class]]) {
+        [request setValue:value forHTTPHeaderField:key];
+      } else if ([value isKindOfClass:[NSNumber class]]) {
+        if (CFGetTypeID((__bridge CFTypeRef)(value)) == CFBooleanGetTypeID()) {
+          [request setValue:((NSNumber *)value).boolValue ? @"true" : @"false" forHTTPHeaderField:key];
+        } else {
+          [request setValue:((NSNumber *)value).stringValue forHTTPHeaderField:key];
+        }
+      } else {
+        [request setValue:[(NSObject *)value description] forHTTPHeaderField:key];
+      }
+    }
+  }
+
+  [request setValue:@"multipart/mixed,application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
+  [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
+  [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
+  [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
-  [request setValue:@"true" forHTTPHeaderField:@"Expo-Accept-Signature"];
+  [request setValue:(_config.expectsSignedManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
   [request setValue:_config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
 
   NSString *runtimeVersion = _config.runtimeVersion;
@@ -235,7 +607,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     [request setValue:_config.sdkVersion forHTTPHeaderField:@"Expo-SDK-Version"];
   }
 
-  NSString *previousFatalError = [EXUpdatesAppLauncherNoDatabase consumeError];
+  NSString *previousFatalError = [EXUpdatesErrorRecovery consumeErrorLog];
   if (previousFatalError) {
     // some servers can have max length restrictions for headers,
     // so we restrict the length of the string to 1024 characters --
@@ -246,7 +618,14 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     [request setValue:previousFatalError forHTTPHeaderField:@"Expo-Fatal-Error"];
   }
 
-  [self _setHTTPHeaderFields:request];
+  for (NSString *key in _config.requestHeaders) {
+    [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
+  }
+  
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  if (codeSigningConfiguration) {
+    [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expects-signature"];
+  }
 }
 
 #pragma mark - NSURLSessionTaskDelegate

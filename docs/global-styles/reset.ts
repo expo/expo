@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme, typography } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
 
@@ -113,11 +114,11 @@ export const globalReset = css`
 
   a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    color: ${Constants.colors.expoLighter};
+    color: ${theme.link.default};
   }
 
   body {
-    font-family: ${Constants.fonts.book};
+    font-family: ${typography.fontFaces.regular};
     text-rendering: optimizeLegibility;
     font-size: 16px;
   }
@@ -129,7 +130,7 @@ export const globalReset = css`
   }
 
   ::selection {
-    background-color: ${Constants.colors.lila};
-    color: ${Constants.colors.black};
+    background-color: ${theme.highlight.accent};
+    color: ${theme.text.default};
   }
 `;

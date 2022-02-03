@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXNotifications/EXNotificationCenterDelegate.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <EXNotifications/EXNotificationsDelegate.h>
 
 @interface EXNotificationCenterDelegate ()
@@ -13,7 +13,7 @@
 
 @implementation EXNotificationCenterDelegate
 
-UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
+EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 
 - (instancetype)init
 {
@@ -29,7 +29,7 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions
 {
   if ([UNUserNotificationCenter currentNotificationCenter].delegate) {
-    UMLogWarn(@"[expo-notifications] EXNotificationCenterDelegate encountered already present delegate of UNUserNotificationCenter: %@. "
+    EXLogWarn(@"[expo-notifications] EXNotificationCenterDelegate encountered already present delegate of UNUserNotificationCenter: %@. "
               "EXNotificationCenterDelegate will not overwrite the value not to break other features of your app. "
               "In return, expo-notifications may not work properly. "
               "To fix this problem either remove setting of the second delegate "
@@ -191,7 +191,10 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
         // completion handler doesn't need to do anything
       }];
     }
-    [_pendingNotificationResponses removeAllObjects];
+    // Remove EXUserNotificationManager check when LegacyNotifications are no longer supported
+    if (![NSStringFromClass([delegate class]) isEqual:@"EXUserNotificationManager"]) {
+      [_pendingNotificationResponses removeAllObjects];
+    }
   }
 }
 

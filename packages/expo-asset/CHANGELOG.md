@@ -8,6 +8,58 @@
 
 ### 🐛 Bug fixes
 
+- Fix missing `getManifest2()` function on web. ([#15891](https://github.com/expo/expo/pull/15891)) by [@jonsamp](https://github.com/jonsamp)
+
+### 💡 Others
+
+- Swap out Cloudfront CDN for `classic-assets.eascdn.net`. ([#15781](https://github.com/expo/expo/pull/15781)) by [@quinlanj](https://github.com/quinlanj)
+
+## 8.4.5 — 2021-12-21
+
+### 🐛 Bug fixes
+
+- Fix an issue preventing the loading of assets using expo-updates manifests during local development. ([#15667](https://github.com/expo/expo/pull/15667)) by [@jonsamp](https://github.com/jonsamp)
+
+## 8.4.4 — 2021-11-17
+
+### 🐛 Bug fixes
+
+- Fix `fromModule` on restrictive (Snack) web environments. ([#14435](https://github.com/expo/expo/pull/14435) by [@IjzerenHein](https://github.com/IjzerenHein))
+
+## 8.4.1 — 2021-10-01
+
+### 💡 Others
+
+- Updated `@testing-library/react-hooks` to version `7.0.1`. ([#14552](https://github.com/expo/expo/pull/14552)) by [@Simek](https://github.com/Simek))
+
+## 8.4.0 — 2021-09-08
+
+### 🎉 New features
+
+- Reapply [#12624](https://github.com/expo/expo/pull/12624) ([#13789](https://github.com/expo/expo/pull/13789) by [@jkhales](https://github.com/jkhales))
+
+## 8.3.2 — 2021-04-21
+
+### 🎉 New features
+
+- Find local assets without extensions. ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
+
+## 8.3.1 — 2021-03-23
+
+### 🐛 Bug fixes
+
+- Removed annoying yellowbox warning message in bare workflow when there's no manifest available. ([#12237](https://github.com/expo/expo/pull/12237) by [@bbarthec](https://github.com/bbarthec))
+
+## 8.3.0 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 8.2.2 — 2021-01-15
+
+_This version does not introduce any user-facing changes._
+
 ## 8.2.1 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
@@ -24,11 +76,11 @@ _This version does not introduce any user-facing changes._
 
 ## 8.1.7 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.1.6 — 2020-05-27
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.1.5
 

@@ -1,10 +1,17 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
+import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import * as Linking from '../Linking';
 import { QueryParams } from '../Linking.types';
 
 describe('parse', () => {
+  beforeAll(() => {
+    mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
+  });
+  afterAll(() => {
+    unmockAllProperties();
+  });
+
   test.each<string>([
     'exp://127.0.0.1:19000/',
     'exp://127.0.0.1:19000/--/test/path?query=param',
@@ -23,54 +30,74 @@ describe('parse', () => {
     'custom://',
     'custom://?hello=bar',
     'invalid',
-  ])(`parses %p`, url => {
+  ])(`parses %p`, (url) => {
     expect(Linking.parse(url)).toMatchSnapshot();
   });
 });
 
-describe('makeUrl queries', () => {
+describe(Linking.createURL, () => {
   const consoleWarn = console.warn;
-  beforeEach(() => {
-    console.warn = jest.fn();
-  });
+  const executionEnvironment = Constants.executionEnvironment;
 
-  afterEach(() => {
-    console.warn = consoleWarn;
-  });
-
-  test.each<QueryParams>([
-    { shouldEscape: '%2b%20' },
-    { escapePluses: 'email+with+plus@whatever.com' },
-    { emptyParam: '' },
-    { undefinedParam: undefined },
-    { lotsOfSlashes: '/////' },
-  ])(`makes url %p`, queryParams => {
-    expect(Linking.makeUrl('some/path', queryParams)).toMatchSnapshot();
-  });
-
-  test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
-    expect(Linking.makeUrl(path)).toMatchSnapshot();
-  });
-});
-
-if (Platform.OS !== 'web') {
-  describe('makeUrl in bare workflow', () => {
-    const consoleWarn = console.warn;
-    const executionEnvironment = Constants.executionEnvironment;
-
+  describe('queries', () => {
     beforeEach(() => {
       console.warn = jest.fn();
-      Constants.executionEnvironment = ExecutionEnvironment.Bare;
+      Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
+      mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
+      mockProperty(Constants.manifest, 'scheme', 'demo');
     });
 
     afterEach(() => {
       console.warn = consoleWarn;
       Constants.executionEnvironment = executionEnvironment;
+      unmockAllProperties();
     });
 
-    it('should return empty string and warn', () => {
-      expect(Linking.makeUrl('/')).toEqual('');
-      expect(console.warn).toHaveBeenCalledWith(expect.stringMatching('not supported in bare'));
+    test.each<QueryParams>([
+      { shouldEscape: '%2b%20' },
+      { escapePluses: 'email+with+plus@whatever.com' },
+      { emptyParam: '' },
+      { undefinedParam: undefined },
+      { lotsOfSlashes: '/////' },
+    ])(`makes url %p`, (queryParams) => {
+      expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
+    });
+
+    test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
+      expect(Linking.createURL(path)).toMatchSnapshot();
     });
   });
-}
+
+  describe('bare', () => {
+    beforeEach(() => {
+      console.warn = jest.fn();
+      Constants.executionEnvironment = ExecutionEnvironment.Bare;
+      mockProperty(Constants.manifest, 'hostUri', null);
+      mockProperty(Constants.manifest, 'scheme', 'demo');
+    });
+
+    afterEach(() => {
+      console.warn = consoleWarn;
+      Constants.executionEnvironment = executionEnvironment;
+      unmockAllProperties();
+    });
+
+    test.each<QueryParams>([
+      { shouldEscape: '%2b%20' },
+      { escapePluses: 'email+with+plus@whatever.com' },
+      { emptyParam: '' },
+      { undefinedParam: undefined },
+      { lotsOfSlashes: '/////' },
+    ])(`makes url %p`, (queryParams) => {
+      expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
+    });
+
+    test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
+      expect(Linking.createURL(path)).toMatchSnapshot();
+    });
+
+    it(`uses triple slashes`, () => {
+      expect(Linking.createURL('some/path', { isTripleSlashed: true })).toMatchSnapshot();
+    });
+  });
+});

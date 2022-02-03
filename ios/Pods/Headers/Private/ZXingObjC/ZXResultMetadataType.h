@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/core/ZXResultMetadataType.h

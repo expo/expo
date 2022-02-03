@@ -1,6 +1,6 @@
 {
   "name": "expo-facebook",
-  "version": "9.1.0",
+  "version": "12.1.0",
   "description": "Expo universal module for Facebook SDK",
   "main": "build/Facebook.js",
   "types": "build/Facebook.d.ts",
@@ -29,14 +29,17 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/facebook/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+  "dependencies": {
+    "@expo/config-plugins": "^4.0.14"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

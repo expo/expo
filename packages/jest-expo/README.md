@@ -2,18 +2,15 @@
 
 A [Jest](https://facebook.github.io/jest/) preset to painlessly test your Expo / React Native apps.
 
-If you have problems with the code in this repository, please file issues & bug reports
-at https://github.com/expo/expo. Thanks!
-
 ### Installation
 
-- `yarn add jest-expo --dev` or `npm i jest-expo --save-dev`
+- To install the compatible version of `jest-expo` and `jest` for your project, run: `expo install jest-expo jest`.
 - Add the following config to `package.json`:
 
-  ```js
+  ```json
   "scripts": {
-    "test": "node_modules/.bin/jest",
-    "test:debug": "node --inspect-brk node_modules/jest/bin/jest.js --runInBand"
+    ...
+    "test": "jest"
   },
   "jest": {
     "preset": "jest-expo"
@@ -29,6 +26,8 @@ at https://github.com/expo/expo. Thanks!
   ```
 
 - Run `npm test` and it should pass
+
+>  You can use a different version of `jest` than the one that is installed with `expo install`, but keep in mind that the SDK and `jest-expo` are built against that version.
 
 ## Platforms
 
@@ -116,4 +115,4 @@ Alternative to `jest-expo/node`. This runs in a Node environment for testing **S
 
 ### Learning Jest
 
-[Read the excellent documentation](https://facebook.github.io/jest/)
+[Read the Jest documentation](https://facebook.github.io/jest/)

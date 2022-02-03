@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.facebook.ads.MediaView;
 
-import org.unimodules.core.ViewManager;
+import expo.modules.core.ViewManager;
 
 public class MediaViewManager extends ViewManager<MediaView> {
   @Override

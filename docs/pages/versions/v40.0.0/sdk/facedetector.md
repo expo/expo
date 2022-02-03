@@ -20,16 +20,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 - Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
 
-### Comprehensive Example
-
-Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.io/@documentation/camerja).
-
-`FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
-
-### Intermodule interface
-
-Other modules, like eg. [Camera](../camera/) are able to use this `FaceDetector`.
-
 ## API
 
 ```js
@@ -95,7 +85,7 @@ Positions of face landmarks are returned only if `faceDetectionLandmarks` proper
 
 ## Methods
 
-To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](../payments/#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
+To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](payments.md#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
 
 ```javascript
 import * as FaceDetector from 'expo-face-detector';

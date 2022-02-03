@@ -1,13 +1,14 @@
-import * as Permissions from 'expo-permissions';
 import * as Brightness from 'expo-brightness';
 import { Platform } from 'react-native';
+
 import * as TestUtils from '../TestUtils';
 
 export const name = 'Brightness';
 export const EPSILON = Math.pow(10, -5);
 
 export async function test(t) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   t.describe(name, () => {
@@ -84,7 +85,7 @@ export async function test(t) {
         () => {
           t.beforeAll(async () => {
             await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-              return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+              return Brightness.requestPermissionsAsync();
             });
           });
 
@@ -148,7 +149,7 @@ export async function test(t) {
       describeWithPermissions(`Brightness.useSystemBrightnessAsync`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-            return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+            return Brightness.requestPermissionsAsync();
           });
         });
 
@@ -194,7 +195,7 @@ export async function test(t) {
       describeWithPermissions(`Brightness.isUsingSystemBrightnessAsync`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-            return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+            return Brightness.requestPermissionsAsync();
           });
         });
 
@@ -225,7 +226,7 @@ export async function test(t) {
       describeWithPermissions(`Brightness Mode`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-            return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+            return Brightness.requestPermissionsAsync();
           });
         });
 

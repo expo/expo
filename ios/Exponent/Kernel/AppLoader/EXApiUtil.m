@@ -13,11 +13,9 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
 
 @implementation EXApiUtil
 
-+ (NSURL *)bundleUrlFromManifest:(NSDictionary *)manifest
++ (NSURL *)bundleUrlFromManifest:(EXManifestsManifest *)manifest
 {
-  NSString *urlString = [manifest objectForKey:@"bundleUrl"];
-  RCTAssert([urlString isKindOfClass:[NSString class]], @"Manifest contains a bundleUrl which is not a string: %@", urlString);
-  return [[self class] encodedUrlFromString:urlString];
+  return [[self class] encodedUrlFromString:manifest.bundleUrl];
 }
 
 + (NSURL *)encodedUrlFromString:(NSString *)urlString
@@ -62,10 +60,10 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
   [publicKeyResource loadResourceWithBehavior:cacheBehavior progressBlock:nil successBlock:^(NSData *publicKeyData) {
     dispatch_async(dispatch_get_main_queue(), ^{
       SecKeyRef publicKey = [self keyRefFromPEMData:publicKeyData];
-      
+
       NSData *signatureData = [[NSData alloc] initWithBase64EncodedString:signature options:0];
       NSData *signedData = [data dataUsingEncoding:NSUTF8StringEncoding];
-      
+
       BOOL isValid = NO;
       if (publicKey) {
         isValid = [self verifyRSASHA256SignedData:signedData signatureData:signatureData publicKey:publicKey];
@@ -173,11 +171,11 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
                               (__bridge id)kSecReturnRef: (__bridge id) kCFBooleanTrue,
                               };
   secStatus = SecItemCopyMatching((CFDictionaryRef)queryParams, (CFTypeRef *)&keyRef);
-  
+
   if (secStatus != noErr) {
     return nil;
   }
-  
+
   return keyRef;
 }
 

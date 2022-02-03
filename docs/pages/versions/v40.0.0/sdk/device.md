@@ -20,44 +20,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as Device from 'expo-device';
 ```
 
-### Constants
-
-- [`Device.isDevice`](#deviceisdevice)
-- [`Device.brand`](#devicebrand)
-- [`Device.manufacturer`](#devicemanufacturer)
-- [`Device.modelName`](#devicemodelname)
-- [`Device.modelId`](#devicemodelid) (iOS only)
-- [`Device.designName`](#devicedesignname) (Android only)
-- [`Device.productName`](#deviceproductname) (Android only)
-- [`Device.deviceYearClass`](#devicedeviceyearclass)
-- [`Device.totalMemory`](#devicetotalmemory)
-- [`Device.supportedCpuArchitectures`](#devicesupportedcpuarchitectures)
-- [`Device.osName`](#deviceosname)
-- [`Device.osVersion`](#deviceosversion)
-- [`Device.osBuildId`](#deviceosbuildid)
-- [`Device.osInternalBuildId`](#deviceosinternalbuildid)
-- [`Device.osBuildFingerprint`](#deviceosbuildfingerprint) (Android only)
-- [`Device.platformApiLevel`](#deviceplatformapilevel) (Android only)
-- [`Device.deviceName`](#devicedevicename)
-
-### Methods
-
-- [`Device.getDeviceTypeAsync()`](#devicegetdevicetypeasync)
-- [`Device.getUptimeAsync()`](#devicegetuptimeasync)
-- [`Device.getMaxMemoryAsync()`](#devicegetmaxmemoryasync) (Android only)
-- [`Device.isRootedExperimentalAsync()`](#deviceisrootedexperimentalasync)
-- [`Device.isSideLoadingEnabledAsync()`](#deviceissideloadingenabledasync) (Android only)
-- [`Device.getPlatformFeaturesAsync()`](#devicegetplatformfeaturesasync) (Android only)
-- [`Device.hasPlatformFeatureAsync(feature)`](#devicehasplatformfeatureasyncfeature) (Android only)
-
-### Enum Types
-
-- [`Device.DeviceType`](#devicedevicetype)
-
-### Errors
-
-- [Error Codes](#error-codes)
-
 ## Constants
 
 ### `Device.isDevice`
@@ -297,7 +259,9 @@ await Device.isRootedExperimentalAsync();
 
 ### `Device.isSideLoadingEnabledAsync()`
 
-**Android only.** Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
+**Android only. Using this method requires you to [add the `REQUEST_INSTALL_PACKAGES` permission](../config/app.md#permissions).**
+
+Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
 
 #### Returns
 
@@ -309,8 +273,6 @@ Returns a promise that resolves to a `boolean` that represents whether the calli
 await Device.isSideLoadingEnabledAsync();
 // true or false
 ```
-
-> This method requires the [`REQUEST_INSTALL_PACKAGES`](https://developer.android.com/reference/android/Manifest.permission#REQUEST_INSTALL_PACKAGES) permission to detect if sideloading is possible on the user's device.
 
 ### `Device.getPlatformFeaturesAsync()`
 

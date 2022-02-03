@@ -4,16 +4,16 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/calendar.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/calendar.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/calendar/)
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/calendar/).
+For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/calendar/).
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -23,11 +23,13 @@ expo install expo-calendar
 
 ### Configure for iOS
 
-Add `NSCalendarsUsageDescription` key to your `Info.plist`:
+Add `NSCalendarsUsageDescription`, and `NSRemindersUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSCalendarsUsageDescription</key>
 <string>Allow $(PRODUCT_NAME) to access your calendar</string>
+<key>NSRemindersUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your reminders</string>
 ```
 
 Run `npx pod-install` after installing the npm package.

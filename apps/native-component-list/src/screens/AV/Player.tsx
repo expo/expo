@@ -1,6 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import SegmentedControl from '@react-native-community/segmented-control';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { AVMetadata } from 'expo-av';
 import React from 'react';
 import {
   GestureResponderEvent,
@@ -28,6 +29,7 @@ interface Props {
       }
     | (() => React.ReactNode)
   )[];
+  extraIndicator?: JSX.Element;
   style?: StyleProp<ViewStyle>;
 
   // Functions
@@ -51,6 +53,7 @@ interface Props {
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
   isMuted: boolean;
+  metadata?: AVMetadata;
 
   // Error
   errorMessage?: string;
@@ -79,7 +82,7 @@ export default function Player(props: Props) {
     return (
       <TouchableOpacity onPress={_toggleLooping} disabled={!props.isLoaded}>
         <Ionicons
-          name="ios-repeat"
+          name="repeat"
           size={34}
           style={[styles.icon, !props.isLooping && { color: '#C1C1C1' }]}
         />
@@ -98,7 +101,10 @@ export default function Player(props: Props) {
 
     return (
       <TouchableOpacity onPress={onPress} disabled={!props.isLoaded}>
-        <Ionicons name={iconName} style={[styles.icon, styles.playPauseIcon]} />
+        <Ionicons
+          name={iconName as 'ios-pause' | 'ios-play'}
+          style={[styles.icon, styles.playPauseIcon]}
+        />
       </TouchableOpacity>
     );
   };
@@ -137,7 +143,7 @@ export default function Player(props: Props) {
         disabled={!props.isLoaded}
         onPress={onPress}>
         <Ionicons
-          name={`ios-${iconName}`}
+          name={`ios-${iconName}` as any}
           size={iconName === 'refresh' ? 20 : 24}
           style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
         />
@@ -171,59 +177,73 @@ export default function Player(props: Props) {
         </Text>
         {_renderReplayButton()}
       </View>
-      <View style={[styles.container, styles.buttonsContainer]}>
+
+      <Text>{props.metadata?.title ?? ''}</Text>
+
+      <View style={styles.container}>{props.extraIndicator}</View>
+
+      <View style={styles.container}>
         <VolumeSlider
           isMuted={props.isMuted}
           disabled={!props.isLoaded}
+          style={{ width: undefined, flex: 1 }}
           volume={props.volume}
           onValueChanged={({ isMuted, volume }) => {
             props.setIsMutedAsync(isMuted);
             props.setVolume(volume);
           }}
         />
-        {_renderAuxiliaryButton({
-          iconName: 'skip-backward',
-          title: 'Replay',
-          onPress: props.replayAsync,
-          active: false,
-        })}
-
-        {_renderAuxiliaryButton({
-          iconName: 'rewind',
-          title: 'Seek Backward',
-          onPress: _seekBackward,
-        })}
-        {_renderAuxiliaryButton({
-          iconName: 'fastforward',
-          title: 'Seek Forward',
-          onPress: _seekForward,
-        })}
-        {props.nextAsync &&
-          _renderAuxiliaryButton({
-            iconName: 'skip-forward',
-            title: 'Next',
-            onPress: props.nextAsync,
-            active: false,
-          })}
       </View>
 
       <View style={[styles.container, styles.buttonsContainer]}>
-        {(props.extraButtons ?? []).map(button => {
+        {(props.extraButtons ?? []).map((button) => {
           if (typeof button === 'function') return button();
           return _renderAuxiliaryButton(button);
         })}
       </View>
-      <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between' }}>
+
+      <View
+        style={[
+          styles.container,
+          { flexDirection: 'row', flex: 1, justifyContent: 'space-between' },
+        ]}>
         <PitchControl
           disabled={Platform.OS === 'web'}
           value={props.shouldCorrectPitch}
           onPress={_toggleShouldCorrectPitch}
         />
         <SpeedSegmentedControl
-          onValueChange={rate => {
+          onValueChange={(rate) => {
             props.setRateAsync(rate, props.shouldCorrectPitch);
           }}
         />
+      </View>
+
+      <View style={[styles.container, styles.buttonsContainer]}>
+        {_renderAuxiliaryButton({
+          iconName: 'play-skip-back',
+          title: 'Replay',
+          onPress: props.replayAsync,
+          active: false,
+        })}
+
+        {_renderAuxiliaryButton({
+          iconName: 'play-back',
+          title: 'Seek Backward',
+          onPress: _seekBackward,
+        })}
+        {_renderAuxiliaryButton({
+          iconName: 'play-forward',
+          title: 'Seek Forward',
+          onPress: _seekForward,
+        })}
+        {props.nextAsync &&
+          _renderAuxiliaryButton({
+            iconName: 'play-skip-forward',
+            title: 'Next',
+            onPress: props.nextAsync,
+            active: false,
+          })}
       </View>
       {_maybeRenderErrorOverlay()}
     </View>
@@ -255,7 +275,7 @@ function PitchControl({
       onPress={() => {
         onPress(!value);
       }}>
-      <Ionicons name="ios-stats" size={24} color={color} style={{}} />
+      <Ionicons name="ios-stats-chart" size={24} color={color} style={{}} />
       <Text
         style={{
           textDecorationLine: disabled ? 'line-through' : 'none',
@@ -277,7 +297,7 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
 
   const renderIcon = (name: string) => (
     <Ionicons
-      name={`ios-${name}`}
+      name={`ios-${name}` as 'ios-hourglass' | 'ios-speedometer'}
       size={24}
       style={{ color: Colors.tintColor, paddingHorizontal: 8 }}
     />
@@ -296,14 +316,14 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
 
       <SegmentedControl
         style={{ width: '50%', minWidth: 260 }}
-        values={data.map(i => i + 'x')}
+        values={data.map((i) => i + 'x')}
         fontStyle={{ color: Colors.tintColor }}
         selectedIndex={index}
         tintColor="white"
-        onChange={event => {
+        onChange={(event) => {
           setIndex(event.nativeEvent.selectedSegmentIndex);
         }}
-        onValueChange={value => onValueChange(parseFloat(value))}
+        onValueChange={(value) => onValueChange(parseFloat(value))}
       />
       {renderIcon('speedometer')}
     </View>
@@ -316,11 +336,13 @@ function VolumeSlider({
   disabled,
   color = Colors.tintColor,
   onValueChanged,
+  style,
 }: {
   volume: number;
   isMuted: boolean;
   disabled?: boolean;
   color?: string;
+  style?: any;
   onValueChanged: (data: { isMuted: boolean; volume: number }) => void;
 }) {
   const [value, setValue] = React.useState(volume);
@@ -354,14 +376,19 @@ function VolumeSlider({
   const height = 36;
   return (
     <View
-      style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }]}
+      style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }, style]}
       pointerEvents={disabled ? 'none' : 'auto'}>
       <TouchableOpacity
         style={{ alignItems: 'center', width: height, height, justifyContent: 'center' }}
         onPress={() => {
           onValueChanged({ isMuted: !isMuted, volume });
         }}>
-        <Ionicons name={`ios-${iconName}`} size={24} color={color} style={{}} />
+        <Ionicons
+          name={`ios-${iconName}` as 'ios-volume-high' | 'ios-volume-low' | 'ios-volume-off'}
+          size={24}
+          color={color}
+          style={{}}
+        />
       </TouchableOpacity>
       <Slider
         value={isMutedActive ? 0 : value}
@@ -369,14 +396,14 @@ function VolumeSlider({
         style={{ height, flex: 1 }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
-        onSlidingComplete={value => {
+        onSlidingComplete={(value) => {
           onValueChanged({ isMuted: value <= 0, volume: value });
 
           if (value > 0) {
             lastUserValue.current = value;
           }
         }}
-        onValueChange={value => {
+        onValueChange={(value) => {
           setValue(value);
         }}
       />

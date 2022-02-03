@@ -10,6 +10,7 @@ exports[`doesn't conflict with Prettier: success 1`] = `true`;
 exports[`lints with the Node config: fixtures/all-00.js 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -67,6 +68,12 @@ function _fn() {}
 
 function* gen() {}
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -74,16 +81,66 @@ function* gen() {}
 exports[`lints with the Node config: fixtures/all-01.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
-  "warningCount": 0,
+  "messages": Array [
+    Object {
+      "column": 3,
+      "endColumn": 18,
+      "endLine": 18,
+      "line": 18,
+      "message": "Duplicate name 'm'.",
+      "messageId": "unexpected",
+      "nodeType": "PropertyDefinition",
+      "ruleId": "@typescript-eslint/no-dupe-class-members",
+      "severity": 1,
+    },
+  ],
+  "source": "import 'hi';
+
+import a from 'a';
+import { b } from 'b';
+import c, { c1 } from 'c';
+import * as d from 'd';
+
+import e from './e';
+
+@d
+export class Example {
+  static s = {
+    a,
+    b,
+  };
+
+  m: object = {};
+  m: object = {};
+
+  hi(): void {
+    _fn();
+  }
+
+  async byeAsync(): Promise<void> {
+    _fn(a, b, c, c1, d, e);
+  }
+}
+
+function _fn(...args: any): void {}
+",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
+  "warningCount": 1,
 }
 `;
 
 exports[`lints with the Node config: fixtures/all-02.js 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -127,6 +184,12 @@ function unused2() {
   const unused3 = 'hi';
 }
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 3,
 }
 `;
@@ -134,6 +197,7 @@ function unused2() {
 exports[`lints with the Node config: fixtures/all-03.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -201,6 +265,12 @@ function tsUnused2() {
   const angleBracketCast = <string>x;
 }
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 5,
 }
 `;
@@ -208,6 +278,7 @@ function tsUnused2() {
 exports[`lints with the Node config: fixtures/all-04.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -215,6 +286,12 @@ Object {
   return ['1'];
 };
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -222,11 +299,18 @@ Object {
 exports[`lints with the Node config: fixtures/all-05.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
   "output": "export const blah = 3!;
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -234,6 +318,7 @@ Object {
 exports[`lints with the Node config: fixtures/all-06.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -244,6 +329,12 @@ export const objectTest: object | null = null;
 export const stringTest: string | null = null;
 export const objectShorthandTest: object | null = null;
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -251,6 +342,7 @@ export const objectShorthandTest: object | null = null;
 exports[`lints with the Node config: fixtures/all-07.js 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -264,6 +356,12 @@ const e = require('e');
 
 export default a + b + c + d + e;
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -271,6 +369,7 @@ export default a + b + c + d + e;
 exports[`lints with the Node config: fixtures/node-00.js 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -299,6 +398,12 @@ Object {
   ],
   "source": "const data = new Buffer(16);
 ",
+  "usedDeprecatedRules": Array [
+    Object {
+      "replacedBy": Array [],
+      "ruleId": "no-buffer-constructor",
+    },
+  ],
   "warningCount": 2,
 }
 `;

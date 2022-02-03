@@ -1,9 +1,10 @@
 ---
 title: Barometer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
+packageName: 'expo-sensors'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -15,15 +16,15 @@ import { InlineCode } from '~/components/base/code';
 
 ## Installation
 
-<InstallSection packageName="expo-sensors" />
+<APIInstallSection />
 
 ## Usage
 
-<SnackInline label='Basic Barometer usage' templateId='barometer' dependencies={['expo-sensors']}>
+<SnackInline label='Basic Barometer usage' dependencies={['expo-sensors']}>
 
-```js
+```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View, Platform } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { Barometer } from 'expo-sensors';
 
 export default function App() {
@@ -76,6 +77,27 @@ export default function App() {
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginTop: 15,
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#eee',
+    padding: 10,
+  },
+  sensor: {
+    marginTop: 45,
+    paddingHorizontal: 10,
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

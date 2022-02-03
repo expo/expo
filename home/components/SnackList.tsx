@@ -1,23 +1,15 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
+import { CommonSnackDataFragment } from '../graphql/types';
 import SnackListItem from './SnackListItem';
 
-export type Snack = {
-  name: string;
-  fullName: string;
-  slug: string;
-  description: string;
-  isDraft?: boolean;
-};
-
 type Props = {
-  data: Snack[];
+  data: CommonSnackDataFragment[];
   loadMoreAsync: () => Promise<any>;
-  belongsToCurrentUser?: true;
 };
 
 export default function LoadingSnackList(props: Props) {
@@ -47,13 +39,13 @@ export default function LoadingSnackList(props: Props) {
   return <SnackList {...props} />;
 }
 
-function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
+function SnackList({ data, loadMoreAsync }: Props) {
   const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
 
   const theme = useTheme();
 
-  const extractKey = React.useCallback(item => item.slug, []);
+  const extractKey = React.useCallback((item) => item.slug, []);
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -95,12 +87,8 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
   }, []);
 
   const style = React.useMemo(
-    () => [
-      { flex: 1 },
-      !belongsToCurrentUser && styles.largeProjectCardList,
-      { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
-    ],
-    [belongsToCurrentUser, theme]
+    () => [{ flex: 1 }, { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground }],
+    [theme]
   );
 
   return (
@@ -109,8 +97,9 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
         data={data}
         keyExtractor={extractKey}
         renderItem={renderItem}
+        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
         renderLoadingIndicator={() => <View />}
-        renderScrollComponent={props => <InfiniteScrollView {...props} />}
+        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         style={style}
         canLoadMore={canLoadMore()}
         onLoadMoreAsync={handleLoadMoreAsync}
@@ -118,14 +107,3 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  largeProjectCardList: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.light.greyBackground,
-  },
-  largeProjectCard: {
-    marginBottom: 10,
-  },
-});

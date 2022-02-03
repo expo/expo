@@ -24,21 +24,6 @@ On Android, this module requires permissions to access the network and Wi-Fi sta
 import * as Network from 'expo-network';
 ```
 
-### Methods
-
-- [`Network.getNetworkStateAsync()`](#networkgetnetworkstateasync)
-- [`Network.getIpAddressAsync()`](#networkgetipaddressasync)
-- [`Network.getMacAddressAsync(interfaceName?)`](#networkgetmacaddressasyncinterfacename)
-- [`Network.isAirplaneModeEnabledAsync()`](#networkisairplanemodeenabledasync) (Android only)
-
-### Enum Types
-
-- [`Network.NetworkStateType`](#networknetworkstatetype)
-
-### Errors
-
-- [Error Codes](#error-codes)
-
 ## Methods
 
 ### `Network.getNetworkStateAsync()`
@@ -86,6 +71,8 @@ await Network.getIpAddressAsync();
 ```
 
 ### `Network.getMacAddressAsync(interfaceName?)`
+
+> **This method is deprecated and will be removed in a future SDK version.** In Expo Go version 2.19.x and above, this method will always return the string `'02:00:00:00:00:00'`. Your standalone apps built with SDK 40 will continue to work as before.
 
 Gets the specified network interface's Mac address. On Android, it requires [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) permission to access available network interfaces.
 

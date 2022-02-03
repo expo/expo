@@ -1,31 +1,30 @@
 package dev.expo.payments;
 
 import android.app.Application;
+import android.content.res.Configuration;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.soloader.SoLoader;
-
-import expo.modules.developmentclient.DevelopmentClientController;
-import expo.modules.random.RandomPackage;
-
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 import java.util.List;
 
-import dev.expo.payments.generated.BasePackageList;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import expo.modules.ReactNativeHostWrapper;
+import expo.modules.ApplicationLifecycleDispatcher;
+import expo.modules.devlauncher.DevLauncherController;
 
 public class MainApplication extends Application implements ReactApplication {
   static final boolean USE_DEV_CLIENT = false;
 
-  private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
-    new BasePackageList().getPackageList()
-  );
-
-  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+  private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(
+    this,
+    new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
@@ -33,17 +32,20 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      List<ReactPackage> packages = new PackageList(this).getPackages();
-      packages.add(new RandomPackage());
-      packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
-      return packages;
+      return new PackageList(this).getPackages();
     }
 
     @Override
     protected String getJSMainModuleName() {
       return "index";
     }
-  };
+
+    @Nullable
+    @Override
+    protected JSIModulePackage getJSIModulePackage() {
+      return new ReanimatedJSIModulePackage();
+    }
+    });
 
   @Override
   public ReactNativeHost getReactNativeHost() {
@@ -57,7 +59,14 @@ public class MainApplication extends Application implements ReactApplication {
     ReactNativeFlipper.initializeFlipper(this);
 
     if (USE_DEV_CLIENT) {
-      DevelopmentClientController.initialize(this, mReactNativeHost);
+      DevLauncherController.initialize(this, mReactNativeHost);
     }
+    ApplicationLifecycleDispatcher.onApplicationCreate(this);
+  }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
   }
 }

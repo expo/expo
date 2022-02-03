@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 import { Notification, NotificationBehavior } from './Notifications.types';
 export declare class NotificationTimeoutError extends CodedError {
     info: {
@@ -14,3 +14,4 @@ export interface NotificationHandler {
     handleError?: (notificationId: string, error: NotificationHandlingError) => void;
 }
 export declare function setNotificationHandler(handler: NotificationHandler | null): void;
+//# sourceMappingURL=NotificationsHandler.d.ts.map

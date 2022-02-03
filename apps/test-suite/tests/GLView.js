@@ -1,7 +1,7 @@
 'use strict';
-import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import { GLView } from 'expo-gl';
+import { Platform } from 'expo-modules-core';
 import React from 'react';
 
 import { mountAndWaitFor } from './helpers';
@@ -16,7 +16,7 @@ export async function test(
   let instance = null;
   let originalTimeout;
 
-  const refSetter = ref => {
+  const refSetter = (ref) => {
     instance = ref;
   };
 
@@ -35,9 +35,9 @@ export async function test(
   });
 
   function getContextAsync() {
-    return new Promise(async resolve => {
+    return new Promise(async (resolve) => {
       await mountAndWaitFor(
-        <GLView onContextCreate={context => resolve(context)} ref={refSetter} style={style} />,
+        <GLView onContextCreate={(context) => resolve(context)} ref={refSetter} style={style} />,
         'onContextCreate',
         setPortalChild
       );
@@ -47,7 +47,9 @@ export async function test(
   describe('GLView', () => {
     it('gets a valid context', async () => {
       const context = await getContextAsync();
-      expect(context instanceof WebGLRenderingContext).toBe(true);
+      expect(
+        context instanceof WebGLRenderingContext || context instanceof WebGL2RenderingContext
+      ).toBe(true);
     });
 
     it('takes a snapshot', async () => {
@@ -187,7 +189,9 @@ export async function test(
     describe('static', () => {
       it('creates a static context', async () => {
         const context = await GLView.createContextAsync();
-        expect(context instanceof WebGLRenderingContext).toBe(true);
+        expect(
+          context instanceof WebGLRenderingContext || context instanceof WebGL2RenderingContext
+        ).toBe(true);
       });
 
       it('takes a snapshot', async () => {

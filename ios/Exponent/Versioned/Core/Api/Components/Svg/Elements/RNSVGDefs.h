@@ -9,7 +9,7 @@
 #import "RNSVGNode.h"
 
 /**
- * RNSVG defination are implemented as abstract UIViews for all elements inside Defs.
+ * RNSVG defination are implemented as abstract views for all elements inside Defs.
  */
 
 @interface RNSVGDefs : RNSVGNode

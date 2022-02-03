@@ -3,12 +3,11 @@ package expo.modules.taskManager;
 import android.content.Context;
 import android.os.Bundle;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.constants.ConstantsInterface;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
@@ -18,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 
 public class TaskManagerInternalModule implements InternalModule, TaskManagerInterface, LifecycleEventListener {
   private UIManager mUIManager;
@@ -49,7 +50,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
 
     // Register in TaskService.
-    mTaskService.setTaskManager(this, getAppId(), getAppUrl());
+    mTaskService.setTaskManager(this, getAppScopeKey(), getAppUrl());
 
     mUIManager.registerLifecycleEventListener(this);
   }
@@ -57,7 +58,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void onDestroy() {
     mUIManager.unregisterLifecycleEventListener(this);
-    mTaskService.setTaskManager(null, getAppId(), getAppUrl());
+    mTaskService.setTaskManager(null, getAppScopeKey(), getAppUrl());
   }
 
   //endregion
@@ -66,13 +67,13 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void registerTask(String taskName, Class consumerClass, Map<String, Object> options) throws Exception {
     checkTaskService();
-    mTaskService.registerTask(taskName, getAppId(), getAppUrl(), consumerClass, options);
+    mTaskService.registerTask(taskName, getAppScopeKey(), getAppUrl(), consumerClass, options);
   }
 
   @Override
   public void unregisterTask(String taskName, Class consumerClass) throws Exception {
     checkTaskService();
-    mTaskService.unregisterTask(taskName, getAppId(), consumerClass);
+    mTaskService.unregisterTask(taskName, getAppScopeKey(), consumerClass);
   }
 
   @Override
@@ -91,7 +92,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     if (mTaskService == null) {
       return false;
     }
-    return mTaskService.taskHasConsumerOfClass(taskName, getAppId(), consumerClass);
+    return mTaskService.taskHasConsumerOfClass(taskName, getAppScopeKey(), consumerClass);
   }
 
   @Override
@@ -106,9 +107,9 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   }
 
   @Override
-  public String getAppId() {
+  public String getAppScopeKey() {
     if (mConstants != null) {
-      return mConstants.getAppId();
+      return mConstants.getAppScopeKey();
     }
     return null;
   }
@@ -118,7 +119,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void onHostResume() {
     if (!isRunningInHeadlessMode()) {
-      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppScopeKey());
       for (TaskConsumerInterface taskConsumer : taskConsumers) {
         if (taskConsumer instanceof LifecycleEventListener) {
           ((LifecycleEventListener) taskConsumer).onHostResume();
@@ -130,7 +131,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void onHostPause() {
     if (!isRunningInHeadlessMode()) {
-      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppScopeKey());
       for (TaskConsumerInterface taskConsumer : taskConsumers) {
         if (taskConsumer instanceof LifecycleEventListener) {
           ((LifecycleEventListener) taskConsumer).onHostPause();
@@ -142,7 +143,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void onHostDestroy() {
     if (!isRunningInHeadlessMode()) {
-      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppScopeKey());
       for (TaskConsumerInterface taskConsumer : taskConsumers) {
         if (taskConsumer instanceof LifecycleEventListener) {
           ((LifecycleEventListener) taskConsumer).onHostDestroy();
@@ -155,7 +156,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   //region helpers
 
   private boolean isRunningInHeadlessMode() {
-    return mTaskService.isStartedByHeadlessLoader(getAppId());
+    return mTaskService.isStartedByHeadlessLoader(getAppScopeKey());
   }
 
   private String getAppUrl() {

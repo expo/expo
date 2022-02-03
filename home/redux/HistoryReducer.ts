@@ -1,14 +1,18 @@
 import { List, Record } from 'immutable';
 
-type HistoryItemType = Record<{
+import { HistoryItem as HistoryItemInput } from '../types';
+
+type HistoryItemObject = {
   url: null | string;
   bundleUrl: null | string;
   manifestUrl: null | string;
   manifest: null | { [key: string]: any };
   time: null | number;
-}>;
+};
 
-const HistoryItem = Record({
+type HistoryItemType = Record<HistoryItemObject> & Readonly<HistoryItemObject>;
+
+const HistoryItem = Record<HistoryItemObject>({
   url: null,
   bundleUrl: null,
   manifestUrl: null,
@@ -20,7 +24,7 @@ type HistoryObject = {
   history: List<HistoryItemType>;
 };
 
-export type HistoryType = Record<HistoryObject>;
+export type HistoryType = Record<HistoryObject> & Readonly<HistoryObject>;
 
 const HistoryState = Record<HistoryObject>({
   history: List(),
@@ -29,7 +33,7 @@ const HistoryState = Record<HistoryObject>({
 type HistoryActions =
   | {
       type: 'loadHistory';
-      payload: { history: HistoryItemType[] };
+      payload: { history: HistoryItemInput[] };
     }
   | { type: 'clearHistory' };
 
@@ -38,9 +42,10 @@ export default (state: HistoryType, action: HistoryActions): HistoryType => {
     case 'loadHistory': {
       const { history } = action.payload;
       const immutableHistoryList = history
-        ? List(history.map(item => new HistoryItem(item)))
+        ? List(history.map((item) => new HistoryItem(item)))
         : List();
       return state.merge({
+        // @ts-ignore
         history: immutableHistoryList,
       });
     }

@@ -29,6 +29,7 @@
 #import "EXScopedNotificationSchedulerModule.h"
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationCategoriesModule.h"
+#import "EXScopedServerRegistrationModule.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -36,24 +37,30 @@
 
 @implementation EXScopedModuleRegistryAdapter
 
-- (UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params forExperienceId:(NSString *)experienceId withKernelServices:(NSDictionary *)kernelServices
+- (EXModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
+                  forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                     scopeKey:(NSString *)scopeKey
+                                     manifest:(EXManifestsManifest *)manifest
+                           withKernelServices:(NSDictionary *)kernelServices
 {
-  UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
+  EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
-  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")] databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
+  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithScopeKey:scopeKey
+                                                                     updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")]
+                                                                    databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
   [moduleRegistry registerInternalModule:updatesBinding];
 #endif
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
-  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
 #endif
 
 #if __has_include(<EXFacebook/EXFacebook.h>)
-  // only override in Expo client
+  // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithExperienceId:experienceId andParams:params];
+    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithScopeKey:scopeKey manifest:manifest];
     [moduleRegistry registerExportedModule:scopedFacebook];
   }
 #endif
@@ -79,7 +86,7 @@
 #endif
 
 #if __has_include(<EXSensors/EXSensorsManager.h>)
-  EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
+  EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithScopeKey:scopeKey andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];
 #endif
 
@@ -95,17 +102,17 @@
 #endif
 
 #if __has_include(<EXSecureStore/EXSecureStore.h>)
-  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithExperienceId:experienceId];
+  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:secureStoreModule];
 #endif
 
 #if __has_include(<EXAmplitude/EXAmplitude.h>)
-  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithExperienceId:experienceId];
+  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
-#if __has_include(<EXPermissions/EXPermissions.h>)
-  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+#if __has_include(<ExpoModulesCore/EXPermissionsService.h>)
+  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
 #endif
@@ -116,7 +123,7 @@
 #endif
 
 #if __has_include(<EXBranch/RNBranch.h>)
-  EXScopedBranch *branchModule = [[EXScopedBranch alloc] initWithExperienceId:experienceId];
+  EXScopedBranch *branchModule = [[EXScopedBranch alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerInternalModule:branchModule];
 #endif
 
@@ -127,51 +134,76 @@
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
   // TODO: Make scoped task manager when adding support for bare React Native
-  EXTaskManager *taskManagerModule = [[EXTaskManager alloc] initWithExperienceId:experienceId];
+  EXTaskManager *taskManagerModule = [[EXTaskManager alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerInternalModule:taskManagerModule];
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
-  
+
 #if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
-  EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithExperienceId:experienceId];
+  EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:errorRecovery];
 #endif
-  
+
 #if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
-  EXScopedFirebaseCore *firebaseCoreModule = [[EXScopedFirebaseCore alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  EXScopedFirebaseCore *firebaseCoreModule = [[EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey manifest:manifest constantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:firebaseCoreModule];
   [moduleRegistry registerInternalModule:firebaseCoreModule];
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
-  EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationsEmmitter];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithScopeKey:scopeKey];
+    [moduleRegistry registerExportedModule:notificationsEmmitter];
+  }
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationsHandler];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithScopeKey:scopeKey];
+    [moduleRegistry registerExportedModule:notificationsHandler];
+  }
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithExperienceId:experienceId];
+  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithScopeKey:scopeKey
+                                                                                                  andConstantsBinding:constantsBinding];
   [moduleRegistry registerInternalModule:notificationsBuilder];
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationSchedulerModule.h>)
-  EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:schedulerModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithScopeKey:scopeKey];
+    [moduleRegistry registerExportedModule:schedulerModule];
+  }
 #endif
-    
+
 #if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
-  EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationPresentationModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithScopeKey:scopeKey];
+    [moduleRegistry registerExportedModule:notificationPresentationModule];
+  }
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
-  EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:categoriesModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey];
+    [moduleRegistry registerExportedModule:scopedCategoriesModule];
+  }
+  [EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:experienceStableLegacyId
+                                                                                                 scopeKey:scopeKey
+                                                                                                         isInExpoGo:[params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]];
 #endif
+
+#if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
+  EXScopedServerRegistrationModule *serverRegistrationModule = [[EXScopedServerRegistrationModule alloc] initWithScopeKey:scopeKey];
+  [moduleRegistry registerExportedModule:serverRegistrationModule];
+#endif
+
   return moduleRegistry;
 }
 

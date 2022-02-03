@@ -1,5 +1,7 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
+import React from 'react';
 
-const ExpoBarCodeScannerView = requireNativeViewManager('ExpoBarCodeScannerView');
+const ExpoBarCodeScannerView: React.ComponentType<any> =
+  requireNativeViewManager('ExpoBarCodeScannerView');
 
 export default ExpoBarCodeScannerView;

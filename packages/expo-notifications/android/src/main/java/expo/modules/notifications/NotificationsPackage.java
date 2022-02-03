@@ -2,18 +2,19 @@ package expo.modules.notifications;
 
 import android.content.Context;
 
-import org.unimodules.core.BasePackage;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.BasePackage;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.util.Arrays;
 import java.util.List;
 
 import expo.modules.notifications.badge.BadgeModule;
 import expo.modules.notifications.badge.ExpoBadgeManager;
-import expo.modules.notifications.installationid.InstallationIdProvider;
+import expo.modules.notifications.serverregistration.ServerRegistrationModule;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule;
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.categories.serializers.ExpoNotificationsCategoriesSerializer;
 import expo.modules.notifications.notifications.channels.AndroidXNotificationsChannelsProvider;
@@ -36,12 +37,13 @@ public class NotificationsPackage extends BasePackage {
       new NotificationsEmitter(context),
       new NotificationsHandler(context),
       new NotificationScheduler(context),
-      new InstallationIdProvider(context),
+      new ServerRegistrationModule(context),
       new NotificationPermissionsModule(context),
       new NotificationChannelManagerModule(context),
       new ExpoNotificationPresentationModule(context),
       new NotificationChannelGroupManagerModule(context),
-      new ExpoNotificationCategoriesModule(context)
+      new ExpoNotificationCategoriesModule(context),
+      new ExpoBackgroundNotificationTasksModule(context)
     );
   }
 

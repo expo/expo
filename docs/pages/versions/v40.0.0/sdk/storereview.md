@@ -3,14 +3,15 @@ title: StoreReview
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-store-review'
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
 
-<PlatformsSection android emulator ios simulator />
+<ImageSpotlight src="/static/images/store-review.png" alt="Screenshots of the store review API in action on iOS" />
 
-![](/static/images/store-review.png)
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -61,12 +62,13 @@ const url = StoreReview.storeUrl();
 
 ### `StoreReview.hasAction()`
 
-This returns a promise that resolves to a boolean that let's you know if the module can perform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isAvailableAsync()` returns false.
+This returns a promise that fulfills to is `true` if `StoreReview.requestReview()` is capable directing the user to some kind of store review flow. If the app config (**app.json**) does not contain store URLs and native store review capabilities are not available then the promise will fulfill to `false`.
 
 #### Example
 
 ```js
 if (await StoreReview.hasAction()) {
+  // you can call StoreReview.requestReview()
 }
 ```
 
@@ -113,8 +115,8 @@ There is no equivalent redirect on Android, you can still open the Play Store to
 const androidPackageName = 'host.exp.exponent';
 // Open the Android Play Store in the browser -> redirects to Play Store on Android
 Linking.openURL(
-  `https://play.google.com/store/apps/details?id=${androidPackageName}?showAllReviews=true`
+  `https://play.google.com/store/apps/details?id=${androidPackageName}&showAllReviews=true`
 );
 // Open the Android Play Store directly
-Linking.openURL(`market://details?id=${androidPackageName}?showAllReviews=true`);
+Linking.openURL(`market://details?id=${androidPackageName}&showAllReviews=true`);
 ```

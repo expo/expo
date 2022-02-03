@@ -1,33 +1,32 @@
 import { Localization } from './Localization.types';
 export { Localization };
 /**
- * Native device language, returned in standard format.
+ * Three-character ISO 4217 currency code. Returns `null` on web.
  *
- * @example `en`, `en-US`, `es-US`
+ * @example `'USD'`, `'EUR'`, `'CNY'`, `null`
  */
-export declare const locale: string;
+export declare const currency: string | null;
 /**
- * List of all the native languages provided by the user settings.
- * These are returned in the order the user defines in their native settings.
- */
-export declare const locales: string[];
-/**
- * The current timezone in display format.
- * On Web timezone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a better estimation you could use the moment-timezone package but it will add significant bloat to your website's bundle size.
+ * Decimal separator used for formatting numbers.
  *
- * @example `America/Los_Angeles`
+ * @example `','`, `'.'`
  */
-export declare const timezone: string;
+export declare const decimalSeparator: string;
+/**
+ * Digit grouping separator used when formatting numbers larger than 1000.
+ *
+ * @example `'.'`, `''`, `','`
+ */
+export declare const digitGroupingSeparator: string;
 /**
  * A list of all the supported language ISO codes.
  */
 export declare const isoCurrencyCodes: string[];
 /**
- * **Available on iOS and web**: Region code for your device which came from Region setting in Language & Region.
- *
- * @example `US`, `NZ`
+ * Boolean value that indicates whether the system uses the metric system.
+ * On Android and web, this is inferred from the current region.
  */
-export declare const region: string | null;
+export declare const isMetric: boolean;
 /**
  * Returns if the system's language is written from Right-to-Left.
  * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
@@ -36,8 +35,45 @@ export declare const region: string | null;
  */
 export declare const isRTL: boolean;
 /**
- * Get the latest native values from the device.
- * Locale can be changed on some Android devices without resetting the app.
- * On iOS, changing the locale will cause the device to reset meaning the constants will always be correct.
+ * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
+ * consisting of a two-character language code and optional script, region and variant codes.
+ *
+ * @example `'en'`, `'en-US'`, `'zh-Hans'`, `'zh-Hans-CN'`, `'en-emodeng'`
+ */
+export declare const locale: string;
+/**
+ * List of all the native languages provided by the user settings.
+ * These are returned in the order the user defines in their device settings.
+ */
+export declare const locales: string[];
+/**
+ * The current time zone in display format.
+ * On Web time zone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a
+ * better estimation you could use the moment-timezone package but it will add significant bloat to
+ * your website's bundle size.
+ *
+ * @example `'America/Los_Angeles'`
+ */
+export declare const timezone: string;
+/**
+ * The region code for your device that comes from the Region setting under Language & Region on iOS.
+ * This value is always available on iOS, but might return `null` on Android or web.
+ *
+ * @example `'US'`, `'NZ'`, `null`
+ */
+export declare const region: string | null;
+/**
+ * Get the latest native values from the device. Locale can be changed on some Android devices
+ * without resetting the app.
+ * > On iOS, changing the locale will cause the device to reset meaning the constants will always be
+ * correct.
+ *
+ * @example
+ * ```ts
+ * // When the app returns from the background on Android...
+ *
+ * const { locale } = await Localization.getLocalizationAsync();
+ * ```
  */
 export declare function getLocalizationAsync(): Promise<Localization>;
+//# sourceMappingURL=Localization.d.ts.map

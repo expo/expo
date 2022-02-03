@@ -9,20 +9,24 @@ export default function BatteryScreen() {
   const [batteryLevel, setBatteryLevel] = React.useState(-1);
   const [batteryState, setBatteryState] = React.useState(Battery.BatteryState.UNKNOWN);
   const [lowPowerMode, setLowPowerMode] = React.useState(false);
+  const [batteryOptimizationState, setBatteryOptimizationState] = React.useState(false);
 
   React.useEffect(() => {
     (async () => {
-      const [isAvailable, batteryLevel, batteryState, lowPowerMode] = await Promise.all([
-        Battery.isAvailableAsync(),
-        Battery.getBatteryLevelAsync(),
-        Battery.getBatteryStateAsync(),
-        Battery.isLowPowerModeEnabledAsync(),
-      ]);
+      const [isAvailable, batteryLevel, batteryState, lowPowerMode, batteryOptimizationState] =
+        await Promise.all([
+          Battery.isAvailableAsync(),
+          Battery.getBatteryLevelAsync(),
+          Battery.getBatteryStateAsync(),
+          Battery.isLowPowerModeEnabledAsync(),
+          Battery.isBatteryOptimizationEnabledAsync(),
+        ]);
 
       setIsAvailable(isAvailable || false);
       setBatteryLevel(batteryLevel);
       setBatteryState(batteryState);
       setLowPowerMode(lowPowerMode);
+      setBatteryOptimizationState(batteryOptimizationState);
     })();
     const batteryLevelListener = Battery.addBatteryLevelListener(({ batteryLevel }) =>
       setBatteryLevel(batteryLevel)
@@ -49,6 +53,7 @@ export default function BatteryScreen() {
                 batteryLevel,
                 batteryState: getBatteryStateString(batteryState),
                 lowPowerMode,
+                batteryOptimizationState,
               },
               null,
               2

@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform } from 'expo-modules-core';
 import PushTokenManager from './PushTokenManager';
 // Web uses SyntheticEventEmitter
 const tokenEmitter = new EventEmitter(PushTokenManager);
@@ -11,8 +11,5 @@ export function addPushTokenListener(listener) {
 }
 export function removePushTokenSubscription(subscription) {
     tokenEmitter.removeSubscription(subscription);
-}
-export function removeAllPushTokenListeners() {
-    tokenEmitter.removeAllListeners(newTokenEventName);
 }
 //# sourceMappingURL=TokenEmitter.js.map

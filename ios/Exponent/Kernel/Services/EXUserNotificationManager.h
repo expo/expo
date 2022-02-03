@@ -10,6 +10,6 @@
 
 @interface EXUserNotificationManager : NSObject <UNUserNotificationCenterDelegate, EXNotificationsIdentifiersManager, EXNotificationsDelegate>
 
-- (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId;
+- (EXPendingNotification *)initialNotification;
 
 @end

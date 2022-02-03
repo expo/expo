@@ -4,7 +4,7 @@
 
 @interface EXScopedBranch ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
@@ -20,16 +20,16 @@
   return @[@protocol(EXDummyBranchProtocol)];
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:RNBranchLinkOpenedNotification object:nil];
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
   return self;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   [(id<EXBranchScopedModuleDelegate>)[_moduleRegistry getSingletonModuleForName:@"BranchManager"] branchModuleDidInit:self];

@@ -3,33 +3,36 @@
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 29
-    compileSdkVersion = 29
+    targetSdkVersion = 30
+    compileSdkVersion = 30
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '29.0.2'
+    buildToolsVersion = '30.0.2'
     supportLibVersion = '29.0.0'
-    kotlinVersion = '1.3.50'
-    gradlePluginVersion = '4.0.0'
+    kotlinVersion = '1.6.10'
+    gradlePluginVersion = '4.1.2'
     gradleDownloadTaskVersion = '3.4.3'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }
   repositories {
     google()
+    mavenCentral()
     jcenter()
-    maven { url 'https://dl.bintray.com/android/android-tools/' }
   }
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
-    classpath 'com.google.gms:google-services:3.2.1'
+    classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
-
-    // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
-    classpath 'com.amazonaws:aws-devicefarm-gradle-plugin:1.3'
-
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
   }
 }
+
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// We don't need linter on turtle.
+plugins {
+  id "com.diffplug.spotless" version "5.14.1"
+}
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 allprojects {
   repositories {
@@ -39,18 +42,19 @@ allprojects {
     }
     // For old expoviews to work
     maven {
-      url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi44_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi38_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi43_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi37_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi42_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
     }
     google()
+    mavenCentral()
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
@@ -65,8 +69,6 @@ allprojects {
       dirs 'libs'
       // dirs project(':expoview').file('libs')
     }
-    // https://github.com/google/ExoPlayer/issues/5225#issuecomment-445739013
-    maven { url 'https://google.bintray.com/exoplayer' }
     // Using www.jitpack.io instead of plain jitpack.io due to
     // https://github.com/jitpack/jitpack.io/issues/4002
     maven { url "https://www.jitpack.io" }
@@ -99,6 +101,37 @@ allprojects {
   }
 }
 
-task clean(type: Delete) {
-  delete rootProject.buildDir
+// This var needs to be defined outside any "remove_from_here" comment blocks
+// because the "*/" in there could affect the resulted code by closing the comment to early.
+def ktlintTarget = '**/*.kt'
+
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// We don't need linter on turtle.
+subprojects {
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    format 'gradle', {
+      target '*.gradle'
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+    kotlin {
+      target(ktlintTarget)
+      ktlint("0.41.0").userData([
+        "disabled_rules"           : "no-wildcard-imports,import-ordering",
+        "charset"                  : "utf-8",
+        "end_of_line"              : "lf",
+        "indent_size"              : "2",
+        "indent_style"             : "space",
+        "insert_final_newline"     : "true",
+        "tab_width"                : "2",
+        "trim_trailing_whitespace" : "true"
+      ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
 }
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE

@@ -13,6 +13,7 @@
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 #import <React/RCTUtils.h>
 
@@ -24,11 +25,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 @interface EXAppLoader ()
 
 @property (nonatomic, strong) NSURL * _Nullable manifestUrl;
-@property (nonatomic, strong) NSDictionary * _Nullable localManifest; // used by Home. TODO: ben: clean up
+@property (nonatomic, strong) EXManifestsManifest * _Nullable localManifest; // used by Home. TODO: ben: clean up
 @property (nonatomic, strong) NSURL * _Nullable httpManifestUrl;
 
-@property (nonatomic, strong) NSDictionary * _Nullable confirmedManifest; // manifest that is actually being used
-@property (nonatomic, strong) NSDictionary * _Nullable cachedManifest; // manifest that is cached and we definitely have, may fall back to it
+@property (nonatomic, strong) EXManifestsManifest * _Nullable confirmedManifest; // manifest that is actually being used
+@property (nonatomic, strong) EXManifestsManifest * _Nullable cachedManifest; // manifest that is cached and we definitely have, may fall back to it
 @property (nonatomic, strong) EXManifestResource * _Nullable manifestResource;
 
 @property (nonatomic, strong) EXAppFetcher * _Nullable appFetcher;
@@ -51,7 +52,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   return self;
 }
 
-- (instancetype)initWithLocalManifest:(NSDictionary *)manifest
+- (instancetype)initWithLocalManifest:(EXManifestsManifest *)manifest
 {
   if (self = [super init]) {
     _localManifest = manifest;
@@ -87,7 +88,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   return kEXAppLoaderStatusNew;
 }
 
-- (NSDictionary * _Nullable)manifest
+- (EXManifestsManifest * _Nullable)manifest
 {
   if (_confirmedManifest) {
     return _confirmedManifest;
@@ -199,7 +200,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)_fetchCachedManifest
 {
-  [self fetchManifestWithCacheBehavior:EXManifestOnlyCache success:^(NSDictionary * cachedManifest) {
+  [self fetchManifestWithCacheBehavior:EXManifestOnlyCache success:^(EXManifestsManifest * cachedManifest) {
     self.cachedManifest = cachedManifest;
     [self _fetchBundleWithManifest:cachedManifest];
   } failure:^(NSError * error) {
@@ -207,19 +208,19 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }];
 }
 
-- (void)_fetchBundleWithManifest:(NSDictionary *)manifest
+- (void)_fetchBundleWithManifest:(EXManifestsManifest *)manifest
 {
   BOOL shouldCheckForUpdate = YES;
   NSTimeInterval fallbackToCacheTimeout = kEXAppLoaderDefaultTimeout;
 
   // in case check for dev mode failed before, check again
-  if ([EXAppFetcher areDevToolsEnabledWithManifest:manifest]) {
+  if (manifest.isUsingDeveloperTool) {
     [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
     return;
   }
 
-  id updates = manifest[@"updates"];
-  id ios = manifest[@"ios"];
+  id updates = manifest.updatesInfo;
+  id ios = manifest.iosConfig;
   if (updates && [updates isKindOfClass:[NSDictionary class]]) {
     NSDictionary *updatesDict = (NSDictionary *)updates;
     id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
@@ -248,7 +249,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
   // if this experience id encountered a loading error before,
   // we should always check for an update, even if the manifest says not to
-  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:manifest]]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:manifest.scopeKey]) {
     shouldCheckForUpdate = YES;
   }
 
@@ -300,8 +301,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     // if either of these don't exist, we don't have enough information to tell
     return NO;
   }
-  return appFetcher.manifest[@"revisionId"]
-  ? [appFetcher.manifest[@"revisionId"] isEqualToString:self.cachedManifest[@"revisionId"]]
+  return appFetcher.manifest.revisionId
+  ? [appFetcher.manifest.revisionId isEqualToString:self.cachedManifest.revisionId]
   : NO;
 }
 
@@ -315,14 +316,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   [self _startAppFetcher:newAppFetcher];
 }
 
-- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(NSDictionary *)manifest
+- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
   if (_delegate) {
     [_delegate appLoader:self didLoadOptimisticManifest:manifest];
   }
 }
 
-- (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)bundle
+- (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)bundle
 {
   _confirmedManifest = manifest;
   if (_delegate) {
@@ -355,7 +356,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 #pragma mark - EXAppFetcherWithTimeoutDelegate
 
-- (void)appFetcher:(EXAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appFetcher:(EXAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   if (_delegate) {
     [_delegate appLoader:self didResolveUpdatedBundleWithManifest:manifest isFromCache:isFromCache error:error];
@@ -369,7 +370,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 #pragma mark - helper methods for fetching
 
-- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)manifestCacheBehavior success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure
+- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)manifestCacheBehavior success:(void (^)(EXManifestsManifest *))success failure:(void (^)(NSError *))failure
 {
   // if we're using a localManifest, just return it immediately
   if (_localManifest) {
@@ -395,12 +396,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
   [manifestResource loadResourceWithBehavior:cachedResourceBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
     NSError *error;
-    id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-    if (!manifest) {
+    id manifestJSON = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    if (!manifestJSON) {
       failure(error);
       return;
     }
-    if (![manifest isKindOfClass:[NSDictionary class]]) {
+    if (![manifestJSON isKindOfClass:[NSDictionary class]]) {
       NSDictionary *errorInfo = @{
                                   NSLocalizedDescriptionKey: @"Cannot parse manifest",
                                   NSLocalizedFailureReasonErrorKey: @"Tried to load a manifest which was not in the proper format",
@@ -408,16 +409,16 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
       failure([NSError errorWithDomain:EXNetworkErrorDomain code:-1 userInfo:errorInfo]);
       return;
     }
-    
+
     // insert loadedFromCache: boolean key into manifest
-    NSMutableDictionary *mutableManifest = [(NSDictionary *)manifest mutableCopy];
+    NSMutableDictionary *mutableManifestJSON = [(NSDictionary *)manifestJSON mutableCopy];
     BOOL loadedFromCache = YES;
     if (cachedResourceBehavior == EXCachedResourceNoCache) {
       loadedFromCache = NO;
     }
-    mutableManifest[@"loadedFromCache"] = @(loadedFromCache);
+    mutableManifestJSON[@"loadedFromCache"] = @(loadedFromCache);
 
-    success([NSDictionary dictionaryWithDictionary:mutableManifest]);
+    success([EXManifestsManifestFactory manifestForManifestJSON:[NSDictionary dictionaryWithDictionary:mutableManifestJSON]]);
   } errorBlock:^(NSError * _Nonnull error) {
 #if DEBUG
     if ([EXEnvironment sharedEnvironment].isDetached && error &&
@@ -431,7 +432,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }];
 }
 
-- (void)fetchJSBundleWithManifest:(NSDictionary *)manifest
+- (void)fetchJSBundleWithManifest:(EXManifestsManifest *)manifest
                      cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
                    timeoutInterval:(NSTimeInterval)timeoutInterval
                           progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock

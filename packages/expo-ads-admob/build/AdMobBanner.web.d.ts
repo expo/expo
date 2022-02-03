@@ -1,4 +1,3 @@
-import * as React from 'react';
-export default class AdMobBanner extends React.Component<object> {
-    render(): JSX.Element;
-}
+declare const AdMobBanner: () => JSX.Element;
+export default AdMobBanner;
+//# sourceMappingURL=AdMobBanner.web.d.ts.map

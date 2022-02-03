@@ -1,5 +1,5 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
-import uuidv4 from 'uuid/v4';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { v4 as uuidv4 } from 'uuid';
 
 import NotificationScheduler from './NotificationScheduler';
 import { NotificationTriggerInput as NativeNotificationTriggerInput } from './NotificationScheduler.types';
@@ -8,10 +8,12 @@ import {
   NotificationTriggerInput,
   DailyTriggerInput,
   WeeklyTriggerInput,
+  YearlyTriggerInput,
   CalendarTriggerInput,
   TimeIntervalTriggerInput,
   DateTriggerInput,
   ChannelAwareTriggerInput,
+  SchedulableNotificationTriggerInput,
 } from './Notifications.types';
 
 export default async function scheduleNotificationAsync(
@@ -27,6 +29,24 @@ export default async function scheduleNotificationAsync(
     parseTrigger(request.trigger)
   );
 }
+
+type ValidTriggerDateComponents = 'month' | 'day' | 'weekday' | 'hour' | 'minute';
+
+const DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS: readonly ValidTriggerDateComponents[] = [
+  'hour',
+  'minute',
+];
+const WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS: readonly ValidTriggerDateComponents[] = [
+  'weekday',
+  'hour',
+  'minute',
+];
+const YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS: readonly ValidTriggerDateComponents[] = [
+  'day',
+  'month',
+  'hour',
+  'minute',
+];
 
 export function parseTrigger(
   userFacingTrigger: NotificationTriggerInput
@@ -44,52 +64,31 @@ export function parseTrigger(
   if (isDateTrigger(userFacingTrigger)) {
     return parseDateTrigger(userFacingTrigger);
   } else if (isDailyTriggerInput(userFacingTrigger)) {
-    const hour = userFacingTrigger.hour;
-    const minute = userFacingTrigger.minute;
-    if (hour === undefined || hour == null || minute === undefined || minute == null) {
-      throw new TypeError('Both hour and minute need to have valid values. Found undefined');
-    }
-    if (hour < 0 || hour > 23) {
-      throw new RangeError(`The hour parameter needs to be between 0 and 23. Found: ${hour}`);
-    }
-    if (minute < 0 || minute > 59) {
-      throw new RangeError(`The minute parameter needs to be between 0 and 59. Found: ${minute}`);
-    }
+    validateDateComponentsInTrigger(userFacingTrigger, DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS);
     return {
       type: 'daily',
       channelId: userFacingTrigger.channelId,
-      hour,
-      minute,
+      hour: userFacingTrigger.hour,
+      minute: userFacingTrigger.minute,
     };
   } else if (isWeeklyTriggerInput(userFacingTrigger)) {
-    const weekday = userFacingTrigger.weekday;
-    const hour = userFacingTrigger.hour;
-    const minute = userFacingTrigger.minute;
-    if (
-      weekday === undefined ||
-      weekday == null ||
-      hour === undefined ||
-      hour == null ||
-      minute === undefined ||
-      minute == null
-    ) {
-      throw new TypeError('Weekday, hour and minute need to have valid values. Found undefined');
-    }
-    if (weekday < 1 || weekday > 7) {
-      throw new RangeError(`The weekday parameter needs to be between 1 and 7. Found: ${weekday}`);
-    }
-    if (hour < 0 || hour > 23) {
-      throw new RangeError(`The hour parameter needs to be between 0 and 23. Found: ${hour}`);
-    }
-    if (minute < 0 || minute > 59) {
-      throw new RangeError(`The minute parameter needs to be between 0 and 59. Found: ${minute}`);
-    }
+    validateDateComponentsInTrigger(userFacingTrigger, WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS);
     return {
       type: 'weekly',
       channelId: userFacingTrigger.channelId,
-      weekday,
-      hour,
-      minute,
+      weekday: userFacingTrigger.weekday,
+      hour: userFacingTrigger.hour,
+      minute: userFacingTrigger.minute,
+    };
+  } else if (isYearlyTriggerInput(userFacingTrigger)) {
+    validateDateComponentsInTrigger(userFacingTrigger, YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS);
+    return {
+      type: 'yearly',
+      channelId: userFacingTrigger.channelId,
+      day: userFacingTrigger.day,
+      month: userFacingTrigger.month,
+      hour: userFacingTrigger.hour,
+      minute: userFacingTrigger.minute,
     };
   } else if (isSecondsPropertyMisusedInCalendarTriggerInput(userFacingTrigger)) {
     throw new TypeError(
@@ -150,27 +149,48 @@ function toTimestamp(date: number | Date) {
 }
 
 function isDailyTriggerInput(
-  trigger: WeeklyTriggerInput | DailyTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput
+  trigger: SchedulableNotificationTriggerInput
 ): trigger is DailyTriggerInput {
-  const { channelId, ...triggerWithoutChannelId } = trigger;
+  if (typeof trigger !== 'object') return false;
+  const { channelId, ...triggerWithoutChannelId } = trigger as DailyTriggerInput;
   return (
-    Object.keys(triggerWithoutChannelId).length === 3 &&
-    'hour' in triggerWithoutChannelId &&
-    'minute' in triggerWithoutChannelId &&
+    Object.keys(triggerWithoutChannelId).length ===
+      DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
+    DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
+      (component) => component in triggerWithoutChannelId
+    ) &&
     'repeats' in triggerWithoutChannelId &&
     triggerWithoutChannelId.repeats === true
   );
 }
 
 function isWeeklyTriggerInput(
-  trigger: WeeklyTriggerInput | DailyTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput
+  trigger: SchedulableNotificationTriggerInput
 ): trigger is WeeklyTriggerInput {
-  const { channelId, ...triggerWithoutChannelId } = trigger;
+  if (typeof trigger !== 'object') return false;
+  const { channelId, ...triggerWithoutChannelId } = trigger as WeeklyTriggerInput;
   return (
-    Object.keys(triggerWithoutChannelId).length === 4 &&
-    'weekday' in triggerWithoutChannelId &&
-    'hour' in triggerWithoutChannelId &&
-    'minute' in triggerWithoutChannelId &&
+    Object.keys(triggerWithoutChannelId).length ===
+      WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
+    WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
+      (component) => component in triggerWithoutChannelId
+    ) &&
+    'repeats' in triggerWithoutChannelId &&
+    triggerWithoutChannelId.repeats === true
+  );
+}
+
+function isYearlyTriggerInput(
+  trigger: SchedulableNotificationTriggerInput
+): trigger is YearlyTriggerInput {
+  if (typeof trigger !== 'object') return false;
+  const { channelId, ...triggerWithoutChannelId } = trigger as YearlyTriggerInput;
+  return (
+    Object.keys(triggerWithoutChannelId).length ===
+      YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
+    YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
+      (component) => component in triggerWithoutChannelId
+    ) &&
     'repeats' in triggerWithoutChannelId &&
     triggerWithoutChannelId.repeats === true
   );
@@ -190,4 +210,71 @@ function isSecondsPropertyMisusedInCalendarTriggerInput(
       !('repeats' in triggerWithoutChannelId) &&
       Object.keys(triggerWithoutChannelId).length > 1)
   );
+}
+
+function validateDateComponentsInTrigger(
+  trigger: NonNullable<NotificationTriggerInput>,
+  components: readonly ValidTriggerDateComponents[]
+) {
+  const anyTriggerType = trigger as any;
+  components.forEach((component) => {
+    if (!(component in anyTriggerType)) {
+      throw new TypeError(`The ${component} parameter needs to be present`);
+    }
+    if (typeof anyTriggerType[component] !== 'number') {
+      throw new TypeError(`The ${component} parameter should be a number`);
+    }
+    switch (component) {
+      case 'month': {
+        const { month } = anyTriggerType;
+        if (month < 0 || month > 11) {
+          throw new RangeError(`The month parameter needs to be between 0 and 11. Found: ${month}`);
+        }
+        break;
+      }
+      case 'day': {
+        const { day, month } = anyTriggerType;
+        const daysInGivenMonth = daysInMonth(month);
+        if (day < 1 || day > daysInGivenMonth) {
+          throw new RangeError(
+            `The day parameter for month ${month} must be between 1 and ${daysInGivenMonth}. Found: ${day}`
+          );
+        }
+        break;
+      }
+      case 'weekday': {
+        const { weekday } = anyTriggerType;
+        if (weekday < 1 || weekday > 7) {
+          throw new RangeError(
+            `The weekday parameter needs to be between 1 and 7. Found: ${weekday}`
+          );
+        }
+        break;
+      }
+      case 'hour': {
+        const { hour } = anyTriggerType;
+        if (hour < 0 || hour > 23) {
+          throw new RangeError(`The hour parameter needs to be between 0 and 23. Found: ${hour}`);
+        }
+        break;
+      }
+      case 'minute': {
+        const { minute } = anyTriggerType;
+        if (minute < 0 || minute > 59) {
+          throw new RangeError(
+            `The minute parameter needs to be between 0 and 59. Found: ${minute}`
+          );
+        }
+        break;
+      }
+    }
+  });
+}
+
+/**
+ * Determines the number of days in the given month (or January if omitted).
+ * If year is specified, it will include leap year logic, else it will always assume a leap year
+ */
+function daysInMonth(month: number = 0, year?: number) {
+  return new Date(year ?? 2000, month + 1, 0).getDate();
 }

@@ -1,12 +1,18 @@
-import { usePermissions } from '@use-expo/permissions';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import TitleSwitch from '../../components/TitledSwitch';
-// Location.setGoogleApiKey('<PROVIDE_YOUR_OWN_API_KEY HERE>');
+import usePermissions from '../../utilities/usePermissions';
+
+// Provide your own Google Maps API Key here to verify.  Note: this requires a
+// paid Google Maps API plan. It is not required to test this during QA.
+const GOOGLE_MAPS_API_KEY = null;
+
+if (GOOGLE_MAPS_API_KEY) {
+  Location.setGoogleApiKey(GOOGLE_MAPS_API_KEY);
+}
 
 const forwardGeocodingAddresses = [
   '1 Hacker Way, CA',
@@ -25,11 +31,19 @@ const reverseGeocodingCoords = [
 ];
 
 export default function GeocodingScreen() {
-  usePermissions(Permissions.LOCATION, { ask: true });
+  usePermissions(Location.requestForegroundPermissionsAsync);
 
   const [useGoogleMaps, setGoogleMaps] = React.useState(false);
 
-  const toggleGoogleMaps = () => setGoogleMaps(value => !value);
+  const toggleGoogleMaps = () => {
+    if (!GOOGLE_MAPS_API_KEY) {
+      throw new Error(
+        'Must supply GOOGLE_MAPS_API_KEY in GeocodingScreen.tsx to use Google Maps API'
+      );
+    } else {
+      setGoogleMaps((value) => !value);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>

@@ -39,7 +39,7 @@ import {
   UL,
 } from '@expo/html-elements';
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
@@ -63,9 +63,6 @@ const textElements = {
   EM,
   Mark,
   Code,
-  TH,
-  TD,
-  Caption,
   LI,
   Q,
   Time,
@@ -78,13 +75,7 @@ const viewElements = {
   Main,
   Section,
   Nav,
-  HR,
   Footer,
-  Table,
-  THead,
-  TBody,
-  TFoot,
-  TR,
   UL,
   LI,
   BlockQuote,
@@ -117,11 +108,73 @@ export async function test(
           const Element = viewElements[elementName];
           await mountAndWaitFor(
             <Element>
-              <View />
+              <Text>Hello</Text>
             </Element>
           );
         });
       }
+    });
+
+    it(`renders a horizontal rule`, async () => {
+      await mountAndWaitFor(
+        <View>
+          <HR />
+        </View>
+      );
+    });
+    it(`renders a table`, async () => {
+      await mountAndWaitFor(
+        <Table>
+          <Caption>Caption</Caption>
+          <THead>
+            <TR>
+              <TH colSpan={2}>The table header</TH>
+            </TR>
+          </THead>
+          <TBody>
+            <TR>
+              <TD>The table body</TD>
+              <TD>with two columns</TD>
+            </TR>
+            <TR>
+              <TD>Row two</TD>
+              <TD>Column two</TD>
+            </TR>
+          </TBody>
+          <TFoot>
+            <TR>
+              <TH colSpan={2}>The table footer</TH>
+            </TR>
+          </TFoot>
+        </Table>
+      );
+    });
+    it(`renders a table`, async () => {
+      await mountAndWaitFor(
+        <Table>
+          <Caption>Caption</Caption>
+          <THead>
+            <TR>
+              <TH colSpan={2}>The table header</TH>
+            </TR>
+          </THead>
+          <TBody>
+            <TR>
+              <TD>The table body</TD>
+              <TD>with two columns</TD>
+            </TR>
+            <TR>
+              <TD>Row two</TD>
+              <TD>Column two</TD>
+            </TR>
+          </TBody>
+          <TFoot>
+            <TR>
+              <TH colSpan={2}>The table footer</TH>
+            </TR>
+          </TFoot>
+        </Table>
+      );
     });
   });
 }

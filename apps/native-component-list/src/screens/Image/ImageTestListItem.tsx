@@ -34,12 +34,14 @@ export default function ImageTestListItem({ test, animValue, tests, navigation }
           style={styles.image}
           imageProps={imageProps}
           ImageComponent={getImageComponent()}
+          loadOnDemand={test.loadOnDemand}
         />
         <View style={styles.spacer} />
         <ImageTestView
           style={styles.image}
           imageProps={imageProps}
           ImageComponent={getSelectedCompareComponent()}
+          loadOnDemand={test.loadOnDemand}
         />
       </View>
     </TouchableOpacity>

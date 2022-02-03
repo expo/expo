@@ -1,4 +1,3 @@
-import * as React from 'react';
-export default class PublisherBanner extends React.Component<object> {
-    render(): JSX.Element;
-}
+declare const PublisherBanner: () => JSX.Element;
+export default PublisherBanner;
+//# sourceMappingURL=PublisherBanner.web.d.ts.map

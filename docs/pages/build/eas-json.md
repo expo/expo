@@ -1,202 +1,188 @@
 ---
-title: Configuration with eas.json
+title: Configuring EAS Build with eas.json
+sidebar_title: Configuration with eas.json
 ---
 
-`eas.json` is your go-to place for configuring EAS Build <small>(and other EAS services soon...)</small>. It is located at the root of your project next to your `package.json`. It looks something like this:
+**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `"build"` key. A minimal **eas.json** may look something like this:
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic"
-      }
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
     },
-    "ios": {
-      "release": {
-        "workflow": "generic"
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  }
+}
+```
+
+## Build profiles
+
+A build profile is a named grouping of configuration that describes the necessary parameters to perform a certain type of build.
+
+The JSON object under the `build` key can contain multiple build profiles, and you can name these build profiles whatever you like; in the above example, there are three build profiles: `development`, `preview`, and `production`, but these could have been named `foo`, `bar`, and `baz` if that was your preference.
+
+To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the channel with the name **production**, if it exists.
+
+### Platform-specific and common options
+
+Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build. Fields that are available to both platforms can provided on the platform-specific configuration object or on the root of the profile.
+
+### Sharing configuration between profiles
+
+Build profiles can extend another build profile using the `"extends"` key. For example, in the `preview` profile you may have `"extends": "production"`; this would make the `preview` profile inherit configuration of the `production` profile.
+
+## Common use cases
+
+Developers using Expo tools usually end up having three different types of builds: **development**, **preview**, and **production**.
+
+### Development builds
+
+These builds include developer tools, and they are never submitted to an app store.
+
+By default, `eas build:configure` will create a `development` profile with `"developmentClient": true`. This indicates that this build depends on [expo-dev-client](/clients/introduction.md).
+
+The `development` profile also defaults to `"distribution": "internal"`. This will make it easy to distribute your app directly to physical iOS and Android devices &mdash; [learn more](/build/internal-distribution.md).
+
+You may alternatively prefer for your development build to [run in an iOS simulator](/build-reference/simulators.md). To do this, use the following configuration for `development` profile:
+
+```json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
       }
     }
+    // ...
   }
+  // ...
 }
 ```
 
-The JSON object under the `builds` key contains the platforms that you want to build for. The example above declares that you want to build app binaries for both Android and iOS platforms.
+If you'd like to create a build for internal distribution and another for the iOS simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.md); the same APK will work in both circumstances.
 
-Each object under the platform key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by Expo CLI to exist is `release` (if you'd like to build your app using another build profile you need to specify it with a parameter - `expo eas:build --platform android --profile foobar`). In the example, there are two build profiles (one for Android and one for iOS) and they are both named `release`. However, they could be named `foo` or `bar` if you'd like to.
+### Preview builds
 
-Generally, the schema of this file looks like this:
+These builds don't include developer tools, they are intended to be installed by your team and other stakeholders, to test out the app in production-like circumstances. In this way, they are similar to [production builds](#production-builds); the difference arises in that they are either not signed for distribution on stores (ad hoc or enterprise provisioning on iOS), or are packaged in a way that is not optimal for store deployment (Android APK is best for preview, AAB is best for stores).
 
-<!-- prettier-ignore -->
+A minimal `preview` profile looks like this:
+
 ```json
 {
-  "builds": {
-    /* @info valid values: android, ios */"PLATFORM_NAME"/* @end */: {
-      /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: { ... },
-      /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: { ... },
-      ...,
+  "build": {
+    "preview": {
+      "distribution": "internal"
+    }
+    // ...
+  }
+  // ...
+}
+```
+
+Similar to [development builds](#development-builds), you can configure your preview build to run in the [iOS simulator](/build-reference/simulators.md) or create a variant of your preview profile for that purpose. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.md); the same APK will work in both circumstances.
+
+### Production builds
+
+These builds are submitted to an app store, for release to the general public or as part of a store-facilitated testing process such as TestFlight.
+
+Production builds must be installed through their respective app stores; they cannot be installed directly to your iOS device/simulator or Android device/emulator. The only exception to this if you explicitly set `"buildType": "apk"` for Android on your build profile; however, it is recommended to use AAB when submitting to stores, and this is the default configuration.
+
+A minimal `production` profile looks like this:
+
+```json
+{
+  "build": {
+    "production": {}
+    // ...
+  }
+  // ...
+}
+```
+
+### Installing multiple builds of the same app on a single device
+
+It's common to have development and production builds installed simultaneously on the same device. [Learn about "installing app variants on the same device"](../build-reference/variants.md).
+
+## Configuring your build tools
+
+Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include, but are not limited to: Node.js, npm, yarn, Ruby, Bundler, Cocoapods, Fastlane, Xcode, and Android NDK.
+
+### Selecting build tool versions
+
+Versions for the most common build tools can be set on build profiles with fields corresponding to names of the tools, for example `"node"`:
+
+```json
+{
+  "build": {
+    "production": {
+      "node": "16.13.0"
+    }
+    // ...
+  }
+  // ...
+}
+```
+
+It's common to want to share build tool configuration between profiles, and we can use `extends` for that:
+
+```json
+{
+  "build": {
+    "production": {
+      "node": "16.13.0"
     },
-    ...
+    "preview": {
+      "extends": "production",
+      "distribution": "internal"
+    },
+    "development": {
+      "extends": "production",
+      "developmentClient": "true",
+      "distribution": "internal"
+    }
+    // ...
   }
+  // ...
 }
 ```
 
-Where `PLATFORM_NAME` is one of `android` or `ios`.
+### Selecting a base image
 
-## Build Profiles
+The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and Cocoapods. You can override them using the specific named fields as described above. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
 
-There are two types of build profiles - generic and managed. _(Building managed projects is not supported at the moment.)_
+If you are using the Expo managed workflow, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to read about the available images on ["Build server infrastructure"](/build-reference/infrastructure.md).
 
-**Generic projects** make almost no assumptions about your project's structure. The only requirement is that your project follows the general structure of React Native projects. This means there are `android` and `ios` directories in the root directory with the Gradle and Xcode projects, respectively. No matter if you've intialized your project with `expo init` or with `npx react-native init`, you should be able to build it with EAS Build.
+## Environment variables
 
-**Managed projects** are much simpler in terms of the project's structure and the knowledge needed to start developing your application. Those projects don't have the native code in the repository and they are tightly coupled with Expo.
-
-## Android
-
-### Generic project
-
-The schema of a build profile for a generic Android project looks like this:
+You can configure environment variables on your build profiles using the `"env"` field. These environment variable those will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
 
 ```json
 {
-  "workflow": "generic",
-  "credentialsSource": "local" | "remote" | "auto", // default: "auto"
-  "withoutCredentials": boolean, // default: false
-  "gradleCommand": string, // default: ":app:bundleRelease"
-  "artifactPath": string // default: "android/app/build/outputs/**/*.{apk,aab}"
-}
-```
-
-- `"workflow": "generic"` indicates that your project is a generic one.
-- `credentialsSource` defines the source of credentials for this build profile. If you want to take advantage of your own `credentials.json` file, set this to `local` ([learn more on this here](../advanced-credentials-configuration/)). If you want to use the credentials Expo already has stored for you, choose `remote`. If you're not sure what to do but you probably won't be running builds from a CI, choose `auto` (this is the default option).
-- `withoutCredentials` when set to `true`, Expo CLI won't require you to configure credentials when building the app using this profile. It comes in handy when you want to build debug binaries and the debug keystore is checked in to the repository. The default is `false`.
-- `gradleCommand` defines the Gradle task to be run on Expo servers to build your project. You can set it to any valid Gradle task, e.g. `:app:assembleDebug` to build a debug binary. The default Gradle command is `:app:bundleRelease`.
-- `artifactPath` is the path (or pattern) where EAS Build is going to look for the build artifacts. EAS Build uses the `fast-glob` npm package for pattern matching, [see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax). The default value is `android/app/build/outputs/**/*.{apk,aab}`.
-
-#### Examples
-
-This is the minimal working example. Expo CLI will ask you for the app's credentials, the project will be built with the `./gradlew :app:bundleRelease` command, and you'll receive an archive containing the `android/app/build/outputs/bundle/release/app-release.aab` file.
-
-```json
-{
-  "workflow": "generic"
-}
-```
-
-If you'd like to build a release APK (AAB is built by default), use this example:
-
-```json
-{
-  "workflow": "generic",
-  "gradleCommand": ":app:assembleRelease",
-  "artifactPath": "android/app/build/outputs/apk/release/app-release.apk"
-}
-```
-
-If you'd like to build a debug APK use the following example. Also, make sure the debug keystore is checked in to the repository.
-
-```json
-{
-  "workflow": "generic",
-  "withoutCredentials": true,
-  "gradleCommand": ":app:assembleDebug",
-  "artifactPath": "android/app/build/outputs/apk/debug/app-debug.apk"
-}
-```
-
-### Managed Project
-
-Managed projects are not supported at the moment but the profile's schema is going to look like this:
-
-```json
-{
-  "workflow": "managed",
-  "credentialsSource": "local" | "remote" | "auto", // default: "auto"
-  "buildType": "app-bundle" | "apk" // default: "app-bundle"
-}
-```
-
-## iOS
-
-### Generic Project
-
-The schema of a build profile for a generic iOS project looks like this:
-
-```json
-{
-  "workflow": "generic",
-  "credentialsSource": "local" | "remote" | "auto", // default: "auto"
-  "scheme": string,
-  "artifactPath": string // default: "ios/build/App.ipa"
-}
-```
-
-- `"workflow": "generic"` indicates that your project is a generic one.
-- `credentialsSource` defines the source of credentials for this build profile. If you want to take advantage of your own `credentials.json` file, set this to `local` ([learn more on this here](../advanced-credentials-configuration/)). If you want to use the credentials Expo already has stored for you, choose `remote`. If you're not sure what to do but you probably won't be running builds from a CI, choose `auto` (this is the default option).
-- `scheme` defines the Xcode project's scheme to build. You should set it if your project has multiple schemes. Please note that if the project has only one scheme, it will automatically be detected. However, if multiple schemes exist and this value is **not** set, Expo CLI will prompt you to select one of them.
-- `artifactPath` is the path (or pattern) where EAS Build is going to look for the build artifacts. EAS Build uses the `fast-glob` npm package for pattern matching, [see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
-
-#### Examples
-
-This is the minimal working example. Expo CLI will ask you for the app's credentials and you'll receive an archive containing the `ios/build/App.ipa` file.
-
-```json
-{
-  "workflow": "generic"
-}
-```
-
-If you'd like to build your iOS project with a custom `Gymfile` ([learn more on this here](../ios-builds/#building-ios-projects-with-fastlane)) where you've defined a different output directory than `ios/build`, use the following example:
-
-<!-- prettier-ignore -->
-```json
-{
-  "workflow": "generic",
-  "artifactPath": /* @info determined by output_directory and output_name in Gymfile */ "ios/my/build/directory/RNApp.ipa" /* @end */
-
-}
-```
-
-### Managed Project
-
-Managed projects are not supported at the moment but the profile's schema is going to look like this:
-
-```json
-{
-  "workflow": "managed",
-  "credentialsSource": "local" | "remote" | "auto", // default: "auto"
-  "buildType": "archive" | "simulator" // default: "archive"
-}
-```
-
-## Overall Example
-
-The following example of `eas.json` configures both Android and iOS builds:
-
-```json
-{
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic"
-      },
-      "debug": {
-        "workflow": "generic",
-        "withoutCredentials": true,
-        "gradleCommand": ":app:assembleDebug",
-        "artifactPath": "android/app/build/outputs/apk/debug/app-debug.apk"
+  "build": {
+    "production": {
+      "node": "16.13.0",
+      "env": {
+        "API_URL": "https://company.com/api"
       }
     },
-    "ios": {
-      "release": {
-        "workflow": "generic",
-        "artifactPath": "ios/my/build/directory/RNApp.ipa"
+    "preview": {
+      "extends": "production",
+      "distribution": "internal",
+      "env": {
+        "API_URL": "https://staging.company.com/api"
       }
     }
+    // ...
   }
+  // ...
 }
 ```
 
-For Android, there are two build profiles - `release` and `debug`. The `release` profile is just a basic generic profile. On the other hand, `debug` will let you build a debug APK for your project. _If you want to build using the `debug` profile, run `expo eas:build --platform android --profile debug`._
-
-For iOS, we've defined a generic profile for the project which takes advantage of a custom `Gymfile`, thus the custom `artifactPath` field.
+The ["Environment variables and secrets" reference](/build-reference/variables.md) explains this topic in greater detail, and the [updates guide](/build/updates.md) provides guidance on considerations when using this feature alongside **expo-updates**.

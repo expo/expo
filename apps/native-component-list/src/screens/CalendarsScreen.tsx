@@ -1,6 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -76,7 +75,7 @@ export default class CalendarsScreen extends React.Component<
   };
 
   _askForCalendarPermissions = async () => {
-    const response = await Permissions.askAsync(Permissions.CALENDAR);
+    const response = await Calendar.requestCalendarPermissionsAsync();
     const granted = response.status === 'granted';
     this.setState({
       haveCalendarPermissions: granted,
@@ -86,7 +85,7 @@ export default class CalendarsScreen extends React.Component<
 
   _askForReminderPermissions = async () => {
     if (Platform.OS === 'android') return true;
-    const response = await Permissions.askAsync(Permissions.REMINDERS);
+    const response = await Calendar.requestRemindersPermissionsAsync();
     const granted = response.status === 'granted';
     this.setState({
       haveReminderPermissions: granted,
@@ -98,10 +97,10 @@ export default class CalendarsScreen extends React.Component<
     const calendarGranted = await this._askForCalendarPermissions();
     const reminderGranted = await this._askForReminderPermissions();
     if (calendarGranted && reminderGranted) {
-      const eventCalendars = ((await Calendar.getCalendarsAsync('event')) as unknown) as any[];
-      const reminderCalendars = (Platform.OS === 'ios'
-        ? await Calendar.getCalendarsAsync('reminder')
-        : []) as any[];
+      const eventCalendars = (await Calendar.getCalendarsAsync('event')) as unknown as any[];
+      const reminderCalendars = (
+        Platform.OS === 'ios' ? await Calendar.getCalendarsAsync('reminder') : []
+      ) as any[];
       this.setState({ calendars: [...eventCalendars, ...reminderCalendars] });
     }
   };
@@ -110,12 +109,12 @@ export default class CalendarsScreen extends React.Component<
     const sourceDetails = Platform.select({
       default: () => ({}),
       ios: () => ({
-        sourceId: this.state.calendars.find(cal => cal.source && cal.source.name === 'Default')
+        sourceId: this.state.calendars.find((cal) => cal.source && cal.source.name === 'Default')
           ?.source.id,
       }),
       android: () => {
         const calendar = this.state.calendars.find(
-          cal => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
+          (cal) => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
         );
         return calendar ? { source: calendar.source, ownerAccount: calendar.ownerAccount } : {};
       },
@@ -176,7 +175,7 @@ export default class CalendarsScreen extends React.Component<
       return (
         <ScrollView style={styles.container}>
           <Button onPress={this._addCalendar} title="Add New Calendar" />
-          {this.state.calendars.map(calendar => (
+          {this.state.calendars.map((calendar) => (
             <CalendarRow
               calendar={calendar}
               key={calendar.id}

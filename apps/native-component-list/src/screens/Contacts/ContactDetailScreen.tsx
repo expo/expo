@@ -1,23 +1,23 @@
 // tslint:disable max-classes-per-file
-import { Ionicons } from '@expo/vector-icons';
-import { usePermissions } from '@use-expo/permissions';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
-import * as Permissions from 'expo-permissions';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import HeaderContainerRight from '../../components/HeaderContainerRight';
+import HeaderIconButton from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
+import usePermissions from '../../utilities/usePermissions';
 import ContactDetailList, { DetailListItem } from './ContactDetailList';
 import * as ContactUtils from './ContactUtils';
 import ContactsAvatar from './ContactsAvatar';
 
 const isIos = Platform.OS === 'ios';
 
-async function getPermissionAsync(permission: Permissions.PermissionType) {
-  const { status } = await Permissions.askAsync(permission);
+async function getPermissionAsync() {
+  const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
     Linking.openSettings();
     return false;
@@ -26,7 +26,40 @@ async function getPermissionAsync(permission: Permissions.PermissionType) {
 }
 
 export default function ContactDetailScreen(props: any) {
-  const [permission] = usePermissions(Permissions.CONTACTS, { ask: true });
+  React.useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: 'Contacts',
+      headerRight: () => (
+        <HeaderContainerRight>
+          <HeaderIconButton
+            name="md-share"
+            onPress={async () => {
+              Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
+            }}
+          />
+          <HeaderIconButton
+            name="md-open"
+            onPress={async () => {
+              await Contacts.presentFormAsync(props.route.params.id);
+              // tslint:disable-next-line no-console
+              console.log('the native contact form has been closed');
+            }}
+          />
+          {isIos && (
+            <HeaderIconButton
+              name="md-copy"
+              onPress={async () => {
+                await ContactUtils.cloneAsync(props.route.params.id);
+                props.navigation.goBack();
+              }}
+            />
+          )}
+        </HeaderContainerRight>
+      ),
+    });
+  }, [props.navigation]);
+
+  const [permission] = usePermissions(Contacts.requestPermissionsAsync);
 
   if (!permission) {
     return (
@@ -38,34 +71,6 @@ export default function ContactDetailScreen(props: any) {
 
   return <ContactDetailView navigation={props.navigation} route={props.route} />;
 }
-
-ContactDetailScreen.navigationOptions = ({
-  navigation,
-  route: {
-    params: { id },
-  },
-}: any) => ({
-  title: 'Contacts',
-  headerRight: () => (
-    <HeaderContainerRight>
-      <HeaderIconButton
-        name="md-share"
-        onPress={async () => {
-          Contacts.shareContactAsync(id, 'Call me :]');
-        }}
-      />
-      {isIos && (
-        <HeaderIconButton
-          name="md-copy"
-          onPress={async () => {
-            await ContactUtils.cloneAsync(id);
-            navigation.goBack();
-          }}
-        />
-      )}
-    </HeaderContainerRight>
-  ),
-});
 
 function ContactDetailView({
   navigation,
@@ -141,7 +146,7 @@ function ContactDetailView({
     for (const key of Object.keys(contact)) {
       const value = (contact as any)[key];
       if (Array.isArray(value) && value.length > 0) {
-        const data = value.map(item => {
+        const data = value.map((item) => {
           let transform: Partial<DetailListItem> = {};
           switch (key) {
             case Contacts.Fields.Relationships:
@@ -250,7 +255,7 @@ function ContactDetailView({
   };
 
   const _selectPhoto = async () => {
-    const permission = await getPermissionAsync(Permissions.MEDIA_LIBRARY);
+    const permission = await getPermissionAsync();
     if (!permission) {
       return;
     }
@@ -339,7 +344,7 @@ function LinkedButton({
             backgroundColor,
           },
         ]}>
-        <Ionicons name={`ios-${icon}`} size={20} color={color} />
+        <Ionicons name={`ios-${icon}` as any} size={20} color={color} />
       </View>
       <Text style={[styles.linkButtonText, { color: backgroundColor }]}>{text}</Text>
     </TouchableOpacity>

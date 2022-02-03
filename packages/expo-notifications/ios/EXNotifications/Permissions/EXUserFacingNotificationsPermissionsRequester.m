@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <EXNotifications/EXUserFacingNotificationsPermissionsRequester.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <UserNotifications/UserNotifications.h>
 
 @interface EXUserFacingNotificationsPermissionsRequester ()
@@ -11,6 +11,8 @@
 @end
 
 @implementation EXUserFacingNotificationsPermissionsRequester
+
+static NSDictionary *_requestedPermissions;
 
 + (NSString *)permissionType
 {
@@ -31,13 +33,13 @@
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 
   __block NSMutableDictionary *status = [NSMutableDictionary dictionary];
-  __block UMPermissionStatus generalStatus = UMPermissionStatusUndetermined;
+  __block EXPermissionStatus generalStatus = EXPermissionStatusUndetermined;
 
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
     if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-      generalStatus = UMPermissionStatusGranted;
+      generalStatus = EXPermissionStatusGranted;
     } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-      generalStatus = UMPermissionStatusDenied;
+      generalStatus = EXPermissionStatusDenied;
     }
 
     status[@"status"] = [self authorizationStatusToEnum:settings.authorizationStatus];
@@ -55,9 +57,7 @@
     }
 
     status[@"alertStyle"] = [self alertStyleToEnum:settings.alertStyle];
-    if (@available(iOS 11.0, *)) {
-      status[@"allowsPreviews"] = [self showPreviewsSettingToEnum:settings.showPreviewsSetting];
-    }
+    status[@"allowsPreviews"] = [self showPreviewsSettingToEnum:settings.showPreviewsSetting];
     if (@available(iOS 12.0, *)) {
       status[@"providesAppNotificationSettings"] = @(settings.providesAppNotificationSettings);
     }
@@ -77,20 +77,19 @@
            };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  static NSDictionary *defaultPermissions;
-  if (!defaultPermissions) {
-    defaultPermissions = @{
-                           @"allowAlert": @(YES),
-                           @"allowBadge": @(YES),
-                           @"allowSound": @(YES)
-                           };
+  if (!_requestedPermissions || [_requestedPermissions count] == 0) {
+    _requestedPermissions = @{
+                              @"allowAlert": @(YES),
+                              @"allowBadge": @(YES),
+                              @"allowSound": @(YES)
+                            };
   }
-  [self requestPermissions:defaultPermissions withResolver:resolve rejecter:reject];
+  [self requestPermissions:_requestedPermissions withResolver:resolve rejecter:reject];
 }
 
-- (void)requestPermissions:(NSDictionary *)permissions withResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissions:(NSDictionary *)permissions withResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   UNAuthorizationOptions options = UNAuthorizationOptionNone;
   if ([permissions[@"allowAlert"] boolValue]) {
@@ -124,11 +123,11 @@
   [self requestAuthorizationOptions:options withResolver:resolve rejecter:reject];
 }
 
-- (void)requestAuthorizationOptions:(UNAuthorizationOptions)options withResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestAuthorizationOptions:(UNAuthorizationOptions)options withResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    UM_STRONGIFY(self);
+    EX_STRONGIFY(self);
     // getPermissions blocks method queue on which this callback is being executed
     // so we have to dispatch to another queue.
     dispatch_async(self.methodQueue, ^{
@@ -143,7 +142,7 @@
 
 # pragma mark - Utilities - notification settings to string
 
-- (NSNumber *)showPreviewsSettingToEnum:(UNShowPreviewsSetting)setting API_AVAILABLE(ios(11.0)) {
+- (NSNumber *)showPreviewsSettingToEnum:(UNShowPreviewsSetting)setting {
   switch (setting) {
     case UNShowPreviewsSettingNever:
       return @(0);
@@ -193,6 +192,11 @@
     case UNNotificationSettingNotSupported:
       return nil;
   }
+}
+
++ (void)setRequestedPermissions:(NSDictionary *)permissions
+{
+  _requestedPermissions = permissions;
 }
 
 @end

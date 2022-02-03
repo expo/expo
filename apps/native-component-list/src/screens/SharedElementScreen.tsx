@@ -12,8 +12,6 @@ const Stack = createSharedElementStackNavigator();
 export function DetailScreen() {
   return (
     <View style={styles.detailContainer}>
-      {/* `style` isn't properly typed on SharedElement
-    // @ts-ignore */}
       <SharedElement id="image" style={StyleSheet.absoluteFill}>
         <Image
           style={styles.detailImage}
@@ -28,11 +26,7 @@ export function DetailScreen() {
   );
 }
 
-interface Props {
-  navigation: StackNavigationProp<{ Detail: undefined }>;
-}
-
-function MainScreen({ navigation }: Props) {
+function MainScreen({ navigation }: { navigation: StackNavigationProp<{ Detail: undefined }> }) {
   return (
     <TouchableOpacity
       style={styles.flex}

@@ -1,5 +1,10 @@
 package versioned.host.exp.exponent.modules.api.reanimated.transitions;
 
+import android.view.Gravity;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import androidx.transition.ChangeBounds;
 import androidx.transition.ChangeTransform;
 import androidx.transition.Fade;
@@ -8,16 +13,9 @@ import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionSet;
 import androidx.transition.Visibility;
-import android.view.Gravity;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
-
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-
 import javax.annotation.Nullable;
 
 class TransitionUtils {
@@ -135,7 +133,8 @@ class TransitionUtils {
       } else if (interpolation.equals("linear")) {
         transition.setInterpolator(new LinearInterpolator());
       } else {
-        throw new JSApplicationIllegalArgumentException("Invalid interpolation type " + interpolation);
+        throw new JSApplicationIllegalArgumentException(
+            "Invalid interpolation type " + interpolation);
       }
     }
     if (params.hasKey("propagation")) {

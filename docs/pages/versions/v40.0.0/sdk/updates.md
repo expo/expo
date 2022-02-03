@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo/src/Updat
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
+The `expo-updates` library by Expo allows you to programmatically control and respond to new updates made available to your app.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -16,7 +16,7 @@ The `Updates` API from **`expo`** allows you to programatically control and resp
 
 Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
 
-> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo client, run `expo publish` and then open the published version of your app with the Expo client. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
+> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo Go app, run `expo publish` and then open the published version of your app with Expo Go. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
 
 ## API
 
@@ -32,7 +32,7 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) If `expo-updates` is enabled, this is the [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../../guides/how-expo-works.md#expo-development-server) object for the update that's currently running.
 
 In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 
@@ -73,7 +73,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
 - **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.fetchUpdateAsync()`
 
@@ -88,7 +88,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
 - **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.addListener(eventListener)`
 

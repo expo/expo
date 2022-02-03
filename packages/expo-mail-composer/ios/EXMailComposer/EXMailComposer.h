@@ -1,9 +1,9 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 #import <MessageUI/MessageUI.h>
 
-@interface EXMailComposer : UMExportedModule <UMModuleRegistryConsumer, MFMailComposeViewControllerDelegate>
+@interface EXMailComposer : EXExportedModule <EXModuleRegistryConsumer, MFMailComposeViewControllerDelegate>
 @end

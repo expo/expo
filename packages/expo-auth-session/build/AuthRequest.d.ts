@@ -11,7 +11,7 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     /**
      * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
      */
-    state: Promise<string> | string;
+    state: string;
     url: string | null;
     codeVerifier?: string;
     codeChallenge?: string;
@@ -35,7 +35,7 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
      * @param discovery
      * @param promptOptions
      */
-    promptAsync(discovery: AuthDiscoveryDocument, { url, ...options }?: AuthRequestPromptOptions): Promise<AuthSessionResult>;
+    promptAsync(discovery: AuthDiscoveryDocument, { url, proxyOptions, ...options }?: AuthRequestPromptOptions): Promise<AuthSessionResult>;
     parseReturnUrl(url: string): AuthSessionResult;
     /**
      * Create the URL for authorization.
@@ -43,7 +43,7 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
      * @param discovery
      */
     makeAuthUrlAsync(discovery: AuthDiscoveryDocument): Promise<string>;
-    private getStateAsync;
     private ensureCodeIsSetupAsync;
 }
 export {};
+//# sourceMappingURL=AuthRequest.d.ts.map

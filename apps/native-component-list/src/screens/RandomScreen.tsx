@@ -12,7 +12,7 @@ if (!global.crypto) {
   // @ts-ignore
   global.crypto = {
     // @ts-ignore
-    getRandomValues: array => getRandomBytes(array.byteLength),
+    getRandomValues: (array) => getRandomBytes(array.byteLength),
   };
 }
 

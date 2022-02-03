@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.google.android.gms.ads.AdRequest;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 
 public class AdMobModule extends ExportedModule {
 

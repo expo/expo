@@ -1,7 +1,6 @@
 package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 
 import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
@@ -13,7 +12,6 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.UIImplementation;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 import versioned.host.exp.exponent.modules.api.reanimated.Utils;
-
 import java.util.Map;
 
 public class PropsNode extends Node implements FinalNode {
@@ -39,19 +37,19 @@ public class PropsNode extends Node implements FinalNode {
     } else if (value instanceof String) {
       propMap.putString(key, (String) value);
     } else if (value instanceof WritableArray) {
-      propMap.putArray(key, (WritableArray)value);
+      propMap.putArray(key, (WritableArray) value);
     } else if (value instanceof WritableMap) {
-      propMap.putMap(key, (WritableMap)value);
+      propMap.putMap(key, (WritableMap) value);
     } else {
       throw new IllegalStateException("Unknown type of animated value");
     }
   }
 
   public PropsNode(
-          int nodeID,
-          ReadableMap config,
-          NodesManager nodesManager,
-          UIImplementation uiImplementation) {
+      int nodeID,
+      ReadableMap config,
+      NodesManager nodesManager,
+      UIImplementation uiImplementation) {
     super(nodeID, config, nodesManager);
     mMapping = Utils.processMapping(config.getMap("props"));
     mUIImplementation = uiImplementation;
@@ -87,7 +85,7 @@ public class PropsNode extends Node implements FinalNode {
           if (mNodesManager.uiProps.contains(key)) {
             hasUIProps = true;
             dest = mPropMap;
-          } else if (mNodesManager.nativeProps.contains(key)){
+          } else if (mNodesManager.nativeProps.contains(key)) {
             hasNativeProps = true;
             dest = nativeProps;
           } else {
@@ -124,12 +122,10 @@ public class PropsNode extends Node implements FinalNode {
 
     if (mConnectedViewTag != View.NO_ID) {
       if (hasUIProps) {
-        mUIImplementation.synchronouslyUpdateViewOnUIThread(
-                mConnectedViewTag,
-                mDiffMap);
+        mUIImplementation.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mDiffMap);
       }
       if (hasNativeProps) {
-        mNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, nativeProps);
+        mNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, nativeProps, false);
       }
       if (hasJSProps) {
         WritableMap evt = Arguments.createMap();

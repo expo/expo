@@ -5,7 +5,7 @@ sidebar_title: Walkthrough
 
 import Video from '~/components/plugins/Video'
 
-If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build an app with the bare workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](../hello-world) is for you.
+If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build an app with the bare workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](hello-world.md) is for you.
 
 ## Initialize a project
 
@@ -17,15 +17,13 @@ If you’re just starting a new bare project then you should initialize it with 
 
 ### Existing React Native apps
 
-If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `react-native-unimodules` package to enable you to use packages from the Expo SDK.
-
-<Video file="exploring-bare/setup.mp4" />
-
-> _Note: We moved superhumanly fast in this video. You're not meant to follow along, we just want to give you a rough sense of what's involved in this process. Full instructions to get set up are available in the [react-native-unimodules README](https://github.com/expo/expo/tree/master/packages/react-native-unimodules)._
+If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `expo` package to enable you to use packages from the Expo SDK. For this, we will run `npx install-expo-modules`.
 
 ### Existing Expo managed workflow apps
 
 If you already have an Expo managed workflow app and you need to customize the native code, you can eject to the bare workflow by running `expo eject`. This will give you a vanilla React Native app that includes all of the Expo SDK APIs that you were using already, and no more than that. The outcome is that you will be in just as good of a position as if you had started your app in the bare workflow from scratch, only you probably saved yourself some time!
+
+> 💡 We recommend upgrading to the latest SDK version before ejecting. It will be more difficult to upgrade your app after ejecting because you will also be responsible for native iOS and Android related upgrade steps.
 
 <Video file="exploring-bare/eject.mp4" spaceAfter />
 
@@ -47,9 +45,9 @@ The process for doing this is the same as any other React Native app. Here we ar
 
 <Video file="exploring-bare/custom.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android
+## Open the project with the Expo Go app on iOS or Android
 
-You can continue using the Expo client _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in the Expo client, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
+You can continue using the Expo Go app _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in Expo Go, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
 
 <Video file="exploring-bare/guard.mp4" />
 
@@ -59,16 +57,16 @@ Now when we go to the screen where you would expect to see the `AttractionList`,
 
 ## Open the app in your web browser
 
-Expo for web also works on bare projects. Here we will just import one simple component into `App.web.js` to demonstrate it, and run `expo start --web`.
+Expo for web also works on bare projects. Here we will just import one simple component into **App.web.js** to demonstrate it, and run `expo start --web`.
 
 <Video file="exploring-bare/web.mp4" spaceAfter />
 
-## Releasing to App Store and Play Store
+## Releasing to the Apple App Store and Google Play Store
 
-This is entirely up to you! The Expo build service does not yet support builds for the bare workflow.
+With [Expo Application Services (EAS)](/eas/index.md), you can build and submit your app with a single command `eas build --auto-submit` using `eas-cli`.
 
 ## That's it!
 
-You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](../hello-world/) to get started coding!
+You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](hello-world.md) to get started coding!
 
-Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../../introduction/walkthrough/) for more information.
+Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../introduction/walkthrough.md) for more information.

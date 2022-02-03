@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
+import { PermissionResponse, EventEmitter, Subscription } from 'expo-modules-core';
 declare type Listener<E> = (event: E) => void;
 declare type NativeSensorModule = any;
 /**
@@ -11,12 +11,15 @@ export default class DeviceSensor<M> {
     _nativeEventName: string;
     _listenerCount: number;
     constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string);
-    addListener(listener: Listener<M>): Subscription;
-    hasListeners(): boolean;
-    getListenerCount(): number;
-    removeAllListeners(): void;
-    removeSubscription(subscription: Subscription): void;
-    setUpdateInterval(intervalMs: number): void;
-    isAvailableAsync(): Promise<boolean>;
+    addListener: (listener: Listener<M>) => Subscription;
+    hasListeners: () => boolean;
+    getListenerCount: () => number;
+    removeAllListeners: () => void;
+    removeSubscription: (subscription: Subscription) => void;
+    setUpdateInterval: (intervalMs: number) => void;
+    isAvailableAsync: () => Promise<boolean>;
+    getPermissionsAsync: () => Promise<PermissionResponse>;
+    requestPermissionsAsync: () => Promise<PermissionResponse>;
 }
 export {};
+//# sourceMappingURL=DeviceSensor.d.ts.map

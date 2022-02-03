@@ -4,15 +4,16 @@
 #import <EXNotifications/EXNotificationSerializer.h>
 #import <EXNotifications/EXNotificationCenterDelegate.h>
 
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 @interface EXNotificationsEmitter ()
 
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
 
 @property (nonatomic, assign) BOOL isBeingObserved;
+@property (nonatomic, assign) BOOL isListening;
 
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
 @property (nonatomic, strong) UNNotificationResponse *lastNotificationResponse;
 
@@ -20,25 +21,23 @@
 
 @implementation EXNotificationsEmitter
 
-UM_EXPORT_MODULE(ExpoNotificationsEmitter);
+EX_EXPORT_MODULE(ExpoNotificationsEmitter);
 
-UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
-                    getLastNotificationResponseAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
+                    getLastNotificationResponseAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
 {
   resolve(_lastNotificationResponse ? [self serializedNotificationResponse:_lastNotificationResponse] : [NSNull null]);
 }
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _notificationCenterDelegate = [moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
-  [_notificationCenterDelegate addDelegate:self];
 }
 
-# pragma mark - UMEventEmitter
+# pragma mark - EXEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -47,12 +46,25 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 
 - (void)startObserving
 {
-  _isBeingObserved = YES;
+  [self setIsBeingObserved:YES];
 }
 
 - (void)stopObserving
 {
-  _isBeingObserved = NO;
+  [self setIsBeingObserved:NO];
+}
+
+- (void)setIsBeingObserved:(BOOL)isBeingObserved
+{
+  _isBeingObserved = isBeingObserved;
+  BOOL shouldListen = _isBeingObserved;
+  if (shouldListen && !_isListening) {
+    [_notificationCenterDelegate addDelegate:self];
+    _isListening = YES;
+  } else if (!shouldListen && _isListening) {
+    [_notificationCenterDelegate removeDelegate:self];
+    _isListening = NO;
+  }
 }
 
 # pragma mark - EXNotificationsDelegate
@@ -80,6 +92,10 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 {
   // Silence React Native warning: "Sending ... with no listeners registered."
   // See: https://github.com/expo/expo/pull/10883#pullrequestreview-529183413
+  // While in practice we don't need to verify this, as as of the end of 2020
+  // we wouldn't send any event to JS if we weren't being observed because
+  // we wouldn't be subscribed to the notification center delegate it's nice
+  // to be sure this problem won't ever arise.
   if (_isBeingObserved) {
     [_eventEmitter sendEventWithName:eventName body:body];
   }

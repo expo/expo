@@ -1,11 +1,11 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from 'expo-modules-core';
 
 export default {
   get name(): string {
     return 'ExpoUpdates';
   },
   async reload(): Promise<void> {
-    if (!canUseDOM) return;
+    if (!Platform.isDOMAvailable) return;
     window.location.reload(true);
   },
 };
