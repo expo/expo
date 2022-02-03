@@ -45,13 +45,15 @@ const summaryStyle = css({
   userSelect: 'none',
   backgroundColor: theme.background.secondary,
   padding: spacing[1.5],
+  paddingRight: spacing[3],
   margin: 0,
 
   '&::marker': { content: '""' },
 });
 
 const markerStyle = css({
-  margin: `0 ${spacing[1.5]}px`,
+  flexShrink: 0,
+  marginRight: spacing[1.5],
   transform: 'rotate(-90deg)',
   transition: `transform ${durations.hover}`,
 
