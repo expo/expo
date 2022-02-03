@@ -6,18 +6,20 @@ import { HEADLINE } from '~/ui/components/Text';
 import { durations } from '~/ui/foundations/durations';
 import { ChevronDownIcon } from '~/ui/foundations/icons';
 
-type CollapsibleProps = PropsWithChildren<
-  Pick<HTMLDetailsElement, 'open'> & {
-    title: ReactNode;
-  }
->;
+type CollapsibleProps = PropsWithChildren<{
+  /** The content of the collapsible summary */
+  summary: ReactNode;
+  /** If the collapsible should be rendered "open" by default */
+  open?: boolean;
+  testID?: string;
+}>;
 
-export function Collapsible({ title, children, ...rest }: CollapsibleProps) {
+export function Collapsible({ summary, open, testID, children }: CollapsibleProps) {
   return (
-    <details css={detailsStyle} {...rest}>
+    <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
         <ChevronDownIcon css={markerStyle} size={iconSize.small} />
-        <HEADLINE tag="span">{title}</HEADLINE>
+        <HEADLINE tag="span">{summary}</HEADLINE>
       </summary>
       <div css={contentStyle}>{children}</div>
     </details>
@@ -66,14 +68,14 @@ const contentStyle = css({
 
 // TODO(cedric): remove everything below this line once we switch to MDX v2,
 // that won't support separate <details> and <summary> tags.
-
 // To implement this collapsible with MDX v1, without changing the pages, we need to add them separately to markdown.
 
 /** @deprecated please use `<Collapsible>` instead of `<DETAILS>` */
 export const DETAILS = ({
+  testID,
   children,
   ...rest
-}: PropsWithChildren<Pick<HTMLDetailsElement, 'open'>>) => {
+}: PropsWithChildren<Omit<CollapsibleProps, 'summary'>>) => {
   // Pull out the `<summary>` to style the content differently.
   const childrenList = React.Children.toArray(children);
   const summary = childrenList.find(node => nodeIsTag(node, 'summary'));
@@ -82,16 +84,16 @@ export const DETAILS = ({
   }
 
   return (
-    <details css={detailsStyle} {...rest}>
+    <details css={detailsStyle} data-testid={testID} {...rest}>
       {summary}
       <div css={contentStyle}>{childrenList}</div>
     </details>
   );
 };
 
-/** @deprecated please use `<Collapsible>` instead of `<summary>` */
-export const SUMMARY = ({ children }: PropsWithChildren<object>) => (
-  <summary css={summaryStyle}>
+/** @deprecated please use `<Collapsible>` instead of `<SUMMARY>` */
+export const SUMMARY = ({ testID, children }: PropsWithChildren<{ testID?: string }>) => (
+  <summary css={summaryStyle} data-testid={testID}>
     <ChevronDownIcon css={markerStyle} size={iconSize.small} />
     <HEADLINE tag="span">{children}</HEADLINE>
   </summary>
