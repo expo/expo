@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-const { copySync, removeSync } = require('fs-extra');
+// const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
@@ -22,11 +22,11 @@ logInfo(
 );
 
 // Prepare the latest version by copying the actual exact latest version
-const vLatest = join('pages', 'versions', `v${version}/`);
-const latest = join('pages', 'versions', 'latest/');
-removeSync(latest);
-copySync(vLatest, latest);
-logInfo(`Copied latest Expo SDK version from v${version}`);
+// const vLatest = join('pages', 'versions', `v${version}/`);
+// const latest = join('pages', 'versions', 'latest/');
+// removeSync(latest);
+// copySync(vLatest, latest);
+// logInfo(`Copied latest Expo SDK version from v${version}`);
 
 /** @type {import('next').NextConfig}  */
 module.exports = {
@@ -124,6 +124,13 @@ module.exports = {
       })
     );
 
+    const versionToLatest = `v${version}`;
+    for (const route of Object.keys(pathMap)) {
+      if (route.startsWith(`/versions/${versionToLatest}`)) {
+        pathMap[route.replace(versionToLatest, 'latest')] = pathMap[route];
+      }
+    }
+
     const sitemapEntries = createSitemap({
       pathMap,
       domain: `https://docs.expo.dev`,
@@ -142,6 +149,13 @@ module.exports = {
     logInfo(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
 
     return pathMap;
+  },
+  async rewrites() {
+    // Rewrite /versions/latest to /versions/v<version> for local development with `yarn dev`
+    return [
+      { source: '/versions/latest', destination: `/versions/v${version}` },
+      { source: '/versions/latest/:path*', destination: `/versions/v${version}/:path*` },
+    ];
   },
   async headers() {
     const cacheHeaders = [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }];

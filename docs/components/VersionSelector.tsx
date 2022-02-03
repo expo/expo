@@ -68,7 +68,7 @@ const VersionSelector: React.FC<Props> = ({ style }) => {
       {
         // Add hidden links to create crawlable references to other SDK versions
         // We can use JS to switch between them, while helping search bots find other SDK versions
-        VERSIONS.map(version => (
+        ['latest', ...VERSIONS].map(version => (
           <a key={version} style={{ display: 'none' }} href={`/versions/${version}/`} />
         ))
       }
@@ -77,7 +77,7 @@ const VersionSelector: React.FC<Props> = ({ style }) => {
         css={STYLES_SELECT_ELEMENT}
         value={version}
         onChange={e => setVersion(e.target.value)}>
-        {VERSIONS.map(version => (
+        {['latest', ...VERSIONS].map(version => (
           <option key={version} value={version}>
             {Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}
           </option>
