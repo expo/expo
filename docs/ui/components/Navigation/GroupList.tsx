@@ -25,6 +25,7 @@ const textStyle = css({
   ...typography.utility.weight.medium,
   borderBottom: `1px solid ${theme.border.default}`,
   padding: spacing[1],
+  paddingLeft: spacing[4] + spacing[1.5], // padding + icon width
   marginLeft: spacing[4],
   marginBottom: spacing[2],
 });
