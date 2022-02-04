@@ -21,7 +21,7 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
   - Using private API will get your app rejected: `[[UIDevice currentDevice] valueForKey: @"_feedbackSupportLevel"]` so this is not added in Expo
 - iOS version is less than 10 (iPhone 7 is the first phone to support this)
   - This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
-- iOS Camera is on (To prevent destablization)
+- iOS Camera is active (in order prevent destabilization)
 
 <PlatformsSection android emulator ios simulator />
 
