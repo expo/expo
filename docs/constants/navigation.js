@@ -274,44 +274,38 @@ const eas = [
 ];
 
 const preview = [
-  makeSection('Preview', [
-    makeGroup('Preview', [makePage('preview/introduction.md'), makePage('preview/support.md')]),
-  ]),
+  makeSection('Preview', [makePage('preview/introduction.md'), makePage('preview/support.md')]),
 ];
 
 const featurePreview = [
   makeSection('Development Builds', [
-    makeGroup('Development Builds', [
-      makePage('development/introduction.md'),
-      makePage('development/getting-started.md'),
-      makePage('development/build.md'),
-      makePage('development/installation.md'),
-      makePage('development/development-workflows.md'),
-      makePage('development/extending-the-dev-menu.md'),
-      makePage('development/compatibility.md'),
-      makePage('development/upgrading.md'),
-      makePage('development/troubleshooting.md'),
-    ]),
+    makePage('development/introduction.md'),
+    makePage('development/getting-started.md'),
+    makePage('development/build.md'),
+    makePage('development/installation.md'),
+    makePage('development/development-workflows.md'),
+    makePage('development/extending-the-dev-menu.md'),
+    makePage('development/compatibility.md'),
+    makePage('development/upgrading.md'),
+    makePage('development/troubleshooting.md'),
   ]),
   makeSection('EAS Update', [
-    makeGroup('EAS Update', [
-      makePage('eas-update/introduction.md'),
-      makePage('eas-update/getting-started.md'),
-      makePage('eas-update/github-actions.md'),
-      makePage('eas-update/how-eas-update-works.md'),
-      makePage('eas-update/deployment-patterns.md'),
-      makePage('eas-update/debug-updates.md'),
-      makePage('eas-update/eas-update-and-eas-cli.md'),
-      makePage('eas-update/optimize-assets.md'),
-      makePage('eas-update/custom-updates-server.md'),
-      makePage('eas-update/migrate-to-eas-update.md'),
-      makePage('eas-update/bare-react-native.md'),
-      makePage('eas-update/runtime-versions.md'),
-      makePage('eas-update/environment-variables.md'),
-      makePage('eas-update/expo-dev-client.md'),
-      makePage('eas-update/known-issues.md'),
-      makePage('eas-update/faq.md'),
-    ]),
+    makePage('eas-update/introduction.md'),
+    makePage('eas-update/getting-started.md'),
+    makePage('eas-update/github-actions.md'),
+    makePage('eas-update/how-eas-update-works.md'),
+    makePage('eas-update/deployment-patterns.md'),
+    makePage('eas-update/debug-updates.md'),
+    makePage('eas-update/eas-update-and-eas-cli.md'),
+    makePage('eas-update/optimize-assets.md'),
+    makePage('eas-update/custom-updates-server.md'),
+    makePage('eas-update/migrate-to-eas-update.md'),
+    makePage('eas-update/bare-react-native.md'),
+    makePage('eas-update/runtime-versions.md'),
+    makePage('eas-update/environment-variables.md'),
+    makePage('eas-update/expo-dev-client.md'),
+    makePage('eas-update/known-issues.md'),
+    makePage('eas-update/faq.md'),
   ]),
 ];
 
