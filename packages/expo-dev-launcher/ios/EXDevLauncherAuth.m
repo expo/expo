@@ -31,7 +31,6 @@ NSString *DEV_LAUNCHER_DEFAULT_SCHEME = @"expo-dev-launcher";
   return @"EXDevLauncherAuth";
 }
 
-
 RCT_EXPORT_METHOD(openAuthSessionAsync:(NSString *)authURL
                            redirectURL:(NSString *)redirectURL
                               resolver:(RCTPromiseResolveBlock)resolve
