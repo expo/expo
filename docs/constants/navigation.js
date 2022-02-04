@@ -222,9 +222,7 @@ const general = [
 ];
 
 const eas = [
-  makeSection('EAS', [
-    makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/'),
-  ]),
+  makeSection('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')]),
   makeSection('EAS Build', [
     makeGroup(
       'Start Building',
@@ -420,7 +418,9 @@ function pagesFromDir(dir) {
 function pageUrl(file) {
   const filePath = path.parse(file);
   const { pathname } = new URL(path.relative(PAGES_DIR, file), 'https://docs.expo.dev');
-  return pathname.replace(filePath.base, filePath.name === 'index' ? '' : filePath.name);
+  return pathname
+    .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
+    .replace(/\/$/, '');
 }
 
 /**
