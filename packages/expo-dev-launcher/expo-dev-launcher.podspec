@@ -28,11 +28,14 @@ Pod::Spec.new do |s|
     ]
   }
 
-  s.pod_target_xcconfig = {
-    'DEFINES_MODULE' => 'YES',
+  # TODO(eric): remove once updates integration is sorted out
+  s.xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_ENABLED=1 EX_DEV_LAUNCHER_VERSION=#{s.version}",
     'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1'
   }
+
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   
   s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"

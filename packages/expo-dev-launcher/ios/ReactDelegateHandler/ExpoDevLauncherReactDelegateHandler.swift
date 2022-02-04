@@ -14,7 +14,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
       return false
     }
 
-    // Backward compatible if main AppDelegate already has expo-dev-launcher setup,
+    // Backwards compatibility -- if the main AppDelegate has already set up expo-dev-launcher,
     // we just skip in this case.
     if EXDevLauncherController.sharedInstance().isStarted {
       return false
