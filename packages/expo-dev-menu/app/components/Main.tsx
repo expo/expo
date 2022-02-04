@@ -24,7 +24,7 @@ import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
 
-export function MainScreen() {
+export function Main() {
   const appInfo = useAppInfo();
   const { devSettings, actions } = useDevSettings();
 
