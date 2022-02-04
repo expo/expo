@@ -16,7 +16,6 @@
 
 NSString *DEV_LAUNCHER_DEFAULT_SCHEME = @"expo-dev-launcher";
 
-
 @interface EXDevLauncherAuth()
 
 @property (nonatomic, copy) RCTPromiseResolveBlock redirectResolve;
