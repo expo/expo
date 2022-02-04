@@ -340,15 +340,6 @@ class DevLauncherController private constructor()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }
       }
-      if (!sErrorHandlerWasInitialized && context is Application) {
-        val handler = DevLauncherUncaughtExceptionHandler(
-          context,
-          Thread.getDefaultUncaughtExceptionHandler()
-        )
-        Thread.setDefaultUncaughtExceptionHandler(handler)
-        sErrorHandlerWasInitialized = true
-      }
-
       MenuDelegateWasInitialized = false
       DevLauncherKoinContext.app.koin.loadModules(listOf(
         module {
@@ -356,7 +347,19 @@ class DevLauncherController private constructor()
           single { appHost }
         }
       ), allowOverride = true)
-      DevLauncherKoinContext.app.koin.declare<DevLauncherControllerInterface>(DevLauncherController())
+
+      val controller = DevLauncherController()
+      DevLauncherKoinContext.app.koin.declare<DevLauncherControllerInterface>(controller)
+
+      if (!sErrorHandlerWasInitialized && context is Application) {
+        val handler = DevLauncherUncaughtExceptionHandler(
+          controller,
+          context,
+          Thread.getDefaultUncaughtExceptionHandler()
+        )
+        Thread.setDefaultUncaughtExceptionHandler(handler)
+        sErrorHandlerWasInitialized = true
+      }
     }
 
     @JvmStatic
