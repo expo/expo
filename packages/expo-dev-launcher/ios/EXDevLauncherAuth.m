@@ -80,7 +80,6 @@ RCT_EXPORT_METHOD(openAuthSessionAsync:(NSString *)authURL
   self.redirectReject = nil;
 }
 
-
 /**
  * Helper that is used in openBrowserAsync and openAuthSessionAsync
  */
