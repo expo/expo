@@ -19,7 +19,9 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
         <ChevronDownIcon css={markerStyle} size={iconSize.small} />
-        <HEADLINE tag="span">{summary}</HEADLINE>
+        <HEADLINE tag="span" css={headlineStyle}>
+          {summary}
+        </HEADLINE>
       </summary>
       <div css={contentStyle}>{children}</div>
     </details>
@@ -49,6 +51,15 @@ const summaryStyle = css({
   margin: 0,
 
   '&::marker': { content: '""' },
+});
+
+// TODO(cedric): remove this when we removed all `h4` tags in the MDX files
+const headlineStyle = css({
+  h4: {
+    display: 'inline',
+    margin: '0 !important',
+    padding: '0 !important',
+  },
 });
 
 const markerStyle = css({
@@ -97,7 +108,9 @@ export const DETAILS = ({
 export const SUMMARY = ({ testID, children }: PropsWithChildren<{ testID?: string }>) => (
   <summary css={summaryStyle} data-testid={testID}>
     <ChevronDownIcon css={markerStyle} size={iconSize.small} />
-    <HEADLINE tag="span">{children}</HEADLINE>
+    <HEADLINE tag="span" css={headlineStyle}>
+      {children}
+    </HEADLINE>
   </summary>
 );
 

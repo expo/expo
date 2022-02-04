@@ -76,6 +76,9 @@ const markdownStyles: Record<string, Config | null> = {
   },
   blockquote: {
     Component: Blockquote,
+    style: {
+      marginBottom: paragraphMarginBottom,
+    },
   },
   img: {
     Component: 'img',
