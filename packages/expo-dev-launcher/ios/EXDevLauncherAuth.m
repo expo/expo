@@ -12,7 +12,6 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
-
 @import EXDevMenu;
 
 NSString *DEV_LAUNCHER_DEFAULT_SCHEME = @"expo-dev-launcher";
