@@ -8,7 +8,7 @@ import { A, CALLOUT } from '~/ui/components/Text';
 
 export function PageLink({ route, isActive }: NavigationRenderProps) {
   if (route.type !== 'page') {
-    throw new Error(`Navigation node is not a page`);
+    throw new Error(`Navigation route is not a page`);
   }
 
   return (

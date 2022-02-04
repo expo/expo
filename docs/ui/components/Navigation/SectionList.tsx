@@ -12,7 +12,7 @@ type SectionListProps = PropsWithChildren<NavigationRenderProps>;
 
 export function SectionList({ route, isActive, children }: SectionListProps) {
   if (route.type !== 'section') {
-    throw new Error(`Navigation node is not a section`);
+    throw new Error(`Navigation route is not a section`);
   }
 
   return (

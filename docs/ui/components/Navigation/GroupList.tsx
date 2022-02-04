@@ -10,7 +10,7 @@ type GroupListProps = PropsWithChildren<NavigationRenderProps>;
 
 export function GroupList({ route, children }: GroupListProps) {
   if (route.type !== 'group') {
-    throw new Error(`Navigation node is not a group`);
+    throw new Error(`Navigation route is not a group`);
   }
 
   return (
