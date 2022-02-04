@@ -47,7 +47,7 @@ const markerStyle = css({
 
 const markerStyleActive = css({
   visibility: 'visible',
-})
+});
 
 const textStyle = css({
   color: theme.text.secondary,
