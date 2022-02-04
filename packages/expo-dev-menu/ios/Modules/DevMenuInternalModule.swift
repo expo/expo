@@ -94,7 +94,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 
   @objc
   func openDevMenuFromReactNative() {
-    guard let rctDevMenu = manager.session?.bridge.devMenu else {
+    guard let rctDevMenu = manager.currentBridge?.devMenu else {
       return
     }
 
@@ -110,33 +110,41 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   @objc
-  func getBuildInfoAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    let bridge = manager.delegate?.appBridge?(forDevMenuManager: self.manager)
-    let manifest = manager.session?.appInfo ?? [:]
-    
-    let buildInfo = EXDevMenuBuildInfo.getFor(bridge as! RCTBridge, andManifest: manifest as Any as! [AnyHashable : Any])
-        
-    resolve([
-      "appName": buildInfo["appName"],
-      "appIcon": buildInfo["appIcon"],
-      "appVersion": buildInfo["appVersion"],
-      "runtimeVersion": buildInfo["runtimeVersion"],
-      "sdkVersion": buildInfo["sdkVersion"],
-      "hostUrl": buildInfo["hostUrl"],
-    ])
+  func getAppInfoAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    if let bridge = manager.currentBridge {
+      let manifest = manager.currentManifest
+      
+      let appInfo = EXDevMenuAppInfo.getFor(bridge, andManifest: manifest as Any as! [AnyHashable : Any])
+      
+      let hostUrl = manager.currentManifestURL?.absoluteString
+          
+      resolve([
+        "appName": appInfo["appName"],
+        "appIcon": appInfo["appIcon"],
+        "appVersion": appInfo["appVersion"],
+        "runtimeVersion": appInfo["runtimeVersion"],
+        "sdkVersion": appInfo["sdkVersion"],
+        "hostUrl": hostUrl,
+      ])
+    } else {
+      reject("E_MISSING_BRIDGE", "DevMenuManager does not have a currentBridge - getAppInfoAsync() ", nil);
+    }
   }
   
   @objc
   func getDevSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    let bridge = manager.delegate?.appBridge?(forDevMenuManager: self.manager)
-    
-    if let devSettings = bridge?.module(forName: "DevSettings") as? RCTDevSettings {
-      resolve([
-        "isDebuggingRemotely": devSettings.isDebuggingRemotely,
-        "isElementInspectorShown": devSettings.isElementInspectorShown,
-        "isHotLoadingEnabled": devSettings.isHotLoadingEnabled,
-        "isPerfMonitorShown": devSettings.isPerfMonitorShown,
-      ])
+    if let bridge = manager.currentBridge {
+      if let devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
+        resolve([
+          "isDebuggingRemotely": devSettings.isDebuggingRemotely,
+          "isElementInspectorShown": devSettings.isElementInspectorShown,
+          "isHotLoadingEnabled": devSettings.isHotLoadingEnabled,
+          "isPerfMonitorShown": devSettings.isPerfMonitorShown,
+        ])
+      }
+      
+    } else {
+      reject("E_MISSING_BRIDGE", "DevMenuManager does not have a currentBridge - getDevSettingsAsync() ", nil);
     }
   }
 }

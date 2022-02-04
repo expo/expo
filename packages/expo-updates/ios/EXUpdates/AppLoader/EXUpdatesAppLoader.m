@@ -237,7 +237,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
   }
-  asset.contentHash = [EXUpdatesUtils sha256WithData:data];
+  asset.contentHash = [EXUpdatesUtils hexEncodedSHA256WithData:data];
   asset.downloadTime = [NSDate date];
   [self->_finishedAssets addObject:asset];
   [self _notifyProgressWithAsset:asset];
@@ -290,7 +290,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
         // do our best to create a new entry for this file even though it already existed on disk
         // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
         NSData *contents = [NSData dataWithContentsOfURL:[self->_directory URLByAppendingPathComponent:existingAsset.filename]];
-        existingAsset.contentHash = [EXUpdatesUtils sha256WithData:contents];
+        existingAsset.contentHash = [EXUpdatesUtils hexEncodedSHA256WithData:contents];
         existingAsset.downloadTime = [NSDate date];
         [self->_finishedAssets addObject:existingAsset];
       }
