@@ -265,13 +265,11 @@ const eas = [
     ]),
   ]),
   makeSection('EAS Submit', [
-    makeGroup('EAS Submit', [
-      makePage('submit/introduction.md'),
-      makePage('submit/eas-json.md'),
-      makePage('submit/android.md'),
-      makePage('submit/ios.md'),
-      makePage('submit/classic-builds.md'),
-    ]),
+    makePage('submit/introduction.md'),
+    makePage('submit/eas-json.md'),
+    makePage('submit/android.md'),
+    makePage('submit/ios.md'),
+    makePage('submit/classic-builds.md'),
   ]),
 ];
 
