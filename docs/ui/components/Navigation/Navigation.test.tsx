@@ -1,74 +1,103 @@
+import { render } from '@testing-library/react';
+import { useRouter } from 'next/router';
 import React from 'react';
 import node from 'unist-builder';
 import visit from 'unist-util-visit';
 
-import { findActiveRoute } from './Navigation';
+import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
+
+jest.mock('next/router');
+
+/** A set of navigation nodes to test with */
+const nodes: NavigationNode[] = [
+  node('section', { name: 'Get started' }, [
+    node('page', { name: 'Introduction', href: '/introduction' }),
+    node('page', { name: 'Create a new app', href: '/introduction/create-new-app' }),
+    node('page', { name: 'Errors and debugging', href: '/introduction/not-that-great-tbh' }),
+  ]),
+  node('section', { name: 'Tutorial' }, [
+    node('group', { name: 'First steps' }, [
+      node('page', { name: 'Styling text', href: '/tutorial/first-steps/styling-text' }),
+      node('page', { name: 'Adding an image', href: '/tutorial/first-steps/adding-images' }),
+      node('page', { name: 'Creating a button', href: '/tutorial/creating-button' }),
+    ]),
+    node('group', { name: 'Building apps' }, [
+      node('page', { name: 'Building for store', href: '/build/eas-build' }),
+      node('page', { name: 'Submitting to store', href: '/build/eas-submit' }),
+    ]),
+    node('group', { name: 'Parallel universe', hidden: true }, [
+      node('page', { name: 'Create Flutter apps', href: '/parallel-universe/flutter' }),
+      node('page', { name: 'Create websites', href: '/parallel-universe/ionic' }),
+      node('page', { name: 'Create broken apps', href: '/parallel-universe/microsoft-uwp' }),
+    ]),
+  ]),
+];
+
+describe(Navigation, () => {
+  beforeEach(() => {
+    jest.mocked(useRouter).mockReturnValue({ pathname: '/' } as any);
+  });
+
+  it('renders pages', () => {
+    const section = getNode(nodes, { name: 'Get started' });
+    const { getByText } = render(<Navigation routes={children(section)} />);
+    // Get started ->
+    expect(getByText('Introduction')).toBeInTheDocument();
+    expect(getByText('Create a new app')).toBeInTheDocument();
+    expect(getByText('Errors and debugging')).toBeInTheDocument();
+  });
+
+  it('renders pages inside groups', () => {
+    const section = getNode(nodes, { name: 'Tutorial' });
+    const { getByText } = render(<Navigation routes={children(section)} />);
+    // Tutorial ->
+    expect(getByText('Building apps')).toBeInTheDocument();
+    // Tutorial -> Building apps ->
+    expect(getByText('Building for store')).toBeInTheDocument();
+    expect(getByText('Submitting to store')).toBeInTheDocument();
+  });
+
+  it('renders pages inside groups inside sections', () => {
+    const { getByText } = render(<Navigation routes={nodes} />);
+    // Get started ->
+    expect(getByText('Introduction')).toBeInTheDocument();
+    // Tutorial -> First steps ->
+    expect(getByText('Adding an image')).toBeInTheDocument();
+    // Tutorial -> Building apps ->
+    expect(getByText('Submitting to store')).toBeInTheDocument();
+  });
+});
 
 describe(findActiveRoute, () => {
   it('finds active page in list', () => {
-    const list = [
-      node('page', { name: 'Page 1', href: '/build' }),
-      node('page', { name: 'Page 2', href: '/build/setup' }),
-      node('page', { name: 'Page 3', href: '/build/eas-json' }),
-    ];
-    expect(findActiveRoute(list, '/build/setup')).toMatchObject({
-      page: findNode(list, { type: 'page', name: 'Page 2' }),
+    const section = getNode(nodes, { name: 'Get started' });
+    expect(findActiveRoute(children(section), '/introduction/create-new-app')).toMatchObject({
+      page: getNode(section, { name: 'Create a new app' }),
       group: null,
       section: null,
     });
   });
 
   it('finds active page and group in list', () => {
-    const list = [
-      node('group', { name: 'Group 1' }, []),
-      node('group', { name: 'Group 2' }, [
-        node('page', { name: 'Page 1', href: '/build' }),
-        node('page', { name: 'Page 2', href: '/build/setup' }),
-        node('page', { name: 'Page 3', href: '/build/eas-json' }),
-      ]),
-    ];
-    expect(findActiveRoute(list, '/build/eas-json')).toMatchObject({
-      page: findNode(list, { type: 'page', name: 'Page 3' }),
-      group: findNode(list, { type: 'group', name: 'Group 2' }),
+    const section = getNode(nodes, { name: 'Tutorial' });
+    expect(findActiveRoute(children(section), '/build/eas-submit')).toMatchObject({
+      page: getNode(section, { name: 'Submitting to store' }),
+      group: getNode(section, { name: 'Building apps' }),
       section: null,
     });
   });
 
   it('finds active page, group, and section in list', () => {
-    const list = [
-      node('section', { name: 'Section 1' }, [
-        node('group', { name: 'Group 1' }, []),
-        node('group', { name: 'Group 2' }, [
-          node('page', { name: 'Page 1', href: '/build' }),
-          node('page', { name: 'Page 2', href: '/build/flutter' }),
-        ]),
-      ]),
-      node('section', { name: 'Section 2' }, [
-        node('group', { name: 'Group 3' }, []),
-        node('group', { name: 'Group 4' }, [
-          node('page', { name: 'Page 3', href: '/build/classic' }),
-          node('page', { name: 'Page 4', href: '/build/eas-json' }),
-        ]),
-      ]),
-    ];
-    expect(findActiveRoute(list, '/build/eas-json')).toMatchObject({
-      page: findNode(list, { type: 'page', name: 'Page 4' }),
-      group: findNode(list, { type: 'group', name: 'Group 4' }),
-      section: findNode(list, { type: 'section', name: 'Section 2' }),
+    expect(findActiveRoute(nodes, '/tutorial/first-steps/styling-text')).toMatchObject({
+      page: getNode(nodes, { name: 'Styling text' }),
+      group: getNode(nodes, { name: 'First steps' }),
+      section: getNode(nodes, { name: 'Tutorial' }),
     });
   });
 
   it('skips hidden navigation node', () => {
-    const list = [
-      node('group', { name: 'Group 1' }, []),
-      node('group', { name: 'Group 2', hidden: true }, [
-        node('page', { name: 'Page 1', href: '/build' }),
-        node('page', { name: 'Page 2', href: '/build/setup' }),
-        node('page', { name: 'Page 3', href: '/build/eas-json' }),
-      ]),
-    ];
-    expect(findActiveRoute(list, '/build/eas-json')).toMatchObject({
+    expect(findActiveRoute(nodes, '/parallel-universe/microsoft-uwp')).toMatchObject({
       page: null,
       group: null,
       section: null,
@@ -77,13 +106,25 @@ describe(findActiveRoute, () => {
 });
 
 /** Helper function to find the first node that matches the predicate */
-function findNode(
-  list: NavigationNode[],
+function getNode(
+  list: NavigationNode | NavigationNode[] | null,
   predicate: Partial<NavigationNode> | ((node: NavigationNode) => boolean)
 ): NavigationNode | null {
   let result = null;
-  visit(node('root', list), predicate as any, node => {
+  const tree = Array.isArray(list) ? node('root', list) : list || node('root');
+  visit(tree, predicate as any, node => {
     result = node;
   });
   return result;
+}
+
+/** Helper function to pull children from the node, if any */
+function children(node: NavigationNode | null) {
+  switch (node?.type) {
+    case 'section':
+    case 'group':
+      return node.children;
+    default:
+      return [];
+  }
 }
