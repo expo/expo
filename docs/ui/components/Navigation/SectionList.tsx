@@ -16,7 +16,7 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
   }
 
   return (
-    <details open={isActive || route.collapsed === false}>
+    <details css={detailsStyle} open={isActive || route.collapsed === false}>
       <summary css={summaryStyle}>
         <ChevronDownIcon css={iconStyle} size={iconSize.small} />
         <CALLOUT css={textStyle} tag="span">
@@ -27,6 +27,11 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
     </details>
   );
 }
+
+const detailsStyle = css({
+  paddingTop: spacing[3],
+  marginBottom: spacing[3],
+});
 
 const summaryStyle = css({
   display: 'flex',
