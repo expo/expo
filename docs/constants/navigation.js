@@ -315,7 +315,10 @@ const reference = VERSIONS.reduce(
     [version]: [
       makeSection('Configuration Files', pagesFromDir(`versions/${version}/config`)),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`)),
-      makeSection('React Native', pagesFromDir(`versions/${version}/react-native`)),
+      makeSection(
+        'React Native',
+        sortLegacyReactNative(pagesFromDir(`versions/${version}/react-native`))
+      ),
     ],
   }),
   {}
