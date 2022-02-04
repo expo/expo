@@ -35,6 +35,7 @@
     _lblError.numberOfLines = 0;
     _lblError.textAlignment = NSTextAlignmentCenter;
     _lblError.font = [UIFont systemFontOfSize:14.0f];
+    _lblError.textColor = [UIColor blackColor];
     [_vContainer addSubview:_lblError];
     
     // retry button
@@ -64,6 +65,7 @@
     self.lblErrorDetail = [[UILabel alloc] init];
     _lblErrorDetail.numberOfLines = 0;
     _lblErrorDetail.textAlignment = NSTextAlignmentCenter;
+    _lblErrorDetail.textColor = [UIColor darkGrayColor];
     [_vContainer addSubview:_lblErrorDetail];
     
     for (UILabel *lblToStyle in @[ _lblUrl, _lblErrorDetail ]) {
