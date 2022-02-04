@@ -18,7 +18,7 @@ import {
   Image,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Switch } from 'react-native';
+import { TouchableWithoutFeedback, Switch } from 'react-native-gesture-handler';
 
 import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';
@@ -36,7 +36,7 @@ export function Main() {
     urlClipboard.onCopyPress(hostUrl);
   }
 
-  function onCopyappInfoPress() {
+  function onCopyAppInfoPress() {
     const { runtimeVersion, sdkVersion, appName, appVersion } = appInfo;
     appInfoClipboard.onCopyPress({ runtimeVersion, sdkVersion, appName, appVersion });
   }
@@ -86,15 +86,13 @@ export function Main() {
 
           <Spacer.Horizontal size="flex" />
 
-          <Button.ScaleOnPressContainer
-            bg="ghost"
-            rounded="full"
-            minScale={0.8}
-            onPress={actions.closeMenu}>
-            <View padding="micro">
-              <XIcon />
-            </View>
-          </Button.ScaleOnPressContainer>
+          <TouchableWithoutFeedback onPress={actions.closeMenu}>
+            <Button.ScaleOnPressContainer bg="ghost" rounded="full" minScale={0.8}>
+              <View padding="micro">
+                <XIcon />
+              </View>
+            </Button.ScaleOnPressContainer>
+          </TouchableWithoutFeedback>
         </Row>
       </View>
 
@@ -194,18 +192,15 @@ export function Main() {
           </>
         )}
 
-        <Button.ScaleOnPressContainer
-          onPress={onCopyappInfoPress}
-          disabled={hasCopiedAppInfoContent}
-          bg="default"
-          roundedTop="none"
-          roundedBottom="large">
-          <Row px="medium" py="small" align="center">
-            <Text color="primary" size="large">
-              {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
-            </Text>
-          </Row>
-        </Button.ScaleOnPressContainer>
+        <TouchableWithoutFeedback onPress={onCopyAppInfoPress} disabled={hasCopiedAppInfoContent}>
+          <Button.ScaleOnPressContainer bg="default" roundedTop="none" roundedBottom="large">
+            <Row px="medium" py="small" align="center">
+              <Text color="primary" size="large">
+                {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
+              </Text>
+            </Row>
+          </Button.ScaleOnPressContainer>
+        </TouchableWithoutFeedback>
       </View>
     </View>
   );
@@ -219,17 +214,19 @@ type ActionButtonProps = {
 
 function ActionButton({ icon, label, onPress }: ActionButtonProps) {
   return (
-    <Button.ScaleOnPressContainer minScale={0.9} bg="default" onPress={onPress}>
-      <View padding="small" rounded="large">
-        <View align="centered">{icon}</View>
+    <TouchableWithoutFeedback onPress={onPress}>
+      <Button.ScaleOnPressContainer minScale={0.9} bg="default">
+        <View padding="small" rounded="large">
+          <View align="centered">{icon}</View>
 
-        <Spacer.Vertical size="tiny" />
+          <Spacer.Vertical size="tiny" />
 
-        <Text size="small" align="center">
-          {label}
-        </Text>
-      </View>
-    </Button.ScaleOnPressContainer>
+          <Text size="small" align="center">
+            {label}
+          </Text>
+        </View>
+      </Button.ScaleOnPressContainer>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -242,40 +239,42 @@ type SettingsRowButtonProps = {
 
 function SettingsRowButton({ label, icon, description = '', onPress }: SettingsRowButtonProps) {
   return (
-    <Button.ScaleOnPressContainer onPress={onPress}>
-      <Row padding="small" align="center">
-        <View width="large" height="large">
-          {icon}
-        </View>
+    <TouchableWithoutFeedback onPress={onPress}>
+      <Button.ScaleOnPressContainer>
+        <Row padding="small" align="center">
+          <View width="large" height="large">
+            {icon}
+          </View>
 
-        <Spacer.Horizontal size="small" />
+          <Spacer.Horizontal size="small" />
 
-        <View>
-          <Text>{label}</Text>
-        </View>
+          <View>
+            <Text>{label}</Text>
+          </View>
 
-        <Spacer.Horizontal size="flex" />
+          <Spacer.Horizontal size="flex" />
 
-        <View style={{ width: 64, alignItems: 'flex-end' }} />
-      </Row>
+          <View style={{ width: 64, alignItems: 'flex-end' }} />
+        </Row>
 
-      {Boolean(description) && (
-        <View style={{ transform: [{ translateY: -8 }] }}>
-          <Row px="small" align="center">
-            <Spacer.Horizontal size="large" />
+        {Boolean(description) && (
+          <View style={{ transform: [{ translateY: -8 }] }}>
+            <Row px="small" align="center">
+              <Spacer.Horizontal size="large" />
 
-            <View shrink="1" px="small">
-              <Text size="small" color="secondary" leading="large">
-                {description}
-              </Text>
-            </View>
+              <View shrink="1" px="small">
+                <Text size="small" color="secondary" leading="large">
+                  {description}
+                </Text>
+              </View>
 
-            <View style={{ width: 64 }} />
-          </Row>
-          <Spacer.Vertical size="tiny" />
-        </View>
-      )}
-    </Button.ScaleOnPressContainer>
+              <View style={{ width: 64 }} />
+            </Row>
+            <Spacer.Vertical size="tiny" />
+          </View>
+        )}
+      </Button.ScaleOnPressContainer>
+    </TouchableWithoutFeedback>
   );
 }
 

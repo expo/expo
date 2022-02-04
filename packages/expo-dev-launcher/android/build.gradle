@@ -56,13 +56,13 @@ android {
     main {
       java {
         def rnVersion = getRNVersion()
+        srcDirs += 'src/react-native-64'
 
         if (rnVersion >= versionToNumber(0, 66, 0)) {
-          srcDirs += "src/react-native-66"
+          // srcDirs += "src/react-native-66"
         } else if (rnVersion >= versionToNumber(0, 65, 0)) {
-          srcDirs += "src/react-native-65"
+          // srcDirs += "src/react-native-65"
         } else {
-          srcDirs += 'src/react-native-64'
         }
       }
     }
