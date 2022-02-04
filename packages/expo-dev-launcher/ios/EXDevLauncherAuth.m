@@ -1,9 +1,4 @@
-//
-//  EXDevLauncherAuth.m
-//  Pods
-//
-//  Created by andrew on 2022-02-02.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherAuth.h"
 
