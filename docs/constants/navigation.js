@@ -39,34 +39,32 @@ const generalDirectories = fs
 // --- Navigation ---
 
 const starting = [
-  makeSection('The Basics', [
-    makeGroup('Get Started', [
-      makePage('get-started/installation.md'),
-      makePage('get-started/create-a-new-app.md'),
-      makePage('get-started/errors.md'),
-    ]),
-    makeGroup('Tutorial', [
-      makePage('tutorial/planning.md'),
-      makePage('tutorial/text.md'),
-      makePage('tutorial/image.md'),
-      makePage('tutorial/button.md'),
-      makePage('tutorial/image-picker.md'),
-      makePage('tutorial/sharing.md'),
-      makePage('tutorial/platform-differences.md'),
-      makePage('tutorial/configuration.md'),
-      makePage('tutorial/follow-up.md'),
-    ]),
-    makeGroup('Conceptual Overview', [
-      makePage('introduction/managed-vs-bare.md'),
-      makePage('introduction/walkthrough.md'),
-      makePage('introduction/why-not-expo.md'),
-      makePage('introduction/faq.md'),
-    ]),
-    makeGroup('Next Steps', [
-      makePage('next-steps/using-the-documentation.md'),
-      makePage('next-steps/community.md'),
-      makePage('next-steps/additional-resources.md'),
-    ]),
+  makeSection('Get Started', [
+    makePage('get-started/installation.md'),
+    makePage('get-started/create-a-new-app.md'),
+    makePage('get-started/errors.md'),
+  ]),
+  makeSection('Tutorial', [
+    makePage('tutorial/planning.md'),
+    makePage('tutorial/text.md'),
+    makePage('tutorial/image.md'),
+    makePage('tutorial/button.md'),
+    makePage('tutorial/image-picker.md'),
+    makePage('tutorial/sharing.md'),
+    makePage('tutorial/platform-differences.md'),
+    makePage('tutorial/configuration.md'),
+    makePage('tutorial/follow-up.md'),
+  ]),
+  makeSection('Conceptual Overview', [
+    makePage('introduction/managed-vs-bare.md'),
+    makePage('introduction/walkthrough.md'),
+    makePage('introduction/why-not-expo.md'),
+    makePage('introduction/faq.md'),
+  ]),
+  makeSection('Next Steps', [
+    makePage('next-steps/using-the-documentation.md'),
+    makePage('next-steps/community.md'),
+    makePage('next-steps/additional-resources.md'),
   ]),
 ];
 
