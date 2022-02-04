@@ -59,7 +59,10 @@ export function findActiveRoute(routes: NavigationNode[], pathname: string) {
 
     switch (route.type) {
       case 'page':
-        if (route.href === pathname) activeRoutes.page = route;
+        if (route.href === pathname) {
+          activeRoutes.page = route;
+          break;
+        }
         break;
 
       case 'group':
@@ -68,6 +71,7 @@ export function findActiveRoute(routes: NavigationNode[], pathname: string) {
           if (nestedActiveRoutes.page) {
             activeRoutes.page = nestedActiveRoutes.page;
             activeRoutes.group = route;
+            break;
           }
         }
         break;
@@ -79,6 +83,7 @@ export function findActiveRoute(routes: NavigationNode[], pathname: string) {
             activeRoutes.page = nestedActiveRoutes.page;
             activeRoutes.group = nestedActiveRoutes.group;
             activeRoutes.section = route;
+            break;
           }
         }
         break;
