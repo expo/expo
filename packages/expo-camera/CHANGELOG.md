@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 12.1.2 — 2022-02-04
+
+### 🐛 Bug fixes
+
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Fix null pointer exception when barcode scanner or face detector are not installed. ([#16167](https://github.com/expo/expo/pull/16167) by [@tsapeta](https://github.com/tsapeta))
-
-### 💡 Others
 
 ## 12.1.1 — 2022-02-01
 
