@@ -2,6 +2,7 @@ package expo.modules.devlauncher.launcher.errors
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.os.Process
@@ -123,7 +124,7 @@ class DevLauncherUncaughtExceptionHandler(
 
   private fun getLogsUrl(): Uri {
     val logsUrlFromManifest = controller.manifest?.getRawJson()?.optString("logUrl")
-    if (logsUrlFromManifest != null) {
+    if (logsUrlFromManifest.isNullOrEmpty()) {
       return Uri.parse(logsUrlFromManifest)
     }
 
