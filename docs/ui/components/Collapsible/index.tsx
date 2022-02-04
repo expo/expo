@@ -45,12 +45,11 @@ const summaryStyle = css({
   flexDirection: 'row',
   alignItems: 'center',
   userSelect: 'none',
+  listStyle: 'none',
   backgroundColor: theme.background.secondary,
   padding: spacing[1.5],
   paddingRight: spacing[3],
   margin: 0,
-
-  '&::marker': { content: '""' },
 });
 
 // TODO(cedric): remove this when we removed all `h4` tags in the MDX files
