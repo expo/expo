@@ -16,7 +16,7 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
   }
 
   return (
-    <details css={detailsStyle} open={isActive || route.collapsed === false}>
+    <details css={detailsStyle} open={isActive || route.collapsed !== true}>
       <summary css={summaryStyle}>
         <ChevronDownIcon css={iconStyle} size={iconSize.small} />
         <CALLOUT css={textStyle} tag="span">

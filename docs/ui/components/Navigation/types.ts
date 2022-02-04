@@ -1,13 +1,15 @@
-export type NavigationTypes = 'section' | 'group' | 'page';
+export type NavigationType = 'section' | 'group' | 'page';
+
+export type NavigationNode = Section | Group | Page;
 
 export type NavigationRenderProps = {
   /** The navigation node or route to render */
-  route: Section | Group | Page;
+  route: NavigationNode;
   /** If this navigation node is considered "active", e.g. current page or containing current page */
   isActive?: boolean;
 };
 
-export type NavigationNode<Type extends NavigationTypes, Data extends object> = Data & {
+export type Node<Type extends NavigationType, Data extends object> = Data & {
   /** The type of the navigation node */
   type: Type;
   /** The name of the navigation node */
@@ -16,7 +18,7 @@ export type NavigationNode<Type extends NavigationTypes, Data extends object> = 
   hidden?: boolean;
 };
 
-export type Section = NavigationNode<
+export type Section = Node<
   'section',
   {
     /** The groups or pages it should render within the collapsible section */
@@ -26,7 +28,7 @@ export type Section = NavigationNode<
   }
 >;
 
-export type Group = NavigationNode<
+export type Group = Node<
   'group',
   {
     /** The pages it should render within the group list */
@@ -34,7 +36,7 @@ export type Group = NavigationNode<
   }
 >;
 
-export type Page = NavigationNode<
+export type Page = Node<
   'page',
   {
     /** The display text of the link in the sidebar, falls back to `name` */
