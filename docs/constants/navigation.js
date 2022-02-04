@@ -402,6 +402,7 @@ function pagesFromDir(dir) {
  * Create the page url using the absolute file path.
  * This parses the URL, relatively from PAGES_DIR.
  * It also strips the file extension, and name if its `index`.
+ * These urls are pathnames, without trailing slashes.
  */
 function pageUrl(file) {
   const filePath = path.parse(file);
