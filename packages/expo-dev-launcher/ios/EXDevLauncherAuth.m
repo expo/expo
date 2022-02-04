@@ -84,7 +84,6 @@ RCT_EXPORT_METHOD(openAuthSessionAsync:(NSString *)authURL
  * Helper that is used in openBrowserAsync and openAuthSessionAsync
  */
 - (BOOL)initializeWebBrowserWithResolver:(RCTPromiseResolveBlock)resolve andRejecter:(RCTPromiseRejectBlock)reject {
-  
   if (self.redirectResolve) {
     reject(@"ERR_DEV_MENU_WEB_BROWSER", @"Another WebBrowser is already being presented.", nil);
     return NO;
