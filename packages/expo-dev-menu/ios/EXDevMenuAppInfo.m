@@ -1,39 +1,54 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-#import "EXDevMenuBuildInfo.h"
+#import "EXDevMenuAppInfo.h"
 
-@implementation EXDevMenuBuildInfo
+@implementation EXDevMenuAppInfo
 
-+(NSDictionary *)getBuildInfoForBridge:(RCTBridge *)bridge andManifest:(NSDictionary *)manifest
+// TODO -- EXManifest - use actual interface
+//- (nullable NSString *)sdkVersion;
+//- (NSString *)bundleUrl;
+//- (nullable NSString *)revisionId;
+//- (nullable NSString *)slug;
+//- (nullable NSString *)appKey;
+//- (nullable NSString *)name;
+//- (nullable NSString *)version;
+//- (nullable NSDictionary *)notificationPreferences;
+//- (nullable NSDictionary *)updatesInfo;
+//- (nullable NSDictionary *)iosConfig;
+//- (nullable NSString *)hostUri;
+//- (nullable NSString *)orientation;
+//- (nullable NSDictionary *)experiments;
+//- (nullable NSDictionary *)developer;
+//- (nullable NSString *)facebookAppId;
+//- (nullable NSString *)facebookApplicationName;
+//- (BOOL)facebookAutoInitEnabled;
+
++(NSDictionary *)getAppInfoForBridge:(RCTBridge *)bridge andManifest:(NSDictionary *)manifest
 {
-  NSMutableDictionary *buildInfo = [NSMutableDictionary new];
+  NSMutableDictionary *appInfo = [NSMutableDictionary new];
 
-  NSString *appIcon = [EXDevMenuBuildInfo getAppIcon];
-  NSString *runtimeVersion = [EXDevMenuBuildInfo getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
-  NSString *sdkVersion = [EXDevMenuBuildInfo getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
-  NSString *appVersion = [EXDevMenuBuildInfo getFormattedAppVersion];
+  NSString *appIcon = [EXDevMenuAppInfo getAppIcon];
+  NSString *runtimeVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
+  NSString *sdkVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
+  NSString *appVersion = [EXDevMenuAppInfo getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
   NSString *hostUrl = [bridge.bundleURL host] ?: @"";
 
-  if (manifest[@"appName"] != nil) {
-    appName = manifest[@"appName"];
+  if (manifest[@"name"] != nil) {
+    appName = manifest[@"name"];
   }
   
-  if (manifest[@"appVersion"] != nil) {
-    appVersion = manifest[@"appVersion"];
-  }
-  
-  if (manifest[@"hostUrl"] != nil) {
-    hostUrl = manifest[@"hostUrl"];
+  if (manifest[@"version"] != nil) {
+    appVersion = manifest[@"version"];
   }
 
-  buildInfo[@"appName"] = appName;
-  buildInfo[@"appIcon"] = appIcon;
-  buildInfo[@"appVersion"] = appVersion;
-  buildInfo[@"runtimeVersion"] = runtimeVersion;
-  buildInfo[@"sdkVersion"] = sdkVersion;
-  buildInfo[@"hostUrl"] = hostUrl;
+  appInfo[@"appName"] = appName;
+  appInfo[@"appIcon"] = appIcon;
+  appInfo[@"appVersion"] = appVersion;
+  appInfo[@"runtimeVersion"] = runtimeVersion;
+  appInfo[@"sdkVersion"] = sdkVersion;
+  appInfo[@"hostUrl"] = hostUrl;
 
-  return buildInfo;
+  return appInfo;
 }
 
 +(NSString *)getAppIcon

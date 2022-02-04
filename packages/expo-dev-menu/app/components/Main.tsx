@@ -20,28 +20,28 @@ import {
 import * as React from 'react';
 import { Switch } from 'react-native';
 
-import { useBuildInfo } from '../hooks/useBuildInfo';
+import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
 
-export function Main() {
-  const buildInfo = useBuildInfo();
+export function MainScreen() {
+  const appInfo = useAppInfo();
   const { devSettings, actions } = useDevSettings();
 
   const urlClipboard = useClipboard();
-  const buildInfoClipboard = useClipboard();
+  const appInfoClipboard = useClipboard();
 
   function onCopyUrlPress() {
-    const { hostUrl } = buildInfo;
+    const { hostUrl } = appInfo;
     urlClipboard.onCopyPress(hostUrl);
   }
 
-  function onCopyBuildInfoPress() {
-    const { runtimeVersion, sdkVersion, appName, appVersion } = buildInfo;
-    buildInfoClipboard.onCopyPress({ runtimeVersion, sdkVersion, appName, appVersion });
+  function onCopyappInfoPress() {
+    const { runtimeVersion, sdkVersion, appName, appVersion } = appInfo;
+    appInfoClipboard.onCopyPress({ runtimeVersion, sdkVersion, appName, appVersion });
   }
 
-  const hasCopiedBuildInfoContent = Boolean(buildInfoClipboard.clipboardContent);
+  const hasCopiedAppInfoContent = Boolean(appInfoClipboard.clipboardContent);
 
   return (
     <View flex="1" bg="secondary">
@@ -50,9 +50,9 @@ export function Main() {
           <Row align="center">
             <View>
               <View height="xl" width="xl" overflow="hidden" bg="secondary" rounded="medium">
-                {Boolean(buildInfo.appIcon) && (
+                {Boolean(appInfo.appIcon) && (
                   <Image
-                    source={{ uri: buildInfo.appIcon }}
+                    source={{ uri: appInfo.appIcon }}
                     style={{ flex: 1, resizeMode: 'contain' }}
                   />
                 )}
@@ -63,21 +63,21 @@ export function Main() {
 
             <View>
               <Heading size="small" weight="bold">
-                {buildInfo.appName}
+                {appInfo.appName}
               </Heading>
               <Spacer.Vertical size="tiny" />
-              {Boolean(buildInfo.runtimeVersion) && (
+              {Boolean(appInfo.runtimeVersion) && (
                 <>
                   <Text size="small" color="secondary">
-                    {`Runtime version: ${buildInfo.runtimeVersion}`}
+                    {`Runtime version: ${appInfo.runtimeVersion}`}
                   </Text>
                 </>
               )}
 
-              {Boolean(buildInfo.sdkVersion) && !buildInfo.runtimeVersion && (
+              {Boolean(appInfo.sdkVersion) && !appInfo.runtimeVersion && (
                 <>
                   <Text size="small" color="secondary">
-                    {`SDK version: ${buildInfo.sdkVersion}`}
+                    {`SDK version: ${appInfo.sdkVersion}`}
                   </Text>
                 </>
               )}
@@ -100,7 +100,7 @@ export function Main() {
 
       <Divider />
 
-      {Boolean(buildInfo.hostUrl) && (
+      {Boolean(appInfo.hostUrl) && (
         <>
           <View bg="default" padding="medium">
             <Text color="secondary">Connected to local server</Text>
@@ -112,7 +112,7 @@ export function Main() {
               <Spacer.Horizontal size="tiny" />
               <View flex="1">
                 <Text type="mono" numberOfLines={1} size="small">
-                  {buildInfo.hostUrl}
+                  {appInfo.hostUrl}
                 </Text>
               </View>
               <Spacer.Horizontal size="small" />
@@ -178,31 +178,31 @@ export function Main() {
       <Spacer.Vertical size="large" />
 
       <View mx="small" rounded="large" overflow="hidden">
-        <BuildInfoRow title="Version" value={buildInfo.appVersion} />
+        <AppInfoRow title="Version" value={appInfo.appVersion} />
         <Divider />
-        {Boolean(buildInfo.runtimeVersion) && (
+        {Boolean(appInfo.runtimeVersion) && (
           <>
-            <BuildInfoRow title="Runtime version" value={buildInfo.runtimeVersion} />
+            <AppInfoRow title="Runtime version" value={appInfo.runtimeVersion} />
             <Divider />
           </>
         )}
 
-        {Boolean(buildInfo.sdkVersion) && !buildInfo.runtimeVersion && (
+        {Boolean(appInfo.sdkVersion) && !appInfo.runtimeVersion && (
           <>
-            <BuildInfoRow title="SDK Version" value={buildInfo.sdkVersion} />
+            <AppInfoRow title="SDK Version" value={appInfo.sdkVersion} />
             <Divider />
           </>
         )}
 
         <Button.ScaleOnPressContainer
-          onPress={onCopyBuildInfoPress}
-          disabled={hasCopiedBuildInfoContent}
+          onPress={onCopyappInfoPress}
+          disabled={hasCopiedAppInfoContent}
           bg="default"
           roundedTop="none"
           roundedBottom="large">
           <Row px="medium" py="small" align="center">
             <Text color="primary" size="large">
-              {hasCopiedBuildInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
+              {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
             </Text>
           </Row>
         </Button.ScaleOnPressContainer>
@@ -340,12 +340,12 @@ function SettingsRowSwitch({
   );
 }
 
-type BuildInfoRowProps = {
+type AppInfoRowProps = {
   title: string;
   value: string;
 };
 
-function BuildInfoRow({ title, value }: BuildInfoRowProps) {
+function AppInfoRow({ title, value }: AppInfoRowProps) {
   return (
     <Row px="medium" py="small" align="center" bg="default">
       <Text size="medium">{title}</Text>

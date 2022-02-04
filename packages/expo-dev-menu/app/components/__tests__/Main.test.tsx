@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import {
-  BuildInfo,
-  getBuildInfoAsync,
+  AppInfo,
+  getAppInfoAsync,
   toggleDebugRemoteJSAsync,
   toggleElementInspectorAsync,
   toggleFastRefreshAsync,
@@ -14,7 +14,7 @@ import {
 import { render, waitFor, fireEvent, act } from '../../test-utils';
 import { Main } from '../Main';
 
-const mockGetBuildInfoAsync = getBuildInfoAsync as jest.Mock;
+const mockGetAppInfoAsync = getAppInfoAsync as jest.Mock;
 const mockToggleDebugRemoteJSAsync = toggleDebugRemoteJSAsync as jest.Mock;
 const mockToggleElementInspectorAsync = toggleElementInspectorAsync as jest.Mock;
 const mockToggleFastRefreshAsync = toggleFastRefreshAsync as jest.Mock;
@@ -24,7 +24,7 @@ const mockNavigateToLauncherAsync = navigateToLauncherAsync as jest.Mock;
 const mockReloadAsync = reloadAsync as jest.Mock;
 
 const mockFns: jest.Mock[] = [
-  mockGetBuildInfoAsync,
+  mockGetAppInfoAsync,
   mockToggleDebugRemoteJSAsync,
   mockToggleElementInspectorAsync,
   mockToggleFastRefreshAsync,
@@ -45,7 +45,7 @@ describe('<Main />', () => {
   });
 
   test('renders build info from dev menu', async () => {
-    const fakeBuildInfo: BuildInfo = {
+    const fakeAppInfo: AppInfo = {
       appName: 'testing',
       appVersion: '123',
       appIcon: 'hello',
@@ -54,24 +54,24 @@ describe('<Main />', () => {
       runtimeVersion: '10',
     };
 
-    mockGetBuildInfoAsync.mockClear();
-    mockGetBuildInfoAsync.mockResolvedValueOnce(fakeBuildInfo);
+    mockGetAppInfoAsync.mockClear();
+    mockGetAppInfoAsync.mockResolvedValueOnce(fakeAppInfo);
 
     const { getByText, queryByText } = render(<Main />);
 
-    expect(getBuildInfoAsync).toHaveBeenCalledTimes(1);
+    expect(getAppInfoAsync).toHaveBeenCalledTimes(1);
 
-    expect(queryByText(fakeBuildInfo.appName)).toBe(null);
-    expect(queryByText(fakeBuildInfo.appVersion)).toBe(null);
-    expect(queryByText(fakeBuildInfo.hostUrl)).toBe(null);
-    expect(queryByText(fakeBuildInfo.runtimeVersion)).toBe(null);
+    expect(queryByText(fakeAppInfo.appName)).toBe(null);
+    expect(queryByText(fakeAppInfo.appVersion)).toBe(null);
+    expect(queryByText(fakeAppInfo.hostUrl)).toBe(null);
+    expect(queryByText(fakeAppInfo.runtimeVersion)).toBe(null);
 
     await waitFor(() => getByText(/go home/i));
 
-    expect(queryByText(fakeBuildInfo.appName)).not.toBe(null);
-    expect(queryByText(fakeBuildInfo.appVersion)).not.toBe(null);
-    expect(queryByText(fakeBuildInfo.hostUrl)).not.toBe(null);
-    expect(queryByText(fakeBuildInfo.runtimeVersion)).not.toBe(null);
+    expect(queryByText(fakeAppInfo.appName)).not.toBe(null);
+    expect(queryByText(fakeAppInfo.appVersion)).not.toBe(null);
+    expect(queryByText(fakeAppInfo.hostUrl)).not.toBe(null);
+    expect(queryByText(fakeAppInfo.runtimeVersion)).not.toBe(null);
   });
 
   test('hooked up to devsettings fns', async () => {
@@ -96,7 +96,7 @@ describe('<Main />', () => {
   });
 
   test('copy text functions', async () => {
-    const fakeBuildInfo: BuildInfo = {
+    const fakeAppInfo: AppInfo = {
       appName: 'testing',
       appVersion: '123',
       appIcon: 'hello',
@@ -105,8 +105,8 @@ describe('<Main />', () => {
       runtimeVersion: '10',
     };
 
-    mockGetBuildInfoAsync.mockClear();
-    mockGetBuildInfoAsync.mockResolvedValueOnce(fakeBuildInfo);
+    mockGetAppInfoAsync.mockClear();
+    mockGetAppInfoAsync.mockResolvedValueOnce(fakeAppInfo);
 
     const { getByText } = render(<Main />);
     await waitFor(() => getByText(/go home/i));
@@ -128,7 +128,7 @@ describe('<Main />', () => {
     await act(async () => fireEvent.press(getByText(/copy link/i)));
     expect(copyToClipboardAsync).toHaveBeenCalledTimes(1);
 
-    expect(copyToClipboardAsync).toHaveBeenLastCalledWith(fakeBuildInfo.hostUrl);
+    expect(copyToClipboardAsync).toHaveBeenLastCalledWith(fakeAppInfo.hostUrl);
   });
 
   test('return to dev launcher and reload', async () => {

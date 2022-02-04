@@ -40,7 +40,7 @@ interface DevMenuInternalMenuControllerModuleInterface {
   fun getDevSettingsAsync(promise: Promise)
 
   @ReactMethod
-  fun getBuildInfoAsync(promise: Promise)
+  fun getAppInfoAsync(promise: Promise)
 
   @ReactMethod
   fun copyToClipboardAsync(content: String, promise: Promise)

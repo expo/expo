@@ -4,9 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXDevMenuBuildInfo : NSObject
+@interface EXDevMenuAppInfo : NSObject
 
-+ (NSDictionary *)getBuildInfoForBridge:(RCTBridge *)bridge andManifest:(NSDictionary *)manifest;
++ (NSDictionary *)getAppInfoForBridge:(RCTBridge *)bridge andManifest:(NSDictionary *)manifest;
 
 @end
 

@@ -1,6 +1,6 @@
 import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
 
-export type BuildInfo = {
+export type AppInfo = {
   appIcon?: string;
   appVersion?: string;
   hostUrl?: string;
@@ -69,8 +69,8 @@ export async function getDevSettingsAsync(): Promise<DevSettings> {
   return await DevMenu.getDevSettingsAsync();
 }
 
-export async function getBuildInfoAsync(): Promise<BuildInfo> {
-  return await DevMenu.getBuildInfoAsync();
+export async function getAppInfoAsync(): Promise<AppInfo> {
+  return await DevMenu.getAppInfoAsync();
 }
 
 export async function copyToClipboardAsync(content: string) {

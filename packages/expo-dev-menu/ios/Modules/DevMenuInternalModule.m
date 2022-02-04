@@ -29,7 +29,7 @@ RCT_EXTERN_METHOD(getAuthSchemeAsync:(RCTPromiseResolveBlock)resolve reject:(RCT
 
 RCT_EXTERN_METHOD(setSessionAsync:(NSDictionary *)session resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(restoreSessionAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(getBuildInfoAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(getAppInfoAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(getDevSettingsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 
 /**
