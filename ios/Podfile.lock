@@ -2538,7 +2538,7 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (11.1.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.0.2):
+  - ExpoLinearGradient (11.0.3):
     - ExpoModulesCore
   - ExpoLocalization (12.0.1):
     - ExpoModulesCore
@@ -5240,7 +5240,7 @@ SPEC CHECKSUMS:
   Expo: 534e51e607aba8229293297da5585f4b26f50fa1
   ExpoCellular: 554981c2fc7670987e21ae54c9019947170f309f
   ExpoHaptics: 0d0b69b2414755a4057ffad0a10315902c0ea1b7
-  ExpoLinearGradient: 9ad5ca20ed594b8b5f460eb7434769d1b9a835ec
+  ExpoLinearGradient: fd591c223c81f6779036ed4cef4deb20ecb87c50
   ExpoLocalization: 72b4524c167da6c4e2a0bbe09176ff8b2c4eddbe
   ExpoModulesCore: 32c0ccb47f477d330ee93db72505380adf0de09a
   ExpoSystemUI: 182c672dd49bd2345023c2042257f68c075527cd
