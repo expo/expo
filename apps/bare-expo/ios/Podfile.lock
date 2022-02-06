@@ -38,7 +38,7 @@ PODS:
     - ExpoModulesCore
   - EXCalendar (10.1.1):
     - ExpoModulesCore
-  - EXCamera (12.1.1):
+  - EXCamera (12.1.2):
     - ExpoModulesCore
   - EXClipboard (2.1.1):
     - ExpoModulesCore
@@ -58,7 +58,7 @@ PODS:
     - ExpoModulesCore
     - FacebookSDK/CoreKit (= 9.2.0)
     - FacebookSDK/LoginKit (= 9.2.0)
-  - EXFaceDetector (11.1.2):
+  - EXFaceDetector (11.1.3):
     - ExpoModulesCore
     - GoogleMLKit/FaceDetection (= 2.1.0)
     - MLKitCommon (= 2.1.0)
@@ -1263,7 +1263,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   EXAmplitude: 114788f58379a84955bd712663be4767a4ae2f5c
   EXAppAuth: 7dd6417aaf6e147ce4cee768977cbca29bd59066
   EXApplication: 54fe5bd6268d697771645e8f1aef8b806a65247a
@@ -1274,7 +1274,7 @@ SPEC CHECKSUMS:
   EXBlur: 82055865de17cf2cf797ff064c50fb59fcbe703f
   EXBrightness: 8c4b08861ced2bdc31362e587aadcf73514ca7bb
   EXCalendar: 1102cee189dd3af6adb5bdbb7d8795ded8d9fc38
-  EXCamera: f763dad21bec8a1ed8a0a564ff29080abb345c3a
+  EXCamera: cad38e0ce3d4234237f277f5d46d30eae25498f0
   EXClipboard: 8123fcda680538bb0e1f4e6511106553e52d3760
   EXConstants: 88bf79622fbd9b476c96d8ec57fe97ca44fe8e3c
   EXContacts: a40b5e2841d417c9ffe54db5d6c8bed58615d62d
@@ -1283,7 +1283,7 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 9bc5eb42714af25dd59513102a622d4c2c4efc47
   EXErrorRecovery: b0d7582714a2cc896e94a2308a356f94dbf14ef7
   EXFacebook: 914b3e1b73044804cf91c8d7a53fb1aab7725ea9
-  EXFaceDetector: 3626cf0befeaf53b2ea73c54431746d99a559f7d
+  EXFaceDetector: 2c227f6c2004e662a1693d303f29422388b408b5
   EXFileSystem: 74e39d0a6ff7f2248d43f144686a5541cb1969de
   EXFirebaseAnalytics: a7ec2dd1394ad0de5c0c63fac0deee496f798284
   EXFirebaseCore: 52151d0b008b99983e6a120cea94466ee760a4e9
@@ -1345,7 +1345,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 5337263514dd6f09803962437687240c5dc39aa4
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
