@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- `KeepAwake.activateKeepAwake` now returns a promise to accommodate web. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+- `KeepAwake.activateKeepAwake` has been deprecated in favor of `KeepAwake.activateKeepAwakeAsync`. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
