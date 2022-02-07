@@ -59,8 +59,16 @@ If you aren't happy with the name you originally chose for your account, you may
 
 ### Transferring Projects Between Accounts
 
-> ⚠️ This feature is in private beta, please email secure@expo.dev with the names of the Personal Accounts or Organizations you would like to transfer the project to and from to join the waitlist. The projects you would like transferred need to be on SDK 43 or greater for this feature. 
+> ⚠️ This feature is in private beta and supported only for projects on SDK 43 or newer. Please upgrade your SDK if necessary and email secure@expo.dev including the following in your email and you will be added to the waitlist. (Tip: you can copy & paste these tables in your email and fill out the information)
 
-If you need to transfer a project between your Personal Account or Organzions you are an Owner of, you can do so by visiting [the project overview page](https://expo.dev/accounts/[account]/projects/[project]) and following the prompts under **Transfer Project**.
+| Account                              | Type                  | Are you an Owner? |
+| ------------------------------------ | --------------------- | ----------------- |
+| name (source)                        | Personal/Organization | yes/no            |
+| name (destination)                   | Personal/Organization | yes/no            |
 
-> 💡 If you need to transfer a project from your account (`source`) to an Organization (`destination`) you are not the Owner of, you can create a new Organization (`escrow`) to complete the transfer without Owner access on the destination account. You can add the Owner to the `destination` account can safely share Owner access on the `escrow` account.
+| Projects      | Currently uses Push Notifications? | upgraded to SDK 43 or newer?| 
+| ------------- | ---------------------------------- | --------------------------- |
+| slug          | yes/no                             | yes/no                      |
+
+
+If it is your case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and you need to transfer the project to their Account (`destination`) where the receiving party does not want to grant you Owner access to said `destination` Account, you can create a new Organization Account (`escrow`) to complete the transfer from while safely sharing Owner access on the `escrow` Account. 
