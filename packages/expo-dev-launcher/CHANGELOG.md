@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix opening published projects on Android. ([#16157](https://github.com/expo/expo/pull/16157) by [@esamelson](https://github.com/esamelson))
-
 ### 💡 Others
+
+## 0.10.4 — 2022-02-07
+
+### 🐛 Bug fixes
+
+- Fix opening published projects on Android. ([#16157](https://github.com/expo/expo/pull/16157) by [@esamelson](https://github.com/esamelson))
 
 ## 0.10.3 — 2022-02-01
 
