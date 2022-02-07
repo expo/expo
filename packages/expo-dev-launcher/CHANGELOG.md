@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix opening published projects on Android.
+- Fix opening published projects on Android. ([#16157](https://github.com/expo/expo/pull/16157) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
