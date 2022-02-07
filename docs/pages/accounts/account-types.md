@@ -71,4 +71,4 @@ If you aren't happy with the name you originally chose for your account, you may
 | slug          | yes/no                             | yes/no                      |
 
 
-If it is your case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and you need to transfer the project to their Account (`destination`) where the receiving party does not want to grant you Owner access to said `destination` Account, you can create a new Organization Account (`escrow`) to complete the transfer from while safely sharing Owner access on the `escrow` Account. 
+> 💡 If it is your case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and you need to transfer the project to their Account (`destination`) where the receiving party does not want to grant you Owner access to said `destination` Account, you can create a new Organization Account (`escrow`) to complete the transfer from while safely sharing Owner access on the `escrow` Account. 
