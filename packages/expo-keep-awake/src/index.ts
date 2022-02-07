@@ -2,7 +2,7 @@ import { Subscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect } from 'react';
 
 import ExpoKeepAwake from './ExpoKeepAwake';
-import { KeepAwakeEvent, KeepAwakeListener } from './KeepAwake.types';
+import { KeepAwakeListener } from './KeepAwake.types';
 
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 

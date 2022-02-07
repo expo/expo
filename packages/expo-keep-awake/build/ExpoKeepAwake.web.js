@@ -32,8 +32,8 @@ export default {
         const eventListener = () => {
             listener({ state: KeepAwakeEventState.RELEASE });
         };
-        if (wakeLockMap[tag]) {
-            const sentinel = wakeLockMap[tag];
+        const sentinel = wakeLockMap[tag];
+        if (sentinel) {
             if ('addEventListener' in sentinel) {
                 sentinel.addEventListener?.('release', eventListener);
             }
