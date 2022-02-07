@@ -101,10 +101,10 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(props => {
   }
 
   return (
-    <PermalinkBase component={component} data-components-heading>
+    <PermalinkBase component={component} data-heading-id={permalinkKey} data-components-heading>
       <div css={STYLES_PERMALINK} ref={heading?.ref}>
         <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
-        <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey}>
+        <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey} >
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
           <span css={STYLES_PERMALINK_ICON} style={props.customIconStyle}>
             <PermalinkIcon />

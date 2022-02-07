@@ -16,8 +16,8 @@ const STYLES_H1 = css`
   border-bottom: 1px solid ${theme.border.default};
 `;
 
-export const H1: React.FC = ({ children }) => (
-  <h1 {...attributes} css={STYLES_H1}>
+export const H1: React.FC = ({ children, ...rest }) => (
+  <h1 {...attributes} css={STYLES_H1} {...rest}>
     {children}
   </h1>
 );
@@ -37,8 +37,8 @@ const STYLES_H2 = css`
   }
 `;
 
-export const H2: React.FC = ({ children }) => (
-  <h2 {...attributes} css={STYLES_H2}>
+export const H2: React.FC = ({ children, ...rest }) => (
+  <h2 {...attributes} css={STYLES_H2} {...rest}>
     {children}
   </h2>
 );
@@ -56,8 +56,8 @@ const STYLES_H3 = css`
   }
 `;
 
-export const H3: React.FC = ({ children }) => (
-  <h3 {...attributes} css={STYLES_H3}>
+export const H3: React.FC = ({ children, ...rest }) => (
+  <h3 {...attributes} css={STYLES_H3} {...rest}>
     {children}
   </h3>
 );
