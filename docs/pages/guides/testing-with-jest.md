@@ -2,15 +2,17 @@
 title: Testing with Jest
 ---
 
-[Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework, so you may be even be familiar with it already. This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems that people encounter when using Jest in React Native.
+This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems people encounter when using **Jest** in React Native.
+
+[Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework, so you may already be familiar with it.
 
 ## Installation
 
-The first thing we'll want to do is install jest-expo, it's a Jest preset that mocks out the native side of the Expo SDK and handles some configuration for you.
+The first thing we'll want to do is to install `jest-expo`, it's a Jest preset that mocks out the native side of the Expo SDK and handles most of configurations for you.
 
 To install the compatible version of `jest-expo` for your project, run: `expo install jest-expo jest`
 
-Then we need to add/update **package.json** to include:
+Then, we need to add/update **package.json** to include:
 
 ```js
 "scripts": {
@@ -22,7 +24,7 @@ Then we need to add/update **package.json** to include:
 }
 ```
 
-Now let's add react-test-renderer to our project. Pick a version that is compatible with the React version used in your project. For example, if you use React 17.x then you should install `react-test-renderer@17`:
+Now let's add `react-test-renderer` to our project. Pick a version that is compatible with the React version used by your project. For example, if you use React 17.x then you should install `react-test-renderer@17`:
 
 `yarn add react-test-renderer@17 --dev` **or** `npm i react-test-renderer@17 --save-dev`
 
@@ -34,7 +36,7 @@ That's it! Now we can start writing Jest tests!
 
 Jest comes with a lot of configuration options, for more details read [Configuring Jest](https://jestjs.io/docs/configuration).
 
-We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/configuration#transformignorepatterns-arraystring). Below is a great starting point to make sure any modules you may be using within `/node_modules/` are transpiled when running jest. This should cover the majority of your needs but you can always add to this pattern list as you see fit.
+We would like to point out [`transformIgnorePatterns`](https://jestjs.io/docs/configuration#transformignorepatterns-arraystring). Below is a great starting point to make sure any modules you may be using within `/node_modules/` are transpiled when running jest. This should cover the majority of your needs but you can always add to this pattern list as you see fit.
 
 ```json
 "jest": {
@@ -47,9 +49,9 @@ We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/conf
 
 ## Unit Test
 
-We are going to write a simple test for **App.js** by creating **App.test.js**. Jest will identify this as a test, and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this tutorial.
+We are going to write a simple test for **App.js** by creating it's own test file: **App.test.js**. Jest will identify this as a test and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this guide.
 
-Our test will be the expected state of the `<App />` to have 1 child element:
+Our test will be the expected state of the `<App />` to have one child element:
 
 ```js
 import React from 'react';
@@ -65,13 +67,13 @@ describe('<App />', () => {
 });
 ```
 
-Now run `yarn test` or `npm run test`, if all went well you should see 1 test passed! Read more on [expect and conditional matchers](https://jestjs.io/docs/en/expect).
+Now run `yarn test` or `npm run test`, if everything goes well, you should see that one test passed! Read more on [expect and conditional matchers](https://jestjs.io/docs/en/expect).
 
 ## Snapshot Test
 
-Now let's add a snapshot test for **App.js**. **What is a snapshot test, and why is it useful?** Snapshot tests are used to make sure the UI stays consistent, especially when a project is working with global styles that are potentially shared across components. Read more about it on Jest's site [snapshot testing](https://jestjs.io/docs/en/snapshot-testing).
+**What is a snapshot test, and why is it useful?** Snapshot tests are used to make sure the UI stays consistent, especially when a project is working with global styles that are potentially shared across components. Read more about it on Jest's site [snapshot testing](https://jestjs.io/docs/en/snapshot-testing).
 
-Let's add the following within the describe():
+Now let's add a snapshot test for **App.js**, add the following within the `describe()`:
 
 ```js
 it('renders correctly', () => {
@@ -80,18 +82,18 @@ it('renders correctly', () => {
 });
 ```
 
-Now run `yarn test` or `npm run test`, if all went well you should see a snapshot created and 2 tests passed!
+Now run `yarn test` or `npm run test`, if everything goes well, you should see a snapshot created and two tests passed!
 
-This was a very simple test, for more information take a look at the following links:
+This was a very simple test, for more information, take a look at the following links:
 
-- [Api: Globals](https://jestjs.io/docs/en/api)
-- [Api: Mock Functions](https://jestjs.io/docs/en/mock-function-api)
-- [Api: Expect](https://jestjs.io/docs/en/expect)
-- [Cli Options](https://jestjs.io/docs/en/cli)
+- [API: Globals](https://jestjs.io/docs/en/api)
+- [API: Mock Functions](https://jestjs.io/docs/en/mock-function-api)
+- [API: Expect](https://jestjs.io/docs/en/expect)
+- [CLI Options](https://jestjs.io/docs/en/cli)
 
 ## Code Coverage Reports
 
-Running tests are cool and all, but wouldn't you like to see your Expo projects total code coverage?! Maybe even see it in html format?! This section is for you!
+Running tests are cool and all, but wouldn't you like to see total code coverage in your Expo projects?! Maybe even see it in an HTML format?! This section is for you!
 
 Let's head back to **package.json** and add the following:
 
@@ -109,15 +111,15 @@ Let's head back to **package.json** and add the following:
 }
 ```
 
-The above additions let's Jest know to collect coverage of all **_.js & .jsx_** file types and not within **_/coverage_**, **_/node_modules/_** and our 2 project config files (add/remove more exclusions to this list to match your Expo app needs).
+The above additions let Jest know to collect coverage of all **_.js & .jsx_** file types and not within **_/coverage_**, **_/node_modules/_** and our 2 project config files (add/remove more exclusions to this list to match your needs).
 
-Now run the test again, you should see **/coverage/** in your app directory! Find the **index.html** file within and double click to open it up in a browser. Not only do we have reporting in our cli, we also have an html version of our code coverage, pretty cool stuff!
+Now run the test again, you should see **/coverage** in your app directory! Find the **index.html** file within and double click to open it up in a browser. Not only do we have reporting in our CLI, we also have an HTML version of our code coverage, pretty cool stuff!
 
 > **Standards Note**: You can do what you want, but usually we wouldn't upload this html reporting to git; so add `coverage/\*\*/*` as a line in `.gitignore` to prevent this directory from being tracked.
 
 ## Structure your Tests
 
-As promised, let's talk about how to set up the tests, right now we have a single `.test.js` in the root of our Expo project. This can get messy quickly, the easiest way is to create a `__tests__` directory (anywhere you'd like) and put all the tests there. For example see below:
+As promised, let's talk about how to set up the tests. Right now we have a single `.test.js` in the root of our Expo project, this can get messy quickly. The easiest way is to create a `__tests__` directory (anywhere you'd like) and put all the tests there. For example see below:
 
 ```sh
 __tests__/
@@ -160,11 +162,11 @@ src/
 ...
 ```
 
-At the end of the day, it's all preference and up to you on how you'd like to structure things, but we wanted to share a few options to consider.
+At the end of the day, it's all about preferences and up to you to know how you'd like to structure things, but we wanted to share a few options to consider.
 
 ## Jest Flows
 
-This is optional, but wanted to talk about different jest test flows. Currently we run the test and that's it, but take a look at the [Cli Options](https://jestjs.io/docs/en/cli). Below are a few script setups to try:
+This is optional, but wanted to talk about different Jest test flows. Currently we run the test and that's it, but take a look at the [CLI Options](https://jestjs.io/docs/en/cli). Below are a few script setups to try:
 
 ```js
 "scripts": {

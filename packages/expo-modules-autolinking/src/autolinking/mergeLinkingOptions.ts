@@ -48,7 +48,7 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
  * Resolves autolinking search paths. If none is provided, it accumulates all node_modules when
  * going up through the path components. This makes workspaces work out-of-the-box without any configs.
  */
-async function resolveSearchPathsAsync(
+export async function resolveSearchPathsAsync(
   searchPaths: string[] | null,
   cwd: string
 ): Promise<string[]> {

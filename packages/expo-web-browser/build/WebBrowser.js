@@ -297,15 +297,15 @@ function _onAppStateChangeAndroid(state) {
 async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
     const appStateChangedToActive = new Promise((resolve) => {
         _onWebBrowserCloseAndroid = resolve;
-        AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
+    const stateChangeSubscription = AppState.addEventListener('change', _onAppStateChangeAndroid);
     let result = { type: WebBrowserResultType.CANCEL };
     let type = null;
     try {
         ({ type } = await openBrowserAsync(startUrl, browserParams));
     }
     catch (e) {
-        AppState.removeEventListener('change', _onAppStateChangeAndroid);
+        stateChangeSubscription.remove();
         _onWebBrowserCloseAndroid = null;
         throw e;
     }
@@ -313,7 +313,7 @@ async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
         await appStateChangedToActive;
         result = { type: WebBrowserResultType.DISMISS };
     }
-    AppState.removeEventListener('change', _onAppStateChangeAndroid);
+    stateChangeSubscription.remove();
     _onWebBrowserCloseAndroid = null;
     return result;
 }

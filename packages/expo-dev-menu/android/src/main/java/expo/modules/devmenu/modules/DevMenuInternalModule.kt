@@ -35,6 +35,15 @@ interface DevMenuInternalMenuControllerModuleInterface {
 
   @ReactMethod
   fun fetchDataSourceAsync(id: String?, promise: Promise)
+
+  @ReactMethod
+  fun getDevSettingsAsync(promise: Promise)
+
+  @ReactMethod
+  fun getAppInfoAsync(promise: Promise)
+
+  @ReactMethod
+  fun copyToClipboardAsync(content: String, promise: Promise)
 }
 
 interface DevMenuInternalSessionManagerModuleInterface {

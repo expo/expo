@@ -37,7 +37,7 @@ export async function resolveModuleAsync(
     podName,
     podspecDir,
     flags: options.flags,
-    modulesClassNames: revision.config?.iosModulesClassNames(),
+    modules: revision.config?.iosModules(),
     appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers(),
     reactDelegateHandlers: revision.config?.iosReactDelegateHandlers(),
   };
@@ -65,14 +65,14 @@ async function generatePackageListFileContentAsync(
 ): Promise<string> {
   const modulesToImport = modules.filter(
     (module) =>
-      module.modulesClassNames.length ||
+      module.modules.length ||
       module.appDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
   const pods = modulesToImport.map((module) => module.podName);
 
   const modulesClassNames = []
-    .concat(...modulesToImport.map((module) => module.modulesClassNames))
+    .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
   const appDelegateSubscribers = []

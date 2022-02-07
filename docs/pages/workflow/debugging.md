@@ -42,7 +42,7 @@ This can be a really frustrating scenario, since it gives you very little inform
 - Reproduce the crash (either using your production app, or the Expo Go app)
 - **Find an associated JavaScript crash report**: Check your JavaScript error reporting service (such as Sentry).
 - **Find an associated iOS crash report**: If your iOS app is on TestFlight or the App Store, you can use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode. If not, refer to their ["Diagnosing Issues Using Crash Reports and Device Logs" guide](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs).
-- **Find an associated Android crash report**If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run `adb logcat` to view the streaming logs. The `adb` (Android Debug Bridge) program is part of the Android SDK; an alternative to installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
+- **Find an associated Android crash report**: If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run `adb logcat` to view the streaming logs. The `adb` (Android Debug Bridge) program is part of the Android SDK; an alternative to installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
 
 With that information, you should be able to identify where the error is coming from, or at least search the internet for possible causes & solutions.
 
@@ -117,6 +117,7 @@ It's easy to use the React Native Debugger to debug your network request: right-
 There are however [some limitations](https://github.com/jhen0409/react-native-debugger/blob/master/docs/network-inspect-of-chrome-devtools.md#limitations), so there are a few other alternatives, all of which require using a proxy:
 
 - [Charles Proxy](https://www.charlesproxy.com/documentation/configuration/browser-and-system-configuration/) (~$50 USD, our preferred tool)
+- [Proxyman](https://proxyman.io) (Free version available or $49 to $59 USD)
 - [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
 - [Fiddler](http://www.telerik.com/fiddler)
 
@@ -124,7 +125,7 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 
 ## Debugging Redux
 
-[Redux](https://redux.js.org/) is a popular library for managing the state of your app that doesn't belong to any single component, and instead it shared throughout the app. You can use the React Native Debugger (told you this tool does it all), the set up is as follows:
+[Redux](https://redux.js.org/) is a popular library for managing and centralizing application state shared throughout the app. You can use Redux DevTools on React Native Debugger for debugging the application's state changes. The setup is as follows:
 
 1. Download React Native Debugger from the [releases page](https://github.com/jhen0409/react-native-debugger/releases).
 2. Open the app, press `⌘+t`/`ctrl+t` to open new window, then set the port to 19000.

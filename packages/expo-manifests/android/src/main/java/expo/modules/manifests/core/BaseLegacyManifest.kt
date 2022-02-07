@@ -13,8 +13,6 @@ abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
 
   override fun getEASProjectID(): String? = json.getNullable("projectId")
 
-  fun getMetadata(): JSONObject? = json.getNullable("metadata")
-
   override fun getAssets(): JSONArray? = json.getNullable("assets")
 
   @Throws(JSONException::class)
@@ -35,14 +33,4 @@ abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
   override fun getAppKey(): String? = json.getNullable("appKey")
 
   fun getCommitTime(): String? = json.getNullable("commitTime")
-
-  @Throws(JSONException::class)
-  private fun getPublishedTime(): String = json.require("publishedTime")
-
-  override fun getSortTime(): String? {
-    // use commitTime instead of publishedTime as it is more accurate;
-    // however, fall back to publishedTime in case older cached manifests do not contain
-    // the commitTime key (we have not always served it)
-    return getCommitTime() ?: getPublishedTime()
-  }
 }

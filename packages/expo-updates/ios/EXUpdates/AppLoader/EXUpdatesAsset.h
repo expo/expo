@@ -17,13 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, strong) NSString *mainBundleFilename; // used for embedded assets
 @property (nonatomic, assign) BOOL isLaunchAsset;
 @property (nullable, nonatomic, strong) NSDictionary *extraRequestHeaders;
+@property (nullable, nonatomic, strong) NSString *expectedHash; // base64url-encoded sha-256
 
 /**
  * properties determined at runtime by updates implementation
  */
 @property (nullable, nonatomic, strong) NSDate *downloadTime;
 @property (nullable, nonatomic, strong) NSString *filename;
-@property (nullable, nonatomic, strong) NSString *contentHash;
+@property (nullable, nonatomic, strong) NSString *contentHash; // hex-encoded sha-256
 @property (nullable, nonatomic, strong) NSDictionary *headers;
 
 /**

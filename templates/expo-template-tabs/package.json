@@ -19,17 +19,17 @@
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
-    "expo": "~44.0.0-beta.1",
-    "expo-asset": "~8.4.4",
-    "expo-constants": "~13.0.0",
+    "expo": "~44.0.5",
+    "expo-asset": "~8.4.6",
+    "expo-constants": "~13.0.1",
     "expo-font": "~10.0.4",
     "expo-linking": "~3.0.0",
-    "expo-splash-screen": "~0.14.0",
+    "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
     "expo-web-browser": "~10.1.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-native": "0.64.3",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-native": "0.66.4",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
     "react-native-web": "0.17.1"
@@ -37,10 +37,10 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/react": "~17.0.21",
-    "@types/react-native": "~0.64.12",
-    "jest-expo": "~43.0.1",
+    "@types/react-native": "~0.66.13",
+    "jest-expo": "~44.0.1",
     "jest": "^26.6.3",
-    "react-test-renderer": "17.0.1",
+    "react-test-renderer": "17.0.2",
     "typescript": "~4.3.5"
   }
 }

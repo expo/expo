@@ -1,6 +1,6 @@
 ---
 title: InAppPurchases
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-in-app-purchases'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-in-app-purchases'
 packageName: 'expo-in-app-purchases'
 ---
 

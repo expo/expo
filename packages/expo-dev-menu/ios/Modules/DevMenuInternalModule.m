@@ -29,7 +29,8 @@ RCT_EXTERN_METHOD(getAuthSchemeAsync:(RCTPromiseResolveBlock)resolve reject:(RCT
 
 RCT_EXTERN_METHOD(setSessionAsync:(NSDictionary *)session resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(restoreSessionAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-
+RCT_EXTERN_METHOD(getAppInfoAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(getDevSettingsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 
 /**
  * Helper that is used in openBrowserAsync and openAuthSessionAsync
@@ -93,6 +94,15 @@ RCT_EXPORT_METHOD(openAuthSessionAsync:(NSString *)authURL
 {
   self.redirectResolve = nil;
   self.redirectReject = nil;
+}
+
+RCT_EXPORT_METHOD(copyToClipboardAsync:(NSString *)content
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+  clipboard.string = (content ?: @"");
+  resolve(nil);
 }
 
 @end

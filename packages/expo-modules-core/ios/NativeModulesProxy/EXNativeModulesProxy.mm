@@ -10,6 +10,7 @@
 
 #import <jsi/jsi.h>
 
+#import <ExpoModulesCore/EXComponentDataCompatibleWrapper.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
@@ -38,13 +39,6 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 @interface RCTBridge (JSIRuntime)
 
 - (void *)runtime;
-
-@end
-
-@interface RCTComponentData (EXNativeModulesProxy)
-
-- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge eventDispatcher:(id<RCTEventDispatcherProtocol>) eventDispatcher; // available in RN 0.65+
-- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge;
 
 @end
 
@@ -368,14 +362,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   NSString *className = NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-    RCTComponentData *componentData;
-    if ([componentData respondsToSelector:@selector(initWithManagerClass:bridge:eventDispatcher:)]) {
-      // Init method was changed in RN 0.65
-      componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
-    } else {
-      // fallback for older RNs
-      componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge];
-    }
+    RCTComponentData *componentData = [[EXComponentDataCompatibleWrapper alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
 }
@@ -416,10 +403,15 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
  */
 - (void)installExpoTurboModules
 {
-  facebook::jsi::Runtime *runtime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : NULL;
+  facebook::jsi::Runtime *jsiRuntime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : nullptr;
 
-  if (runtime) {
-    expo::installRuntimeObjects(*runtime, _bridge.jsCallInvoker, self);
+  if (jsiRuntime) {
+    JavaScriptRuntime *runtime = [[JavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
+
+    [JavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
+    [_swiftInteropBridge setRuntime:runtime];
+
+    expo::installRuntimeObjects(*jsiRuntime, _bridge.jsCallInvoker, self);
   }
 }
 

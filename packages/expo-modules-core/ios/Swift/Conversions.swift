@@ -27,7 +27,7 @@ internal final class Conversions {
     case 10:
       return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9])
     default:
-      throw TooManyArgumentsError(count: array.count, limit: 10)
+      throw TooManyArgumentsException((count: array.count, limit: 10))
     }
   }
 
@@ -46,9 +46,9 @@ internal final class Conversions {
   }
 
   /**
-   Picks values under given keys from the dictionary, casted to a specific type. Can throw errors when
-   - The dictionary is missing some of the given keys (`MissingKeysError`)
-   - Some of the values cannot be casted to specified type (`CastingValuesError`)
+   Picks values under given keys from the dictionary, cast to a specific type. Can throw exceptions when
+   - The dictionary is missing some of the given keys (`MissingKeysException`)
+   - Some of the values cannot be cast to specified type (`CastingValuesException`)
    */
   static func pickValues<ValueType>(from dict: [String: Any], byKeys keys: [String], as type: ValueType.Type) throws -> [ValueType] {
     var result = (
@@ -68,16 +68,16 @@ internal final class Conversions {
       }
     }
     if !result.missingKeys.isEmpty {
-      throw MissingKeysError<ValueType>(keys: result.missingKeys)
+      throw MissingKeysException<ValueType>(result.missingKeys)
     }
     if !result.invalidKeys.isEmpty {
-      throw CastingValuesError<ValueType>(keys: result.invalidKeys)
+      throw CastingValuesException<ValueType>(result.invalidKeys)
     }
     return result.values
   }
 
   /**
-   Converts hex string to `UIColor` or throws an error if the string is corrupted.
+   Converts hex string to `UIColor` or throws an exception if the string is corrupted.
    */
   static func toColor(hexString hex: String) throws -> UIColor {
     var hexStr = hex
@@ -103,7 +103,7 @@ internal final class Conversions {
 
     guard hexStr.range(of: #"^[0-9a-fA-F]{8}$"#, options: .regularExpression) != nil,
           Scanner(string: hexStr).scanHexInt64(&rgba) else {
-      throw InvalidHexColorError(hex: hex)
+      throw InvalidHexColorException(hex)
     }
     return try toColor(rgba: rgba)
   }
@@ -114,7 +114,7 @@ internal final class Conversions {
    */
   static func toColor(argb: UInt64) throws -> UIColor {
     guard argb <= UInt32.max else {
-      throw HexColorOverflowError(hex: argb)
+      throw HexColorOverflowException(argb)
     }
     let alpha = CGFloat((argb >> 24) & 0xff) / 255.0
     let red   = CGFloat((argb >> 16) & 0xff) / 255.0
@@ -128,7 +128,7 @@ internal final class Conversions {
    */
   static func toColor(rgba: UInt64) throws -> UIColor {
     guard rgba <= UInt32.max else {
-      throw HexColorOverflowError(hex: rgba)
+      throw HexColorOverflowException(rgba)
     }
     let red   = CGFloat((rgba >> 24) & 0xff) / 255.0
     let green = CGFloat((rgba >> 16) & 0xff) / 255.0
@@ -144,90 +144,86 @@ internal final class Conversions {
     return keys.map { "`\($0)`" }.joined(separator: ", ")
   }
 
-  // MARK: - Errors
+  static func formatPlural(_ number: Int, _ singular: String, _ plural: String? = nil) -> String {
+    return String(number) + (number == 1 ? singular : (plural ?? singular + "s"))
+  }
+
+  // MARK: - Exceptions
 
   /**
-   An error meaning that the number of arguments exceeds the limit.
+   An exception meaning that the number of arguments exceeds the limit.
    */
-  internal struct TooManyArgumentsError: CodedError {
-    let count: Int
-    let limit: Int
-    var description: String {
-      "A number of arguments `\(count)` exceeds the limit of `\(limit)`"
+  internal class TooManyArgumentsException: GenericException<(count: Int, limit: Int)> {
+    override var reason: String {
+      "Native function expects \(formatPlural(param.limit, "argument")), but received \(param.count)"
     }
   }
 
   /**
-   An error that can be thrown by convertible types, when given value cannot be converted.
+   An exception that can be thrown by convertible types, when given value cannot be converted.
    */
-  internal struct ConvertingError<TargetType>: CodedError {
-    let value: Any?
+  internal class ConvertingException<TargetType>: GenericException<Any?> {
     var code: String = "ERR_CONVERTING_FAILED"
-    var description: String {
-      "Cannot convert `\(String(describing: value))` to `\(TargetType.self)`"
+    override var reason: String {
+      "Cannot convert '\(String(describing: param))' to \(TargetType.self)"
     }
   }
 
   /**
-   An error that is thrown when given value cannot be casted.
+   An exception that is thrown when given value cannot be cast.
    */
-  internal struct CastingError<TargetType>: CodedError {
-    let value: Any
+  internal class CastingException<TargetType>: GenericException<Any> {
     var code: String = "ERR_CASTING_FAILED"
-    var description: String {
-      "Cannot cast `\(String(describing: value))` to `\(TargetType.self)`"
+    override var reason: String {
+      "Cannot cast '\(String(describing: param))' to \(TargetType.self)"
     }
   }
 
   /**
-   An error that can be thrown by convertible types,
-   when the values in given dictionary cannot be casted to specific type.
+   An exception that can be thrown by convertible types,
+   when the values in given dictionary cannot be cast to specific type.
    */
-  internal struct CastingValuesError<ValueType>: CodedError {
-    let keys: [String]
+  internal class CastingValuesException<ValueType>: GenericException<[String]> {
     var code: String = "ERR_CASTING_VALUES_FAILED"
-    var description: String {
-      "Cannot cast keys \(formatKeys(keys)) to `\(ValueType.self)`"
+    override var reason: String {
+      "Cannot cast keys \(formatKeys(param)) to \(ValueType.self)"
     }
   }
 
   /**
-   An error that can be throw by convertible types,
+   An exception that can be thrown by convertible types,
    when given dictionary is missing some required keys.
    */
-  internal struct MissingKeysError<ValueType>: CodedError {
-    let keys: [String]
-    var description: String {
-      "Missing keys \(formatKeys(keys)) of type `\(ValueType.self)`"
+  internal class MissingKeysException<ValueType>: GenericException<[String]> {
+    override var reason: String {
+      "Missing keys \(formatKeys(param)) to create \(ValueType.self) record"
     }
   }
 
   /**
-   An error that is thrown when null value is tried to be casted to non-optional type.
+   An exception that is thrown when null value is tried to be cast to non-optional type.
    */
-  internal struct NullCastError<TargetType>: CodedError {
-    var description: String {
-      "Cannot cast null value to non-optional `\(TargetType.self)`"
+  internal class NullCastException<TargetType>: Exception {
+    override var reason: String {
+      "Cannot cast null to non-optional '\(TargetType.self)'"
     }
   }
 
   /**
-   An error used when the hex color string is invalid (e.g. contains non-hex characters).
+   An exception used when the hex color string is invalid (e.g. contains non-hex characters).
    */
-  internal struct InvalidHexColorError: CodedError {
-    let hex: String
-    var description: String {
-      "Provided hex color `\(hex)` is invalid"
+  internal class InvalidHexColorException: GenericException<String> {
+    override var reason: String {
+      "Provided hex color '\(param)' is invalid"
     }
   }
 
   /**
-   An error used when the integer value of the color would result in an overflow of `UInt32`.
+   An exception used when the integer value of the color would result in an overflow of `UInt32`.
    */
-  internal struct HexColorOverflowError: CodedError {
-    let hex: UInt64
-    var description: String {
-      "Provided hex color `\(hex)` would result in an overflow"
+  internal class HexColorOverflowException: GenericException<UInt64> {
+    override var reason: String {
+      "Provided hex color '\(param)' would result in an overflow"
     }
   }
 }

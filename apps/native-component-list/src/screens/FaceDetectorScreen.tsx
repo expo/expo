@@ -19,9 +19,8 @@ interface State {
 }
 
 const imageViewSize = 300;
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class FeceDetectorScreen extends React.Component<{}, State> {
+
+export default class FaceDetectorScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'FaceDetector',
   };
@@ -152,12 +151,12 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
 
   _maybeRenderDetectedFacesAndLandmarks = () => {
     const { selection, faceDetection } = this.state;
-    if (selection && faceDetection) {
-      const { pixelsToDisplayScale } = calculateImageScale(selection as ImageInfo);
+    if (selection && !selection?.cancelled && faceDetection) {
+      const { pixelsToDisplayScale } = calculateImageScale(selection);
       return (
         <View
           style={{
-            ...imageOverflowSizeAndPosition(selection as ImageInfo),
+            ...imageOverflowSizeAndPosition(selection),
             position: 'absolute',
           }}>
           {this.state.faceDetection &&

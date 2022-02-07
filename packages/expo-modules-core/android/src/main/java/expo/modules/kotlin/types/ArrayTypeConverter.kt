@@ -1,16 +1,18 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.CollectionElementCastException
+import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 class ArrayTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val type: KType,
-) : TypeConverter<Array<*>>(type.isMarkedNullable) {
+  private val arrayType: KType,
+) : TypeConverter<Array<*>>(arrayType.isMarkedNullable) {
   private val arrayElementConverter = converterProvider.obtainTypeConverter(
-    requireNotNull(type.arguments.first().type) {
+    requireNotNull(arrayType.arguments.first().type) {
       "The array type should contain the type of the elements."
     }
   )
@@ -22,7 +24,11 @@ class ArrayTypeConverter(
       array[i] = jsArray
         .getDynamic(i)
         .recycle {
-          arrayElementConverter.convert(this)
+          exceptionDecorator({ cause ->
+            CollectionElementCastException(arrayType, arrayType.arguments.first().type!!, type, cause)
+          }) {
+            arrayElementConverter.convert(this)
+          }
         }
     }
     return array
@@ -37,7 +43,7 @@ class ArrayTypeConverter(
   @Suppress("UNCHECKED_CAST")
   private fun createTypedArray(size: Int): Array<Any?> {
     return java.lang.reflect.Array.newInstance(
-      (type.arguments.first().type!!.classifier as KClass<*>).java,
+      (arrayType.arguments.first().type!!.classifier as KClass<*>).java,
       size
     ) as Array<Any?>
   }

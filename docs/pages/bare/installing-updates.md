@@ -105,4 +105,4 @@ By default, `expo-updates` requires no additional setup. If you want to customiz
 
 ## Usage
 
-See more information about usage in the [expo-updates README](https://github.com/expo/expo/blob/master/packages/expo-updates/README.md).
+See more information about usage in the [expo-updates README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).

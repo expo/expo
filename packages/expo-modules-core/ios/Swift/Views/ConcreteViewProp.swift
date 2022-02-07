@@ -36,22 +36,20 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
     // Method's signature must be type-erased to conform to `AnyViewProp` protocol.
     // Given view must be castable to the generic `ViewType` type.
     guard let view = view as? ViewType else {
-      throw IncompatibleViewError(propName: name, viewType: ViewType.self)
+      throw IncompatibleViewException((propName: name, viewType: ViewType.self))
     }
     guard let value = try propType.cast(value) as? PropType else {
-      throw Conversions.CastingError<PropType>(value: value)
+      throw Conversions.CastingException<PropType>(value)
     }
     setter(view, value)
   }
 }
 
 /**
- An error that is thrown when the view passed to prop's setter doesn't match the type in setter's definition.
+ An exception that is thrown when the view passed to prop's setter doesn't match the type in setter's definition.
  */
-internal struct IncompatibleViewError: CodedError {
-  let propName: String
-  let viewType: UIView.Type
-  var description: String {
-    "Tried to set prop `\(propName)` on the view that isn't `\(viewType)`"
+internal class IncompatibleViewException: GenericException<(propName: String, viewType: UIView.Type)> {
+  override var reason: String {
+    "Tried to set prop '\(param.propName)' on the view that isn't \(param.viewType)"
   }
 }

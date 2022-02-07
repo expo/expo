@@ -1,6 +1,6 @@
 ---
 title: MediaLibrary
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-media-library'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-media-library'
 packageName: 'expo-media-library'
 ---
 
@@ -32,7 +32,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-media-library` repository](https://github.com/expo/expo/tree/master/packages/expo-media-library#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-media-library` repository](https://github.com/expo/expo/tree/main/packages/expo-media-library#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

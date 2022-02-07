@@ -3,7 +3,7 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - master
+      - main
     paths:
       - .github/workflows/web.yml
       - yarn.lock

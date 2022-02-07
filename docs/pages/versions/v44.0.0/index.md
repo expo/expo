@@ -30,14 +30,16 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 
 ## Each Expo SDK version depends on a React Native version
 
-Every quarter there is a new Expo SDK release that typically updates to the latest stable version of React Native and includes a variety of bugfixes, features and improvements to the Expo SDK. It's often useful to know what version of React Native your Expo project is running on, so the following table maps Expo SDK versions to their included React Native version.
+Every quarter there is a new Expo SDK release that typically updates to the latest stable version of React Native and includes a variety of bugfixes, features and improvements to the Expo SDK.
 
 | Expo SDK Version | React Native Version |
 | ---------------- | :------------------: |
+| 44.0.0           |        0.64.3        |
 | 43.0.0           |        0.64.3        |
 | 42.0.0           |        0.63.3        |
 | 41.0.0           |        0.63.3        |
 | 40.0.0           |        0.63.3        |
-| 39.0.0           |        0.63.2        |
-| 38.0.0           |        0.62.2        |
-| 37.0.0           |        0.61.4        |
+
+### Support for other React Native versions
+
+Packages in the Expo SDK are intended to support the target React Native version for that SDK. Typically, they will not support older versions of React Native, but they may. When a new version of React Native is released, the latest versions of the Expo SDK packages are typically updated to support it; however, this may take weeks or more, depending on the extent of the changes in the release.

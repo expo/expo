@@ -14,7 +14,6 @@ import expo.modules.updates.manifest.ManifestHeaderData
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
-import org.apache.commons.codec.binary.Hex
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -25,6 +24,7 @@ import kotlin.math.min
 import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
+import android.util.Base64
 
 open class FileDownloader(private val client: OkHttpClient) {
   constructor(context: Context) : this(OkHttpClient.Builder().cache(getCache(context)).build())
@@ -316,10 +316,11 @@ open class FileDownloader(private val client: OkHttpClient) {
             }
 
             override fun onSuccess(file: File, hash: ByteArray) {
-              val hashHexString = String(Hex.encodeHex(hash)).toLowerCase(Locale.ROOT)
+              // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
+              val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
               val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
-              if (expectedAssetHash != null && expectedAssetHash != hashHexString) {
-                callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashHexString"), asset)
+              if (expectedAssetHash != null && expectedAssetHash != hashBase64String) {
+                callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashBase64String"), asset)
                 return
               }
 

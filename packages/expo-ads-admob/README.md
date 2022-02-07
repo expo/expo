@@ -4,7 +4,7 @@ Provides support for the Google AdMob SDK (https://www.google.com/admob/) for mo
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/admob.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/admob.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/admob/)
 
 # Installation in managed Expo projects

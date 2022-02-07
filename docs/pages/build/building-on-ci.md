@@ -156,26 +156,17 @@ version: 2.1
 executors:
   default:
     docker:
-      - image: circleci/node:16
+      - image: cimg/node:lts
     working_directory: ~/my-app
-
-commands:
-  attach_project:
-    steps:
-      - attach_workspace:
-          at: ~/my-app
 
 jobs:
   eas_build:
     executor: default
     steps:
       - checkout
-      - attach_project
-
       - run:
           name: Install dependencies
           command: npm ci
-
       - run:
           name: Trigger build
           command: npx eas-cli build --platform all --non-interactive
@@ -200,36 +191,30 @@ workflows:
 ```yaml
 name: EAS Build
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
-  workflow_dispatch:
-
 jobs:
   build:
     name: Install and build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 16.x
-
-      - name: Setup Expo
-        uses: expo/expo-github-action@v5
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v7
         with:
-          expo-version: 4.x
-          expo-token: ${{ secrets.EXPO_TOKEN }}
-          expo-cache: true
-
+          expo-version: 5.x
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
       - name: Install dependencies
         run: npm ci
-
       - name: Build on EAS
-        run: npx eas-cli build --platform all --non-interactive
+        run: eas build --platform all --non-interactive
 ```
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.

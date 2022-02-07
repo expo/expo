@@ -1,15 +1,17 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.CollectionElementCastException
+import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KType
 
 class ListTypeConverter(
   converterProvider: TypeConverterProvider,
-  type: KType,
-) : TypeConverter<List<*>>(type.isMarkedNullable) {
+  private val listType: KType,
+) : TypeConverter<List<*>>(listType.isMarkedNullable) {
   private val elementConverter = converterProvider.obtainTypeConverter(
-    requireNotNull(type.arguments.first().type) {
+    requireNotNull(listType.arguments.first().type) {
       "The list type should contain the type of elements."
     }
   )
@@ -18,7 +20,11 @@ class ListTypeConverter(
     val jsArray = value.asArray()
     return List(jsArray.size()) { index ->
       jsArray.getDynamic(index).recycle {
-        elementConverter.convert(this)
+        exceptionDecorator({ cause ->
+          CollectionElementCastException(listType, listType.arguments.first().type!!, type, cause)
+        }) {
+          elementConverter.convert(this)
+        }
       }
     }
   }

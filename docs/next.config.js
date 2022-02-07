@@ -4,33 +4,38 @@ const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
 const { ESBuildMinifyPlugin } = require('esbuild-loader');
+const { info: logInfo } = require('next/dist/build/output/log');
 
-const navigation = require('./constants/navigation-data');
-const versions = require('./constants/versions');
+const navigation = require('./constants/navigation');
+const { VERSIONS } = require('./constants/versions');
 const { version, betaVersion } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
 
-// copy versions/v(latest version) to versions/latest
-// (Next.js only half-handles symlinks)
+// Determine if we are using esbuild for MDX transpiling
+const enableEsbuild = !!process.env.USE_ESBUILD;
+logInfo(
+  enableEsbuild
+    ? 'Using esbuild for MDX files, USE_ESBUILD set to true'
+    : 'Using babel for MDX files, USE_ESBUILD not set'
+);
+
+// Prepare the latest version by copying the actual exact latest version
 const vLatest = join('pages', 'versions', `v${version}/`);
 const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
+logInfo(`Copied latest Expo SDK version from v${version}`);
 
-// Determine if we are using esbuild for MDX transpiling
-const enableEsbuild = !!process.env.USE_ESBUILD;
-
-console.log(enableEsbuild ? 'Using esbuild for MDX files' : 'Using babel for MDX files');
-
+/** @type {import('next').NextConfig}  */
 module.exports = {
-  // future: {
-  //   webpack5: true,
-  // },
   trailingSlash: true,
-  // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  // Next 11 does not support ESLint v8, enable it when we upgrade to 12
+  eslint: { ignoreDuringBuilds: true },
+  // Keep using webpack 4, webpack 5 causes some issues. See: https://github.com/expo/expo/pull/12794
+  webpack5: false,
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
@@ -119,7 +124,7 @@ module.exports = {
       })
     );
 
-    createSitemap({
+    const sitemapEntries = createSitemap({
       pathMap,
       domain: `https://docs.expo.dev`,
       output: join(outDir, `sitemap.xml`),
@@ -129,11 +134,12 @@ module.exports = {
         ...navigation.startingDirectories,
         ...navigation.generalDirectories,
         ...navigation.easDirectories,
-        ...versions.VERSIONS.map(version => `versions/${version}`),
+        ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: navigation.previewDirectories,
     });
+    logInfo(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
 
     return pathMap;
   },

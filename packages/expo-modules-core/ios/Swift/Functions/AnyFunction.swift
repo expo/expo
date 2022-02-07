@@ -25,6 +25,11 @@ public protocol AnyFunction: AnyDefinition {
   var queue: DispatchQueue? { get }
 
   /**
+   Whether the function needs to be called asynchronously from JavaScript.
+   */
+  var isAsync: Bool { get }
+
+  /**
    Calls the function on given module with arguments and a promise.
    */
   func call(args: [Any], promise: Promise)
@@ -39,4 +44,9 @@ public protocol AnyFunction: AnyDefinition {
    Specifies on which queue the function should run.
    */
   func runOnQueue(_ queue: DispatchQueue?) -> Self
+
+  /**
+   Makes the JavaScript function synchronous.
+   */
+  func runSynchronously() -> Self
 }

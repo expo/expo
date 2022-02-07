@@ -16,12 +16,11 @@
       "apps/*",
       "apps/test-suite/puppeteer-test",
       "home",
-      "packages/*",
-      "react-native-lab/react-native"
+      "packages/*"
     ]
   },
   "resolutions": {
-    "react-native": "0.64.3",
+    "react-native": "0.66.4",
     "**/util": "~0.12.4"
   },
   "dependencies": {

@@ -7,6 +7,7 @@ import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProp
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://reactnative.dev/docs/network.html#fetch), for example).
 
@@ -77,7 +78,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-facebook` repository](https://github.com/expo/expo/tree/master/packages/expo-facebook#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-facebook` repository](https://github.com/expo/expo/tree/main/packages/expo-facebook#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

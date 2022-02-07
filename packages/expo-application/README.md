@@ -4,7 +4,7 @@ Gets native application information such as its ID, app name, and build version 
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/application.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/application.md)
 
 # Installation in managed Expo projects
 

@@ -1,6 +1,6 @@
 ---
 title: DocumentPicker
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-document-picker'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-document-picker'
 packageName: 'expo-document-picker'
 ---
 

@@ -5,7 +5,7 @@ import CoreGraphics
 
 var defaultStartPoint = CGPoint(x: 0.5, y: 0.0)
 var defaultEndPoint = CGPoint(x: 0.5, y: 1.0)
-var defaultLocations: [CGFloat] = [0.0, 1.0]
+var defaultLocations: [CGFloat] = []
 
 final class LinearGradientLayer: CALayer {
   var colors = [CGColor]()
@@ -15,6 +15,12 @@ final class LinearGradientLayer: CALayer {
 
   override init() {
     super.init()
+    self.needsDisplayOnBoundsChange = true
+    self.masksToBounds = true
+  }
+  
+  override init(layer: Any) {
+    super.init(layer: layer)
     self.needsDisplayOnBoundsChange = true
     self.masksToBounds = true
   }

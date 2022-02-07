@@ -3,7 +3,7 @@ name: Android Instrumentation Tests
 on:
   workflow_dispatch: {}
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/android-instrumentation-tests.yml
       - 'fastlane/**'
@@ -25,6 +25,7 @@ concurrency:
 jobs:
   test:
     runs-on: macos-11
+    timeout-minutes: 60
     env:
       NDK_ABI_FILTERS: x86_64
     steps:
@@ -64,6 +65,7 @@ jobs:
         run: sed -i '' 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
         working-directory: react-native-lab/react-native
       - name: 🎸 Run instrumented unit tests
+        timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29

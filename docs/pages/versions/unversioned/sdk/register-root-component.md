@@ -1,6 +1,6 @@
 ---
 title: registerRootComponent
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/launch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo/src/launch'
 packageName: 'expo'
 ---
 

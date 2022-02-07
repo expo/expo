@@ -4,7 +4,7 @@
 
 ## API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/updates.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/updates.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/)
 
 Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020.
@@ -19,7 +19,7 @@ Finally, this module is not compatible with ExpoKit. Make sure you do not have `
 
 ## Upgrading
 
-If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For instructions and more information, see the [CHANGELOG](https://github.com/expo/expo/blob/master/packages/expo-updates/CHANGELOG.md). (For new projects, the no-publish workflow is enabled by default.)
+If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For instructions and more information, see the [CHANGELOG](https://github.com/expo/expo/blob/main/packages/expo-updates/CHANGELOG.md). (For new projects, the no-publish workflow is enabled by default.)
 
 # Installation in managed Expo projects
 
@@ -89,10 +89,10 @@ Regardless of the value of this setting, as long as updates are enabled, your ap
 
 The number of milliseconds `expo-updates` should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
 
-| iOS plist/dictionary key | Android Map key          | Android meta-data name                             | Default | Required? |
-| ------------------------ | ------------------------ | -------------------------------------------------- | ------- | --------- |
-| TBD                      | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
-| TBD                      | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
+| iOS plist/dictionary key          | Android Map key          | Android meta-data name                             | Default | Required? |
+| --------------------------------- | ------------------------ | -------------------------------------------------- | ------- | --------- |
+| `EXUpdatesCodeSigningCertificate` | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
+| `EXUpdatesCodeSigningMetadata`    | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
 
 If `codeSigningCertificate` is present, `expo-updates` will enforce manifest code signing using the certificate and any metadata associated with it.
 - `codeSigningCertificate` must be a valid PEM formatted X.509 certificate with code signing extended key usage.

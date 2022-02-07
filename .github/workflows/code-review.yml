@@ -7,7 +7,7 @@ on:
         description: 'Number of the pull request to review'
         required: true
   pull_request_target:
-    branches: [master, sdk-*]
+    branches: [main, sdk-*]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}

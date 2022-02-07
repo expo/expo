@@ -289,11 +289,11 @@ platform :android do
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
 
-  lane :build do |build_type: "Debug", flavor: "versioned", sign: true|
+  lane :build do |build_type: "Debug", flavor: "versioned", sign: true, aab: false|
     ENV['ANDROID_UNSIGNED'] = '1' unless sign
     gradle(
       project_dir: "android",
-      task: "app:assemble",
+      task: aab ? "app:bundle": "app:assemble",
       flavor: flavor,
       build_type: build_type,
     )
@@ -308,7 +308,7 @@ platform :android do
     supply(
       package_name: "host.exp.exponent",
       metadata_path: "./fastlane/android/metadata",
-      apk: "./android/app/build/outputs/apk/versioned/release/app-versioned-release.apk",
+      apk: "./android/app/build/outputs/bundle/versionedRelease/app-versioned-release.aab",
       track: "production",
       skip_upload_images: true,
       skip_upload_screenshots: true

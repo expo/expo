@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 0.6.0 — 2022-01-26
+
+### ⚠️ Notices
+
+- Expose `findModulesAsync` from `expo-modules-autolinking/build/autolinking` again. ([#15950](https://github.com/expo/expo/pull/15950) by [@EvanBacon](https://github.com/EvanBacon))
+- Deprecated `modulesClassNames` in favor of `modules` in the Expo module config. ([#15852](https://github.com/expo/expo/pull/15852) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.5.5 — 2022-01-05
 
 ### 🐛 Bug fixes

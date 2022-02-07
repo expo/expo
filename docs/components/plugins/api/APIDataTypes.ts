@@ -50,6 +50,7 @@ export type TypeDefinitionData = {
   };
   declaration?: TypeDeclarationContentData;
   value?: string | boolean | null;
+  operator?: string;
 };
 
 export type MethodParamData = {
@@ -60,7 +61,9 @@ export type MethodParamData = {
 };
 
 export type TypePropertyDataFlags = {
-  isOptional: boolean;
+  isExternal?: boolean;
+  isOptional?: boolean;
+  isStatic?: boolean;
 };
 
 // Constants section

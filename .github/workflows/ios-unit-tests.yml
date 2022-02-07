@@ -16,7 +16,7 @@ on:
       - Gemfile.lock
       - .ruby-version
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
       - ios/**
@@ -37,6 +37,7 @@ concurrency:
 jobs:
   build:
     runs-on: macos-11
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v2
         with:
@@ -98,4 +99,5 @@ jobs:
         run: pod install
         working-directory: apps/bare-expo/ios
       - name: Run native iOS unit tests
+        timeout-minutes: 45
         run: expotools native-unit-tests --platform ios

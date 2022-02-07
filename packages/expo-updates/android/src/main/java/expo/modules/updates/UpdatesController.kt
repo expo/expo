@@ -56,10 +56,13 @@ class UpdatesController private constructor(
   private val databaseHandlerThread = HandlerThread("expo-updates-database")
   private lateinit var databaseHandler: Handler
   private fun initializeDatabaseHandler() {
-    databaseHandlerThread.start()
-    databaseHandler = Handler(databaseHandlerThread.looper)
+    if (!::databaseHandler.isInitialized) {
+      databaseHandlerThread.start()
+      databaseHandler = Handler(databaseHandlerThread.looper)
+    }
   }
 
+  private var isStarted = false
   private var loaderTask: LoaderTask? = null
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
@@ -81,7 +84,7 @@ class UpdatesController private constructor(
     private set
 
   fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    if (isEmergencyLaunch) {
+    if (isEmergencyLaunch || !updatesConfiguration.isEnabled) {
       return
     }
     errorRecovery.startMonitoring(reactInstanceManager)
@@ -191,8 +194,15 @@ class UpdatesController private constructor(
    */
   @Synchronized
   fun start(context: Context) {
+    if (isStarted) {
+      return
+    }
+    isStarted = true
+
     if (!updatesConfiguration.isEnabled) {
       launcher = NoDatabaseLauncher(context, updatesConfiguration)
+      notifyController()
+      return
     }
     if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
       throw AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.")
@@ -200,6 +210,8 @@ class UpdatesController private constructor(
     if (updatesDirectory == null) {
       launcher = NoDatabaseLauncher(context, updatesConfiguration, updatesDirectoryException)
       isEmergencyLaunch = true
+      notifyController()
+      return
     }
 
     initializeDatabaseHandler()
@@ -280,6 +292,9 @@ class UpdatesController private constructor(
 
   @Synchronized
   private fun notifyController() {
+    if (launcher == null) {
+      throw AssertionError("UpdatesController.notifyController was called with a null launcher, which is an error. This method should only be called when an update is ready to launch.")
+    }
     isLoaderTaskFinished = true
     (this as java.lang.Object).notify()
   }
@@ -444,8 +459,10 @@ class UpdatesController private constructor(
      * @param context the base context of the application, ideally a [ReactApplication]
      */
     @JvmStatic fun initialize(context: Context) {
-      initializeWithoutStarting(context)
-      singletonInstance!!.start(context)
+      if (singletonInstance == null) {
+        initializeWithoutStarting(context)
+        singletonInstance!!.start(context)
+      }
     }
 
     /**

@@ -10,7 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesUtils : NSObject
 
 + (void)runBlockOnMainThread:(void (^)(void))block;
-+ (NSString *)sha256WithData:(NSData *)data;
++ (NSString *)hexEncodedSHA256WithData:(NSData *)data;
++ (NSString *)base64UrlEncodedSHA256WithData:(NSData *)data;
 + (nullable NSURL *)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error;
 + (void)sendEventToBridge:(nullable RCTBridge *)bridge withType:(NSString *)eventType body:(NSDictionary *)body;
 + (BOOL)shouldCheckForUpdateWithConfig:(EXUpdatesConfig *)config;

@@ -10,3 +10,8 @@ export declare const projectPackageJsonPath: string;
  * - options provided to the CLI command
  */
 export declare function mergeLinkingOptionsAsync<OptionsType extends SearchOptions>(providedOptions: OptionsType): Promise<OptionsType>;
+/**
+ * Resolves autolinking search paths. If none is provided, it accumulates all node_modules when
+ * going up through the path components. This makes workspaces work out-of-the-box without any configs.
+ */
+export declare function resolveSearchPathsAsync(searchPaths: string[] | null, cwd: string): Promise<string[]>;

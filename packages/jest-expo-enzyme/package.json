@@ -45,7 +45,7 @@
     "jest-canvas-mock": "~2.2.0",
     "jest-enzyme": "~7.1.2",
     "jest-expo": "~44.0.0-beta.0",
-    "react-test-renderer": "~17.0.1"
+    "react-test-renderer": "~17.0.2"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.3",
@@ -55,5 +55,5 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo-enzyme"
 }

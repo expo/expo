@@ -22,7 +22,7 @@ public struct Promise: AnyArgument {
   }
 
   public func reject(_ error: Error) {
-    rejecter(UnexpectedError(error))
+    rejecter(UnexpectedException(error))
   }
 
   public func reject(_ error: CodedError) {

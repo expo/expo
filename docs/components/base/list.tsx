@@ -69,19 +69,38 @@ const STYLES_LIST_ITEM = css`
 `;
 
 const STYLE_RETURN_LIST = css`
-  list-style-type: '⇒';
+  list-style-type: '⮑';
   padding-left: 0.5rem;
+  margin-left: 0.25rem;
+
+  ::marker {
+    color: ${theme.icon.secondary};
+    font-size: 90%;
+  }
+`;
+
+const STYLE_PROP_LIST = css`
+  ::marker {
+    color: ${theme.text.secondary};
+    font-size: 125%;
+  }
 `;
 
 type LIProps = {
   returnType?: boolean;
-  customCss?: SerializedStyles | undefined;
+  propType?: boolean;
+  customCss?: SerializedStyles;
 };
 
-export const LI: React.FC<LIProps> = ({ children, returnType, customCss }) => {
+export const LI: React.FC<LIProps> = ({ children, returnType, propType, customCss }) => {
   return (
     <li
-      css={[STYLES_LIST_ITEM, returnType && STYLE_RETURN_LIST, customCss]}
+      css={[
+        STYLES_LIST_ITEM,
+        returnType && STYLE_RETURN_LIST,
+        propType && STYLE_PROP_LIST,
+        customCss,
+      ]}
       className="docs-list-item">
       {children}
     </li>

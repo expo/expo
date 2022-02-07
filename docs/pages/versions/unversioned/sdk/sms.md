@@ -1,6 +1,6 @@
 ---
 title: SMS
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sms'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sms'
 packageName: 'expo-sms'
 ---
 
