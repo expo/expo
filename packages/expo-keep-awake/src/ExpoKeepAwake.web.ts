@@ -2,7 +2,23 @@ import { CodedError, Platform, Subscription } from 'expo-modules-core';
 
 import { KeepAwakeEvent, KeepAwakeEventState } from './KeepAwake.types';
 
-const wakeLockMap: Record<string, any> = {};
+const wakeLockMap: Record<string, WakeLockSentinel> = {};
+
+type WakeLockSentinel = {
+  onrelease: null | ((event: any) => void);
+  released: boolean;
+  type: 'screen';
+  release?: Function;
+
+  addEventListener?: (event: string, listener: (event: any) => void) => void;
+  removeEventListener?: (event: string, listener: (event: any) => void) => void;
+};
+
+declare const navigator: {
+  wakeLock: {
+    request(type: 'screen'): Promise<WakeLockSentinel>;
+  };
+};
 
 /** Wraps the webWakeLock API https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API */
 export default {
@@ -16,7 +32,7 @@ export default {
     if (!Platform.isDOMAvailable) {
       return;
     }
-    const wakeLock = await (navigator as any).wakeLock.request('screen');
+    const wakeLock = await navigator.wakeLock.request('screen');
     wakeLockMap[tag] = wakeLock;
   },
   async deactivate(tag: string) {
@@ -24,8 +40,8 @@ export default {
       return;
     }
     if (wakeLockMap[tag]) {
-      wakeLockMap[tag].release();
-      wakeLockMap[tag] = null;
+      wakeLockMap[tag].release?.();
+      delete wakeLockMap[tag];
     } else {
       throw new CodedError(
         'ERR_KEEP_AWAKE_TAG_INVALID',
@@ -33,17 +49,27 @@ export default {
       );
     }
   },
-  addListener(tag: string, listener: (event: KeepAwakeEvent) => void): Subscription {
+  addListenerForTag(tag: string, listener: (event: KeepAwakeEvent) => void): Subscription {
     const eventListener = () => {
       listener({ state: KeepAwakeEventState.RELEASE });
     };
-    if (wakeLockMap[tag]) {
-      wakeLockMap[tag].addEventListener('release', eventListener);
+    const sentinel = wakeLockMap[tag];
+    if (sentinel) {
+      if ('addEventListener' in sentinel) {
+        sentinel.addEventListener?.('release', eventListener);
+      } else {
+        sentinel.onrelease = eventListener;
+      }
     }
     return {
       remove: () => {
-        if (wakeLockMap[tag]) {
-          wakeLockMap[tag].removeEventListener('release', eventListener);
+        const sentinel = wakeLockMap[tag];
+        if (sentinel) {
+          if (sentinel.removeEventListener) {
+            sentinel.removeEventListener('release', eventListener);
+          } else {
+            sentinel.onrelease = null;
+          }
         }
       },
     };

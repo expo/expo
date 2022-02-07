@@ -5,4 +5,5 @@ export declare type KeepAwakeEvent = {
 export declare enum KeepAwakeEventState {
     RELEASE = "release"
 }
+export declare type KeepAwakeListener = (event: KeepAwakeEvent) => void;
 //# sourceMappingURL=KeepAwake.types.d.ts.map

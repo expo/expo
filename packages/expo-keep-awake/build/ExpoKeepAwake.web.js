@@ -21,24 +21,36 @@ export default {
             return;
         }
         if (wakeLockMap[tag]) {
-            wakeLockMap[tag].release();
-            wakeLockMap[tag] = null;
+            wakeLockMap[tag].release?.();
+            delete wakeLockMap[tag];
         }
         else {
             throw new CodedError('ERR_KEEP_AWAKE_TAG_INVALID', `The wake lock with tag ${tag} has not activated yet`);
         }
     },
-    addListener(tag, listener) {
+    addListenerForTag(tag, listener) {
         const eventListener = () => {
             listener({ state: KeepAwakeEventState.RELEASE });
         };
         if (wakeLockMap[tag]) {
-            wakeLockMap[tag].addEventListener('release', eventListener);
+            const sentinel = wakeLockMap[tag];
+            if ('addEventListener' in sentinel) {
+                sentinel.addEventListener?.('release', eventListener);
+            }
+            else {
+                sentinel.onrelease = eventListener;
+            }
         }
         return {
             remove: () => {
-                if (wakeLockMap[tag]) {
-                    wakeLockMap[tag].removeEventListener('release', eventListener);
+                const sentinel = wakeLockMap[tag];
+                if (sentinel) {
+                    if (sentinel.removeEventListener) {
+                        sentinel.removeEventListener('release', eventListener);
+                    }
+                    else {
+                        sentinel.onrelease = null;
+                    }
                 }
             },
         };

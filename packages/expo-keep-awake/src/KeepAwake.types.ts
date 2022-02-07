@@ -8,3 +8,6 @@ export type KeepAwakeEvent = {
 export enum KeepAwakeEventState {
   RELEASE = 'release',
 }
+
+// @needsAudit
+export type KeepAwakeListener = (event: KeepAwakeEvent) => void;
