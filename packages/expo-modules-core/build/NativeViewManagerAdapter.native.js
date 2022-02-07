@@ -1,11 +1,11 @@
 import React from 'react';
-import { NativeModules, UIManager, requireNativeComponent } from 'react-native';
+import { NativeModules, requireNativeComponent } from 'react-native';
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
 export function requireNativeViewManager(viewName) {
     const { viewManagersMetadata } = NativeModules.NativeUnimoduleProxy;
-    const viewManagerConfig = viewManagersMetadata[viewName];
+    const viewManagerConfig = viewManagersMetadata?.[viewName];
     if (__DEV__ && !viewManagerConfig) {
         const exportedViewManagerNames = Object.keys(viewManagersMetadata).join(', ');
         console.warn(`The native view manager required by name (${viewName}) from NativeViewManagerAdapter isn't exported by expo-modules-core. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`);
@@ -14,14 +14,7 @@ export function requireNativeViewManager(viewName) {
     // manager
     const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
     const ReactNativeComponent = requireNativeComponent(reactNativeViewName);
-    const reactNativeUIConfiguration = (UIManager.getViewManagerConfig
-        ? UIManager.getViewManagerConfig(reactNativeViewName)
-        : UIManager[reactNativeViewName]) || {
-        NativeProps: {},
-        directEventTypes: {},
-    };
     const proxiedPropsNames = viewManagerConfig.propsNames;
-    console.log(viewName, { reactNativeUIConfiguration, viewManagersMetadata });
     // Define a component for universal-module authors to access their native view manager
     function NativeComponentAdapter(props, ref) {
         const nativeProps = omit(props, proxiedPropsNames);
