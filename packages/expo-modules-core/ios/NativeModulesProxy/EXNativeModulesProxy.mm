@@ -21,7 +21,7 @@
 #import <ExpoModulesCore/Swift.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
-static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
+static const NSString *viewManagersKeyPath = @"viewManagers";
 static const NSString *exportedConstantsKeyPath = @"modulesConstants";
 
 static const NSString *methodInfoKeyKey = @"key";
@@ -125,15 +125,19 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
   // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
-  NSMutableArray<NSString *> *viewManagersNames = [NSMutableArray arrayWithCapacity:[viewManagers count]];
+  NSMutableDictionary<NSString *, NSDictionary *> *viewManagersConfigs = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
+
   for (EXViewManager *viewManager in viewManagers) {
-    [viewManagersNames addObject:[viewManager viewName]];
+    viewManagersConfigs[viewManager.viewName] = @{
+      @"propsNames": [[viewManager getPropsNames] allKeys]
+    };
   }
 
-  [viewManagersNames addObjectsFromArray:[_swiftInteropBridge exportedViewManagersNames]];
+  // Add entries from Swift view managers
+  [viewManagersConfigs addEntriesFromDictionary:[_swiftInteropBridge viewManagersConfigs]];
 
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
-  constantsAccumulator[viewManagersNamesKeyPath] = viewManagersNames;
+  constantsAccumulator[viewManagersKeyPath] = viewManagersConfigs;
   constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
 

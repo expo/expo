@@ -83,9 +83,13 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func exportedViewManagersNames() -> [String] {
-    return registry.compactMap { holder in
-      return holder.definition.viewManager != nil ? holder.name : nil
+  public func viewManagersConfigs() -> [String: Any] {
+    return registry.reduce(into: [String: Any]()) { acc, holder in
+      if let viewManager = holder.definition.viewManager {
+        acc[holder.name] = [
+          "propsNames": viewManager.props.map { $0.name }
+        ]
+      }
     }
   }
 
