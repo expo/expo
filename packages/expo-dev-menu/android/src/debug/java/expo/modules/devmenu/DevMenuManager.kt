@@ -308,6 +308,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     )
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
+
+    hostReactContext
+      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      ?.emit("openDevMenu", null)
   }
 
   /**

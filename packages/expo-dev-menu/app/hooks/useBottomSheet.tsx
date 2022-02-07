@@ -42,8 +42,12 @@ export function BottomSheetProvider({ children }: BottomSheetProviderProps) {
 
   const callbackNode = React.useRef(new Value(0));
 
+  function hideApp() {
+    hideMenu();
+  }
+
   const trackCallbackNode = React.useRef(
-    onChange(callbackNode.current, cond(eq(callbackNode.current, 0), call([], hideMenu)))
+    onChange(callbackNode.current, cond(eq(callbackNode.current, 0), call([], hideApp)))
   );
 
   const backgroundOpacity = callbackNode.current.interpolate({

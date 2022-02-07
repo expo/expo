@@ -30,7 +30,7 @@ class DevLauncherDevMenuExtensions(
         return@export
       }
 
-      action("dev-launcher-back-to-launcher", {
+      action("backToLauncher", {
         controller?.navigateToLauncher()
       }) {
         isEnabled = { true }
