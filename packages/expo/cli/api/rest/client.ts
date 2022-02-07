@@ -9,7 +9,7 @@ import { getAccessToken, getSessionSecret } from '../user/sessionStorage';
 import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import { FetchLike } from './client.types';
-import { wrapFetchWithPrefixUrl } from './wrapFetchWithPrefixUrl';
+import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
@@ -86,7 +86,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
   };
 }
 
-const fetchWithBaseUrl = wrapFetchWithPrefixUrl(fetchInstance, getExpoApiBaseUrl() + '/v2');
+const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchInstance, getExpoApiBaseUrl() + '/v2');
 
 const fetchWithCredentials = wrapFetchWithCredentials(fetchWithBaseUrl);
 

@@ -1,29 +1,29 @@
 import { URLSearchParams } from 'url';
 
-import { wrapFetchWithPrefixUrl } from '../wrapFetchWithPrefixUrl';
+import { wrapFetchWithBaseUrl } from '../wrapFetchWithBaseUrl';
 
-describe(wrapFetchWithPrefixUrl, () => {
+describe(wrapFetchWithBaseUrl, () => {
   it(`supports relative paths`, async () => {
     const input = jest.fn();
-    const next = wrapFetchWithPrefixUrl(input, 'https://example.com/v2');
+    const next = wrapFetchWithBaseUrl(input, 'https://example.com/v2');
     await next('/test', {});
     expect(input).toBeCalledWith('https://example.com/v2/test', {});
   });
   it(`supports relative paths that don't begin with slash`, async () => {
     const input = jest.fn();
-    const next = wrapFetchWithPrefixUrl(input, 'https://example.com/v2');
+    const next = wrapFetchWithBaseUrl(input, 'https://example.com/v2');
     await next('test', {});
     expect(input).toBeCalledWith('https://example.com/v2test', {});
   });
   it(`supports absolute URLs`, async () => {
     const input = jest.fn();
-    const next = wrapFetchWithPrefixUrl(input, 'https://example.com/v2');
+    const next = wrapFetchWithBaseUrl(input, 'https://example.com/v2');
     await next('https://expo.dev/', {});
     expect(input).toBeCalledWith('https://expo.dev/', {});
   });
   it(`appends URLSearchParams to the URL`, async () => {
     const input = jest.fn();
-    const next = wrapFetchWithPrefixUrl(input, 'https://example.com/v2');
+    const next = wrapFetchWithBaseUrl(input, 'https://example.com/v2');
     await next('/test', {
       searchParams: new URLSearchParams({
         foo: 'bar',
@@ -33,7 +33,7 @@ describe(wrapFetchWithPrefixUrl, () => {
   });
   it(`does not support non-string URLs`, async () => {
     const input = jest.fn();
-    const next = wrapFetchWithPrefixUrl(input, 'https://example.com/v2');
+    const next = wrapFetchWithBaseUrl(input, 'https://example.com/v2');
     expect(() => next({ href: 'foo' }, {})).toThrow(/string URL/);
   });
 });
