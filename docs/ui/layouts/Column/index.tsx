@@ -18,7 +18,7 @@ export function ColumnLayout({ navigation, sidebar, children }: ColumnLayoutProp
     <div css={containerStyle}>
       <div css={navigationColumnStyle}>{navigation}</div>
       <div css={articleColumnStyle}>
-        <Scroll css={!sidebar && paddedArticleColumnStyle}>
+        <Scroll>
           <div css={contentBehaviorStyle}>{children}</div>
         </Scroll>
       </div>
@@ -50,15 +50,6 @@ const navigationColumnStyle = css({
 
 const articleColumnStyle = css({
   flex: 1,
-});
-
-const paddedArticleColumnStyle = css({
-  // Apply right padding to avoid jumping content when the sidebar is toggled hidden/visible
-  paddingRight: columnWidth,
-  // But when the sidebar should never be shown, don't add padding
-  [`@media screen and (max-width: ${sidebarMinimalWidth}px)`]: {
-    paddingRight: 0,
-  },
 });
 
 const sidebarColumnStyle = css({
