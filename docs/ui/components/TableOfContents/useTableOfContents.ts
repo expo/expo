@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
-type TableOfContentsOptions = {
+export type TableOfContentsOptions = {
   /** The root containing element to search for headings and observe them scrolling */
   root?: Element;
   /** The query selector to fetch all headings, defaults to `h2, h3` */
@@ -75,12 +75,12 @@ function useObserver(
       const visible = entries.filter(entry => entry.isIntersecting);
       if (visible.length === 1) {
         // TODO(cedric): move the heading id back the the heading element
-        onVisible(findHeadingId(visible[0].target));
+        onVisible(findHeadingId(visible[0].target as HTMLElement));
       } else if (visible.length > 1) {
         const sorted = visible.sort(
           (a, b) => observerables.indexOf(a.target) - observerables.indexOf(b.target)
         );
-        onVisible(findHeadingId(sorted[0].target));
+        onVisible(findHeadingId(sorted[0].target as HTMLElement));
       }
     },
     [onVisible, observerablesHash]
@@ -91,7 +91,7 @@ function useObserver(
       const observer = new IntersectionObserver(onObserve, {
         root,
         // TODO(cedric): make sure these margins are tweaked properly with the new heading components
-        rootMargin: '-25% 0px -25% 0px',
+        rootMargin: '-25% 0px -50% 0px',
       });
       observerables.forEach(observerable => observer.observe(observerable));
       return () => observer.disconnect();
@@ -101,9 +101,11 @@ function useObserver(
 }
 
 /**
- * Find the heading ID of a heading.
- * @todo move the heading id back the the heading element, making this function obsolete
+ * Get the ID by heading element.
+ * This is added by the PermaLink component.
+ * 
+ * @todo Try to just use ID instead of this workaround
  */
-export function findHeadingId(element: Element) {
-  return Array.from(element.getElementsByTagName('span')).find(span => span.id)!.id;
+export function findHeadingId(element: HTMLElement) {
+  return element.dataset.headingId!;
 }
