@@ -17,8 +17,8 @@ export function ColumnLayout({ navigation, sidebar, children }: ColumnLayoutProp
   return (
     <div css={containerStyle}>
       <div css={navigationColumnStyle}>{navigation}</div>
-      <div css={[articleColumnStyle, !sidebar && paddedArticleColumnStyle]}>
-        <Scroll>
+      <div css={articleColumnStyle}>
+        <Scroll css={!sidebar && paddedArticleColumnStyle}>
           <div css={contentBehaviorStyle}>{children}</div>
         </Scroll>
       </div>
