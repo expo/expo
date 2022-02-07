@@ -83,7 +83,7 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func viewManagersConfigs() -> [String: Any] {
+  public func viewManagersMetadata() -> [String: Any] {
     return registry.reduce(into: [String: Any]()) { acc, holder in
       if let viewManager = holder.definition.viewManager {
         acc[holder.name] = [

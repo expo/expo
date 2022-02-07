@@ -18,11 +18,11 @@ type NativeExpoComponentProps = {
  * A drop-in replacement for `requireNativeComponent`.
  */
 export function requireNativeViewManager<P = any>(viewName: string): React.ComponentType<P> {
-  const { viewManagers } = NativeModules.NativeUnimoduleProxy;
-  const viewManagerConfig = viewManagers[viewName];
+  const { viewManagersMetadata } = NativeModules.NativeUnimoduleProxy;
+  const viewManagerConfig = viewManagersMetadata[viewName];
 
   if (__DEV__ && !viewManagerConfig) {
-    const exportedViewManagerNames = Object.keys(viewManagers).join(', ');
+    const exportedViewManagerNames = Object.keys(viewManagersMetadata).join(', ');
     console.warn(
       `The native view manager required by name (${viewName}) from NativeViewManagerAdapter isn't exported by expo-modules-core. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`
     );
@@ -40,7 +40,7 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
     directEventTypes: {},
   };
   const proxiedPropsNames = viewManagerConfig.propsNames;
-  console.log(viewName, { reactNativeUIConfiguration, viewManagers });
+  console.log(viewName, { reactNativeUIConfiguration, viewManagersMetadata });
 
   // Define a component for universal-module authors to access their native view manager
   function NativeComponentAdapter(props, ref) {
