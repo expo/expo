@@ -22,6 +22,7 @@ export {
   GithubIcon,
   InfoIcon,
   SparklesIcon,
+  TriangleDownIcon,
   TwitterIcon,
   WarningIcon,
 } from '@expo/styleguide';

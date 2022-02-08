@@ -4,7 +4,7 @@ import { Blockquote } from './Blockquote';
 
 import { P } from '~/ui/components/Text';
 
-describe('Blockquote', () => {
+describe(Blockquote, () => {
   it('renders with default info icon', () => {
     const { getByTitle } = render(<Blockquote>Hello</Blockquote>);
     expect(getByTitle('Info-icon')).toBeInTheDocument();
