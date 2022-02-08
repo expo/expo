@@ -15,7 +15,7 @@ jest.mock('fs');
 jest.mock('axios');
 jest.mock('../../../api/user/sessionStorage');
 jest.mock('../../../api/user/user');
-jest.mock('../ExpoConfigSchema', () => {
+jest.mock('../../../api/getExpoSchema', () => {
   return {
     getAssetSchemasAsync() {
       return ['icon', 'splash.image'];

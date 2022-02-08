@@ -6,15 +6,7 @@ import * as UrlUtils from '../serverUrl';
 jest.mock('../api/ProcessSettings');
 jest.mock('fs');
 jest.mock('resolve-from');
-
 jest.mock('../../utils/ip');
-
-// jest.mock('@expo/image-utils', () => ({
-//   generateImageAsync(input, { src }) {
-//     const fs = require('fs');
-//     return { source: fs.readFileSync(src) };
-//   },
-// }));
 
 afterAll(() => {
   jest.unmock('resolve-from');

@@ -1,4 +1,4 @@
-import * as ExpoConfigSchema from '../ExpoConfigSchema';
+import { getAssetSchemasAsync } from '../getExpoSchema';
 
 describe(`getAssetSchemasAsync return array of strings including some known values`, () => {
   test.each([
@@ -11,7 +11,7 @@ describe(`getAssetSchemasAsync return array of strings including some known valu
       ['icon', 'notification.icon', 'splash.image', 'ios.splash.xib', 'android.splash.xxhdpi'],
     ],
   ])('for SDK %s', async (sdkVersion, expectedAssetsPaths) => {
-    const schemas = await ExpoConfigSchema.getAssetSchemasAsync(sdkVersion);
+    const schemas = await getAssetSchemasAsync(sdkVersion);
     expect(schemas.every((field) => typeof field === 'string')).toBe(true);
     for (const el of expectedAssetsPaths) {
       expect(schemas).toContain(el);

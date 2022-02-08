@@ -35,6 +35,7 @@ interface ProcessSettings {
   maxMetroWorkers?: number;
 }
 
+// TODO: Combine with endpoint.ts
 function getAPI(): ApiConfig {
   if (EXPO_LOCAL) {
     return {

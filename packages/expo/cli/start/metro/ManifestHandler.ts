@@ -7,6 +7,7 @@ import os from 'os';
 import { parse, resolve } from 'url';
 
 import { fetchAsync } from '../../api/rest/client';
+import { signExpoGoManifestAsync } from '../../api/signManifest';
 import { ensureLoggedInAsync } from '../../api/user/actions';
 import { ANONYMOUS_USERNAME, getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
@@ -367,20 +368,8 @@ export async function getSignedManifestStringAsync(manifest: Partial<ExpoAppMani
   if (cachedSignedManifest.manifestString === manifestString) {
     return cachedSignedManifest.signedManifest;
   }
-  await ensureLoggedInAsync();
-  const res = await fetchAsync('/manifest/sign', {
-    method: 'POST',
-    body: JSON.stringify({
-      args: {
-        remoteUsername: manifest.owner ?? getActorDisplayName(await getUserAsync()),
-        remotePackageName: manifest.slug,
-      },
-      manifest: manifest as JSONObject,
-    }),
-  });
-  const { data } = await res.json();
+  const response = await signExpoGoManifestAsync(manifest);
 
-  const response = data.response;
   cachedSignedManifest.manifestString = manifestString;
   cachedSignedManifest.signedManifest = response;
   return response;

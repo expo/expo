@@ -4,9 +4,9 @@ import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
-import { createCachedFetch } from '../../api/rest/client';
-import { EXPO_UNIVERSE_DIR, LOCAL_XDL_SCHEMA } from '../../utils/env';
-import { CommandError } from '../../utils/errors';
+import { EXPO_UNIVERSE_DIR, LOCAL_XDL_SCHEMA } from '../utils/env';
+import { CommandError } from '../utils/errors';
+import { createCachedFetch } from './rest/client';
 
 export type Schema = any;
 export type AssetSchema = {
@@ -75,14 +75,14 @@ async function getSchemaJSONAsync(sdkVersion: string): Promise<{ schema: Schema 
   return schemaJson[sdkVersion];
 }
 
-const fetch = createCachedFetch({
+const fetchAsync = createCachedFetch({
   cacheDirectory: 'schema-cache',
   // We'll use a 1 week cache for versions so older versions get flushed out eventually.
   ttl: 1000 * 60 * 60 * 24 * 7,
 });
 
 async function getConfigurationSchemaAsync(sdkVersion: string): Promise<JSONObject> {
-  const response = await fetch(`/project/configuration/schema/${sdkVersion}`);
+  const response = await fetchAsync(`project/configuration/schema/${sdkVersion}`);
   const { data } = await response.json();
   return data;
 }

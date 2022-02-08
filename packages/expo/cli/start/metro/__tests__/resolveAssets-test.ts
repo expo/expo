@@ -1,5 +1,6 @@
-import { resolveManifestAssets, getAssetFieldPathsForManifestAsync } from '../resolveAssets';
-jest.mock('../ExpoConfigSchema', () => ({
+import { getAssetFieldPathsForManifestAsync } from '../resolveAssets';
+
+jest.mock('../../../api/getExpoSchema', () => ({
   getAssetSchemasAsync() {
     return [
       'icon',

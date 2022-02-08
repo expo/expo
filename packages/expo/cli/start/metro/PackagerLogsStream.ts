@@ -2,14 +2,13 @@ import bunyan from '@expo/bunyan';
 import { JSONObject } from '@expo/json-file';
 import chalk from 'chalk';
 import path from 'path';
-import { EXPO_DEBUG } from '../../utils/env';
 import ProgressBar from 'progress';
 
-import { getLogger, LogFields } from '../logger';
-import { setProgressBar } from '../../utils/progress';
-import StatusEventEmitter from '../../utils/analytics/StatusEventEmitter';
-
 import * as Log from '../../log';
+import StatusEventEmitter from '../../utils/analytics/StatusEventEmitter';
+import { EXPO_DEBUG } from '../../utils/env';
+import { setProgressBar } from '../../utils/progress';
+import { getLogger, LogFields } from '../logger';
 
 type BuildEventType =
   | 'METRO_INITIALIZE_STARTED'

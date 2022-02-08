@@ -6,14 +6,21 @@ const defaultOptions: ExecSyncOptionsWithStringEncoding = {
   stdio: ['pipe', 'pipe', 'ignore'],
 };
 
-function getPID(port: number) {
-  return execFileSync('lsof', [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'], defaultOptions)
-    .split('\n')[0]
-    .trim();
+/** Returns a pid value for a running port like `63828` or null if nothing is running on the given port. */
+function getPID(port: number): number | null {
+  try {
+    const results = execFileSync('lsof', [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'], defaultOptions)
+      .split('\n')[0]
+      .trim();
+    return Number(results);
+  } catch {
+    return null;
+  }
 }
 
+/** Get `package.json` `name` field for a given directory. Returns `null` if none exist. */
 function getPackageName(packageRoot: string): string | null {
-  const packageJson = path.join(packageRoot.trim(), 'package.json');
+  const packageJson = path.join(packageRoot, 'package.json');
   try {
     return require(packageJson).name || null;
   } catch {
@@ -21,28 +28,40 @@ function getPackageName(packageRoot: string): string | null {
   }
 }
 
-function getProcessCommand(pid: string, procDirectory: string): string {
-  const results = execSync(`ps -o command -p ${pid} | sed -n 2p`, defaultOptions)
-    .replace(/\n$/, '')
-    .trim();
-
+/** Returns a command like `node /Users/evanbacon/.../bin/expo start` or the package.json name. */
+function getProcessCommand(pid: number, procDirectory: string): string {
   const name = getPackageName(procDirectory);
-  return name ? name : results;
+
+  if (name) {
+    return name;
+  }
+  return execSync(`ps -o command -p ${pid} | sed -n 2p`, defaultOptions).replace(/\n$/, '').trim();
 }
 
-function getDirectoryOfProcessById(processId: string): string {
+/** Get directory for a given process ID.  */
+function getDirectoryOfProcessById(processId: number): string {
   return execSync(
-    'lsof -p ' + processId + ' | awk \'$4=="cwd" {for (i=9; i<=NF; i++) printf "%s ", $i}\'',
+    `lsof -p ${processId} | awk '$4=="cwd" {for (i=9; i<=NF; i++) printf "%s ", $i}'`,
     defaultOptions
   ).trim();
 }
 
-export function getRunningProcess(
-  port: number
-): { pid: string; directory: string; command: string } | null {
+/** Get information about a running process given a port. Returns null if no process is running on the given port. */
+export function getRunningProcess(port: number): {
+  /** The PID value for the port. */
+  pid: number;
+  /** Get the directory for the running process. */
+  directory: string;
+  /** The command running the process like `node /Users/evanbacon/.../bin/expo start` or the `package.json` name like `my-app`. */
+  command: string;
+} | null {
+  // 63828
+  const pid = getPID(port);
+  if (!pid) {
+    return null;
+  }
+
   try {
-    // 63828
-    const pid = getPID(port);
     // /Users/evanbacon/Documents/GitHub/lab/myapp
     const directory = getDirectoryOfProcessById(pid);
     // /Users/evanbacon/Documents/GitHub/lab/myapp/package.json

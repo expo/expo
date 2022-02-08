@@ -3,12 +3,12 @@ import { BundleAssetWithFileHashes } from '@expo/dev-server';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { getAssetSchemasAsync } from '../../api/getExpoSchema';
 import * as Log from '../../log';
 import { fileExistsAsync } from '../../utils/dir';
 import { CommandError } from '../../utils/errors';
 import { get, set } from '../../utils/obj';
-import { isUrl } from '../../utils/url';
-import * as ExpoConfigSchema from './ExpoConfigSchema';
+import { validateUrl } from '../../utils/url';
 
 type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 
@@ -45,7 +45,7 @@ export async function resolveGoogleServicesFile(projectRoot: string, manifest: E
  */
 export async function getAssetFieldPathsForManifestAsync(manifest: ExpoConfig): Promise<string[]> {
   // String array like ["icon", "notification.icon", "loading.icon", "loading.backgroundImage", "ios.icon", ...]
-  const sdkAssetFieldPaths = await ExpoConfigSchema.getAssetSchemasAsync(manifest.sdkVersion);
+  const sdkAssetFieldPaths = await getAssetSchemasAsync(manifest.sdkVersion);
   return sdkAssetFieldPaths.filter((assetSchema) => get(manifest, assetSchema));
 }
 
@@ -68,7 +68,7 @@ export async function resolveManifestAssets(
       assetSchemas.map(async (manifestField) => {
         const pathOrURL = get(manifest, manifestField);
         // URL
-        if (isUrl(pathOrURL)) {
+        if (validateUrl(pathOrURL, { requireProtocol: true })) {
           return pathOrURL;
         }
 
