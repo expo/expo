@@ -15,7 +15,7 @@ import {
 } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
-import { RecordingOptions, RecordingStatus } from './Recording.types';
+import { RecordingInput, RecordingOptions, RecordingStatus } from './Recording.types';
 import { RECORDING_OPTIONS_PRESET_LOW_QUALITY } from './RecordingConstants';
 import { Sound } from './Sound';
 
@@ -233,6 +233,18 @@ export class Recording {
     } else {
       throw new Error('This Recording object is already prepared to record.');
     }
+  }
+
+  async getAvailableInputs(): Promise<RecordingInput[]> {
+    return ExponentAV.getAvailableInputs();
+  }
+
+  async getCurrentInput(): Promise<RecordingInput> {
+    return ExponentAV.getCurrentInput();
+  }
+
+  async setInput(inputUid: string): Promise<void> {
+    return ExponentAV.setInput(inputUid);
   }
 
   async startAsync(): Promise<RecordingStatus> {

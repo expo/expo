@@ -1,6 +1,6 @@
 import { PermissionResponse, PermissionStatus, PermissionHookOptions, Subscription } from 'expo-modules-core';
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
-import { RecordingOptions, RecordingStatus } from './Recording.types';
+import { RecordingInput, RecordingOptions, RecordingStatus } from './Recording.types';
 import { Sound } from './Sound';
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
@@ -38,6 +38,9 @@ export declare class Recording {
     setOnRecordingStatusUpdate(onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null): void;
     setProgressUpdateInterval(progressUpdateIntervalMillis: number): void;
     prepareToRecordAsync(options?: RecordingOptions): Promise<RecordingStatus>;
+    getAvailableInputs(): Promise<RecordingInput[]>;
+    getCurrentInput(): Promise<RecordingInput>;
+    setInput(inputUid: string): Promise<void>;
     startAsync(): Promise<RecordingStatus>;
     pauseAsync(): Promise<RecordingStatus>;
     stopAndUnloadAsync(): Promise<RecordingStatus>;

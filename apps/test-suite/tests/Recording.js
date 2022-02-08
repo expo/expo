@@ -205,6 +205,52 @@ export async function test(t) {
       });
     });*/
 
+    t.describe('Recording.getAvailableInputs()', () => {
+      t.afterEach(async () => {
+        await recordingObject.startAsync();
+        await waitFor(defaultRecordingDurationMillis);
+        await recordingObject.stopAndUnloadAsync();
+      });
+
+      t.it('returns a list of available recording inputs', async () => {
+        await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
+
+        const inputs = await recordingObject.getAvailableInputs();
+        t.expect(inputs.length).toBeGreaterThan(0);
+      });
+    });
+
+    t.describe('Recording.getCurrentInput()', () => {
+      t.afterEach(async () => {
+        await recordingObject.startAsync();
+        await waitFor(defaultRecordingDurationMillis);
+        await recordingObject.stopAndUnloadAsync();
+      });
+      t.it('returns the currently-selected recording input', async () => {
+        await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
+
+        const input = await recordingObject.getCurrentInput();
+        t.expect(input).toBeDefined();
+      });
+    });
+
+    t.describe('Recording.setInput()', () => {
+      t.afterEach(async () => {
+        await recordingObject.startAsync();
+        await waitFor(defaultRecordingDurationMillis);
+        await recordingObject.stopAndUnloadAsync();
+      });
+      t.it('sets the recording input', async () => {
+        await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
+
+        const inputs = await recordingObject.getAvailableInputs();
+        const initialInput = inputs[0];
+        await recordingObject.setInput(initialInput.uid);
+        const currentInput = await recordingObject.getCurrentInput();
+        t.expect(currentInput.uid).toEqual(initialInput.uid);
+      });
+    });
+
     t.describe('Recording.startAsync()', () => {
       t.afterEach(async () => {
         await waitFor(defaultRecordingDurationMillis);
