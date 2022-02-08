@@ -60,7 +60,6 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    controller.maybeSynchronizeDevMenuDelegate()
     reactInstanceManager.currentReactContext?.let {
       onReactContextInitialized(it)
       return
@@ -89,8 +88,6 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   }
 
   private fun setUpDevMenuDelegateIfPresent(context: ReactContext) {
-    controller.maybeInitDevMenuDelegate(context)
-
     val devMenuManagerProvider = context
       .catalystInstance
       .nativeModules

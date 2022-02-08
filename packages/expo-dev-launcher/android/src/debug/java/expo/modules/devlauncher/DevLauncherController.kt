@@ -10,8 +10,6 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
-import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuManagerProviderInterface
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.replaceEXPScheme
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
@@ -34,7 +32,7 @@ import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
-import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
+import expo.modules.devmenu.DevMenuManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
@@ -56,8 +54,6 @@ private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
   Intent.FLAG_ACTIVITY_NO_ANIMATION
 
-private var MenuDelegateWasInitialized = false
-
 class DevLauncherController private constructor()
   : DevLauncherKoinComponent, DevLauncherControllerInterface {
   private val context: Context by lazy {
@@ -69,7 +65,7 @@ class DevLauncherController private constructor()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
   private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
-  var devMenuManager: DevMenuManagerInterface? = null
+  val devMenuManager: DevMenuManager = DevMenuManager
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
     set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
@@ -144,9 +140,6 @@ class DevLauncherController private constructor()
   }
 
   override fun onAppLoaded(context: ReactContext) {
-    // App can be started from deep link.
-    // That's why, we maybe need to initialized dev menu here.
-    maybeInitDevMenuDelegate(context)
     synchronized(this) {
       appIsLoading = false
     }
@@ -179,7 +172,7 @@ class DevLauncherController private constructor()
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
           canLaunchDevMenuOnStart = false
-          this.devMenuManager?.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
+          this.devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
         }
 
         if (!isDevLauncherUrl(uri)) {
@@ -225,31 +218,6 @@ class DevLauncherController private constructor()
     }
   }
 
-  override fun maybeSynchronizeDevMenuDelegate() {
-    val devMenuManager = this.devMenuManager
-    if (MenuDelegateWasInitialized && devMenuManager != null) {
-      devMenuManager.synchronizeDelegate()
-    }
-  }
-
-  override fun maybeInitDevMenuDelegate(context: ReactContext) {
-    if (MenuDelegateWasInitialized) {
-      return
-    }
-    MenuDelegateWasInitialized = true
-
-    val devMenuManagerProvider = context
-      .catalystInstance
-      .nativeModules
-      .find { nativeModule ->
-        nativeModule is DevMenuManagerProviderInterface
-      } as? DevMenuManagerProviderInterface
-
-    val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
-    devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
-    devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
-    this.devMenuManager = devMenuManager
-  }
 
   @UiThread
   private fun clearHost(host: ReactNativeHost, activityToBeInvalidated: ReactActivity?) {
@@ -340,7 +308,6 @@ class DevLauncherController private constructor()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }
       }
-      MenuDelegateWasInitialized = false
       DevLauncherKoinContext.app.koin.loadModules(listOf(
         module {
           single { context }
