@@ -3,7 +3,6 @@ import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguid
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import { HEADLINE } from '~/ui/components/Text';
-import { durations } from '~/ui/foundations/durations';
 import { TriangleDownIcon } from '~/ui/foundations/icons';
 
 type CollapsibleProps = PropsWithChildren<{
@@ -65,7 +64,7 @@ const markerStyle = css({
   flexShrink: 0,
   marginRight: spacing[1.5],
   transform: 'rotate(-90deg)',
-  transition: `transform ${durations.hover}`,
+  transition: `transform 200ms`,
 
   'details[open] &': { transform: 'rotate(0)' },
 });
