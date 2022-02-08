@@ -34,8 +34,6 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
   const properties = children?.filter(isProp);
   const methods = children?.filter(isMethod);
 
-  console.warn(clx);
-
   return (
     <div key={`class-definition-${name}`}>
       {hasMultipleClasses ? (
