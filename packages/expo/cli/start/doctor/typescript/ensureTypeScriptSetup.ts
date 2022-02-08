@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 import wrapAnsi from 'wrap-ansi';
+import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 
 import * as Log from '../../../log';
 import { CI, EXPO_DEBUG, EXPO_NO_TYPESCRIPT_SETUP } from '../../../utils/env';
@@ -11,7 +12,6 @@ import { CommandError } from '../../../utils/errors';
 import { logNewSection } from '../../../utils/ora';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
-import * as Versions from '../../api/Versions';
 import {
   collectMissingPackages,
   hasTSConfig,
@@ -68,11 +68,11 @@ export async function shouldSetupTypeScriptAsync(
   return null;
 }
 
-async function getSDKVersionsAsync(projectRoot: string): Promise<Versions.SDKVersion | null> {
+async function getSDKVersionsAsync(projectRoot: string): Promise<SDKVersion | null> {
   try {
     const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
     if (exp.sdkVersion) {
-      const sdkVersions = await Versions.getReleasedVersionsAsync();
+      const sdkVersions = await getReleasedVersionsAsync();
       return sdkVersions[exp.sdkVersion] ?? null;
     }
   } catch {

@@ -1,5 +1,5 @@
 import * as Log from '../../log';
-import { downloadExpoGoForPlatformAsync } from '../../utils/downloadAppAsync';
+import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
 import { logNewSection } from '../../utils/ora';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
 
@@ -56,7 +56,7 @@ export async function installExpoAsync({
   };
 
   warningTimer = setWarningTimer();
-  const binaryPath = await downloadExpoGoForPlatformAsync('android');
+  const binaryPath = await downloadExpoGoAsync('android');
 
   const message = version
     ? `Installing Expo Go ${version} on ${device.name}`

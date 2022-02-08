@@ -2,10 +2,10 @@ import { ExpoConfig } from '@expo/config';
 import os from 'os';
 import { URLSearchParams } from 'url';
 
+import { fetchAsync } from '../../api/rest/client';
+import { getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
-import { fetch } from '../../utils/fetch-api';
-import { getUserAsync } from '../../utils/user/user';
 import { constructDeepLink } from '../serverUrl';
 import * as WebpackDevServer from '../webpack/WebpackDevServer';
 import ProcessSettings from './ProcessSettings';
@@ -123,7 +123,7 @@ async function notifyAliveAsync({
     searchParams.append('deviceId', id);
   });
 
-  await fetch('/development-sessions/notify-alive', {
+  await fetchAsync('/development-sessions/notify-alive', {
     searchParams,
     method: 'POST',
     body: JSON.stringify({

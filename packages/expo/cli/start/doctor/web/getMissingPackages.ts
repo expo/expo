@@ -1,7 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import resolveFrom from 'resolve-from';
-
-import * as Versions from '../../api/Versions';
+import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 
 export type ResolvedPackage = {
   file: string;
@@ -65,10 +64,10 @@ export async function getMissingPackagesAsync(
   return results;
 }
 
-async function getSDKVersionsAsync(exp: ExpoConfig): Promise<Versions.SDKVersion | null> {
+async function getSDKVersionsAsync(exp: ExpoConfig): Promise<SDKVersion | null> {
   try {
     if (exp.sdkVersion) {
-      const sdkVersions = await Versions.getReleasedVersionsAsync();
+      const sdkVersions = await getReleasedVersionsAsync();
       return sdkVersions[exp.sdkVersion] ?? null;
     }
   } catch {

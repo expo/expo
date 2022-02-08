@@ -6,13 +6,13 @@ import http from 'http';
 import os from 'os';
 import { parse, resolve } from 'url';
 
+import { fetchAsync } from '../../api/rest/client';
+import { ensureLoggedInAsync } from '../../api/user/actions';
+import { ANONYMOUS_USERNAME, getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import { fetch } from '../../utils/fetch-api';
 import { learnMore } from '../../utils/link';
 import { stripPort } from '../../utils/url';
-import { ensureLoggedInAsync } from '../../utils/user/actions';
-import { ANONYMOUS_USERNAME, getActorDisplayName, getUserAsync } from '../../utils/user/user';
 import ProcessSettings from '../api/ProcessSettings';
 import * as ProjectDevices from '../api/ProjectDevices';
 import UserSettings from '../api/UserSettings';
@@ -368,7 +368,7 @@ export async function getSignedManifestStringAsync(manifest: Partial<ExpoAppMani
     return cachedSignedManifest.signedManifest;
   }
   await ensureLoggedInAsync();
-  const res = await fetch('/manifest/sign', {
+  const res = await fetchAsync('/manifest/sign', {
     method: 'POST',
     body: JSON.stringify({
       args: {

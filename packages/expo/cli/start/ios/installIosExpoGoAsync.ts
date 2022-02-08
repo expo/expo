@@ -1,12 +1,13 @@
 import semver from 'semver';
+import { getVersionsAsync } from '../../api/getVersions';
 
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
-import { downloadExpoGoForPlatformAsync } from '../../utils/downloadAppAsync';
+import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
 import { logNewSection } from '../../utils/ora';
 import { profile } from '../../utils/profile';
 import { confirmAsync } from '../../utils/prompts';
-import * as Versions from '../api/Versions';
+
 import * as SimControl from './SimControl';
 
 export const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
@@ -61,7 +62,7 @@ async function doesExpoClientNeedUpdatedAsync(
 ): Promise<boolean> {
   // Test that upgrading works by returning true
   // return true;
-  const versions = await profile(Versions.getVersionsAsync)();
+  const versions = await profile(getVersionsAsync)();
   const clientForSdk = await profile(getClientForSDK)(sdkVersion);
   const latestVersionForSdk = clientForSdk?.version ?? versions.iosVersion;
 
@@ -96,7 +97,7 @@ async function installExpoOnSimulatorAsync({
   };
   warningTimer = setWarningTimer();
 
-  const dir = await downloadExpoGoForPlatformAsync('ios', { url });
+  const dir = await downloadExpoGoAsync('ios', { url });
 
   const message = version
     ? `Installing Expo Go ${version} on ${simulator.name}`
@@ -147,7 +148,7 @@ async function getClientForSDK(sdkVersionString?: string) {
     return null;
   }
 
-  const sdkVersion = (await Versions.getVersionsAsync())[sdkVersionString];
+  const sdkVersion = (await getVersionsAsync())[sdkVersionString];
   if (!sdkVersion) {
     return null;
   }

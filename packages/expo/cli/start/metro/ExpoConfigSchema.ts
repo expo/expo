@@ -4,9 +4,9 @@ import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
+import { createCachedFetch } from '../../api/rest/client';
 import { EXPO_UNIVERSE_DIR, LOCAL_XDL_SCHEMA } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { createCachedFetch } from '../../utils/fetch-api';
 
 export type Schema = any;
 export type AssetSchema = {

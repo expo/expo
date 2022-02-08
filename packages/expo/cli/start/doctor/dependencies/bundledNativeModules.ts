@@ -2,9 +2,9 @@ import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
+import { createCachedFetch } from '../../../api/rest/client';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import { createCachedFetch } from '../../../utils/fetch-api';
 
 interface NativeModule {
   npmPackage: string;

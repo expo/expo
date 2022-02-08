@@ -6,12 +6,12 @@ import http from 'http';
 import { parse } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 
+import { fetchAsync } from '../../api/rest/client';
+import { ensureLoggedInAsync } from '../../api/user/actions';
+import { ANONYMOUS_USERNAME, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import { fetch } from '../../utils/fetch-api';
 import { stripPort } from '../../utils/url';
-import { ensureLoggedInAsync } from '../../utils/user/actions';
-import { ANONYMOUS_USERNAME, getUserAsync } from '../../utils/user/user';
 import ProcessSettings from '../api/ProcessSettings';
 import UserSettings from '../api/UserSettings';
 import { constructHostUri, stripJSExtension } from '../serverUrl';
@@ -38,7 +38,7 @@ async function shouldUseAnonymousManifestAsync(
 
 async function getScopeKeyForProjectIdAsync(projectId: string): Promise<string> {
   await ensureLoggedInAsync();
-  const response = await fetch(`/projects/${encodeURIComponent(projectId)}`, {
+  const response = await fetchAsync(`/projects/${encodeURIComponent(projectId)}`, {
     method: 'GET',
   });
   const { data } = await response.json();

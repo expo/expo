@@ -2,10 +2,11 @@ import assert from 'assert';
 import nock from 'nock';
 import { FetchError } from 'node-fetch';
 
-import { ApiV2Error, fetch, getExpoApiBaseUrl } from '../fetch-api';
-import { getAccessToken, getSessionSecret } from '../user/sessionStorage';
+import { getExpoApiBaseUrl } from '../../api/endpoint';
+import { ApiV2Error } from '../../api/rest/client';
+import { getAccessToken, getSessionSecret } from '../../api/user/sessionStorage';
 
-jest.mock('../user/sessionStorage');
+jest.mock('../../api/user/sessionStorage');
 const asMock = (fn: any): jest.Mock => fn as jest.Mock;
 
 beforeEach(() => {

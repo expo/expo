@@ -12,7 +12,6 @@ import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import { confirmAsync } from '../../utils/prompts';
-import * as Versions from '../api/Versions';
 import { getNativeDevServerPort } from '../devServer';
 import * as UrlUtils from '../serverUrl';
 import { isDevClientPackageInstalled } from '../startAsync';
@@ -25,6 +24,7 @@ import {
   uninstallExpoAsync,
 } from './installAndroidExpoGoAsync';
 import { promptForDeviceAsync } from './promptAndroidDeviceAsync';
+import { getVersionsAsync } from '../../api/getVersions';
 
 const EMULATOR_MAX_WAIT_TIMEOUT = 60 * 1000 * 3;
 
@@ -188,7 +188,7 @@ async function isClientOutdatedAsync(
   device: AndroidDeviceBridge.Device,
   sdkVersion?: string
 ): Promise<boolean> {
-  const versions = await Versions.getVersionsAsync();
+  const versions = await getVersionsAsync();
   const clientForSdk = await getClientForSDK(sdkVersion);
   const latestVersionForSdk = clientForSdk?.version ?? versions.androidVersion;
   const installedVersion = await getExpoVersionAsync(device);
@@ -270,7 +270,7 @@ async function getClientForSDK(sdkVersionString?: string) {
     return null;
   }
 
-  const sdkVersion = (await Versions.getVersionsAsync())[sdkVersionString];
+  const sdkVersion = (await getVersionsAsync())[sdkVersionString];
   if (!sdkVersion) {
     return null;
   }

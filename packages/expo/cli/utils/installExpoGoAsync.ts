@@ -1,9 +1,9 @@
-import * as SimControl from '../start/ios/SimControl';
 import * as Log from '../log';
-import { downloadExpoGoForPlatformAsync } from './downloadAppAsync';
-import { logNewSection } from './ora';
-import { Device } from '../start/android/Android';
+import { Device } from '../start/android/AndroidDeviceBridge';
 import * as AndroidDeviceBridge from '../start/android/AndroidDeviceBridge';
+import * as SimControl from '../start/ios/SimControl';
+import { downloadExpoGoAsync } from './downloadExpoGoAsync';
+import { logNewSection } from './ora';
 
 const INSTALL_WARNING_TIMEOUT = 60 * 1000;
 
@@ -29,7 +29,7 @@ export async function installExpoOnSimulatorAsync({
   };
   warningTimer = setWarningTimer();
 
-  const dir = await downloadExpoGoForPlatformAsync('ios');
+  const dir = await downloadExpoGoAsync('ios');
 
   const message = version
     ? `Installing Expo Go ${version} on ${simulator.name}`
@@ -67,7 +67,7 @@ export async function installExpoGoOnAndroidAsync({
   };
 
   warningTimer = setWarningTimer();
-  const binaryPath = await downloadExpoGoForPlatformAsync('android');
+  const binaryPath = await downloadExpoGoAsync('android');
 
   const message = version
     ? `Installing Expo Go ${version} on ${device.name}`

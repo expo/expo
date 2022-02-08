@@ -1,6 +1,6 @@
 import nock from 'nock';
 
-import { getExpoApiBaseUrl } from '../../../utils/fetch-api';
+import { getExpoApiBaseUrl } from '../../../api/endpoint';
 import { constructDeepLink } from '../../serverUrl';
 import * as ProjectDevices from '../ProjectDevices';
 import { startDevSessionAsync, stopDevSession } from '../startDevSession';

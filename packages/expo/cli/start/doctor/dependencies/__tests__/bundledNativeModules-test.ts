@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import nock from 'nock';
 import path from 'path';
 
-import { getExpoApiBaseUrl } from '../../../../utils/fetch-api';
+import { getExpoApiBaseUrl } from '../../../../api/endpoint';
 import { getBundledNativeModulesAsync } from '../bundledNativeModules';
 
 jest.mock('fs');

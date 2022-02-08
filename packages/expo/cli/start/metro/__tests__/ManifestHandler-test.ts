@@ -4,8 +4,8 @@ import { vol } from 'memfs';
 import nock from 'nock';
 import path from 'path';
 
-import { getExpoApiBaseUrl } from '../../../utils/fetch-api';
-import { getAccessToken } from '../../../utils/user/sessionStorage';
+import { getExpoApiBaseUrl } from '../../../api/endpoint';
+import { getAccessToken } from '../../../api/user/sessionStorage';
 import UserSettings from '../../api/UserSettings';
 import * as ManifestHandler from '../ManifestHandler';
 
@@ -13,8 +13,8 @@ const actualFs = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 jest.mock('axios');
-jest.mock('../../../utils/user/sessionStorage');
-jest.mock('../../../utils/user/user');
+jest.mock('../../../api/user/sessionStorage');
+jest.mock('../../../api/user/user');
 jest.mock('../ExpoConfigSchema', () => {
   return {
     getAssetSchemasAsync() {
