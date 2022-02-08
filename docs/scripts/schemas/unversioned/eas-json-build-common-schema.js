@@ -26,7 +26,7 @@ export default [
     name: 'distribution',
     enum: [ 'store', 'internal' ],
     description: [ 'The method of distributing your app.',
-      '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When using `internal`, make sure the build produces an APK or IPA file. Otherwise, the sharable URL will be useless. [Learn more about internal distribution](../internal-distribution).',
+      '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When using `internal`, make sure the build produces an APK or IPA file. Otherwise, the sharable URL will be useless. [Learn more about internal distribution](../../build/internal-distribution).',
       ' - `store` - produces builds for store uploads, your build URLs won\'t be sharable.'
     ]
   },
