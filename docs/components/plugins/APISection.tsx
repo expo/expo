@@ -10,7 +10,7 @@ import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces'
 import APISectionMethods from '~/components/plugins/api/APISectionMethods';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { TypeDocKind, getComponentName } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
 
 const LATEST_VERSION = `v${require('~/package.json').version}`;
@@ -19,6 +19,7 @@ type Props = {
   packageName: string;
   apiName?: string;
   forceVersion?: string;
+  strictTypes?: boolean;
 };
 
 const filterDataByKind = (
@@ -58,6 +59,7 @@ const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
   apiName?: string,
+  strictTypes: boolean = false,
   isTestMode: boolean = false
 ): JSX.Element => {
   try {
@@ -84,7 +86,8 @@ const renderAPI = (
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        )
+        ) &&
+        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
     );
 
     const props = filterDataByKind(
@@ -110,7 +113,9 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(component => `${component.name}Props`);
+    const componentsPropNames = components.map(
+      ({ name, children }) => `${getComponentName(name, children)}Props`
+    );
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
       componentsPropNames.includes(entry.name)
     );
@@ -170,12 +175,12 @@ const renderAPI = (
   }
 };
 
-const APISection = ({ packageName, apiName, forceVersion }: Props) => {
+const APISection = ({ packageName, apiName, forceVersion, strictTypes = false }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, !!forceVersion);
+  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, !!forceVersion);
 };
 
 export default APISection;

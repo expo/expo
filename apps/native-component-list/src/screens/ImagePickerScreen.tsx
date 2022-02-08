@@ -1,7 +1,7 @@
-import { Video } from 'expo-av';
+import { ResizeMode, Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
-import { Image, Platform, ScrollView, View, StyleSheet } from 'react-native';
+import { Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
@@ -84,7 +84,7 @@ function ImagePickerScreen() {
             <Video
               source={{ uri: selection.uri }}
               style={styles.video}
-              resizeMode="contain"
+              resizeMode={ResizeMode.CONTAIN}
               shouldPlay
               isLooping
             />
