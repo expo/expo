@@ -7,7 +7,7 @@ const LocalAppTimeout = 80 * 1000;
 const sleep = (duration: number) =>
   new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
-async function pressMenuButton(buttonString: string) {
+async function pressElementByString(buttonString: string, timeout: number = 0) {
   let button = element(by.text(buttonString));
 
   await waitFor(button).toBeVisible().withTimeout(MenuTimeout);
@@ -40,7 +40,7 @@ function getLocalIPAddress(): string {
 
 async function openMenu(): Promise<void> {
   if (device.getPlatform() === 'android') {
-    return getInvocationManager().execute({
+    return await getInvocationManager().execute({
       target: {
         type: 'Class',
         value: 'com.testrunner.DevClientDetoxHelper',
@@ -52,28 +52,55 @@ async function openMenu(): Promise<void> {
   return await device.shake();
 }
 
+async function waitForLauncherMainScreen() {
+  await waitFor(element(by.id('DevLauncherMainScreen')))
+    .toBeVisible()
+    .withTimeout(LauncherMainScreenTimeout);
+}
+
+async function waitForAppMainScreen() {
+  await waitFor(element(by.id('LocalAppMainScreen')))
+    .toBeVisible()
+    .withTimeout(LocalAppTimeout);
+}
+
+async function tapButton(button: Detox.IndexableNativeElement) {
+  if (device.getPlatform() === 'ios') {
+    await button.tap();
+    return;
+  }
+  // On Android we have to make 2 tap - it is a bug in React Native.
+  await button.multiTap(2);
+}
+
 describe('DevLauncher', () => {
   beforeEach(async () => {
     await device.launchApp({ newInstance: true });
   });
 
   it('should render main screen', async () => {
+    await waitForLauncherMainScreen();
+  });
+
+  it('should be able to go to the settings screen and come back to the main screen', async () => {
+    await waitForLauncherMainScreen();
+
+    await pressElementByString('Settings');
+    await expect(element(by.id('DevLauncherSettingsScreen'))).toBeVisible();
+
+    await pressElementByString('Home');
     await expect(element(by.id('DevLauncherMainScreen'))).toBeVisible();
   });
 
-  it('should be able to open dev menu', async () => {
-    await expect(element(by.id('DevLauncherMainScreen'))).toBeVisible();
+  it('should be able to load app from URL and come back to the launcher screen', async () => {
+    await waitForLauncherMainScreen();
 
-    await openMenu();
-
-    await waitFor(element(by.id('DevMenuMainScreen')))
-      .toBeVisible()
-      .withTimeout(MenuTimeout);
-  });
-
-  it('should be able to load app from URL', async () => {
+    const urlToggle = element(by.id('DevLauncherURLToggle'));
     const urlInput = element(by.id('DevLauncherURLInput'));
     const loadButton = element(by.id('DevLauncherLoadAppButton'));
+
+    await expect(urlToggle).toBeVisible();
+    urlToggle.tap();
 
     await expect(urlInput).toBeVisible();
     await expect(loadButton).toBeVisible();
@@ -83,37 +110,13 @@ describe('DevLauncher', () => {
       // close keyboard
       await device.pressBack();
     }
-    await loadButton.multiTap(2);
+    await tapButton(loadButton);
 
-    await waitFor(element(by.id('LocalAppMainScreen')))
-      .toBeVisible()
-      .withTimeout(LocalAppTimeout);
-  });
-
-  it('should be able to come back to the dev launcher screen', async () => {
-    const urlInput = element(by.id('DevLauncherURLInput'));
-    const loadButton = element(by.id('DevLauncherLoadAppButton'));
-
-    await expect(urlInput).toBeVisible();
-    await expect(loadButton).toBeVisible();
-
-    await urlInput.typeText(`http://${getLocalIPAddress()}:8081`);
-    if (device.getPlatform() === 'android') {
-      // close keyboard
-      await device.pressBack();
-    }
-    await loadButton.multiTap(2);
-
-    await waitFor(element(by.id('LocalAppMainScreen')))
-      .toBeVisible()
-      .withTimeout(LocalAppTimeout);
-
+    await waitForAppMainScreen();
     await openMenu();
 
-    await pressMenuButton('Back to Launcher');
+    await pressElementByString('Go home', MenuTimeout);
 
-    await waitFor(element(by.id('DevLauncherMainScreen')))
-      .toBeVisible()
-      .withTimeout(LauncherMainScreenTimeout);
+    await waitForLauncherMainScreen();
   });
 });
