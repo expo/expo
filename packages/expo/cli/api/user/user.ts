@@ -1,19 +1,18 @@
 import gql from 'graphql-tag';
 
 import * as Log from '../../log';
-import * as Analytics from '../analytics/rudderstackClient';
-import { apiClient } from '../api';
+import * as Analytics from '../../utils/analytics/rudderstackClient';
 import { graphqlClient } from '../graphql/client';
 import { CurrentUserQuery } from '../graphql/generated';
 import { UserQuery } from '../graphql/queries/UserQuery';
+import { fetchAsync } from '../rest/client';
 import { getAccessToken, getSessionSecret, setSessionAsync } from './sessionStorage';
-
-// Re-export, but keep in separate file to avoid dependency cycle
-export { getSessionSecret, getAccessToken };
 
 export type Actor = NonNullable<CurrentUserQuery['meActor']>;
 
 let currentUser: Actor | undefined;
+
+export const ANONYMOUS_USERNAME = 'anonymous';
 
 /**
  * Resolve the name of the actor, either normal user or robot user.
@@ -27,7 +26,7 @@ export function getActorDisplayName(user?: Actor): string {
     case 'Robot':
       return user.firstName ? `${user.firstName} (robot)` : 'robot';
     default:
-      return 'anonymous';
+      return ANONYMOUS_USERNAME;
   }
 }
 
@@ -51,8 +50,13 @@ export async function loginAsync(json: {
   password: string;
   otp?: string;
 }): Promise<void> {
-  const body = await apiClient.post('auth/loginAsync', { json }).json();
-  const { sessionSecret } = (body as any).data;
+  const res = await fetchAsync('auth/loginAsync', {
+    method: 'POST',
+    body: JSON.stringify(json),
+  });
+  const {
+    data: { sessionSecret },
+  } = await res.json();
   const result = await graphqlClient
     .query(
       gql`

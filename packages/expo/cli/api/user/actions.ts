@@ -2,9 +2,9 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import * as Log from '../../log';
-import { ApiV2Error } from '../api';
-import { learnMore } from '../link';
-import promptAsync, { Question } from '../prompts';
+import { learnMore } from '../../utils/link';
+import promptAsync, { Question } from '../../utils/prompts';
+import { ApiV2Error } from '../rest/client';
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
 import { Actor, getUserAsync, loginAsync } from './user';
 

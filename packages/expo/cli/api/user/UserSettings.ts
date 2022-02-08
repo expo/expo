@@ -29,10 +29,8 @@ export type UserSettingsData = {
   analyticsDeviceId?: string;
 };
 
-const UserSettings = new JsonFile<UserSettingsData>(SETTINGS_FILE_PATH, {
+export const UserSettings = new JsonFile<UserSettingsData>(SETTINGS_FILE_PATH, {
   jsonParseErrorDefault: {},
   cantReadFileDefault: {},
   ensureDir: true,
 });
-
-export default UserSettings;

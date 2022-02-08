@@ -61,9 +61,9 @@ it('runs `npx expo whoami`', async () => {
   if (results.stderr) {
     expect(results.stderr.trim()).toBe('Not logged in');
   } else {
-    expect(results.stdout.trim()).toBe(expect.any(String));
+    expect(results.stdout.trim()).toBeTruthy();
     // Ensure this can always be used as a means of automation.
-    expect(results.stdout.trim().split(os.EOL)).toBe(1);
+    expect(results.stdout.trim().split(os.EOL).length).toBe(1);
   }
 });
 

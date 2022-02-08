@@ -3,20 +3,22 @@ import { JSONValue } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs';
+import fetch from 'node-fetch';
 import path from 'path';
 import slugify from 'slugify';
 import { Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
+import { FileSystemCache } from '../api/rest/cache/FileSystemCache';
+import { wrapFetchWithCache } from '../api/rest/cache/wrapFetchWithCache';
 import * as Log from '../log';
 import { createEntryResolver, createFileTransform } from './createFileTransform';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
-import { FileSystemCache } from './fetch-cache/FileSystemCache';
-import createFetchWithCache from './fetch-cache/fetch';
 
-const cachedFetch = createFetchWithCache(
+const cachedFetch = wrapFetchWithCache(
+  fetch,
   new FileSystemCache({
     cacheDirectory: getCacheFilePath(),
     // Time to live. How long (in ms) responses remain cached before being automatically ejected. If undefined, responses are never automatically ejected from the cache.

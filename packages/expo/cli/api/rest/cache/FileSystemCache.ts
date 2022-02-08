@@ -6,7 +6,7 @@ function getBodyAndMetaKeys(key: string): [string, string] {
 }
 
 export class FileSystemCache {
-  constructor(public options: { ttl?: boolean; cacheDirectory: string }) {}
+  constructor(public options: { ttl?: number; cacheDirectory: string }) {}
 
   async get(key: string) {
     const [, metaKey] = getBodyAndMetaKeys(key);
@@ -60,8 +60,8 @@ export class FileSystemCache {
       metaCopy.bodyStreamIntegrity = await new Promise((fulfill, reject) => {
         bodyStream
           .pipe(cacache.put.stream(this.options.cacheDirectory, bodyKey))
-          .on('integrity', i => fulfill(i))
-          .on('error', e => {
+          .on('integrity', (i) => fulfill(i))
+          .on('error', (e) => {
             reject(e);
           });
       });
