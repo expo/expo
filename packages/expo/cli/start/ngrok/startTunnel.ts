@@ -2,10 +2,10 @@ import { readExpRcAsync } from '@expo/config';
 import * as path from 'path';
 import slugify from 'slugify';
 
+import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
-import { getActorDisplayName, getUserAsync } from '../../utils/user/user';
 import * as Android from '../android/Android';
 import * as ProjectSettings from '../api/ProjectSettings';
 import UserSettings from '../api/UserSettings';

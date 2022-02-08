@@ -22,7 +22,7 @@ jest.mock('../../serverUrl', () => {
     constructDeepLink: jest.fn(),
   };
 });
-jest.mock('../../../utils/user/user', () => {
+jest.mock('../../../api/user/user', () => {
   return {
     getUserAsync: jest.fn(() => Promise.resolve({})),
   };
