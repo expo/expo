@@ -100,7 +100,7 @@ async function promptForBackupOTPAsync(
 
   const device = smsNonPrimarySecondFactorDevices[selectedValue];
 
-  await fetchAsync('/auth/send-sms-otp', {
+  await fetchAsync('auth/send-sms-otp', {
     method: 'POST',
     body: JSON.stringify({
       username,

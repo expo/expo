@@ -86,7 +86,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
   };
 }
 
-const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchInstance, getExpoApiBaseUrl() + '/v2');
+const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchInstance, getExpoApiBaseUrl() + '/v2/');
 
 const fetchWithCredentials = wrapFetchWithCredentials(fetchWithBaseUrl);
 

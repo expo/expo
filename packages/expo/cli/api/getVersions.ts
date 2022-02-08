@@ -41,7 +41,7 @@ export async function getVersionsAsync(): Promise<Versions> {
     ttl: 1000 * 60 * 60 * 24 * 7,
   });
 
-  const results = await fetchAsync('/versions/latest');
+  const results = await fetchAsync('versions/latest');
   if (!results.ok) {
     throw new CommandError(
       'API',

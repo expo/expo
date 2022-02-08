@@ -50,7 +50,7 @@ export async function loginAsync(json: {
   password: string;
   otp?: string;
 }): Promise<void> {
-  const res = await fetchAsync('/auth/loginAsync', {
+  const res = await fetchAsync('auth/loginAsync', {
     method: 'POST',
     body: JSON.stringify(json),
   });

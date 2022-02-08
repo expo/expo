@@ -33,7 +33,7 @@ it('converts Expo APIv2 error to ApiV2Error', async () => {
   expect.assertions(6);
 
   try {
-    await fetchAsync('/test', {
+    await fetchAsync('test', {
       method: 'POST',
     });
   } catch (error: any) {
@@ -64,7 +64,7 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
   expect.assertions(3);
 
   try {
-    await fetchAsync('/test', {
+    await fetchAsync('test', {
       method: 'POST',
     });
   } catch (error: any) {
@@ -77,9 +77,9 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
 });
 
 it('does not convert non-APIv2 error to ApiV2Error', async () => {
-  nock(getExpoApiBaseUrl()).post('/v2/test').reply(500, 'Something went wrong');
+  const scope = nock(getExpoApiBaseUrl()).post('/v2/test').reply(500, 'Something went wrong');
 
-  expect.assertions(2);
+  expect.assertions(1);
 
   try {
     await fetchAsync('test', {
@@ -89,11 +89,12 @@ it('does not convert non-APIv2 error to ApiV2Error', async () => {
     expect(error).toBeInstanceOf(FetchError);
     expect(error).not.toBeInstanceOf(ApiV2Error);
   }
+  expect(scope.isDone()).toBe(true);
 });
 
 it('makes a get request', async () => {
   nock(getExpoApiBaseUrl()).get('/v2/get-me?foo=bar').reply(200, 'Hello World');
-  const res = await fetchAsync('/get-me', {
+  const res = await fetchAsync('get-me', {
     method: 'GET',
     // Ensure our custom support for URLSearchParams works...
     searchParams: new URLSearchParams({
@@ -123,7 +124,7 @@ it('makes an authenticated request with access token', async () => {
     .matchHeader('authorization', (val) => val.length === 1 && val[0] === 'Bearer my-access-token')
     .get('/v2/get-me')
     .reply(200, 'Hello World');
-  const res = await fetchAsync('/get-me', {
+  const res = await fetchAsync('get-me', {
     method: 'GET',
   });
   expect(res.status).toEqual(200);
@@ -136,7 +137,7 @@ it('makes an authenticated request with session secret', async () => {
     .matchHeader('expo-session', (val) => val.length === 1 && val[0] === 'my-secret-token')
     .get('/v2/get-me')
     .reply(200, 'Hello World');
-  const res = await fetchAsync('/get-me', {
+  const res = await fetchAsync('get-me', {
     method: 'GET',
   });
   expect(res.status).toEqual(200);
@@ -151,7 +152,7 @@ it('only uses access token when both authentication methods are available', asyn
     .matchHeader('expo-session', (val) => !val)
     .get('/v2/get-me')
     .reply(200, 'Hello World');
-  const res = await fetchAsync('/get-me', {
+  const res = await fetchAsync('get-me', {
     method: 'GET',
   });
   expect(res.status).toEqual(200);
