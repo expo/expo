@@ -4,7 +4,7 @@ import React, { PropsWithChildren, ReactNode } from 'react';
 
 import { HEADLINE } from '~/ui/components/Text';
 import { durations } from '~/ui/foundations/durations';
-import { ChevronDownIcon } from '~/ui/foundations/icons';
+import { TriangleDownIcon } from '~/ui/foundations/icons';
 
 type CollapsibleProps = PropsWithChildren<{
   /** The content of the collapsible summary */
@@ -18,7 +18,7 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
   return (
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
-        <ChevronDownIcon css={markerStyle} size={iconSize.small} />
+        <TriangleDownIcon css={markerStyle} size={iconSize.small} />
         <HEADLINE tag="span" css={headlineStyle}>
           {summary}
         </HEADLINE>
@@ -106,7 +106,7 @@ export const DETAILS = ({
 /** @deprecated please use `<Collapsible>` instead of `<SUMMARY>` */
 export const SUMMARY = ({ testID, children }: PropsWithChildren<{ testID?: string }>) => (
   <summary css={summaryStyle} data-testid={testID}>
-    <ChevronDownIcon css={markerStyle} size={iconSize.small} />
+    <TriangleDownIcon css={markerStyle} size={iconSize.small} />
     <HEADLINE tag="span" css={headlineStyle}>
       {children}
     </HEADLINE>
