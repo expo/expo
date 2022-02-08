@@ -53,7 +53,7 @@ We have taken a lot of care to make sure that all of the functionality that you 
 
 ### Renaming an Account
 
-> ⚠️ This feature is in private beta, please email secure@expo.dev with the name of the Personal Account or Organization you would like to rename to join the waitlist.
+> ⚠️ This feature is in private beta and supported only if your projects are on SDK 43 or newer, please email secure@expo.dev with the name of the Personal Account or Organization you would like to rename and confirm your SDK version to join the waitlist.
 
 If you aren't happy with the name you originally chose for your account, you may choose a new name a limited number of times. Simply visit [the account settings page](https://expo.dev/accounts/[account]/settings) and follow the prompts under **Rename Account**.
 
