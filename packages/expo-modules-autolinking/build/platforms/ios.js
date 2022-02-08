@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveModuleAsync = exports.getSwiftModuleName = void 0;
-const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+const spawnAsync_1 = __importDefault(require("../utils/spawnAsync"));
 async function findPodspecFile(revision) {
     var _a;
     if ((_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPath()) {
@@ -123,7 +123,7 @@ async function normalizePodModuleAsync(module) {
     let result = module.podName;
     const podspecFile = path_1.default.join(module.podspecDir, `${module.podName}.podspec`);
     if (await fs_extra_1.default.pathExists(podspecFile)) {
-        const { stdout } = await (0, spawn_async_1.default)('pod', ['ipc', 'spec', podspecFile]);
+        const stdout = await (0, spawnAsync_1.default)('pod', ['ipc', 'spec', podspecFile]);
         const podspecJson = JSON.parse(stdout);
         if (podspecJson.header_dir) {
             result = podspecJson.header_dir;

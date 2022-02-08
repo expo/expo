@@ -1,9 +1,9 @@
-import spawnAsync from '@expo/spawn-async';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
 import { ModuleDescriptor, PackageRevision, SearchOptions } from '../types';
+import spawnAsync from '../utils/spawnAsync';
 
 async function findPodspecFile(revision: PackageRevision): Promise<string | undefined> {
   if (revision.config?.iosPodspecPath()) {
@@ -146,7 +146,7 @@ async function normalizePodModuleAsync(module: ModuleDescriptor): Promise<string
   let result = module.podName;
   const podspecFile = path.join(module.podspecDir, `${module.podName}.podspec`);
   if (await fs.pathExists(podspecFile)) {
-    const { stdout } = await spawnAsync('pod', ['ipc', 'spec', podspecFile]);
+    const stdout = await spawnAsync('pod', ['ipc', 'spec', podspecFile]);
     const podspecJson = JSON.parse(stdout);
     if (podspecJson.header_dir) {
       result = podspecJson.header_dir;
