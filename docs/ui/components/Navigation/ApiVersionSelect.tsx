@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguide';
 import React from 'react';
 
 import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
