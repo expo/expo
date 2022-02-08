@@ -65,7 +65,7 @@ class DevLauncherController private constructor()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
   private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
-  val devMenuManager: DevMenuManager = DevMenuManager
+  var devMenuManager: DevMenuManager = DevMenuManager
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
     set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
@@ -225,7 +225,7 @@ class DevLauncherController private constructor()
   }
 
   private fun setupDevMenu() {
-    devMenuManager.currentManifest = manifest?.getRawJson()
+    devMenuManager.currentManifest = manifest
     devMenuManager.currentManifestURL = manifestURL.toString()
   }
 

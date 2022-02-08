@@ -65,6 +65,7 @@ android {
 dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
+  implementation project(":expo-manifests")
 
   implementation 'com.squareup.okhttp3:okhttp:3.14.9'
 

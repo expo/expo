@@ -8,6 +8,7 @@ import com.google.common.truth.Truth
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
+import expo.modules.devmenu.DevMenuManager
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
@@ -33,7 +34,7 @@ class DevLauncherControllerTest {
   @Test
   fun `sets shouldAutoLaunch on dev menu manager`() {
     val controller = DevLauncherController.instance as DevLauncherController
-    val mockDevMenuManager = mockk<DevMenuManagerInterface>(relaxed = true)
+    val mockDevMenuManager = mockk<DevMenuManager>(relaxed = true)
     controller.devMenuManager = mockDevMenuManager
     Truth.assertThat(controller.canLaunchDevMenuOnStart).isTrue()
 

@@ -123,12 +123,14 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     val manifest = devMenuManager.currentManifest
 
     if (manifest != null) {
-      if (manifest.get("name") != null) {
-        appName = manifest.get("name") as String
+      val manifestName = manifest.getName()
+      if (manifestName != null) {
+        appName = manifestName
       }
 
-      if (manifest.get("version") != null) {
-        appVersion = manifest.get("version") as String
+      val manifestVersion = manifest.getVersion()
+      if (manifestVersion != null) {
+        appVersion = manifestVersion
       }
     }
 
