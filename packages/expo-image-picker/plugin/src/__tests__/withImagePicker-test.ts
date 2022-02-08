@@ -17,7 +17,7 @@ describe(setImagePickerManifestActivity, () => {
     const app = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifestJson);
     expect(app.activity[2]).toStrictEqual({
       $: {
-        'android:name': 'com.theartofdev.edmodo.cropper.CropImageActivity',
+        'android:name': 'com.canhub.cropper.CropImageActivity',
         'android:theme': '@style/Base.Theme.AppCompat',
       },
     });

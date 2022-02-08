@@ -79,7 +79,7 @@
           android:host="expo.io"
           android:path="/expo-go"
           android:scheme="http"/>
-        
+
         <data
           android:host="expo.dev"
           android:path="/expo-go"
@@ -94,7 +94,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
-      
+
       <!-- This has to be separate from the exp[s]:// scheme filter. No idea why -->
       <intent-filter>
         <data
@@ -309,7 +309,7 @@
 
     <!-- ImagePicker native module -->
     <activity
-      android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+      android:name="com.canhub.cropper.CropImageActivity"
       android:theme="@style/Base.Theme.AppCompat">
     </activity>
 

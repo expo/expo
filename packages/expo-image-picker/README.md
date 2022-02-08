@@ -51,7 +51,7 @@ In `AndroidManifest.xml` add the following `activity` within `application`:
 
 ```xml
 <activity
-  android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+  android:name="com.canhub.cropper.CropImageActivity"
   android:theme="@style/Base.Theme.AppCompat">
 </activity>
 ```

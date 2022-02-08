@@ -26,6 +26,8 @@ object ImagePickerConstants {
   const val COROUTINE_CANCELED = "Coroutine canceled by module destruction."
   const val PROMISES_CANCELED = "Module destroyed, all promises canceled."
   const val UNKNOWN_EXCEPTION = "Unknown exception."
+  const val ERR_CROPPING_FAILURE = "ERR_CROPPING_FAILURE"
+  const val CROPPING_FAILURE_MESSAGE = "Cropping operation failed"
 
   const val OPTION_QUALITY = "quality"
   const val OPTION_ALLOWS_EDITING = "allowsEditing"
