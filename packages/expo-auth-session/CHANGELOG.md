@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Export provider specific config types: `FacebookAuthRequestConfig` and `GoogleAuthRequestConfig`.
+- Add missing `language` field to the `GoogleAuthRequestConfig`.
+
 ## 3.5.0 — 2021-12-03
 
 _This version does not introduce any user-facing changes._

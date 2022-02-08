@@ -4,6 +4,7 @@ import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
+import { P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { CommentTextBlock, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
@@ -44,11 +45,12 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
               withDash
             />
           ) : null}
-          <br />
           {enumValue?.defaultValue && (
-            <InlineCode customCss={STYLES_ENUM_VALUE}>
-              {name}.{enumValue.name} ＝ {enumValue?.defaultValue}
-            </InlineCode>
+            <P>
+              <InlineCode customCss={STYLES_ENUM_VALUE}>
+                {name}.{enumValue.name} ＝ {enumValue?.defaultValue}
+              </InlineCode>
+            </P>
           )}
         </LI>
       ))}

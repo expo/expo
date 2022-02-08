@@ -3,7 +3,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { UL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
-import { H2, H4 } from '~/components/plugins/Headings';
+import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
@@ -21,47 +21,100 @@ export type APISectionClassesProps = {
   data: GeneratedData[];
 };
 
-const renderProperty = (prop: PropData) => {
-  return prop.signatures?.length ? renderMethod(prop) : renderProp(prop, prop?.defaultValue, true);
-};
+const isProp = (child: PropData) =>
+  child.kind === TypeDocKind.Property &&
+  !child.overwrites &&
+  !child.name.startsWith('_') &&
+  !child.implementationOf;
 
-const renderClass = (
-  { name, comment, type, extendedTypes, children }: ClassDefinitionData,
-  classCount: number
-): JSX.Element => {
-  const properties = children?.filter(
-    child => child.kind === TypeDocKind.Property && !child.overwrites && !child.name.startsWith('_')
-  );
-  const methods = children?.filter(child => child.kind === TypeDocKind.Method && !child.overwrites);
+const isMethod = (child: PropData) => child.kind === TypeDocKind.Method && !child.overwrites;
+
+const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX.Element => {
+  const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
+  const properties = children?.filter(isProp);
+  const methods = children?.filter(isMethod);
+
+  console.warn(clx);
+
   return (
     <div key={`class-definition-${name}`}>
-      <H2>{name}</H2>
-      {extendedTypes?.length && (
+      {hasMultipleClasses ? (
+        <H3Code>
+          <InlineCode>{name}</InlineCode>
+        </H3Code>
+      ) : (
+        <H2>{name}</H2>
+      )}
+      {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
           <B>Type: </B>
           {type ? <InlineCode>{resolveTypeName(type)}</InlineCode> : 'Class'}
-          <span> extends </span>
-          <InlineCode>{resolveTypeName(extendedTypes[0])}</InlineCode>
+          {extendedTypes?.length && (
+            <>
+              <span> extends </span>
+              {extendedTypes.map(extendedType => (
+                <InlineCode key={`extends-${extendedType.name}`}>
+                  {resolveTypeName(extendedType)}
+                </InlineCode>
+              ))}
+            </>
+          )}
+          {implementedTypes?.length && (
+            <>
+              <span> implements </span>
+              {implementedTypes.map(implementedType => (
+                <InlineCode key={`implements-${implementedType.name}`}>
+                  {resolveTypeName(implementedType)}
+                </InlineCode>
+              ))}
+            </>
+          )}
         </P>
       )}
       <CommentTextBlock comment={comment} />
       {properties?.length ? (
         <>
-          {classCount === 1 ? <H2>{name} Properties</H2> : <H4>{name} Properties</H4>}
-          <UL>{properties.map(renderProperty)}</UL>
+          {hasMultipleClasses ? (
+            <>
+              <H4>{name} Properties</H4>
+              <br />
+            </>
+          ) : (
+            <H2>{name} Properties</H2>
+          )}
+          <UL>
+            {properties.map(property =>
+              renderProp(property, property?.defaultValue, !hasMultipleClasses)
+            )}
+          </UL>
         </>
       ) : null}
       {methods?.length ? (
         <>
-          {classCount === 1 ? <H2>{name} Methods</H2> : <H4>{name} Methods</H4>}
-          <>{methods.map(renderProperty)}</>
+          {hasMultipleClasses ? <H4>{name} Methods</H4> : <H2>{name} Methods</H2>}
+          <div style={{ paddingLeft: 8 }}>
+            {methods.map((method, index) =>
+              renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
+            )}
+          </div>
         </>
       ) : null}
+      <hr />
     </div>
   );
 };
 
-const APISectionClasses = ({ data }: APISectionClassesProps) =>
-  data?.length ? <>{data.map(cls => renderClass(cls, data?.length))}</> : null;
+const APISectionClasses = ({ data }: APISectionClassesProps) => {
+  if (data?.length) {
+    const hasMultipleClasses = data.length > 1;
+    return (
+      <>
+        {hasMultipleClasses ? <H2>Classes</H2> : null}
+        {data.map(cls => renderClass(cls, hasMultipleClasses))}
+      </>
+    );
+  }
+  return null;
+};
 
 export default APISectionClasses;
