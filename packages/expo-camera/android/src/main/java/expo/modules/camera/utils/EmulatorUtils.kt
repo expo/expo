@@ -1,11 +1,10 @@
 package expo.modules.camera.utils
 
-import java.io.File
-import java.io.IOException
+import android.os.Build
 import java.util.*
 
 object EmulatorUtils {
-  fun isRunningOnEmulator(): Boolean
+  fun isRunningOnEmulator(): Boolean {
     return Build.FINGERPRINT.startsWith("generic") ||
       Build.FINGERPRINT.startsWith("unknown") ||
       Build.MODEL.contains("google_sdk") ||
@@ -29,4 +28,5 @@ object EmulatorUtils {
       Build.PRODUCT.lowercase(Locale.ROOT).contains("nox") ||
       Build.SERIAL.lowercase(Locale.ROOT).contains("nox") ||
       (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+  }
 }

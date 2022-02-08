@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.Manifest
 import android.media.CamcorderProfile
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 
