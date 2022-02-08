@@ -42,9 +42,6 @@ function getInvocationManager() {
 }
 
 function getLocalIPAddress(): string {
-  if (device.getPlatform() === 'ios') {
-    return 'localhost';
-  }
   return require('os')
     .networkInterfaces()
     .en0.find((elm: { family: string }) => elm.family === 'IPv4').address;
