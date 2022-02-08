@@ -73,7 +73,7 @@ export function SettingsScreen() {
   const hasCopiedContent = Boolean(clipboardContent);
 
   return (
-    <ScrollView>
+    <ScrollView testID="DevLauncherSettingsScreen">
       <Spacer.Vertical size="large" />
 
       <View py="large" px="medium">
