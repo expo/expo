@@ -119,7 +119,7 @@ RCT_EXPORT_METHOD(setSessionAsync:(NSString *)session
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
   [[NSUserDefaults standardUserDefaults] setObject:session forKey:@"expo-session-secret"];
-  [DevMenuManager.shared.expoApiClient setSessionSecret:session];
+  [DevMenuManager.shared setSession:session];
   resolve(nil);
 }
 
@@ -129,7 +129,7 @@ RCT_EXPORT_METHOD(restoreSessionAsync:(RCTPromiseResolveBlock)resolve
   NSString *session = [[NSUserDefaults standardUserDefaults] objectForKey:@"expo-session-secret"];
   
   if (session != nil) {
-    [DevMenuManager.shared.expoApiClient setSessionSecret:session];
+    [DevMenuManager.shared setSession:session];
   }
   
   resolve(session);

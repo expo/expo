@@ -90,6 +90,12 @@ open class DevMenuManager: NSObject {
   
   @objc
   public var currentManifestURL: URL?
+  
+  
+  @objc
+  public func setSession(_ session: String) {
+    self.expoApiClient.setSessionSecret(session)
+  }
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
@@ -314,6 +320,7 @@ open class DevMenuManager: NSObject {
     return UIUserInterfaceStyle.unspecified
   }
 
+
   // MARK: private
 
   private func loadDevMenuItems(forExtension ext: DevMenuExtensionProtocol) -> DevMenuItemsContainerProtocol? {
@@ -373,4 +380,5 @@ open class DevMenuManager: NSObject {
     }
     return true
   }
+  
 }
