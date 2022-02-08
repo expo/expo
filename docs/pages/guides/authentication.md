@@ -59,8 +59,6 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 - If `offline_access` isn't included then no refresh token will be returned.
 
-<SnackInline label='IdentityServer 4 Auth' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
 <!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
@@ -106,8 +104,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 <!-- End IdentityServer 4 -->
 
 ### Azure
@@ -119,8 +115,6 @@ export default function App() {
 | [Get Your Config][c-azure2] | OpenID   | Supported | Available      |
 
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
-
-<SnackInline label='Azure Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -166,8 +160,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 <!-- End Azure -->
 
 ### Coinbase
@@ -197,8 +189,6 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
 <Tab>
-
-<SnackInline label='Coinbase Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -334,8 +324,6 @@ function useMounted() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -367,8 +355,6 @@ function useMounted() {
 <Tab>
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
-
-<SnackInline label='Dropbox Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -434,13 +420,9 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
-
-<SnackInline label='Dropbox Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -502,8 +484,6 @@ export default function App() {
   );
 }
 ```
-
-</SnackInline>
 
 </Tab>
 
@@ -619,8 +599,6 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 
 <Tab>
 
-<SnackInline label='Facebook Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
 <!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
@@ -662,13 +640,9 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
-
-<SnackInline label='Facebook Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -709,8 +683,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -718,8 +690,6 @@ export default function App() {
 - Be sure to setup Facebook auth as described above, this is basically identical.
 - 🔥 Create a new Firebase project
 - Enable Facebook auth, save the project.
-
-<SnackInline label='Facebook Firebase' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser', 'firebase']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -779,8 +749,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
@@ -806,8 +774,6 @@ export default function App() {
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
-
-<SnackInline label='FitBit Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -865,13 +831,9 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
-
-<SnackInline label='FitBit Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -936,8 +898,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
@@ -964,8 +924,6 @@ export default function App() {
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
-
-<SnackInline label='GitHub Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1022,8 +980,6 @@ export default function App() {
   );
 }
 ```
-
-</SnackInline>
 
 </Tab>
 
@@ -1131,8 +1087,6 @@ Expo web client ID for use in the browser.
 <Tabs tabs={["Standard", "Firebase"]}>
 <Tab>
 
-<SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
 <!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
@@ -1176,8 +1130,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -1197,8 +1149,6 @@ export default function App() {
   - Expo Go Proxy: https://auth.expo.io/@yourname/your-app
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
-
-<SnackInline label='Google Firebase' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser', 'firebase']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1260,8 +1210,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
@@ -1283,8 +1231,6 @@ export default function App() {
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
-
-<SnackInline label='Imgur Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1342,13 +1288,9 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
-
-<SnackInline label='Imgur Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1407,8 +1349,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
@@ -1430,8 +1370,6 @@ export default function App() {
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
-
-<SnackInline label='Okta Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1488,8 +1426,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -1522,8 +1458,6 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
 <Tab>
-
-<SnackInline label='Reddit Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1579,15 +1513,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
-
-<SnackInline label='Reddit Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1647,8 +1577,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 </Tabs>
 
@@ -1674,8 +1602,6 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
 <Tab>
-
-<SnackInline label='Slack Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1732,8 +1658,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -1772,8 +1696,6 @@ export default function App() {
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
-
-<SnackInline label='Spotify Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1833,13 +1755,10 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-<SnackInline label='Spotify Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -1902,8 +1821,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 </Tabs>
 
@@ -1925,8 +1842,6 @@ export default function App() {
 
 <Tabs tabs={["Auth Code"]}>
 <Tab>
-
-<SnackInline label='Strava Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -2004,8 +1919,6 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 );
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
@@ -2028,8 +1941,6 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
 <Tab>
-
-<SnackInline label='Twitch Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -2087,13 +1998,9 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
-
-<SnackInline label='Twitch Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -2154,8 +2061,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
@@ -2188,8 +2093,6 @@ You must use the proxy service in the Expo Go app because `exp://localhost:19000
 <Tabs tabs={["Auth Code"]}>
 
 <Tab>
-
-<SnackInline label='Twitter Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -2253,8 +2156,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
@@ -2277,8 +2178,6 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
 <Tab>
-
-<SnackInline label='Uber Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -2336,13 +2235,9 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
-
-<SnackInline label='Uber Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -2402,8 +2297,6 @@ export default function App() {
   );
 }
 ```
-
-</SnackInline>
 
 </Tab>
 

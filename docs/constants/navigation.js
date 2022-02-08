@@ -3,6 +3,7 @@
 const frontmatter = require('front-matter');
 const fs = require('fs');
 const path = require('path');
+const make = require('unist-builder');
 const { URL } = require('url');
 
 const { LATEST_VERSION, VERSIONS } = require('./versions');
@@ -310,7 +311,6 @@ const preview = [
 ];
 
 const featurePreview = [
-  makeGroup('Feature Preview', [], { href: './pages/feature-preview/', hidden: true }),
   makeSection('Development Builds', [
     makeGroup('Development Builds', [
       makePage('development/introduction.md'),
@@ -382,24 +382,12 @@ module.exports = {
 
 // --- MDX methods ---
 
-/**
- * @param {string} name
- * @param {any[]} [children=[]]
- * @param {Partial<import('~/types/common').NavigationRoute>} [overwrites={}]
- */
-function makeSection(name, children = [], overwrites = {}) {
-  // TODO(cedric): refactor node types to match unist
-  return { name, children, ...overwrites };
+function makeSection(name, children = [], props = {}) {
+  return make('section', { name, ...props }, children);
 }
 
-/**
- * @param {string} name
- * @param {any[]} [children=[]]
- * @param {Partial<import('~/types/common').NavigationRoute>} [overwrites={}]
- */
-function makeGroup(name, children = [], overwrites = {}) {
-  // TODO(cedric): refactor node types to match unist
-  return { name, posts: children, ...overwrites };
+function makeGroup(name, children = [], props = {}) {
+  return make('group', { name, ...props }, children);
 }
 
 /**
@@ -436,7 +424,7 @@ function makePage(file) {
   if (data.hidden) {
     result.hidden = data.hidden;
   }
-  return result;
+  return make('page', result);
 }
 
 // --- Other helpers ---

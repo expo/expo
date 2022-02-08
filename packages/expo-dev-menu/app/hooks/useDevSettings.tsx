@@ -15,6 +15,18 @@ export function useDevSettings() {
     isPerfMonitorShown: false,
   });
 
+  // toggle value so that there is no lag in response to user input
+  // these values will update to the correct value after the native fn is executed via updateSettings()
+  // by this time the bottom sheet will likely be closed
+  function eagerToggleValue(key: keyof DevMenu.DevSettings) {
+    setDevSettings((prevSettings) => {
+      return {
+        ...prevSettings,
+        [key]: !prevSettings[key],
+      };
+    });
+  }
+
   React.useEffect(() => {
     DevMenu.getDevSettingsAsync().then(setDevSettings);
   }, []);
@@ -25,39 +37,43 @@ export function useDevSettings() {
   }, []);
 
   const toggleElementInspector = React.useCallback(async () => {
+    eagerToggleValue('isElementInspectorShown');
     await DevMenu.toggleElementInspectorAsync();
     bottomSheet.collapse();
-    await updateSettings();
+    updateSettings();
   }, []);
 
   const toggleFastRefresh = React.useCallback(async () => {
+    eagerToggleValue('isHotLoadingEnabled');
     await DevMenu.toggleFastRefreshAsync();
     bottomSheet.collapse();
-    await updateSettings();
+    updateSettings();
   }, []);
 
   const toggleDebugRemoteJS = React.useCallback(async () => {
+    eagerToggleValue('isDebuggingRemotely');
     await DevMenu.toggleDebugRemoteJSAsync();
     bottomSheet.collapse();
-    await updateSettings();
+    updateSettings();
   }, []);
 
   const togglePerformanceMonitor = React.useCallback(async () => {
+    eagerToggleValue('isPerfMonitorShown');
     await DevMenu.togglePerformanceMonitorAsync();
     bottomSheet.collapse();
-    await updateSettings();
+    updateSettings();
   }, []);
 
   const navigateToLauncher = React.useCallback(async () => {
     await DevMenu.navigateToLauncherAsync();
+    updateSettings();
     bottomSheet.collapse();
-    await updateSettings();
   }, []);
 
   const reload = React.useCallback(async () => {
     await DevMenu.reloadAsync();
     bottomSheet.collapse();
-    await updateSettings();
+    updateSettings();
   }, []);
 
   const closeMenu = React.useCallback(async () => {

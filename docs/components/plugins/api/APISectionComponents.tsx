@@ -7,21 +7,18 @@ import {
   CommentData,
   GeneratedData,
   MethodSignatureData,
-  PropData,
   PropsDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
-import { CommentTextBlock, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
+import {
+  CommentTextBlock,
+  resolveTypeName,
+  getComponentName,
+} from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
   componentsProps: PropsDefinitionData[];
-};
-
-const getComponentName = (name?: string, children: PropData[] = []) => {
-  if (name && name !== 'default') return name;
-  const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
-  return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
 const getComponentComment = (comment: CommentData, signatures: MethodSignatureData[]) =>
@@ -58,7 +55,9 @@ const APISectionComponents = ({ data, componentsProps }: APISectionComponentsPro
       {data.map(component =>
         renderComponent(
           component,
-          componentsProps.filter(cp => cp.name.includes(component.name))
+          componentsProps.filter(cp =>
+            cp.name.includes(getComponentName(component.name, component.children))
+          )
         )
       )}
     </>

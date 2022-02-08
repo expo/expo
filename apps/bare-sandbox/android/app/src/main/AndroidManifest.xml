@@ -40,6 +40,6 @@
         <data android:scheme="dev.expo.devclient"/>
       </intent-filter>
     </activity>
-    <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" android:theme="@style/Base.Theme.AppCompat"/>
+    <activity android:name="com.canhub.cropper.CropImageActivity" android:theme="@style/Base.Theme.AppCompat"/>
   </application>
 </manifest>
