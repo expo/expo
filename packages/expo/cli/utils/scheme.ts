@@ -9,11 +9,7 @@ import {
   hasRequiredAndroidFilesAsync,
   hasRequiredIOSFilesAsync,
 } from '../prebuild/clearNativeFolder';
-
-function intersecting<T>(a: T[], b: T[]): T[] {
-  const [c, d] = a.length > b.length ? [a, b] : [b, a];
-  return c.filter((value) => d.includes(value));
-}
+import { intersecting } from './array';
 
 // sort longest to ensure uniqueness.
 // this might be undesirable as it causes the QR code to be longer.

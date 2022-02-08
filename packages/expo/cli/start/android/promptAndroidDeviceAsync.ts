@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { AbortCommandError } from '../../utils/errors';
 
+import { AbortCommandError } from '../../utils/errors';
 import { promptAsync } from '../../utils/prompts';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
 

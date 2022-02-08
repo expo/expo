@@ -6,3 +6,8 @@ export function findLastIndex<T>(array: T[], predicate: (item: T) => boolean) {
   }
   return -1;
 }
+
+export function intersecting<T>(a: T[], b: T[]): T[] {
+  const [c, d] = a.length > b.length ? [a, b] : [b, a];
+  return c.filter((value) => d.includes(value));
+}

@@ -4,8 +4,8 @@ import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 import wrapAnsi from 'wrap-ansi';
-import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 
+import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import * as Log from '../../../log';
 import { CI, EXPO_DEBUG, EXPO_NO_TYPESCRIPT_SETUP } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
