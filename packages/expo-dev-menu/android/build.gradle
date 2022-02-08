@@ -101,17 +101,22 @@ rootProject.getSubprojects().forEach({ project ->
         replaceSoTask.buildDir = project.getProperties().buildDir
         def appName = project.getProperties().path
 
+        def tasks = project.getTasks()
         replaceSoTaskDebug.dependsOn(
-            project.getTasks().getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
-            project.getTasks().getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
+            tasks.getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
+            tasks.getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
         )
-        project.getTasks().getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
+        tasks.getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
 
-        replaceSoTaskReleaseWithDevMenu.dependsOn(
-            project.getTasks().getByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs"),
-            project.getTasks().getByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
-        )
-        project.getTasks().getByPath("${appName}:package${flavorString}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
+        if (tasks.findByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs")
+            && tasks.findByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
+            && tasks.findByPath("${appName}:package${flavorString}ReleaseWithDevMenu")) {
+          replaceSoTaskReleaseWithDevMenu.dependsOn(
+              task.getByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs"),
+              task.getByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
+          )
+          tasks.getByPath("${appName}:package${flavorString}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
+        }
       }
     }
   }
