@@ -25,11 +25,41 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
     NSSetUncaughtExceptionHandler { exception in
       NSLog("DevLauncher tries to handle uncaught exception: %@", exception)
       NSLog("Stack Trace: %@", exception.callStackSymbols)
+      
+      EXDevLauncherUncaughtExceptionHandler.tryToSendExceptionToBundler(exception)
       EXDevLauncherUncaughtExceptionHandler.defaultHandler?(exception)
     }
   }
 
   static func uninstallHandler() {
     NSSetUncaughtExceptionHandler(defaultHandler)
+  }
+  
+  
+  static func tryToSendExceptionToBundler(_ exception: NSException) {
+    let controller = EXDevLauncherController.sharedInstance()
+    if (controller.isAppRunning()) {
+      guard let url = getLogsUrl(controller) else {
+        return
+      }
+      
+      let logsManager = EXDevLauncherRemoteLogsManager(withUrl: url)
+      logsManager.deferError(message: "Your app just crashed. See the error below.")
+      logsManager.deferError(exception: exception)
+      logsManager.sendSync()
+    }
+  }
+  
+  static func getLogsUrl(_ controller: EXDevLauncherController) -> URL? {
+    let logsUrlFromManifest = controller.appManifest()?.rawManifestJSON()["logUrl"] as? String
+    if (logsUrlFromManifest != nil) {
+      return URL.init(string: logsUrlFromManifest!)
+    }
+    
+    guard let appUrl = controller.appBridge?.bundleURL else {
+      return nil
+    }
+    
+    return URL.init(string: "logs", relativeTo: appUrl)
   }
 }

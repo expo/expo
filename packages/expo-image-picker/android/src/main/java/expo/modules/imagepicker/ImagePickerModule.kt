@@ -10,7 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import com.theartofdev.edmodo.cropper.CropImage
+import com.canhub.cropper.CropImage
 import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.ModuleRegistryDelegate
@@ -356,7 +356,11 @@ class ImagePickerModule(
     val contentResolver = activity.application.contentResolver
 
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-      val result = CropImage.getActivityResult(intent)
+      val result = CropImage.getActivityResult(intent).ifNull {
+        promise.reject(ImagePickerConstants.ERR_CROPPING_FAILURE, ImagePickerConstants.CROPPING_FAILURE_MESSAGE)
+        return
+      }
+
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
       ImageResultTask(
         promise,

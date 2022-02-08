@@ -59,7 +59,7 @@ In order to access the `ssid` property (available under `state.details.ssid`), t
 ```json
   "ios": {
     "entitlements": {
-      "com.apple.developer.networking.wifi-info": "true"
+      "com.apple.developer.networking.wifi-info": true
     }
   }
 ```
