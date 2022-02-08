@@ -1,26 +1,13 @@
 import { getUserStatePath } from '@expo/config/build/getUserState';
 import fs from 'fs-extra';
 import { vol } from 'memfs';
+import nock from 'nock';
 
-import {
-  Actor,
-  getActorDisplayName,
-  getSessionSecret,
-  getUserAsync,
-  loginAsync,
-  logoutAsync,
-} from '../user';
+import { getExpoApiBaseUrl } from '../../endpoint';
+import { getSessionSecret } from '../sessionStorage';
+import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
 
 jest.mock('fs');
-jest.mock('../../api', () => ({
-  apiClient: {
-    post: jest.fn(() => {
-      return {
-        json: () => Promise.resolve({ data: { sessionSecret: 'SESSION_SECRET' } }),
-      };
-    }),
-  },
-}));
 jest.mock('../../graphql/client', () => ({
   graphqlClient: {
     query: () => {
@@ -57,6 +44,12 @@ const robotStub: Actor = {
   isExpoAdmin: false,
 };
 
+function mockLoginRequest() {
+  nock(getExpoApiBaseUrl())
+    .post('/v2/auth/loginAsync')
+    .reply(200, { data: { sessionSecret: 'SESSION_SECRET' } });
+}
+
 describe(getUserAsync, () => {
   it('skips fetching user without access token or session secret', async () => {
     expect(await getUserAsync()).toBeUndefined();
@@ -68,6 +61,8 @@ describe(getUserAsync, () => {
   });
 
   it('fetches user when session secret is defined', async () => {
+    mockLoginRequest();
+
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
     expect(await getUserAsync()).toMatchObject({ __typename: 'User' });
   });
@@ -75,6 +70,7 @@ describe(getUserAsync, () => {
 
 describe(loginAsync, () => {
   it('saves user data to ~/.expo/state.json', async () => {
+    mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
 
     expect(await fs.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
@@ -93,6 +89,7 @@ describe(loginAsync, () => {
 
 describe(logoutAsync, () => {
   it('removes the session secret', async () => {
+    mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
     expect(getSessionSecret()).toBe('SESSION_SECRET');
 

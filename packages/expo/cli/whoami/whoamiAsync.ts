@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
+import { getActorDisplayName, getUserAsync } from '../api/user/user';
 import * as Log from '../log';
-import { getActorDisplayName, getUserAsync } from '../utils/user/user';
 
 export async function whoamiAsync() {
   const user = await getUserAsync();
