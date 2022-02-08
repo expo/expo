@@ -120,20 +120,20 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     var appIcon = getApplicationIconUri()
     var hostUrl = reactContext.sourceURL
 
-    val manifest = devMenuManager.getSession()?.appInfo
+    val manifest = devMenuManager.currentManifest
 
     if (manifest != null) {
-      if (manifest.get("appName") != null) {
-        appName = manifest.get("appName") as String
+      if (manifest.get("name") != null) {
+        appName = manifest.get("name") as String
       }
 
-      if (manifest.get("appVersion") != null) {
-        appVersion = manifest.get("appVersion") as String
+      if (manifest.get("version") != null) {
+        appVersion = manifest.get("version") as String
       }
+    }
 
-      if (manifest.get("hostUrl") != null) {
-        hostUrl = manifest.get("hostUrl") as String
-      }
+    if (devMenuManager.currentManifestURL != null) {
+      hostUrl = devMenuManager.currentManifestURL
     }
 
     map.apply {

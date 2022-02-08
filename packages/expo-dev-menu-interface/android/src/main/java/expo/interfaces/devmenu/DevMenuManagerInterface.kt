@@ -9,8 +9,12 @@ import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import kotlinx.coroutines.CoroutineScope
+import org.json.JSONObject
 
 interface DevMenuManagerInterface {
+  var currentManifest: JSONObject?
+  var currentManifestURL: String?
+
   /**
    * Opens the dev menu in provided [activity]
    */

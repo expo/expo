@@ -115,6 +115,8 @@ class DevLauncherController private constructor()
       manifest = appLoaderFactory.getManifest()
       manifestURL = parsedUrl
 
+      setupDevMenu()
+
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
       mode = Mode.APP
@@ -130,6 +132,7 @@ class DevLauncherController private constructor()
         mode = Mode.LAUNCHER
         manifest = null
         manifestURL = null
+        invalidateDevMenu()
       }
     } catch (e: Exception) {
       synchronized(this) {
@@ -162,6 +165,9 @@ class DevLauncherController private constructor()
     mode = Mode.LAUNCHER
     manifest = null
     manifestURL = null
+
+    invalidateDevMenu()
+
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
@@ -218,6 +224,15 @@ class DevLauncherController private constructor()
     }
   }
 
+  private fun setupDevMenu() {
+    devMenuManager.currentManifest = manifest?.getRawJson()
+    devMenuManager.currentManifestURL = manifestURL.toString()
+  }
+
+  private fun invalidateDevMenu() {
+    devMenuManager.currentManifest = null
+    devMenuManager.currentManifestURL = null
+  }
 
   @UiThread
   private fun clearHost(host: ReactNativeHost, activityToBeInvalidated: ReactActivity?) {

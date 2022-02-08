@@ -46,6 +46,7 @@ import expo.modules.devmenu.tests.DevMenuTestInterceptor
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.json.JSONObject
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
@@ -64,6 +65,9 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private val expoApiClient = DevMenuExpoApiClient()
   private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
+
+  override var currentManifest: JSONObject? = null
+  override var currentManifestURL: String? = null
 
   //region helpers
 
