@@ -30,9 +30,6 @@ export const EXPO_NO_TYPESCRIPT_SETUP = () => boolish('EXPO_NO_TYPESCRIPT_SETUP'
 /** Disable telemetry (analytics) */
 export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
 
-/** Expo automated authentication token for use in CI environments */
-export const EXPO_TOKEN = process.env.EXPO_TOKEN ?? null;
-
 /** Is running in non-interactive CI mode */
 export const LOCAL_XDL_SCHEMA = boolish('LOCAL_XDL_SCHEMA', false);
 
@@ -47,14 +44,21 @@ export const XDL_HOST = string('XDL_HOST', 'exp.host');
 
 export const XDL_SCHEME = string('XDL_SCHEME', 'https');
 
-/** Disable all API caches. Does not disable bundler caches. */
-export const EXPO_NO_CACHE = () => boolish('EXPO_NO_CACHE', false);
-
 /** @deprecated Default Webpack host string */
 export const WEB_HOST = string('WEB_HOST', '0.0.0.0');
 
 /** @deprecated Default Webpack port string */
 export const WEB_PORT = int('WEB_PORT', 19006);
+
+// @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
+
+// TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
+
+/** Expo automated authentication token for use in CI environments */
+export const EXPO_TOKEN = process.env.EXPO_TOKEN ?? null;
+
+/** Disable all API caches. Does not disable bundler caches. */
+export const EXPO_NO_CACHE = () => boolish('EXPO_NO_CACHE', false);
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 

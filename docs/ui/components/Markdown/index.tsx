@@ -2,6 +2,9 @@ import { css, CSSObject } from '@emotion/react';
 import { typography } from '@expo/styleguide';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
+import { Blockquote } from './Blockquote';
+
+import { DETAILS, SUMMARY } from '~/ui/components/Collapsible';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H1, H2, H4, H5, CODE, P, BOLD, UL, OL, LI } from '~/ui/components/Text';
 
@@ -72,8 +75,10 @@ const markdownStyles: Record<string, Config | null> = {
     style: { margin: `2ch 0` },
   },
   blockquote: {
-    Component: 'div',
-    css: typography.body.blockquote,
+    Component: Blockquote,
+    style: {
+      marginBottom: paragraphMarginBottom,
+    },
   },
   img: {
     Component: 'img',
@@ -91,15 +96,13 @@ const markdownStyles: Record<string, Config | null> = {
     css: typography.utility.anchor,
   },
   details: {
-    Component: 'details',
-    css: typography.body.paragraph,
-  },
-  summary: {
-    Component: 'summary',
-    css: typography.body.paragraph,
+    Component: DETAILS,
     style: {
       marginBottom: 16,
     },
+  },
+  summary: {
+    Component: SUMMARY,
   },
   table: {
     Component: Table,

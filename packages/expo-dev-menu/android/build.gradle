@@ -74,15 +74,15 @@ def getCurrentFlavor() {
 }
 
 def replaceSoTaskDebug
-def replaceSoTaskRelease
+def replaceSoTaskReleaseWithDevMenu
 
 if (Integer.parseInt(minor) < 65 && shouldSwapJNI()) {
   println("DevMenu will replace JNI library.")
 
   tasks.register("replaceSoTaskDebug", replaceSoTask)
-  tasks.register("replaceSoTaskRelease", replaceSoTask)
+  tasks.register("replaceSoTaskReleaseWithDevMenu", replaceSoTask)
   replaceSoTaskDebug = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskDebug")
-  replaceSoTaskRelease = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskRelease")
+  replaceSoTaskReleaseWithDevMenu = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskReleaseWithDevMenu")
 }
 
 rootProject.getSubprojects().forEach({ project ->
@@ -101,17 +101,22 @@ rootProject.getSubprojects().forEach({ project ->
         replaceSoTask.buildDir = project.getProperties().buildDir
         def appName = project.getProperties().path
 
+        def tasks = project.getTasks()
         replaceSoTaskDebug.dependsOn(
-            project.getTasks().getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
-            project.getTasks().getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
+            tasks.getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
+            tasks.getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
         )
-        project.getTasks().getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
+        tasks.getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
 
-        replaceSoTaskRelease.dependsOn(
-            project.getTasks().getByPath("${appName}:merge${flavorString}ReleaseNativeLibs"),
-            project.getTasks().getByPath("${appName}:strip${flavorString}ReleaseDebugSymbols")
-        )
-        project.getTasks().getByPath("${appName}:package${flavorString}Release").dependsOn(replaceSoTaskRelease)
+        if (tasks.findByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs")
+            && tasks.findByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
+            && tasks.findByPath("${appName}:package${flavorString}ReleaseWithDevMenu")) {
+          replaceSoTaskReleaseWithDevMenu.dependsOn(
+              task.getByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs"),
+              task.getByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
+          )
+          tasks.getByPath("${appName}:package${flavorString}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
+        }
       }
     }
   }
@@ -195,7 +200,7 @@ android {
   }
 
   sourceSets {
-    main {
+    debug {
       jniLibs.srcDir "$reanimatedPath/$reanimatedVersion-$engine/jni"
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
@@ -237,7 +242,8 @@ repositories {
 dependencies {
   implementation project(':expo-modules-core')
 
-  implementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
+  debugImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
+  releaseWithDevMenuImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
 
   implementation project(":expo-dev-menu-interface")
 

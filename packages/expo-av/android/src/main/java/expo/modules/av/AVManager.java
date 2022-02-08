@@ -7,7 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -24,6 +26,7 @@ import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,6 +59,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY = "numberOfChannels";
   private static final String RECORDING_OPTION_BIT_RATE_KEY = "bitRate";
   private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
+
+  private static final String RECORDING_INPUT_NAME_KEY = "name";
+  private static final String RECORDING_INPUT_TYPE_KEY = "type";
+  private static final String RECORDING_INPUT_UID_KEY = "uid";
 
   private boolean mShouldRouteThroughEarpiece = false;
 
@@ -667,6 +674,131 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     map.putString("uri", Uri.fromFile(new File(mAudioRecordingFilePath)).toString());
     map.putBundle("status", getAudioRecorderStatus());
     promise.resolve(map);
+  }
+
+  private AudioDeviceInfo getDeviceInfoFromUid(String uid) {
+    AudioDeviceInfo deviceInfo = null;
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+      return deviceInfo;
+    }
+
+    int id = Integer.valueOf(uid);
+    AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+    for (AudioDeviceInfo device : audioDevices) {
+      int deviceId = device.getId();
+      if (deviceId == id) {
+        return device;
+      }
+    }
+    return null;
+  }
+
+  private Bundle getMapFromDeviceInfo(AudioDeviceInfo deviceInfo) {
+    Bundle map = new Bundle();
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+      return map;
+    }
+    int type = deviceInfo.getType();
+    String typeStr = String.valueOf(type);
+    if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
+      typeStr = "MicrophoneBuiltIn";
+    } else if (type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+      typeStr = "BluetoothSCO";
+    } else if (type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+      typeStr = "BluetoothA2DP";
+    } else if (type == AudioDeviceInfo.TYPE_TELEPHONY) {
+      typeStr = "Telephony";
+    } else if (type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+      typeStr = "MicrophoneWired";
+    }
+    map.putString(RECORDING_INPUT_NAME_KEY, deviceInfo.getProductName().toString());
+    map.putString(RECORDING_INPUT_TYPE_KEY, typeStr);
+    map.putString(RECORDING_INPUT_UID_KEY, String.valueOf(deviceInfo.getId()));
+    return map;
+  }
+
+  @Override
+  public void getCurrentInput(final Promise promise) {
+    AudioDeviceInfo deviceInfo = null;
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P){
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current audio input is not supported on devices running Android version lower than Android 9.0");
+      return;
+    } else  {
+
+      try {
+        // getRoutedDevice() is the most reliable way to return the actual mic input, however it
+        // only returns a valid device when actively recording, and may throw otherwise.
+        // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
+        deviceInfo = mAudioRecorder.getRoutedDevice();
+      } catch (Exception e) {
+        // Noop if this throws, try alternate method of determining current input below.
+      }
+
+      // If no routed device is found try preferred device
+      deviceInfo = mAudioRecorder.getPreferredDevice();
+
+      if (deviceInfo == null) {
+        // If no preferred device is found, set it to the first built-in input we can find
+        AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+        for (int i = 0; i < audioDevices.length; i++) {
+          AudioDeviceInfo availableDeviceInfo = audioDevices[i];
+          int type = availableDeviceInfo.getType();
+          if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
+            deviceInfo = availableDeviceInfo;
+            mAudioRecorder.setPreferredDevice(deviceInfo);
+            break;
+          }
+        }
+      }
+    }
+
+    if (deviceInfo != null) {
+      final Bundle map = getMapFromDeviceInfo(deviceInfo);
+      promise.resolve(map);
+    } else {
+      promise.reject("E_AUDIO_DEVICENOTFOUND", "Cannot get current input, AudioDeviceInfo not found.");
+    }
+  }
+
+  @Override
+  public void getAvailableInputs(final Promise promise) {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M){
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting available inputs is not supported on devices running Android version lower than Android 6.0");
+    } else {
+      ArrayList<Bundle> devices = new ArrayList();
+      AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+      for (AudioDeviceInfo deviceInfo : audioDevices) {
+        int type = deviceInfo.getType();
+        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+          final Bundle map = getMapFromDeviceInfo(deviceInfo);
+          devices.add(map);
+        }
+      }
+      promise.resolve(devices);
+    }
+  }
+
+  @Override
+  public void setInput(final String uid, final Promise promise) {
+    AudioDeviceInfo deviceInfo = getDeviceInfoFromUid(uid);
+    boolean success = false;
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      if (deviceInfo != null && deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+        mAudioManager.startBluetoothSco();
+      } else {
+        mAudioManager.stopBluetoothSco();
+      }
+
+      success = mAudioRecorder.setPreferredDevice(deviceInfo);
+
+    } else {
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Setting input is not supported on devices running Android version lower than Android 9.0");
+    }
+    if (success) {
+      promise.resolve(success);
+    } else {
+      promise.reject("E_AUDIO_SETINPUTFAIL", "Could not set preferred device input.");
+    }
   }
 
   @Override

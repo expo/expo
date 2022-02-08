@@ -1,10 +1,11 @@
 import ProgressBar from 'progress';
 
-let _bundleProgressBar: ProgressBar | null = null;
-export function setProgressBar(bar: ProgressBar | null) {
-  _bundleProgressBar = bar;
+let currentProgress: ProgressBar | null = null;
+
+export function setProgressBar(bar: ProgressBar | null): void {
+  currentProgress = bar;
 }
 
 export function getProgressBar(): ProgressBar | null {
-  return _bundleProgressBar;
+  return currentProgress;
 }

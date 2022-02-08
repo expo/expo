@@ -1,4 +1,5 @@
-import prompts, { Options, Choice, PromptObject, PromptType } from 'prompts';
+import assert from 'assert';
+import prompts, { Choice, Options, PromptObject, PromptType } from 'prompts';
 
 import { CI } from './env';
 import { AbortCommandError, CommandError } from './errors';
@@ -14,6 +15,15 @@ export interface ExpoChoice<T> extends Choice {
 export { PromptType };
 
 type PromptOptions = { nonInteractiveHelp?: string; isCancelable?: boolean } & Options;
+
+export type NamelessQuestion = Omit<Question<'value'>, 'name' | 'type'>;
+
+type InteractionOptions = { pause: boolean; canEscape?: boolean };
+
+type InteractionCallback = (options: InteractionOptions) => void;
+
+/** Interaction observers for detecting when keystroke tracking should pause/resume. */
+const listeners: InteractionCallback[] = [];
 
 export default async function prompt(
   questions: Question | Question[],
@@ -40,9 +50,6 @@ export default async function prompt(
   try {
     const results = await prompts(questions, {
       onCancel() {
-        if (isCancelable) {
-          return;
-        }
         throw new AbortCommandError();
       },
       ...options,
@@ -53,8 +60,6 @@ export default async function prompt(
     resumeInteractions();
   }
 }
-
-export type NamelessQuestion = Omit<Question<'value'>, 'name' | 'type'>;
 
 /**
  * Create a standard yes/no confirmation that can be cancelled.
@@ -78,41 +83,6 @@ export async function confirmAsync(
   return value ?? null;
 }
 
-type InteractionOptions = { pause: boolean; canEscape?: boolean };
-
-type InteractionCallback = (options: InteractionOptions) => void;
-
-const listeners: InteractionCallback[] = [];
-
-/**
- * Used to pause/resume interaction observers while prompting (made for TerminalUI).
- *
- * @param callback
- */
-export function addInteractionListener(callback: InteractionCallback) {
-  listeners.push(callback);
-}
-
-export function removeInteractionListener(callback: InteractionCallback) {
-  const listenerIndex = listeners.findIndex((_callback) => _callback === callback);
-  if (listenerIndex === -1) {
-    throw new Error('removeInteractionListener(): cannot remove an unregistered event listener.');
-  }
-  listeners.splice(listenerIndex, 1);
-}
-
-export function pauseInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
-  for (const listener of listeners) {
-    listener({ pause: true, ...options });
-  }
-}
-
-export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
-  for (const listener of listeners) {
-    listener({ pause: false, ...options });
-  }
-}
-
 /** Select an option from a list of options. */
 export async function selectAsync<T>(
   message: string,
@@ -132,3 +102,35 @@ export async function selectAsync<T>(
 }
 
 export const promptAsync = prompt;
+
+/**
+ * Used to pause/resume interaction observers while prompting (made for TerminalUI).
+ *
+ * @param callback
+ */
+export function addInteractionListener(callback: InteractionCallback) {
+  listeners.push(callback);
+}
+
+export function removeInteractionListener(callback: InteractionCallback) {
+  const listenerIndex = listeners.findIndex((_callback) => _callback === callback);
+  assert(
+    listenerIndex >= 0,
+    'removeInteractionListener(): cannot remove an unregistered event listener.'
+  );
+  listeners.splice(listenerIndex, 1);
+}
+
+/** Notify all listeners that keypress observations must pause. */
+export function pauseInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
+  for (const listener of listeners) {
+    listener({ pause: true, ...options });
+  }
+}
+
+/** Notify all listeners that keypress observations can start.. */
+export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
+  for (const listener of listeners) {
+    listener({ pause: false, ...options });
+  }
+}

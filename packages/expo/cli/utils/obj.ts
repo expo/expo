@@ -1,3 +1,4 @@
+/** `lodash.get` */
 export function get(obj: any, key: string): any | null {
   const branches = key.split('.');
   let current: any = obj;
@@ -11,6 +12,7 @@ export function get(obj: any, key: string): any | null {
   return current;
 }
 
+/** `lodash.set` */
 export function set(obj: any, key: string, value: any): any | null {
   const branches = key.split('.');
   let current: any = obj;
@@ -23,7 +25,6 @@ export function set(obj: any, key: string, value: any): any | null {
 
     if (!(branch in current)) {
       current[branch] = {};
-      // return null;
     }
 
     current = current[branch];
@@ -31,6 +32,7 @@ export function set(obj: any, key: string, value: any): any | null {
   return null;
 }
 
+/** `lodash.pickBy` */
 export function pickBy<T>(
   obj: { [key: string]: T },
   predicate: (value: T, key: string) => boolean | undefined

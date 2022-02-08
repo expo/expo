@@ -129,8 +129,9 @@ export const renderProp = (
   </LI>
 );
 
-const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) =>
-  data?.length ? (
+const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) => {
+  const baseProp = data.find(prop => prop.name === header);
+  return data?.length ? (
     <>
       {header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
@@ -139,7 +140,7 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
           <H3Code key={`${header}-props-header`}>
             <InlineCode>{header}</InlineCode>
           </H3Code>
-          <br />
+          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : <br />}
         </>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
@@ -147,5 +148,6 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
       )}
     </>
   ) : null;
+};
 
 export default APISectionProps;

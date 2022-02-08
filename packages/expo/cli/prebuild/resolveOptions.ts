@@ -6,11 +6,11 @@ import path from 'path';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
-import { isUrl } from '../utils/url';
+import { validateUrl } from '../utils/url';
 
 /** Resolves a template option as a URL or file path pointing to a tar file. */
 export function resolveTemplateOption(template: string) {
-  if (isUrl(template)) {
+  if (validateUrl(template)) {
     return template;
   }
   const templatePath = path.resolve(template);

@@ -1,4 +1,4 @@
-import { set, get } from '../obj';
+import { set, get, pickBy } from '../obj';
 
 describe(set, () => {
   it(`sets deeply`, () => {
@@ -17,5 +17,16 @@ describe(get, () => {
   });
   it(`returns null`, () => {
     expect(get({ a: { b: { c: 'd' } } }, 'a.b.d')).toEqual(null);
+  });
+});
+
+describe(pickBy, () => {
+  it(`picks`, () => {
+    expect(pickBy({ a: { b: { c: 'd' } } }, (_, key) => key.startsWith('a'))).toEqual({
+      a: { b: { c: 'd' } },
+    });
+  });
+  it(`ignores`, () => {
+    expect(pickBy({ a: { b: { c: 'd' } } }, (_, key) => !key.startsWith('a'))).toEqual({});
   });
 });
