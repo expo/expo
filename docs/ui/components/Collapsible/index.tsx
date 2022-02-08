@@ -36,7 +36,7 @@ const detailsStyle = css({
   padding: 0,
 
   '&[open]': {
-    boxShadow: shadows.tiny,
+    boxShadow: shadows.micro,
   },
 });
 
