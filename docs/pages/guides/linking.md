@@ -267,11 +267,11 @@ The AASA must be served from `/.well-known/apple-app-site-association` (with no 
 }
 ```
 
-This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by the app with ID `LKWJEF.io.myapp.example`. See [Apple's documentation](https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
+This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by the app with ID `LKWJEF.io.myapp.example`. See [Apple's documentation](https://developer.apple.com/documentation/bundleresources/applinks) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
 
 > The `*` wildcard does **not** match domain or path separators (periods and slashes).
 
-As of iOS 13, [a new `details` format is supported](https://developer.apple.com/documentation/safariservices/supporting_associated_domains) which allows you to specify
+As of iOS 13, [a new `details` format is supported](https://developer.apple.com/documentation/xcode/supporting-associated-domains) which allows you to specify
 
 - `appIDs` instead of `appID`, which makes it easier to associate multiple apps with the same configuration
 - an array of `components`, which allows you to specify fragments, exclude specific paths, and add comments
@@ -331,7 +331,7 @@ At this point, opening a link on your mobile device should now open your app! If
 
 ### Deep links on Android
 
-Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](../workflow/configuration.md#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](/workflow/configuration.md#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
 ```
 "intentFilters": [
