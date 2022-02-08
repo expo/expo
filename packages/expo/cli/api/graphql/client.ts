@@ -15,7 +15,7 @@ import { DocumentNode } from 'graphql';
 import fetch from 'node-fetch';
 
 import * as Log from '../../log';
-import { getExpoApiBaseUrl } from '../api';
+import { getExpoApiBaseUrl } from '../endpoint';
 import { getAccessToken, getSessionSecret } from '../user/sessionStorage';
 
 type AccessTokenHeaders = {

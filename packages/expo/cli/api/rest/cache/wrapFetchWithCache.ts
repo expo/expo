@@ -11,9 +11,11 @@
 import crypto from 'crypto';
 import FormData from 'form-data';
 import fs from 'fs';
-import fetch, { Request, RequestInfo, RequestInit, Response } from 'node-fetch';
+import { Request, RequestInfo, RequestInit, Response } from 'node-fetch';
 import { URLSearchParams } from 'url';
 
+import { FetchLike } from '../client.types';
+import { FileSystemCache } from './FileSystemCache';
 import { NFCResponse } from './response';
 
 const CACHE_VERSION = 3;
@@ -36,7 +38,7 @@ async function lock(key: string) {
   const takeLockPromise = lockPromiseForKey[key];
   lockPromiseForKey[key] = takeLockPromise.then(
     () =>
-      new Promise(fulfill => {
+      new Promise((fulfill) => {
         unlockFunctionForKey[key] = fulfill;
       })
   );
@@ -74,7 +76,7 @@ function getFormDataCacheKey(formData: FormData) {
   const boundaryReplaceRegex = new RegExp(boundary, 'g');
 
   // @ts-expect-error
-  cacheKey._streams = cacheKey._streams.map(s => {
+  cacheKey._streams = cacheKey._streams.map((s) => {
     if (typeof s === 'string') {
       return s.replace(boundaryReplaceRegex, '');
     }
@@ -144,23 +146,20 @@ function getCacheKey(requestArguments: any[]) {
   return md5(JSON.stringify([resourceCacheKeyJson, initCacheKeyJson, CACHE_VERSION]));
 }
 
-async function getResponse(
-  cache: import('./FileSystemCache').FileSystemCache,
-  url: RequestInfo,
-  init?: RequestInit | undefined
-) {
-  const cacheKey = getCacheKey([url, init]);
-  let cachedValue = await cache.get(cacheKey);
+export function wrapFetchWithCache(
+  fetch: FetchLike,
+  cache: FileSystemCache
+): (url: RequestInfo, init?: RequestInit | undefined) => Promise<Response> {
+  async function getResponse(
+    cache: FileSystemCache,
+    url: RequestInfo,
+    init?: RequestInit | undefined
+  ) {
+    const cacheKey = getCacheKey([url, init]);
+    let cachedValue = await cache.get(cacheKey);
 
-  const ejectSelfFromCache = () => cache.remove(cacheKey);
+    const ejectSelfFromCache = () => cache.remove(cacheKey);
 
-  if (cachedValue) {
-    return new NFCResponse(cachedValue.bodyStream, cachedValue.metaData, ejectSelfFromCache, true);
-  }
-
-  await lock(cacheKey);
-  try {
-    cachedValue = await cache.get(cacheKey);
     if (cachedValue) {
       return new NFCResponse(
         cachedValue.bodyStream,
@@ -170,31 +169,37 @@ async function getResponse(
       );
     }
 
-    const fetchResponse = await fetch(url, init);
-    const serializedMeta = NFCResponse.serializeMetaFromNodeFetchResponse(fetchResponse);
+    await lock(cacheKey);
+    try {
+      cachedValue = await cache.get(cacheKey);
+      if (cachedValue) {
+        return new NFCResponse(
+          cachedValue.bodyStream,
+          cachedValue.metaData,
+          ejectSelfFromCache,
+          true
+        );
+      }
 
-    const newlyCachedData = await cache.set(
-      cacheKey,
-      // @ts-expect-error
-      fetchResponse.body,
-      serializedMeta
-    );
+      const fetchResponse = await fetch(url, init);
+      const serializedMeta = NFCResponse.serializeMetaFromNodeFetchResponse(fetchResponse);
 
-    return new NFCResponse(
-      newlyCachedData!.bodyStream,
-      newlyCachedData!.metaData,
-      ejectSelfFromCache,
-      false
-    );
-  } finally {
-    unlock(cacheKey);
+      const newlyCachedData = await cache.set(
+        cacheKey,
+        // @ts-expect-error
+        fetchResponse.body,
+        serializedMeta
+      );
+
+      return new NFCResponse(
+        newlyCachedData!.bodyStream,
+        newlyCachedData!.metaData,
+        ejectSelfFromCache,
+        false
+      );
+    } finally {
+      unlock(cacheKey);
+    }
   }
-}
-
-function createFetchWithCache(
-  cache: import('./FileSystemCache').FileSystemCache
-): (url: RequestInfo, init?: RequestInit | undefined) => Promise<Response> {
   return (url: RequestInfo, init?: RequestInit | undefined) => getResponse(cache, url, init);
 }
-
-export default createFetchWithCache;

@@ -1,11 +1,12 @@
+import nock from 'nock';
+
 import * as Log from '../../../log';
-import { apiClient } from '../../api';
-import { promptAsync, selectAsync } from '../../prompts';
+import { promptAsync, selectAsync } from '../../../utils/prompts';
+import { getExpoApiBaseUrl } from '../../endpoint';
 import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } from '../otp';
 import { loginAsync } from '../user';
 
-jest.mock('../../prompts');
-jest.mock('../../api');
+jest.mock('../../../utils/prompts');
 jest.mock('../user');
 jest.mock('../../../log');
 
@@ -50,7 +51,7 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
       'One-time password was sent to the phone number ending in testphone.'
     );
 
-    expect(asMock(loginAsync)).toHaveBeenCalledTimes(1);
+    expect(loginAsync).toHaveBeenCalledTimes(1);
   });
 
   it('shows authenticator OTP prompt when authenticator is primary', async () => {
@@ -73,7 +74,7 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
     });
 
     expect(Log.log).toHaveBeenCalledWith('One-time password from authenticator required.');
-    expect(asMock(loginAsync)).toHaveBeenCalledTimes(1);
+    expect(loginAsync).toHaveBeenCalledTimes(1);
   });
 
   it('shows menu when user bails on primary', async () => {
@@ -108,8 +109,8 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
       smsAutomaticallySent: false,
     });
 
-    expect(asMock(selectAsync).mock.calls.length).toEqual(1);
-    expect(asMock(loginAsync)).toHaveBeenCalledTimes(1);
+    expect(selectAsync).toHaveBeenCalledTimes(1);
+    expect(loginAsync).toHaveBeenCalledTimes(1);
   });
 
   it('shows a warning when when user bails on primary and does not have any secondary set up', async () => {
@@ -168,7 +169,7 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
       smsAutomaticallySent: false,
     });
 
-    expect(asMock(promptAsync).mock.calls.length).toBe(2); // first OTP, second OTP
+    expect(promptAsync).toHaveBeenCalledTimes(2); // first OTP, second OTP
   });
 
   it('requests SMS OTP and prompts for SMS OTP when user selects SMS secondary', async () => {
@@ -185,9 +186,13 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
         throw new Error("shouldn't happen");
       });
 
-    asMock(apiClient.post).mockReturnValueOnce({
-      json: () => Promise.resolve({ data: { sessionSecret: 'SESSION_SECRET' } }),
-    });
+    const scope = nock(getExpoApiBaseUrl())
+      .post('/v2/auth/send-sms-otp', {
+        username: 'blah',
+        password: 'blah',
+        secondFactorDeviceID: 'p2',
+      })
+      .reply(200, {});
 
     await retryUsernamePasswordAuthWithOTPAsync('blah', 'blah', {
       secondFactorDevices: [
@@ -207,17 +212,8 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
       smsAutomaticallySent: false,
     });
 
-    expect(asMock(promptAsync).mock.calls.length).toBe(2); // first OTP, second OTP
-    expect(asMock(apiClient.post).mock.calls[0]).toEqual([
-      'auth/send-sms-otp',
-      {
-        json: {
-          username: 'blah',
-          password: 'blah',
-          secondFactorDeviceID: 'p2',
-        },
-      },
-    ]);
+    expect(promptAsync).toHaveBeenCalledTimes(2); // first OTP, second OTP
+    expect(scope.isDone()).toBe(true);
   });
 
   it('exits when user bails on primary and backup', async () => {

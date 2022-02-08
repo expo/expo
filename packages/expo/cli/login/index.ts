@@ -41,7 +41,7 @@ export const expoLogin: Command = async (argv) => {
     );
   }
 
-  const { showLoginPromptAsync } = await import('../utils/user/actions');
+  const { showLoginPromptAsync } = await import('../api/user/actions');
   return showLoginPromptAsync({
     // Parsed options
     username: args['--username'],
