@@ -51,6 +51,14 @@ export type TypeDefinitionData = {
   declaration?: TypeDeclarationContentData;
   value?: string | boolean | null;
   operator?: string;
+  objectType?: {
+    name: string;
+    type: string;
+  };
+  indexType?: {
+    type: string;
+    value: string;
+  };
 };
 
 export type MethodParamData = {
@@ -131,6 +139,7 @@ export type PropsDefinitionData = {
   name: string;
   type: TypeDefinitionData;
   kind: TypeDocKind;
+  comment?: CommentData;
 };
 
 export type PropData = {

@@ -26,7 +26,7 @@ export default function VideoPlayer(props: {
   const [sourceIndex, setIndex] = React.useState(0);
   const [errorMessage, setError] = React.useState<undefined | string>(undefined);
   const [useNativeControls, setUseNativeControls] = React.useState(false);
-  const [resizeMode, setResizeMode] = React.useState<ResizeMode>(Video.RESIZE_MODE_CONTAIN);
+  const [resizeMode, setResizeMode] = React.useState<ResizeMode>(ResizeMode.CONTAIN);
   const prevStatus = React.useRef<AVPlaybackStatus | null>(null);
 
   const [status, setStatus] = React.useState<AVPlaybackStatus>({
