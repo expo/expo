@@ -59,7 +59,7 @@ If you aren't happy with the name you originally chose for your account, you may
 
 ### Transferring Projects Between Accounts
 
-> ⚠️ This feature is in private beta and supported only for projects on SDK 43 or newer. Please upgrade your SDK if necessary and email secure@expo.dev including the following in your email and you will be added to the waitlist. (Tip: you can copy & paste these tables in your email and fill out the information)
+> ⚠️ This feature is in private beta and supported only for projects on SDK 43 or newer. Please upgrade your SDK if necessary and email secure@expo.dev including the following in your email and you will be added to the waitlist.
 
 | Account                              | Type                  | Are you an Owner? |
 | ------------------------------------ | --------------------- | ----------------- |
