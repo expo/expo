@@ -6,7 +6,7 @@ import http from 'http';
 import { resolve } from 'path';
 import { parse } from 'url';
 
-import { constructDevClientUrl, constructManifestUrl } from '../serverUrl';
+import { UrlCreator } from '../UrlCreator';
 
 export const LoadingEndpoint = '/_expo/loading';
 export const DeepLinkEndpoint = '/_expo/link';
@@ -59,7 +59,7 @@ async function loadingEndpointHandler(
     await readFile(resolve(__dirname, './../../static/loading-page/index.html'))
   ).toString('utf-8');
 
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const { exp } = getConfig(projectRoot);
   const { appName } = getNameFromConfig(exp);
   const { query } = parse(req.url!, true);
   const platform = getPlatform(query);
@@ -72,36 +72,35 @@ async function loadingEndpointHandler(
   res.end(content);
 }
 
-function deeplinkEndpointHandler(
-  projectRoot: string,
-  req: express.Request | http.IncomingMessage,
-  res: express.Response | http.ServerResponse
-) {
-  const { query } = parse(req.url!, true);
-  const isDevClient = query['choice'] === 'expo-dev-client';
-  if (isDevClient) {
-    const projectUrl = constructDevClientUrl({
-      hostType: 'localhost',
-    });
-    res.setHeader('Location', projectUrl);
-  } else {
-    const projectUrl = constructManifestUrl({
-      hostType: 'localhost',
-    });
-    res.setHeader('Location', projectUrl);
+export function getLoadingPageHandler(projectRoot: string, urlCreator: UrlCreator) {
+  function deeplinkEndpointHandler(
+    projectRoot: string,
+    req: express.Request | http.IncomingMessage,
+    res: express.Response | http.ServerResponse
+  ) {
+    const { query } = parse(req.url!, true);
+    const isDevClient = query['choice'] === 'expo-dev-client';
+    if (isDevClient) {
+      const projectUrl = urlCreator.constructDevClientUrl({
+        hostType: 'localhost',
+      });
+      res.setHeader('Location', projectUrl);
+    } else {
+      const projectUrl = urlCreator.constructManifestUrl({
+        hostType: 'localhost',
+      });
+      res.setHeader('Location', projectUrl);
+    }
+
+    onDeepLink(projectRoot, isDevClient, getPlatform(query));
+
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.setHeader('Expires', '-1');
+    res.setHeader('Pragma', 'no-cache');
+
+    res.statusCode = 307;
+    res.end();
   }
-
-  onDeepLink(projectRoot, isDevClient, getPlatform(query));
-
-  res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-  res.setHeader('Expires', '-1');
-  res.setHeader('Pragma', 'no-cache');
-
-  res.statusCode = 307;
-  res.end();
-}
-
-export function getLoadingPageHandler(projectRoot: string) {
   return async (
     req: express.Request | http.IncomingMessage,
     res: express.Response | http.ServerResponse,

@@ -30,7 +30,7 @@ const NO_PACKAGE_MESSAGE = `Project must have a \`android.package\` set in the E
  * If the project Expo config is a static JSON file, the bundle identifier will be updated in the config automatically.
  */
 export async function getOrPromptForBundleIdentifier(projectRoot: string): Promise<string> {
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const { exp } = getConfig(projectRoot);
 
   const current = exp.ios?.bundleIdentifier;
   if (current) {
@@ -138,7 +138,7 @@ async function getRecommendedPackageNameAsync(exp: ExpoConfig): Promise<string |
  * If the project Expo config is a static JSON file, the package name will be updated in the config automatically.
  */
 export async function getOrPromptForPackage(projectRoot: string): Promise<string> {
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const { exp } = getConfig(projectRoot);
 
   const current = exp.android?.package;
   if (current) {

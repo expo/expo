@@ -13,7 +13,7 @@ import { getMissingPackagesAsync } from './getMissingPackages';
 export async function ensureDependenciesAsync(
   projectRoot: string,
   {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
+    exp = getConfig(projectRoot).exp,
     requiredPackages,
     warningMessage,
     installMessage,

@@ -6,7 +6,7 @@ import StatusEventEmitter from '../utils/analytics/StatusEventEmitter';
 import { findLastIndex } from '../utils/array';
 import { EXPO_DEBUG } from '../utils/env';
 import { getLogger } from './logger';
-import PackagerLogsStream, { LogRecord, LogUpdater } from './metro/PackagerLogsStream';
+import PackagerLogsStream, { LogRecord, LogUpdater } from './server/PackagerLogsStream';
 
 /**
  * Given a line from a metro stack trace, this can attempt to extract

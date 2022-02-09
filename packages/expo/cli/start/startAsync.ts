@@ -1,6 +1,5 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
-import resolveFrom from 'resolve-from';
 
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
@@ -8,34 +7,19 @@ import { logEvent } from '../utils/analytics/rudderstackClient';
 import StatusEventEmitter from '../utils/analytics/StatusEventEmitter';
 import { CI } from '../utils/env';
 import { installExitHooks } from '../utils/exit';
+import { FileNotifier } from '../utils/FileNotifier';
 import { getAllSpinners, ora } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { getProgressBar, setProgressBar } from '../utils/progress';
-import ProcessSettings from './api/ProcessSettings';
 import { BundlerStartOptions } from './BundlerDevServer';
-import * as Project from './devServer';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { ensureTypeScriptSetupAsync } from './doctor/typescript/ensureTypeScriptSetup';
 import { ensureWebSupportSetupAsync } from './doctor/web/ensureWebSetup';
-import { printQRCode } from './interface/qr';
 import { startInterfaceAsync } from './interface/TerminalUI';
-import * as LoadingPageHandler from './metro/LoadingPageHandler';
 import { openPlatformsAsync } from './platforms/openPlatformsAsync';
 import { Options, resolvePortsAsync } from './resolveOptions';
-import { constructDeepLink } from './serverUrl';
-import { watchBabelConfigForProject } from './watchBabelConfig';
-import * as WebpackDevServer from './webpack/WebpackDevServer';
-
-export function isDevClientPackageInstalled(projectRoot: string) {
-  try {
-    // we check if `expo-dev-launcher` is installed instead of `expo-dev-client`
-    // because someone could install only launcher.
-    resolveFrom(projectRoot, 'expo-dev-launcher');
-    return true;
-  } catch {
-    return false;
-  }
-}
+import * as LoadingPageHandler from './server/middleware/LoadingPageHandler';
+import * as Project from './startDevServers';
 
 async function multiBundlerStartOptions(
   projectRoot: string,
@@ -53,10 +37,17 @@ async function multiBundlerStartOptions(
     // host: options.host,
     maxWorkers: options.maxWorkers,
     resetDevServer: options.clear,
+    location: {
+      hostType: options.host,
+      minify: options.minify,
+      scheme: options.scheme,
+      isOffline: options.offline,
+      mode,
+    },
   };
   const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, settings);
 
-  if (options.web) {
+  if (options.web || settings.webOnly) {
     multiBundlerStartOptions.push({
       type: 'webpack',
       options: {
@@ -84,45 +75,19 @@ export async function startAsync(
   options: Options,
   settings: { webOnly?: boolean }
 ) {
-  const startOptions = await multiBundlerStartOptions(projectRoot, options, settings);
-
   Log.log(chalk.gray(`Starting project at ${projectRoot}`));
 
-  // Add clean up hooks
-  installExitHooks(() => {
-    const spinners = getAllSpinners();
-    spinners.forEach((spinner) => {
-      spinner.fail();
-    });
-
-    const currentProgress = getProgressBar();
-    if (currentProgress) {
-      currentProgress.terminate();
-      setProgressBar(null);
-    }
-    const spinner = ora({ text: 'Stopping server', color: 'white' }).start();
-    Project.stopAsync(projectRoot)
-      .then(() => {
-        spinner.stopAndPersist({ text: 'Stopped server', symbol: `\u203A` });
-        process.exit();
-      })
-      .catch((error) => {
-        spinner.fail('Failed to stop server');
-        Log.error(error);
-      });
-  });
-
-  const { exp, pkg } = profile(getConfig)(projectRoot, {
-    skipSDKVersionRequirement: settings.webOnly || options.devClient,
-  });
+  const { exp, pkg } = profile(getConfig)(projectRoot);
 
   // TODO: Move into resolveOptions
   if (!options.forceManifestType) {
     const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
     const updatesUrl = exp.updates?.url;
     const isEasUpdatesUrl = updatesUrl && easUpdatesUrlRegex.test(updatesUrl);
-    ProcessSettings.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
+    options.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
   }
+
+  const startOptions = await multiBundlerStartOptions(projectRoot, options, settings);
 
   // Validations
 
@@ -130,15 +95,16 @@ export async function startAsync(
     await ensureWebSupportSetupAsync(projectRoot);
   }
 
-  if (options.devClient) {
-    track(projectRoot, exp);
-  }
-
   await profile(ensureTypeScriptSetupAsync)(projectRoot);
 
-  if (!settings.webOnly) {
-    // TODO: only validate dependencies if starting in managed workflow
+  if (!settings.webOnly && !options.devClient) {
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+  }
+
+  // Some tracking thing
+
+  if (options.devClient) {
+    track(projectRoot, exp);
   }
 
   // More Dev Client
@@ -149,7 +115,7 @@ export async function startAsync(
         return;
       }
 
-      const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+      const { exp } = getConfig(projectRoot);
       StatusEventEmitter.once('deviceLogReceive', () => {
         // Send the 'ready' event once the app is running in a device.
         logEvent('dev client start command', {
@@ -167,52 +133,52 @@ export async function startAsync(
     }
   );
 
-  watchBabelConfigForProject(projectRoot);
-
   await profile(Project.startDevServersAsync)(projectRoot, startOptions);
 
-  // Send to option...
-  let url: string | null = null;
-
-  try {
-    url = constructDeepLink();
-  } catch (error) {
-    // TODO: Maybe there's a better way to do this
-    if (!options.devClient || error.code !== 'NO_DEV_CLIENT_SCHEME') {
-      throw error;
-    }
-    url = null;
-  }
-
   // Open project on devices.
-  await profile(openPlatformsAsync)(projectRoot, options, settings);
+  await profile(openPlatformsAsync)(projectRoot, options);
+
+  watchBabelConfig(projectRoot);
 
   // Present the Terminal UI.
   if (!CI) {
-    await profile(startInterfaceAsync, 'TerminalUI.startAsync')(projectRoot, {
+    await profile(startInterfaceAsync)(projectRoot, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
-      webOnly: settings.webOnly,
-      isWebSocketsEnabled: !settings.webOnly || WebpackDevServer.isTargetingNative(),
+      devClient: options.devClient,
+      isWebSocketsEnabled: Project.getDefaultDevServer()?.isTargetingNative(),
+      async stopAsync() {
+        const spinners = getAllSpinners();
+        spinners.forEach((spinner) => {
+          spinner.fail();
+        });
+
+        const currentProgress = getProgressBar();
+        if (currentProgress) {
+          currentProgress.terminate();
+          setProgressBar(null);
+        }
+        const spinner = ora({ text: 'Stopping server', color: 'white' }).start();
+        try {
+          await Project.stopAsync();
+          spinner.stopAndPersist({ text: 'Stopped server', symbol: `\u203A` });
+          process.exit();
+        } catch (error) {
+          spinner.fail('Failed to stop server');
+          Log.exit(error);
+        }
+      },
     });
-  } else if (url) {
-    Log.log();
-    printQRCode(url);
-    Log.log(`Your native app is running at ${chalk.underline(url)}`);
+  } else {
+    // Display the server location in CI...
+    const url = Project.getDefaultDevServer()?.getDevServerUrl();
+    if (url) {
+      Log.log(chalk`Waiting on {underline ${url}`);
+    }
   }
 
   // Final note about closing the server.
-  Log.log(
-    settings.webOnly
-      ? chalk`Logs for your project will appear in the browser console. {dim Press Ctrl+C to exit.}`
-      : chalk`Logs for your project will appear below. {dim Press Ctrl+C to exit.}`
-  );
-
-  if (options.devClient) {
-    logEvent('dev client start command', {
-      status: 'ready',
-      ...getDevClientProperties(projectRoot, exp),
-    });
-  }
+  const logLocation = settings.webOnly ? 'in the browser console' : 'below';
+  Log.log(chalk`Logs for your project will appear ${logLocation}. {dim Press Ctrl+C to exit.}`);
 }
 
 function track(projectRoot: string, exp: ExpoConfig) {
@@ -227,4 +193,16 @@ function track(projectRoot: string, exp: ExpoConfig) {
     });
     // UnifiedAnalytics.flush();
   });
+}
+
+function watchBabelConfig(projectRoot: string) {
+  const notifier = new FileNotifier(projectRoot, [
+    './babel.config.js',
+    './.babelrc',
+    './.babelrc.js',
+  ]);
+
+  notifier.startObserving();
+
+  return notifier;
 }

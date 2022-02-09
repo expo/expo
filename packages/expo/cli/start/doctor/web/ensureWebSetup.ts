@@ -56,7 +56,7 @@ export async function shouldSetupWebSupportAsync(
     return { failureReason: '\u203A Skipping web setup: EXPO_NO_WEB_SETUP is enabled.' };
   }
 
-  const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const projectConfig = getConfig(projectRoot);
 
   // Detect if the 'web' string is purposefully missing from the platforms array.
   if (isWebPlatformExcluded(projectConfig.rootConfig)) {
@@ -73,7 +73,7 @@ export async function shouldSetupWebSupportAsync(
 async function ensureWebDependenciesInstalledAsync(
   projectRoot: string,
   {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
+    exp = getConfig(projectRoot).exp,
   }: {
     exp?: ExpoConfig;
   } = {}

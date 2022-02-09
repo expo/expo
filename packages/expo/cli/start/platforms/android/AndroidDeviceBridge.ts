@@ -5,9 +5,9 @@ import os from 'os';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
+import { installExitHooks } from '../../../utils/exit';
 import { learnMore } from '../../../utils/link';
 import * as Binaries from '../../../utils/vendoredBinary';
-import { getNativeDevServerPort } from '../../devServer';
 
 export type Device = {
   pid?: string;
@@ -329,18 +329,17 @@ export async function isDeviceBootedAsync({
   return devices.find((device) => device.name === name) ?? null;
 }
 
-function getAdbReversePorts(): number[] {
-  // TODO: Do we need to add the Web port for opening in the emulator?
-  return [getNativeDevServerPort()];
-}
+export async function startAdbReverseAsync(adbReversePorts: number[]): Promise<boolean> {
+  // Install cleanup automatically...
+  installExitHooks(() => {
+    stopAdbReverseAsync(adbReversePorts);
+  });
 
-export async function startAdbReverseAsync(
-  adbReversePorts: number[] = getAdbReversePorts()
-): Promise<boolean> {
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
     for (const port of adbReversePorts) {
       if (!(await adbReverseAsync({ device, port }))) {
+        Log.debug(`[ADB] Failed to start reverse port '${port}' on device '${device.name}'`);
         return false;
       }
     }
@@ -348,9 +347,7 @@ export async function startAdbReverseAsync(
   return true;
 }
 
-export async function stopAdbReverseAsync(
-  adbReversePorts: number[] = getAdbReversePorts()
-): Promise<void> {
+export async function stopAdbReverseAsync(adbReversePorts: number[]): Promise<void> {
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
     for (const port of adbReversePorts) {

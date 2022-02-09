@@ -23,17 +23,25 @@ export type Options = {
 
 export async function persistOptionsAsync(options: Options) {
   // Set process settings...
-  const ProcessSettings = await import('./api/ProcessSettings').then((m) => m.default);
+  const ProcessSettings = await import('./ProcessSettings').then((m) => m.default);
   ProcessSettings.isOffline = options.offline;
-  ProcessSettings.devClient = options.devClient;
-  ProcessSettings.https = options.https;
-  ProcessSettings.isDevMode = !!options.dev;
-  ProcessSettings.resetDevServer = !!options.clear;
-  ProcessSettings.forceManifestType = options.forceManifestType;
-  ProcessSettings.hostType = options.host;
-  ProcessSettings.scheme = options.scheme;
-  ProcessSettings.minify = options.minify;
-  ProcessSettings.maxMetroWorkers = options.maxWorkers;
+
+  const { setPersistedOptions } = await import('./startDevServers');
+  setPersistedOptions({
+    devClient: options.devClient,
+    forceManifestType: options.forceManifestType,
+    https: options.https,
+    maxWorkers: options.maxWorkers,
+    mode: options.dev ? 'development' : 'production',
+    resetDevServer: options.clear,
+    location: {
+      hostType: options.host,
+      minify: options.minify,
+      scheme: options.scheme,
+      isOffline: options.offline,
+      mode: options.dev ? 'development' : 'production',
+    },
+  });
 }
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {

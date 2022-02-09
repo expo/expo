@@ -41,9 +41,7 @@ export async function getSchemesForAndroidAsync(projectRoot: string) {
 }
 
 async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<string | null> {
-  const { exp } = getConfig(projectRoot, {
-    skipSDKVersionRequirement: true,
-  });
+  const { exp } = getConfig(projectRoot);
   try {
     const getDefaultScheme = require(resolveFrom(projectRoot, 'expo-dev-client/getDefaultScheme'));
     const scheme = getDefaultScheme(exp);

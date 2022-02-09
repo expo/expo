@@ -1,12 +1,11 @@
 import { MetroDevServerOptions, prependMiddleware, runMetroDevServerAsync } from '@expo/dev-server';
 
-import { getFreePortAsync } from '../utils/port';
-import { attachLogger } from './attachLogger';
-import { BundlerStartOptions, BundlerDevServer, DevServerInstance } from './BundlerDevServer';
-import { getLogger } from './logger';
-import * as ExpoUpdatesManifestHandler from './metro/ExpoUpdatesManifestHandler';
-import * as LoadingPageHandler from './metro/LoadingPageHandler';
-import * as ManifestHandler from './metro/ManifestHandler';
+import { getFreePortAsync } from '../../utils/port';
+import { attachLogger } from '../attachLogger';
+import { getLogger } from '../logger';
+import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
+import * as LoadingPageHandler from './middleware/LoadingPageHandler';
+import { UrlCreator } from './UrlCreator';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -15,12 +14,13 @@ const EXPO_GO_METRO_PORT = 19000;
 const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
+  get name(): string {
+    return 'metro';
+  }
   async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     await this.stopAsync();
 
     await attachLogger(this.projectRoot);
-
-    const useExpoUpdatesManifest = options.forceManifestType === 'expo-updates';
 
     const port =
       // If the manually defined port is busy then an error should be thrown...
@@ -31,6 +31,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
         : // Otherwise (running in Expo Go) use a free port that falls back on the classic 19000 port.
           await getFreePortAsync(options.port || EXPO_GO_METRO_PORT));
+
+    this.urlCreator = new UrlCreator(options.location, {
+      port,
+      getTunnelUrl: this.getTunnelUrl,
+    });
 
     const parsedOptions: MetroDevServerOptions = {
       port,
@@ -48,9 +53,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       parsedOptions
     );
 
-    const manifestMiddleware = useExpoUpdatesManifest
-      ? ExpoUpdatesManifestHandler.getManifestHandler(this.projectRoot)
-      : ManifestHandler.getManifestHandler(this.projectRoot);
+    const manifestMiddleware = this.getManifestMiddleware(options);
+
     // We need the manifest handler to be the first middleware to run so our
     // routes take precedence over static files. For example, the manifest is
     // served from '/' and if the user has an index.html file in their project
@@ -59,7 +63,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware);
 
-    middleware.use(LoadingPageHandler.getLoadingPageHandler(this.projectRoot));
+    middleware.use(LoadingPageHandler.getLoadingPageHandler(this.projectRoot, this.urlCreator));
 
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);
@@ -86,6 +90,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       messageSocket,
     });
 
+    await this.postStartAsync(options);
+
     return this.instance;
+  }
+
+  protected getConfigModuleIds(): string[] {
+    return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
 }

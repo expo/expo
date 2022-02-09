@@ -6,17 +6,25 @@ import * as path from 'path';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
-import * as Log from '../log';
-import { fileExistsAsync } from '../utils/dir';
-import { getIpAddress } from '../utils/ip';
-import { BundlerStartOptions, BundlerDevServer, DevServerInstance } from './BundlerDevServer';
-import { getLogger } from './logger';
-import * as ExpoUpdatesManifestHandler from './metro/ExpoUpdatesManifestHandler';
-import * as ManifestHandler from './metro/ManifestHandler';
+import * as Log from '../../log';
+import { fileExistsAsync } from '../../utils/dir';
+import { WEB_HOST, WEB_PORT } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
+import { getIpAddress } from '../../utils/ip';
+import { choosePortAsync } from '../../utils/port';
+import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
+import { getLogger } from '../logger';
+import { UrlCreator } from './UrlCreator';
+import { ensureEnvironmentSupportsSSLAsync } from './webpack/ssl';
+import { clearWebProjectCacheAsync } from './webpack/WebProjectCache';
 
 export type WebpackConfiguration = webpack.Configuration;
 
 export class WebpackBundlerDevServer extends BundlerDevServer {
+  get name(): string {
+    return 'webpack';
+  }
+
   // A custom message websocket broadcaster used to send messages to a React Native runtime.
   private customMessageSocketBroadcaster:
     | undefined
@@ -86,14 +94,18 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return ['ios', 'android'].includes(process.env.EXPO_WEBPACK_PLATFORM || '');
   }
 
+  isTargetingWeb(): boolean {
+    return true;
+  }
+
   private async createNativeDevServerMiddleware({
     port,
     compiler,
-    forceManifestType,
+    options,
   }: {
     port: number;
     compiler: webpack.Compiler;
-    forceManifestType?: 'classic' | 'expo-updates';
+    options: BundlerStartOptions;
   }) {
     if (!this.isTargetingNative()) {
       return null;
@@ -109,11 +121,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // Add manifest middleware to the other middleware.
     // TODO: Move this in to expo/dev-server.
 
-    const useExpoUpdatesManifest = forceManifestType === 'expo-updates';
-
-    const middleware = useExpoUpdatesManifest
-      ? ExpoUpdatesManifestHandler.getManifestHandler(this.projectRoot)
-      : ManifestHandler.getManifestHandler(this.projectRoot);
+    const middleware = this.getManifestMiddleware(options);
 
     nativeMiddleware.middleware.use(middleware).use(
       '/symbolicate',
@@ -126,10 +134,47 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return nativeMiddleware;
   }
 
+  private async getAvailablePortAsync(options: { defaultPort?: number }): Promise<number> {
+    try {
+      const defaultPort = options?.defaultPort ?? WEB_PORT;
+      const port = await choosePortAsync(this.projectRoot, {
+        defaultPort,
+        host: WEB_HOST,
+      });
+      if (!port) {
+        throw new CommandError('NO_PORT_FOUND', `Port ${defaultPort} not available.`);
+      }
+      return port;
+    } catch (error) {
+      throw new CommandError('NO_PORT_FOUND', error.message);
+    }
+  }
+
   async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     await this.stopAsync();
 
-    const { port, host, https, mode, forceManifestType } = options;
+    const { resetDevServer, https, mode } = options;
+
+    const port = await this.getAvailablePortAsync({
+      defaultPort: options.port,
+    });
+
+    this.urlCreator = new UrlCreator(options.location, {
+      port,
+      getTunnelUrl: this.getTunnelUrl,
+    });
+
+    Log.debug('Starting webpack on port: ' + port);
+
+    if (resetDevServer) {
+      Log.log(chalk.dim(`Clearing ${mode} cache directory...`));
+      await clearWebProjectCacheAsync(this.projectRoot, mode);
+    }
+
+    if (https) {
+      Log.debug('Configuring SSL to enable HTTPS support');
+      await ensureEnvironmentSupportsSSLAsync(this.projectRoot);
+    }
 
     const config = await loadConfigAsync(this.projectRoot, options);
 
@@ -145,7 +190,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       nativeMiddleware = await this.createNativeDevServerMiddleware({
         port,
         compiler,
-        forceManifestType,
+        options,
       });
       // Inject the native manifest middleware.
       const originalBefore = config.devServer.before.bind(config.devServer.before);
@@ -161,7 +206,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const server = new WebpackDevServer(compiler, config.devServer);
     // Launch WebpackDevServer.
-    server.listen(port, host, function (this: http.Server, error) {
+    server.listen(port, WEB_HOST, function (this: http.Server, error) {
       if (nativeMiddleware) {
         attachNativeDevServerMiddlewareToDevServer({
           server: this,
@@ -203,7 +248,13 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       },
     });
 
+    await this.postStartAsync(options);
+
     return this.instance;
+  }
+
+  protected getConfigModuleIds(): string[] {
+    return ['./webpack.config.js'];
   }
 }
 
@@ -255,7 +306,7 @@ function applyEnvironmentVariables(config: WebpackConfiguration): WebpackConfigu
 
 async function loadConfigAsync(
   projectRoot: string,
-  options: WebpackStartOptions,
+  options: BundlerStartOptions,
   argv?: string[]
 ): Promise<WebpackConfiguration> {
   const env = {

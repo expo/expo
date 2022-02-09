@@ -1,7 +1,7 @@
 import * as path from 'path';
 
-import * as Log from '../../log';
-import { removeAsync } from '../../utils/dir';
+import * as Log from '../../../log';
+import { removeAsync } from '../../../utils/dir';
 
 export function getWebProjectCachePath(projectRoot: string, mode: string = 'development'): string {
   return path.join(projectRoot, '.expo', 'web', 'cache', mode);

@@ -2,7 +2,7 @@ import { ProjectConfig } from '@expo/config';
 import { getEntryPoint } from '@expo/config/paths';
 import path from 'path';
 
-import { CommandError } from '../../utils/errors';
+import { CommandError } from '../../../utils/errors';
 
 const supportedPlatforms = ['ios', 'android', 'web'];
 

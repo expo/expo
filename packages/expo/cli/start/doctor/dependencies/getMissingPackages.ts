@@ -44,7 +44,7 @@ export function collectMissingPackages(
 export async function getMissingPackagesAsync(
   projectRoot: string,
   {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
+    exp = getConfig(projectRoot).exp,
     requiredPackages,
   }: {
     exp?: ExpoConfig;

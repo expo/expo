@@ -5,13 +5,12 @@ import { openInEditorAsync } from '../../utils/editor';
 import { CI, EXPO_DEBUG } from '../../utils/env';
 import { AbortCommandError, logCmdError } from '../../utils/errors';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
-import ProcessSettings from '../api/ProcessSettings';
-import { startDevServersAsync } from '../devServer';
 import { ensureWebSupportSetupAsync } from '../doctor/web/ensureWebSetup';
-import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
-import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
-import * as Webpack from '../webpack/Webpack';
-import * as WebpackDevServer from '../webpack/WebpackDevServer';
+import {
+  ensureWebDevServerRunningAsync,
+  getDefaultDevServer,
+  getWebDevServer,
+} from '../startDevServers';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import {
   openJsInspectorAsync,
@@ -27,12 +26,11 @@ const CTRL_L = '\u000C';
 
 export async function startInterfaceAsync(
   projectRoot: string,
-  options: Pick<StartOptions, 'isWebSocketsEnabled' | 'webOnly' | 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'> & {
+    stopAsync: () => Promise<void>;
+  }
 ) {
   const { stdin } = process;
-
-  const android = new AndroidPlatformManager(projectRoot);
-  const apple = new ApplePlatformManager(projectRoot);
 
   const startWaitingForCommand = () => {
     if (!stdin.setRawMode) {
@@ -68,6 +66,8 @@ export async function startInterfaceAsync(
     switch (key) {
       case CTRL_C:
       case CTRL_D:
+        await options.stopAsync();
+
         // @ts-ignore: Argument of type '"SIGINT"' is not assignable to parameter of type '"disconnect"'.
         process.emit('SIGINT');
         // Prevent terminal UI from accepting commands while the process is closing.
@@ -89,75 +89,51 @@ export async function startInterfaceAsync(
           return await openMoreToolsAsync();
       }
     }
-
-    const shouldPrompt = !CI && ['I', 'A'].includes(key);
-    if (shouldPrompt) {
-      Log.clear();
-    }
     const { platforms = ['ios', 'android', 'web'] } = options;
 
-    const handleOpenError = (e: Error) => {
-      if (!(e instanceof AbortCommandError)) {
-        Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
-      }
-    };
-    switch (key) {
-      case 'A':
-      case 'a': {
-        let runtime: 'web' | 'custom' | 'expo';
-        if (options.webOnly && !WebpackDevServer.isTargetingNative()) {
-          Log.log(`${BLT} Opening the web project in Chrome on Android...`);
-          runtime = 'web';
-        } else {
-          const isDisabled = !platforms.includes('android');
-          if (isDisabled) {
-            Log.warn(
-              `Android is disabled, enable it by adding ${chalk.bold`android`} to the platforms array in your app.json or app.config.js`
-            );
-            break;
-          }
-          runtime = ProcessSettings.devClient ? 'custom' : 'expo';
-          Log.log(`${BLT} Opening on Android...`);
-        }
-        await android
-          .openAsync(
-            {
-              runtime,
-            },
-            { shouldPrompt }
-          )
-          .catch(handleOpenError);
-        printHelp();
-        break;
-      }
-      case 'I':
-      case 'i': {
-        let runtime: 'web' | 'custom' | 'expo';
+    if (['i', 'a'].includes(key.toLowerCase())) {
+      const platform = key.toLowerCase() === 'i' ? 'ios' : 'android';
 
-        if (options.webOnly && !WebpackDevServer.isTargetingNative()) {
-          Log.log(`${BLT} Opening the web project in Safari on iOS...`);
-          runtime = 'web';
-        } else {
-          const isDisabled = !platforms.includes('ios');
-          if (isDisabled) {
-            Log.warn(
-              `iOS is disabled, enable it by adding ${chalk.bold`ios`} to the platforms array in your app.json or app.config.js`
-            );
-            break;
+      const shouldPrompt = !CI && ['I', 'A'].includes(key);
+      if (shouldPrompt) {
+        Log.clear();
+      }
+
+      const server = getDefaultDevServer();
+
+      const platformSettings: Record<
+        string,
+        { name: string; key: 'android' | 'ios'; launchTarget: 'emulator' | 'simulator' }
+      > = {
+        android: {
+          name: `Android`,
+          key: 'android',
+          launchTarget: 'emulator',
+        },
+        ios: {
+          name: `iOS`,
+          key: 'ios',
+          launchTarget: 'simulator',
+        },
+      };
+
+      const settings = platformSettings[platform];
+
+      Log.log(`${BLT} Opening on ${settings.name}...`);
+
+      if (server.isTargetingNative() && !platforms.includes(settings.key)) {
+        Log.warn(
+          chalk`${settings.name} is disabled, enable it by adding {bold ${settings.key}} to the platforms array in your app.json or app.config.js`
+        );
+      } else {
+        try {
+          await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
+          printHelp();
+        } catch (e) {
+          if (!(e instanceof AbortCommandError)) {
+            Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
           }
-          Log.log(`${BLT} Opening on iOS...`);
-          runtime = ProcessSettings.devClient ? 'custom' : 'expo';
         }
-        await apple
-          .openAsync(
-            {
-              runtime,
-            },
-            { shouldPrompt }
-          )
-          .catch(handleOpenError);
-        printHelp();
-        break;
       }
     }
 
@@ -183,17 +159,22 @@ export async function startInterfaceAsync(
         }
 
         // Ensure the Webpack dev server is running first
-        const isStarted = WebpackDevServer.getDevServerUrl();
-        if (!isStarted) {
+        if (!getWebDevServer()) {
           Log.debug('Starting up webpack dev server');
-          await startDevServersAsync(projectRoot, [{ type: 'webpack' }]);
+          await ensureWebDevServerRunningAsync(projectRoot);
           // When this is the first time webpack is started, reprint the connection info.
           printDevServerInfo(options);
         }
 
         Log.log(`${BLT} Open in the web browser...`);
-        await Webpack.openAsync(projectRoot);
-        printHelp();
+        try {
+          await getWebDevServer().openPlatformAsync('desktop');
+          printHelp();
+        } catch (e) {
+          if (!(e instanceof AbortCommandError)) {
+            Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+          }
+        }
         break;
       }
       case 'c':

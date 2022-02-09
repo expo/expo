@@ -3,12 +3,12 @@ import { BundleAssetWithFileHashes } from '@expo/dev-server';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { getAssetSchemasAsync } from '../../api/getExpoSchema';
-import * as Log from '../../log';
-import { fileExistsAsync } from '../../utils/dir';
-import { CommandError } from '../../utils/errors';
-import { get, set } from '../../utils/obj';
-import { validateUrl } from '../../utils/url';
+import { getAssetSchemasAsync } from '../../../api/getExpoSchema';
+import * as Log from '../../../log';
+import { fileExistsAsync } from '../../../utils/dir';
+import { CommandError } from '../../../utils/errors';
+import { get, set } from '../../../utils/obj';
+import { validateUrl } from '../../../utils/url';
 
 type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 

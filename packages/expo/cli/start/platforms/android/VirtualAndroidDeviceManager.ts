@@ -20,7 +20,7 @@ export class VirtualAndroidDeviceManager extends VirtualDeviceManager<AndroidDev
     shouldPrompt?: boolean;
   } = {}): Promise<VirtualAndroidDeviceManager> {
     if (device) {
-      await AndroidDeviceBridge.startAdbReverseAsync();
+      // await AndroidDeviceBridge.startAdbReverseAsync();
       const manager = new VirtualAndroidDeviceManager(device);
       if (!(await manager.attemptToStartAsync())) {
         throw new AbortCommandError();

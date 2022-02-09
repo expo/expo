@@ -1,4 +1,3 @@
-import * as UrlUtils from '../../serverUrl';
 import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
 import { VirtualDeviceManager } from '../VirtualDeviceManager';
 import { ensureDeviceHasValidExpoGoAsync } from './ensureDeviceHasValidExpoGoAsync';
@@ -7,8 +6,21 @@ import { SimulatorDevice } from './SimControl';
 import { VirtualAppleDeviceManager } from './VirtualAppleDeviceManager';
 
 export class ApplePlatformManager extends PlatformManager<SimulatorDevice> {
-  constructor(projectRoot: string) {
-    super(projectRoot, 'ios', VirtualAppleDeviceManager.resolveAsync);
+  constructor(
+    protected projectRoot: string,
+    protected port: number,
+    protected getDevServerUrl: () => string | null,
+    protected constructLoadingUrl: (platform?: string, type?: string) => string | null,
+    protected constructManifestUrl: (props: { scheme?: string }) => string | null
+  ) {
+    super(
+      projectRoot,
+      'ios',
+      getDevServerUrl,
+      () => constructLoadingUrl(this.platform, 'localhost'),
+      constructManifestUrl,
+      VirtualAppleDeviceManager.resolveAsync
+    );
   }
 
   public async openAsync(
@@ -21,21 +33,17 @@ export class ApplePlatformManager extends PlatformManager<SimulatorDevice> {
     return super.openAsync(options, resolveSettings);
   }
 
-  constructLoadingUrl(): string {
-    return UrlUtils.constructLoadingUrl(this.platform, 'localhost');
-  }
-
-  async ensureDeviceHasValidExpoGoAsync(
+  protected async ensureDeviceHasValidExpoGoAsync(
     deviceManager: VirtualDeviceManager<SimulatorDevice>
   ): Promise<boolean> {
     return ensureDeviceHasValidExpoGoAsync(this.projectRoot, deviceManager);
   }
 
-  async resolveExistingApplicationIdAsync(): Promise<string> {
+  protected async resolveExistingApplicationIdAsync(): Promise<string> {
     return resolveExistingApplicationIdAsync(this.projectRoot);
   }
 
-  resolveAlternativeLaunchUrl(
+  protected resolveAlternativeLaunchUrl(
     applicationId: string,
     props?: Partial<BaseOpenInCustomProps>
   ): string {

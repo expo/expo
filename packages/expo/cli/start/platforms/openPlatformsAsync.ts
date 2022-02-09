@@ -1,44 +1,22 @@
 import { AbortCommandError } from '../../utils/errors';
 import { Options } from '../resolveOptions';
-import * as Webpack from '../webpack/Webpack';
-import { AndroidPlatformManager } from './android/AndroidPlatformManager';
-import { ApplePlatformManager } from './ios/ApplePlatformManager';
+import {
+  ensureWebDevServerRunningAsync,
+  getDefaultDevServer,
+  getWebDevServer,
+} from '../startDevServers';
 
 export async function openPlatformsAsync(
   projectRoot: string,
-  options: Pick<Options, 'devClient' | 'ios' | 'android' | 'web'>,
-  settings: { webOnly?: boolean }
+  options: Pick<Options, 'ios' | 'android' | 'web'>
 ) {
   const results = await Promise.allSettled([
+    options.android ? getDefaultDevServer().openPlatformAsync('emulator') : null,
+    options.ios ? getDefaultDevServer().openPlatformAsync('simulator') : null,
     (async () => {
-      if (options.android) {
-        const platform = new AndroidPlatformManager(projectRoot);
-        if (settings.webOnly) {
-          return platform.openAsync({ runtime: 'web' });
-        } else if (options.devClient) {
-          return platform.openAsync({ runtime: 'custom' });
-        }
-        return platform.openAsync({ runtime: 'expo' });
-      }
-      return null;
-    })(),
-    (async () => {
-      if (options.ios) {
-        const platform = new ApplePlatformManager(projectRoot);
-        if (settings.webOnly) {
-          return platform.openAsync({ runtime: 'web' });
-        } else if (options.devClient) {
-          return platform.openAsync({ runtime: 'custom' });
-        }
-        return platform.openAsync({ runtime: 'expo' });
-      }
-      return null;
-    })(),
-    (async () => {
-      if (options.web) {
-        return Webpack.openAsync(projectRoot);
-      }
-      return null;
+      if (!options.web) return null;
+      await ensureWebDevServerRunningAsync(projectRoot);
+      return getWebDevServer().openPlatformAsync('desktop');
     })(),
   ]);
 

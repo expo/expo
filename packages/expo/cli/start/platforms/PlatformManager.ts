@@ -1,40 +1,36 @@
 import assert from 'assert';
+import resolveFrom from 'resolve-from';
 
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import * as UrlUtils from '../serverUrl';
-import { isDevClientPackageInstalled } from '../startAsync';
 import { VirtualDeviceManager } from './VirtualDeviceManager';
-import * as WebpackDevServer from '../webpack/WebpackDevServer';
 
 export interface BaseOpenInCustomProps {
   scheme?: string;
   applicationId?: string | null;
 }
 
+export interface BaseResolveDeviceProps<IDevice> {
+  /** Should prompt the user to select a device. */
+  shouldPrompt?: boolean;
+  /** The target device to use. */
+  device?: IDevice;
+
+  osType?: string;
+}
+
 export class PlatformManager<
   IDevice,
   IOpenInCustomProps extends BaseOpenInCustomProps = BaseOpenInCustomProps,
-  IResolveDeviceProps extends {
-    /** Should prompt the user to select a device. */
-    shouldPrompt?: boolean;
-    /** The target device to use. */
-    device?: IDevice;
-
-    osType?: string;
-  } = {
-    /** Should prompt the user to select a device. */
-    shouldPrompt?: boolean;
-    /** The target device to use. */
-    device?: IDevice;
-
-    osType?: string;
-  }
+  IResolveDeviceProps extends BaseResolveDeviceProps<IDevice> = BaseResolveDeviceProps<IDevice>
 > {
   constructor(
     protected projectRoot: string,
     protected platform: 'ios' | 'android',
+    protected getDevServerUrl: () => string | null,
+    protected constructLoadingUrl: (platform?: string, type?: string) => string | null,
+    protected constructManifestUrl: (props: { scheme?: string }) => string | null,
     private resolveDeviceAsync: (
       resolver?: Partial<IResolveDeviceProps>
     ) => Promise<VirtualDeviceManager<IDevice>>
@@ -44,14 +40,14 @@ export class PlatformManager<
     if (
       process.env['EXPO_ENABLE_INTERSTITIAL_PAGE'] &&
       !devClient &&
-      isDevClientPackageInstalled(this.projectRoot)
+      // TODO: >:0
+      // Checks if dev client is installed.
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
     ) {
       return this.constructLoadingUrl();
     } else {
       try {
-        return UrlUtils.constructDeepLink({
-          scheme,
-        });
+        return this.constructManifestUrl({ scheme });
       } catch (e) {
         if (devClient) {
           return null;
@@ -146,12 +142,11 @@ export class PlatformManager<
   }
 
   /** Open the current web project (Webpack) in a device . */
-  async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
+  protected async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
     url: string;
   }> {
-    // Ensure Webpack Dev Server is running.
-    const url = WebpackDevServer.getDevServerUrl();
-    assert(url, 'Webpack Dev Server is not running.');
+    const url = this.getDevServerUrl();
+    assert(url, 'Dev server is not running.');
 
     const deviceManager = await this.resolveDeviceAsync(resolveSettings);
     deviceManager.logOpeningUrl(url);
@@ -161,24 +156,20 @@ export class PlatformManager<
     return { url };
   }
 
-  resolveAlternativeLaunchUrl(
+  protected resolveAlternativeLaunchUrl(
     applicationId: string,
     props: Partial<IOpenInCustomProps> = {}
   ): string {
     throw new Error('unimplemented');
   }
 
-  constructLoadingUrl(): string {
-    throw new Error('unimplemented');
-  }
-
-  async ensureDeviceHasValidExpoGoAsync(
+  protected async ensureDeviceHasValidExpoGoAsync(
     deviceManager: VirtualDeviceManager<IDevice>
   ): Promise<boolean> {
     throw new Error('unimplemented');
   }
 
-  async resolveExistingApplicationIdAsync(): Promise<string> {
+  protected async resolveExistingApplicationIdAsync(): Promise<string> {
     throw new Error('unimplemented');
   }
 }

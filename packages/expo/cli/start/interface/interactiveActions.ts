@@ -5,9 +5,12 @@ import chalk from 'chalk';
 import * as Log from '../../log';
 import { learnMore } from '../../utils/link';
 import { selectAsync } from '../../utils/prompts';
-import { getNativeDevServerPort, broadcastMessage } from '../devServer';
-import * as UrlUtils from '../serverUrl';
-import * as WebpackDevServer from '../webpack/WebpackDevServer';
+import {
+  broadcastMessage,
+  getDefaultDevServer,
+  getNativeDevServerPort,
+  getWebDevServer,
+} from '../startDevServers';
 import { BLT, printHelp, printItem, printUsage, StartOptions } from './commandsTable';
 import { printQRCode } from './qr';
 
@@ -31,11 +34,12 @@ export async function openJsInspectorAsync() {
 }
 
 export function printDevServerInfo(
-  options: Pick<StartOptions, 'webOnly' | 'isWebSocketsEnabled' | 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
 ) {
-  if (!options.webOnly) {
+  // If native dev server is running, print its URL.
+  if (getNativeDevServerPort()) {
     try {
-      const url = UrlUtils.constructDeepLink();
+      const url = getDefaultDevServer().getNativeRuntimeUrl();
 
       printQRCode(url);
       Log.log(printItem(`Metro waiting on ${chalk.underline(url)}`));
@@ -46,16 +50,14 @@ export function printDevServerInfo(
       if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
         throw error;
       } else {
-        const serverUrl = UrlUtils.constructManifestUrl({
-          urlType: 'http',
-        });
+        const serverUrl = getDefaultDevServer().getDevServerUrl();
         Log.log(printItem(`Metro waiting on ${chalk.underline(serverUrl)}`));
         Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
       }
     }
   }
 
-  const webUrl = WebpackDevServer.getDevServerUrl();
+  const webUrl = getWebDevServer()?.getDevServerUrl({ hostType: 'localhost' });
   if (webUrl) {
     Log.log();
     Log.log(printItem(`Webpack waiting on ${chalk.underline(webUrl)}`));

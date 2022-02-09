@@ -12,7 +12,6 @@ export type StartOptions = {
   reset?: boolean;
   nonPersistent?: boolean;
   maxWorkers?: number;
-  webOnly?: boolean;
   platforms?: ExpoConfig['platforms'];
 };
 
@@ -27,7 +26,7 @@ export const printItem = (text: string): string =>
 const div = chalk.dim(`│`);
 
 export function printUsage(
-  options: Pick<StartOptions, 'webOnly' | 'devClient' | 'isWebSocketsEnabled' | 'platforms'>,
+  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>,
   { verbose }: { verbose: boolean }
 ) {
   const isMac = process.platform === 'darwin';
