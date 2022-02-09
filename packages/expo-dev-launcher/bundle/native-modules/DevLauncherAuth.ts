@@ -106,12 +106,5 @@ export async function restoreSessionAsync(): Promise<{
   [key: string]: any;
   sessionSecret: string;
 }> {
-  if (Platform.OS === 'android') {
-    try {
-      return JSON.parse(await DevLauncherAuth.restoreSessionAsync());
-    } catch (exception) {
-      return null;
-    }
-  }
   return await DevLauncherAuth.restoreSessionAsync();
 }

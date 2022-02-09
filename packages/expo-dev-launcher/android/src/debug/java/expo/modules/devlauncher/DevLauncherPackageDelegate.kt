@@ -5,12 +5,14 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtensions
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
+import expo.modules.devlauncher.modules.DevLauncherAuth
 
 object DevLauncherPackageDelegate {
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
     listOf(
       DevLauncherModule(reactContext),
       DevLauncherInternalModule(reactContext),
-      DevLauncherDevMenuExtensions(reactContext)
+      DevLauncherDevMenuExtensions(reactContext),
+      DevLauncherAuth(reactContext)
     )
 }
