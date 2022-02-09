@@ -138,13 +138,13 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   if ([inputsForRoute count] > 0) {
     return [inputsForRoute objectAtIndex:0];
   }
-    
+
   // If we've already set a preferred input, return it
   AVAudioSessionPortDescription *preferredInput = [[AVAudioSession sharedInstance] preferredInput];
   if (preferredInput != Nil) {
     return preferredInput;
   }
-    
+
   // If we don't have a current route, select the first available input and set it as preferred input.
   NSArray *availInputs = [[AVAudioSession sharedInstance] availableInputs];
   if ([availInputs count] > 0) {
@@ -152,6 +152,8 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
     [self setActiveInput:defaultInput];
     return defaultInput;
   }
+
+  return nil;
 }
 
 - (void)moduleDidBackground:(id)backgroundingModule
