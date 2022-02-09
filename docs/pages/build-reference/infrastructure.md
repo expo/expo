@@ -3,7 +3,7 @@ title: Build server infrastructure
 sidebar_title: Server infrastructure
 ---
 
-This document describes the current build infrastructure as of October 8, 2021. It is likely to change over time, and this document will be updated.
+This document describes the current build infrastructure as of February 1, 2022. It is likely to change over time, and this document will be updated.
 
 ## Configuring build environment
 
@@ -39,8 +39,6 @@ When selecting an image for the build you can use the full name provided below o
 - `~/.npmrc`
 
   ```
-  user=0
-  unsafe-perm=true
   registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
   ```
 
@@ -50,6 +48,7 @@ When selecting an image for the build you can use the full name provided below o
   unsafeHttpWhitelist:
     - "*"
   npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
+  enableImmutableInstalls: false
   ```
 
 #### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `latest`)
@@ -58,8 +57,9 @@ When selecting an image for the build you can use the full name provided below o
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
-- Node.js 14.18.1
-- Yarn 1.22.10
+- Node.js 16.13.2
+- Yarn 1.22.17
+- npm 8.1.2
 - Java 11
 
 </details>
@@ -70,8 +70,9 @@ When selecting an image for the build you can use the full name provided below o
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
-- Node.js 14.18.1
-- Yarn 1.22.10
+- Node.js 16.13.2
+- Yarn 1.22.17
+- npm 8.1.2
 - Java 8
 
 </details>
@@ -82,8 +83,9 @@ When selecting an image for the build you can use the full name provided below o
 
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
-- Node.js 14.18.1
-- Yarn 1.22.10
+- Node.js 16.13.2
+- Yarn 1.22.17
+- Npm 8.1.2
 - Java 11
 
 </details>
@@ -94,8 +96,9 @@ When selecting an image for the build you can use the full name provided below o
 
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
-- Node.js 14.18.1
-- Yarn 1.22.10
+- Node.js 16.13.2
+- Yarn 1.22.17
+- Npm 8.1.2
 - Java 8
 
 </details>
@@ -119,6 +122,7 @@ When selecting an image for the build you can use the full name provided below o
   unsafeHttpWhitelist:
     - "*"
   npmRegistryServer: "registry=http://10.254.24.8:4873"
+  enableImmutableInstalls: false
   ```
 
 #### Image `macos-monterey-12.1-xcode-13.2`
@@ -127,9 +131,9 @@ When selecting an image for the build you can use the full name provided below o
 
 - macOS Monterey 12.1
 - Xcode 13.2.1 (13C100)
-- Node.js 14.18.1
-- Yarn 1.22.10
-- npm 6.14.8
+- Node.js 16.13.2
+- Yarn 1.22.17
+- npm 8.1.2
 - fastlane 2.201.0
 - CocoaPods 1.11.2
 - Ruby 2.7
@@ -142,8 +146,9 @@ When selecting an image for the build you can use the full name provided below o
 
 - macOS Big Sur 11.4
 - Xcode 13.0 (13A233)
-- Node.js 14.18.1
-- Yarn 1.22.10
+- Node.js 16.13.2
+- Yarn 1.22.17
+- npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
 - Ruby 2.7
@@ -156,8 +161,9 @@ When selecting an image for the build you can use the full name provided below o
 
 - macOS Big Sur 11.4
 - Xcode 12.5 (12E5244e)
-- Node.js 14.18.1
-- Yarn 1.22.10
+- Node.js 16.13.2
+- Yarn 1.22.17
+- npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
 - Ruby 2.7

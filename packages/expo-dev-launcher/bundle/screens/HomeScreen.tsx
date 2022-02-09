@@ -89,7 +89,7 @@ export function HomeScreen({
   };
 
   return (
-    <View>
+    <View testID="DevLauncherMainScreen">
       <View bg="default">
         <AppHeader
           title={appName}

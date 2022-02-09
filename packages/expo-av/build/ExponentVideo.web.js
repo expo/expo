@@ -2,14 +2,7 @@ import * as React from 'react';
 import createElement from 'react-native-web/dist/exports/createElement';
 import ExponentAV from './ExponentAV';
 import { addFullscreenListener } from './FullscreenUtils.web';
-export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export const FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+import { VideoFullscreenUpdate, } from './Video.types';
 const Video = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
 export default class ExponentVideo extends React.Component {
     _video;
@@ -22,12 +15,12 @@ export default class ExponentVideo extends React.Component {
             return;
         if (isFullscreen) {
             this.props.onFullscreenUpdate({
-                nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
+                nativeEvent: { fullscreenUpdate: VideoFullscreenUpdate.PLAYER_DID_PRESENT },
             });
         }
         else {
             this.props.onFullscreenUpdate({
-                nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_DISMISS },
+                nativeEvent: { fullscreenUpdate: VideoFullscreenUpdate.PLAYER_DID_DISMISS },
             });
         }
     };

@@ -1,17 +1,17 @@
 import * as React from 'react';
 
+import { AppInfoContextProvider, AppInfoContextProviderProps } from '../hooks/useAppInfo';
 import { BottomSheetProvider } from '../hooks/useBottomSheet';
-import { BuildInfoContextProvider, BuildInfoContextProviderProps } from '../hooks/useBuildInfo';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
-  initialBuildInfo?: BuildInfoContextProviderProps['initialBuildInfo'];
+  initialAppInfo?: AppInfoContextProviderProps['initialAppInfo'];
 };
 
-export function AppProviders({ children, initialBuildInfo }: AppProvidersProps) {
+export function AppProviders({ children, initialAppInfo }: AppProvidersProps) {
   return (
-    <BuildInfoContextProvider initialBuildInfo={initialBuildInfo}>
+    <AppInfoContextProvider initialAppInfo={initialAppInfo}>
       <BottomSheetProvider>{children}</BottomSheetProvider>
-    </BuildInfoContextProvider>
+    </AppInfoContextProvider>
   );
 }

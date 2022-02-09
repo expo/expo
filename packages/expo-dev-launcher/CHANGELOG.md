@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+
+- Move unrelated dev-menu functions into dev-launcher. ([#16124](https://github.com/expo/expo/pull/16124) by [@ajsmth](https://github.com/ajsmth))
+- Simplify dev-launcher / dev-menu relationship on iOS. ([#16067](https://github.com/expo/expo/pull/16067) by [@ajsmth](https://github.com/ajsmth))
+
+
+## 0.10.4 — 2022-02-07
+
+### 🐛 Bug fixes
+
+- Fix opening published projects on Android. ([#16157](https://github.com/expo/expo/pull/16157) by [@esamelson](https://github.com/esamelson))
+
 ## 0.10.3 — 2022-02-01
 
 ### 🐛 Bug fixes

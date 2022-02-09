@@ -2,18 +2,6 @@
 
 import EXDevMenuInterface
 
-class DevMenuBridgeProxyDelegate: DevMenuDelegateProtocol {
-  private let bridge: RCTBridge
-
-  init(_ bridge: RCTBridge) {
-    self.bridge = bridge
-  }
-
-  public func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject? {
-    return self.bridge
-  }
-}
-
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
     if Thread.isMainThread {
@@ -59,9 +47,8 @@ private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtoc
  Manages the dev menu and provides most of the public API.
  */
 @objc
-open class DevMenuManager: NSObject, DevMenuManagerProtocol {
+open class DevMenuManager: NSObject {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
-  lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
 
@@ -72,7 +59,6 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    */
   @objc
   static public let shared = DevMenuManager()
-
   /**
    The window that controls and displays the dev menu view.
    */
@@ -83,22 +69,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    */
   lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
 
-  /**
-   Instance of `DevMenuSession` that keeps the details of the currently opened dev menu session.
-   */
-  public private(set) var session: DevMenuSession?
-
   var currentScreen: String?
-
-  /**
-   The delegate of `DevMenuManager` implementing `DevMenuDelegateProtocol`.
-   */
+  
   @objc
-  public var delegate: DevMenuDelegateProtocol? {
+  public var currentBridge: RCTBridge? {
     didSet {
-      guard self.canLaunchDevMenuOnStart && (DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished), let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+      guard self.canLaunchDevMenuOnStart && DevMenuSettings.showsAtLaunch, let bridge = currentBridge else {
         return
       }
+      
       if bridge.isLoading {
         NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: DevMenuViewController.ContentDidAppearNotification, object: nil)
       } else {
@@ -106,14 +85,16 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       }
     }
   }
-
   @objc
-  public static func configure(withBridge bridge: AnyObject) {
-    if let bridge = bridge as? RCTBridge {
-      shared.delegate = DevMenuBridgeProxyDelegate(bridge)
-    } else {
-      fatalError("Cound't cast to RCTBrigde. Make sure that you passed `RCTBridge` to `DevMenuManager.initializeWithBridge`.")
-    }
+  public var currentManifest: [AnyHashable: Any] = [:]
+  
+  @objc
+  public var currentManifestURL: URL?
+  
+  
+  @objc
+  public func setSession(_ session: String) {
+    self.expoApiClient.setSessionSecret(session)
   }
 
   @objc
@@ -132,7 +113,6 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
     self.readAutoLaunchDisabledState()
-    self.expoSessionDelegate.restoreSession()
   }
 
   /**
@@ -198,7 +178,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
 
   @objc
   public func sendEventToDelegateBridge(_ eventName: String, data: Any?) {
-    guard let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+    guard let bridge = currentBridge else {
       return
     }
 
@@ -231,7 +211,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    Bridge may register multiple modules with the same name – in this case it returns only the one that overrides the others.
    */
   var extensions: [DevMenuExtensionProtocol]? {
-    guard let bridge = session?.bridge else {
+    guard let bridge = currentBridge else {
       return nil
     }
     let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
@@ -314,14 +294,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     if isVisible == visible {
       return false
     }
-    return delegate?.devMenuManager?(self, canChangeVisibility: visible) ?? true
+    
+    return true
   }
 
   /**
    Returns bool value whether the onboarding view should be displayed by the dev menu view.
    */
   func shouldShowOnboarding() -> Bool {
-    return delegate?.shouldShowOnboarding?(manager: self) ?? !DevMenuSettings.isOnboardingFinished
+    return !DevMenuSettings.isOnboardingFinished
   }
 
   func readAutoLaunchDisabledState() {
@@ -336,8 +317,9 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
 
   @available(iOS 12.0, *)
   var userInterfaceStyle: UIUserInterfaceStyle {
-    return delegate?.userInterfaceStyle?(forDevMenuManager: self) ?? UIUserInterfaceStyle.unspecified
+    return UIUserInterfaceStyle.unspecified
   }
+
 
   // MARK: private
 
@@ -387,17 +369,16 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return false
     }
     if visible {
-      guard let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
-        debugPrint("DevMenuManager: The delegate is unset or it didn't provide a bridge to render for.")
+      guard currentBridge != nil else {
+        debugPrint("DevMenuManager: There is no bridge to render DevMenu.")
         return false
       }
-      session = DevMenuSession(bridge: bridge, appInfo: delegate?.appInfo?(forDevMenuManager: self), screen: screen)
       setCurrentScreen(screen)
       DispatchQueue.main.async { self.window?.makeKeyAndVisible() }
     } else {
-      session = nil
       DispatchQueue.main.async { self.window?.isHidden = true }
     }
     return true
   }
+  
 }

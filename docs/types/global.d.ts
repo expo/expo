@@ -1,4 +1,5 @@
 /// <reference types="@emotion/jest" />
+/// <reference types="@emotion/react/types/css-prop" />
 interface Window {
   __NEXT_DATA__: any;
   NProgress: any;
