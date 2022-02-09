@@ -88,8 +88,6 @@ PODS:
   - EXImageLoader (3.1.0):
     - ExpoModulesCore
     - React-Core
-  - EXImagePicker (12.0.0):
-    - ExpoModulesCore
   - EXInAppPurchases (12.1.0):
     - ExpoModulesCore
   - EXJSONUtils (0.2.0)
@@ -216,6 +214,8 @@ PODS:
     - ExpoModulesCore
   - ExpoImageManipulator (10.2.0):
     - EXImageLoader
+    - ExpoModulesCore
+  - ExpoImagePicker (12.0.0):
     - ExpoModulesCore
   - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
@@ -816,7 +816,6 @@ DEPENDENCIES:
   - EXGoogleSignIn (from `../../../packages/expo-google-sign-in/ios`)
   - EXImage (from `../../../packages/expo-image`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
-  - EXImagePicker (from `../../../packages/expo-image-picker/ios`)
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
@@ -841,6 +840,7 @@ DEPENDENCIES:
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
+  - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
@@ -1044,9 +1044,6 @@ EXTERNAL SOURCES:
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
-  EXImagePicker:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-image-picker/ios"
   EXInAppPurchases:
     inhibit_warnings: false
     :path: "../../../packages/expo-in-app-purchases/ios"
@@ -1106,6 +1103,9 @@ EXTERNAL SOURCES:
   ExpoImageManipulator:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-manipulator/ios"
+  ExpoImagePicker:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-image-picker/ios"
   ExpoKeepAwake:
     inhibit_warnings: false
     :path: "../../../packages/expo-keep-awake/ios"
@@ -1315,7 +1315,6 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
   EXImage: ee032fea95d6a21800d6678eb14d1face73236d6
   EXImageLoader: ad85d98d686b33a2cf3788d1e35c5156d3ffd2e0
-  EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
   EXInAppPurchases: 9c65b5ed6313e3aa32a5b75e4bcbce19868d66b4
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
@@ -1336,6 +1335,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: 6e4cb4a1e74be91e4c6671ce03a4c79fb18959c5
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
+  ExpoImagePicker: fcb2c6ef0267c2ec4274d9b7eea61063fa2433f3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
   ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552

@@ -1,0 +1,6 @@
+{
+  "platforms": ["android", "ios"],
+  "ios": {
+    "modulesClassNames": ["ImagePickerModule"]
+  }
+}
