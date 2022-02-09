@@ -36,14 +36,6 @@ export const LOCAL_XDL_SCHEMA = boolish('LOCAL_XDL_SCHEMA', false);
 /** local directory to the universe repo for testing locally */
 export const EXPO_UNIVERSE_DIR = string('EXPO_UNIVERSE_DIR', '');
 
-// TODO: Rename to EXPO_API_PORT or something...
-export const XDL_PORT = int('XDL_PORT', 0);
-
-/** Defaults to `exp.host` */
-export const XDL_HOST = string('XDL_HOST', 'exp.host');
-
-export const XDL_SCHEME = string('XDL_SCHEME', 'https');
-
 /** @deprecated Default Webpack host string */
 export const WEB_HOST = string('WEB_HOST', '0.0.0.0');
 

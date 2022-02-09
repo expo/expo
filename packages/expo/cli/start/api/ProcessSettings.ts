@@ -1,14 +1,6 @@
-import { EXPO_LOCAL, EXPO_STAGING, XDL_HOST, XDL_PORT, XDL_SCHEME } from '../../utils/env';
-
-interface ApiConfig {
-  scheme: string;
-  host: string;
-  port: number | null;
-}
+// This file represents globals for the start command.
 
 interface ProcessSettings {
-  /** API endpoints to use. */
-  api: ApiConfig;
   /** Name of this tool. */
   developerTool: 'expo-cli';
   /** Should the CLI skip making network requests. */
@@ -35,31 +27,7 @@ interface ProcessSettings {
   maxMetroWorkers?: number;
 }
 
-// TODO: Combine with endpoint.ts
-function getAPI(): ApiConfig {
-  if (EXPO_LOCAL) {
-    return {
-      scheme: 'http',
-      host: 'localhost',
-      port: 3000,
-    };
-  } else if (EXPO_STAGING) {
-    return {
-      scheme: XDL_SCHEME,
-      host: 'staging.exp.host',
-      port: XDL_PORT || null,
-    };
-  } else {
-    return {
-      scheme: XDL_SCHEME,
-      host: XDL_HOST,
-      port: XDL_PORT || null,
-    };
-  }
-}
-
 const settings: ProcessSettings = {
-  api: getAPI(),
   developerTool: 'expo-cli',
   isOffline: false,
   https: false,
