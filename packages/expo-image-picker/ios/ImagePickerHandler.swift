@@ -44,16 +44,16 @@ internal class ImagePickerHandler: NSObject,
 
   func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: MediaInfo) {
     DispatchQueue.main.async {
-      picker.dismiss(animated: true) { [weak self]
-        self.handlePickedMedia(mediaInfo: info)
+      picker.dismiss(animated: true) { [weak self] in
+        self?.handlePickedMedia(mediaInfo: info)
       }
     }
   }
 
   func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
     DispatchQueue.main.async {
-      picker.dismiss(animated: true) { [weak self]
-        self.handlePickingCancellation()
+      picker.dismiss(animated: true) { [weak self] in
+        self?.handlePickingCancellation()
       }
     }
   }
