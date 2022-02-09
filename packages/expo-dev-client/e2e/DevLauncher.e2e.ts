@@ -1,16 +1,22 @@
 import { element, expect, waitFor, by, device } from 'detox';
 
-const MenuTimeout = 70 * 1000;
-const LauncherMainScreenTimeout = 50 * 1000;
-const LocalAppTimeout = 80 * 1000;
+const LauncherMainScreenTimeout = 100 * 1000;
+const MenuTimeout = 100 * 1000;
+const LocalAppTimeout = 160 * 1000;
 
 const sleep = (duration: number) =>
   new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
 
-async function pressElementByString(buttonString: string, timeout: number = 0) {
+async function pressElementByString(buttonString: string) {
+  const button = element(by.text(buttonString));
+  expect(button).toBeVisible();
+  await tapButton(button);
+}
+
+async function pressMenuElementByString(buttonString: string, timeout: number = 0) {
   let button = element(by.text(buttonString));
 
-  await waitFor(button).toBeVisible().withTimeout(MenuTimeout);
+  await waitFor(button).toBeVisible().withTimeout(timeout);
 
   // When we open the dev-menu, we will see an animation.
   // Unfortunately, if we try to click to button before the
@@ -21,7 +27,13 @@ async function pressElementByString(buttonString: string, timeout: number = 0) {
   button = element(by.text(buttonString));
   await waitFor(button).toBeVisible();
 
-  await button.tap();
+  await tapButton(button);
+}
+
+async function runWithoutSynchronization(block: () => Promise<void>) {
+  await device.disableSynchronization();
+  await block();
+  await device.enableSynchronization();
 }
 
 function getInvocationManager() {
@@ -30,9 +42,6 @@ function getInvocationManager() {
 }
 
 function getLocalIPAddress(): string {
-  if (device.getPlatform() === 'ios') {
-    return 'localhost';
-  }
   return require('os')
     .networkInterfaces()
     .en0.find((elm: { family: string }) => elm.family === 'IPv4').address;
@@ -64,6 +73,15 @@ async function waitForAppMainScreen() {
     .withTimeout(LocalAppTimeout);
 }
 
+async function ensureThatLauncherMainScreenIsVisible() {
+  if (device.getPlatform() === 'ios') {
+    await expect(element(by.id('DevLauncherMainScreen'))).toBeVisible();
+    return;
+  }
+
+  await waitForLauncherMainScreen();
+}
+
 async function tapButton(button: Detox.IndexableNativeElement) {
   if (device.getPlatform() === 'ios') {
     await button.tap();
@@ -79,11 +97,11 @@ describe('DevLauncher', () => {
   });
 
   it('should render main screen', async () => {
-    await waitForLauncherMainScreen();
+    await ensureThatLauncherMainScreenIsVisible();
   });
 
   it('should be able to go to the settings screen and come back to the main screen', async () => {
-    await waitForLauncherMainScreen();
+    await ensureThatLauncherMainScreenIsVisible();
 
     await pressElementByString('Settings');
     await expect(element(by.id('DevLauncherSettingsScreen'))).toBeVisible();
@@ -93,7 +111,7 @@ describe('DevLauncher', () => {
   });
 
   it('should be able to load app from URL and come back to the launcher screen', async () => {
-    await waitForLauncherMainScreen();
+    await ensureThatLauncherMainScreenIsVisible();
 
     const urlToggle = element(by.id('DevLauncherURLToggle'));
     const urlInput = element(by.id('DevLauncherURLInput'));
@@ -110,13 +128,15 @@ describe('DevLauncher', () => {
       // close keyboard
       await device.pressBack();
     }
-    await tapButton(loadButton);
 
-    await waitForAppMainScreen();
-    await openMenu();
+    await runWithoutSynchronization(async () => {
+      await tapButton(loadButton);
+      await waitForAppMainScreen();
+      await openMenu();
 
-    await pressElementByString('Go home', MenuTimeout);
+      await pressMenuElementByString('Go home', MenuTimeout);
 
-    await waitForLauncherMainScreen();
+      await waitForLauncherMainScreen();
+    });
   });
 });

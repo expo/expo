@@ -2,8 +2,8 @@ import RudderAnalytics from '@expo/rudder-sdk-node';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 
+import { UserSettings } from '../../api/user/UserSettings';
 import { EXPO_LOCAL, EXPO_STAGING, EXPO_NO_TELEMETRY } from '../env';
-import UserSettings from '../user/UserSettings';
 
 const PLATFORM_TO_ANALYTICS_PLATFORM: { [platform: string]: string } = {
   darwin: 'Mac',

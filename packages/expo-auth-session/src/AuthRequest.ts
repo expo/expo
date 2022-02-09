@@ -21,10 +21,31 @@ let _authLock: boolean = false;
 
 type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 
+// @needsAudit @docsMissing
 /**
- * Implements an authorization request.
+ * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1][https://tools.ietf.org/html/rfc6749#section-4.1.1].
+ * You can use this class directly for more info around the authorization.
  *
- * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
+ * **Common use-cases:**
+ *
+ * - Parse a URL returned from the authorization server with `parseReturnUrlAsync()`.
+ * - Get the built authorization URL with `makeAuthUrlAsync()`.
+ * - Get a loaded JSON representation of the auth request with crypto state loaded with `getAuthRequestConfigAsync()`.
+ *
+ * @example
+ * ```ts
+ * // Create a request.
+ * const request = new AuthRequest({ ... });
+ *
+ * // Prompt for an auth code
+ * const result = await request.promptAsync(discovery, { useProxy: true });
+ *
+ * // Get the URL to invoke
+ * const url = await request.makeAuthUrlAsync(discovery);
+ *
+ * // Get the URL to invoke
+ * const parsed = await request.parseReturnUrlAsync("<URL From Server>");
+ * ```
  */
 export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   /**

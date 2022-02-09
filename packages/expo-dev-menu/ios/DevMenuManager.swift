@@ -49,7 +49,6 @@ private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtoc
 @objc
 open class DevMenuManager: NSObject {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
-  lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
 
@@ -91,6 +90,12 @@ open class DevMenuManager: NSObject {
   
   @objc
   public var currentManifestURL: URL?
+  
+  
+  @objc
+  public func setSession(_ session: String) {
+    self.expoApiClient.setSessionSecret(session)
+  }
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
@@ -108,7 +113,6 @@ open class DevMenuManager: NSObject {
     self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
     self.readAutoLaunchDisabledState()
-    self.expoSessionDelegate.restoreSession()
   }
 
   /**
@@ -316,6 +320,7 @@ open class DevMenuManager: NSObject {
     return UIUserInterfaceStyle.unspecified
   }
 
+
   // MARK: private
 
   private func loadDevMenuItems(forExtension ext: DevMenuExtensionProtocol) -> DevMenuItemsContainerProtocol? {
@@ -375,4 +380,5 @@ open class DevMenuManager: NSObject {
     }
     return true
   }
+  
 }
