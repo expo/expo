@@ -35,7 +35,7 @@ export function getNativeDevServerPort() {
   return MetroDevServer.getInstance()?.location?.port ?? null;
 }
 
-export async function startAsync(
+export async function startDevServersAsync(
   projectRoot: string,
   options: Pick<MetroDevServer.StartOptions, 'webOnly' | 'webpackPort' | 'metroPort'> = {}
 ): Promise<ExpoConfig> {

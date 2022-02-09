@@ -6,7 +6,7 @@ import { CI, EXPO_DEBUG } from '../../utils/env';
 import { AbortCommandError, logCmdError } from '../../utils/errors';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import ProcessSettings from '../api/ProcessSettings';
-import * as Project from '../devServer';
+import { startDevServersAsync } from '../devServer';
 import { ensureWebSupportSetupAsync } from '../doctor/web/ensureWebSetup';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
 import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
@@ -25,7 +25,7 @@ const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const CTRL_L = '\u000C';
 
-export async function startAsync(
+export async function startInterfaceAsync(
   projectRoot: string,
   options: Pick<StartOptions, 'isWebSocketsEnabled' | 'webOnly' | 'platforms'>
 ) {
@@ -186,7 +186,7 @@ export async function startAsync(
         const isStarted = WebpackDevServer.getDevServerUrl();
         if (!isStarted) {
           Log.debug('Starting up webpack dev server');
-          await Project.startAsync(projectRoot, { webOnly: true });
+          await startDevServersAsync(projectRoot, { webOnly: true });
           // When this is the first time webpack is started, reprint the connection info.
           printDevServerInfo(options);
         }

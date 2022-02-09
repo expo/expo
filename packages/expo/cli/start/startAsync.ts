@@ -17,7 +17,7 @@ import { validateDependenciesVersionsAsync } from './doctor/dependencies/validat
 import { ensureTypeScriptSetupAsync } from './doctor/typescript/ensureTypeScriptSetup';
 import { ensureWebSupportSetupAsync } from './doctor/web/ensureWebSetup';
 import { printQRCode } from './interface/qr';
-import * as TerminalUI from './interface/TerminalUI';
+import { startInterfaceAsync } from './interface/TerminalUI';
 import * as LoadingPageHandler from './metro/LoadingPageHandler';
 import { openPlatformsAsync } from './platforms/openPlatformsAsync';
 import { Options, resolvePortsAsync } from './resolveOptions';
@@ -123,7 +123,7 @@ export async function startAsync(
     }
   );
 
-  await profile(Project.startAsync)(projectRoot, {
+  await profile(Project.startDevServersAsync)(projectRoot, {
     webOnly: settings.webOnly,
     ...multiBundlerSettings,
   });
@@ -146,7 +146,7 @@ export async function startAsync(
 
   // Present the Terminal UI.
   if (!CI) {
-    await profile(TerminalUI.startAsync, 'TerminalUI.startAsync')(projectRoot, {
+    await profile(startInterfaceAsync, 'TerminalUI.startAsync')(projectRoot, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       webOnly: settings.webOnly,
       isWebSocketsEnabled: !settings.webOnly || WebpackDevServer.isTargetingNative(),
