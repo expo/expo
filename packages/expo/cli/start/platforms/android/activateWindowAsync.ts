@@ -12,7 +12,7 @@ function getUnixPID(port: number | string) {
     .trim();
 }
 
-export async function activateEmulatorWindowAsync(
+export async function activateWindowAsync(
   device: Pick<AndroidDeviceBridge.Device, 'type' | 'pid'>
 ) {
   if (

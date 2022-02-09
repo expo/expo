@@ -5,7 +5,7 @@ import * as Log from '../../../log';
 import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { validateUrl } from '../../../utils/url';
 import { VirtualDeviceManager } from '../VirtualDeviceManager';
-import { activateEmulatorWindowAsync } from './activateEmulatorWindowAsync';
+import { activateWindowAsync } from './activateWindowAsync';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
 import { getDevicesAsync } from './getDevicesAsync';
 import { promptForDeviceAsync } from './promptAndroidDeviceAsync';
@@ -154,6 +154,6 @@ export class VirtualAndroidDeviceManager extends VirtualDeviceManager<AndroidDev
 
   async activateWindowAsync() {
     // Bring the emulator window to the front on macos devices.
-    await activateEmulatorWindowAsync(this.device);
+    await activateWindowAsync(this.device);
   }
 }
