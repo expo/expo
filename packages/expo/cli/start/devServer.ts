@@ -4,13 +4,14 @@ import * as Log from '../log';
 import { logEvent } from '../utils/analytics/rudderstackClient';
 import ProcessSettings from './api/ProcessSettings';
 import { startDevSessionAsync, stopDevSession } from './api/startDevSession';
-import * as MetroDevServer from './metro/MetroDevServer';
+import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import * as NgrokServer from './ngrok/ngrokServer';
 import { startTunnelAsync, stopTunnelAsync } from './ngrok/startTunnel';
 import * as AndroidDeviceBridge from './platforms/android/AndroidDeviceBridge';
-import { watchBabelConfigForProject } from './watchBabelConfig';
-import * as Webpack from './webpack/Webpack';
-import * as WebpackDevServer from './webpack/WebpackDevServer';
+import { WebpackBundlerDevServer } from './WebpackBundlerDevServer';
+
+const devServers: BundlerDevServer[] = [];
 
 /**
  * Sends a message over web sockets to any connected device,
@@ -23,49 +24,68 @@ export function broadcastMessage(
   method: 'reload' | 'devMenu' | 'sendDevCommand',
   params?: Record<string, any>
 ) {
-  MetroDevServer.broadcastMessage(method, params);
-  WebpackDevServer.broadcastMessage(method, params);
+  devServers.forEach((server) => {
+    server.broadcastMessage(method, params);
+  });
 }
 
 /** Get the port for the dev server (either Webpack or Metro) that is hosting code for React Native runtimes. */
 export function getNativeDevServerPort() {
-  if (WebpackDevServer.isTargetingNative()) {
-    return WebpackDevServer.getInstance()?.location?.port ?? null;
-  }
-  return MetroDevServer.getInstance()?.location?.port ?? null;
+  const [server] = devServers.filter((server) => server.isTargetingNative());
+  return server?.getInstance?.()?.location?.port ?? null;
 }
+
+const BUNDLERS = {
+  webpack: WebpackBundlerDevServer,
+  metro: MetroBundlerDevServer,
+};
+
+export type MultiBundlerStartOptions = {
+  type: keyof typeof BUNDLERS;
+  options?: BundlerStartOptions;
+}[];
 
 export async function startDevServersAsync(
   projectRoot: string,
-  options: Pick<MetroDevServer.StartOptions, 'webOnly' | 'webpackPort' | 'metroPort'> = {}
+  startOptions: MultiBundlerStartOptions
 ): Promise<ExpoConfig> {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+
   logEvent('Start Project', {
     developerTool: ProcessSettings.developerTool,
     sdkVersion: exp.sdkVersion ?? null,
   });
 
-  watchBabelConfigForProject(projectRoot);
-
-  if (options.webOnly) {
-    await Webpack.startAsync(projectRoot, {
-      port: options.webpackPort,
-    });
-  } else {
-    await MetroDevServer.startAsync(projectRoot, options);
-  }
+  await startBundlerDevServersAsync(projectRoot, startOptions);
 
   if (!ProcessSettings.isOffline && ProcessSettings.hostType === 'tunnel') {
     await startTunnelAsync(projectRoot);
   }
 
-  const runtime = !options.webOnly || WebpackDevServer.isTargetingNative() ? 'native' : 'web';
+  // If any dev server is hosting native then we should display the native button.
+  const runtime = getNativeDevServerPort() ? 'native' : 'web';
 
   // This is used to make Expo Go open the project in either Expo Go, or the web browser.
   // Must come after ngrok (`startTunnelsAsync`) setup.
   startDevSessionAsync(projectRoot, { exp, runtime });
 
   return exp;
+}
+
+async function startBundlerDevServersAsync(
+  projectRoot: string,
+  startOptions: MultiBundlerStartOptions
+) {
+  const devServers: BundlerDevServer[] = [];
+
+  for (const { type, options } of startOptions) {
+    const BundlerDevServerClass = BUNDLERS[type];
+    const server = new BundlerDevServerClass(projectRoot);
+    await server.startAsync(options);
+    devServers.push(server);
+  }
+
+  return devServers;
 }
 
 export async function stopAsync(projectRoot: string): Promise<void> {
@@ -87,8 +107,7 @@ async function stopInternalAsync(projectRoot: string): Promise<void> {
   stopDevSession();
 
   await Promise.all([
-    WebpackDevServer.stopAsync(),
-    MetroDevServer.stopAsync(),
+    ...devServers.map((server) => server.stopAsync()),
     async () => {
       if (!ProcessSettings.isOffline) {
         await stopTunnelAsync(projectRoot).catch((e) => {
@@ -96,7 +115,7 @@ async function stopInternalAsync(projectRoot: string): Promise<void> {
         });
       }
     },
-    await AndroidDeviceBridge.stopAdbDaemonAsync(),
+    AndroidDeviceBridge.stopAdbDaemonAsync(),
   ]);
 }
 

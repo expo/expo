@@ -186,7 +186,7 @@ export async function startInterfaceAsync(
         const isStarted = WebpackDevServer.getDevServerUrl();
         if (!isStarted) {
           Log.debug('Starting up webpack dev server');
-          await startDevServersAsync(projectRoot, { webOnly: true });
+          await startDevServersAsync(projectRoot, [{ type: 'webpack' }]);
           // When this is the first time webpack is started, reprint the connection info.
           printDevServerInfo(options);
         }

@@ -47,9 +47,9 @@ export async function startAsync(
 }
 
 export async function openAsync(projectRoot: string, options?: StartWebpackCLIOptions) {
-  if (!ExpoWebpackDevServer.getInstance().server) {
-    await startAsync(projectRoot, options);
-  }
+  // if (!ExpoWebpackDevServer.getInstance().server) {
+  //   await startAsync(projectRoot, options);
+  // }
   return await openProjectAsync();
 }
 

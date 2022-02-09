@@ -12,6 +12,7 @@ import { getAllSpinners, ora } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { getProgressBar, setProgressBar } from '../utils/progress';
 import ProcessSettings from './api/ProcessSettings';
+import { BundlerStartOptions } from './BundlerDevServer';
 import * as Project from './devServer';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { ensureTypeScriptSetupAsync } from './doctor/typescript/ensureTypeScriptSetup';
@@ -22,6 +23,7 @@ import * as LoadingPageHandler from './metro/LoadingPageHandler';
 import { openPlatformsAsync } from './platforms/openPlatformsAsync';
 import { Options, resolvePortsAsync } from './resolveOptions';
 import { constructDeepLink } from './serverUrl';
+import { watchBabelConfigForProject } from './watchBabelConfig';
 import * as WebpackDevServer from './webpack/WebpackDevServer';
 
 export function isDevClientPackageInstalled(projectRoot: string) {
@@ -35,12 +37,54 @@ export function isDevClientPackageInstalled(projectRoot: string) {
   }
 }
 
+async function multiBundlerStartOptions(
+  projectRoot: string,
+  { devClient, forceManifestType, ...options }: Options,
+  settings: { webOnly?: boolean }
+): Promise<Project.MultiBundlerStartOptions> {
+  const multiBundlerStartOptions: Project.MultiBundlerStartOptions = [];
+  const mode = options.dev ? 'development' : 'production';
+
+  const commonOptions: BundlerStartOptions = {
+    mode,
+    devClient,
+    forceManifestType,
+    https: options.https,
+    // host: options.host,
+    maxWorkers: options.maxWorkers,
+    resetDevServer: options.clear,
+  };
+  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, settings);
+
+  if (options.web) {
+    multiBundlerStartOptions.push({
+      type: 'webpack',
+      options: {
+        ...commonOptions,
+        port: multiBundlerSettings.webpackPort,
+      },
+    });
+  }
+
+  if (!settings.webOnly) {
+    multiBundlerStartOptions.push({
+      type: 'metro',
+      options: {
+        ...commonOptions,
+        port: multiBundlerSettings.metroPort,
+      },
+    });
+  }
+
+  return multiBundlerStartOptions;
+}
+
 export async function startAsync(
   projectRoot: string,
   options: Options,
   settings: { webOnly?: boolean }
 ) {
-  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, settings);
+  const startOptions = await multiBundlerStartOptions(projectRoot, options, settings);
 
   Log.log(chalk.gray(`Starting project at ${projectRoot}`));
 
@@ -123,10 +167,9 @@ export async function startAsync(
     }
   );
 
-  await profile(Project.startDevServersAsync)(projectRoot, {
-    webOnly: settings.webOnly,
-    ...multiBundlerSettings,
-  });
+  watchBabelConfigForProject(projectRoot);
+
+  await profile(Project.startDevServersAsync)(projectRoot, startOptions);
 
   // Send to option...
   let url: string | null = null;
