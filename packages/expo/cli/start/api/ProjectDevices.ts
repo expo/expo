@@ -1,7 +1,4 @@
-import JsonFile from '@expo/json-file';
-import path from 'path';
-
-import { dotExpoProjectDirectory } from './dotExpo';
+import { createTemporaryProjectFile } from './dotExpo';
 
 export type DeviceInfo = {
   installationId: string;
@@ -16,9 +13,9 @@ const devicesFile = 'devices.json';
 
 const MILLISECONDS_IN_30_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-function devicesJsonFile(projectRoot: string): JsonFile<DevicesInfo> {
-  return new JsonFile<DevicesInfo>(path.join(dotExpoProjectDirectory(projectRoot), devicesFile));
-}
+export const DevicesFile = createTemporaryProjectFile<DevicesInfo>(devicesFile, {
+  devices: [],
+});
 
 let devicesInfo: DevicesInfo | null = null;
 
@@ -31,9 +28,7 @@ export async function getDevicesInfoAsync(projectRoot: string): Promise<DevicesI
 
 export async function readDevicesInfoAsync(projectRoot: string): Promise<DevicesInfo> {
   try {
-    devicesInfo = await devicesJsonFile(projectRoot).readAsync({
-      cantReadFileDefault: { devices: [] },
-    });
+    devicesInfo = await DevicesFile.readAsync(projectRoot);
 
     // if the file on disk has old devices, filter them out here before we use them
     const filteredDevices = filterOldDevices(devicesInfo.devices);
@@ -52,7 +47,7 @@ export async function readDevicesInfoAsync(projectRoot: string): Promise<Devices
 
     return devicesInfo;
   } catch {
-    return await devicesJsonFile(projectRoot).writeAsync({ devices: [] });
+    return await DevicesFile.setAsync(origin, { devices: [] });
   }
 }
 
@@ -61,14 +56,7 @@ export async function setDevicesInfoAsync(
   json: DevicesInfo
 ): Promise<DevicesInfo> {
   devicesInfo = json;
-
-  try {
-    return await devicesJsonFile(projectRoot).mergeAsync(json, {
-      cantReadFileDefault: { devices: [] },
-    });
-  } catch {
-    return await devicesJsonFile(projectRoot).writeAsync(json);
-  }
+  return await DevicesFile.setAsync(projectRoot, json);
 }
 
 export async function saveDevicesAsync(
