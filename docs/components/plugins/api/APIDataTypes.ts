@@ -109,12 +109,13 @@ export type InterfaceDefinitionData = {
   children: PropData[];
   comment?: CommentData;
   kind: TypeDocKind;
+  extendedTypes?: TypeDefinitionData[];
+  implementedTypes?: TypeDefinitionData[];
 };
 
 // Classes section
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
-  extendedTypes?: TypeDefinitionData[];
   type?: TypeDefinitionData;
 };
 
@@ -151,6 +152,8 @@ export type PropData = {
   defaultValue?: string;
   signatures?: MethodSignatureData[];
   overwrites?: TypeDefinitionData;
+  implementationOf?: TypeDefinitionData;
+  inheritedFrom?: TypeGeneralData;
 };
 
 export type DefaultPropsDefinitionData = {
