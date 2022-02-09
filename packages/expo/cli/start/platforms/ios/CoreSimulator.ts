@@ -4,8 +4,8 @@ import { sync as globSync } from 'glob';
 import os from 'os';
 import path from 'path';
 
-import * as Log from '../../log';
-import { parseBinaryPlistAsync } from '../../utils/plist';
+import * as Log from '../../../log';
+import { parseBinaryPlistAsync } from '../../../utils/plist';
 import { SimulatorDevice } from './SimControl';
 
 // Enable this to test the JS version of simctl

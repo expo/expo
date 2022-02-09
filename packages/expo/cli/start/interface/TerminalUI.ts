@@ -2,14 +2,14 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
-import { CI } from '../../utils/env';
+import { CI, EXPO_DEBUG } from '../../utils/env';
 import { AbortCommandError, logCmdError } from '../../utils/errors';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
-import * as Android from '../android/Android';
 import ProcessSettings from '../api/ProcessSettings';
 import * as Project from '../devServer';
 import { ensureWebSupportSetupAsync } from '../doctor/web/ensureWebSetup';
-import * as Apple from '../ios/Apple';
+import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
+import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
 import * as Webpack from '../webpack/Webpack';
 import * as WebpackDevServer from '../webpack/WebpackDevServer';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
@@ -30,6 +30,9 @@ export async function startAsync(
   options: Pick<StartOptions, 'isWebSocketsEnabled' | 'webOnly' | 'platforms'>
 ) {
   const { stdin } = process;
+
+  const android = new AndroidPlatformManager(projectRoot);
+  const apple = new ApplePlatformManager(projectRoot);
 
   const startWaitingForCommand = () => {
     if (!stdin.setRawMode) {
@@ -95,17 +98,16 @@ export async function startAsync(
 
     const handleOpenError = (e: Error) => {
       if (!(e instanceof AbortCommandError)) {
-        Log.error(e.toString());
+        Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
       }
     };
     switch (key) {
       case 'A':
-      case 'a':
+      case 'a': {
+        let runtime: 'web' | 'custom' | 'expo';
         if (options.webOnly && !WebpackDevServer.isTargetingNative()) {
           Log.log(`${BLT} Opening the web project in Chrome on Android...`);
-          await Android.openWebProjectAsync(projectRoot, {
-            shouldPrompt,
-          }).catch(handleOpenError);
+          runtime = 'web';
         } else {
           const isDisabled = !platforms.includes('android');
           if (isDisabled) {
@@ -114,27 +116,27 @@ export async function startAsync(
             );
             break;
           }
-
+          runtime = ProcessSettings.devClient ? 'custom' : 'expo';
           Log.log(`${BLT} Opening on Android...`);
-          if (ProcessSettings.devClient) {
-            await Android.openProjectInDevClientAsync(projectRoot, {
-              shouldPrompt,
-            }).catch(handleOpenError);
-          } else {
-            await Android.openProjectInExpoGoAsync(projectRoot, { shouldPrompt }).catch(
-              handleOpenError
-            );
-          }
         }
+        await android
+          .openAsync(
+            {
+              runtime,
+            },
+            { shouldPrompt }
+          )
+          .catch(handleOpenError);
         printHelp();
         break;
+      }
       case 'I':
-      case 'i':
+      case 'i': {
+        let runtime: 'web' | 'custom' | 'expo';
+
         if (options.webOnly && !WebpackDevServer.isTargetingNative()) {
           Log.log(`${BLT} Opening the web project in Safari on iOS...`);
-          await Apple.openWebProjectAsync(projectRoot, {
-            shouldPrompt,
-          }).catch(handleOpenError);
+          runtime = 'web';
         } else {
           const isDisabled = !platforms.includes('ios');
           if (isDisabled) {
@@ -144,19 +146,19 @@ export async function startAsync(
             break;
           }
           Log.log(`${BLT} Opening on iOS...`);
-
-          if (ProcessSettings.devClient) {
-            await Apple.openProjectInDevClientAsync(projectRoot, {
-              shouldPrompt,
-            }).catch(handleOpenError);
-          } else {
-            await Apple.openProjectInExpoGoAsync(projectRoot, { shouldPrompt }).catch(
-              handleOpenError
-            );
-          }
+          runtime = ProcessSettings.devClient ? 'custom' : 'expo';
         }
+        await apple
+          .openAsync(
+            {
+              runtime,
+            },
+            { shouldPrompt }
+          )
+          .catch(handleOpenError);
         printHelp();
         break;
+      }
     }
 
     switch (key) {

@@ -2,12 +2,12 @@ import { ExpoConfig, getConfig } from '@expo/config';
 
 import * as Log from '../log';
 import { logEvent } from '../utils/analytics/rudderstackClient';
-import * as AndroidDeviceBridge from './android/AndroidDeviceBridge';
 import ProcessSettings from './api/ProcessSettings';
 import { startDevSessionAsync, stopDevSession } from './api/startDevSession';
 import * as MetroDevServer from './metro/MetroDevServer';
 import * as NgrokServer from './ngrok/ngrokServer';
 import { startTunnelAsync, stopTunnelAsync } from './ngrok/startTunnel';
+import * as AndroidDeviceBridge from './platforms/android/AndroidDeviceBridge';
 import { watchBabelConfigForProject } from './watchBabelConfig';
 import * as Webpack from './webpack/Webpack';
 import * as WebpackDevServer from './webpack/WebpackDevServer';

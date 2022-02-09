@@ -7,7 +7,7 @@ import { getActorDisplayName, getUserAsync } from './user/user';
 
 export async function signEASManifestAsync(manifest: ExpoUpdatesManifest): Promise<string> {
   await ensureLoggedInAsync();
-  const response = await fetchAsync(`/manifest/eas/sign`, {
+  const response = await fetchAsync(`manifest/eas/sign`, {
     method: 'POST',
     body: JSON.stringify({
       manifest,
@@ -19,7 +19,7 @@ export async function signEASManifestAsync(manifest: ExpoUpdatesManifest): Promi
 
 export async function signExpoGoManifestAsync(manifest: Partial<ExpoAppManifest>): Promise<string> {
   await ensureLoggedInAsync();
-  const res = await fetchAsync('/manifest/sign', {
+  const res = await fetchAsync('manifest/sign', {
     method: 'POST',
     body: JSON.stringify({
       args: {
@@ -30,5 +30,5 @@ export async function signExpoGoManifestAsync(manifest: Partial<ExpoAppManifest>
     }),
   });
   const { data } = await res.json();
-  return data;
+  return data.response;
 }

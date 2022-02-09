@@ -3,9 +3,9 @@ import chalk from 'chalk';
 import { execSync } from 'child_process';
 import path from 'path';
 
-import * as Log from '../../log';
-import { CommandError } from '../../utils/errors';
-import { profile } from '../../utils/profile';
+import * as Log from '../../../log';
+import { CommandError } from '../../../utils/errors';
+import { profile } from '../../../utils/profile';
 import * as CoreSimulator from './CoreSimulator';
 import { waitForActionAsync } from './utils/waitForActionAsync';
 
@@ -145,7 +145,7 @@ export async function waitForDeviceToBootAsync({
   });
 }
 
-export async function openURLAsync(options: { udid?: string; url: string }): Promise<void> {
+export async function openUrlAsync(options: { udid?: string; url: string }): Promise<void> {
   try {
     // Skip logging since this is likely to fail.
     await xcrunAsync(['simctl', 'openurl', deviceUDIDOrBooted(options.udid), options.url]);
@@ -153,6 +153,7 @@ export async function openURLAsync(options: { udid?: string; url: string }): Pro
     if (!error.stderr?.match(/Unable to lookup in current state: Shut/)) {
       throw error;
     }
+
     // If the device was in a weird in-between state ("Shutting Down" or "Shutdown"), then attempt to reboot it and try again.
     // This can happen when quitting the Simulator app, and immediately pressing `i` to reopen the project.
 
@@ -160,7 +161,7 @@ export async function openURLAsync(options: { udid?: string; url: string }): Pro
     await runBootAsync({ udid: deviceUDIDOrBooted(options.udid) });
 
     // Finally, try again...
-    return await openURLAsync(options);
+    return await openUrlAsync(options);
   }
 }
 

@@ -1,4 +1,3 @@
-import { readExpRcAsync } from '@expo/config';
 import * as path from 'path';
 import slugify from 'slugify';
 
@@ -6,10 +5,13 @@ import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
-import * as Android from '../android/Android';
 import * as ProjectSettings from '../api/ProjectSettings';
 import UserSettings from '../api/UserSettings';
 import { getNativeDevServerPort } from '../devServer';
+import {
+  startAdbReverseAsync,
+  stopAdbReverseAsync,
+} from '../platforms/android/AndroidDeviceBridge';
 import * as NgrokServer from './ngrokServer';
 import { NgrokOptions, resolveNgrokAsync } from './resolveNgrok';
 
@@ -64,7 +66,7 @@ async function connectToNgrokAsync(
     const url = await ngrok.connect({
       hostname,
       configPath,
-      onStatusChange: handleStatusChange.bind(null, projectRoot),
+      onStatusChange: handleStatusChange.bind(null),
       ...args,
     });
     return url;
@@ -117,13 +119,12 @@ export async function startTunnelAsync(
     );
   }
   await stopTunnelAsync(projectRoot);
-  if (await Android.startAdbReverseAsync(projectRoot)) {
+  if (await startAdbReverseAsync()) {
     Log.log(
       'Successfully ran `adb reverse`. Localhost URLs should work on the connected Android device.'
     );
   }
   const packageShortName = path.parse(projectRoot).base;
-  const expRc = await readExpRcAsync(projectRoot);
 
   let startedTunnelsSuccessfully = false;
 
@@ -140,9 +141,7 @@ export async function startTunnelAsync(
     (async () => {
       const createResolver = (extra: string[] = []) =>
         async function resolveHostnameAsync() {
-          const randomness = expRc.manifestTunnelRandomness
-            ? expRc.manifestTunnelRandomness
-            : await getProjectRandomnessAsync(projectRoot);
+          const randomness = await getProjectRandomnessAsync(projectRoot);
           return [
             ...extra,
             randomness,
@@ -202,10 +201,11 @@ export async function stopTunnelAsync(projectRoot: string): Promise<void> {
     await ngrok.kill();
   }
   NgrokServer.setNgrokInfo(null);
-  await Android.stopAdbReverseAsync(projectRoot);
+  // TODO: Just use exit hooks...
+  await stopAdbReverseAsync();
 }
 
-function handleStatusChange(projectRoot: string, status: string) {
+function handleStatusChange(status: string) {
   if (status === 'closed') {
     Log.error(
       'We noticed your tunnel is having issues. ' +

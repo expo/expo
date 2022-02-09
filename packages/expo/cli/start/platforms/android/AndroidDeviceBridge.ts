@@ -3,10 +3,11 @@ import chalk from 'chalk';
 import { execFileSync } from 'child_process';
 import os from 'os';
 
-import * as Log from '../../log';
-import { CommandError } from '../../utils/errors';
-import { learnMore } from '../../utils/link';
-import * as Binaries from '../../utils/vendoredBinary';
+import * as Log from '../../../log';
+import { CommandError } from '../../../utils/errors';
+import { learnMore } from '../../../utils/link';
+import * as Binaries from '../../../utils/vendoredBinary';
+import { getNativeDevServerPort } from '../../devServer';
 
 export type Device = {
   pid?: string;
@@ -328,7 +329,14 @@ export async function isDeviceBootedAsync({
   return devices.find((device) => device.name === name) ?? null;
 }
 
-export async function startAdbReverseAsync(adbReversePorts: number[]): Promise<boolean> {
+function getAdbReversePorts(): number[] {
+  // TODO: Do we need to add the Web port for opening in the emulator?
+  return [getNativeDevServerPort()];
+}
+
+export async function startAdbReverseAsync(
+  adbReversePorts: number[] = getAdbReversePorts()
+): Promise<boolean> {
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
     for (const port of adbReversePorts) {
@@ -340,7 +348,9 @@ export async function startAdbReverseAsync(adbReversePorts: number[]): Promise<b
   return true;
 }
 
-export async function stopAdbReverseAsync(adbReversePorts: number[]): Promise<void> {
+export async function stopAdbReverseAsync(
+  adbReversePorts: number[] = getAdbReversePorts()
+): Promise<void> {
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
     for (const port of adbReversePorts) {
@@ -395,7 +405,7 @@ async function _isDeviceAuthorizedAsync(device: Device): Promise<boolean> {
   return device.isAuthorized;
 }
 
-async function getAdbFileOutputAsync(args: string[], encoding?: 'latin1') {
+async function getAdbFileOutputAsync(args: string[]) {
   await Binaries.addToPathAsync('adb');
   const adb = whichADB();
 
@@ -406,7 +416,7 @@ async function getAdbFileOutputAsync(args: string[], encoding?: 'latin1') {
 
   try {
     return await execFileSync(adb, args, {
-      encoding,
+      encoding: 'latin1',
       stdio: 'pipe',
     });
   } catch (e) {
@@ -462,7 +472,7 @@ async function getPropertyDataForDeviceAsync(
   const propCommand = adbPidArgs(...[device.pid, 'shell', 'getprop', prop].filter(Boolean));
   try {
     // Prevent reading as UTF8.
-    const results = (await getAdbFileOutputAsync(propCommand, 'latin1')).toString('latin1');
+    const results = await getAdbFileOutputAsync(propCommand);
     // Like:
     // [wifi.direct.interface]: [p2p-dev-wlan0]
     // [wifi.interface]: [wlan0]

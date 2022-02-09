@@ -1,4 +1,4 @@
-import { delayAsync } from '../../../utils/delay';
+import { delayAsync } from '../../../../utils/delay';
 
 export class TimeoutError extends Error {}
 

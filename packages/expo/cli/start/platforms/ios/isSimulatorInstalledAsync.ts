@@ -3,10 +3,10 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import semver from 'semver';
 
-import * as Log from '../../log';
-import { delayAsync } from '../../utils/delay';
-import { profile } from '../../utils/profile';
-import { confirmAsync } from '../../utils/prompts';
+import * as Log from '../../../log';
+import { delayAsync } from '../../../utils/delay';
+import { profile } from '../../../utils/profile';
+import { confirmAsync } from '../../../utils/prompts';
 import * as SimControl from './SimControl';
 import * as Xcode from './xcode';
 

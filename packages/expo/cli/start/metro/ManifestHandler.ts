@@ -1,15 +1,12 @@
 import { ExpoAppManifest, ExpoConfig, ExpoGoConfig, getConfig } from '@expo/config';
-import { JSONObject } from '@expo/json-file';
 import chalk from 'chalk';
 import express from 'express';
 import http from 'http';
 import os from 'os';
 import { parse, resolve } from 'url';
 
-import { fetchAsync } from '../../api/rest/client';
 import { signExpoGoManifestAsync } from '../../api/signManifest';
-import { ensureLoggedInAsync } from '../../api/user/actions';
-import { ANONYMOUS_USERNAME, getActorDisplayName, getUserAsync } from '../../api/user/user';
+import { ANONYMOUS_USERNAME, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { learnMore } from '../../utils/link';
@@ -288,7 +285,7 @@ async function fetchComputedManifestStringAsync(
     hostInfo,
     acceptSignature,
   }: { manifest: ExpoAppManifest; hostInfo: HostInfo; acceptSignature: string | string[] }
-) {
+): Promise<string> {
   try {
     return await getManifestStringAsync(manifest, hostInfo.host, acceptSignature);
   } catch (error) {

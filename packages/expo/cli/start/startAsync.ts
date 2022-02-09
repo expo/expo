@@ -19,7 +19,7 @@ import { ensureWebSupportSetupAsync } from './doctor/web/ensureWebSetup';
 import { printQRCode } from './interface/qr';
 import * as TerminalUI from './interface/TerminalUI';
 import * as LoadingPageHandler from './metro/LoadingPageHandler';
-import { openPlatformsAsync } from './openPlatformsAsync';
+import { openPlatformsAsync } from './platforms/openPlatformsAsync';
 import { Options, resolvePortsAsync } from './resolveOptions';
 import { constructDeepLink } from './serverUrl';
 import * as WebpackDevServer from './webpack/WebpackDevServer';

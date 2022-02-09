@@ -1,8 +1,8 @@
-import { AbortCommandError } from '../utils/errors';
-import * as Android from './android/Android';
-import * as Apple from './ios/Apple';
-import { Options } from './resolveOptions';
-import * as Webpack from './webpack/Webpack';
+import { AbortCommandError } from '../../utils/errors';
+import { Options } from '../resolveOptions';
+import * as Webpack from '../webpack/Webpack';
+import { AndroidPlatformManager } from './android/AndroidPlatformManager';
+import { ApplePlatformManager } from './ios/ApplePlatformManager';
 
 export async function openPlatformsAsync(
   projectRoot: string,
@@ -12,23 +12,25 @@ export async function openPlatformsAsync(
   const results = await Promise.allSettled([
     (async () => {
       if (options.android) {
+        const platform = new AndroidPlatformManager(projectRoot);
         if (settings.webOnly) {
-          return Android.openWebProjectAsync(projectRoot);
+          return platform.openAsync({ runtime: 'web' });
         } else if (options.devClient) {
-          return Android.openProjectInDevClientAsync(projectRoot);
+          return platform.openAsync({ runtime: 'custom' });
         }
-        return Android.openProjectInExpoGoAsync(projectRoot);
+        return platform.openAsync({ runtime: 'expo' });
       }
       return null;
     })(),
     (async () => {
       if (options.ios) {
+        const platform = new ApplePlatformManager(projectRoot);
         if (settings.webOnly) {
-          return Apple.openWebProjectAsync(projectRoot);
+          return platform.openAsync({ runtime: 'web' });
         } else if (options.devClient) {
-          return Apple.openProjectInDevClientAsync(projectRoot);
+          return platform.openAsync({ runtime: 'custom' });
         }
-        return Apple.openProjectInExpoGoAsync(projectRoot);
+        return platform.openAsync({ runtime: 'expo' });
       }
       return null;
     })(),

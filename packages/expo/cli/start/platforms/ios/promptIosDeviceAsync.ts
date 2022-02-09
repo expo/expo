@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { promptAsync } from '../../utils/prompts';
+import { promptAsync } from '../../../utils/prompts';
 import { getBestBootedSimulatorAsync, getBestUnbootedSimulatorAsync } from './getBestSimulator';
 import { SimulatorDevice } from './SimControl';
 

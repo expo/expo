@@ -3,7 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
-import * as Log from '../../../log';
+import * as Log from '../../../../log';
 import { TimeoutError, waitForActionAsync } from './waitForActionAsync';
 
 const execAsync = promisify(exec);

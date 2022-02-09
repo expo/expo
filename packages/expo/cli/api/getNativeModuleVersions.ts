@@ -37,7 +37,7 @@ export async function getNativeModuleVersionsAsync(
    *   ...
    * ]
    */
-  const response = await fetchAsync(`/sdks/${sdkVersion}/native-modules`);
+  const response = await fetchAsync(`sdks/${sdkVersion}/native-modules`);
   const { data } = await response.json();
   if (!data.length) {
     throw new CommandError('VERSIONS', 'The bundled native module list from www is empty');

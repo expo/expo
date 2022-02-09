@@ -48,7 +48,7 @@ export async function updateDevelopmentSessionAsync({
     searchParams.append('deviceId', id);
   });
 
-  await fetchAsync('/development-sessions/notify-alive', {
+  await fetchAsync('development-sessions/notify-alive', {
     searchParams,
     method: 'POST',
     body: JSON.stringify({
