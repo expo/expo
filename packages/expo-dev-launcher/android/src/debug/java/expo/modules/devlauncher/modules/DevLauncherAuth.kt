@@ -34,7 +34,6 @@ class DevLauncherAuth(reactContext: ReactApplicationContext?)
     promise.resolve(null)
   }
 
-
   private fun saveSessionToLocalStorage(data: String?) {
     localStore
       .edit()
