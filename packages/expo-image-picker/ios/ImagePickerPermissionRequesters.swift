@@ -11,7 +11,7 @@ public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
     // TODO: @bbarthec: don't we need to provide @strongify mechanism for closures retaining `self`?
     AVCaptureDevice.requestAccess(for: AVMediaType.video) { _ in
-      resolve(self.getPermissions())
+      resolve(getPermissions())
     }
   }
 

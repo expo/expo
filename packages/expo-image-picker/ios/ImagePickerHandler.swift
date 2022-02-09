@@ -31,20 +31,20 @@ internal class ImagePickerHandler: NSObject,
   }
 
   private func handlePickedMedia(mediaInfo: MediaInfo) {
-    self.statusBarVisibilityController.maybeRestoreStatusBarVisibility()
-    self.onMediaPickingResultHandler.didPickMedia(mediaInfo: mediaInfo)
+    statusBarVisibilityController.maybeRestoreStatusBarVisibility()
+    onMediaPickingResultHandler.didPickMedia(mediaInfo: mediaInfo)
   }
 
   private func handlePickingCancellation() {
-    self.statusBarVisibilityController.maybeRestoreStatusBarVisibility()
-    self.onMediaPickingResultHandler.didCancelPicking()
+    statusBarVisibilityController.maybeRestoreStatusBarVisibility()
+    onMediaPickingResultHandler.didCancelPicking()
   }
 
   // MARK: - UIImagePickerControllerDelegate
 
   func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: MediaInfo) {
     DispatchQueue.main.async {
-      picker.dismiss(animated: true) {
+      picker.dismiss(animated: true) { [weak self]
         self.handlePickedMedia(mediaInfo: info)
       }
     }
@@ -52,7 +52,7 @@ internal class ImagePickerHandler: NSObject,
 
   func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
     DispatchQueue.main.async {
-      picker.dismiss(animated: true) {
+      picker.dismiss(animated: true) { [weak self]
         self.handlePickingCancellation()
       }
     }
@@ -61,12 +61,12 @@ internal class ImagePickerHandler: NSObject,
   // MARK: - UIAdaptivePresentationControllerDelegate
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    self.handlePickingCancellation()
+    handlePickingCancellation()
   }
 
   // MARK: - UINavigationControllerDelegate
 
   func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-    self.statusBarVisibilityController.maybePreserveVisibilityAndHideStatusBar(self.hideStatusBarWhenPresented)
+    statusBarVisibilityController.maybePreserveVisibilityAndHideStatusBar(hideStatusBarWhenPresented)
   }
 }

@@ -14,8 +14,8 @@ internal class StatusBarVisibilityController {
       return
     }
 
-    self.shouldRestoreStatusBarVisibility = true
-    self.setStatusBarHidden(true)
+    shouldRestoreStatusBarVisibility = true
+    setStatusBarHidden(true)
   }
 
   func maybeRestoreStatusBarVisibility() {
@@ -23,8 +23,8 @@ internal class StatusBarVisibilityController {
       return
     }
 
-    self.shouldRestoreStatusBarVisibility = false
-    self.setStatusBarHidden(false)
+    shouldRestoreStatusBarVisibility = false
+    setStatusBarHidden(false)
   }
 
   /**

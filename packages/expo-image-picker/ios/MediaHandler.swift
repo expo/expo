@@ -15,8 +15,8 @@ internal struct MediaHandler {
     let videoType = kUTTypeMovie as String
 
     switch mediaType {
-    case imageType: return self.handleImage(mediaInfo: mediaInfo, completion: completion)
-    case videoType: return self.handleVideo(mediaInfo: mediaInfo, completion: completion)
+    case imageType: return handleImage(mediaInfo: mediaInfo, completion: completion)
+    case videoType: return handleVideo(mediaInfo: mediaInfo, completion: completion)
     default: return completion(.failure(InvalidMediaTypeException(mediaType)))
     }
   }
@@ -34,7 +34,7 @@ internal struct MediaHandler {
                                                                                mediaInfo: mediaInfo,
                                                                                options: options)
 
-      let targetUrl = try self.generateUrl(withFileExtension: fileExtension)
+      let targetUrl = try generateUrl(withFileExtension: fileExtension)
 
       // no modification requested
       let imageModified = options.allowsEditing || options.quality != nil
@@ -72,7 +72,7 @@ internal struct MediaHandler {
         return completion(.failure(FailedToReadVideoException()))
       }
 
-      let targetUrl = try self.generateUrl(withFileExtension: ".mov")
+      let targetUrl = try generateUrl(withFileExtension: ".mov")
 
       try VideoUtils.tryCopyingVideo(at: pickedVideoUrl, to: targetUrl)
 
