@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 
 const DevMenu = NativeModules.ExpoDevMenuInternal;
 
@@ -15,32 +15,4 @@ export async function getSettingsAsync(): Promise<DevMenuSettingsType> {
 
 export async function setSettingsAsync(settings: DevMenuSettingsType) {
   return await DevMenu.setSettingsAsync(settings);
-}
-
-export async function setSessionAsync(
-  session: { [key: string]: any; sessionSecret: string } | null
-): Promise<void> {
-  return await DevMenu.setSessionAsync(session);
-}
-
-export async function restoreSessionAsync(): Promise<{
-  [key: string]: any;
-  sessionSecret: string;
-}> {
-  if (Platform.OS === 'android') {
-    try {
-      return JSON.parse(await DevMenu.restoreSessionAsync());
-    } catch (exception) {
-      return null;
-    }
-  }
-  return await DevMenu.restoreSessionAsync();
-}
-
-export async function getAuthSchemeAsync(): Promise<string> {
-  if (Platform.OS === 'android') {
-    return 'expo-dev-launcher';
-  }
-
-  return await DevMenu.getAuthSchemeAsync();
 }

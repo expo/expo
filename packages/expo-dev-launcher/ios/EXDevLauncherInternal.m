@@ -132,5 +132,4 @@ RCT_EXPORT_METHOD(copyToClipboard:(NSString *)content
   resolve(nil);
 }
 
-
 @end
