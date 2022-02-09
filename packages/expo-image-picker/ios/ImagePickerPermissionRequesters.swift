@@ -9,9 +9,8 @@ public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
   }
 
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    // TODO: @bbarthec: don't we need to provide @strongify mechanism for closures retaining `self`?
-    AVCaptureDevice.requestAccess(for: AVMediaType.video) { _ in
-      resolve(getPermissions())
+    AVCaptureDevice.requestAccess(for: AVMediaType.video) { [weak self] _ in
+      resolve(self?.getPermissions())
     }
   }
 
@@ -85,7 +84,9 @@ public class DefaultMediaLibraryPermissionRequester: NSObject {}
 extension DefaultMediaLibraryPermissionRequester {
   @objc
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    let authorizationHandler = { (_: PHAuthorizationStatus) in resolve(self.getPermissions()) }
+    let authorizationHandler = { [weak self] (_: PHAuthorizationStatus) in
+      resolve(self?.getPermissions())
+    }
     if #available(iOS 14.0, *) {
       PHPhotoLibrary.requestAuthorization(for: self.accessLevel(), handler: authorizationHandler)
     } else {
