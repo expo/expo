@@ -1,6 +1,6 @@
-import { NativeModules, AppState, Linking } from 'react-native';
+import { NativeModules, AppState, Linking, Platform } from 'react-native';
 
-const DevMenu = NativeModules.ExpoDevMenuInternal;
+const DevLauncherAuth = NativeModules.EXDevLauncherAuth;
 
 let redirectHandler: ((event: any) => void) | null = null;
 let onWebBrowserCloseAndroid: null | (() => void) = null;
@@ -29,13 +29,13 @@ function stopWaitingForRedirect() {
 }
 
 async function openBrowserAndWaitAndroidAsync(startUrl: string): Promise<any> {
-  const appStateChangedToActive = new Promise(resolve => {
+  const appStateChangedToActive = new Promise<void>((resolve) => {
     onWebBrowserCloseAndroid = resolve;
     AppState.addEventListener('change', onAppStateChangeAndroid);
   });
 
   let result = { type: 'cancel' };
-  await DevMenu.openWebBrowserAsync(startUrl);
+  await DevLauncherAuth.openWebBrowserAsync(startUrl);
   const type = 'opened';
 
   if (type === 'opened') {
@@ -49,7 +49,7 @@ async function openBrowserAndWaitAndroidAsync(startUrl: string): Promise<any> {
 }
 
 function waitForRedirectAsync(returnUrl: string): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     redirectHandler = (event: any) => {
       if (event.url.startsWith(returnUrl)) {
         resolve({ url: event.url, type: 'success' });
@@ -82,10 +82,36 @@ async function openAuthSessionPolyfillAsync(startUrl: string, returnUrl: string)
 }
 
 export async function openAuthSessionAsync(url: string, returnUrl: string): Promise<any> {
-  if (DevMenu.openAuthSessionAsync) {
+  if (DevLauncherAuth.openAuthSessionAsync) {
     // iOS
-    return await DevMenu.openAuthSessionAsync(url, returnUrl);
+    return await DevLauncherAuth.openAuthSessionAsync(url, returnUrl);
   }
   // Android
   return await openAuthSessionPolyfillAsync(url, returnUrl);
+}
+
+export async function getAuthSchemeAsync(): Promise<string> {
+  if (Platform.OS === 'android') {
+    return 'expo-dev-launcher';
+  }
+
+  return await DevLauncherAuth.getAuthSchemeAsync();
+}
+
+export async function setSessionAsync(session: string): Promise<void> {
+  return await DevLauncherAuth.setSessionAsync(session);
+}
+
+export async function restoreSessionAsync(): Promise<{
+  [key: string]: any;
+  sessionSecret: string;
+}> {
+  if (Platform.OS === 'android') {
+    try {
+      return JSON.parse(await DevLauncherAuth.restoreSessionAsync());
+    } catch (exception) {
+      return null;
+    }
+  }
+  return await DevLauncherAuth.restoreSessionAsync();
 }
