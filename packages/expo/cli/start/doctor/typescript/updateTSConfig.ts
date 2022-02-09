@@ -2,15 +2,13 @@ import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 
 import * as Log from '../../../log';
-import { EXPO_NO_TYPESCRIPT_SETUP } from '../../../utils/env';
-import { baseTSConfigName, resolveBaseTSConfig } from './resolveModules';
+
+export const baseTSConfigName = 'expo/tsconfig.base';
 
 export async function updateTSConfigAsync({
-  projectRoot,
   tsConfigPath,
   isBootstrapping,
 }: {
-  projectRoot: string;
   tsConfigPath: string;
   isBootstrapping: boolean;
 }): Promise<void> {
@@ -29,30 +27,11 @@ export async function updateTSConfigAsync({
 
   const modifications: [string, string][] = [];
 
-  // If the default TSConfig template exists (SDK +41), then use it in the project
-  const hasTemplateTsconfig = resolveBaseTSConfig(projectRoot);
-  if (hasTemplateTsconfig) {
-    // If the extends field isn't defined, set it to the expo default
-    if (!projectTSConfig.extends) {
-      // if (projectTSConfig.extends !== baseTSConfigName) {
-      projectTSConfig.extends = baseTSConfigName;
-      modifications.push(['extends', baseTSConfigName]);
-    }
-  } else if (isBootstrapping) {
-    // use an unversioned config when the versioned config cannot be resolved
-    projectTSConfig.compilerOptions = {
-      jsx: 'react-native',
-      target: 'esnext',
-      lib: ['esnext'],
-      allowJs: true,
-      skipLibCheck: true,
-      noEmit: true,
-      allowSyntheticDefaultImports: true,
-      resolveJsonModule: true,
-      esModuleInterop: true,
-      moduleResolution: 'node',
-    };
-    modifications.push(['compilerOptions', 'configured']);
+  // If the extends field isn't defined, set it to the expo default
+  if (!projectTSConfig.extends) {
+    // if (projectTSConfig.extends !== baseTSConfigName) {
+    projectTSConfig.extends = baseTSConfigName;
+    modifications.push(['extends', baseTSConfigName]);
   }
 
   // If no changes, then quietly bail out
@@ -66,12 +45,10 @@ export async function updateTSConfigAsync({
   Log.log();
 
   if (isBootstrapping) {
-    Log.log(`${chalk.bold`TypeScript`}: A ${chalk.cyan('tsconfig.json')} has been auto-generated`);
+    Log.log(chalk`{bold TypeScript}: A {cyan tsconfig.json} has been auto-generated`);
   } else {
     Log.log(
-      `${chalk.bold`TypeScript`}: The ${chalk.cyan(
-        'tsconfig.json'
-      )} has been updated ${chalk.dim`(Use ${EXPO_NO_TYPESCRIPT_SETUP()} to skip)`}`
+      chalk`{bold TypeScript}: The {cyan tsconfig.json} has been updated {dim (Use EXPO_NO_TYPESCRIPT_SETUP to skip)}`
     );
     logModifications(modifications);
   }
@@ -81,9 +58,7 @@ export async function updateTSConfigAsync({
 function logModifications(modifications: string[][]) {
   Log.log();
 
-  Log.log(
-    `\u203A ${chalk.bold('Required')} modifications made to the ${chalk.cyan('tsconfig.json')}:`
-  );
+  Log.log(`\u203A {bold Required} modifications made to the {cyan tsconfig.json}:`);
 
   Log.log();
 

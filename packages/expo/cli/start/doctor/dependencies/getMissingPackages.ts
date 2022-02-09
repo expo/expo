@@ -1,5 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import resolveFrom from 'resolve-from';
+
 import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 
 export type ResolvedPackage = {

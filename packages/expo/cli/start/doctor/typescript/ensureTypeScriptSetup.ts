@@ -1,22 +1,13 @@
-import { getConfig } from '@expo/config';
-import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
-import wrapAnsi from 'wrap-ansi';
 
-import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import * as Log from '../../../log';
-import { CI, EXPO_DEBUG, EXPO_NO_TYPESCRIPT_SETUP } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
-import { logNewSection } from '../../../utils/ora';
+import { fileExistsAsync } from '../../../utils/dir';
+import { EXPO_NO_TYPESCRIPT_SETUP } from '../../../utils/env';
+import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
 import { profile } from '../../../utils/profile';
-import { confirmAsync } from '../../../utils/prompts';
-import {
-  collectMissingPackages,
-  hasTSConfig,
-  queryFirstProjectTypeScriptFileAsync,
-} from './resolveModules';
+import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 import { updateTSConfigAsync } from './updateTSConfig';
 
 export async function ensureTypeScriptSetupAsync(projectRoot: string): Promise<void> {
@@ -34,14 +25,10 @@ export async function ensureTypeScriptSetupAsync(projectRoot: string): Promise<v
   }
 
   // Ensure TypeScript packages are installed
-  await ensureRequiredDependenciesAsync(
-    projectRoot,
-    // Don't prompt in CI
-    CI
-  );
+  await ensureRequiredDependenciesAsync(projectRoot);
 
   // Update the config
-  await updateTSConfigAsync({ projectRoot, tsConfigPath, isBootstrapping: intent.isBootstrapping });
+  await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
 }
 
 export async function shouldSetupTypeScriptAsync(
@@ -68,124 +55,45 @@ export async function shouldSetupTypeScriptAsync(
   return null;
 }
 
-async function getSDKVersionsAsync(projectRoot: string): Promise<SDKVersion | null> {
-  try {
-    const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-    if (exp.sdkVersion) {
-      const sdkVersions = await getReleasedVersionsAsync();
-      return sdkVersions[exp.sdkVersion] ?? null;
-    }
-  } catch {
-    // This is a convenience method and we should avoid making this halt the process.
+async function ensureRequiredDependenciesAsync(projectRoot: string): Promise<boolean> {
+  return await ensureDependenciesAsync(projectRoot, {
+    installMessage: `It looks like you're trying to use TypeScript but don't have the required dependencies installed.`,
+    warningMessage:
+      "If you're not using TypeScript, please remove the TypeScript files from your project",
+    requiredPackages: [
+      // use typescript/package.json to skip node module cache issues when the user installs
+      // the package and attempts to resolve the module in the same process.
+      { file: 'typescript/package.json', pkg: 'typescript' },
+      { file: '@types/react/index.d.ts', pkg: '@types/react' },
+      { file: '@types/react-native/index.d.ts', pkg: '@types/react-native' },
+    ],
+  });
+}
+
+async function queryFirstProjectTypeScriptFileAsync(projectRoot: string): Promise<null | string> {
+  const results = await wrapGlobWithTimeout(
+    () =>
+      everyMatchAsync('**/*.@(ts|tsx)', {
+        cwd: projectRoot,
+        ignore: [
+          '**/@(Carthage|Pods|node_modules)/**',
+          '**/*.d.ts',
+          '@(ios|android|web|web-build|dist)/**',
+        ],
+      }),
+    5000
+  );
+
+  if (results === false) {
+    return null;
+  }
+  return results[0] ?? null;
+}
+
+async function hasTSConfig(projectRoot: string): Promise<string | null> {
+  const tsConfigPath = path.join(projectRoot, 'tsconfig.json');
+  if (await fileExistsAsync(tsConfigPath)) {
+    return tsConfigPath;
   }
   return null;
-}
-
-async function ensureRequiredDependenciesAsync(
-  projectRoot: string,
-  skipPrompt: boolean = false
-): Promise<string> {
-  const { resolutions, missing } = collectMissingPackages(projectRoot);
-  if (!missing.length) {
-    return resolutions.typescript!;
-  }
-
-  // Ensure the versions are right for the SDK that the project is currently using.
-  const versions = await getSDKVersionsAsync(projectRoot);
-  if (versions?.relatedPackages) {
-    for (const pkg of missing) {
-      if (pkg.pkg in versions.relatedPackages) {
-        pkg.version = versions.relatedPackages[pkg.pkg];
-      }
-    }
-  }
-
-  // Prompt to install or bail out...
-  const readableMissingPackages = missing.map((p) => p.pkg).join(', ');
-
-  const isYarn = PackageManager.isUsingYarn(projectRoot);
-
-  let title = `It looks like you're trying to use TypeScript but don't have the required dependencies installed.`;
-
-  if (!skipPrompt) {
-    if (
-      await confirmAsync({
-        message: wrapAnsi(
-          title + ` Would you like to install ${chalk.cyan(readableMissingPackages)}?`,
-          // This message is a bit too long, so wrap it to fit smaller terminals
-          process.stdout.columns || 80
-        ),
-        initial: true,
-      })
-    ) {
-      await installPackagesAsync(projectRoot, {
-        isYarn,
-        devPackages: missing.map(({ pkg, version }) => {
-          if (version) {
-            return [pkg, version].join('@');
-          }
-          return pkg;
-        }),
-      });
-      // Try again but skip prompting twice.
-      return await ensureRequiredDependenciesAsync(projectRoot, true);
-    }
-
-    // Reset the title so it doesn't print twice in interactive mode.
-    title = '';
-  } else {
-    title += '\n\n';
-  }
-
-  const col = process.stdout.columns || 80;
-
-  const installCommand =
-    (isYarn ? 'yarn add --dev' : 'npm install --save-dev') +
-    ' ' +
-    missing
-      .map(({ pkg, version }) => {
-        if (version) {
-          return [pkg, version].join('@');
-        }
-        return pkg;
-      })
-      .join(' ');
-
-  let disableMessage =
-    "If you're not using TypeScript, please remove the TypeScript files from your project";
-
-  if (await hasTSConfig(projectRoot)) {
-    disableMessage += ` and delete the tsconfig.json.`;
-  } else {
-    disableMessage += '.';
-  }
-
-  const solution = `Please install ${chalk.bold(
-    readableMissingPackages
-  )} by running:\n\n  ${chalk.reset.bold(installCommand)}\n\n`;
-
-  // This prevents users from starting a misconfigured JS or TS project by default.
-  throw new CommandError(wrapAnsi(title + solution + disableMessage + '\n', col));
-}
-
-async function installPackagesAsync(
-  projectRoot: string,
-  { isYarn, devPackages }: { isYarn: boolean; devPackages: string[] }
-) {
-  const packageManager = PackageManager.createForProject(projectRoot, {
-    yarn: isYarn,
-    log: Log.log,
-    silent: !EXPO_DEBUG,
-  });
-
-  const packagesStr = chalk.bold(devPackages.join(', '));
-  Log.log();
-  const installingPackageStep = logNewSection(`Installing ${packagesStr}`);
-  try {
-    await packageManager.addDevAsync(...devPackages);
-  } catch (e) {
-    installingPackageStep.fail(`Failed to install ${packagesStr} with error: ${e.message}`);
-    throw e;
-  }
-  installingPackageStep.succeed(`Installed ${packagesStr}`);
 }

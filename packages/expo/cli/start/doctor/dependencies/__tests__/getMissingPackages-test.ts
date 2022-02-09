@@ -1,12 +1,12 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { getReleasedVersionsAsync } from '../../../api/Versions';
+import { getReleasedVersionsAsync } from '../../../../api/getVersions';
 import { getMissingPackagesAsync } from '../getMissingPackages';
 
 const asMock = (fn: any): jest.Mock => fn as jest.Mock;
 
-jest.mock('../../../api/Versions', () => {
+jest.mock('../../../../api/getVersions', () => {
   return {
     getReleasedVersionsAsync: jest.fn(),
   };

@@ -9,12 +9,10 @@ import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { BundledNativeModules, getBundledNativeModulesAsync } from './bundledNativeModules';
 
-// import { actionAsync } from '../installAsync';
 export async function validateDependenciesVersionsAsync(
   projectRoot: string,
   exp: Pick<ExpoConfig, 'sdkVersion'>,
   pkg: PackageJSONConfig
-  //   fixDependencies: boolean = false
 ): Promise<boolean> {
   let bundledNativeModules: BundledNativeModules | null = null;
 
@@ -41,22 +39,20 @@ export async function validateDependenciesVersionsAsync(
         )} - actual version installed: ${chalk.underline(actualVersion)}`
       );
     });
-    // if (fixDependencies) {
-    //   await actionAsync(
-    //     incorrectDeps.map((dep) => dep.packageName),
-    //     {}
-    //   );
-    // } else {
+
     Log.warn(
       'Your project may not work correctly until you install the correct versions of the packages.\n' +
-        `To install the correct versions of these packages, please run: ${chalk.inverse(
-          'expo doctor --fix-dependencies'
-        )},\n` +
-        `or install individual packages by running ${chalk.inverse(
-          'expo install [package-name ...]'
-        )}`
+        chalk`Install individual packages by running {inverse expo install [package-name ...]}`
     );
-    // }
+    // Log.warn(
+    //   'Your project may not work correctly until you install the correct versions of the packages.\n' +
+    //     `To install the correct versions of these packages, please run: ${chalk.inverse(
+    //       'expo doctor --fix-dependencies'
+    //     )},\n` +
+    //     `or install individual packages by running ${chalk.inverse(
+    //       'expo install [package-name ...]'
+    //     )}`
+    // );
 
     return false;
   }
