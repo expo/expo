@@ -1,24 +1,24 @@
 import { crop, flip, resize, rotate } from './actions/index.web';
 import { getContext } from './utils/getContext.web';
 function getResults(canvas, options) {
-    let base64;
+    let uri;
     if (options) {
         const { format = 'png' } = options;
         if (options.format === 'png' && options.compress !== undefined) {
             console.warn('compress is not supported with png format.');
         }
         const quality = Math.min(1, Math.max(0, options.compress ?? 1));
-        base64 = canvas.toDataURL('image/' + format, quality);
+        uri = canvas.toDataURL('image/' + format, quality);
     }
     else {
         // defaults to PNG with no loss
-        base64 = canvas.toDataURL();
+        uri = canvas.toDataURL();
     }
     return {
-        uri: base64,
+        uri,
         width: canvas.width,
         height: canvas.height,
-        base64,
+        base64: uri.replace(/^data:image\/\w+;base64,/, ''),
     };
 }
 function loadImageAsync(uri) {
