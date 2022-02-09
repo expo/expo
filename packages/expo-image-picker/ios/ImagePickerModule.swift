@@ -94,7 +94,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       return promise.reject(CameraUnavailableOnSimulatorException())
 #else
       picker.sourceType = .camera
-      picker.cameraDevice = context.options.cameraType == .front ? .front : .rear
+      picker.cameraDevice = options.cameraType == .front ? .front : .rear
 #endif
     }
 

@@ -300,7 +300,7 @@ private struct ImageUtils {
     let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]
     if gps != nil {
       gps!.forEach { key, value in
-        exif["GPD\(key)"] = value
+        exif["GPS\(key)"] = value
       }
     }
 

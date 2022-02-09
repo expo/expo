@@ -14,7 +14,7 @@ internal class FileSystemModuleNotFoundException: Exception {
   }
 }
 
-internal class LoggerMOduleNotFoundException: Exception {
+internal class LoggerModuleNotFoundException: Exception {
   override var reason: String {
     "Logger module not found. Are you sure that Expo modules are properly linked?"
   }
