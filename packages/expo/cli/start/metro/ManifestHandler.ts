@@ -7,13 +7,13 @@ import { parse, resolve } from 'url';
 
 import { signExpoGoManifestAsync } from '../../api/signManifest';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../api/user/user';
+import UserSettings from '../../api/user/UserSettings';
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { learnMore } from '../../utils/link';
 import { stripPort } from '../../utils/url';
 import ProcessSettings from '../api/ProcessSettings';
 import * as ProjectDevices from '../api/ProjectDevices';
-import UserSettings from '../api/UserSettings';
 import {
   constructBundleQueryParams,
   constructBundleUrl,

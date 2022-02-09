@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import { vol } from 'memfs';
 import path from 'path';
 
-import UserSettings from '../../api/UserSettings';
+import UserSettings from '../../../api/user/UserSettings';
 import * as ExpoUpdatesManifestHandler from '../ExpoUpdatesManifestHandler';
 import { getManifestResponseAsync } from '../ManifestHandler';
 
@@ -12,7 +12,7 @@ jest.mock('fs');
 describe('ExpoUpdatesManifestHandler', () => {
   describe(getManifestResponseAsync, () => {
     beforeAll(() => {
-      fs.removeSync(UserSettings.userSettingsFile());
+      fs.removeSync(UserSettings.getFilePath());
     });
 
     beforeEach(() => {

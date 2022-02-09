@@ -5,15 +5,14 @@ import nock from 'nock';
 import path from 'path';
 
 import { getExpoApiBaseUrl } from '../../../api/endpoint';
-import { getAccessToken } from '../../../api/user/sessionStorage';
-import UserSettings from '../../api/UserSettings';
+import UserSettings from '../../../api/user/UserSettings';
 import * as ManifestHandler from '../ManifestHandler';
 
 const actualFs = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 jest.mock('axios');
-jest.mock('../../../api/user/sessionStorage');
+jest.mock('../../../api/user/UserSettings');
 jest.mock('../../../api/user/user');
 jest.mock('../../../api/getExpoSchema', () => {
   return {
@@ -40,12 +39,12 @@ const mockSignedManifestResponse = JSON.stringify({
 const asMock = (fn: any): jest.Mock => fn as jest.Mock;
 
 beforeEach(() => {
-  asMock(getAccessToken).mockReset();
+  asMock(UserSettings.getAccessToken).mockReset();
 });
 
 describe('getSignedManifestStringAsync', () => {
   it('calls the server API to sign a manifest', async () => {
-    asMock(getAccessToken).mockReturnValue('my-access-token');
+    asMock(UserSettings.getAccessToken).mockReturnValue('my-access-token');
 
     const scope = nock(getExpoApiBaseUrl())
       .post('/v2/manifest/sign', {
@@ -75,7 +74,7 @@ describe('getSignedManifestStringAsync', () => {
 
 describe('getUnsignedManifestString', () => {
   it('returns a stringified manifest with the same shape a server-signed manifest', () => {
-    asMock(getAccessToken).mockReturnValue('my-access-token');
+    asMock(UserSettings.getAccessToken).mockReturnValue('my-access-token');
 
     expect(ManifestHandler.getUnsignedManifestString(mockManifest)).toMatchSnapshot();
   });
@@ -83,7 +82,7 @@ describe('getUnsignedManifestString', () => {
 
 describe(ManifestHandler.getManifestResponseAsync, () => {
   beforeAll(() => {
-    fs.removeSync(UserSettings.userSettingsFile());
+    fs.removeSync(UserSettings.getFilePath());
   });
 
   beforeEach(() => {

@@ -2,11 +2,11 @@ import * as path from 'path';
 import slugify from 'slugify';
 
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
+import UserSettings from '../../api/user/UserSettings';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
 import { ProjectSettings } from '../api/ProjectSettings';
-import UserSettings from '../api/UserSettings';
 import { getNativeDevServerPort } from '../devServer';
 import {
   startAdbReverseAsync,

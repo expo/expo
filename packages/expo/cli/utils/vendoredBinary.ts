@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import hasbin from 'hasbin';
 import path from 'path';
 
-import { UserSettings } from '../api/user/UserSettings';
+import UserSettings from '../api/user/UserSettings';
 import { CommandError } from './errors';
 
 export const OSX_SOURCE_PATH = path.join(__dirname, '../../..', 'static/binaries', 'osx');
