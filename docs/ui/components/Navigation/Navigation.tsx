@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { ComponentType, useMemo } from 'react';
 
+import { ApiVersionSelect } from './ApiVersionSelect';
 import { GroupList } from './GroupList';
 import { PageLink } from './PageLink';
 import { SectionList } from './SectionList';
@@ -14,7 +15,12 @@ export type NavigationProps = {
 export function Navigation({ routes }: NavigationProps) {
   const router = useRouter();
   const activeRoutes = useMemo(() => findActiveRoute(routes, router.pathname), [router.pathname]);
-  return <nav>{routes.map(route => navigationRenderer(route, activeRoutes))}</nav>;
+  return (
+    <nav>
+      <ApiVersionSelect />
+      {routes.map(route => navigationRenderer(route, activeRoutes))}
+    </nav>
+  );
 }
 
 const renderers: Record<NavigationType, ComponentType<NavigationRenderProps>> = {
