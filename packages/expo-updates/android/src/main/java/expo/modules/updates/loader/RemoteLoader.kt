@@ -4,9 +4,8 @@ import android.content.Context
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.manifest.ManifestMetadata
+import expo.modules.updates.manifest.UpdateManifest
 import java.io.File
 
 /**
@@ -32,23 +31,21 @@ class RemoteLoader internal constructor(
     updatesDirectory: File?
   ) : this(context, configuration, database, fileDownloader, updatesDirectory, LoaderFiles())
 
-  override fun loadManifest(
+  override suspend fun loadManifest(
     context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
-    callback: ManifestDownloadCallback
-  ) {
+  ): UpdateManifest {
     val extraHeaders = ManifestMetadata.getServerDefinedHeaders(database, configuration)
-    mFileDownloader.downloadManifest(configuration, extraHeaders, context, callback)
+    return mFileDownloader.downloadManifest(configuration, extraHeaders, context)
   }
 
-  override fun loadAsset(
+  override suspend fun loadAsset(
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
-    callback: AssetDownloadCallback
-  ) {
-    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, callback)
+  ): FileDownloader.AssetDownloadResult {
+    return mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration)
   }
 
   override fun shouldSkipAsset(assetEntity: AssetEntity): Boolean {

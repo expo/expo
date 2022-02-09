@@ -8,7 +8,6 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.loader.Crypto.RSASignatureListener
 import expo.modules.updates.manifest.ManifestFactory
 import expo.modules.updates.manifest.ManifestHeaderData
 import expo.modules.updates.manifest.UpdateManifest
@@ -25,72 +24,40 @@ import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import kotlin.coroutines.suspendCoroutine
 
 open class FileDownloader(private val client: OkHttpClient) {
   constructor(context: Context) : this(OkHttpClient.Builder().cache(getCache(context)).build())
 
-  interface FileDownloadCallback {
-    fun onFailure(e: Exception)
-    fun onSuccess(file: File, hash: ByteArray)
-  }
+  data class FileDownloadResult(val file: File, val hash: ByteArray)
 
-  interface ManifestDownloadCallback {
-    fun onFailure(message: String, e: Exception)
-    fun onSuccess(updateManifest: UpdateManifest)
-  }
+  data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
 
-  interface AssetDownloadCallback {
-    fun onFailure(e: Exception, assetEntity: AssetEntity)
-    fun onSuccess(assetEntity: AssetEntity, isNew: Boolean)
-  }
+  private suspend fun downloadFileToPath(request: Request, destination: File): FileDownloadResult {
+    val response = downloadData(request)
+    if (!response.isSuccessful) {
+      throw Exception("Network request failed: " + response.body()!!.string())
+    }
 
-  private fun downloadFileToPath(request: Request, destination: File, callback: FileDownloadCallback) {
-    downloadData(
-      request,
-      object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-          callback.onFailure(e)
-        }
-
-        @Throws(IOException::class)
-        override fun onResponse(call: Call, response: Response) {
-          if (!response.isSuccessful) {
-            callback.onFailure(
-              Exception(
-                "Network request failed: " + response.body()!!
-                  .string()
-              )
-            )
-            return
-          }
-          try {
-            response.body()!!.byteStream().use { inputStream ->
-              val hash = UpdatesUtils.sha256AndWriteToFile(inputStream, destination)
-              callback.onSuccess(destination, hash)
-            }
-          } catch (e: Exception) {
-            Log.e(TAG, "Failed to download file to destination $destination", e)
-            callback.onFailure(e)
-          }
-        }
+    try {
+      return response.body()!!.byteStream().use { inputStream ->
+        val hash = UpdatesUtils.sha256AndWriteToFile(inputStream, destination)
+        FileDownloadResult(destination, hash)
       }
-    )
+    } catch (e: Exception) {
+      Log.e(TAG, "Failed to download file to destination $destination", e)
+      throw e
+    }
   }
 
-  internal fun parseManifestResponse(response: Response, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  internal suspend fun parseManifestResponse(response: Response, configuration: UpdatesConfiguration): UpdateManifest {
     val contentType = response.header("content-type") ?: ""
     val isMultipart = contentType.startsWith("multipart/", ignoreCase = true)
     if (isMultipart) {
       val boundaryParameter = ParameterParser().parse(contentType, ';')["boundary"]
-      if (boundaryParameter == null) {
-        callback.onFailure(
-          "Missing boundary in multipart manifest content-type",
-          IOException("Missing boundary in multipart manifest content-type")
-        )
-        return
-      }
+        ?: throw IOException("Missing boundary in multipart manifest content-type")
 
-      parseMultipartManifestResponse(response, boundaryParameter, configuration, callback)
+      return parseMultipartManifestResponse(response, boundaryParameter, configuration)
     } else {
       val responseHeaders = response.headers()
       val manifestHeaderData = ManifestHeaderData(
@@ -101,7 +68,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         signature = responseHeaders["expo-signature"]
       )
 
-      parseManifest(response.body()!!.string(), manifestHeaderData, null, configuration, callback)
+      return parseManifest(response.body()!!.string(), manifestHeaderData, null, configuration)
     }
   }
 
@@ -120,7 +87,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     return Headers.of(headers)
   }
 
-  private fun parseMultipartManifestResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  private suspend fun parseMultipartManifestResponse(response: Response, boundary: String, configuration: UpdatesConfiguration): UpdateManifest {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
 
@@ -149,26 +116,17 @@ open class FileDownloader(private val client: OkHttpClient) {
         nextPart = multipartStream.readBoundary()
       }
     } catch (e: Exception) {
-      callback.onFailure(
-        "Error while reading multipart manifest response",
-        e
-      )
-      return
+      throw IOException("Error while reading multipart manifest response", e)
     }
 
     if (manifestPartBodyAndHeaders == null) {
-      callback.onFailure("Multipart manifest response missing manifest part", IOException("Malformed multipart manifest response"))
-      return
+      throw IOException("Malformed multipart manifest response")
     }
 
     val extensions = try {
       extensionsBody?.let { JSONObject(it) }
     } catch (e: Exception) {
-      callback.onFailure(
-        "Failed to parse multipart manifest extensions",
-        e
-      )
-      return
+      throw IOException("Failed to parse multipart manifest extensions", e)
     }
 
     val responseHeaders = response.headers()
@@ -180,10 +138,10 @@ open class FileDownloader(private val client: OkHttpClient) {
       signature = manifestPartBodyAndHeaders.second["expo-signature"]
     )
 
-    parseManifest(manifestPartBodyAndHeaders.first, manifestHeaderData, extensions, configuration, callback)
+    return parseManifest(manifestPartBodyAndHeaders.first, manifestHeaderData, extensions, configuration)
   }
 
-  private fun parseManifest(manifestBody: String, manifestHeaderData: ManifestHeaderData, extensions: JSONObject?, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  private suspend fun parseManifest(manifestBody: String, manifestHeaderData: ManifestHeaderData, extensions: JSONObject?, configuration: UpdatesConfiguration): UpdateManifest {
     try {
       val updateResponseJson = extractUpdateResponseJson(manifestBody, configuration)
       val isSignatureInBody =
@@ -213,149 +171,93 @@ open class FileDownloader(private val client: OkHttpClient) {
       // We should treat these manifests as unsigned rather than signed with an invalid signature.
       val isUnsignedFromXDL = "UNSIGNED" == signature
       if (signature != null && !isUnsignedFromXDL) {
-        Crypto.verifyExpoPublicRSASignature(
-          this@FileDownloader,
-          manifestString,
-          signature,
-          object : RSASignatureListener {
-            override fun onError(exception: Exception, isNetworkError: Boolean) {
-              callback.onFailure("Could not validate signed manifest", exception)
-            }
-
-            override fun onCompleted(isValid: Boolean) {
-              if (isValid) {
-                try {
-                  createManifest(manifestBody, preManifest, manifestHeaderData, extensions, true, configuration, callback)
-                } catch (e: Exception) {
-                  callback.onFailure("Failed to parse manifest data", e)
-                }
-              } else {
-                callback.onFailure(
-                  "Manifest signature is invalid; aborting",
-                  Exception("Manifest signature is invalid")
-                )
-              }
-            }
+        val isValid = Crypto.verifyExpoPublicRSASignature(this@FileDownloader, manifestString, signature)
+        if (isValid) {
+          try {
+            return createManifest(manifestBody, preManifest, manifestHeaderData, extensions, true, configuration)
+          } catch (e: Exception) {
+            throw Error("Failed to parse manifest data", e)
           }
-        )
+        } else {
+          throw Error("Manifest signature is invalid; aborting")
+        }
       } else {
-        createManifest(manifestBody, preManifest, manifestHeaderData, extensions, false, configuration, callback)
+        return createManifest(manifestBody, preManifest, manifestHeaderData, extensions, false, configuration)
       }
     } catch (e: Exception) {
-      callback.onFailure(
-        "Failed to parse manifest data",
-        e
-      )
+      throw IOException("Failed to parse manifest data", e)
     }
   }
 
-  fun downloadManifest(
+  suspend fun downloadManifest(
     configuration: UpdatesConfiguration,
     extraHeaders: JSONObject?,
     context: Context,
-    callback: ManifestDownloadCallback
-  ) {
+  ): UpdateManifest {
     try {
-      downloadData(
-        createRequestForManifest(configuration, extraHeaders, context),
-        object : Callback {
-          override fun onFailure(call: Call, e: IOException) {
-            callback.onFailure(
-              "Failed to download manifest from URL: " + configuration.updateUrl,
-              e
-            )
-          }
-
-          @Throws(IOException::class)
-          override fun onResponse(call: Call, response: Response) {
-            if (!response.isSuccessful) {
-              callback.onFailure(
-                "Failed to download manifest from URL: " + configuration.updateUrl,
-                Exception(
-                  response.body()!!.string()
-                )
-              )
-              return
-            }
-
-            parseManifestResponse(response, configuration, callback)
-          }
-        }
-      )
+      val response = downloadData(createRequestForManifest(configuration, extraHeaders, context))
+      if (!response.isSuccessful) {
+        throw Exception(response.body()!!.string())
+      }
+      return parseManifestResponse(response, configuration)
     } catch (e: Exception) {
-      callback.onFailure(
+      throw IOException(
         "Failed to download manifest from URL " + configuration.updateUrl.toString(),
         e
       )
     }
   }
 
-  fun downloadAsset(
+  suspend fun downloadAsset(
     asset: AssetEntity,
     destinationDirectory: File?,
     configuration: UpdatesConfiguration,
-    callback: AssetDownloadCallback
-  ) {
+  ): AssetDownloadResult {
     if (asset.url == null) {
-      callback.onFailure(Exception("Could not download asset " + asset.key + " with no URL"), asset)
-      return
+      throw Exception("Could not download asset " + asset.key + " with no URL")
     }
     val filename = UpdatesUtils.createFilenameForAsset(asset)
     val path = File(destinationDirectory, filename)
-    if (path.exists()) {
+    return if (path.exists()) {
       asset.relativePath = filename
-      callback.onSuccess(asset, false)
+      AssetDownloadResult(asset, false)
     } else {
-      try {
-        downloadFileToPath(
-          createRequestForAsset(asset, configuration),
-          path,
-          object : FileDownloadCallback {
-            override fun onFailure(e: Exception) {
-              callback.onFailure(e, asset)
-            }
+      val result = downloadFileToPath(createRequestForAsset(asset, configuration), path)
 
-            override fun onSuccess(file: File, hash: ByteArray) {
-              // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
-              val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
-              val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
-              if (expectedAssetHash != null && expectedAssetHash != hashBase64String) {
-                callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashBase64String"), asset)
-                return
-              }
-
-              asset.downloadTime = Date()
-              asset.relativePath = filename
-              asset.hash = hash
-              callback.onSuccess(asset, true)
-            }
-          }
-        )
-      } catch (e: Exception) {
-        callback.onFailure(e, asset)
+      // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
+      val hashBase64String = Base64.encodeToString(result.hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+      val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
+      if (expectedAssetHash != null && expectedAssetHash != hashBase64String) {
+        throw Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashBase64String")
       }
+
+      asset.downloadTime = Date()
+      asset.relativePath = filename
+      asset.hash = result.hash
+      AssetDownloadResult(asset, true)
     }
   }
 
-  fun downloadData(request: Request, callback: Callback) {
-    downloadData(request, callback, false)
-  }
-
-  private fun downloadData(request: Request, callback: Callback, isRetry: Boolean) {
-    client.newCall(request).enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        if (isRetry) {
-          callback.onFailure(call, e)
-        } else {
-          downloadData(request, callback, true)
+  suspend fun downloadData(request: Request): Response {
+    return suspendCoroutine { cont ->
+      client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+          // retry once
+          client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+              cont.resumeWith(Result.failure(e))
+            }
+            override fun onResponse(call: Call, response: Response) {
+              cont.resumeWith(Result.success(response))
+            }
+          })
         }
-      }
 
-      @Throws(IOException::class)
-      override fun onResponse(call: Call, response: Response) {
-        callback.onResponse(call, response)
-      }
-    })
+        override fun onResponse(call: Call, response: Response) {
+          cont.resumeWith(Result.success(response))
+        }
+      })
+    }
   }
 
   companion object {
@@ -372,8 +274,7 @@ open class FileDownloader(private val client: OkHttpClient) {
       extensions: JSONObject?,
       isVerified: Boolean,
       configuration: UpdatesConfiguration,
-      callback: ManifestDownloadCallback
-    ) {
+    ): UpdateManifest {
       try {
         configuration.codeSigningConfiguration?.let {
           val isSignatureValid = Crypto.isSignatureValid(
@@ -386,8 +287,7 @@ open class FileDownloader(private val client: OkHttpClient) {
           }
         }
       } catch (e: Exception) {
-        callback.onFailure("Downloaded manifest signature is invalid", e)
-        return
+        throw IOException("Downloaded manifest signature is invalid", e)
       }
 
       if (configuration.expectsSignedManifest) {
@@ -395,11 +295,9 @@ open class FileDownloader(private val client: OkHttpClient) {
       }
       val updateManifest = ManifestFactory.getManifest(preManifest, manifestHeaderData, extensions, configuration)
       if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, updateManifest.manifestFilters)) {
-        val message =
-          "Downloaded manifest is invalid; provides filters that do not match its content"
-        callback.onFailure(message, Exception(message))
+        throw Exception("Downloaded manifest is invalid; provides filters that do not match its content")
       } else {
-        callback.onSuccess(updateManifest)
+        return updateManifest
       }
     }
 

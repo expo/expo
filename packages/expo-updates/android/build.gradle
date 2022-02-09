@@ -122,6 +122,8 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 }
 repositories {
   mavenCentral()

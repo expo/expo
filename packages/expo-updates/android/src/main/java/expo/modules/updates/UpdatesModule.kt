@@ -12,11 +12,14 @@ import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.utils.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.CoroutineContext
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
@@ -26,10 +29,12 @@ import expo.modules.updates.UpdatesConfiguration
 class UpdatesModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(context) {
+) : ExportedModule(context), CoroutineScope {
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   private val updatesService: UpdatesInterface? by moduleRegistry()
+
+  override val coroutineContext: CoroutineContext get() = Dispatchers.Default
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryDelegate.onCreate(moduleRegistry)
@@ -116,62 +121,62 @@ class UpdatesModule(
 
   @ExpoMethod
   fun checkForUpdateAsync(promise: Promise) {
-    try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot check for updates when expo-updates is not enabled."
-        )
-        return
-      }
-      val databaseHolder = updatesServiceLocal.databaseHolder
-      val extraHeaders = ManifestMetadata.getServerDefinedHeaders(
-        databaseHolder.database, updatesServiceLocal.configuration
-      )
-      databaseHolder.releaseDatabase()
-      updatesServiceLocal.fileDownloader.downloadManifest(
-        updatesServiceLocal.configuration,
-        extraHeaders,
-        context,
-        object : ManifestDownloadCallback {
-          override fun onFailure(message: String, e: Exception) {
-            promise.reject("ERR_UPDATES_CHECK", message, e)
-            Log.e(TAG, message, e)
-          }
-
-          override fun onSuccess(updateManifest: UpdateManifest) {
-            val launchedUpdate = updatesServiceLocal.launchedUpdate
-            val updateInfo = Bundle()
-            if (launchedUpdate == null) {
-              // this shouldn't ever happen, but if we don't have anything to compare
-              // the new manifest to, let the user know an update is available
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-              return
-            }
-            if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
-                launchedUpdate,
-                updateManifest.manifestFilters
-              )
-            ) {
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-            } else {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
-            }
-          }
+    promise.launch(this) {
+      try {
+        val updatesServiceLocal = updatesService
+        if (!updatesServiceLocal!!.configuration.isEnabled) {
+          promise.reject(
+            "ERR_UPDATES_DISABLED",
+            "You cannot check for updates when expo-updates is not enabled."
+          )
+          return@launch
         }
-      )
-    } catch (e: IllegalStateException) {
-      promise.reject(
-        "ERR_UPDATES_CHECK",
-        "The updates module controller has not been properly initialized. If you're using a development client, you cannot check for updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
-      )
+        val databaseHolder = updatesServiceLocal.databaseHolder
+        val extraHeaders = ManifestMetadata.getServerDefinedHeaders(
+          databaseHolder.database, updatesServiceLocal.configuration
+        )
+        databaseHolder.releaseDatabase()
+
+        val updateManifest = try {
+          updatesServiceLocal.fileDownloader.downloadManifest(
+            updatesServiceLocal.configuration,
+            extraHeaders,
+            context,
+          )
+        } catch (e: Error) {
+          promise.reject("ERR_UPDATES_CHECK", e.message, e)
+          Log.e(TAG, e.message, e)
+          return@launch
+        }
+        val launchedUpdate = updatesServiceLocal.launchedUpdate
+        val updateInfo = Bundle()
+        if (launchedUpdate == null) {
+          // this shouldn't ever happen, but if we don't have anything to compare
+          // the new manifest to, let the user know an update is available
+          updateInfo.putBoolean("isAvailable", true)
+          updateInfo.putString("manifestString", updateManifest.manifest.toString())
+          promise.resolve(updateInfo)
+          return@launch
+        }
+        if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
+            updateManifest.updateEntity,
+            launchedUpdate,
+            updateManifest.manifestFilters
+          )
+        ) {
+          updateInfo.putBoolean("isAvailable", true)
+          updateInfo.putString("manifestString", updateManifest.manifest.toString())
+          promise.resolve(updateInfo)
+        } else {
+          updateInfo.putBoolean("isAvailable", false)
+          promise.resolve(updateInfo)
+        }
+      } catch (e: IllegalStateException) {
+        promise.reject(
+          "ERR_UPDATES_CHECK",
+          "The updates module controller has not been properly initialized. If you're using a development client, you cannot check for updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
+        )
+      }
     }
   }
 

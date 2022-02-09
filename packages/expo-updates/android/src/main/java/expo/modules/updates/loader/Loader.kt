@@ -8,10 +8,11 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 
@@ -30,6 +31,8 @@ abstract class Loader protected constructor(
   private var skippedAssetList = mutableListOf<AssetEntity>()
   private var existingAssetList = mutableListOf<AssetEntity>()
   private var finishedAssetList = mutableListOf<AssetEntity>()
+
+  private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   interface LoaderCallback {
     fun onFailure(e: Exception)
@@ -63,19 +66,17 @@ abstract class Loader protected constructor(
     fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean
   }
 
-  protected abstract fun loadManifest(
+  protected abstract suspend fun loadManifest(
     context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
-    callback: ManifestDownloadCallback
-  )
+  ): UpdateManifest
 
-  protected abstract fun loadAsset(
+  protected abstract suspend fun loadAsset(
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
-    callback: AssetDownloadCallback
-  )
+  ): FileDownloader.AssetDownloadResult
 
   protected abstract fun shouldSkipAsset(assetEntity: AssetEntity): Boolean
 
@@ -87,24 +88,20 @@ abstract class Loader protected constructor(
     }
     this.callback = callback
 
-    loadManifest(
-      context, database, configuration,
-      object : ManifestDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
-          finishWithError(message, e)
+    coroutineScope.launch {
+      try {
+        val updateManifest = loadManifest(context, database, configuration)
+        this@Loader.updateManifest = updateManifest
+        if (this@Loader.callback!!.onUpdateManifestLoaded(updateManifest)) {
+          processUpdateManifest(updateManifest)
+        } else {
+          updateEntity = null
+          finishWithSuccess()
         }
-
-        override fun onSuccess(updateManifest: UpdateManifest) {
-          this@Loader.updateManifest = updateManifest
-          if (this@Loader.callback!!.onUpdateManifestLoaded(updateManifest)) {
-            processUpdateManifest(updateManifest)
-          } else {
-            updateEntity = null
-            finishWithSuccess()
-          }
-        }
+      } catch (e: Exception) {
+        finishWithError(e.message!!, e)
       }
-    )
+    }
   }
 
   private fun reset() {
@@ -222,25 +219,21 @@ abstract class Loader protected constructor(
         continue
       }
 
-      loadAsset(
-        assetEntity, updatesDirectory, configuration,
-        object : AssetDownloadCallback {
-          override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(
-              assetEntity.hash!!
-            ) else "key " + assetEntity.key
-            Log.e(TAG, "Failed to download asset with $identifier", e)
-            handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
-          }
-
-          override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
-            handleAssetDownloadCompleted(
-              assetEntity,
-              if (isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
-            )
-          }
+      coroutineScope.launch {
+        try {
+          val assetResult = loadAsset(assetEntity, updatesDirectory, configuration)
+          handleAssetDownloadCompleted(
+            assetResult.assetEntity,
+            if (assetResult.isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
+          )
+        } catch (e: Exception) {
+          val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(
+            assetEntity.hash!!
+          ) else "key " + assetEntity.key
+          Log.e(TAG, "Failed to download asset with $identifier", e)
+          handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
         }
-      )
+      }
     }
   }
 

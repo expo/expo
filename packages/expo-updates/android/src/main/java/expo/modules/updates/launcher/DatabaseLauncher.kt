@@ -11,11 +11,11 @@ import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.LoaderFiles
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
 
@@ -36,6 +36,8 @@ class DatabaseLauncher(
     private set
   override val isUsingEmbeddedAssets: Boolean
     get() = localAssetFiles == null
+
+  private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   private var assetsToDownload = 0
   private var assetsToDownloadFinished = 0
@@ -158,26 +160,29 @@ class DatabaseLauncher(
     return if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       assetsToDownload++
-      fileDownloader.downloadAsset(
-        asset,
-        updatesDirectory,
-        configuration,
-        object : AssetDownloadCallback {
-          override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            Log.e(TAG, "Failed to load asset from disk or network", e)
-            if (assetEntity.isLaunchAsset) {
-              launchAssetException = e
-            }
-            maybeFinish(assetEntity, null)
-          }
 
-          override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
-            database.assetDao().updateAsset(assetEntity)
-            val assetFileLocal = File(updatesDirectory, assetEntity.relativePath)
-            maybeFinish(assetEntity, if (assetFileLocal.exists()) assetFileLocal else null)
+      coroutineScope.launch {
+        try {
+          val assetDownloadResult = fileDownloader.downloadAsset(
+            asset,
+            updatesDirectory,
+            configuration,
+          )
+          database.assetDao().updateAsset(assetDownloadResult.assetEntity)
+          val assetFileLocal =
+            File(updatesDirectory, assetDownloadResult.assetEntity.relativePath)
+          maybeFinish(
+            assetDownloadResult.assetEntity,
+            if (assetFileLocal.exists()) assetFileLocal else null
+          )
+        } catch (e: Exception) {
+          Log.e(TAG, "Failed to load asset from disk or network", e)
+          if (asset.isLaunchAsset) {
+            launchAssetException = e
           }
+          maybeFinish(asset, null)
         }
-      )
+      }
       null
     } else {
       assetFile

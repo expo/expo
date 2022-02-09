@@ -33,60 +33,46 @@ object Crypto {
   // ASN.1 path to the extended key usage info within a CERT
   private const val CODE_SIGNING_OID = "1.3.6.1.5.5.7.3.3"
 
-  fun verifyExpoPublicRSASignature(
+  suspend fun verifyExpoPublicRSASignature(
     fileDownloader: FileDownloader,
     data: String,
     signature: String,
-    listener: RSASignatureListener
-  ) {
-    fetchExpoPublicKeyAndVerifyPublicRSASignature(true, data, signature, fileDownloader, listener)
+  ): Boolean {
+    return fetchExpoPublicKeyAndVerifyPublicRSASignature(true, data, signature, fileDownloader)
   }
 
   // On first attempt use cache. If verification fails try a second attempt without
   // cache in case the keys were actually rotated.
   // On second attempt reject promise if it fails.
-  private fun fetchExpoPublicKeyAndVerifyPublicRSASignature(
+  private suspend fun fetchExpoPublicKeyAndVerifyPublicRSASignature(
     isFirstAttempt: Boolean,
     plainText: String,
     cipherText: String,
     fileDownloader: FileDownloader,
-    listener: RSASignatureListener
-  ) {
+  ): Boolean {
     val cacheControl = if (isFirstAttempt) CacheControl.FORCE_CACHE else CacheControl.FORCE_NETWORK
     val request = Request.Builder()
       .url(EXPO_PUBLIC_KEY_URL)
       .cacheControl(cacheControl)
       .build()
-    fileDownloader.downloadData(
-      request,
-      object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-          listener.onError(e, true)
-        }
-
-        @Throws(IOException::class)
-        override fun onResponse(call: Call, response: Response) {
-          val exception: Exception = try {
-            val isValid = verifyPublicRSASignature(response.body()!!.string(), plainText, cipherText)
-            listener.onCompleted(isValid)
-            return
-          } catch (e: Exception) {
-            e
-          }
-          if (isFirstAttempt) {
-            fetchExpoPublicKeyAndVerifyPublicRSASignature(
-              false,
-              plainText,
-              cipherText,
-              fileDownloader,
-              listener
-            )
-          } else {
-            listener.onError(exception, false)
-          }
-        }
-      }
-    )
+    val response = fileDownloader.downloadData(request)
+    val exception: Exception = try {
+      return verifyPublicRSASignature(
+        response.body()!!.string(), plainText, cipherText
+      )
+    } catch (e: Exception) {
+      e
+    }
+    if (isFirstAttempt) {
+      return fetchExpoPublicKeyAndVerifyPublicRSASignature(
+        false,
+        plainText,
+        cipherText,
+        fileDownloader,
+      )
+    } else {
+      throw exception
+    }
   }
 
   @Throws(
@@ -117,11 +103,6 @@ object Crypto {
     signature.initVerify(key)
     signature.update(plainText.toByteArray())
     return signature.verify(Base64.decode(cipherText, Base64.DEFAULT))
-  }
-
-  interface RSASignatureListener {
-    fun onError(exception: Exception, isNetworkError: Boolean)
-    fun onCompleted(isValid: Boolean)
   }
 
   enum class CodeSigningAlgorithm(val algorithmName: String) {
