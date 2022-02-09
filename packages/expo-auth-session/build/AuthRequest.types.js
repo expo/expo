@@ -1,23 +1,23 @@
+// @needsAudit
 export var CodeChallengeMethod;
 (function (CodeChallengeMethod) {
     /**
      * The default and recommended method for transforming the code verifier.
-     * 1. Convert the code verifier to ASCII.
-     * 2. Create a digest of the string using crypto method SHA256.
-     * 3. Convert the digest to Base64 and URL encode it.
+     * - Convert the code verifier to ASCII.
+     * - Create a digest of the string using crypto method SHA256.
+     * - Convert the digest to Base64 and URL encode it.
      */
     CodeChallengeMethod["S256"] = "S256";
     /**
-     * This should not be used.
-     * When used, the code verifier will be sent to the server as-is.
+     * This should not be used. When used, the code verifier will be sent to the server as-is.
      */
     CodeChallengeMethod["Plain"] = "plain";
 })(CodeChallengeMethod || (CodeChallengeMethod = {}));
+// @needsAudit
 /**
- * The client informs the authorization server of the
- * desired grant type by using the a response type.
+ * The client informs the authorization server of the desired grant type by using the response type.
  *
- * [Section 3.1.1](https://tools.ietf.org/html/rfc6749#section-3.1.1)
+ * @see [Section 3.1.1](https://tools.ietf.org/html/rfc6749#section-3.1.1).
  */
 export var ResponseType;
 (function (ResponseType) {
@@ -34,11 +34,13 @@ export var ResponseType;
      */
     ResponseType["IdToken"] = "id_token";
 })(ResponseType || (ResponseType = {}));
+// @needsAudit
 /**
- * Should the user be prompted to login or consent again.
+ * Informs the server if the user should be prompted to login or consent again.
  * This can be used to present a dialog for switching accounts after the user has already been logged in.
+ * You should use this in favor of clearing cookies (which is mostly not possible on iOS).
  *
- * [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
+ * @see [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest).
  */
 export var Prompt;
 (function (Prompt) {

@@ -972,7 +972,7 @@ in here.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getCredentialStateAsync(user)
             </code>
@@ -1265,7 +1265,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -1426,7 +1426,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               refreshAsync(options)
             </code>
@@ -1693,7 +1693,7 @@ refresh operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               signInAsync(options)
             </code>
@@ -1999,7 +1999,7 @@ sign-in operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               signOutAsync(options)
             </code>
@@ -2346,7 +2346,7 @@ sign-out operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               addRevokeListener(listener)
             </code>
@@ -4175,16 +4175,20 @@ OAuth 2.0 protocol
         <span>
           White button with black text.
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationButtonStyle
-          .
-          WHITE
-           ＝ 
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonStyle
+            .
+            WHITE
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4202,16 +4206,20 @@ OAuth 2.0 protocol
         <span>
           White button with a black outline and black text.
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationButtonStyle
-          .
-          WHITE_OUTLINE
-           ＝ 
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonStyle
+            .
+            WHITE_OUTLINE
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4229,16 +4237,20 @@ OAuth 2.0 protocol
         <span>
           Black button with white text.
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationButtonStyle
-          .
-          BLACK
-           ＝ 
-          2
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonStyle
+            .
+            BLACK
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -4335,16 +4347,20 @@ OAuth 2.0 protocol
         <span>
           "Sign in with Apple"
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationButtonType
-          .
-          SIGN_IN
-           ＝ 
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonType
+            .
+            SIGN_IN
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4362,16 +4378,20 @@ OAuth 2.0 protocol
         <span>
           "Continue with Apple"
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationButtonType
-          .
-          CONTINUE
-           ＝ 
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonType
+            .
+            CONTINUE
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4392,16 +4412,20 @@ OAuth 2.0 protocol
             (requires iOS 13.2 or higher)
           </em>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationButtonType
-          .
-          SIGN_UP
-           ＝ 
-          2
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonType
+            .
+            SIGN_UP
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -4537,16 +4561,20 @@ for more details.
             REVOKED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationCredentialState
-          .
-          REVOKED
-           ＝ 
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            REVOKED
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4560,16 +4588,20 @@ for more details.
             AUTHORIZED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationCredentialState
-          .
-          AUTHORIZED
-           ＝ 
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            AUTHORIZED
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4583,16 +4615,20 @@ for more details.
             NOT_FOUND
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationCredentialState
-          .
-          NOT_FOUND
-           ＝ 
-          2
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            NOT_FOUND
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4606,16 +4642,20 @@ for more details.
             TRANSFERRED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationCredentialState
-          .
-          TRANSFERRED
-           ＝ 
-          3
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            TRANSFERRED
+             ＝ 
+            3
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -4695,16 +4735,20 @@ for more details.
         <span>
           An operation that depends on the particular kind of credential provider.
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationOperation
-          .
-          IMPLICIT
-           ＝ 
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            IMPLICIT
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4718,16 +4762,20 @@ for more details.
             LOGIN
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationOperation
-          .
-          LOGIN
-           ＝ 
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            LOGIN
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4741,16 +4789,20 @@ for more details.
             REFRESH
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationOperation
-          .
-          REFRESH
-           ＝ 
-          2
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            REFRESH
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4764,16 +4816,20 @@ for more details.
             LOGOUT
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationOperation
-          .
-          LOGOUT
-           ＝ 
-          3
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            LOGOUT
+             ＝ 
+            3
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -4941,16 +4997,20 @@ for more details.
             FULL_NAME
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationScope
-          .
-          FULL_NAME
-           ＝ 
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationScope
+            .
+            FULL_NAME
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -4964,16 +5024,20 @@ for more details.
             EMAIL
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationScope
-          .
-          EMAIL
-           ＝ 
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationScope
+            .
+            EMAIL
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -5102,16 +5166,20 @@ for more details.
         <span>
           The system does not support this determination and there is no data.
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationUserDetectionStatus
-          .
-          UNSUPPORTED
-           ＝ 
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationUserDetectionStatus
+            .
+            UNSUPPORTED
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -5129,16 +5197,20 @@ for more details.
         <span>
           The system has not determined whether the user might be a real person.
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationUserDetectionStatus
-          .
-          UNKNOWN
-           ＝ 
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationUserDetectionStatus
+            .
+            UNKNOWN
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -5156,16 +5228,20 @@ for more details.
         <span>
           The user appears to be a real person.
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          AppleAuthenticationUserDetectionStatus
-          .
-          LIKELY_REAL
-           ＝ 
-          2
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationUserDetectionStatus
+            .
+            LIKELY_REAL
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -5919,7 +5995,7 @@ Same as
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               usePermissions
             </code>
@@ -6229,7 +6305,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               getPermissionsAsync()
@@ -6395,7 +6471,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               requestPermissionsAsync()
@@ -6579,7 +6655,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               scanFromURLAsync(url, barCodeTypes)
@@ -8311,16 +8387,20 @@ For some types, they will represent the area used by the scanner.
             DENIED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          PermissionStatus
-          .
-          DENIED
-           ＝ 
-          "denied"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            DENIED
+             ＝ 
+            "denied"
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -8334,16 +8414,20 @@ For some types, they will represent the area used by the scanner.
             GRANTED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          PermissionStatus
-          .
-          GRANTED
-           ＝ 
-          "granted"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            GRANTED
+             ＝ 
+            "granted"
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -8357,16 +8441,20 @@ For some types, they will represent the area used by the scanner.
             UNDETERMINED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          PermissionStatus
-          .
-          UNDETERMINED
-           ＝ 
-          "undetermined"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            UNDETERMINED
+             ＝ 
+            "undetermined"
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -8446,7 +8534,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getPermissionsAsync()
             </code>
@@ -8588,7 +8676,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getStepCountAsync(start, end)
             </code>
@@ -8912,7 +9000,7 @@ a start date that is more than seven days in the past returns only the available
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -9068,7 +9156,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               requestPermissionsAsync()
             </code>
@@ -9210,7 +9298,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               watchStepCount(callback)
             </code>
@@ -10245,16 +10333,20 @@ provided with a single argument that is
             DENIED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          PermissionStatus
-          .
-          DENIED
-           ＝ 
-          "denied"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            DENIED
+             ＝ 
+            "denied"
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -10268,16 +10360,20 @@ provided with a single argument that is
             GRANTED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          PermissionStatus
-          .
-          GRANTED
-           ＝ 
-          "granted"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            GRANTED
+             ＝ 
+            "granted"
+          </code>
+        </p>
       </li>
       <li
         class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
@@ -10291,16 +10387,20 @@ provided with a single argument that is
             UNDETERMINED
           </code>
         </span>
-        <br />
-        <code
-          class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          PermissionStatus
-          .
-          UNDETERMINED
-           ＝ 
-          "undetermined"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            UNDETERMINED
+             ＝ 
+            "undetermined"
+          </code>
+        </p>
       </li>
     </ul>
   </div>

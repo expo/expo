@@ -1,7 +1,8 @@
+// @needsAudit
 /**
- * A hint about the type of the token submitted for revocation.
+ * A hint about the type of the token submitted for revocation. If not included then the server should attempt to deduce the token type.
  *
- * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+ * @see [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
 export var TokenTypeHint;
 (function (TokenTypeHint) {
@@ -18,10 +19,11 @@ export var TokenTypeHint;
      */
     TokenTypeHint["RefreshToken"] = "refresh_token";
 })(TokenTypeHint || (TokenTypeHint = {}));
+// @needsAudit
 /**
  * Grant type values used in dynamic client registration and auth requests.
  *
- * [Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
+ * @see [Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
  */
 export var GrantType;
 (function (GrantType) {

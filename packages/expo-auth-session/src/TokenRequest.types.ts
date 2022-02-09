@@ -1,14 +1,16 @@
+// @needsAudit
 /**
- * Access token type
+ * Access token type.
  *
- * [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
+ * @see [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
  */
 export type TokenType = 'bearer' | 'mac';
 
+// @needsAudit
 /**
- * A hint about the type of the token submitted for revocation.
+ * A hint about the type of the token submitted for revocation. If not included then the server should attempt to deduce the token type.
  *
- * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+ * @see [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
 export enum TokenTypeHint {
   /**
@@ -25,6 +27,7 @@ export enum TokenTypeHint {
   RefreshToken = 'refresh_token',
 }
 
+// @needsAudit
 /**
  * Config used to request a token refresh, revocation, or code exchange.
  */
@@ -58,10 +61,11 @@ export interface TokenRequestConfig {
   scopes?: string[];
 }
 
+// @needsAudit
 /**
  * Config used to exchange an authorization code for an access token.
  *
- * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
+ * @see [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
 export interface AccessTokenRequestConfig extends TokenRequestConfig {
   /**
@@ -76,10 +80,11 @@ export interface AccessTokenRequestConfig extends TokenRequestConfig {
   redirectUri: string;
 }
 
+// @needsAudit
 /**
  * Config used to request a token refresh, or code exchange.
  *
- * [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+ * @see [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
  */
 export interface RefreshTokenRequestConfig extends TokenRequestConfig {
   /**
@@ -88,26 +93,32 @@ export interface RefreshTokenRequestConfig extends TokenRequestConfig {
   refreshToken?: string;
 }
 
+// @needsAudit
 /**
  * Config used to revoke a token.
  *
- * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+ * @see [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
 export interface RevokeTokenRequestConfig extends Partial<TokenRequestConfig> {
   /**
    * The token that the client wants to get revoked.
+   *
+   * [Section 3.1](https://tools.ietf.org/html/rfc6749#section-3.1)
    */
   token: string;
   /**
    * A hint about the type of the token submitted for revocation.
+   *
+   * [Section 3.2](https://tools.ietf.org/html/rfc6749#section-3.2)
    */
   tokenTypeHint?: TokenTypeHint;
 }
 
+// @needsAudit
 /**
  * Grant type values used in dynamic client registration and auth requests.
  *
- * [Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
+ * @see [Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
  */
 export enum GrantType {
   /**
@@ -136,6 +147,7 @@ export enum GrantType {
   ClientCredentials = 'client_credentials',
 }
 
+// @needsAudit @docsMissing
 /**
  * Object returned from the server after a token response.
  */
@@ -149,6 +161,7 @@ export interface ServerTokenResponseConfig {
   issued_at?: number;
 }
 
+// @needsAudit
 export interface TokenResponseConfig {
   /**
    * The access token issued by the authorization server.

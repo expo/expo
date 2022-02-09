@@ -27,6 +27,7 @@ export const discovery: DiscoveryDocument = {
   tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
 };
 
+// @needsAudit @docsMissing
 export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
   webClientId?: string;
   iosClientId?: string;
@@ -34,6 +35,10 @@ export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
   expoClientId?: string;
 }
 
+// @needsAudit
+/**
+ * Extends [`AuthRequest`](#authrequest) and accepts [`FacebookAuthRequest`](#facebookauthrequest) in the constructor.
+ */
 class FacebookAuthRequest extends AuthRequest {
   nonce?: string;
 
@@ -98,7 +103,7 @@ class FacebookAuthRequest extends AuthRequest {
  * - [Get Started](https://docs.expo.io/guides/authentication/#facebook)
  *
  * @param config
- * @param discovery
+ * @param redirectUriOptions
  */
 export function useAuthRequest(
   config: Partial<FacebookAuthRequestConfig> = {},
