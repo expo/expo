@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { breakpoints, theme } from '@expo/styleguide';
+import { breakpoints, theme, spacing } from '@expo/styleguide';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import { LayoutScroll } from './LayoutScroll';
@@ -53,11 +53,13 @@ const navigationStyle = css({
 });
 
 const contentStyle = css({ gridArea: 'content' });
+
 const innerContentStyle = css({
   margin: '0 auto',
   maxWidth: breakpoints.large,
   height: '100%',
   overflowY: 'visible',
+  padding: spacing[10],
 });
 
 const sidebarStyle = css({
