@@ -5,7 +5,6 @@ import ExpoModulesCore
 
 internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate {
   let viewController: SFSafariViewController
-  var modalNavigationController: UINavigationController?
   var promise: Promise?
   var isOpen: Bool {
     promise != nil
@@ -57,6 +56,5 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate {
   private func finish(type: String) {
     promise?.resolve(["type": type])
     promise = nil
-    modalNavigationController = nil
   }
 }
