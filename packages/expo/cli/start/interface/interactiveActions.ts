@@ -5,8 +5,7 @@ import chalk from 'chalk';
 import * as Log from '../../log';
 import { learnMore } from '../../utils/link';
 import { selectAsync } from '../../utils/prompts';
-import { getNativeDevServerPort } from '../devServer';
-import * as MetroDevServer from '../metro/MetroDevServer';
+import { getNativeDevServerPort, broadcastMessage } from '../devServer';
 import * as UrlUtils from '../serverUrl';
 import * as WebpackDevServer from '../webpack/WebpackDevServer';
 import { BLT, printHelp, printItem, printUsage, StartOptions } from './commandsTable';
@@ -73,8 +72,7 @@ export function printDevServerInfo(
 export function reloadApp() {
   Log.log(`${BLT} Reloading apps`);
   // Send reload requests over the dev servers
-  MetroDevServer.broadcastMessage('reload');
-  WebpackDevServer.broadcastMessage('reload');
+  broadcastMessage('reload');
 }
 
 export async function openMoreToolsAsync() {
@@ -89,8 +87,7 @@ export async function openMoreToolsAsync() {
       // Toggling Remote JS Debugging is pretty rough, so leaving it disabled.
       // { title: 'Toggle Remote Debugging', value: 'toggleRemoteDebugging' },
     ]);
-    MetroDevServer.broadcastMessage('sendDevCommand', { name: value });
-    WebpackDevServer.broadcastMessage('sendDevCommand', { name: value });
+    broadcastMessage('sendDevCommand', { name: value });
   } catch (e) {
     Log.debug(e);
     // do nothing
@@ -101,6 +98,5 @@ export async function openMoreToolsAsync() {
 
 export function toggleDevMenu() {
   Log.log(`${BLT} Toggling dev menu`);
-  MetroDevServer.broadcastMessage('devMenu');
-  WebpackDevServer.broadcastMessage('devMenu');
+  broadcastMessage('devMenu');
 }

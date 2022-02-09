@@ -12,6 +12,21 @@ import { watchBabelConfigForProject } from './watchBabelConfig';
 import * as Webpack from './webpack/Webpack';
 import * as WebpackDevServer from './webpack/WebpackDevServer';
 
+/**
+ * Sends a message over web sockets to any connected device,
+ * does nothing when the dev server is not running.
+ *
+ * @param method name of the command. In RN projects `reload`, and `devMenu` are available. In Expo Go, `sendDevCommand` is available.
+ * @param params
+ */
+export function broadcastMessage(
+  method: 'reload' | 'devMenu' | 'sendDevCommand',
+  params?: Record<string, any>
+) {
+  MetroDevServer.broadcastMessage(method, params);
+  WebpackDevServer.broadcastMessage(method, params);
+}
+
 /** Get the port for the dev server (either Webpack or Metro) that is hosting code for React Native runtimes. */
 export function getNativeDevServerPort() {
   if (WebpackDevServer.isTargetingNative()) {
