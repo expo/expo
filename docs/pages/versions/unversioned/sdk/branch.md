@@ -6,7 +6,7 @@ packageName: 'expo-branch'
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> ⚠️ **This module only works in standalone apps on the classic build service (`expo build`)**. It is **not compatible with EAS Build**. [Work is in progress to add managed EAS Build support for react-native-branch](https://github.com/expo/config-plugins/pull/28). Once this is ready, `expo-branch` will be deprecated.
+> ⚠️ **This module only works in standalone apps on the classic build service (`expo build`)**. For **EAS Build**, you should use the official [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) with [@config-plugins/react-native-branch](https://github.com/expo/config-plugins/tree/master/packages/react-native-branch) instead.
 
 **`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referrals and attribution with deep links.
 
