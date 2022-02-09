@@ -8,6 +8,9 @@ export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
     androidClientId?: string;
     expoClientId?: string;
 }
+/**
+ * Extends [`AuthRequest`](#authrequest) and accepts [`FacebookAuthRequest`](#facebookauthrequest) in the constructor.
+ */
 declare class FacebookAuthRequest extends AuthRequest {
     nonce?: string;
     constructor({ language, extraParams, clientSecret, ...config }: FacebookAuthRequestConfig);
@@ -24,7 +27,7 @@ declare class FacebookAuthRequest extends AuthRequest {
  * - [Get Started](https://docs.expo.io/guides/authentication/#facebook)
  *
  * @param config
- * @param discovery
+ * @param redirectUriOptions
  */
 export declare function useAuthRequest(config?: Partial<FacebookAuthRequestConfig>, redirectUriOptions?: Partial<AuthSessionRedirectUriOptions>): [
     FacebookAuthRequest | null,

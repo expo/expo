@@ -19,6 +19,10 @@ export const discovery = {
     revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
     userInfoEndpoint: 'https://openidconnect.googleapis.com/v1/userinfo',
 };
+// @needsAudit
+/**
+ * Extends [`AuthRequest`](#authrequest) and accepts [`GoogleAuthRequestConfig`](#googleauthrequestconfig) in the constructor.
+ */
 class GoogleAuthRequest extends AuthRequest {
     nonce;
     constructor({ language, loginHint, selectAccount, extraParams = {}, clientSecret, ...config }) {
