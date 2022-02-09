@@ -8,8 +8,6 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.devmenu.modules.internals.DevMenuInternalFontManagerModule
 import expo.modules.devmenu.modules.internals.DevMenuInternalMenuControllerModule
-import expo.modules.devmenu.modules.internals.DevMenuInternalSessionManagerModule
-import expo.modules.devmenu.modules.internals.DevMenuInternalWebBrowserModule
 
 interface DevMenuInternalMenuControllerModuleInterface {
   @ReactMethod
@@ -70,13 +68,8 @@ class DevMenuInternalModule(
   reactContext: ReactApplicationContext
 ) : ReactContextBaseJavaModule(reactContext),
   DevMenuInternalFontManagerModuleInterface by DevMenuInternalFontManagerModule(reactContext),
-  DevMenuInternalWebBrowserModuleInterface by DevMenuInternalWebBrowserModule(reactContext),
-  DevMenuInternalSessionManagerModuleInterface by DevMenuInternalSessionManagerModule(reactContext),
   DevMenuInternalMenuControllerModuleInterface by DevMenuInternalMenuControllerModule(reactContext) {
 
-  override fun initialize() {
-    restoreSession()
-  }
   override fun getName() = "ExpoDevMenuInternal"
 
   private val doesDeviceSupportKeyCommands
