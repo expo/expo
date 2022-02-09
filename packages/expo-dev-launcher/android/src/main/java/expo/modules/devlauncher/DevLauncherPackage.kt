@@ -26,6 +26,7 @@ class DevLauncherPackage : Package, ReactPackage {
       override fun onCreate(application: Application?) {
         if (application != null && application is ReactApplication) {
           DevLauncherController.initialize(application, application.reactNativeHost)
+          // TODO: optional updates
         }
       }
     }
