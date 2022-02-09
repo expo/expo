@@ -1,5 +1,6 @@
 export type PageMetadata = {
-  title?: string;
+  title: string;
+  description?: string;
   sourceCodeUrl?: string;
   packageName?: string;
   maxHeadingDepth?: number;
