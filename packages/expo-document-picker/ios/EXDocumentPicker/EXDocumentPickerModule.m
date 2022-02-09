@@ -186,14 +186,20 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
     
   NSString *extension = [url pathExtension];
   NSString *mimeType = [EXDocumentPickerModule getMimeType:extension];
-  
-  _resolve(@{
-             @"type": @"success",
-             @"uri": [newUrl absoluteString],
-             @"name": [url lastPathComponent],
-             @"size": @(fileSize),
-             @"mimeType": mimeType
-             });
+
+  NSMutableDictionary *response = [@{
+    @"type": @"success",
+    @"uri": [newUrl absoluteString],
+    @"name": [url lastPathComponent],
+    @"size": @(fileSize)
+  } mutableCopy];
+
+  if (mimeType != nil) {
+    response[@"mimeType"] = mimeType;
+  }
+
+  _resolve(response);
+
   _resolve = nil;
   _reject = nil;
 }
