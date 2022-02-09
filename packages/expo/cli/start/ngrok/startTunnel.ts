@@ -5,7 +5,7 @@ import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
-import * as ProjectSettings from '../api/ProjectSettings';
+import { ProjectSettings } from '../api/ProjectSettings';
 import UserSettings from '../api/UserSettings';
 import { getNativeDevServerPort } from '../devServer';
 import {

@@ -1,7 +1,7 @@
 import JsonFile from '@expo/json-file';
 import path from 'path';
 
-import { dotExpoProjectDirectory } from './ProjectSettings';
+import { dotExpoProjectDirectory } from './dotExpo';
 
 export type DeviceInfo = {
   installationId: string;
