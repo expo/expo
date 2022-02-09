@@ -9,7 +9,6 @@ function getArtifactsPath() {
 }
 
 const artifactsPath = getArtifactsPath();
-console.log({ artifactsPath });
 
 module.exports = {
   'test-runner': 'jest',
