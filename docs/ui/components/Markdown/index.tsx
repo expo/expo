@@ -8,6 +8,8 @@ import { DETAILS, SUMMARY } from '~/ui/components/Collapsible';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H1, H2, H4, H5, CODE, P, BOLD, UL, OL, LI } from '~/ui/components/Text';
 
+export { MarkdownWrapper } from './Wrapper';
+
 type Config = ConfigStyles & {
   Component: ComponentType<ComponentProps> | string;
 };

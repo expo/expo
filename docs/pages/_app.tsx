@@ -1,14 +1,12 @@
 import { ThemeProvider } from '@expo/styleguide';
-import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/browser';
 import { AppProps } from 'next/app';
 import React from 'react';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
-import * as markdownComponents from '~/common/translate-markdown';
 import { useNProgress } from '~/common/use-nprogress';
-import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 import { AnalyticsProvider } from '~/providers/Analytics';
+import { MarkdownProvider } from '~/providers/Markdown';
 
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-theme.css';
@@ -21,11 +19,6 @@ Sentry.init({
   beforeSend: preprocessSentryError,
 });
 
-const rootMarkdownComponents = {
-  ...markdownComponents,
-  wrapper: DocumentationElements,
-};
-
 export { reportWebVitals } from '~/providers/Analytics';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -33,9 +26,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <AnalyticsProvider>
       <ThemeProvider>
-        <MDXProvider components={rootMarkdownComponents}>
+        <MarkdownProvider>
           <Component {...pageProps} />
-        </MDXProvider>
+        </MarkdownProvider>
       </ThemeProvider>
     </AnalyticsProvider>
   );
