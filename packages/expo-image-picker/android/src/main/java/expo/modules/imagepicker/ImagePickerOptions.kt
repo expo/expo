@@ -1,58 +1,63 @@
 package expo.modules.imagepicker
 
-import expo.modules.core.Promise
-import expo.modules.core.utilities.ifNull
+import android.content.Intent
+import androidx.annotation.FloatRange
+import androidx.annotation.IntRange
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 
-data class ImagePickerOptions(
-  val quality: Int,
-  val isAllowsEditing: Boolean,
-  val forceAspect: List<*>?,
-  val isBase64: Boolean,
-  val mediaTypes: MediaTypes,
-  val isExif: Boolean,
-  val videoMaxDuration: Int
-) {
-  companion object {
-    fun optionsFromMap(options: Map<String, Any?>, promise: Promise): ImagePickerOptions? {
-      val quality = options[ImagePickerConstants.OPTION_QUALITY]?.let {
-        if (it is Number) {
-          return@let (it.toDouble() * 100).toInt()
+internal class ImagePickerOptions: Record {
+  /**
+   * TODO(@bbarthec): restore preventing numbers from outside valid range
+   */
+  @Field
+  @FloatRange(from = 0.0, to = 1.0, fromInclusive = true, toInclusive = true)
+  var quality: Double = 0.2
+
+  @Field
+  var allowsEditing: Boolean = false
+
+  /**
+   * TODO(@bbarthec): prevent negative numbers
+   * TODO(@bbarthec): undocumented
+   */
+  @Field
+  var forceAspect: Pair<Int, Int>? = null
+
+  @Field
+  var base64: Boolean = false
+
+  @Field
+  var mediaTypes: MediaTypes = MediaTypes.IMAGES
+
+  @Field
+  var exif: Boolean = false
+
+  /**
+   * TODO(@bbarthec): prevent negative numbers
+   */
+  @Field
+  @IntRange(from = 0)
+  var videoMaxDuration: Int = 0
+}
+
+enum class MediaTypes(val value: String) {
+  IMAGES("Images"),
+  VIDEOS("Videos"),
+  ALL("All");
+
+  internal fun toIntent(): Intent {
+    return Intent().also {
+      when (this) {
+        IMAGES -> it.type = "image/*"
+        VIDEOS -> it.type = "video/*"
+        ALL -> {
+          it.type = "*/*"
+          it.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
         }
-
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "Quality can not be `null`.")
-        return null
-      } ?: ImagePickerConstants.DEFAULT_QUALITY
-
-      val isAllowsEditing = options[ImagePickerConstants.OPTION_ALLOWS_EDITING] as? Boolean ?: false
-
-      val forceAspect: List<*>? = options[ImagePickerConstants.OPTION_ASPECT]?.let {
-        if (it is List<*> && it.size == 2 && it[0] is Number && it[1] is Number) {
-          return@let it
-        }
-
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "'Aspect option must be of form [Number, Number]")
-        return null
       }
 
-      val isBase64 = options[ImagePickerConstants.OPTION_BASE64] as? Boolean ?: false
-      val mediaTypes = MediaTypes.fromString(
-        options[ImagePickerConstants.OPTION_MEDIA_TYPES] as? String ?: "Images"
-      ).ifNull {
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "Unknown media types: ${options[ImagePickerConstants.OPTION_MEDIA_TYPES]}")
-        return null
-      }
-      val isExif = options[ImagePickerConstants.OPTION_EXIF] as? Boolean ?: false
-
-      val videoMaxDuration = options[ImagePickerConstants.OPTION_VIDEO_MAX_DURATION]?.let {
-        if (it is Number && it.toInt() >= 0) {
-          return@let it.toInt()
-        }
-
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "videoMaxDuration must be a non-negative integer")
-        return null
-      } ?: 0
-
-      return ImagePickerOptions(quality, isAllowsEditing, forceAspect, isBase64, mediaTypes, isExif, videoMaxDuration)
+      it.action = Intent.ACTION_GET_CONTENT
     }
   }
 }

@@ -1,10 +1,12 @@
 package expo.modules.interfaces.permissions;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import expo.modules.core.Promise;
 
 public interface Permissions {
 
-  static void getPermissionsWithPermissionsManager(Permissions permissionsManager, final Promise promise, String... permissions) {
+  static void getPermissionsWithPermissionsManager(@Nullable Permissions permissionsManager, @NonNull final Promise promise, @NonNull String... permissions) {
     if (permissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
@@ -12,7 +14,7 @@ public interface Permissions {
     permissionsManager.getPermissionsWithPromise(promise, permissions);
   }
 
-  static void askForPermissionsWithPermissionsManager(Permissions permissionsManager, final Promise promise, String... permissions) {
+  static void askForPermissionsWithPermissionsManager(@Nullable Permissions permissionsManager, @NonNull final Promise promise, @NonNull String... permissions) {
     if (permissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;

@@ -248,4 +248,44 @@ class RecordTypeConverterTest {
     Truth.assertThat(myRecord.innerRecord).isEqualTo(InnerRecord().apply { name = "value" })
     Truth.assertThat(myRecord.points).isEqualTo(listOf(1.0, 2.0, 3.0))
   }
+
+  enum class EnumWithoutParameter {
+    VALUE1, VALUE2, VALUE3
+  }
+
+  enum class EnumWithInt(val value: Int) {
+    VALUE1(1), VALUE2(2), VALUE3(3)
+  }
+
+  enum class EnumWithString(val value: String) {
+    VALUE1("value1"), VALUE2("value2"), VALUE3("value3")
+  }
+
+  @Test
+  fun `should work with enums`() {
+    class MyRecord : Record {
+      @Field
+      lateinit var enumWithoutParameter: EnumWithoutParameter
+
+      @Field
+      lateinit var enumWithInt: EnumWithInt
+
+      @Field
+      lateinit var enumWithString: EnumWithString
+    }
+
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putString("enumWithoutParameter", "VALUE2")
+        putInt("enumWithInt", 1)
+        putString("enumWithString", "value3")
+      }
+    )
+
+    val myRecord = convert<MyRecord>(map)
+
+    Truth.assertThat(myRecord.enumWithoutParameter).isEqualTo(EnumWithoutParameter.VALUE2)
+    Truth.assertThat(myRecord.enumWithInt).isEqualTo(EnumWithInt.VALUE1)
+    Truth.assertThat(myRecord.enumWithString).isEqualTo(EnumWithString.VALUE3)
+  }
 }

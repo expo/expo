@@ -6,12 +6,16 @@ object ImagePickerConstants {
   const val TAG = "ExponentImagePicker"
   const val REQUEST_LAUNCH_CAMERA = 1
   const val REQUEST_LAUNCH_IMAGE_LIBRARY = 2
-  const val DEFAULT_QUALITY = 100
+  const val MAXIMUM_QUALITY = 1.0
   const val CACHE_DIR_NAME = "ImagePicker"
   const val PENDING_RESULT_EVENT = "ExpoImagePicker.onPendingResult"
 
   const val ERR_MISSING_ACTIVITY = "ERR_MISSING_ACTIVITY"
   const val MISSING_ACTIVITY_MESSAGE = "Activity which was provided during module initialization is no longer available"
+  const val ERR_MISSING_CONTEXT = "ERR_MISSING_CONTEXT"
+  const val MISSING_CONTEXT_MESSAGE = "Application context is not available"
+  const val ERR_MISSING_MODULE = "ERR_MISSING_MODULE"
+  const val MISSING_IMAGE_LOADER_MODULE_MESSAGE = "ImageLoader module is unavailable"
   const val ERR_CAN_NOT_DEDUCE_TYPE = "ERR_CAN_NOT_DEDUCE_TYPE"
   const val CAN_NOT_DEDUCE_TYPE_MESSAGE = "Can not deduce type of the returned file."
   const val ERR_CAN_NOT_SAVE_RESULT = "ERR_CAN_NOT_SAVE_RESULT"
@@ -28,14 +32,6 @@ object ImagePickerConstants {
   const val UNKNOWN_EXCEPTION = "Unknown exception."
   const val ERR_CROPPING_FAILURE = "ERR_CROPPING_FAILURE"
   const val CROPPING_FAILURE_MESSAGE = "Cropping operation failed"
-
-  const val OPTION_QUALITY = "quality"
-  const val OPTION_ALLOWS_EDITING = "allowsEditing"
-  const val OPTION_MEDIA_TYPES = "mediaTypes"
-  const val OPTION_ASPECT = "aspect"
-  const val OPTION_BASE64 = "base64"
-  const val OPTION_EXIF = "exif"
-  const val OPTION_VIDEO_MAX_DURATION = "videoMaxDuration"
 
   val exifTags = arrayOf(
     arrayOf("string", ExifInterface.TAG_ARTIST),

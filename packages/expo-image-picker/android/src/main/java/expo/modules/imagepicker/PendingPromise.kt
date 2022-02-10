@@ -1,6 +1,7 @@
 package expo.modules.imagepicker
 
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import expo.modules.core.Promise
 
 /**
@@ -26,9 +27,10 @@ class PendingPromise(
 
   override fun reject(code: String, message: String, e: Throwable?) {
     pickerResultsStore.addPendingResult(
-      Bundle().apply {
-        putString("code", code)
-        putString("message", message)
+      bundleOf(
+        "code" to code,
+        "message" to message
+      ).apply {
         e?.let {
           putString("exception", it.toString())
         }
