@@ -49,7 +49,7 @@ jobs:
           yarn e2e
         working-directory: packages/expo-dev-client
       - name: Store artifacts of build failures
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v2
         with:
           name: expo-dev-client-e2e-artifacts
