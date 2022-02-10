@@ -36,7 +36,6 @@ class DevLauncherControllerTest {
     val controller = DevLauncherController.instance as DevLauncherController
     val mockDevMenuManager = mockk<DevMenuManager>(relaxed = true)
     controller.devMenuManager = mockDevMenuManager
-    Truth.assertThat(controller.canLaunchDevMenuOnStart).isTrue()
 
     controller.handleIntent(Intent().apply {
       data = Uri.parse("https://expo-development-client")
@@ -46,6 +45,5 @@ class DevLauncherControllerTest {
     verify {
       mockDevMenuManager.setCanLaunchDevMenuOnStart(false)
     }
-    Truth.assertThat(controller.canLaunchDevMenuOnStart).isFalse()
   }
 }
