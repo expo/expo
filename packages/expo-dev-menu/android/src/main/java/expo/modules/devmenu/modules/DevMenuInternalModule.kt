@@ -44,15 +44,6 @@ interface DevMenuInternalMenuControllerModuleInterface {
   fun copyToClipboardAsync(content: String, promise: Promise)
 }
 
-interface DevMenuInternalSessionManagerModuleInterface {
-  fun restoreSession(): String?
-
-  @ReactMethod
-  fun restoreSessionAsync(promise: Promise)
-
-  @ReactMethod
-  fun setSessionAsync(session: ReadableMap?, promise: Promise)
-}
 
 interface DevMenuInternalFontManagerModuleInterface {
   @ReactMethod
