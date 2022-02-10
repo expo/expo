@@ -9,7 +9,7 @@ import { PageLink } from './PageLink';
 import { SectionList } from './SectionList';
 import { NavigationNode, NavigationRenderProps, NavigationType } from './types';
 
-import { LayoutScroll } from '~/ui/components/Layout';
+import { LayoutScroll, usePersistScroll } from '~/ui/components/Layout';
 
 export type NavigationProps = {
   /** The tree of navigation nodes to render in the sidebar */
@@ -19,11 +19,11 @@ export type NavigationProps = {
 export function Navigation({ routes }: NavigationProps) {
   const router = useRouter();
   const activeRoutes = useMemo(() => findActiveRoute(routes, router.pathname), [router.pathname]);
+  const persistScroll = usePersistScroll('navigation');
 
-  // TODO(cedric): add root links above the routes and add fade to scroll
   return (
     <nav css={navigationStyle}>
-      <LayoutScroll>
+      <LayoutScroll {...persistScroll}>
         <ApiVersionSelect />
         {routes.map(route => navigationRenderer(route, activeRoutes))}
       </LayoutScroll>
