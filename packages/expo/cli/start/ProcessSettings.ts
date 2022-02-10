@@ -1,15 +1,8 @@
-// This file represents globals for the CLI.
+// This file represents temporary globals for the CLI.
 
-interface ProcessSettings {
-  /** Name of this tool. */
-  developerTool: 'expo-cli';
+export const ProcessSettings: {
   /** Should the CLI skip making network requests. */
   isOffline: boolean;
-}
-
-const settings: ProcessSettings = {
-  developerTool: 'expo-cli',
+} = {
   isOffline: false,
 };
-
-export default settings;

@@ -1,5 +1,4 @@
-import { stripAnsi } from '../../../utils/__tests__/utils';
-
+import { stripAnsi } from '../../../../utils/ansi';
 import PackagerLogsStream from '../PackagerLogsStream';
 
 function createBundlingErrorChunk(error): any {

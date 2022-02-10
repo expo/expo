@@ -70,7 +70,7 @@ export class AsyncNgrok {
 
   /** Get the active pid from the running instance of ngrok. */
   // TODO: Use this instead of a stored local value.
-  public getActivePid(): number | null {
+  private getActivePid(): number | null {
     return this.instance?.getActiveProcess?.()?.pid ?? null;
   }
 
@@ -78,7 +78,8 @@ export class AsyncNgrok {
     return this.serverUrl;
   }
 
-  public killInstance() {
+  /** Terminate the instance by the pid. */
+  private killInstance() {
     const pid = this.getActivePid();
     if (pid !== null) {
       try {

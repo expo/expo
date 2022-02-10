@@ -16,10 +16,10 @@ import { validateDependenciesVersionsAsync } from './doctor/dependencies/validat
 import { ensureTypeScriptSetupAsync } from './doctor/typescript/ensureTypeScriptSetup';
 import { ensureWebSupportSetupAsync } from './doctor/web/ensureWebSetup';
 import { startInterfaceAsync } from './interface/TerminalUI';
-import { openPlatformsAsync } from './platforms/openPlatformsAsync';
+import { openPlatformsAsync } from './platforms/openPlatforms';
 import { Options, resolvePortsAsync } from './resolveOptions';
 import * as LoadingPageHandler from './server/middleware/LoadingPageHandler';
-import * as Project from './startDevServers';
+import * as Project from './server/startDevServers';
 
 async function multiBundlerStartOptions(
   projectRoot: string,

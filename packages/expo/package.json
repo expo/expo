@@ -135,6 +135,8 @@
   },
   "devDependencies": {
     "@swc/core": "^1.2.126",
+    "@types/metro": "~0.66.1",
+    "@types/metro-core": "~0.66.0",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
     "@taskr/watch": "1.1.0",

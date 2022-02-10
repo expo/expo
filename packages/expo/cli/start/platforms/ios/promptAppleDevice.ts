@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { promptAsync } from '../../../utils/prompts';
 import { getBestBootedSimulatorAsync, getBestUnbootedSimulatorAsync } from './getBestSimulator';
-import { SimulatorDevice } from './SimControl';
+import { Device } from './simctl';
 
 /**
  * Get 'best' simulator for the user based on:
@@ -26,9 +26,9 @@ async function getBestSimulatorAsync({ osType }: { osType?: string }): Promise<s
  * @param devices
  */
 async function sortDefaultDeviceToBeginningAsync(
-  devices: SimulatorDevice[],
+  devices: Device[],
   osType?: string
-): Promise<SimulatorDevice[]> {
+): Promise<Device[]> {
   const defaultUdid = await getBestSimulatorAsync({ osType });
   if (defaultUdid) {
     let iterations = 0;
@@ -40,16 +40,13 @@ async function sortDefaultDeviceToBeginningAsync(
   return devices;
 }
 
-export async function promptAppleDeviceAsync(
-  devices: SimulatorDevice[],
-  osType?: string
-): Promise<SimulatorDevice> {
+export async function promptAppleDeviceAsync(devices: Device[], osType?: string): Promise<Device> {
   devices = await sortDefaultDeviceToBeginningAsync(devices, osType);
   const results = await promptForDeviceAsync(devices);
   return devices.find(({ udid }) => results === udid)!;
 }
 
-async function promptForDeviceAsync(devices: SimulatorDevice[]): Promise<string> {
+async function promptForDeviceAsync(devices: Device[]): Promise<string> {
   // TODO: provide an option to add or download more simulators
   // TODO: Add support for physical devices too.
 

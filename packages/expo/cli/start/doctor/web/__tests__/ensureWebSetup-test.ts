@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { stripAnsi } from '../../../../utils/__tests__/utils';
+import { stripAnsi } from '../../../../utils/ansi';
 import { isWebPlatformExcluded, shouldSetupWebSupportAsync } from '../ensureWebSetup';
 
 jest.mock('fs');

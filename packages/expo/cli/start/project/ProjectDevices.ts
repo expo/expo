@@ -9,11 +9,11 @@ export type DevicesInfo = {
   devices: DeviceInfo[];
 };
 
-const devicesFile = 'devices.json';
+const DEVICES_FILE_NAME = 'devices.json';
 
 const MILLISECONDS_IN_30_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-export const DevicesFile = createTemporaryProjectFile<DevicesInfo>(devicesFile, {
+export const DevicesFile = createTemporaryProjectFile<DevicesInfo>(DEVICES_FILE_NAME, {
   devices: [],
 });
 

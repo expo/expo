@@ -84,11 +84,12 @@ export async function ensureDependenciesAsync(
   throw new CommandError(wrapForTerminal(title + solution + disableMessage + '\n'));
 }
 
-// Wrap long messages to fit smaller terminals.
+/**  Wrap long messages to fit smaller terminals. */
 function wrapForTerminal(message: string): string {
   return wrapAnsi(message, process.stdout.columns || 80);
 }
 
+/** Create the bash install command from a given set of packages and settings. */
 export function createInstallCommand({
   isYarn,
   packages,
@@ -114,6 +115,7 @@ export function createInstallCommand({
   );
 }
 
+/** Install packages in the project. */
 async function installPackagesAsync(
   projectRoot: string,
   { isYarn, packages }: { isYarn: boolean; packages: string[] }

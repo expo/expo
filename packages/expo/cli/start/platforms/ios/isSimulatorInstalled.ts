@@ -7,7 +7,7 @@ import * as Log from '../../../log';
 import { delayAsync } from '../../../utils/delay';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
-import * as SimControl from './SimControl';
+import * as SimControl from './simctl';
 import * as Xcode from './xcode';
 
 const SUGGESTED_XCODE_VERSION = `${Xcode.minimumVersion}.0`;

@@ -6,16 +6,18 @@ import { delayAsync, TimeoutError } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { validateUrl } from '../../../utils/url';
-import { VirtualDeviceManager } from '../VirtualDeviceManager';
+import { DeviceManager } from '../DeviceManager';
+import { ExpoGoInstaller } from '../ExpoGoInstaller';
+import { BaseResolveDeviceProps } from '../PlatformManager';
+import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunning';
 import {
   getBestBootedSimulatorAsync,
   getBestUnbootedSimulatorAsync,
   getSelectableSimulatorsAsync,
 } from './getBestSimulator';
-import { isSimulatorInstalledAsync } from './isSimulatorInstalledAsync';
+import { isSimulatorInstalledAsync } from './isSimulatorInstalled';
 import { promptAppleDeviceAsync } from './promptAppleDevice';
-import * as SimControl from './SimControl';
-import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunningAsync';
+import * as SimControl from './simctl';
 
 const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 
@@ -26,7 +28,7 @@ const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 async function ensureSimulatorOpenAsync(
   { udid, osType }: { udid?: string; osType?: string } = {},
   tryAgain: boolean = true
-): Promise<SimControl.SimulatorDevice> {
+): Promise<SimControl.Device> {
   // Use a default simulator if none was specified
   if (!udid) {
     // If a simulator is open, side step the entire booting sequence.
@@ -54,7 +56,7 @@ async function ensureSimulatorOpenAsync(
   return bootedDevice;
 }
 
-export class VirtualAppleDeviceManager extends VirtualDeviceManager<SimControl.SimulatorDevice> {
+export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   static async assertSystemRequirementsAsync() {
     assert(
       await profile(isSimulatorInstalledAsync)(),
@@ -66,22 +68,22 @@ export class VirtualAppleDeviceManager extends VirtualDeviceManager<SimControl.S
     device,
     osType,
     shouldPrompt,
-  }: {
-    device?: Pick<SimControl.SimulatorDevice, 'udid'>;
-    osType?: string;
-    shouldPrompt?: boolean;
-  } = {}): Promise<VirtualAppleDeviceManager> {
+  }: BaseResolveDeviceProps<Pick<SimControl.Device, 'udid'>> = {}): Promise<AppleDeviceManager> {
     if (shouldPrompt) {
       const devices = await getSelectableSimulatorsAsync({ osType });
       device = await promptAppleDeviceAsync(devices, osType);
     }
 
     const booted = await ensureSimulatorOpenAsync({ udid: device?.udid, osType });
-    return new VirtualAppleDeviceManager(booted);
+    return new AppleDeviceManager(booted);
   }
 
   get name() {
     return this.device.name;
+  }
+
+  get identifier(): string {
+    return this.device.udid;
   }
 
   async getAppVersionAsync(applicationId: string): Promise<string | null> {
@@ -111,7 +113,7 @@ export class VirtualAppleDeviceManager extends VirtualDeviceManager<SimControl.S
     return matched;
   }
 
-  async startAsync(): Promise<SimControl.SimulatorDevice> {
+  async startAsync(): Promise<SimControl.Device> {
     return ensureSimulatorOpenAsync({ osType: this.device.osType, udid: this.device.udid });
   }
 
@@ -203,5 +205,10 @@ export class VirtualAppleDeviceManager extends VirtualDeviceManager<SimControl.S
     await ensureSimulatorAppRunningAsync(this.device);
     // TODO: Focus the individual window
     await osascript.execAsync(`tell application "Simulator" to activate`);
+  }
+
+  async ensureExpoGoAsync(sdkVersion?: string) {
+    const installer = new ExpoGoInstaller('ios', EXPO_GO_BUNDLE_IDENTIFIER, sdkVersion);
+    return installer.ensureAsync(this);
   }
 }

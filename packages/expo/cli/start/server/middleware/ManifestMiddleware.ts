@@ -2,7 +2,6 @@ import { ExpoAppManifest, ExpoGoConfig } from '@expo/config';
 import express from 'express';
 import http from 'http';
 
-import ProcessSettings from '../../ProcessSettings';
 import { UrlCreator, URLOptions } from '../UrlCreator';
 
 export interface HostInfo {
@@ -13,6 +12,8 @@ export interface HostInfo {
   serverOS: NodeJS.Platform;
   serverOSVersion: string;
 }
+
+export const DEVELOPER_TOOL = 'expo-cli';
 
 export class ManifestHandlerMiddleware {
   constructor(
@@ -82,7 +83,7 @@ export class ManifestHandlerMiddleware {
     return {
       // Required for Expo Go to function.
       developer: {
-        tool: ProcessSettings.developerTool,
+        tool: DEVELOPER_TOOL,
         projectRoot,
       },
       packagerOpts,

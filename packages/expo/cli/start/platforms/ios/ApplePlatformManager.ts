@@ -1,11 +1,9 @@
 import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
-import { VirtualDeviceManager } from '../VirtualDeviceManager';
-import { ensureDeviceHasValidExpoGoAsync } from './ensureExpoGo';
+import { AppleDeviceManager } from './AppleDeviceManager';
 import { resolveAppIdAsync } from './resolveAppId';
-import { SimulatorDevice } from './SimControl';
-import { VirtualAppleDeviceManager } from './VirtualAppleDeviceManager';
+import { Device } from './simctl';
 
-export class ApplePlatformManager extends PlatformManager<SimulatorDevice> {
+export class ApplePlatformManager extends PlatformManager<Device> {
   constructor(
     protected projectRoot: string,
     protected port: number,
@@ -19,7 +17,7 @@ export class ApplePlatformManager extends PlatformManager<SimulatorDevice> {
       getDevServerUrl,
       () => constructLoadingUrl(this.platform, 'localhost'),
       constructManifestUrl,
-      VirtualAppleDeviceManager.resolveAsync
+      AppleDeviceManager.resolveAsync
     );
   }
 
@@ -27,16 +25,10 @@ export class ApplePlatformManager extends PlatformManager<SimulatorDevice> {
     options:
       | { runtime: 'expo' | 'web' }
       | { runtime: 'custom'; props?: Partial<BaseOpenInCustomProps> },
-    resolveSettings?: Partial<{ shouldPrompt?: boolean; device?: SimulatorDevice; osType?: string }>
+    resolveSettings?: Partial<{ shouldPrompt?: boolean; device?: Device; osType?: string }>
   ): Promise<{ url: string }> {
-    await VirtualAppleDeviceManager.assertSystemRequirementsAsync();
+    await AppleDeviceManager.assertSystemRequirementsAsync();
     return super.openAsync(options, resolveSettings);
-  }
-
-  protected async ensureDeviceHasValidExpoGoAsync(
-    deviceManager: VirtualDeviceManager<SimulatorDevice>
-  ): Promise<boolean> {
-    return ensureDeviceHasValidExpoGoAsync(this.projectRoot, deviceManager);
   }
 
   protected async resolveExistingApplicationIdAsync(): Promise<string> {

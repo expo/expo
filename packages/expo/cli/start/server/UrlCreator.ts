@@ -201,51 +201,26 @@ function resolveProtocol({
 }
 
 function assertValidOptions(opts: Partial<URLOptions>): URLOptions {
-  if (opts.scheme && typeof opts.scheme !== 'string') {
-    throw new CommandError('INVALID_OPTIONS', `"scheme" must be a string if specified`);
-  }
-
-  const optionalEnums: [string, string[]][] = [
-    ['urlType', [null, 'exp', 'http', 'no-protocol']],
-    ['hostType', ['localhost', 'lan', 'tunnel']],
-    ['mode', ['development', 'production']],
-  ];
-
-  for (const [key, values] of optionalEnums) {
-    if (opts[key] && !values.includes(opts[key])) {
-      throw new CommandError(
-        'INVALID_OPTIONS',
-        `"${key}" must be one of: ${values.join(', ')} if specified`
-      );
-    }
-  }
-
-  for (const key of ['devClient', 'minify', 'https']) {
-    if (opts[key] !== undefined && typeof opts[key] !== 'boolean') {
-      throw new CommandError('INVALID_OPTIONS', `"${key}" must be a boolean if specified`);
-    }
-  }
-
-  Object.keys(opts).forEach((key) => {
-    if (
-      ![
-        'devClient',
-        'scheme',
-        'urlType',
-        'isOffline',
-        'hostType',
-        'mode',
-        'minify',
-        'https',
-      ].includes(key)
-    ) {
-      throw new CommandError('INVALID_OPTIONS', `"${key}" is not a valid option`);
-    }
-  });
+  assert(opts.minify == null || typeof opts.minify === 'boolean', `"minify" must be a boolean`);
+  assert(
+    opts.isOffline == null || typeof opts.isOffline === 'boolean',
+    `"isOffline" must be a boolean`
+  );
+  assert(opts.scheme == null || typeof opts.scheme === 'string', `"scheme" must be a string`);
+  if (!opts.urlType != null) assert.match(opts.urlType, /^(exp|http|no-protocol)$/);
+  if (!opts.hostType != null) assert.match(opts.hostType, /^(localhost|lan|tunnel)$/);
+  if (!opts.mode != null) assert.match(opts.mode, /^(development|production)$/);
 
   return opts as URLOptions;
 }
 
-function getProxyUrl(isPackager: boolean) {
+/** @deprecated */
+function getProxyUrl(isPackager: boolean): string | undefined {
   return isPackager ? process.env.EXPO_PACKAGER_PROXY_URL : process.env.EXPO_MANIFEST_PROXY_URL;
 }
+
+// TODO: Drop the undocumented env variables:
+// EXPO_PACKAGER_HOSTNAME
+// REACT_NATIVE_PACKAGER_HOSTNAME
+// EXPO_PACKAGER_PROXY_URL
+// EXPO_MANIFEST_PROXY_URL

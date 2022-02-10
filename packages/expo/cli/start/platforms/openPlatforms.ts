@@ -4,7 +4,7 @@ import {
   ensureWebDevServerRunningAsync,
   getDefaultDevServer,
   getWebDevServer,
-} from '../startDevServers';
+} from '../server/startDevServers';
 
 export async function openPlatformsAsync(
   projectRoot: string,
@@ -13,11 +13,11 @@ export async function openPlatformsAsync(
   const results = await Promise.allSettled([
     options.android ? getDefaultDevServer().openPlatformAsync('emulator') : null,
     options.ios ? getDefaultDevServer().openPlatformAsync('simulator') : null,
-    (async () => {
-      if (!options.web) return null;
-      await ensureWebDevServerRunningAsync(projectRoot);
-      return getWebDevServer().openPlatformAsync('desktop');
-    })(),
+    options.web
+      ? ensureWebDevServerRunningAsync(projectRoot).then(() =>
+          getWebDevServer().openPlatformAsync('desktop')
+        )
+      : null,
   ]);
 
   const errors = results

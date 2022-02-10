@@ -3,6 +3,7 @@ import assert from 'assert';
 import { WEB_PORT } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
+import { ProcessSettings } from './ProcessSettings';
 
 export type Options = {
   forceManifestType: 'classic' | 'expo-updates';
@@ -22,11 +23,9 @@ export type Options = {
 };
 
 export async function persistOptionsAsync(options: Options) {
-  // Set process settings...
-  const ProcessSettings = await import('./ProcessSettings').then((m) => m.default);
   ProcessSettings.isOffline = options.offline;
 
-  const { setPersistedOptions } = await import('./startDevServers');
+  const { setPersistedOptions } = await import('./server/startDevServers');
   setPersistedOptions({
     devClient: options.devClient,
     forceManifestType: options.forceManifestType,

@@ -4,7 +4,6 @@ import assert from 'assert';
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import * as AndroidDeviceBridge from '../platforms/android/AndroidDeviceBridge';
-import ProcessSettings from '../ProcessSettings';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { WebpackBundlerDevServer } from './WebpackBundlerDevServer';
@@ -78,7 +77,6 @@ export async function startDevServersAsync(
   const { exp } = getConfig(projectRoot);
 
   logEvent('Start Project', {
-    developerTool: ProcessSettings.developerTool,
     sdkVersion: exp.sdkVersion ?? null,
   });
 

@@ -4,24 +4,25 @@ import chalk from 'chalk';
 import * as Log from '../../../log';
 import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { validateUrl } from '../../../utils/url';
-import { VirtualDeviceManager } from '../VirtualDeviceManager';
-import { activateWindowAsync } from './activateWindowAsync';
+import { DeviceManager } from '../DeviceManager';
+import { ExpoGoInstaller } from '../ExpoGoInstaller';
+import { BaseResolveDeviceProps } from '../PlatformManager';
+import { activateWindowAsync } from './activateWindow';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
-import { getDevicesAsync } from './getDevicesAsync';
-import { promptForDeviceAsync } from './promptAndroidDeviceAsync';
-import { startDeviceAsync } from './startDeviceAsync';
+import { getDevicesAsync } from './getDevices';
+import { promptForDeviceAsync } from './promptAndroidDevice';
+import { startDeviceAsync } from './startDevice';
 
-export class VirtualAndroidDeviceManager extends VirtualDeviceManager<AndroidDeviceBridge.Device> {
+const EXPO_GO_PACKAGE = 'host.exp.exponent';
+
+export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Device> {
   static async resolveAsync({
     device,
     shouldPrompt,
-  }: {
-    device?: AndroidDeviceBridge.Device;
-    shouldPrompt?: boolean;
-  } = {}): Promise<VirtualAndroidDeviceManager> {
+  }: BaseResolveDeviceProps<AndroidDeviceBridge.Device> = {}): Promise<AndroidDeviceManager> {
     if (device) {
       // await AndroidDeviceBridge.startAdbReverseAsync();
-      const manager = new VirtualAndroidDeviceManager(device);
+      const manager = new AndroidDeviceManager(device);
       if (!(await manager.attemptToStartAsync())) {
         throw new AbortCommandError();
       }
@@ -30,12 +31,16 @@ export class VirtualAndroidDeviceManager extends VirtualDeviceManager<AndroidDev
 
     const devices = await getDevicesAsync();
     const _device = shouldPrompt ? await promptForDeviceAsync(devices) : devices[0];
-    return VirtualAndroidDeviceManager.resolveAsync({ device: _device, shouldPrompt: false });
+    return AndroidDeviceManager.resolveAsync({ device: _device, shouldPrompt: false });
   }
 
   get name() {
     // TODO: Maybe strip `_` from the device name?
     return this.device.name;
+  }
+
+  get identifier(): string {
+    return this.device.pid ?? 'unknown';
   }
 
   async getAppVersionAsync(applicationId: string): Promise<string | null> {
@@ -140,7 +145,7 @@ export class VirtualAndroidDeviceManager extends VirtualDeviceManager<AndroidDev
         // Note: this is not needed in Expo Development Client, it only applies to Expo Go
         await AndroidDeviceBridge.launchApplicationIdAsync(
           { pid: this.device.pid },
-          { applicationId: 'host.exp.exponent' }
+          { applicationId: EXPO_GO_PACKAGE }
         );
       }
 
@@ -155,5 +160,10 @@ export class VirtualAndroidDeviceManager extends VirtualDeviceManager<AndroidDev
   async activateWindowAsync() {
     // Bring the emulator window to the front on macos devices.
     await activateWindowAsync(this.device);
+  }
+
+  async ensureExpoGoAsync(sdkVersion?: string) {
+    const installer = new ExpoGoInstaller('android', EXPO_GO_PACKAGE, sdkVersion);
+    return installer.ensureAsync(this);
   }
 }

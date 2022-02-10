@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
-import { CI, EXPO_DEBUG } from '../../utils/env';
+import { EXPO_DEBUG } from '../../utils/env';
 import { AbortCommandError, logCmdError } from '../../utils/errors';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { ensureWebSupportSetupAsync } from '../doctor/web/ensureWebSetup';
@@ -10,7 +10,7 @@ import {
   ensureWebDevServerRunningAsync,
   getDefaultDevServer,
   getWebDevServer,
-} from '../startDevServers';
+} from '../server/startDevServers';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import {
   openJsInspectorAsync,
@@ -23,6 +23,22 @@ import {
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const CTRL_L = '\u000C';
+
+const PLATFORM_SETTINGS: Record<
+  string,
+  { name: string; key: 'android' | 'ios'; launchTarget: 'emulator' | 'simulator' }
+> = {
+  android: {
+    name: `Android`,
+    key: 'android',
+    launchTarget: 'emulator',
+  },
+  ios: {
+    name: `iOS`,
+    key: 'ios',
+    launchTarget: 'simulator',
+  },
+};
 
 export async function startInterfaceAsync(
   projectRoot: string,
@@ -94,30 +110,13 @@ export async function startInterfaceAsync(
     if (['i', 'a'].includes(key.toLowerCase())) {
       const platform = key.toLowerCase() === 'i' ? 'ios' : 'android';
 
-      const shouldPrompt = !CI && ['I', 'A'].includes(key);
+      const shouldPrompt = ['I', 'A'].includes(key);
       if (shouldPrompt) {
         Log.clear();
       }
 
       const server = getDefaultDevServer();
-
-      const platformSettings: Record<
-        string,
-        { name: string; key: 'android' | 'ios'; launchTarget: 'emulator' | 'simulator' }
-      > = {
-        android: {
-          name: `Android`,
-          key: 'android',
-          launchTarget: 'emulator',
-        },
-        ios: {
-          name: `iOS`,
-          key: 'ios',
-          launchTarget: 'simulator',
-        },
-      };
-
-      const settings = platformSettings[platform];
+      const settings = PLATFORM_SETTINGS[platform];
 
       Log.log(`${BLT} Opening on ${settings.name}...`);
 
@@ -135,6 +134,8 @@ export async function startInterfaceAsync(
           }
         }
       }
+      // Break out early.
+      return;
     }
 
     switch (key) {

@@ -10,28 +10,8 @@ import {
   getDefaultDevServer,
   getNativeDevServerPort,
   getWebDevServer,
-} from '../startDevServers';
-import { BLT, printHelp, printItem, printUsage, StartOptions } from './commandsTable';
-import { printQRCode } from './qr';
-
-export async function openJsInspectorAsync() {
-  Log.log(`Opening JavaScript inspector in the browser...`);
-  const port = getNativeDevServerPort();
-  assert(port, 'Metro dev server is not running');
-  const metroServerOrigin = `http://localhost:${port}`;
-  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-  if (!apps.length) {
-    Log.warn(
-      `No compatible apps connected. This feature is only available for apps using the Hermes runtime. ${learnMore(
-        'https://docs.expo.dev/guides/using-hermes/'
-      )}`
-    );
-    return;
-  }
-  for (const app of apps) {
-    openJsInspector(app);
-  }
-}
+} from '../server/startDevServers';
+import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 
 export function printDevServerInfo(
   options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
@@ -69,6 +49,25 @@ export function printDevServerInfo(
   printUsage(options, { verbose: false });
   printHelp();
   Log.log();
+}
+
+export async function openJsInspectorAsync() {
+  Log.log(`Opening JavaScript inspector in the browser...`);
+  const port = getNativeDevServerPort();
+  assert(port, 'Metro dev server is not running');
+  const metroServerOrigin = `http://localhost:${port}`;
+  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+  if (!apps.length) {
+    Log.warn(
+      `No compatible apps connected. This feature is only available for apps using the Hermes runtime. ${learnMore(
+        'https://docs.expo.dev/guides/using-hermes/'
+      )}`
+    );
+    return;
+  }
+  for (const app of apps) {
+    openJsInspector(app);
+  }
 }
 
 export function reloadApp() {

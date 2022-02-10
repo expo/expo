@@ -5,10 +5,13 @@ import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 
 export type ResolvedPackage = {
   file: string;
+  /** NPM package name. */
   pkg: string;
+  /** NPM package version. */
   version?: string;
 };
 
+/** Given a set of required packages, this method returns a list of missing packages. */
 export function collectMissingPackages(
   projectRoot: string,
   requiredPackages: ResolvedPackage[]

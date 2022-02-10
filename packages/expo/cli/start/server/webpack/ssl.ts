@@ -2,8 +2,8 @@ import * as devcert from '@expo/devcert';
 import fs from 'fs/promises';
 import * as path from 'path';
 
-import * as Log from '../../log';
-import { ensureDirectoryAsync } from '../../utils/dir';
+import * as Log from '../../../log';
+import { ensureDirectoryAsync } from '../../../utils/dir';
 
 export async function ensureEnvironmentSupportsSSLAsync(projectRoot: string) {
   if (!process.env.SSL_CRT_FILE || !process.env.SSL_KEY_FILE) {

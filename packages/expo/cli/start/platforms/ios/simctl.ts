@@ -9,7 +9,7 @@ import { CommandError } from '../../../utils/errors';
 
 type DeviceState = 'Shutdown' | 'Booted';
 
-export type SimulatorDevice = {
+export type Device = {
   availabilityError: 'runtime profile not found';
   /**
    * '/Users/name/Library/Developer/CoreSimulator/Devices/00E55DC0-0364-49DF-9EC6-77BE587137D4/data'
@@ -85,7 +85,7 @@ type PermissionName =
 
 type SimulatorDeviceList = {
   devices: {
-    [runtime: string]: SimulatorDevice[];
+    [runtime: string]: Device[];
   };
 };
 
@@ -134,8 +134,8 @@ export async function getContainerPathAsync({
 
 export async function waitForDeviceToBootAsync({
   udid,
-}: Pick<SimulatorDevice, 'udid'>): Promise<SimulatorDevice | null> {
-  return waitForActionAsync<SimulatorDevice | null>({
+}: Pick<Device, 'udid'>): Promise<Device | null> {
+  return waitForActionAsync<Device | null>({
     action: () => bootAsync({ udid }),
   });
 }
@@ -173,24 +173,20 @@ export async function openBundleIdAsync(options: {
 }
 
 // This will only boot in headless mode if the Simulator app is not running.
-export async function bootAsync({ udid }: { udid: string }): Promise<SimulatorDevice | null> {
+export async function bootAsync({ udid }: { udid: string }): Promise<Device | null> {
   // TODO: Deprecate
   await runBootAsync({ udid });
   return await isSimulatorBootedAsync({ udid });
 }
 
-async function getBootedSimulatorsAsync(): Promise<SimulatorDevice[]> {
+async function getBootedSimulatorsAsync(): Promise<Device[]> {
   const simulatorDeviceInfo = await listAsync('devices');
   return Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
     return prev.concat(runtime.filter((device) => device.state === 'Booted'));
   }, []);
 }
 
-async function isSimulatorBootedAsync({
-  udid,
-}: {
-  udid?: string;
-}): Promise<SimulatorDevice | null> {
+async function isSimulatorBootedAsync({ udid }: { udid?: string }): Promise<Device | null> {
   // Simulators can be booted even if the app isn't running :(
   const devices = await getBootedSimulatorsAsync();
   if (udid) {

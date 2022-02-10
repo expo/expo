@@ -2,10 +2,15 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 
-export class VirtualDeviceManager<IDevice> {
+/** An abstract class for interacting with a native device. */
+export class DeviceManager<IDevice> {
   constructor(public device: IDevice) {}
 
   get name(): string {
+    throw new Error('Unimplemented');
+  }
+
+  get identifier(): string {
     throw new Error('Unimplemented');
   }
 
@@ -38,6 +43,10 @@ export class VirtualDeviceManager<IDevice> {
   }
 
   activateWindowAsync(): Promise<void> {
+    throw new Error('Unimplemented');
+  }
+
+  ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
     throw new Error('Unimplemented');
   }
 }

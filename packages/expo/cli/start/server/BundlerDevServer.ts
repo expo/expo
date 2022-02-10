@@ -8,7 +8,7 @@ import { FileNotifier } from '../../utils/FileNotifier';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
 import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
-import ProcessSettings from '../ProcessSettings';
+import { ProcessSettings } from '../ProcessSettings';
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { ClassicManifestMiddleware } from './middleware/ClassicManifestMiddleware';
@@ -131,7 +131,6 @@ export class BundlerDevServer {
   protected async startTunnelAsync() {
     const port = this.getInstance()?.location?.port;
     if (!port) return;
-    // TODO: No globals!
     Log.debug('[tunnel] connect to port: ' + port);
     this.ngrok = new AsyncNgrok(this.projectRoot, port);
     await this.ngrok.startAsync();

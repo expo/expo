@@ -1,5 +1,4 @@
 import * as osascript from '@expo/osascript';
-import spawnAsync from '@expo/spawn-async';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -61,8 +60,4 @@ export async function openSimulatorAppAsync({ udid }: { udid?: string }) {
     args.push('--args', '-CurrentDeviceUDID', udid);
   }
   await execAsync(args.join(' '));
-}
-
-export async function killAllAsync() {
-  return await spawnAsync('killAll', ['Simulator']);
 }

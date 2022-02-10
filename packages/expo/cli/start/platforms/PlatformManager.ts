@@ -1,10 +1,11 @@
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import { VirtualDeviceManager } from './VirtualDeviceManager';
+import { DeviceManager } from './DeviceManager';
 
 export interface BaseOpenInCustomProps {
   scheme?: string;
@@ -16,10 +17,11 @@ export interface BaseResolveDeviceProps<IDevice> {
   shouldPrompt?: boolean;
   /** The target device to use. */
   device?: IDevice;
-
+  /** Indicates the type of device to use, useful for launching TVs, watches, etc. */
   osType?: string;
 }
 
+/** An abstract class for launching a URL on a device. */
 export class PlatformManager<
   IDevice,
   IOpenInCustomProps extends BaseOpenInCustomProps = BaseOpenInCustomProps,
@@ -33,7 +35,7 @@ export class PlatformManager<
     protected constructManifestUrl: (props: { scheme?: string }) => string | null,
     private resolveDeviceAsync: (
       resolver?: Partial<IResolveDeviceProps>
-    ) => Promise<VirtualDeviceManager<IDevice>>
+    ) => Promise<DeviceManager<IDevice>>
   ) {}
 
   private constructDeepLink(scheme?: string, devClient?: boolean): string | null {
@@ -164,9 +166,10 @@ export class PlatformManager<
   }
 
   protected async ensureDeviceHasValidExpoGoAsync(
-    deviceManager: VirtualDeviceManager<IDevice>
+    deviceManager: DeviceManager<IDevice>
   ): Promise<boolean> {
-    throw new Error('unimplemented');
+    const { exp } = getConfig(this.projectRoot);
+    return deviceManager.ensureExpoGoAsync(exp.sdkVersion);
   }
 
   protected async resolveExistingApplicationIdAsync(): Promise<string> {

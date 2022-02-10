@@ -13,7 +13,6 @@ import { CommandError } from '../../utils/errors';
 import { getIpAddress } from '../../utils/ip';
 import { choosePortAsync } from '../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
-import { getLogger } from '../logger';
 import { UrlCreator } from './UrlCreator';
 import { ensureEnvironmentSupportsSSLAsync } from './webpack/ssl';
 import { clearWebProjectCacheAsync } from './webpack/WebProjectCache';
@@ -111,10 +110,9 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       return null;
     }
 
-    const { createDevServerMiddleware } = await import('@expo/dev-server');
+    const { createDevServerMiddleware } = await import('./middleware/createDevServerMiddleware');
 
     const nativeMiddleware = createDevServerMiddleware({
-      logger: getLogger(),
       port,
       watchFolders: [this.projectRoot],
     });
@@ -309,10 +307,46 @@ async function loadConfigAsync(
   options: BundlerStartOptions,
   argv?: string[]
 ): Promise<WebpackConfiguration> {
+  // let bar: ProgressBar | null = null;
+
   const env = {
     projectRoot,
     pwa: !!options.isImageEditingEnabled,
-    logger: getLogger(),
+    // TODO: Use a new loader in Webpack config...
+    logger: {
+      info(input, jsonString) {
+        // const {
+        //   tag,
+        // id,
+        // shouldHide,
+        // type,
+        // ...props
+        // } = JSON.parse(jsonString)
+        // if (type === 'bundling_error') {
+        //   Log.error(props.error)
+        // } else if (type === 'bundling_warning') {
+        //   Log.warn(props.error)
+        // } else if (type === 'bundle_build_started') {
+        //   bar = new ProgressBar(`${chalk.bold(props?.bundleDetails?.platform)} Bundling JavaScript [:bar] :percent`, {
+        //     width: 64,
+        //     total: 100,
+        //     clear: true,
+        //     complete: '=',
+        //     incomplete: ' ',
+        //   });
+        // } else if (type === 'bundle_transform_progressed') {
+        //   const percentProgress = props.percentage * 100;
+        //   // const roundedPercentProgress = Math.floor(100 * percentProgress) / 100;
+        //   if (this.bar && !this.bar.complete) {
+        //     const ticks = percentProgress - this.bar.curr;
+        //     if (ticks > 0) {
+        //       this.bar.tick(ticks);
+        //     }
+        //   }
+        // } else if (type === 'bundle_build_done') {
+        // }
+      },
+    },
     mode: options.mode,
     https: options.https,
   };

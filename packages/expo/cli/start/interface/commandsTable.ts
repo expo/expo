@@ -1,6 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
+import qrcode from 'qrcode-terminal';
 
 import * as Log from '../../log';
 
@@ -18,6 +19,11 @@ export type StartOptions = {
 export const printHelp = (): void => {
   logCommandsTable([{ key: '?', msg: 'show all commands' }]);
 };
+
+/** Print the world famous 'Expo QR Code'. */
+export function printQRCode(url: string) {
+  qrcode.generate(url, { small: true }, (code) => Log.log(code));
+}
 
 export const getTerminalColumns = () => process.stdout.columns || 80;
 export const printItem = (text: string): string =>

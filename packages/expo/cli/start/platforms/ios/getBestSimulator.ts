@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 
-import * as SimControl from './SimControl';
+import { CommandError } from '../../../utils/errors';
+import * as SimControl from './simctl';
 
 function getDefaultSimulatorDeviceUDID() {
   try {
@@ -15,7 +16,7 @@ function getDefaultSimulatorDeviceUDID() {
 }
 
 export async function getBestBootedSimulatorAsync({ osType }: { osType?: string }) {
-  let simulatorOpenedByApp: SimControl.SimulatorDevice | null;
+  let simulatorOpenedByApp: SimControl.Device | null;
 
   const simulatorDeviceInfo = await SimControl.listAsync('devices');
   const devices = Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
@@ -50,7 +51,10 @@ export async function getBestUnbootedSimulatorAsync({
 
   if (!simulators.length) {
     // TODO: Prompt to install the simulators
-    throw new Error(`No ${osType || 'iOS'} devices available in Simulator.app`);
+    throw new CommandError(
+      'UNSUPPORTED_OS_TYPE',
+      `No ${osType || 'iOS'} devices available in Simulator.app`
+    );
   }
 
   // If the default udid is defined, then check to ensure its osType matches the required os.
@@ -70,7 +74,7 @@ export async function getBestUnbootedSimulatorAsync({
  */
 export async function getSelectableSimulatorsAsync({
   osType = 'iOS',
-}: { osType?: string } = {}): Promise<SimControl.SimulatorDevice[]> {
+}: { osType?: string } = {}): Promise<SimControl.Device[]> {
   const simulators = await SimControl.listSimulatorDevicesAsync();
   return simulators.filter((device) => device.isAvailable && device.osType === osType);
 }

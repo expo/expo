@@ -12,11 +12,11 @@ import * as Log from '../../../log';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
-import ProcessSettings from '../../ProcessSettings';
+import { ProcessSettings } from '../../ProcessSettings';
 import * as ProjectDevices from '../../project/ProjectDevices';
 import { stripJSExtension } from '../UrlCreator';
-import { ManifestHandlerMiddleware } from './ManifestMiddleware';
 import { getPlatformFromLegacyRequest } from './getPlatformFromRequest';
+import { DEVELOPER_TOOL, ManifestHandlerMiddleware } from './ManifestMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
 
@@ -183,7 +183,6 @@ export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
 
         // Log analytics
         logEvent('Serve Manifest', {
-          developerTool: ProcessSettings.developerTool,
           sdkVersion,
         });
       } catch (e) {
@@ -283,7 +282,7 @@ async function createHostInfoAsync(): Promise<HostInfo> {
     host,
     server: 'expo',
     serverVersion: process.env.__EXPO_VERSION,
-    serverDriver: ProcessSettings.developerTool,
+    serverDriver: DEVELOPER_TOOL,
     serverOS: os.platform(),
     serverOSVersion: os.release(),
   };

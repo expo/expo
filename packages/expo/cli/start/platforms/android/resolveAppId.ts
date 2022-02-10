@@ -13,12 +13,12 @@ async function isManagedProjectAsync(projectRoot: string) {
 }
 
 async function resolveNativeApplicationIdAsync(projectRoot: string): Promise<string | null> {
-  try {
-    const applicationIdFromGradle = await AndroidConfig.Package.getApplicationIdAsync(projectRoot);
-    if (applicationIdFromGradle) {
-      return applicationIdFromGradle;
-    }
-  } catch {}
+  const applicationIdFromGradle = await AndroidConfig.Package.getApplicationIdAsync(
+    projectRoot
+  ).catch(() => null);
+  if (applicationIdFromGradle) {
+    return applicationIdFromGradle;
+  }
 
   try {
     const filePath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);

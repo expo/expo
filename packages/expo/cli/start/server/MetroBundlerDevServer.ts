@@ -1,9 +1,13 @@
-import { MetroDevServerOptions, prependMiddleware, runMetroDevServerAsync } from '@expo/dev-server';
+import { MetroDevServerOptions, prependMiddleware } from '@expo/dev-server';
+import http from 'http';
+import Metro from 'metro';
+import { Terminal } from 'metro-core';
+import resolveFrom from 'resolve-from';
 
 import { getFreePortAsync } from '../../utils/port';
-import { attachLogger } from '../attachLogger';
-import { getLogger } from '../logger';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
+import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { createDevServerMiddleware } from './middleware/createDevServerMiddleware';
 import * as LoadingPageHandler from './middleware/LoadingPageHandler';
 import { UrlCreator } from './UrlCreator';
 
@@ -20,8 +24,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     await this.stopAsync();
 
-    await attachLogger(this.projectRoot);
-
     const port =
       // If the manually defined port is busy then an error should be thrown...
       options.port ??
@@ -37,9 +39,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       getTunnelUrl: this.getTunnelUrl,
     });
 
-    const parsedOptions: MetroDevServerOptions = {
+    const parsedOptions = {
       port,
-      logger: getLogger(),
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
 
@@ -98,4 +99,93 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
+}
+
+// From expo/dev-server but with ability to use custom logger.
+type MessageSocket = {
+  broadcast: (method: string, params?: Record<string, any> | undefined) => void;
+};
+class MetroImportError extends Error {
+  constructor(projectRoot: string, moduleId: string) {
+    super(
+      `Missing package "${moduleId}" in the project at: ${projectRoot}\n` +
+        'This usually means `react-native` is not installed. ' +
+        'Please verify that dependencies in package.json include "react-native" ' +
+        'and run `yarn` or `npm install`.'
+    );
+  }
+}
+
+function resolveFromProject(projectRoot: string, moduleId: string) {
+  const resolvedPath = resolveFrom.silent(projectRoot, moduleId);
+  if (!resolvedPath) {
+    throw new MetroImportError(projectRoot, moduleId);
+  }
+  return resolvedPath;
+}
+
+function importFromProject(projectRoot: string, moduleId: string) {
+  return require(resolveFromProject(projectRoot, moduleId));
+}
+
+export function importMetroFromProject(projectRoot: string): typeof Metro {
+  return importFromProject(projectRoot, 'metro');
+}
+
+export function importExpoMetroConfigFromProject(
+  projectRoot: string
+): typeof import('@expo/metro-config') {
+  return importFromProject(projectRoot, '@expo/metro-config');
+}
+
+async function runMetroDevServerAsync(
+  projectRoot: string,
+  options: Omit<MetroDevServerOptions, 'logger'>
+): Promise<{
+  server: http.Server;
+  middleware: any;
+  messageSocket: MessageSocket;
+}> {
+  let reportEvent: ((event: any) => void) | undefined;
+
+  const Metro = importMetroFromProject(projectRoot);
+  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
+
+  const terminal = new Terminal(process.stdout);
+  const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
+  const reporter = {
+    update(event: any) {
+      terminalReporter.update(event);
+      if (reportEvent) {
+        reportEvent(event);
+      }
+    },
+  };
+
+  const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+
+  const { middleware, attachToServer } = createDevServerMiddleware({
+    port: metroConfig.server.port,
+    watchFolders: metroConfig.watchFolders,
+  });
+
+  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
+  // @ts-ignore can't mutate readonly config
+  metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+    if (customEnhanceMiddleware) {
+      metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
+    }
+    return middleware.use(metroMiddleware);
+  };
+
+  const server = await Metro.runServer(metroConfig, { hmrEnabled: true });
+
+  const { messageSocket, eventsSocket } = attachToServer(server);
+  reportEvent = eventsSocket.reportEvent;
+
+  return {
+    server,
+    middleware,
+    messageSocket,
+  };
 }

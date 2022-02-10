@@ -13,10 +13,10 @@ import UserSettings from '../../../api/user/UserSettings';
 import * as Log from '../../../log';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { stripPort } from '../../../utils/url';
-import ProcessSettings from '../../ProcessSettings';
+import { ProcessSettings } from '../../ProcessSettings';
 import { stripJSExtension } from '../UrlCreator';
-import { ManifestHandlerMiddleware } from './ManifestMiddleware';
 import { getPlatformFromRequest } from './getPlatformFromRequest';
+import { ManifestHandlerMiddleware } from './ManifestMiddleware';
 import { resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
 
@@ -177,7 +177,6 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
         res.end(JSON.stringify(body));
 
         logEvent('Serve Expo Updates Manifest', {
-          developerTool: ProcessSettings.developerTool,
           runtimeVersion: (body as any).runtimeVersion,
         });
       } catch (e) {

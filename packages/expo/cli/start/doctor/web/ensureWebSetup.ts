@@ -15,6 +15,7 @@ import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync
 let hasChecked = false;
 let disabledReason = '';
 
+/** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
 export async function ensureWebSupportSetupAsync(
   projectRoot: string,
   { skipCache = false }: { skipCache?: boolean } = {}
@@ -40,6 +41,7 @@ export async function ensureWebSupportSetupAsync(
   return true;
 }
 
+/** Return `true` if the `web` platform is purposefully excluded from the project Expo config. */
 export function isWebPlatformExcluded(rootConfig: AppJSONConfig): boolean {
   // Detect if the 'web' string is purposefully missing from the platforms array.
   const isWebExcluded =

@@ -1,12 +1,12 @@
 import { getConfig } from '@expo/config';
 import { IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
-import fs from 'fs-extra';
+import fs from 'fs';
 
 export async function resolveAppIdAsync(projectRoot: string) {
   // Check xcode project
   try {
-    const bundleId = await IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj(projectRoot);
+    const bundleId = IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj(projectRoot);
     if (bundleId) {
       return bundleId;
     }
