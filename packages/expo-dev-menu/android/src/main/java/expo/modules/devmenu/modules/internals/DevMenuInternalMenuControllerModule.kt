@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext) :
   DevMenuInternalMenuControllerModuleInterface {
   private val devMenuManager: DevMenuManager = DevMenuManager
-  private val devMenuSettings = devMenuManager.getSettings()
 
   override fun dispatchCallableAsync(callableId: String?, args: ReadableMap?, promise: Promise) {
     if (callableId == null) {
@@ -33,26 +32,26 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   }
 
   override fun setOnboardingFinished(finished: Boolean) {
-    devMenuSettings?.isOnboardingFinished = finished
+    devMenuManager.getSettings()?.isOnboardingFinished = finished
   }
 
-  override fun getSettingsAsync(promise: Promise) = promise.resolve(devMenuSettings?.serialize())
+  override fun getSettingsAsync(promise: Promise) = promise.resolve(devMenuManager.getSettings()?.serialize())
 
   override fun setSettingsAsync(settings: ReadableMap, promise: Promise) {
     if (settings.hasKey("motionGestureEnabled")) {
-      devMenuSettings?.motionGestureEnabled = settings.getBoolean("motionGestureEnabled")
+      devMenuManager.getSettings()?.motionGestureEnabled = settings.getBoolean("motionGestureEnabled")
     }
 
     if (settings.hasKey("keyCommandsEnabled")) {
-      devMenuSettings?.keyCommandsEnabled = settings.getBoolean("keyCommandsEnabled")
+      devMenuManager.getSettings()?.keyCommandsEnabled = settings.getBoolean("keyCommandsEnabled")
     }
 
     if (settings.hasKey("showsAtLaunch")) {
-      devMenuSettings?.showsAtLaunch = settings.getBoolean("showsAtLaunch")
+      devMenuManager.getSettings()?.showsAtLaunch = settings.getBoolean("showsAtLaunch")
     }
 
     if (settings.hasKey("touchGestureEnabled")) {
-      devMenuSettings?.touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
+      devMenuManager.getSettings()?.touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
     }
 
     promise.resolve(null)
