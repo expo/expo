@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source ~/.expo/bashrc > /dev/null
-
-echo $PATH

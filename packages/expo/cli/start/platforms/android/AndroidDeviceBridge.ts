@@ -7,7 +7,6 @@ import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { learnMore } from '../../../utils/link';
-import * as Binaries from '../../../utils/vendoredBinary';
 
 export type Device = {
   pid?: string;
@@ -203,7 +202,7 @@ export async function installOnDeviceAsync(
 }
 
 async function getAdbOutputAsync(args: string[]): Promise<string> {
-  await Binaries.addToPathAsync('adb');
+  // await Binaries.addToPathAsync('adb');
   const adb = whichADB();
 
   if (_isAdbOwner === null) {
@@ -403,7 +402,7 @@ async function _isDeviceAuthorizedAsync(device: Device): Promise<boolean> {
 }
 
 async function getAdbFileOutputAsync(args: string[]) {
-  await Binaries.addToPathAsync('adb');
+  // await Binaries.addToPathAsync('adb');
   const adb = whichADB();
 
   if (_isAdbOwner === null) {
