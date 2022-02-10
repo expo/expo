@@ -83,11 +83,7 @@ async function ensureThatLauncherMainScreenIsVisible() {
 }
 
 async function tapButton(button: Detox.IndexableNativeElement) {
-  if (device.getPlatform() === 'ios') {
-    await button.tap();
-    return;
-  }
-  // On Android we have to make 2 tap - it is a bug in React Native.
+  // We have to make 2 tap - it is a bug in React Native.
   await button.multiTap(2);
 }
 
