@@ -4,9 +4,8 @@ import { execSync } from 'child_process';
 import path from 'path';
 
 import * as Log from '../../../log';
+import { waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
-import { profile } from '../../../utils/profile';
-import { waitForActionAsync } from './utils/waitForActionAsync';
 
 type DeviceState = 'Shutdown' | 'Booted';
 

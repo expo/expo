@@ -40,7 +40,7 @@ async function sortDefaultDeviceToBeginningAsync(
   return devices;
 }
 
-export async function promptIosDeviceAsync(
+export async function promptAppleDeviceAsync(
   devices: SimulatorDevice[],
   osType?: string
 ): Promise<SimulatorDevice> {

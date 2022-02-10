@@ -1,10 +1,10 @@
 import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 import { VirtualDeviceManager } from '../VirtualDeviceManager';
 import { Device } from './AndroidDeviceBridge';
-import { ensureDeviceHasValidExpoGoAsync } from './ensureDeviceHasValidExpoGoAsync';
-import { resolveExistingApplicationIdAsync } from './resolveExistingApplicationId';
-import { VirtualAndroidDeviceManager } from './VirtualAndroidDeviceManager';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
+import { ensureDeviceHasValidExpoGoAsync } from './ensureExpoGo';
+import { resolveAppIdAsync } from './resolveAppId';
+import { VirtualAndroidDeviceManager } from './VirtualAndroidDeviceManager';
 
 interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   launchActivity?: string;
@@ -45,7 +45,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
   }
 
   protected async resolveExistingApplicationIdAsync(): Promise<string> {
-    return resolveExistingApplicationIdAsync(this.projectRoot);
+    return resolveAppIdAsync(this.projectRoot);
   }
 
   protected resolveAlternativeLaunchUrl(

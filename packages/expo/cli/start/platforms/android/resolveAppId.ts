@@ -33,7 +33,7 @@ async function resolveNativeApplicationIdAsync(projectRoot: string): Promise<str
   return getConfig(projectRoot).exp.android?.package ?? null;
 }
 
-export async function resolveExistingApplicationIdAsync(projectRoot: string) {
+export async function resolveAppIdAsync(projectRoot: string) {
   const isManaged = await isManagedProjectAsync(projectRoot);
   if (isManaged) {
     const { exp } = getConfig(projectRoot);

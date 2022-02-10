@@ -1,7 +1,7 @@
 import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
 import { VirtualDeviceManager } from '../VirtualDeviceManager';
-import { ensureDeviceHasValidExpoGoAsync } from './ensureDeviceHasValidExpoGoAsync';
-import { resolveExistingApplicationIdAsync } from './resolveExistingApplicationId';
+import { ensureDeviceHasValidExpoGoAsync } from './ensureExpoGo';
+import { resolveAppIdAsync } from './resolveAppId';
 import { SimulatorDevice } from './SimControl';
 import { VirtualAppleDeviceManager } from './VirtualAppleDeviceManager';
 
@@ -40,7 +40,7 @@ export class ApplePlatformManager extends PlatformManager<SimulatorDevice> {
   }
 
   protected async resolveExistingApplicationIdAsync(): Promise<string> {
-    return resolveExistingApplicationIdAsync(this.projectRoot);
+    return resolveAppIdAsync(this.projectRoot);
   }
 
   protected resolveAlternativeLaunchUrl(

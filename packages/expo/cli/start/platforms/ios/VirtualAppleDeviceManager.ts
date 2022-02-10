@@ -2,7 +2,7 @@ import * as osascript from '@expo/osascript';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { delayAsync } from '../../../utils/delay';
+import { delayAsync, TimeoutError } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { validateUrl } from '../../../utils/url';
@@ -13,10 +13,9 @@ import {
   getSelectableSimulatorsAsync,
 } from './getBestSimulator';
 import { isSimulatorInstalledAsync } from './isSimulatorInstalledAsync';
-import { promptIosDeviceAsync } from './promptIosDeviceAsync';
+import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './SimControl';
-import { ensureSimulatorAppRunningAsync } from './utils/ensureSimulatorAppRunningAsync';
-import { TimeoutError } from './utils/waitForActionAsync';
+import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunningAsync';
 
 const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 
@@ -74,7 +73,7 @@ export class VirtualAppleDeviceManager extends VirtualDeviceManager<SimControl.S
   } = {}): Promise<VirtualAppleDeviceManager> {
     if (shouldPrompt) {
       const devices = await getSelectableSimulatorsAsync({ osType });
-      device = await promptIosDeviceAsync(devices, osType);
+      device = await promptAppleDeviceAsync(devices, osType);
     }
 
     const booted = await ensureSimulatorOpenAsync({ udid: device?.udid, osType });
