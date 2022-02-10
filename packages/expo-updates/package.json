@@ -40,7 +40,7 @@
     "expo-manifests": "~0.2.2",
     "expo-structured-headers": "~2.1.0",
     "expo-updates-interface": "~0.5.0",
-    "fbemitter": "^2.1.1",
+    "fbemitter": "^3.0.0",
     "resolve-from": "^5.0.0",
     "uuid": "^3.4.0"
   },
