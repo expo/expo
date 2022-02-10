@@ -1,0 +1,6 @@
+{
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modulesClassNames": ["WebBrowserModule"]
+  }
+}
