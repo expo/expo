@@ -8,8 +8,6 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
-import expo.modules.manifests.core.Manifest
-
 import kotlinx.coroutines.CoroutineScope
 
 interface DevMenuManagerInterface {
