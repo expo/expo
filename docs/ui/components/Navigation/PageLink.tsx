@@ -31,8 +31,11 @@ const linkStyle = css({
 });
 
 const linkStyleActive = css({
-  backgroundColor: theme.background.default,
   boxShadow: shadows.micro,
+  backgroundColor: theme.background.default,
+  '[data-expo-theme="dark"] &': {
+    backgroundColor: theme.background.tertiary,
+  }
 });
 
 const markerStyle = css({
