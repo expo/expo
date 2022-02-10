@@ -7,9 +7,9 @@ data class ManifestHeaderData(
   /**
    * Classic updates Expo Go manifest signature
    */
-  val manifestSignature: String? = null,
+  val manifestSignatureForLegacyExpoKey: String? = null,
   /**
    * Code signing manifest signature
    */
-  val signature: String? = null
+  val codeSigningSignature: String? = null
 )

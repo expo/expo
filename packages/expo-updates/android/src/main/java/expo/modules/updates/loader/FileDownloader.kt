@@ -2,7 +2,6 @@ package expo.modules.updates.loader
 
 import android.content.Context
 import android.util.Log
-import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
@@ -97,8 +96,8 @@ open class FileDownloader(private val client: OkHttpClient) {
         protocolVersion = responseHeaders["expo-protocol-version"],
         manifestFilters = responseHeaders["expo-manifest-filters"],
         serverDefinedHeaders = responseHeaders["expo-server-defined-headers"],
-        manifestSignature = responseHeaders["expo-manifest-signature"],
-        signature = responseHeaders["expo-signature"]
+        manifestSignatureForLegacyExpoKey = responseHeaders["expo-manifest-signature"],
+        codeSigningSignature = responseHeaders["expo-signature"]
       )
 
       parseManifest(response.body()!!.string(), manifestHeaderData, null, configuration, callback)
@@ -176,8 +175,8 @@ open class FileDownloader(private val client: OkHttpClient) {
       protocolVersion = responseHeaders["expo-protocol-version"],
       manifestFilters = responseHeaders["expo-manifest-filters"],
       serverDefinedHeaders = responseHeaders["expo-server-defined-headers"],
-      manifestSignature = responseHeaders["expo-manifest-signature"],
-      signature = manifestPartBodyAndHeaders.second["expo-signature"]
+      manifestSignatureForLegacyExpoKey = responseHeaders["expo-manifest-signature"],
+      codeSigningSignature = manifestPartBodyAndHeaders.second["expo-signature"]
     )
 
     parseManifest(manifestPartBodyAndHeaders.first, manifestHeaderData, extensions, configuration, callback)
@@ -185,38 +184,38 @@ open class FileDownloader(private val client: OkHttpClient) {
 
   private fun parseManifest(manifestBody: String, manifestHeaderData: ManifestHeaderData, extensions: JSONObject?, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
     try {
-      val updateResponseJson = extractUpdateResponseJson(manifestBody, configuration)
-      val isSignatureInBody =
-        updateResponseJson.has("manifestString") && updateResponseJson.has("signature")
-      val signature = if (isSignatureInBody) {
-        updateResponseJson.getNullable("signature")
-      } else {
-        manifestHeaderData.manifestSignature
-      }
+      val updateResponseJson = extractManifestFromManifestBodyResponse(manifestBody, configuration)
 
       /**
-       * The updateResponseJson is just the manifest when it is unsigned, or the signature is sent as a header.
-       * If the signature is in the body, the updateResponseJson looks like:
-       * {
-       *   manifestString: string;
-       *   signature: string;
-       * }
+       * The updateResponseJson is just the manifest in the following cases:
+       * - it is a unsigned (legacy expo key) classic manifest. Usually the case in production apps.
+       * - it is signed (legacy expo key) and the signature is sent as a header.
+       *
+       * The updateResponseJson contains both the manifest and signature in the following cases:
+       * - it is signed (legacy expo key) and the signature is in the body. In this case the format is:
+       *   {
+       *     manifestString: string;
+       *     signature: string;
+       *   }
+       *
+       * For modern code signing (code signing key) the signature is always in a header.
        */
-      val manifestString = if (isSignatureInBody) {
-        updateResponseJson.getString("manifestString")
+      val (manifestSignatureForLegacyExpoKey, manifestString) = if (updateResponseJson.has("manifestString") && updateResponseJson.has("signature")) {
+        Pair(updateResponseJson.require("signature"), updateResponseJson.require("manifestString"))
       } else {
-        manifestBody
+        Pair(manifestHeaderData.manifestSignatureForLegacyExpoKey, manifestBody)
       }
-      val preManifest = JSONObject(manifestString)
+
+      val manifestJSON = JSONObject(manifestString)
 
       // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
       // We should treat these manifests as unsigned rather than signed with an invalid signature.
-      val isUnsignedFromXDL = "UNSIGNED" == signature
-      if (signature != null && !isUnsignedFromXDL) {
+      val isUnsignedFromXDL = "UNSIGNED" == manifestSignatureForLegacyExpoKey
+      if (manifestSignatureForLegacyExpoKey != null && !isUnsignedFromXDL) {
         Crypto.verifyExpoPublicRSASignature(
           this@FileDownloader,
           manifestString,
-          signature,
+          manifestSignatureForLegacyExpoKey,
           object : RSASignatureListener {
             override fun onError(exception: Exception, isNetworkError: Boolean) {
               callback.onFailure("Could not validate signed manifest", exception)
@@ -225,7 +224,7 @@ open class FileDownloader(private val client: OkHttpClient) {
             override fun onCompleted(isValid: Boolean) {
               if (isValid) {
                 try {
-                  createManifest(manifestBody, preManifest, manifestHeaderData, extensions, true, configuration, callback)
+                  createManifest(manifestBody, manifestJSON, manifestHeaderData, extensions, true, configuration, callback)
                 } catch (e: Exception) {
                   callback.onFailure("Failed to parse manifest data", e)
                 }
@@ -239,7 +238,7 @@ open class FileDownloader(private val client: OkHttpClient) {
           }
         )
       } else {
-        createManifest(manifestBody, preManifest, manifestHeaderData, extensions, false, configuration, callback)
+        createManifest(manifestBody, manifestJSON, manifestHeaderData, extensions, false, configuration, callback)
       }
     } catch (e: Exception) {
       callback.onFailure(
@@ -378,7 +377,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         configuration.codeSigningConfiguration?.let {
           val isSignatureValid = Crypto.isSignatureValid(
             it,
-            Crypto.parseSignatureHeader(manifestHeaderData.signature),
+            Crypto.parseSignatureHeader(manifestHeaderData.codeSigningSignature),
             bodyString.toByteArray()
           )
           if (!isSignatureValid) {
@@ -404,7 +403,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     }
 
     @Throws(IOException::class)
-    private fun extractUpdateResponseJson(
+    private fun extractManifestFromManifestBodyResponse(
       manifestString: String,
       configuration: UpdatesConfiguration
     ): JSONObject {
@@ -422,7 +421,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         for (i in 0 until manifestArray.length()) {
           val manifestCandidate = manifestArray.getJSONObject(i)
           val sdkVersion = manifestCandidate.getString("sdkVersion")
-          if (configuration.sdkVersion != null && configuration.sdkVersion!!.split(",").contains(sdkVersion)
+          if (configuration.sdkVersion != null && configuration.sdkVersion.split(",").contains(sdkVersion)
           ) {
             return manifestCandidate
           }
