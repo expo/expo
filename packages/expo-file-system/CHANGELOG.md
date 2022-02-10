@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.1.4 — 2022-02-10
+
+_This version does not introduce any user-facing changes._
+
 ## 13.1.3 — 2022-02-01
 
 ### 🐛 Bug fixes
