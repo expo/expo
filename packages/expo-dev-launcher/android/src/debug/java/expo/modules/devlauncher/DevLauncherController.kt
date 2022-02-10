@@ -82,7 +82,7 @@ class DevLauncherController private constructor()
     private set
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
-  var canLaunchDevMenuOnStart = true
+  var canLaunchDevMenuOnStart = false
 
   enum class Mode {
     LAUNCHER, APP
