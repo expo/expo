@@ -17,7 +17,7 @@ export function usePersistScroll<T extends HTMLElement = HTMLDivElement>(id: str
   useEffect(
     function scrollRefDidMount() {
       if (ref.current && scrollPositions[id] > 0) {
-        ref.current.scrollTop = scrollPositions[id] || 0;
+        ref.current.scrollTop = scrollPositions[id];
       }
     },
     [ref.current]
