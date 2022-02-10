@@ -1,20 +1,24 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
-import React, { HTMLAttributes, PropsWithChildren } from 'react';
+import React, { forwardRef, HTMLAttributes, PropsWithChildren } from 'react';
 
-type LayoutScrollProps = PropsWithChildren<HTMLAttributes<HTMLDivElement>>;
+type LayoutScrollProps = PropsWithChildren<
+  HTMLAttributes<HTMLDivElement> & {
+    /** If the scroll container should smoothly scroll when scrolled programatically */
+    smoothScroll?: boolean;
+  }
+>;
 
-export function LayoutScroll({ children, ...rest }: LayoutScrollProps) {
-  return (
-    <div css={scrollStyle} {...rest}>
+export const LayoutScroll = forwardRef<HTMLDivElement, LayoutScrollProps>(
+  ({ smoothScroll, children, ...rest }, ref) => (
+    <div css={[scrollStyle, smoothScroll && smoothScrollBehavior]} {...rest} ref={ref}>
       {children}
     </div>
-  );
-}
+  )
+);
 
 const scrollStyle = css({
   height: '100%',
-  scrollBehavior: 'smooth',
   overflowY: 'auto',
   /* width */
   '::-webkit-scrollbar': {
@@ -34,4 +38,8 @@ const scrollStyle = css({
   '::-webkit-scrollbar-thumb:hover': {
     backgroundColor: theme.background.quaternary,
   },
+});
+
+const smoothScrollBehavior = css({
+  scrollBehavior: 'smooth',
 });
