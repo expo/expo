@@ -80,7 +80,6 @@
     "arg": "4.1.0",
     "babel-preset-expo": "~9.0.1",
     "better-opn": "~3.0.2",
-    "bplist-parser": "^0.3.0",
     "internal-ip": "4.3.0",
     "cacache": "^15.3.0",
     "chalk": "^4.0.0",

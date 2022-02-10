@@ -1429,7 +1429,7 @@
     json5 "^1.0.1"
     write-file-atomic "^2.3.0"
 
-"@expo/metro-config@0.3.8", "@expo/metro-config@~0.3.7":
+"@expo/metro-config@0.3.8":
   version "0.3.8"
   resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.3.8.tgz#e784f96ad9d182e7177c191b82471a6c8c9e6704"
   integrity sha512-dDjd5wFlw0t/UEjYvT6atDPEUYI8GyCX0unnRowRCe2V67NMmwZ2FkUBapwOy12HhkdlRJqfp+XdHgj2LiXzdg==
@@ -1442,7 +1442,7 @@
     getenv "^1.0.0"
     sucrase "^3.20.0"
 
-"@expo/metro-config@0.3.9":
+"@expo/metro-config@0.3.9", "@expo/metro-config@~0.3.7":
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.3.9.tgz#41e04b7941fc74809852af16fca05b950741da6e"
   integrity sha512-mtTc+LXdhRAux42OXK25EbPFGCWHn0r4iRJwhGq23nLP1YUWsA8TQJ2QOrYSdTE6FeH2ZyrSBpdJmwQD50GENg==
@@ -1693,7 +1693,7 @@
     lodash.pick "^4.4.0"
     lodash.template "^4.5.0"
 
-"@expo/webpack-config@0.16.15", "@expo/webpack-config@~0.16.14":
+"@expo/webpack-config@0.16.15":
   version "0.16.15"
   resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.16.15.tgz#fd99561efc6270befd95cf3688ecc69cf5012cdd"
   integrity sha512-ZAgakJm5p1opuAZTEIOctimmyGc4aqjWjWq6fjwZT2O/FI/QZBDvldSl7RvBGs/bweL5zY6rMfNNsjDoch3iBA==
@@ -1728,7 +1728,7 @@
     webpack "4.43.0"
     webpack-manifest-plugin "~2.2.0"
 
-"@expo/webpack-config@0.16.16":
+"@expo/webpack-config@0.16.16", "@expo/webpack-config@~0.16.14":
   version "0.16.16"
   resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.16.16.tgz#a5587d9d48baf602c59f93a814726e6aae8d44bf"
   integrity sha512-TlJatXD/TiVkXdr2+n+lLVM7ppQ5qpwHyIqtB/6be3L7qAVEqnBhzDaqnyTasbpaUakq1ZYdNPkhgWeBgK8gjw==
@@ -6342,7 +6342,7 @@ cacheable-request@^6.0.0:
     normalize-url "^4.1.0"
     responselike "^1.0.2"
 
-cacheable-request@^7.0.1, cacheable-request@^7.0.2:
+cacheable-request@^7.0.2:
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/cacheable-request/-/cacheable-request-7.0.2.tgz#ea0d0b889364a25854757301ca12b2da77f91d27"
   integrity sha512-pouW8/FmiPQbuGpkXQ9BAPv/Mo5xDGANgSNXzTzJ8DrKGuXOssM4wIQRjfanNRh3Yu5cfYPvcorqbhg2KIJtew==
@@ -10261,23 +10261,6 @@ globby@^6.1.0:
     object-assign "^4.0.1"
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
-
-got@11.8.2:
-  version "11.8.2"
-  resolved "https://registry.yarnpkg.com/got/-/got-11.8.2.tgz#7abb3959ea28c31f3576f1576c1effce23f33599"
-  integrity sha512-D0QywKgIe30ODs+fm8wMZiAcZjypcCodPNuMz5H9Mny7RJ+IjJ10BdmGW7OM7fHXP+O7r6ZwapQ/YQmMSvB0UQ==
-  dependencies:
-    "@sindresorhus/is" "^4.0.0"
-    "@szmarczak/http-timer" "^4.0.5"
-    "@types/cacheable-request" "^6.0.1"
-    "@types/responselike" "^1.0.0"
-    cacheable-lookup "^5.0.3"
-    cacheable-request "^7.0.1"
-    decompress-response "^6.0.0"
-    http2-wrapper "^1.0.0-beta.5.2"
-    lowercase-keys "^2.0.0"
-    p-cancelable "^2.0.0"
-    responselike "^2.0.0"
 
 got@^11.5.1:
   version "11.8.3"

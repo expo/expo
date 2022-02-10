@@ -6,7 +6,6 @@ import path from 'path';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
-import * as CoreSimulator from './CoreSimulator';
 import { waitForActionAsync } from './utils/waitForActionAsync';
 
 type DeviceState = 'Shutdown' | 'Booted';
@@ -118,9 +117,6 @@ export async function getContainerPathAsync({
   udid: string;
   bundleIdentifier: string;
 }): Promise<string | null> {
-  if (CoreSimulator.isEnabled()) {
-    return CoreSimulator.getContainerPathAsync({ udid, bundleIdentifier });
-  }
   try {
     const { stdout } = await xcrunAsync([
       'simctl',
@@ -179,15 +175,6 @@ export async function openBundleIdAsync(options: {
 
 // This will only boot in headless mode if the Simulator app is not running.
 export async function bootAsync({ udid }: { udid: string }): Promise<SimulatorDevice | null> {
-  if (CoreSimulator.isEnabled()) {
-    const device = await CoreSimulator.getDeviceInfoAsync({ udid }).catch(() => null);
-    if (device?.state === 'Booted') {
-      return device;
-    }
-    await runBootAsync({ udid });
-    return await profile(CoreSimulator.getDeviceInfoAsync)({ udid });
-  }
-
   // TODO: Deprecate
   await runBootAsync({ udid });
   return await isSimulatorBootedAsync({ udid });
@@ -277,9 +264,6 @@ export async function listAsync(
 }
 
 export async function listSimulatorDevicesAsync() {
-  if (CoreSimulator.isEnabled()) {
-    return CoreSimulator.listDevicesAsync();
-  }
   const simulatorDeviceInfo = await listAsync('devices');
   return Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
     return prev.concat(runtime);

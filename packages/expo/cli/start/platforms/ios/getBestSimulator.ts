@@ -1,6 +1,5 @@
 import { execSync } from 'child_process';
 
-import * as CoreSimulator from './CoreSimulator';
 import * as SimControl from './SimControl';
 
 function getDefaultSimulatorDeviceUDID() {
@@ -17,15 +16,12 @@ function getDefaultSimulatorDeviceUDID() {
 
 export async function getBestBootedSimulatorAsync({ osType }: { osType?: string }) {
   let simulatorOpenedByApp: SimControl.SimulatorDevice | null;
-  if (CoreSimulator.isEnabled()) {
-    simulatorOpenedByApp = await CoreSimulator.getDeviceInfoAsync().catch(() => null);
-  } else {
-    const simulatorDeviceInfo = await SimControl.listAsync('devices');
-    const devices = Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
-      return prev.concat(runtime.filter((device) => device.state === 'Booted'));
-    }, []);
-    simulatorOpenedByApp = devices[0];
-  }
+
+  const simulatorDeviceInfo = await SimControl.listAsync('devices');
+  const devices = Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
+    return prev.concat(runtime.filter((device) => device.state === 'Booted'));
+  }, []);
+  simulatorOpenedByApp = devices[0];
 
   // This should prevent opening a second simulator in the chance that default
   // simulator doesn't match what the Simulator app would open by default.
