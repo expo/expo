@@ -155,6 +155,7 @@ import {
   FacebookAuthProvider,
   signInWithCredential,
 } from 'firebase/auth';
+import * as Facebook from 'expo-facebook';
 
 initializeApp(config);
 
