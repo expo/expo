@@ -21,7 +21,7 @@ export function TableOfContents(props: TableOfContentsProps) {
 
   return (
     <nav css={containerStyle}>
-      <CALLOUT css={titleStyle}>On this page</CALLOUT>
+      <CALLOUT css={titleStyle} weight="medium">On this page</CALLOUT>
       <ul css={listStyle}>
         {headings.map(heading => {
           const headingId = findHeadingId(heading);
@@ -41,7 +41,7 @@ function TableOfContentsLink({ heading, headingId, isActive }: TableOfContentsLi
   const headingText = useMemo(() => getHeadingText(heading), [heading.textContent]);
   return (
     <A css={[linkStyle, getHeadingStyle(heading)]} href={`#${headingId}`}>
-      <CALLOUT css={isActive && activeLinkStyle} tag="span">
+      <CALLOUT weight={isActive ? 'medium' : 'regular'} tag="span">
         {headingText}
       </CALLOUT>
     </A>
