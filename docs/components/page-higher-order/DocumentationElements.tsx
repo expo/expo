@@ -10,7 +10,6 @@ import { PageMetadataContext } from '~/providers/page-metadata';
 import { PageMetadata, RemarkHeading } from '~/types/common';
 import { AnchorContext } from '~/ui/components/Text';
 
-
 type DocumentationElementsProps = PropsWithChildren<{
   meta: PageMetadata;
   headings: RemarkHeading[];
