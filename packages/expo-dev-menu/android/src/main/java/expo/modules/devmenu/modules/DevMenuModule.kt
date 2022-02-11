@@ -4,17 +4,15 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
+
 
 class DevMenuModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
   override fun getName() = "ExpoDevMenu"
 
-  private val devMenuManager by lazy {
-    reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)!!
-      .getDevMenuManager()
-  }
+  private val devMenuManager: DevMenuManager = DevMenuManager
 
   private fun openMenuOn(screen: String?) {
     reactApplicationContext

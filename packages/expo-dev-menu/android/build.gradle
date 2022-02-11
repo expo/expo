@@ -241,6 +241,7 @@ repositories {
 
 dependencies {
   implementation project(':expo-modules-core')
+  implementation project(":expo-manifests")
 
   debugImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
   releaseWithDevMenuImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")

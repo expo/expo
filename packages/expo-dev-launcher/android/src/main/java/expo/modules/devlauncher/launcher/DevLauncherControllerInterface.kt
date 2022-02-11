@@ -17,8 +17,6 @@ interface DevLauncherControllerInterface {
   fun onAppLoadedWithError()
   fun getRecentlyOpenedApps(): Map<String, String?>
   fun navigateToLauncher()
-  fun maybeSynchronizeDevMenuDelegate()
-  fun maybeInitDevMenuDelegate(context: ReactContext)
   fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate
   fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean
 

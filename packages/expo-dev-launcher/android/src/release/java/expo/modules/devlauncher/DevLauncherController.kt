@@ -47,10 +47,6 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
 
   override val useDeveloperSupport = false
 
-  override fun maybeInitDevMenuDelegate(context: ReactContext) {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
-  }
-
   override fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
@@ -60,10 +56,6 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
   }
 
   override fun navigateToLauncher() {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
-  }
-
-  override fun maybeSynchronizeDevMenuDelegate() {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
