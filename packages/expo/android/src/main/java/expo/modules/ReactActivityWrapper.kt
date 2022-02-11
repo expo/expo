@@ -6,16 +6,30 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
-class ReactActivityWrapper : ReactActivity() {
+open class ReactActivityWrapper : ReactActivity() {
   private val reactActivityListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityListeners(application) }
 
-  override fun createReactActivityDelegate(): ReactActivityDelegate {
-    val delegate = super.createReactActivityDelegate()
-    return reactActivityListeners.asSequence()
-      .mapNotNull { it.createReactActivityDelegate(this, delegate) }
-      .firstOrNull() ?: delegate
+  init {
+    // TODO: as an alternative, try not wrapping delegate object but instead just listening to
+    //  onCreate event and calling the methods from DevLauncherReactActivityRedirectDelegate there
+    val delegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
+    delegateField.isAccessible = true
+    val delegate = delegateField.get(this) as ReactActivityDelegate
+
+    val newDelegate = reactActivityListeners.asSequence()
+      .mapNotNull { it.onDidCreateReactActivityDelegate(this, delegate) }
+      .firstOrNull()
+
+    if (newDelegate != null && newDelegate != delegate) {
+      val modifiers = Field::class.java.getDeclaredField("accessFlags")
+      modifiers.isAccessible = true
+      modifiers.setInt(delegateField, delegateField.modifiers and Modifier.FINAL.inv())
+      delegateField.set(this, newDelegate)
+    }
   }
 
   override fun onNewIntent(intent: Intent?) {
