@@ -22,7 +22,7 @@ export function useTableOfContents(options: TableOfContentsOptions = {}) {
   useObserver(options.root, setActiveId, headings);
 
   const onRouteChange = useCallback(
-    (url: string) => setActiveId(url.split('#', 2).pop()!),
+    (url: string) => setActiveId(new URL(url, 'https://docs.expo.dev').hash),
     [setActiveId]
   );
 
@@ -68,19 +68,19 @@ function useObserver(
   observerables: Element[]
 ) {
   // TODO(cedric): find a better way to detect changes of the observerables
-  const observerablesHash = observerables.map(el => findHeadingId(el)).join('');
+  const observerablesHash = observerables.map(el => getHeadingId(el as HTMLElement)).join('');
 
   const onObserve = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const visible = entries.filter(entry => entry.isIntersecting);
       if (visible.length === 1) {
         // TODO(cedric): move the heading id back the the heading element
-        onVisible(findHeadingId(visible[0].target as HTMLElement));
+        onVisible(getHeadingId(visible[0].target as HTMLElement));
       } else if (visible.length > 1) {
         const sorted = visible.sort(
           (a, b) => observerables.indexOf(a.target) - observerables.indexOf(b.target)
         );
-        onVisible(findHeadingId(sorted[0].target as HTMLElement));
+        onVisible(getHeadingId(sorted[0].target as HTMLElement));
       }
     },
     [onVisible, observerablesHash]
@@ -103,9 +103,9 @@ function useObserver(
 /**
  * Get the ID by heading element.
  * This is added by the PermaLink component.
- * 
+ *
  * @todo Try to just use ID instead of this workaround
  */
-export function findHeadingId(element: HTMLElement) {
-  return element.dataset.headingId!;
+export function getHeadingId(element: HTMLElement): string {
+  return element.id || element.dataset.id || '';
 }

@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { spacing, typography } from '@expo/styleguide';
 import React, { useMemo } from 'react';
 
-import { findHeadingId, useTableOfContents, TableOfContentsOptions } from './useTableOfContents';
+import { getHeadingId, useTableOfContents, TableOfContentsOptions } from './useTableOfContents';
 
 import { A, CALLOUT } from '~/ui/components/Text';
 
@@ -14,17 +14,16 @@ type TableOfContentsLinkProps = {
 };
 
 export function TableOfContents(props: TableOfContentsProps) {
-  const { headings, activeId } = useTableOfContents({
-    root: typeof document !== 'undefined' ? document.body : undefined,
-    selector: 'h2, h3',
-  });
+  const { headings, activeId } = useTableOfContents(props);
 
   return (
     <nav css={containerStyle}>
-      <CALLOUT css={titleStyle} weight="medium">On this page</CALLOUT>
+      <CALLOUT css={titleStyle} weight="medium">
+        On this page
+      </CALLOUT>
       <ul css={listStyle}>
         {headings.map(heading => {
-          const headingId = findHeadingId(heading);
+          const headingId = getHeadingId(heading);
           const isActive = headingId === activeId;
           return (
             <li key={`heading-${headingId}`}>
@@ -70,10 +69,6 @@ const linkStyle = css({
   padding: `${spacing[1.5]}px 0`,
 });
 
-const activeLinkStyle = css({
-  ...typography.utility.weight.medium,
-});
-
 function getHeadingStyle(heading: HTMLHeadingElement) {
   const level = Math.max(Number(heading.tagName.slice(1)) - 2, 0);
   return { paddingLeft: spacing[2] * level };
@@ -82,6 +77,7 @@ function getHeadingStyle(heading: HTMLHeadingElement) {
 /**
  * Get the link text from the heading.
  * This only uses the function name if a heading contains code.
+ * @todo revise this with proper code block styling
  */
 function getHeadingText(heading: HTMLHeadingElement) {
   const text = heading.textContent || '';
