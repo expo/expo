@@ -86,7 +86,7 @@ export default function OpenBrowserAsyncDemo() {
     <>
       <HeadingText>openBrowserAsync</HeadingText>
       <Configurator choices={openBrowserConfigurationChoices} onChange={setOpenOptions} />
-      <MonoText>options: {JSON.stringify(openOptions, null, 2)}</MonoText>
+      <MonoText>WebBrowser.openBrowserAsync(url, {JSON.stringify(openOptions, null, 2)})</MonoText>
       <View style={styles.buttons}>
         <Button style={styles.button} onPress={openBrowser} title="Open" />
         <Button style={styles.button} onPress={openAndDismiss} title="Open and dismiss" />
