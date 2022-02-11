@@ -108,21 +108,4 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.setCurrentScreen(currentScreen)
     resolve(nil)
   }
-
-  @objc
-  func getDevSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let bridge = manager.currentBridge {
-      if let devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
-        resolve([
-          "isDebuggingRemotely": devSettings.isDebuggingRemotely,
-          "isElementInspectorShown": devSettings.isElementInspectorShown,
-          "isHotLoadingEnabled": devSettings.isHotLoadingEnabled,
-          "isPerfMonitorShown": devSettings.isPerfMonitorShown,
-        ])
-      }
-      
-    } else {
-      reject("E_MISSING_BRIDGE", "DevMenuManager does not have a currentBridge - getDevSettingsAsync() ", nil);
-    }
-  }
 }

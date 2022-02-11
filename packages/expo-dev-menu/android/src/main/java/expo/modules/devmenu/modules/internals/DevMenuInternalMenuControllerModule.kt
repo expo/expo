@@ -83,28 +83,6 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     }
   }
 
-  override fun getDevSettingsAsync(promise: Promise) {
-    val reactInstanceManager = devMenuManager.getReactInstanceManager()
-    val map = Arguments.createMap()
-
-    if (reactInstanceManager != null) {
-      val devDelegate = DevMenuDevToolsDelegate(devMenuManager, reactInstanceManager)
-      val devSettings = devDelegate.devSettings
-      val devInternalSettings = (devSettings as? DevInternalSettings)
-
-      map.apply {
-        if (devInternalSettings != null) {
-          putBoolean("isDebuggingRemotely", devSettings.isRemoteJSDebugEnabled)
-          putBoolean("isElementInspectorShown", devSettings.isElementInspectorEnabled)
-          putBoolean("isHotLoadingEnabled", devSettings.isHotModuleReplacementEnabled)
-          putBoolean("isPerfMonitorShown", devSettings.isFpsDebugEnabled)
-        }
-      }
-    }
-
-    promise.resolve(map)
-  }
-  
   override fun copyToClipboardAsync(content: String, promise: Promise) {
     val clipboard = reactContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(null, content)
