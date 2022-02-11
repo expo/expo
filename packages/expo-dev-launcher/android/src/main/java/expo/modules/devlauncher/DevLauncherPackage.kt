@@ -1,8 +1,10 @@
 package expo.modules.devlauncher
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
@@ -12,8 +14,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
+import expo.modules.core.interfaces.ReactActivityHandler
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.core.interfaces.ReactActivityListener
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
+import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
 
 class DevLauncherPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> = DevLauncherPackageDelegate.createNativeModules(reactContext);
@@ -33,17 +38,29 @@ class DevLauncherPackage : Package, ReactPackage {
     return listOf(listener)
   }
 
+  override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
+    val listener = object : ReactActivityLifecycleListener {
+      override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
+        DevLauncherSplashScreenProvider()
+          .attachSplashScreenViewAsync(activity)
+        DevLauncherController.redirect(activity.intent)
+      }
+    }
+    return listOf(listener)
+  }
+
+  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
+    val listener = object : ReactActivityHandler {
+      override fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
+        DevLauncherController.onWillCreateReactActivityDelegate(activity)
+      }
+    }
+    return listOf(listener)
+  }
+
   // TODO: maybe put this in the debug flavor only?
   override fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> {
     val listener = object : ReactActivityListener {
-      override fun onDidCreateReactActivityDelegate(activity: ReactActivity, delegate: ReactActivityDelegate): ReactActivityDelegate? {
-        return DevLauncherController.wrapReactActivityDelegate(activity, object : DevLauncherReactActivityDelegateSupplier {
-          override fun get(): ReactActivityDelegate {
-            return delegate
-          }
-        })
-      }
-
       override fun onNewIntent(activity: ReactActivity, intent: Intent): Boolean {
         return DevLauncherController.tryToHandleIntent(activity, intent)
       }

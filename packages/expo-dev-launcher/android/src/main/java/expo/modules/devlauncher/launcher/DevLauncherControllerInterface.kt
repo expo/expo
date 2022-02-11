@@ -18,6 +18,7 @@ interface DevLauncherControllerInterface {
   fun getRecentlyOpenedApps(): Map<String, String?>
   fun navigateToLauncher()
   fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate
+  fun redirectFromStartActivity(intent: Intent?)
   fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean
 
   val manifest: Manifest?

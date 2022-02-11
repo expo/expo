@@ -26,6 +26,12 @@ class ReactActivityDelegateWrapper(
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
+  init {
+    reactActivityHandlers.forEach {
+      it.onWillCreateReactActivityDelegate(activity)
+    }
+  }
+
   //region ReactActivityDelegate
 
   override fun getLaunchOptions(): Bundle? {

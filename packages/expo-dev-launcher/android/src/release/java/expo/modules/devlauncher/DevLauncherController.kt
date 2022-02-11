@@ -51,6 +51,10 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
+  override fun redirectFromStartActivity(intent: Intent?) {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
   override fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }

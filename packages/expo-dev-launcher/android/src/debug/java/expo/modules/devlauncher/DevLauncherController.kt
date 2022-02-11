@@ -250,7 +250,7 @@ class DevLauncherController private constructor()
     }
   }
 
-  private fun redirectFromStartActivity(intent: Intent?) {
+  override fun redirectFromStartActivity(intent: Intent?) {
     if (!handleIntent(intent, null)) {
       navigateToLauncher()
     }
@@ -360,6 +360,20 @@ class DevLauncherController private constructor()
       return devLauncherKoin()
         .get<DevLauncherControllerInterface>()
         .getCurrentReactActivityDelegate(activity, devLauncherReactActivityDelegateSupplier)
+    }
+
+    @JvmStatic
+    fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
+      devLauncherKoin()
+        .get<DevLauncherLifecycle>()
+        .delegateWillBeCreated(activity)
+    }
+
+    @JvmStatic
+    fun redirect(intent: Intent?) {
+      devLauncherKoin()
+        .get<DevLauncherControllerInterface>()
+        .redirectFromStartActivity(intent)
     }
 
     @JvmStatic
