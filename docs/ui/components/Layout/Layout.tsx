@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { breakpoints } from '@expo/styleguide';
+import { breakpoints, theme } from '@expo/styleguide';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import { LayoutScroll } from './LayoutScroll';
@@ -37,6 +37,10 @@ const layoutStyle = css({
     "header header header"
     "navigation content sidebar"
   `,
+  backgroundColor: theme.background.default,
+  '[data-expo-theme="dark"] &': {
+    backgroundColor: theme.background.screen,
+  },
 });
 
 const headerStyle = css({ gridArea: 'header' });
