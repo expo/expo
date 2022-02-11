@@ -2,44 +2,42 @@ import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide';
 import React, { useMemo } from 'react';
 
-import { getHeadingId, useTableOfContents, TableOfContentsOptions } from './useTableOfContents';
+import { HeadingEntry, useHeadingsObserver } from './useHeadingObserver';
 
+import { LayoutScroll, useAutoScrollTo } from '~/ui/components/Layout';
 import { A, CALLOUT } from '~/ui/components/Text';
 
-type TableOfContentsProps = TableOfContentsOptions;
-type TableOfContentsLinkProps = {
-  heading: HTMLHeadingElement;
-  headingId: string;
+type TableOfContentsLinkProps = HeadingEntry & {
   isActive?: boolean;
 };
 
-export function TableOfContents(props: TableOfContentsProps) {
-  const { headings, activeId } = useTableOfContents(props);
+export function TableOfContents() {
+  const { headings, activeId } = useHeadingsObserver();
+  const autoScroll = useAutoScrollTo(activeId ? `[data-toc-id="${activeId}"]` : '');
 
   return (
-    <nav css={containerStyle}>
-      <CALLOUT css={titleStyle} weight="medium">
-        On this page
-      </CALLOUT>
-      <ul css={listStyle}>
-        {headings.map(heading => {
-          const headingId = getHeadingId(heading);
-          const isActive = headingId === activeId;
-          return (
-            <li key={`heading-${headingId}`}>
-              <TableOfContentsLink heading={heading} headingId={headingId} isActive={isActive} />
+    <LayoutScroll ref={autoScroll.ref}>
+      <nav css={containerStyle}>
+        <CALLOUT css={titleStyle} weight="medium">
+          On this page
+        </CALLOUT>
+        <ul css={listStyle}>
+          {headings.map(heading => (
+            <li key={`heading-${heading.id}`} data-toc-id={heading.id}>
+              <TableOfContentsLink {...heading} isActive={heading.id === activeId} />
             </li>
-          );
-        })}
-      </ul>
-    </nav>
+          ))}
+        </ul>
+      </nav>
+    </LayoutScroll>
   );
 }
 
-function TableOfContentsLink({ heading, headingId, isActive }: TableOfContentsLinkProps) {
-  const headingText = useMemo(() => getHeadingText(heading), [heading.textContent]);
+function TableOfContentsLink({ id, element, isActive }: TableOfContentsLinkProps) {
+  const headingText = useMemo(() => getHeadingText(element), [element]);
+
   return (
-    <A css={[linkStyle, getHeadingStyle(heading)]} href={`#${headingId}`}>
+    <A css={[linkStyle, getHeadingStyle(element)]} href={`#${id}`}>
       <CALLOUT weight={isActive ? 'medium' : 'regular'} tag="span">
         {headingText}
       </CALLOUT>
