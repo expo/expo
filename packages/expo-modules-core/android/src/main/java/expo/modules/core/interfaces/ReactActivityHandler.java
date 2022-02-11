@@ -1,6 +1,8 @@
 package expo.modules.core.interfaces;
 
 import android.app.Activity;
+
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactRootView;
 
 import androidx.annotation.Nullable;
@@ -18,4 +20,6 @@ public interface ReactActivityHandler {
   default ReactRootView createReactRootView(Activity activity) {
     return null;
   }
+
+  default void onWillCreateReactActivityDelegate(ReactActivity activity) {}
 }

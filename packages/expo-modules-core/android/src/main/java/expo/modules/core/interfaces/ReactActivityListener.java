@@ -11,10 +11,11 @@ import com.facebook.react.ReactNativeHost;
 
 import androidx.annotation.Nullable;
 
+// TODO: merge with ReactActivityHandler (they can be the same interface)
 public interface ReactActivityListener {
 
   @Nullable
-  default ReactActivityDelegate onDidCreateReactActivityDelegate(ReactActivity activity, ReactActivityDelegate delegate) {
+  default ReactActivityDelegate onDidCreateReactActivityDelegate(ReactActivity activity) {
     return null;
   }
 
