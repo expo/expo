@@ -1,36 +1,69 @@
 package expo.modules.clipboard
 
-import androidx.test.core.app.ApplicationProvider
+import expo.modules.test.core.ModuleMock
+import expo.modules.test.core.PromiseState
+import expo.modules.test.core.assertResolved
+import expo.modules.test.core.promiseResolved
+import io.mockk.confirmVerified
+import io.mockk.verify
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertResolved
 
 @RunWith(RobolectricTestRunner::class)
 class ClipboardModuleTest {
 
-  private lateinit var module: ClipboardModule
+  private lateinit var module: ModuleMock<ClipboardModule>
 
   @Before
   fun initializeMock() {
-    module = ClipboardModule(ApplicationProvider.getApplicationContext())
+    module = ModuleMock(ClipboardModule(), autoOnCreate = true)
   }
 
   @Test
-  fun setAndGetString() {
-    var promise1 = PromiseMock()
-    module.setString("albus dumbledore", promise1)
-    assertResolved(promise1)
-    assertNull(promise1.resolveValue)
+  fun `save to and read from clipboard`() {
+    // write to clipboard
+    val writePromise = module.callFunction("setString", "albus dumbledore")
+    assertResolved(writePromise)
 
-    var promise2 = PromiseMock()
-    module.getStringAsync(promise2)
-    assertResolved(promise2)
-    assertEquals("albus dumbledore", promise2.resolveValue)
+    // read from clipboard
+    val readPromise = module.callFunction("getStringAsync")
+    promiseResolved<String>(readPromise) { resolvedValue ->
+      assertEquals("albus dumbledore", resolvedValue)
+    }
+  }
+
+  @Test
+  fun `emit events when clipboard changes`() {
+    // update clipboard content
+    val promise1 = module.callFunction("setString", "severus snape")
+    assertEquals(promise1.state, PromiseState.RESOLVED)
+
+    // assert
+    verify {
+      module.eventEmitter.emit(
+        "onClipboardChanged",
+        match {
+          it.getString("content") == "severus snape"
+        }
+      )
+    }
+    confirmVerified(module.eventEmitter)
+  }
+
+  @Test
+  fun `don't emit events when in background`() {
+    // prepare
+    module.activityGoesBackground()
+
+    // update clipboard content
+    module.callFunction("setString", "ronald weasley")
+
+    // assert that event was NOT called
+    verify(inverse = true) { module.eventEmitter.emit("setString", any()) }
+    confirmVerified(module.eventEmitter)
   }
 }
