@@ -9,7 +9,7 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-`expo-crypto` enables you to hash (encrypt) data in an equivalent manner to the Node.js core `crypto` API.
+`expo-crypto` enables you to hash data in an equivalent manner to the Node.js core `crypto` API.
 
 <PlatformsSection android emulator ios simulator web />
 

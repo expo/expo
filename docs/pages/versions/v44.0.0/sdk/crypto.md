@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-`expo-crypto` enables you to hash (encrypt) data in an equivalent manner to the Node.js core `crypto` API.
+`expo-crypto` enables you to hash data in an equivalent manner to the Node.js core `crypto` API.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -113,10 +113,6 @@ const digest = await Crypto.digestStringAsync(
 
 ### `CryptoDigestAlgorithm`
 
-[`Cryptographic hash function`][algorithm-link] is an algorithm that can be used to generate a checksum value. They have a variety of applications in cryptography.
-
-> Cryptographic hash functions like `SHA1`, `MD5` are **vulnerable**! Attacks have been proven to significantly reduce their collision resistance.
-
 | Name              | Type   | Description | Collision Resistant | 🍎 iOS | 💚 Android | 💻 Web |
 | ----------------- | ------ | ----------- | ------------------- | ------ | ---------- | ------ |
 | [SHA1][sha-def]   | string | `160` bits  | ❌                  | ✅     | ✅         | ✅     |
@@ -155,5 +151,4 @@ const digest = await Crypto.digestStringAsync(
 
 <!-- External Links -->
 
-[algorithm-link]: https://developer.mozilla.org/en-US/docs/Glossary/Cryptographic_hash_function
 [sha-def]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
