@@ -3,7 +3,6 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { ModuleDescriptor, PackageRevision, SearchOptions } from '../types';
-import spawnAsync from '../utils/spawnAsync';
 
 async function findPodspecFile(revision: PackageRevision): Promise<string | undefined> {
   if (revision.config?.iosPodspecPath()) {
@@ -140,17 +139,4 @@ export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptor[]): 
   const indent = '  ';
   return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
 ${indent.repeat(2)}]`;
-}
-
-async function normalizePodModuleAsync(module: ModuleDescriptor): Promise<string> {
-  let result = module.podName;
-  const podspecFile = path.join(module.podspecDir, `${module.podName}.podspec`);
-  if (await fs.pathExists(podspecFile)) {
-    const stdout = await spawnAsync('pod', ['ipc', 'spec', podspecFile]);
-    const podspecJson = JSON.parse(stdout);
-    if (podspecJson.header_dir) {
-      result = podspecJson.header_dir;
-    }
-  }
-  return result;
 }
