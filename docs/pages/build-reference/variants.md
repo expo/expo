@@ -190,13 +190,13 @@ Assign a distinct scheme to every build profile in **eas.json**:
     "development": {
       "ios": {
         "buildConfiguration": "Debug",
-        "scheme": "myapp"
+        "scheme": "myapp-dev"
       }
     },
     "production": {
       "ios": {
         "buildConfiguration": "Release",
-        "scheme": "myapp-dev"
+        "scheme": "myapp"
       }
     }
   }
