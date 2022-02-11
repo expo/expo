@@ -20,8 +20,7 @@ class ClipboardModule : Module() {
 
     function("getStringAsync") {
       val clip = clipboardManager?.primaryClip?.takeIf { it.itemCount >= 1 }
-      val value = clip?.getItemAt(0)?.text ?: ""
-      value
+      clip?.getItemAt(0)?.text ?: ""
     }
 
     function("setString") { content: String ->
@@ -60,11 +59,11 @@ class ClipboardModule : Module() {
       manager?.addPrimaryClipChangedListener listener@{
         manager.primaryClip
           ?.takeIf { isListening && it.itemCount >= 1 }
-          ?.let {
+          ?.let { clip ->
             this@ClipboardModule.sendEvent(
               clipboardChangedEventName,
               Bundle().apply {
-                putString("content", it.getItemAt(0).text.toString())
+                putString("content", clip.getItemAt(0).text.toString())
               }
             )
           }
