@@ -117,11 +117,17 @@ constants {
 ```
 
 ```kotlin
+// Passed as arguments
 constants(
-  mapOf(
+  "PI" to kotlin.math.PI
+)
+
+// or returned by the closure
+constants {
+  return@constants mapOf(
     "PI" to kotlin.math.PI
   )
-)
+}
 ```
 
 </CodeBlocksTable>
