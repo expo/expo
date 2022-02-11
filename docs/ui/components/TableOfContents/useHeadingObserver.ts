@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 export type HeadingEntry = {
   id: string;
   element: HTMLHeadingElement;
-}
+};
 
 /**
  * Retrieve all headings matching the selector within the document.
