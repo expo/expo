@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { spacing, typography } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide';
 import React, { useMemo } from 'react';
 
 import { getHeadingId, useTableOfContents, TableOfContentsOptions } from './useTableOfContents';
@@ -54,8 +54,6 @@ const containerStyle = css({
 });
 
 const titleStyle = css({
-  ...typography.fontSizes[15],
-  ...typography.utility.weight.medium,
   marginTop: spacing[4],
   marginBottom: spacing[1.5],
 });
