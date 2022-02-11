@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 public interface ReactActivityListener {
 
   @Nullable
-  default ReactActivityDelegate createReactActivityDelegate(ReactActivity activity, ReactActivityDelegate delegate) {
+  default ReactActivityDelegate onDidCreateReactActivityDelegate(ReactActivity activity, ReactActivityDelegate delegate) {
     return null;
   }
 

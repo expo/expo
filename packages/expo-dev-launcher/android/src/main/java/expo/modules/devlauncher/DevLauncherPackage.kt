@@ -36,7 +36,7 @@ class DevLauncherPackage : Package, ReactPackage {
   // TODO: maybe put this in the debug flavor only?
   override fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> {
     val listener = object : ReactActivityListener {
-      override fun createReactActivityDelegate(activity: ReactActivity, delegate: ReactActivityDelegate): ReactActivityDelegate? {
+      override fun onDidCreateReactActivityDelegate(activity: ReactActivity, delegate: ReactActivityDelegate): ReactActivityDelegate? {
         return DevLauncherController.wrapReactActivityDelegate(activity, object : DevLauncherReactActivityDelegateSupplier {
           override fun get(): ReactActivityDelegate {
             return delegate
