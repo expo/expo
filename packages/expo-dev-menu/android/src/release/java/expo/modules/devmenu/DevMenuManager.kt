@@ -14,11 +14,16 @@ import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import expo.modules.devmenu.api.DevMenuMetroClient
 import kotlinx.coroutines.CoroutineScope
+import expo.modules.manifests.core.Manifest
 
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
 object DevMenuManager : DevMenuManagerInterface {
   internal var delegate: DevMenuDelegateInterface? = null
+
+  var currentManifest: Manifest? = null
+  var currentManifestURL: String? = null
+
   val metroClient: DevMenuMetroClient by lazy {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
