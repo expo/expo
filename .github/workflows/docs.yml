@@ -92,3 +92,25 @@ jobs:
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Docs
+
+  # Temporary job to determine if the redesign works properly
+  docs-next:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+
+      - name: 🏗 Setup Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: yarn
+      
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 👷 Build docs
+        run: yarn build
+        env:
+          NEXT_PUBLIC_EXPO_DESIGN: 1
+          USE_ESBUILD: 1
