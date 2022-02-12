@@ -34,12 +34,12 @@ export function TableOfContents() {
 }
 
 function TableOfContentsLink({ id, element, isActive }: TableOfContentsLinkProps) {
-  const headingText = useMemo(() => getHeadingText(element), [element]);
+  const info = useMemo(() => getHeadingInfo(element), [element]);
 
   return (
-    <A css={[linkStyle, getHeadingStyle(element)]} href={`#${id}`}>
+    <A css={[linkStyle, getHeadingIndent(element)]} href={`#${id}`}>
       <CALLOUT weight={isActive ? 'medium' : 'regular'} tag="span">
-        {headingText}
+        {info.text}
       </CALLOUT>
     </A>
   );
@@ -65,18 +65,20 @@ const linkStyle = css({
   padding: `${spacing[1.5]}px 0`,
 });
 
-function getHeadingStyle(heading: HTMLHeadingElement) {
+export function getHeadingIndent(heading: HTMLHeadingElement) {
   const level = Math.max(Number(heading.tagName.slice(1)) - 2, 0);
   return { paddingLeft: spacing[2] * level };
 }
 
 /**
- * Get the link text from the heading.
- * This only uses the function name if a heading contains code.
- * @todo revise this with proper code block styling
+ * Parse the heading information from an HTML heading element.
+ * If it contains parentheis, we try to extract the function name only.
  */
-function getHeadingText(heading: HTMLHeadingElement) {
+export function getHeadingInfo(heading: HTMLHeadingElement) {
   const text = heading.textContent || '';
-  const functionChar = text.indexOf('(');
-  return functionChar >= 0 ? text.slice(0, functionChar) : text;
+  const functionOpenChar = text.indexOf('(');
+
+  return functionOpenChar >= 0 && text[functionOpenChar - 1].trim()
+    ? { type: 'code', text: text.slice(0, functionOpenChar) }
+    : { type: 'text', text };
 }
