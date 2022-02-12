@@ -56,9 +56,10 @@ class ClipboardModule : Module() {
 
     init {
       val manager = clipboardManager
-      manager?.addPrimaryClipChangedListener listener@{
-        manager.primaryClip
-          ?.takeIf { isListening && it.itemCount >= 1 }
+      manager?.addPrimaryClipChangedListener {
+        manager.takeIf { isListening }
+          ?.primaryClip
+          ?.takeIf { it.itemCount >= 1 }
           ?.let { clip ->
             this@ClipboardModule.sendEvent(
               clipboardChangedEventName,
