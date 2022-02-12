@@ -1,6 +1,12 @@
 import { cleanup } from '@testing-library/react-native';
 import 'react-native-gesture-handler/jestSetup';
 
+global.fetch = jest.fn().mockResolvedValue({
+  ok: true,
+  json: () => Promise.resolve({}),
+  text: () => Promise.resolve(''),
+});
+
 afterEach(cleanup);
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -32,7 +38,6 @@ jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
 jest.mock('./bundle/native-modules/DevLauncherInternal');
 jest.mock('./bundle/native-modules/DevLauncherAuth');
 jest.mock('./bundle/native-modules/DevMenuInternal');
-jest.mock('./bundle/native-modules/DevMenu');
 
 const MOCK_INITIAL_METRICS = {
   frame: {

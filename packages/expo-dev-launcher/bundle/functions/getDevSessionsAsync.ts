@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
+import { restClient } from '../apiClient';
 import { installationID, isDevice } from '../native-modules/DevLauncherInternal';
-import { queryDevSessionsAsync } from '../native-modules/DevMenu';
 import { DevSession } from '../types';
 
 // TODO -- move this into context / make it settable via JS
@@ -17,12 +17,12 @@ export async function getDevSessionsAsync(isAuthenticated = false): Promise<DevS
   let devSessions: DevSession[] = [];
 
   if (isAuthenticated) {
-    const sessions = await queryDevSessionsAsync();
+    const sessions = await fetchDevSessions();
     devSessions = devSessions.concat(sessions);
   }
 
   if (!devSessions.length && installationID) {
-    const sessions = await queryDevSessionsAsync(installationID);
+    const sessions = await fetchDevSessions(installationID);
     devSessions = devSessions.concat(sessions);
   }
 
@@ -54,4 +54,17 @@ export async function getLocalPackagersAsync(): Promise<DevSession[]> {
   );
 
   return onlineDevSessions;
+}
+
+export async function fetchDevSessions(installationID?: string) {
+  let devSessionsEndpoint = `/development-sessions`;
+  const headers = {};
+
+  if (installationID != null) {
+    devSessionsEndpoint += `?deviceId=${installationID}`;
+    headers['Expo-Dev-Client-ID'] = installationID;
+  }
+
+  const sessions = await restClient<{ data: DevSession[] }>(devSessionsEndpoint, { headers });
+  return sessions.data ?? [];
 }
