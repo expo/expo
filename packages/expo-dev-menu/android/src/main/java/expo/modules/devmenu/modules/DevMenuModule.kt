@@ -49,23 +49,6 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun queryDevSessionsAsync(deviceID: String?, promise: Promise) {
-    devMenuManager.coroutineScope.launch {
-      try {
-        devMenuManager
-          .getExpoApiClient()
-          .queryDevSessions(deviceID)
-          .use {
-            @Suppress("DEPRECATION_ERROR")
-            promise.resolve(it.body()?.charStream()?.readText() ?: "")
-          }
-      } catch (e: Exception) {
-        promise.reject("ERR_DEVMENU_CANNOT_GET_DEV_SESSIONS", e.message, e)
-      }
-    }
-  }
-
-  @ReactMethod
   fun openMenu() {
     openMenuOn(null)
   }
