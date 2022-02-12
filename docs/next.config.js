@@ -74,6 +74,7 @@ module.exports = {
               require('./mdx-plugins/remark-export-headings'),
               require('./mdx-plugins/remark-link-rewrite'),
             ],
+            rehypePlugins: [require('rehype-slug')],
           },
         },
       ],
