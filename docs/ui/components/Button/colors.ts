@@ -63,4 +63,4 @@ export function hexToAccessibleHSLA(hex: string, alpha: number) {
   }
 
   return `hsla(${h},${s}%,${l}%,${alpha})`;
-};
+}
