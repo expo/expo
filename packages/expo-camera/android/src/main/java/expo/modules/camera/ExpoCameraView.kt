@@ -197,10 +197,6 @@ class ExpoCameraView(
     barCodeScanner?.setSettings(settings)
   }
 
-  fun setDefaultRecordSettings(options: Map<String, Any>? = mapOf()) {
-    defaultRecordOptions = defaultRecordOptions
-  }
-
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
       emitBarCodeReadEvent(eventEmitter, this, barCode)
