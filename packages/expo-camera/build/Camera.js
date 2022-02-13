@@ -317,7 +317,8 @@ export default class Camera extends React.Component {
             ? this._onObjectDetected(this.props.onBarCodeScanned)
             : undefined;
         const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
-        return (React.createElement(ExponentCamera, { ...nativeProps, ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved }));
+        const defaultRecordOptions = ensureRecordingOptions(this.props.defaultRecordOptions);
+        return (React.createElement(ExponentCamera, { ...nativeProps, ref: this._setReference, defaultRecordOptions: defaultRecordOptions, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved }));
     }
 }
 export const { Constants, getPermissionsAsync, requestPermissionsAsync, getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;

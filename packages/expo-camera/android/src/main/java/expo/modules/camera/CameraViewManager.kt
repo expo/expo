@@ -69,6 +69,11 @@ class CameraViewManager(
     view.autoFocus = autoFocus
   }
 
+  @ExpoProp(name = "defaultRecordOptions")
+  fun setDefaultRecordOptions(view: ExpoCameraView, defaultRecordOptions: Map<String, Any>?) {
+    view.defaultRecordOptions = defaultRecordOptions
+  }
+
   @ExpoProp(name = "focusDepth")
   fun setFocusDepth(view: ExpoCameraView, depth: Float) {
     view.focusDepth = depth

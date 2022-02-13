@@ -169,6 +169,12 @@ EX_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
   }
 }
 
+EX_VIEW_PROPERTY(defaultRecordOptions, NSDictionary *, EXCamera)
+{
+    [view setDefaultRecordOptions:value];
+    [view updateSessionWithOptions:value onReject:nil];
+}
+
 EX_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];

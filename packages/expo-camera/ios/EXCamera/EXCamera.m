@@ -498,6 +498,41 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 }
 
+-(void) updateSessionWithOptions:(NSDictionary *)options onReject:(EXPromiseRejectBlock)reject
+{
+  bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
+  [self updateSessionAudioIsMuted:shouldBeMuted];
+
+  AVCaptureConnection *connection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+  // TODO: Add support for videoStabilizationMode (right now it is not only read, never written to)
+  if (connection.isVideoStabilizationSupported == NO) {
+    EXLogWarn(@"%s: Video Stabilization is not supported on this device.", __func__);
+  } else {
+    [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
+  }
+  [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+  
+  AVCaptureSessionPreset preset;
+  if (options[@"quality"]) {
+    EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
+    preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
+  } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
+    preset = AVCaptureSessionPresetHigh;
+  }
+
+  if (preset != nil) {
+    [self updateSessionPreset:preset];
+  }
+  
+  [self setVideoOptions:options forConnection:connection onReject:reject];
+  
+  bool canBeMirrored = connection.isVideoMirroringSupported;
+  bool shouldBeMirrored = options[@"mirror"] && [options[@"mirror"] boolValue];
+  if (canBeMirrored && shouldBeMirrored) {
+    [connection setVideoMirrored:shouldBeMirrored];
+  }
+}
+
 - (void)record:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
 {
   if (_movieFileOutput == nil) {
@@ -510,37 +545,10 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     [self setupMovieFileCapture];
   }
 
+    
   if (_movieFileOutput != nil && !_movieFileOutput.isRecording && _videoRecordedResolve == nil && _videoRecordedReject == nil) {
-    bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
-    [self updateSessionAudioIsMuted:shouldBeMuted];
-
-    AVCaptureConnection *connection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
-    // TODO: Add support for videoStabilizationMode (right now it is not only read, never written to)
-    if (connection.isVideoStabilizationSupported == NO) {
-      EXLogWarn(@"%s: Video Stabilization is not supported on this device.", __func__);
-    } else {
-      [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
-    }
-    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
-    
-    AVCaptureSessionPreset preset;
-    if (options[@"quality"]) {
-      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
-      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
-    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
-      preset = AVCaptureSessionPresetHigh;
-    }
-
-    if (preset != nil) {
-      [self updateSessionPreset:preset];
-    }
-    
-    [self setVideoOptions:options forConnection:connection onReject:reject];
-    
-    bool canBeMirrored = connection.isVideoMirroringSupported;
-    bool shouldBeMirrored = options[@"mirror"] && [options[@"mirror"] boolValue];
-    if (canBeMirrored && shouldBeMirrored) {
-      [connection setVideoMirrored:shouldBeMirrored];
+    if (options != nil && [options allKeys].count >= 1) { // usually contains at least orientation. In case it contains more - commit actions
+        [self updateSessionWithOptions:options onReject:reject];
     }
 
     EX_WEAKIFY(self);

@@ -302,6 +302,10 @@ export declare type CameraProps = ViewProps & {
      */
     zoom?: number;
     /**
+     * Camera recording options, passed to recordAsync.
+     */
+    defaultRecordOptions?: CameraRecordingOptions;
+    /**
      * A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported
      * by the device use [`getSupportedRatiosAsync`](#getsupportedratiosasync).
      * @default 4:3.
@@ -397,6 +401,7 @@ export declare type CameraNativeProps = {
     autoFocus?: string | boolean | number;
     focusDepth?: number;
     zoom?: number;
+    defaultRecordOptions?: CameraRecordingOptions;
     whiteBalance?: number | string;
     pictureSize?: string;
     barCodeScannerSettings?: BarCodeSettings;

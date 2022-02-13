@@ -21,10 +21,10 @@ export default class Camera extends React.Component<CameraProps> {
     static getAvailableVideoCodecsAsync(): Promise<VideoCodec[]>;
     static Constants: ConstantsType;
     static ConversionTables: {
-        type: Record<"front" | "back", string | number | undefined>;
-        flashMode: Record<"on" | "off" | "auto" | "torch", string | number | undefined>;
-        autoFocus: Record<"on" | "off" | "auto" | "singleShot", string | number | boolean | undefined>;
-        whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
+        type: Record<"back" | "front", string | number | undefined>;
+        flashMode: Record<"auto" | "on" | "off" | "torch", string | number | undefined>;
+        autoFocus: Record<"auto" | "on" | "off" | "singleShot", string | number | boolean | undefined>;
+        whiteBalance: Record<"auto" | "manual" | "continuous" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent", string | number | undefined>;
     };
     static defaultProps: CameraProps;
     /**
