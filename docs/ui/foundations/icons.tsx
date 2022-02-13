@@ -1,6 +1,6 @@
 import { iconSize, theme } from '@expo/styleguide';
 import React from 'react';
-import { Clipboard } from 'react-feather';
+import { Clipboard, ArrowLeft, ArrowRight } from 'react-feather';
 
 export type IconProps = {
   size?: number | string;
@@ -31,6 +31,18 @@ export {
 export const ClipboardIcon = (props: IconProps) => {
   const { size = iconSize.regular, color = theme.icon.default } = props;
   return <Clipboard size={size} color={color} />;
+};
+
+// TODO(cedric): move to @expo/styleguide
+export const ArrowLeftIcon = (props: IconProps) => {
+  const { size = iconSize.regular, color = theme.icon.default } = props;
+  return <ArrowLeft size={size} color={color} />;
+};
+
+// TODO(cedric): move to @expo/styleguide
+export const ArrowRightIcon = (props: IconProps) => {
+  const { size = iconSize.regular, color = theme.icon.default } = props;
+  return <ArrowRight size={size} color={color} />;
 };
 
 // TODO(cedric): move to @expo/styleguide
