@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { useEffect, useState } from 'react';
 
 export function useAudio(): [boolean, React.Dispatch<boolean>] {
@@ -15,7 +15,7 @@ export function useAudio(): [boolean, React.Dispatch<boolean>] {
 }
 
 export type AudioModeState = {
-  interruptionModeIOS: number;
+  interruptionModeIOS: InterruptionModeIOS;
   playsInSilentModeIOS: boolean;
   allowsRecordingIOS: boolean;
   staysActiveInBackground: boolean;
@@ -36,7 +36,7 @@ export function useAudioMode(
 async function setAudioModeAsync(audioMode: AudioModeState): Promise<void> {
   await Audio.setAudioModeAsync({
     ...audioMode,
-    interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+    interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
     shouldDuckAndroid: false,
     playThroughEarpieceAndroid: false,
   });

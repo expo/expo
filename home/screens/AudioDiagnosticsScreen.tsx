@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { InterruptionModeIOS } from 'expo-av';
 import React from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
@@ -11,7 +11,7 @@ import Environment from '../utils/Environment';
 import { useAudio, useAudioMode } from '../utils/useAudio';
 
 const initialAudioMode = {
-  interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+  interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
   playsInSilentModeIOS: false,
   allowsRecordingIOS: false,
   staysActiveInBackground: false,
@@ -74,11 +74,11 @@ export default function AudioDiagnosticsScreen() {
       <AudioOptionSelector
         title="Interruption Mode"
         items={[
-          { name: 'Mix with Other Apps', value: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS },
-          { name: 'Do Not Mix', value: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX },
+          { name: 'Mix with Other Apps', value: InterruptionModeIOS.MixWithOthers },
+          { name: 'Do Not Mix', value: InterruptionModeIOS.DoNotMix },
           {
             name: 'Duck Other Apps',
-            value: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+            value: InterruptionModeIOS.DuckOthers,
             disabled: !audioMode.playsInSilentModeIOS,
           },
         ]}
