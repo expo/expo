@@ -230,6 +230,8 @@ PODS:
     - ExpoModulesCore
   - ExpoSystemUI (1.1.0):
     - ExpoModulesCore
+  - ExpoWebBrowser (10.1.0):
+    - ExpoModulesCore
   - EXPrint (11.1.0):
     - ExpoModulesCore
   - EXScreenCapture (4.1.0):
@@ -266,8 +268,6 @@ PODS:
     - ExpoModulesCore
   - EXUpdatesInterface (0.5.0)
   - EXVideoThumbnails (6.2.0):
-    - ExpoModulesCore
-  - EXWebBrowser (10.1.0):
     - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
@@ -845,6 +845,7 @@ DEPENDENCIES:
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
+  - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
@@ -862,7 +863,6 @@ DEPENDENCIES:
   - EXTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - EXVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
-  - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../../../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../../../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../../../node_modules/react-native/third-party-podspecs/glog.podspec`)
@@ -1121,6 +1121,9 @@ EXTERNAL SOURCES:
   ExpoSystemUI:
     inhibit_warnings: false
     :path: "../../../packages/expo-system-ui/ios"
+  ExpoWebBrowser:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-web-browser/ios"
   EXPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
@@ -1172,9 +1175,6 @@ EXTERNAL SOURCES:
   EXVideoThumbnails:
     inhibit_warnings: false
     :path: "../../../packages/expo-video-thumbnails/ios"
-  EXWebBrowser:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-web-browser/ios"
   FBLazyVector:
     :path: "../../../node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -1337,6 +1337,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
+  ExpoWebBrowser: 860eff8b9f413111bba517fedaa642b745af99d4
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
   EXScreenCapture: 0146fdf6ca4c3402a1cf62b2ddb739a840e08c94
   EXScreenOrientation: 35776938aaa9b6460b4df72ff96f2b35e9a4e28b
@@ -1354,7 +1355,6 @@ SPEC CHECKSUMS:
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: 847d648d6f4bc0c1afad05caa56a487dc543445e
-  EXWebBrowser: 37388663fa51cbfc883de2244931a5182d948e5f
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBLazyVector: 244195e30d63d7f564c55da4410b9a24e8fbceaa
   FBReactNativeSpec: c94002c1d93da3658f4d5119c6994d19961e3d52
