@@ -25,46 +25,11 @@ class DevLauncherPackage : Package, ReactPackage {
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> = emptyList()
 
-  // TODO: maybe put this in the debug flavor only?
-  override fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> {
-    val listener = object : ApplicationLifecycleListener {
-      override fun onCreate(application: Application?) {
-        if (application != null && application is ReactApplication) {
-          DevLauncherController.initialize(application, application.reactNativeHost)
-          // TODO: optional updates
-        }
-      }
-    }
-    return listOf(listener)
-  }
+  override fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> = DevLauncherPackageDelegate.createApplicationLifecycleListeners(context);
 
-  override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
-    val listener = object : ReactActivityLifecycleListener {
-      override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
-        DevLauncherSplashScreenProvider()
-          .attachSplashScreenViewAsync(activity)
-        DevLauncherController.redirect(activity.intent)
-      }
-    }
-    return listOf(listener)
-  }
+  override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> = DevLauncherPackageDelegate.createReactActivityLifecycleListeners(activityContext);
 
-  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
-    val listener = object : ReactActivityHandler {
-      override fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
-        DevLauncherController.onWillCreateReactActivityDelegate(activity)
-      }
-    }
-    return listOf(listener)
-  }
+  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = DevLauncherPackageDelegate.createReactActivityHandlers(activityContext);
 
-  // TODO: maybe put this in the debug flavor only?
-  override fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> {
-    val listener = object : ReactActivityListener {
-      override fun onNewIntent(activity: ReactActivity, intent: Intent): Boolean {
-        return DevLauncherController.tryToHandleIntent(activity, intent)
-      }
-    }
-    return listOf(listener)
-  }
+  override fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> = DevLauncherPackageDelegate.createReactActivityListeners(activityContext);
 }

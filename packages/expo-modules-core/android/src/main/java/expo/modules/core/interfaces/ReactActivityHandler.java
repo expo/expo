@@ -21,5 +21,9 @@ public interface ReactActivityHandler {
     return null;
   }
 
+  default boolean shouldNoop() {
+    return false;
+  }
+
   default void onWillCreateReactActivityDelegate(ReactActivity activity) {}
 }

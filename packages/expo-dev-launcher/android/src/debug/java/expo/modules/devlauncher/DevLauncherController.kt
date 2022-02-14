@@ -1,5 +1,6 @@
 package expo.modules.devlauncher
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -35,6 +36,7 @@ import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
+import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
@@ -250,9 +252,16 @@ class DevLauncherController private constructor()
     }
   }
 
-  override fun redirectFromStartActivity(intent: Intent?) {
+  private fun redirectFromStartActivity(intent: Intent?) {
     if (!handleIntent(intent, null)) {
       navigateToLauncher()
+    }
+  }
+
+  override fun maybeRedirectFromActivity(activity: Activity) {
+    if (mode == Mode.LAUNCHER) {
+      DevLauncherSplashScreenProvider().attachSplashScreenViewAsync(activity)
+      redirectFromStartActivity(activity.intent)
     }
   }
 
@@ -370,10 +379,10 @@ class DevLauncherController private constructor()
     }
 
     @JvmStatic
-    fun redirect(intent: Intent?) {
+    fun maybeRedirect(activity: Activity) {
       devLauncherKoin()
         .get<DevLauncherControllerInterface>()
-        .redirectFromStartActivity(intent)
+        .maybeRedirectFromActivity(activity)
     }
 
     @JvmStatic

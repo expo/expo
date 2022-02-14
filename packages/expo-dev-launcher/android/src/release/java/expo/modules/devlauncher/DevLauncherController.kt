@@ -51,7 +51,7 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  override fun redirectFromStartActivity(intent: Intent?) {
+  override fun maybeRedirectFromActivity(activity: Activity) {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
@@ -103,6 +103,12 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     fun wrapReactActivityDelegate(reactActivity: ReactActivity, devLauncherReactActivityDelegateSupplier: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate {
       return devLauncherReactActivityDelegateSupplier.get()
     }
+
+    @JvmStatic
+    fun onWillCreateReactActivityDelegate(activity: ReactActivity) { }
+
+    @JvmStatic
+    fun maybeRedirect(activity: Activity) { }
 
     @JvmStatic
     fun tryToHandleIntent(reactActivity: ReactActivity, intent: Intent): Boolean = false
