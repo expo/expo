@@ -16,7 +16,7 @@ import expo.modules.devmenu.modules.DevMenuInternalModule
 import expo.modules.devmenu.modules.DevMenuModule
 import expo.modules.devmenu.modules.DevMenuSettings
 import expo.modules.core.interfaces.Package
-import expo.modules.core.interfaces.ReactActivityListener
+import expo.modules.core.interfaces.ReactActivityHandler
 
 class DevMenuPackage: Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
@@ -32,8 +32,8 @@ class DevMenuPackage: Package, ReactPackage {
     return emptyList()
   }
 
-  override fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> {
-    val listener = object : ReactActivityListener {
+  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
+    val listener = object : ReactActivityHandler {
       override fun onPostCreate(savedInstanceState: Bundle?, reactNativeHost: ReactNativeHost) {
         if (!DevMenuManager.isInitialized()) {
           DevMenuManager.initializeWithReactNativeHost(reactNativeHost)

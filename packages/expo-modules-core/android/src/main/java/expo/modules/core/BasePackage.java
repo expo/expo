@@ -6,6 +6,7 @@ import expo.modules.core.interfaces.ApplicationLifecycleListener;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.Package;
 import expo.modules.core.interfaces.ReactActivityDelegateHandler;
+import expo.modules.core.interfaces.ReactActivityHandler;
 import expo.modules.core.interfaces.ReactActivityLifecycleListener;
 import expo.modules.core.interfaces.ReactNativeHostHandler;
 import expo.modules.core.interfaces.SingletonModule;
@@ -53,6 +54,11 @@ public class BasePackage implements Package {
 
   @Override
   public List<ReactActivityDelegateHandler> createReactActivityDelegateHandlers(Context activityContext) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<ReactActivityHandler> createReactActivityHandlers(Context activityContext) {
     return Collections.emptyList();
   }
 }

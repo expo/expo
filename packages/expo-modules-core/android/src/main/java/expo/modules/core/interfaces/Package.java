@@ -48,7 +48,7 @@ public interface Package {
     return Collections.emptyList();
   }
 
-  default List<? extends ReactActivityListener> createReactActivityListeners(Context activityContext) {
+  default List<? extends ReactActivityHandler> createReactActivityHandlers(Context activityContext) {
     return Collections.emptyList();
   }
 }
