@@ -73,6 +73,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, strong) AVCaptureMovieFileOutput *movieFileOutput;
 @property (nonatomic, strong) id runtimeErrorHandlingObserver;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic, strong) NSDictionary *defaultRecordOptions;
 
 @property (nonatomic, assign) NSInteger presetCamera;
 @property (nonatomic, assign) EXCameraFlashMode flashMode;
@@ -82,7 +83,6 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) NSInteger whiteBalance;
 @property (assign, nonatomic) AVCaptureSessionPreset pictureSize;
 @property (nonatomic, assign) AVCaptureVideoStabilizationMode videoStabilizationMode;
-@property (nonatomic, assign) NSDictionary *defaultRecordOptions;
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
