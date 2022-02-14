@@ -16,7 +16,7 @@ import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityDelegateHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
-import expo.modules.core.interfaces.ReactActivityListener
+import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
 
@@ -31,5 +31,5 @@ class DevLauncherPackage : Package, ReactPackage {
 
   override fun createReactActivityDelegateHandlers(activityContext: Context?): List<ReactActivityDelegateHandler> = DevLauncherPackageDelegate.createReactActivityDelegateHandlers(activityContext);
 
-  override fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> = DevLauncherPackageDelegate.createReactActivityListeners(activityContext);
+  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = DevLauncherPackageDelegate.createReactActivityHandlers(activityContext);
 }

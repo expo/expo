@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.ReactActivityDelegateHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
-import expo.modules.core.interfaces.ReactActivityListener
+import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtensions
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
@@ -61,9 +61,9 @@ object DevLauncherPackageDelegate {
       }
     )
 
-  fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> =
+  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
     listOf(
-      object : ReactActivityListener {
+      object : ReactActivityHandler {
         override fun onNewIntent(activity: ReactActivity, intent: Intent): Boolean {
           return DevLauncherController.tryToHandleIntent(activity, intent)
         }

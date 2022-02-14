@@ -7,11 +7,11 @@ import android.view.MotionEvent
 import com.facebook.react.ReactActivity
 
 open class ReactActivityWrapper : ReactActivity() {
-  private val reactActivityListeners = ExpoModulesPackage.packageList
-    .flatMap { it.createReactActivityListeners(application) }
+  private val reactActivityHandlers = ExpoModulesPackage.packageList
+    .flatMap { it.createReactActivityHandlers(application) }
 
   override fun onNewIntent(intent: Intent?) {
-    reactActivityListeners.forEach {
+    reactActivityHandlers.forEach {
       if (it.onNewIntent(this, intent)) {
         return@onNewIntent
       }
@@ -21,13 +21,13 @@ open class ReactActivityWrapper : ReactActivity() {
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    reactActivityListeners.forEach {
+    reactActivityHandlers.forEach {
       it.onPostCreate(savedInstanceState, reactNativeHost)
     }
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-    reactActivityListeners.forEach {
+    reactActivityHandlers.forEach {
       if (it.dispatchTouchEvent(ev)) {
         return@dispatchTouchEvent true
       }
@@ -36,7 +36,7 @@ open class ReactActivityWrapper : ReactActivity() {
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-    reactActivityListeners.forEach {
+    reactActivityHandlers.forEach {
       if (it.onKeyUp(keyCode, event)) {
         return@onKeyUp true
       }
