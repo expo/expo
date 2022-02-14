@@ -40,8 +40,8 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate {
   }
 
   func dismiss() {
-    viewController.dismiss(animated: true) { [weak self] in
-      self?.finish(type: "dismiss")
+    viewController.dismiss(animated: true) {
+      self.finish(type: "dismiss")
     }
   }
 
