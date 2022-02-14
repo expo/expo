@@ -293,6 +293,7 @@ const featurePreview = [
     makePage('eas-update/introduction.md'),
     makePage('eas-update/getting-started.md'),
     makePage('eas-update/github-actions.md'),
+    makePage('eas-update/developing-with-eas-update.md'),
     makePage('eas-update/how-eas-update-works.md'),
     makePage('eas-update/deployment-patterns.md'),
     makePage('eas-update/debug-updates.md'),
