@@ -15,7 +15,7 @@ import {
   getBestUnbootedSimulatorAsync,
   getSelectableSimulatorsAsync,
 } from './getBestSimulator';
-import { isSimulatorInstalledAsync } from './isSimulatorInstalled';
+import { isSimulatorInstalledAsync, validateEnvironmentAsync } from './validateEnvironment';
 import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './simctl';
 
@@ -58,10 +58,7 @@ async function ensureSimulatorOpenAsync(
 
 export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   static async assertSystemRequirementsAsync() {
-    assert(
-      await profile(isSimulatorInstalledAsync)(),
-      'Unable to verify Xcode and Simulator installation.'
-    );
+    await validateEnvironmentAsync();
   }
 
   static async resolveAsync({

@@ -1,6 +1,5 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { execSync } from 'child_process';
 import path from 'path';
 
 import * as Log from '../../../log';
@@ -379,15 +378,6 @@ export function isLicenseOutOfDate(text: string) {
 
   const lower = text.toLowerCase();
   return lower.includes('xcode') && lower.includes('license');
-}
-
-export async function isXcrunInstalledAsync() {
-  try {
-    execSync('xcrun --version', { stdio: 'ignore' });
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 export async function xcrunAsync(args: string[], options?: SpawnOptions) {
