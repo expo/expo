@@ -2,13 +2,12 @@ import { execSync } from 'child_process';
 
 import * as Log from '../../../../log';
 import { confirmAsync } from '../../../../utils/prompts';
-import { ensureXcodeInstalledAsync, getXcodeVersion, getXcodeVersionInternal } from '../xcode';
+import { getXcodeVersionAsync, XcodePrerequisite } from '../XcodePrerequisite';
 
 const asMock = (fn: any): jest.Mock => fn;
+
 jest.mock(`../../../../log`);
-
 jest.mock('../../../../utils/prompts');
-
 jest.mock('child_process', () => {
   return {
     execSync: jest.fn(),
@@ -20,17 +19,17 @@ function mockXcodeInstalled() {
 Build version 13A1030d`);
 }
 
-describe(getXcodeVersionInternal, () => {
+describe(getXcodeVersionAsync, () => {
   beforeEach(() => {
     jest.mock('../../../../log').resetAllMocks();
   });
   it(`returns the xcode version`, () => {
     mockXcodeInstalled();
-    expect(getXcodeVersionInternal()).toEqual('13.1.0');
+    expect(getXcodeVersionAsync()).toEqual('13.1.0');
   });
   it(`logs an error when the xcode cli format is invalid`, () => {
     asMock(execSync).mockReturnValue(`foobar`);
-    expect(getXcodeVersionInternal()).toEqual(null);
+    expect(getXcodeVersionAsync()).toEqual(null);
     expect(Log.error).toHaveBeenLastCalledWith(
       expect.stringMatching(/Unable to check Xcode version/)
     );
@@ -39,28 +38,12 @@ describe(getXcodeVersionInternal, () => {
     asMock(execSync).mockImplementationOnce(() => {
       throw new Error('foobar');
     });
-    expect(getXcodeVersionInternal()).toEqual(null);
+    expect(getXcodeVersionAsync()).toEqual(null);
     expect(Log.error).not.toBeCalled();
   });
 });
 
-describe(getXcodeVersion, () => {
-  it(`caches results for a single process`, () => {
-    asMock(execSync)
-      .mockImplementationOnce(
-        () =>
-          `Xcode 13.1
-Build version 13A1030d`
-      )
-      .mockImplementationOnce(() => {
-        throw new Error('should not be called twice');
-      });
-    expect(getXcodeVersion()).toEqual('13.1.0');
-    expect(getXcodeVersion()).toEqual('13.1.0');
-  });
-});
-
-describe(ensureXcodeInstalledAsync, () => {
+describe('assertAsync', () => {
   beforeEach(() => {
     jest.mock('../../../../utils/prompts').resetAllMocks();
   });
@@ -74,7 +57,7 @@ describe(ensureXcodeInstalledAsync, () => {
       throw new Error("shouldn't happen");
     });
 
-    await ensureXcodeInstalledAsync({ cache: false });
+    await XcodePrerequisite.instance.assertImplementation();
   });
 
   for (const { xcodeVersion, promptRegex, condition } of [
@@ -107,7 +90,7 @@ Build version 13A1030d`;
           throw new Error("shouldn't happen");
         });
 
-      await ensureXcodeInstalledAsync({ cache: false });
+      await expect(XcodePrerequisite.instance.assertImplementation()).rejects.toThrow();
 
       expect(confirmAsync).toHaveBeenLastCalledWith({
         initial: true,

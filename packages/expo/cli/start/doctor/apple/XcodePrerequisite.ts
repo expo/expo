@@ -2,45 +2,18 @@ import { execSync } from 'child_process';
 import semver from 'semver';
 
 import * as Log from '../../../log';
-import { memoize } from '../../../utils/fn';
+import { AbortCommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
+import { Prerequisite } from './Prerequisite';
 
 // Based on the RN docs (Aug 2020).
-export const MIN_XCODE_VERSION = 9.4;
-export const APP_STORE_ID = '497799835';
+const MIN_XCODE_VERSION = 9.4;
+const APP_STORE_ID = '497799835';
 
 const SUGGESTED_XCODE_VERSION = `${MIN_XCODE_VERSION}.0`;
 
-/**
- * Ensure Xcode is installed an recent enough to be used with Expo.
- *
- * @return true when Xcode is installed, false when the process should end.
- */
-export async function ensureXcodeInstalledAsync({
-  cache,
-}: { cache?: boolean } = {}): Promise<boolean> {
-  const version = profile(cache === false ? getXcodeVersionInternal : getXcodeVersion)();
-  if (!version) {
-    // Almost certainly Xcode isn't installed.
-    await promptToOpenAppStoreAsync(
-      `Xcode needs to be installed (don't worry, you won't have to use it), would you like to continue to the App Store?`
-    );
-    return false;
-  }
-
-  if (semver.lt(version, SUGGESTED_XCODE_VERSION)) {
-    // Xcode version is too old.
-    await promptToOpenAppStoreAsync(
-      `Xcode (${version}) needs to be updated to at least version ${MIN_XCODE_VERSION}, would you like to continue to the App Store?`
-    );
-    return false;
-  }
-
-  return true;
-}
-
-export const promptToOpenAppStoreAsync = async (message: string) => {
+const promptToOpenAppStoreAsync = async (message: string) => {
   // This prompt serves no purpose accept informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
   const confirm = await confirmAsync({ initial: true, message });
   if (confirm) {
@@ -50,7 +23,7 @@ export const promptToOpenAppStoreAsync = async (message: string) => {
 };
 
 /** Exposed for testing, use `getXcodeVersion` */
-export const getXcodeVersionInternal = (): string | null | false => {
+export const getXcodeVersionAsync = (): string | null | false => {
   try {
     const last = execSync('xcodebuild -version', { stdio: 'pipe' })
       .toString()
@@ -77,10 +50,6 @@ export const getXcodeVersionInternal = (): string | null | false => {
   return null;
 };
 
-// This method anywhere from 1-2s so cache the results in case we run it multiple times
-// (like in run:ios or reopening on iOS for development build).
-export const getXcodeVersion = memoize(getXcodeVersionInternal);
-
 /**
  * Open a link to the App Store. Just link in mobile apps, **never** redirect without prompting first.
  *
@@ -97,4 +66,30 @@ function getAppStoreLink(appId: string): string {
     return `macappstore://itunes.apple.com/app/id${appId}`;
   }
   return `https://apps.apple.com/us/app/id${appId}`;
+}
+
+export class XcodePrerequisite extends Prerequisite {
+  static instance = new XcodePrerequisite();
+
+  /**
+   * Ensure Xcode is installed an recent enough to be used with Expo.
+   */
+  async assertImplementation(): Promise<void> {
+    const version = profile(getXcodeVersionAsync)();
+    if (!version) {
+      // Almost certainly Xcode isn't installed.
+      await promptToOpenAppStoreAsync(
+        `Xcode needs to be installed (don't worry, you won't have to use it), would you like to continue to the App Store?`
+      );
+      throw new AbortCommandError();
+    }
+
+    if (semver.lt(version, SUGGESTED_XCODE_VERSION)) {
+      // Xcode version is too old.
+      await promptToOpenAppStoreAsync(
+        `Xcode (${version}) needs to be updated to at least version ${MIN_XCODE_VERSION}, would you like to continue to the App Store?`
+      );
+      throw new AbortCommandError();
+    }
+  }
 }
