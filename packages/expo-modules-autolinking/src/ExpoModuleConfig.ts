@@ -45,6 +45,13 @@ export class ExpoModuleConfig {
   }
 
   /**
+   * Returns the product module name, if defined by the module author.
+   */
+  iosSwiftModuleName(): string | undefined {
+    return this.rawConfig.ios?.swiftModuleName;
+  }
+
+  /**
    * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
    */
   androidModules() {

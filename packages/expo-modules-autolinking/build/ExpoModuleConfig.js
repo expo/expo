@@ -46,6 +46,13 @@ class ExpoModuleConfig {
         return (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath;
     }
     /**
+     * Returns the product module name, if defined by the module author.
+     */
+    iosSwiftModuleName() {
+        var _a;
+        return (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName;
+    }
+    /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
     androidModules() {

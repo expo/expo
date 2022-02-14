@@ -17,6 +17,11 @@ async function findPodspecFile(revision: PackageRevision): Promise<string | unde
   return podspecFile;
 }
 
+export function getSwiftModuleName(podName: string, swiftModuleName?: string): string {
+  // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
+  return swiftModuleName ?? podName.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
 /**
  * Resolves module search result with additional details required for iOS platform.
  */
@@ -33,9 +38,12 @@ export async function resolveModuleAsync(
   const podName = path.basename(podspecFile, path.extname(podspecFile));
   const podspecDir = path.dirname(path.join(revision.path, podspecFile));
 
+  const swiftModuleName = getSwiftModuleName(podName, revision.config?.iosSwiftModuleName());
+
   return {
     podName,
     podspecDir,
+    swiftModuleName,
     flags: options.flags,
     modules: revision.config?.iosModules(),
     appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers(),
@@ -69,7 +77,7 @@ async function generatePackageListFileContentAsync(
       module.appDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
-  const pods = modulesToImport.map((module) => module.podName);
+  const swiftModules = modulesToImport.map((module) => module.swiftModuleName);
 
   const modulesClassNames = []
     .concat(...modulesToImport.map((module) => module.modules))
@@ -91,7 +99,7 @@ async function generatePackageListFileContentAsync(
  */
 
 import ExpoModulesCore
-${pods.map((podName) => `import ${podName}\n`).join('')}
+${swiftModules.map((moduleName) => `import ${moduleName}\n`).join('')}
 @objc(${className})
 public class ${className}: ModulesProvider {
   public override func getModuleClasses() -> [AnyModule.Type] {
