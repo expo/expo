@@ -3,7 +3,6 @@ import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
-import semver from 'semver';
 
 import * as Log from '../../../log';
 import { delayAsync } from '../../../utils/delay';
@@ -11,41 +10,7 @@ import { memoize } from '../../../utils/fn';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
 import * as SimControl from './simctl';
-import * as Xcode from './xcode';
-
-const SUGGESTED_XCODE_VERSION = `${Xcode.minimumVersion}.0`;
-
-/**
- * Ensure Xcode is installed an recent enough to be used with Expo.
- *
- * @return true when Xcode is installed, false when the process should end.
- */
-async function ensureXcodeInstalledAsync(): Promise<boolean> {
-  const version = profile(Xcode.getXcodeVersion)();
-  if (!version) {
-    // Almost certainly Xcode isn't installed.
-    await Xcode.promptToOpenAppStoreAsync(
-      `Xcode needs to be installed (don't worry, you won't have to use it), would you like to continue to the App Store?`
-    );
-    return false;
-  }
-
-  if (!semver.valid(version)) {
-    // Not sure why this would happen, if it does we should add a more confident error message.
-    Log.error(`Xcode version is in an unknown format: ${version}`);
-    return false;
-  }
-
-  if (semver.lt(version, SUGGESTED_XCODE_VERSION)) {
-    // Xcode version is too old.
-    await Xcode.promptToOpenAppStoreAsync(
-      `Xcode (${version}) needs to be updated to at least version ${Xcode.minimumVersion}, would you like to continue to the App Store?`
-    );
-    return false;
-  }
-
-  return true;
-}
+import { ensureXcodeInstalledAsync } from './xcode';
 
 async function isXcrunInstalledAsync() {
   try {
