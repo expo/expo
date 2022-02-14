@@ -1,4 +1,4 @@
-import { formatArrayOfReactDelegateHandler } from '../ios';
+import { formatArrayOfReactDelegateHandler, getSwiftModuleName } from '../ios';
 
 describe(formatArrayOfReactDelegateHandler, () => {
   it('should output empty array when no one specify `reactDelegateHandlers`', () => {
@@ -46,5 +46,17 @@ describe(formatArrayOfReactDelegateHandler, () => {
       (packageName: "expo-constants", handler: ConstantsReactDelegateHandler2.self),
       (packageName: "expo-device", handler: DeviceReactDelegateHandler.self)
     ]`);
+  });
+});
+
+describe(getSwiftModuleName, () => {
+  it('should use value from module config when it exists', () => {
+    expect(getSwiftModuleName('expotest', 'EXTest')).toBe('EXTest');
+    expect(getSwiftModuleName('expotest', null)).toBe('expotest');
+    expect(getSwiftModuleName('expotest')).toBe('expotest');
+  });
+
+  it('should replace non-alphanumeric values with _', () => {
+    expect(getSwiftModuleName('expo-test.2')).toBe('expo_test_2');
   });
 });
