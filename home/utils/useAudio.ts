@@ -16,7 +16,7 @@ export function useAudio(): [boolean, Dispatch<boolean>] {
 
 export function useAudioMode(
   initialAudioMode: Partial<AudioMode>
-): [Partial<AudioMode>, Dispatch<AudioMode>] {
+): [Partial<AudioMode>, Dispatch<Partial<AudioMode>>] {
   const [audioMode, setAudioMode] = useState(initialAudioMode);
 
   useEffect(() => {
