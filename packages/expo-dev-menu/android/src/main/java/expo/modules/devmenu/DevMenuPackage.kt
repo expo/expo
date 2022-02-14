@@ -32,7 +32,6 @@ class DevMenuPackage: Package, ReactPackage {
     return emptyList()
   }
 
-  // TODO: maybe put this in the debug flavor only?
   override fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> {
     val listener = object : ReactActivityListener {
       override fun onPostCreate(savedInstanceState: Bundle?, reactNativeHost: ReactNativeHost) {

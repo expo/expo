@@ -25,6 +25,7 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
+  private var shouldNoop = false
 
   init {
     reactActivityHandlers.forEach {
@@ -57,10 +58,17 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun loadApp(appKey: String?) {
+    if (shouldNoop) {
+      return
+    }
     return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    shouldNoop = reactActivityHandlers
+      .map { it.shouldNoop() }
+      .fold(false) { accu, current -> accu || current }
+
     // Since we just wrap `ReactActivityDelegate` but not inherit it, in its `onCreate`,
     // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
     // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
@@ -85,6 +93,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
+    if (shouldNoop) {
+      return
+    }
     invokeDelegateMethod<Unit>("onResume")
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onResume(activity)
@@ -92,6 +103,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onPause() {
+    if (shouldNoop) {
+      return
+    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
     }
@@ -99,6 +113,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onDestroy() {
+    if (shouldNoop) {
+      return
+    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)
     }
@@ -122,6 +139,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onBackPressed(): Boolean {
+    if (shouldNoop) {
+      return true
+    }
     val listenerResult = reactActivityLifecycleListeners
       .map(ReactActivityLifecycleListener::onBackPressed)
       .fold(false) { accu, current -> accu || current }
@@ -130,6 +150,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onNewIntent(intent: Intent?): Boolean {
+    if (shouldNoop) {
+      return true
+    }
     val listenerResult = reactActivityLifecycleListeners
       .map { it.onNewIntent(intent) }
       .fold(false) { accu, current -> accu || current }
@@ -138,6 +161,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
+    if (shouldNoop) {
+      return
+    }
     delegate.onWindowFocusChanged(hasFocus)
   }
 
@@ -146,6 +172,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
+    if (shouldNoop) {
+      return
+    }
     delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
   }
 

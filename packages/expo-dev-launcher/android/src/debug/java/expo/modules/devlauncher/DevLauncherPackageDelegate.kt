@@ -1,7 +1,18 @@
 package expo.modules.devlauncher
 
+import android.app.Activity
+import android.app.Application
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
+import expo.modules.core.interfaces.ApplicationLifecycleListener
+import expo.modules.core.interfaces.ReactActivityHandler
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.core.interfaces.ReactActivityListener
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtensions
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
@@ -14,5 +25,48 @@ object DevLauncherPackageDelegate {
       DevLauncherInternalModule(reactContext),
       DevLauncherDevMenuExtensions(reactContext),
       DevLauncherAuth(reactContext)
+    )
+
+  fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> =
+    listOf(
+      object : ApplicationLifecycleListener {
+        override fun onCreate(application: Application?) {
+          if (application != null && application is ReactApplication) {
+            DevLauncherController.initialize(application, application.reactNativeHost)
+            // TODO: optional updates
+          }
+        }
+      }
+    )
+
+  fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> =
+    listOf(
+      object : ReactActivityLifecycleListener {
+        override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
+          DevLauncherController.maybeRedirect(activity)
+        }
+      }
+    )
+
+  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
+    listOf(
+      object : ReactActivityHandler {
+        override fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
+          DevLauncherController.onWillCreateReactActivityDelegate(activity)
+        }
+
+        override fun shouldNoop(): Boolean {
+          return DevLauncherController.wasInitialized() && DevLauncherController.instance.mode == DevLauncherController.Mode.LAUNCHER
+        }
+      }
+    )
+
+  fun createReactActivityListeners(activityContext: Context?): List<ReactActivityListener> =
+    listOf(
+      object : ReactActivityListener {
+        override fun onNewIntent(activity: ReactActivity, intent: Intent): Boolean {
+          return DevLauncherController.tryToHandleIntent(activity, intent)
+        }
+      }
     )
 }
