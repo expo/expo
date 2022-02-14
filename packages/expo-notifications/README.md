@@ -754,18 +754,18 @@ The `taskName` argument is the string you passed to `TaskManager.defineTask` as 
 
 #### Examples
 
-Implementing a notification handler that always shows the notification when it is received
-
 ```ts
+import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+  console.log('Received a notification in the background!');
+  // Do something with the notification data
 });
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 ```
 
 ### `unregisterTaskAsync(taskName: string): void`
