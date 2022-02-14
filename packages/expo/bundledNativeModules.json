@@ -57,7 +57,7 @@
   "expo-image-manipulator": "~10.2.0",
   "expo-image-picker": "~12.0.1",
   "expo-in-app-purchases": "~12.1.0",
-  "expo-intent-launcher": "~10.1.0",
+  "expo-intent-launcher": "~10.1.3",
   "expo-keep-awake": "~10.0.1",
   "expo-linear-gradient": "~11.0.3",
   "expo-linking": "~3.0.0",
