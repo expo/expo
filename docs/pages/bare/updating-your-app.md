@@ -55,7 +55,7 @@ Say you have an existing build, build A, of your app running in production. Buil
 
 However, if build A of your app fetches JavaScript version 2 as an update and tries to run it, it will error on the `MediaLibrary.getAlbumsAsync()` method call because the `MediaLibrary` native module is not present in build A. If your JavaScript doesn't catch this error, it will propagate and your app will crash, rendering JavaScript version 2 unusable on build A of your app.
 
-We need some way, therefore, of preventing JavaScript version 2 from being deployed to build A -- or, in general, controlling which updates str deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
+We need some way, therefore, of preventing JavaScript version 2 from being deployed to build A - or, in general, controlling which updates are deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
 
 ### Runtime Version
 
