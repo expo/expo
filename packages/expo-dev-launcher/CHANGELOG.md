@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add expo-modules and ReactDelegate-based automatic setup. ([#16190](https://github.com/expo/expo/pull/16190) by [@esamelson](https://github.com/esamelson))
+- Add expo-modules and ReactDelegate-based automatic setup on iOS. ([#16190](https://github.com/expo/expo/pull/16190) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
