@@ -1,52 +1,56 @@
-import { restClient } from '../../apiClient';
 import { getBuildInfoAsync, installationID } from '../../native-modules/DevLauncherInternal';
 import { getSettingsAsync } from '../../native-modules/DevMenuInternal';
+import { getDevSessionsAsync } from '../getDevSessionsAsync';
 import { getInitialData } from '../getInitialData';
 import { restoreUserAsync } from '../restoreUserAsync';
 
 jest.mock('../restoreUserAsync');
-jest.mock('../../apiClient');
+jest.mock('../getDevSessionsAsync');
 
 const mockRestoreUserAsync = restoreUserAsync as jest.Mock;
-const mockRestClient = restClient as jest.Mock;
 
-const mockFns = [getBuildInfoAsync, getSettingsAsync, restoreUserAsync, restClient] as jest.Mock[];
+const mockFns = [
+  getBuildInfoAsync,
+  getSettingsAsync,
+  restoreUserAsync,
+  getDevSessionsAsync,
+] as jest.Mock[];
 
 describe('getInitialData()', () => {
   beforeEach(() => {
-    mockFns.forEach((fn) => fn.mockReset());
+    mockFns.forEach((fn) => fn.mockClear());
   });
 
   test('calls all the fns we need', async () => {
-    mockRestClient.mockResolvedValue({ data: [] });
-
     expect(getBuildInfoAsync).not.toHaveBeenCalled();
     expect(getSettingsAsync).not.toHaveBeenCalled();
     expect(restoreUserAsync).not.toHaveBeenCalled();
-    expect(restClient).not.toHaveBeenCalled();
+    expect(getDevSessionsAsync).not.toHaveBeenCalled();
 
     await getInitialData();
 
-    // not called unless user is authenticated
-    expect(restClient).not.toHaveBeenCalled();
+    expect(getDevSessionsAsync).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isAuthenticated: false })
+    );
+
+    expect(getDevSessionsAsync).toHaveBeenCalled();
     expect(getBuildInfoAsync).toHaveBeenCalled();
     expect(getSettingsAsync).toHaveBeenCalled();
     expect(restoreUserAsync).toHaveBeenCalled();
   });
 
-  test.only('queries dev sessions if logged in', async () => {
+  test('queries dev sessions if logged in', async () => {
     mockRestoreUserAsync.mockResolvedValueOnce({ username: '123' });
-    mockRestClient.mockResolvedValue({ data: [] });
 
     expect(getBuildInfoAsync).not.toHaveBeenCalled();
     expect(getSettingsAsync).not.toHaveBeenCalled();
     expect(restoreUserAsync).not.toHaveBeenCalled();
+    expect(getDevSessionsAsync).not.toHaveBeenCalled();
 
     await getInitialData();
 
-    expect(restClient).toHaveBeenLastCalledWith(
-      expect.stringContaining(`deviceId=${installationID}`),
-      expect.any(Object)
+    expect(getDevSessionsAsync).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isAuthenticated: true, installationID })
     );
 
     expect(getBuildInfoAsync).toHaveBeenCalled();

@@ -2,9 +2,13 @@ import { GraphQLClient } from 'graphql-request';
 
 import * as DevLauncherAuth from './native-modules/DevLauncherAuth';
 
-export const apiEndpoint = `https://exp.host/--/graphql`;
-export const websiteOrigin = 'https://expo.dev';
-export const restEndpoint = `https://exp.host/--/api/v2`;
+export const apiEndpoint = __DEV__
+  ? `https://staging.exp.host/--/graphql`
+  : `https://exp.host/--/graphql`;
+export const websiteOrigin = __DEV__ ? `https://staging.expo.dev` : 'https://expo.dev';
+export const restEndpoint = __DEV__
+  ? `https://staging.exp.host/--/api/v2`
+  : `https://exp.host/--/api/v2`;
 
 export const apiClient = new GraphQLClient(apiEndpoint);
 
