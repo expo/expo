@@ -18,41 +18,23 @@ import FlipperKit
 #endif
 
 @UIApplicationMain
-class AppDelegate: ExpoAppDelegate, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
-  var bridge: RCTBridge?
-  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-
-  let useDevClient: Bool = false
-  
+class AppDelegate: ExpoAppDelegate, RCTBridgeDelegate {
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     initializeFlipper(with: application)
-    window = UIWindow(frame: UIScreen.main.bounds)
-    self.launchOptions = launchOptions;
 
-    if (useDevClient) {
-      let controller = EXDevLauncherController.sharedInstance()
-      controller.start(with: window!, delegate: self, launchOptions: launchOptions);
-    } else {
-      initializeReactNativeBridge(launchOptions);
-    }
-
-    super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    
-    return true
-  }
-
-  @discardableResult
-  func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge {
     let bridge = reactDelegate.createBridge(delegate: self, launchOptions: launchOptions)
     let rootView = reactDelegate.createRootView(bridge: bridge, moduleName: "main", initialProperties: nil)
     let rootViewController = reactDelegate.createRootViewController()
     rootView.backgroundColor = UIColor.white
     rootViewController.view = rootView
 
-    window?.rootViewController = rootViewController
-    window?.makeKeyAndVisible()
-    self.bridge = bridge
-    return bridge
+    window = UIWindow(frame: UIScreen.main.bounds)
+    window!.rootViewController = rootViewController
+    window!.makeKeyAndVisible()
+
+    super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+    return true
   }
   
   #if RCT_DEV
@@ -62,10 +44,9 @@ class AppDelegate: ExpoAppDelegate, RCTBridgeDelegate, EXDevLauncherControllerDe
   #endif
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-    if (useDevClient && EXDevLauncherController.sharedInstance().onDeepLink(url, options: options)) {
-      return true;
+    if (super.application(app, open: url, options: options)) {
+      return true
     }
-    
     return RCTLinkingManager.application(app, open: url, options: options)
   }
   
@@ -86,11 +67,7 @@ class AppDelegate: ExpoAppDelegate, RCTBridgeDelegate, EXDevLauncherControllerDe
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     // DEBUG must be setup in Swift projects: https://stackoverflow.com/a/24112024/4047926
     #if DEBUG
-    if (useDevClient) {
-      return EXDevLauncherController.sharedInstance().sourceUrl()
-    } else {
-      return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
-    }
+    return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     #else
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif
@@ -102,11 +79,5 @@ class AppDelegate: ExpoAppDelegate, RCTBridgeDelegate, EXDevLauncherControllerDe
     // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
 
     return extraModules
-  }
-
-  // MARK: - EXDevelopmentClientControllerDelegate
-
-  func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    developmentClientController.appBridge = initializeReactNativeBridge(developmentClientController.getLaunchOptions())
   }
 }
