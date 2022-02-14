@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherAuth.h"
+#import "EXDevLauncherController.h"
 
 #import <React/RCTBridge.h>
 #import <SafariServices/SafariServices.h>
