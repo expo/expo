@@ -96,7 +96,7 @@ export default function AudioDiagnosticsScreen() {
 type AudioOptionSwitchProps = {
   title: string;
   disabled?: boolean;
-  value: boolean;
+  value?: boolean;
   onValueChange: (value: boolean) => void;
 };
 
