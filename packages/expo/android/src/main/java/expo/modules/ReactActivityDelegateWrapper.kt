@@ -22,13 +22,13 @@ class ReactActivityDelegateWrapper(
 ) : ReactActivityDelegate(activity, null) {
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
-  private val reactActivityHandlers = ExpoModulesPackage.packageList
-    .flatMap { it.createReactActivityHandlers(activity) }
+  private val reactActivityDelegateHandlers = ExpoModulesPackage.packageList
+    .flatMap { it.createReactActivityDelegateHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
   private var shouldNoop = false
 
   init {
-    reactActivityHandlers.forEach {
+    reactActivityDelegateHandlers.forEach {
       it.onWillCreateReactActivityDelegate(activity)
     }
   }
@@ -40,7 +40,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    return reactActivityHandlers.asSequence()
+    return reactActivityDelegateHandlers.asSequence()
       .mapNotNull { it.createReactRootView(activity) }
       .firstOrNull() ?: invokeDelegateMethod("createRootView")
   }
@@ -65,7 +65,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    shouldNoop = reactActivityHandlers
+    shouldNoop = reactActivityDelegateHandlers
       .map { it.shouldNoop() }
       .fold(false) { accu, current -> accu || current }
 
