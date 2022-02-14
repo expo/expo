@@ -28,10 +28,8 @@ Pod::Spec.new do |s|
     ]
   }
 
-  # TODO(eric): remove once updates integration is sorted out
   s.xcconfig = {
-    'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_ENABLED=1 EX_DEV_LAUNCHER_VERSION=#{s.version}",
-    'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1'
+    'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_VERSION=#{s.version}"
   }
 
   # Swift/Objective-C compatibility

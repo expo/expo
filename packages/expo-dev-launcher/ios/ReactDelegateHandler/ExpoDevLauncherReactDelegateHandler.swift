@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import EXUpdatesInterface
 
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
@@ -33,6 +34,9 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     self.launchOptions = launchOptions
 
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
+    if (EXUpdatesControllerRegistry.sharedInstance().controller != nil) {
+      EXDevLauncherController.sharedInstance().updatesInterface = EXUpdatesControllerRegistry.sharedInstance().controller
+    }
     return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: self.launchOptions)
   }
 
