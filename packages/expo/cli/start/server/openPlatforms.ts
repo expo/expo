@@ -4,7 +4,7 @@ import {
   ensureWebDevServerRunningAsync,
   getDefaultDevServer,
   getWebDevServer,
-} from '../server/startDevServers';
+} from './startDevServers';
 
 export async function openPlatformsAsync(
   projectRoot: string,

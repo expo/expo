@@ -30,14 +30,13 @@ async function resolveNativeApplicationIdAsync(projectRoot: string): Promise<str
     }
   } catch {}
 
-  return getConfig(projectRoot).exp.android?.package ?? null;
+  return null;
 }
 
-export async function resolveAppIdAsync(projectRoot: string) {
+export async function resolveAppIdAsync(projectRoot: string): Promise<string> {
   const isManaged = await isManagedProjectAsync(projectRoot);
   if (isManaged) {
-    const { exp } = getConfig(projectRoot);
-    const applicationId = exp?.android?.package;
+    const applicationId = getConfig(projectRoot).exp.android?.package;
     if (!applicationId) {
       throw new CommandError(
         `Could not find property android.package in app.config.js/app.json. This setting is required to launch the app.`

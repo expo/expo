@@ -4,6 +4,7 @@ import assert from 'assert';
 import openBrowserAsync from 'better-opn';
 
 import * as Log from '../../log';
+import { UnimplementedError } from '../../utils/errors';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
 import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
@@ -70,7 +71,7 @@ const MIDDLEWARES = {
 
 export class BundlerDevServer {
   get name(): string {
-    throw new Error('unimplemented');
+    throw new UnimplementedError();
   }
 
   private ngrok: AsyncNgrok | null = null;
@@ -107,7 +108,7 @@ export class BundlerDevServer {
 
   /** Start the dev server using settings defined in the start command. */
   public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
-    throw new Error('unimplemented');
+    throw new UnimplementedError();
   }
 
   protected async postStartAsync(options: BundlerStartOptions) {
@@ -120,7 +121,7 @@ export class BundlerDevServer {
   }
 
   protected getConfigModuleIds(): string[] {
-    throw new Error('unimplemented');
+    throw new UnimplementedError();
   }
 
   protected watchConfig() {

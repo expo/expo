@@ -36,7 +36,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     return super.openAsync(options, resolveSettings);
   }
 
-  protected async resolveExistingApplicationIdAsync(): Promise<string> {
+  protected async resolveExistingAppIdAsync(): Promise<string> {
     return resolveAppIdAsync(this.projectRoot);
   }
 

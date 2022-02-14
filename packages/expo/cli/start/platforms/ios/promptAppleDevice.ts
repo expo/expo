@@ -1,24 +1,8 @@
 import chalk from 'chalk';
 
 import { promptAsync } from '../../../utils/prompts';
-import { getBestBootedSimulatorAsync, getBestUnbootedSimulatorAsync } from './getBestSimulator';
+import { getBestSimulatorAsync } from './getBestSimulator';
 import { Device } from './simctl';
-
-/**
- * Get 'best' simulator for the user based on:
- * 1. Currently booted simulator.
- * 2. Last simulator that was opened.
- * 3. First simulator that was opened.
- */
-async function getBestSimulatorAsync({ osType }: { osType?: string }): Promise<string> {
-  const simulatorOpenedByApp = await getBestBootedSimulatorAsync({ osType });
-
-  if (simulatorOpenedByApp) {
-    return simulatorOpenedByApp.udid;
-  }
-
-  return await getBestUnbootedSimulatorAsync({ osType });
-}
 
 /**
  * Sort the devices so the last simulator that was opened (user's default) is the first suggested.
@@ -29,10 +13,10 @@ async function sortDefaultDeviceToBeginningAsync(
   devices: Device[],
   osType?: string
 ): Promise<Device[]> {
-  const defaultUdid = await getBestSimulatorAsync({ osType });
-  if (defaultUdid) {
+  const defaultId = await getBestSimulatorAsync({ osType });
+  if (defaultId) {
     let iterations = 0;
-    while (devices[0].udid !== defaultUdid && iterations < devices.length) {
+    while (devices[0].udid !== defaultId && iterations < devices.length) {
       devices.push(devices.shift()!);
       iterations++;
     }
@@ -40,13 +24,14 @@ async function sortDefaultDeviceToBeginningAsync(
   return devices;
 }
 
+/** Prompt the user to select an Apple device, sorting the most likely option to the beginning. */
 export async function promptAppleDeviceAsync(devices: Device[], osType?: string): Promise<Device> {
   devices = await sortDefaultDeviceToBeginningAsync(devices, osType);
-  const results = await promptForDeviceAsync(devices);
+  const results = await promptAppleDeviceInternalAsync(devices);
   return devices.find(({ udid }) => results === udid)!;
 }
 
-async function promptForDeviceAsync(devices: Device[]): Promise<string> {
+async function promptAppleDeviceInternalAsync(devices: Device[]): Promise<string> {
   // TODO: provide an option to add or download more simulators
   // TODO: Add support for physical devices too.
 

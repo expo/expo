@@ -17,7 +17,6 @@ export async function startDeviceAsync(
       `@${device.name}`,
       // disable animation for faster boot -- this might make it harder to detect if it mounted properly tho
       //'-no-boot-anim'
-      // '-google-maps-key' -- TODO: Use from config
     ],
     {
       stdio: 'ignore',

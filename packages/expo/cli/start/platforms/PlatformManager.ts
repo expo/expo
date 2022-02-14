@@ -3,7 +3,7 @@ import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import { CommandError } from '../../utils/errors';
+import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import { DeviceManager } from './DeviceManager';
 
@@ -88,7 +88,7 @@ export class PlatformManager<
   ): Promise<{ url: string }> {
     let url = this.constructDeepLink(props.scheme, true);
     // TODO: It's unclear why we do application id validation when opening with a URL
-    const applicationId = props.applicationId ?? (await this.resolveExistingApplicationIdAsync());
+    const applicationId = props.applicationId ?? (await this.resolveExistingAppIdAsync());
 
     const deviceManager = await this.resolveDeviceAsync(resolveSettings);
 
@@ -162,7 +162,7 @@ export class PlatformManager<
     applicationId: string,
     props: Partial<IOpenInCustomProps> = {}
   ): string {
-    throw new Error('unimplemented');
+    throw new UnimplementedError();
   }
 
   protected async ensureDeviceHasValidExpoGoAsync(
@@ -172,7 +172,7 @@ export class PlatformManager<
     return deviceManager.ensureExpoGoAsync(exp.sdkVersion);
   }
 
-  protected async resolveExistingApplicationIdAsync(): Promise<string> {
-    throw new Error('unimplemented');
+  protected async resolveExistingAppIdAsync(): Promise<string> {
+    throw new UnimplementedError();
   }
 }

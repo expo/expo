@@ -2,6 +2,7 @@ import { ExpoAppManifest, ExpoGoConfig } from '@expo/config';
 import express from 'express';
 import http from 'http';
 
+import { UnimplementedError } from '../../../utils/errors';
 import { UrlCreator, URLOptions } from '../UrlCreator';
 
 export interface HostInfo {
@@ -61,7 +62,7 @@ export class ManifestHandlerMiddleware {
     manifestString: string;
     hostInfo: HostInfo;
   }> {
-    throw new Error('unimplemented');
+    throw new UnimplementedError();
   }
 
   protected getExpoGoConfig({
@@ -103,6 +104,6 @@ export class ManifestHandlerMiddleware {
     res: express.Response | http.ServerResponse,
     next: (err?: Error) => void
   ) => Promise<void> {
-    throw new Error('unimplemented');
+    throw new UnimplementedError();
   }
 }

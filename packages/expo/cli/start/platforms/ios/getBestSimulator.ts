@@ -16,13 +16,11 @@ function getDefaultSimulatorDeviceUDID() {
 }
 
 export async function getBestBootedSimulatorAsync({ osType }: { osType?: string }) {
-  let simulatorOpenedByApp: SimControl.Device | null;
-
   const simulatorDeviceInfo = await SimControl.listAsync('devices');
   const devices = Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
     return prev.concat(runtime.filter((device) => device.state === 'Booted'));
   }, []);
-  simulatorOpenedByApp = devices[0];
+  const simulatorOpenedByApp = devices[0];
 
   // This should prevent opening a second simulator in the chance that default
   // simulator doesn't match what the Simulator app would open by default.
@@ -41,10 +39,10 @@ export async function getBestUnbootedSimulatorAsync({
 }: {
   osType?: string;
 }): Promise<string> {
-  const defaultUdid = getDefaultSimulatorDeviceUDID();
+  const defaultId = getDefaultSimulatorDeviceUDID();
 
-  if (defaultUdid && !osType) {
-    return defaultUdid;
+  if (defaultId && !osType) {
+    return defaultId;
   }
 
   const simulators = await getSelectableSimulatorsAsync({ osType });
@@ -58,10 +56,10 @@ export async function getBestUnbootedSimulatorAsync({
   }
 
   // If the default udid is defined, then check to ensure its osType matches the required os.
-  if (defaultUdid) {
-    const defaultSimulator = simulators.find((device) => device.udid === defaultUdid);
+  if (defaultId) {
+    const defaultSimulator = simulators.find((device) => device.udid === defaultId);
     if (defaultSimulator?.osType === osType) {
-      return defaultUdid;
+      return defaultId;
     }
   }
 
@@ -77,4 +75,20 @@ export async function getSelectableSimulatorsAsync({
 }: { osType?: string } = {}): Promise<SimControl.Device[]> {
   const simulators = await SimControl.listSimulatorDevicesAsync();
   return simulators.filter((device) => device.isAvailable && device.osType === osType);
+}
+
+/**
+ * Get 'best' simulator for the user based on:
+ * 1. Currently booted simulator.
+ * 2. Last simulator that was opened.
+ * 3. First simulator that was opened.
+ */
+export async function getBestSimulatorAsync({ osType }: { osType?: string }): Promise<string> {
+  const simulatorOpenedByApp = await getBestBootedSimulatorAsync({ osType });
+
+  if (simulatorOpenedByApp) {
+    return simulatorOpenedByApp.udid;
+  }
+
+  return await getBestUnbootedSimulatorAsync({ osType });
 }

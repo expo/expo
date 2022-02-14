@@ -1,33 +1,11 @@
-import spawnAsync from '@expo/spawn-async';
-import os from 'os';
-
 import { CommandError } from '../../../utils/errors';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
-import { whichEmulator } from './emulator';
-
-/** Returns a list of emulator names. */
-async function getEmulatorsAsync(): Promise<AndroidDeviceBridge.Device[]> {
-  try {
-    const { stdout } = await spawnAsync(whichEmulator(), ['-list-avds']);
-    return stdout
-      .split(os.EOL)
-      .filter(Boolean)
-      .map((name) => ({
-        name,
-        type: 'emulator',
-        // unsure from this
-        isBooted: false,
-        isAuthorized: true,
-      }));
-  } catch {
-    return [];
-  }
-}
+import { listAvdsAsync } from './emulator';
 
 export async function getDevicesAsync(): Promise<AndroidDeviceBridge.Device[]> {
   const bootedDevices = await AndroidDeviceBridge.getAttachedDevicesAsync();
 
-  const data = await getEmulatorsAsync();
+  const data = await listAvdsAsync();
   const connectedNames = bootedDevices.map(({ name }) => name);
 
   const offlineEmulators = data

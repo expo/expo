@@ -3,7 +3,13 @@ import { IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import fs from 'fs';
 
-export async function resolveAppIdAsync(projectRoot: string) {
+/**
+ * Resolve the best possible bundle identifier for the project.
+ * 1. Check the bundle identifier in the Xcode project.
+ * 2. Check the Info.plist file.
+ * 3. Check the Expo config.
+ */
+export async function resolveAppIdAsync(projectRoot: string): Promise<string | null> {
   // Check xcode project
   try {
     const bundleId = IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj(projectRoot);
@@ -17,10 +23,10 @@ export async function resolveAppIdAsync(projectRoot: string) {
     const infoPlistPath = IOSConfig.Paths.getInfoPlistPath(projectRoot);
     const data = await plist.parse(fs.readFileSync(infoPlistPath, 'utf8'));
     if (data.CFBundleIdentifier && !data.CFBundleIdentifier.startsWith('$(')) {
-      return data.CFBundleIdentifier;
+      return data.CFBundleIdentifier ?? null;
     }
   } catch {}
 
   // Check Expo config
-  return getConfig(projectRoot).exp.ios?.bundleIdentifier;
+  return getConfig(projectRoot).exp.ios?.bundleIdentifier ?? null;
 }

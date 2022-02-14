@@ -9,9 +9,9 @@ import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import { BaseResolveDeviceProps } from '../PlatformManager';
 import { activateWindowAsync } from './activateWindow';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
+import { startDeviceAsync } from './emulator';
 import { getDevicesAsync } from './getDevices';
 import { promptForDeviceAsync } from './promptAndroidDevice';
-import { startDeviceAsync } from './startDevice';
 
 const EXPO_GO_PACKAGE = 'host.exp.exponent';
 

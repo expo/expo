@@ -11,14 +11,14 @@ import { FileNotifier } from '../utils/FileNotifier';
 import { getAllSpinners, ora } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { getProgressBar, setProgressBar } from '../utils/progress';
-import { BundlerStartOptions } from './BundlerDevServer';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { ensureTypeScriptSetupAsync } from './doctor/typescript/ensureTypeScriptSetup';
 import { ensureWebSupportSetupAsync } from './doctor/web/ensureWebSetup';
 import { startInterfaceAsync } from './interface/TerminalUI';
-import { openPlatformsAsync } from './platforms/openPlatforms';
 import { Options, resolvePortsAsync } from './resolveOptions';
+import { BundlerStartOptions } from './server/BundlerDevServer';
 import * as LoadingPageHandler from './server/middleware/LoadingPageHandler';
+import { openPlatformsAsync } from './server/openPlatforms';
 import * as Project from './server/startDevServers';
 
 async function multiBundlerStartOptions(
