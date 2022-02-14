@@ -1,7 +1,7 @@
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
-import { useEffect, useState } from 'react';
+import { Audio, AudioMode, InterruptionModeAndroid } from 'expo-av';
+import { Dispatch, useEffect, useState } from 'react';
 
-export function useAudio(): [boolean, React.Dispatch<boolean>] {
+export function useAudio(): [boolean, Dispatch<boolean>] {
   const [isAudioEnabled, setAudioEnabled] = useState(true);
 
   useEffect(() => {
@@ -14,16 +14,9 @@ export function useAudio(): [boolean, React.Dispatch<boolean>] {
   return [isAudioEnabled, setAudioEnabled];
 }
 
-export type AudioModeState = {
-  interruptionModeIOS: InterruptionModeIOS;
-  playsInSilentModeIOS: boolean;
-  allowsRecordingIOS: boolean;
-  staysActiveInBackground: boolean;
-};
-
 export function useAudioMode(
-  initialAudioMode: AudioModeState
-): [AudioModeState, React.Dispatch<AudioModeState>] {
+  initialAudioMode: Partial<AudioMode>
+): [Partial<AudioMode>, Dispatch<AudioMode>] {
   const [audioMode, setAudioMode] = useState(initialAudioMode);
 
   useEffect(() => {
@@ -33,7 +26,7 @@ export function useAudioMode(
   return [audioMode, setAudioMode];
 }
 
-async function setAudioModeAsync(audioMode: AudioModeState): Promise<void> {
+async function setAudioModeAsync(audioMode: Partial<AudioMode>): Promise<void> {
   await Audio.setAudioModeAsync({
     ...audioMode,
     interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
