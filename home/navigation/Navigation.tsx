@@ -38,6 +38,7 @@ import {
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import {
   DiagnosticsStackRoutes,
+  ModalStackRoutes,
   ProfileStackRoutes,
   ProjectsStackRoutes,
 } from './Navigation.types';
@@ -218,7 +219,7 @@ function TabNavigator(props: { theme: string }) {
 const ModalStack = createStackNavigator();
 
 export default (props: { theme: ColorTheme }) => {
-  const navigationRef = React.useRef<NavigationContainerRef>(null);
+  const navigationRef = React.useRef<NavigationContainerRef<ModalStackRoutes>>(null);
   const isNavigationReadyRef = React.useRef(false);
   const initialURLWasConsumed = React.useRef(false);
 
@@ -269,14 +270,13 @@ export default (props: { theme: ColorTheme }) => {
           gestureEnabled: true,
           cardOverlayEnabled: true,
           cardStyle: { backgroundColor: 'transparent' },
-          headerStatusBarHeight:
-            navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+          headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
+          presentation: 'modal',
           ...TransitionPresets.ModalPresentationIOS,
-        })}
-        mode="modal">
+        })}>
         <ModalStack.Screen name="RootStack">
           {() => (
-            <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+            <RootStack.Navigator initialRouteName="Tabs" screenOptions={{ presentation: 'modal' }}>
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>

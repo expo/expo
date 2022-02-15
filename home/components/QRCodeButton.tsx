@@ -1,6 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 
+import { ModalStackRoutes } from '../navigation/Navigation.types';
 import {
   alertWithCameraPermissionInstructions,
   requestCameraPermissionsAsync,
@@ -10,7 +11,7 @@ import ListItem from './ListItem';
 type Props = React.ComponentProps<typeof ListItem>;
 
 function QRCodeButton(props: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<ModalStackRoutes>>();
 
   const handlePressAsync = async () => {
     if (await requestCameraPermissionsAsync()) {

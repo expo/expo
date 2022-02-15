@@ -17,6 +17,9 @@
       "apps/test-suite/puppeteer-test",
       "home",
       "packages/*"
+    ],
+    "nohoist": [
+      "**/@react-navigation/*"
     ]
   },
   "resolutions": {

@@ -1,8 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Linking, Share, StyleSheet, View } from 'react-native';
 
 import Colors from '../constants/Colors';
+import { ProfileStackRoutes } from '../navigation/Navigation.types';
 import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
 import Badge from './Badge';
@@ -32,7 +33,7 @@ function ProjectListItem({
   sdkVersion,
   ...props
 }: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<ProfileStackRoutes>>();
   const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
   const renderRightContent = React.useCallback((): React.ReactNode => {

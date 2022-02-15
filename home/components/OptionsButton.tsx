@@ -1,11 +1,13 @@
-import { ActionSheetProps, connectActionSheet } from '@expo/react-native-action-sheet';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Alert, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/Colors';
 
-function OptionsButton({ showActionSheetWithOptions }: ActionSheetProps) {
+export default function OptionsButton() {
+  const { showActionSheetWithOptions } = useActionSheet();
+
   const handlePress = () => {
     const options = ['Report this user', 'Cancel'];
     const cancelButtonIndex = 1;
@@ -45,5 +47,3 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
 });
-
-export default connectActionSheet(OptionsButton);
