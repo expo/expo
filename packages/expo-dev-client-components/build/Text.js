@@ -4,8 +4,8 @@ import { create } from 'react-native-primitives';
 import { text, textDark } from './theme';
 export const Heading = create(RNText, {
     base: {
-        fontSize: 22,
-        lineHeight: 28,
+        fontSize: 18,
+        lineHeight: 20,
         fontWeight: '600',
         color: lightTheme.text.default,
     },
@@ -15,17 +15,9 @@ export const Heading = create(RNText, {
     variants: {
         ...text,
         size: {
-            small: {
-                fontSize: 18,
-                lineHeight: 20,
-            },
-            medium: {
+            large: {
                 fontSize: 22,
                 lineHeight: 28,
-            },
-            large: {
-                fontSize: 28,
-                lineHeight: 32,
             },
         },
     },
@@ -38,6 +30,7 @@ export const Text = create(RNText, {
         fontWeight: 'normal',
         color: lightTheme.text.default,
         fontSize: 16,
+        lineHeight: 18,
     },
     props: {
         accessibilityRole: 'text',

@@ -30,7 +30,8 @@ export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: 
 
   return (
     <View>
-      <Spacer.Horizontal style={{ height: insets.top }} />
+      <View style={{ height: insets.top }} />
+
       <Row align="center">
         <Row px="medium">
           {Boolean(appImageUri) && (
@@ -41,16 +42,14 @@ export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: 
           )}
 
           <View>
-            <Heading size="small" weight="semibold">
-              {title}
-            </Heading>
+            <Heading weight="semibold">{title}</Heading>
             <Text size="small" color="secondary">
               {subtitle}
             </Text>
           </View>
         </Row>
 
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
 
         <Button.ScaleOnPressContainer
           onPress={onUserProfilePress}

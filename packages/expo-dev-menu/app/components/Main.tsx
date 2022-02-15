@@ -16,6 +16,7 @@ import {
   RunIcon,
   StatusIndicator,
   Image,
+  scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -63,9 +64,7 @@ export function Main() {
             <Spacer.Horizontal size="small" />
 
             <View>
-              <Heading size="small" weight="bold">
-                {appInfo.appName}
-              </Heading>
+              <Heading weight="bold">{appInfo.appName}</Heading>
               <Spacer.Vertical size="tiny" />
               {Boolean(appInfo.runtimeVersion) && (
                 <>
@@ -85,10 +84,13 @@ export function Main() {
             </View>
           </Row>
 
-          <Spacer.Horizontal size="flex" />
-
+          <Spacer.Horizontal />
           <GestureHandlerTouchableWrapper onPress={actions.closeMenu}>
-            <Button.ScaleOnPressContainer bg="ghost" rounded="full" minScale={0.8}>
+            <Button.ScaleOnPressContainer
+              onPress={actions.closeMenu}
+              bg="ghost"
+              rounded="full"
+              minScale={0.8}>
               <View padding="micro">
                 <XIcon />
               </View>
@@ -263,13 +265,13 @@ function SettingsRowButton({ label, icon, description = '', onPress }: SettingsR
             <Text>{label}</Text>
           </View>
 
-          <Spacer.Horizontal size="flex" />
+          <Spacer.Horizontal />
 
-          <View style={{ width: 64, alignItems: 'flex-end' }} />
+          <View width="16" style={{ alignItems: 'flex-end' }} />
         </Row>
 
         {Boolean(description) && (
-          <View style={{ transform: [{ translateY: -8 }] }}>
+          <View style={{ transform: [{ translateY: -scale['3'] }] }}>
             <Row px="small" align="center">
               <Spacer.Horizontal size="large" />
 
@@ -279,7 +281,7 @@ function SettingsRowButton({ label, icon, description = '', onPress }: SettingsR
                 </Text>
               </View>
 
-              <View style={{ width: 64 }} />
+              <View width="16" />
             </Row>
             <Spacer.Vertical size="tiny" />
           </View>
@@ -319,9 +321,9 @@ function SettingsRowSwitch({
           <Text>{label}</Text>
         </View>
 
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
 
-        <View style={{ width: 64, alignItems: 'flex-end' }}>
+        <View width="16" style={{ alignItems: 'flex-end' }}>
           <Switch
             testID={testID}
             value={isEnabled}
@@ -341,7 +343,7 @@ function SettingsRowSwitch({
               </Text>
             </View>
 
-            <View style={{ width: 64 }} />
+            <View style={{ width: scale[16] }} />
           </Row>
           <Spacer.Vertical size="tiny" />
         </View>
@@ -359,13 +361,12 @@ function AppInfoRow({ title, value }: AppInfoRowProps) {
   return (
     <Row px="medium" py="small" align="center" bg="default">
       <Text size="medium">{title}</Text>
-      <Spacer.Horizontal size="flex" />
+      <Spacer.Horizontal />
       <Text>{value}</Text>
     </Row>
   );
 }
 
-// TODO - move this to `expo-dev-client-components`
 function GestureHandlerTouchableWrapper({ onPress, children }) {
   if (Platform.OS === 'android') {
     return <TouchableWithoutFeedback onPress={onPress}>{children}</TouchableWithoutFeedback>;

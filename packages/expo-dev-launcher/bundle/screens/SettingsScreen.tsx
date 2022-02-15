@@ -82,7 +82,7 @@ export function SettingsScreen() {
             <ShowMenuIcon />
             <Spacer.Horizontal size="small" />
             <Text size="large">Show menu at launch</Text>
-            <Spacer.Horizontal size="flex" />
+            <Spacer.Horizontal />
             <Switch
               accessibilityRole="switch"
               accessibilityLabel="Toggle showing menu at launch"
@@ -95,9 +95,7 @@ export function SettingsScreen() {
         <Spacer.Vertical size="large" />
 
         <View padding="medium">
-          <Heading size="small" color="secondary">
-            Menu gestures
-          </Heading>
+          <Heading color="secondary">Menu gestures</Heading>
         </View>
 
         <View>
@@ -113,7 +111,7 @@ export function SettingsScreen() {
               <Text size="large" color="secondary">
                 Shake Device
               </Text>
-              <Spacer.Horizontal size="flex" />
+              <Spacer.Horizontal />
               {motionGestureEnabled && <CheckIcon />}
             </Row>
           </Button.ScaleOnPressContainer>
@@ -132,7 +130,7 @@ export function SettingsScreen() {
               <Text size="large" color="secondary">
                 Three-finger long-press
               </Text>
-              <Spacer.Horizontal size="flex" />
+              <Spacer.Horizontal />
               {touchGestureEnabled && <CheckIcon />}
             </Row>
           </Button.ScaleOnPressContainer>
@@ -149,8 +147,8 @@ export function SettingsScreen() {
 
         <View rounded="large" overflow="hidden">
           <Row px="medium" py="small" align="center" bg="default">
-            <Text size="medium">Version</Text>
-            <Spacer.Horizontal size="flex" />
+            <Text>Version</Text>
+            <Spacer.Horizontal />
             <Text>{buildInfo?.appVersion}</Text>
           </Row>
 
@@ -158,8 +156,8 @@ export function SettingsScreen() {
             <>
               <Divider />
               <Row px="medium" py="small" align="center" bg="default">
-                <Text size="medium">Runtime Version</Text>
-                <Spacer.Horizontal size="flex" />
+                <Text>Runtime Version</Text>
+                <Spacer.Horizontal />
                 <Text>{buildInfo.runtimeVersion}</Text>
               </Row>
             </>
@@ -169,8 +167,8 @@ export function SettingsScreen() {
             <>
               <Divider />
               <Row px="medium" py="small" align="center" bg="default">
-                <Text size="medium">SDK Version</Text>
-                <Spacer.Horizontal size="flex" />
+                <Text>SDK Version</Text>
+                <Spacer.Horizontal />
                 <Text>{buildInfo.sdkVersion}</Text>
               </Row>
             </>

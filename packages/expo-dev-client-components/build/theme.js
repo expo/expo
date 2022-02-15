@@ -6,57 +6,36 @@ export const scale = {
     medium: spacing[4],
     large: spacing[6],
     xl: spacing[8],
+    ...spacing,
 };
+function fullSpacingScaleForAttributes(attributes) {
+    const obj = {};
+    Object.keys(scale).forEach((key) => {
+        key = `${key}`;
+        const value = {};
+        attributes.forEach((attribute) => {
+            value[attribute] = scale[key];
+        });
+        obj[key] = value;
+    });
+    return obj;
+}
 export const padding = {
-    padding: {
-        micro: { padding: scale.micro },
-        tiny: { padding: scale.tiny },
-        small: { padding: scale.small },
-        medium: { padding: scale.medium },
-        large: { padding: scale.large },
-        xl: { padding: scale.xl },
-    },
-    px: {
-        micro: { paddingHorizontal: scale.micro },
-        tiny: { paddingHorizontal: scale.tiny },
-        small: { paddingHorizontal: scale.small },
-        medium: { paddingHorizontal: scale.medium },
-        large: { paddingHorizontal: scale.large },
-        xl: { paddingHorizontal: scale.xl },
-    },
-    py: {
-        micro: { paddingVertical: scale.micro },
-        tiny: { paddingVertical: scale.tiny },
-        small: { paddingVertical: scale.small },
-        medium: { paddingVertical: scale.medium },
-        large: { paddingVertical: scale.large },
-        xl: { paddingVertical: scale.xl },
-    },
+    padding: fullSpacingScaleForAttributes(['padding']),
+    px: fullSpacingScaleForAttributes(['paddingHorizontal']),
+    py: fullSpacingScaleForAttributes(['paddingVertical']),
+    pb: fullSpacingScaleForAttributes(['paddingBottom']),
+    pt: fullSpacingScaleForAttributes(['paddingTop']),
 };
 export const margin = {
-    margin: {
-        micro: { margin: scale.micro },
-        tiny: { margin: scale.tiny },
-        small: { margin: scale.small },
-        medium: { margin: scale.medium },
-        large: { margin: scale.large },
-        xl: { margin: scale.xl },
-    },
-    mx: {
-        micro: { marginHorizontal: scale.micro },
-        tiny: { marginHorizontal: scale.tiny },
-        small: { marginHorizontal: scale.small },
-        medium: { marginHorizontal: scale.medium },
-        large: { marginHorizontal: scale.large },
-    },
-    my: {
-        micro: { marginHorizontal: scale.micro },
-        tiny: { marginVertical: scale.tiny },
-        small: { marginVertical: scale.small },
-        medium: { marginVertical: scale.medium },
-        large: { marginVertical: scale.large },
-    },
+    margin: fullSpacingScaleForAttributes(['margin']),
+    mx: fullSpacingScaleForAttributes(['marginHorizontal']),
+    my: fullSpacingScaleForAttributes(['marginVertical']),
+    mb: fullSpacingScaleForAttributes(['marginBottom']),
+    mt: fullSpacingScaleForAttributes(['marginTop']),
 };
+export const width = fullSpacingScaleForAttributes(['width']);
+export const height = fullSpacingScaleForAttributes(['height']);
 export const rounded = {
     rounded: {
         none: { borderRadius: 0 },

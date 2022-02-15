@@ -1,8 +1,8 @@
-import { lightTheme, darkTheme, shadows, iconSize } from '@expo/styleguide-native';
+import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
 import { View as RNView } from 'react-native';
 import { create } from 'react-native-primitives';
 
-import { scale, padding, margin, rounded, bg, bgDark } from './theme';
+import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
 
 export const View = create(RNView, {
   variants: {
@@ -29,6 +29,11 @@ export const View = create(RNView, {
       '0': { flexShrink: 0 },
     },
 
+    grow: {
+      '1': { flexGrow: 1 },
+      '0': { flexGrow: 0 },
+    },
+
     bg,
 
     border: {
@@ -45,23 +50,9 @@ export const View = create(RNView, {
       button: shadows.button,
     },
 
-    width: {
-      micro: { width: iconSize.micro },
-      tiny: { width: iconSize.tiny },
-      small: { width: iconSize.small },
-      medium: { width: iconSize.regular },
-      large: { width: iconSize.large },
-      xl: { width: scale.xl },
-    },
+    width,
 
-    height: {
-      micro: { height: iconSize.micro },
-      tiny: { height: iconSize.tiny },
-      small: { height: iconSize.small },
-      medium: { height: iconSize.regular },
-      large: { height: iconSize.large },
-      xl: { height: scale.xl },
-    },
+    height,
 
     ...padding,
     ...margin,
@@ -108,29 +99,33 @@ export const Row = create(RNView, {
 });
 
 const Horizontal = create(RNView, {
+  base: {
+    flex: 1,
+  },
   variants: {
     size: {
-      flex: { flex: 1 },
-      micro: { width: scale.micro },
-      tiny: { width: scale.tiny },
-      small: { width: scale.small },
-      medium: { width: scale.medium },
-      large: { width: scale.large },
-      xl: { width: scale.xl },
+      micro: { width: scale.micro, flex: 0 },
+      tiny: { width: scale.tiny, flex: 0 },
+      small: { width: scale.small, flex: 0 },
+      medium: { width: scale.medium, flex: 0 },
+      large: { width: scale.large, flex: 0 },
+      xl: { width: scale.xl, flex: 0 },
     },
   },
 });
 
 const Vertical = create(RNView, {
+  base: {
+    flex: 1,
+  },
   variants: {
     size: {
-      flex: { flex: 1 },
-      micro: { height: scale.micro },
-      tiny: { height: scale.tiny },
-      small: { height: scale.small },
-      medium: { height: scale.medium },
-      large: { height: scale.large },
-      xl: { height: scale.xl },
+      micro: { height: scale.micro, flex: 0 },
+      tiny: { height: scale.tiny, flex: 0 },
+      small: { height: scale.small, flex: 0 },
+      medium: { height: scale.medium, flex: 0 },
+      large: { height: scale.large, flex: 0 },
+      xl: { height: scale.xl, flex: 0 },
     },
   },
 });

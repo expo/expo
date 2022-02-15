@@ -1,6 +1,6 @@
-import { Button, View } from 'expo-dev-client-components';
+import { Button } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, StyleSheet, useWindowDimensions } from 'react-native';
+import { Animated, StyleSheet, useWindowDimensions, Pressable } from 'react-native';
 
 import { createAsyncStack, StackItem, useStackItems } from '../functions/createAsyncStack';
 
@@ -52,9 +52,11 @@ function ModalStackContainer() {
     <Animated.View
       style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
       pointerEvents={hasModal ? 'auto' : 'none'}>
-      <Button.Container
-        style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' }}
-        onPress={() => modalStack.pop()}>
+      <Pressable
+        onPress={() => {
+          modalStack.pop();
+        }}
+        style={[StyleSheet.absoluteFillObject]}>
         {modals.map((item) => (
           <ModalScreen
             key={item.key}
@@ -64,7 +66,7 @@ function ModalStackContainer() {
             onPushEnd={() => modalStack.onPushEnd(item.key)}
           />
         ))}
-      </Button.Container>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -75,7 +77,7 @@ type ModalScreenProps = StackItem<ModalProps> & {
   onClose: () => void;
 };
 
-function ModalScreen({ status, element, onPopEnd, onPushEnd, onClose, title }: ModalScreenProps) {
+function ModalScreen({ status, element, onPopEnd, onPushEnd }: ModalScreenProps) {
   const { height } = useWindowDimensions();
 
   const animatedValue = React.useRef(new Animated.Value(status === 'settled' ? 1 : 0));
@@ -111,16 +113,12 @@ function ModalScreen({ status, element, onPopEnd, onPushEnd, onClose, title }: M
 
   return (
     <Animated.View
-      pointerEvents={status === 'popping' ? 'none' : 'auto'}
+      pointerEvents={status === 'popping' ? 'none' : 'box-none'}
       style={[
         StyleSheet.absoluteFillObject,
         { justifyContent: 'center', transform: [{ translateY }] },
       ]}>
-      <Button.Container>
-        <View mx="medium" bg="default" rounded="large" overflow="hidden" shadow="medium">
-          {element}
-        </View>
-      </Button.Container>
+      <Button.Container>{element}</Button.Container>
     </Animated.View>
   );
 }

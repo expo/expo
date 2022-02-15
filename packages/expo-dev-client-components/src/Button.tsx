@@ -1,6 +1,6 @@
 import { lightTheme, darkTheme, borderRadius, shadows, palette } from '@expo/styleguide-native';
 import * as React from 'react';
-import { Pressable as RNPressable, Text as RNText, Animated, useColorScheme } from 'react-native';
+import { Text as RNText, Animated, useColorScheme, Pressable as RNPressable } from 'react-native';
 import { create } from 'react-native-primitives';
 
 import { rounded, margin, padding, text } from './theme';

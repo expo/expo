@@ -78,7 +78,6 @@ function PackagersList() {
   const onPackagerPress = ({ url }: { url: string }) => {
     loadApp(url).catch((error) => {
       modalStack.push({
-        title: 'Error loading app',
         element: <LoadAppErrorModal message={error.message} />,
       });
     });
@@ -98,7 +97,7 @@ function PackagersList() {
         </Text>
 
         <Spacer.Vertical size="small" />
-        <Text size="medium">Start a local development server with:</Text>
+        <Text>Start a local development server with:</Text>
         <Spacer.Vertical size="small" />
 
         <View bg="secondary" border="default" rounded="medium" padding="medium">
@@ -154,7 +153,7 @@ function PackagerRow({ onPress, label }: PackagerRowProps) {
           <StatusIndicator size="small" status="success" />
           <Spacer.Horizontal size="small" />
           <Text>{label}</Text>
-          <Spacer.Horizontal size="flex" />
+          <Spacer.Horizontal />
           <ChevronRightIcon />
         </Row>
       </Button.ScaleOnPressContainer>

@@ -8,14 +8,12 @@ export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
     <BaseModal title="Confirm logout">
       <Spacer.Vertical size="medium" />
 
-      <Heading size="small" weight="medium">
-        Are you sure you want to log out?
-      </Heading>
+      <Heading weight="medium">Are you sure you want to log out?</Heading>
 
       <Spacer.Vertical size="large" />
 
       <Row>
-        <View flex="1" style={{ flexGrow: 1 }}>
+        <View flex="1" grow="1">
           <Button.ScaleOnPressContainer
             bg="tertiary"
             rounded="medium"
@@ -31,7 +29,7 @@ export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
 
         <Spacer.Horizontal size="medium" />
 
-        <View flex="1" style={{ flexGrow: 1 }}>
+        <View flex="1" grow="1">
           <Button.ScaleOnPressContainer
             bg="ghost"
             border="ghost"
