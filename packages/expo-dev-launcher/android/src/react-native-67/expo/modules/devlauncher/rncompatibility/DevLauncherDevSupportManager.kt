@@ -45,7 +45,7 @@ class DevLauncherDevSupportManager(
   redBoxHandler: RedBoxHandler?,
   devBundleDownloadListener: DevBundleDownloadListener?,
   minNumShakes: Int,
-  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
+  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
 ) : DevSupportManagerBase(
   applicationContext,
   reactInstanceManagerHelper,
@@ -54,7 +54,8 @@ class DevLauncherDevSupportManager(
   redBoxHandler,
   devBundleDownloadListener,
   minNumShakes,
-  customPackagerCommandHandlers
+  customPackagerCommandHandlers,
+  null
 ), DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
 
