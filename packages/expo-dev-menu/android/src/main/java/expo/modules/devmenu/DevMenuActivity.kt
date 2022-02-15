@@ -63,8 +63,6 @@ class DevMenuActivity : ReactActivity() {
         putParcelableArray("devMenuItems", DevMenuManager.serializedItems().toTypedArray())
         putParcelableArray("devMenuScreens", DevMenuManager.serializedScreens().toTypedArray())
         putString("uuid", UUID.randomUUID().toString())
-        putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
-        putString("openScreen", DevMenuManager.getSession()?.openScreen)
       }
 
       override fun createRootView() = createRootView(this@DevMenuActivity)

@@ -70,12 +70,6 @@ interface DevMenuManagerInterface {
   fun serializedScreens(): List<Bundle>
 
   /**
-   * @return a instance of [DevMenuSessionInterface] that keeps the details of the currently opened dev menu session,
-   * or `null` if menu isn't opened.
-   */
-  fun getSession(): DevMenuSessionInterface?
-
-  /**
    * @return a instance of [DevMenuSettingsInterface] that keeps all settings for current dev menu delegate,
    * or `null` if delegate wasn't provided.
    */

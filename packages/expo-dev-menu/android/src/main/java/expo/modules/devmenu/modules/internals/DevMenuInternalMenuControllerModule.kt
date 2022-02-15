@@ -58,7 +58,7 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   }
 
   override fun openDevMenuFromReactNative() {
-    devMenuManager.getSession()?.reactInstanceManager?.devSupportManager?.let {
+    devMenuManager.getReactInstanceManager()?.devSupportManager?.let {
       devMenuManager.closeMenu()
       it.devSupportEnabled = true
       it.showDevOptionsDialog()
@@ -84,7 +84,7 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   }
 
   override fun getDevSettingsAsync(promise: Promise) {
-    val reactInstanceManager = devMenuManager.getSession()?.reactInstanceManager
+    val reactInstanceManager = devMenuManager.getReactInstanceManager()
     val map = Arguments.createMap()
 
     if (reactInstanceManager != null) {
