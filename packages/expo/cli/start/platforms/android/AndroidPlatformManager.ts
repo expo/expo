@@ -12,18 +12,17 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
   constructor(
     protected projectRoot: string,
     protected port: number,
-    protected getDevServerUrl: () => string | null,
-    protected constructLoadingUrl: (platform?: string, type?: string) => string | null,
-    protected constructManifestUrl: (props: { scheme?: string }) => string | null
+    getDevServerUrl: () => string | null,
+    getLoadingUrl: (platform?: string, type?: string) => string | null,
+    getManifestUrl: (props: { scheme?: string }) => string | null
   ) {
-    super(
-      projectRoot,
-      'android',
+    super(projectRoot, {
+      platform: 'android',
       getDevServerUrl,
-      () => constructLoadingUrl(this.platform),
-      constructManifestUrl,
-      AndroidDeviceManager.resolveAsync
-    );
+      getLoadingUrl: () => getLoadingUrl('android'),
+      getManifestUrl,
+      resolveDeviceAsync: AndroidDeviceManager.resolveAsync,
+    });
   }
 
   public async openAsync(

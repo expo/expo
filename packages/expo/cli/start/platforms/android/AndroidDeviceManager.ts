@@ -162,7 +162,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Devi
     await activateWindowAsync(this.device);
   }
 
-  async ensureExpoGoAsync(sdkVersion?: string) {
+  async ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
     const installer = new ExpoGoInstaller('android', EXPO_GO_PACKAGE, sdkVersion);
     return installer.ensureAsync(this);
   }

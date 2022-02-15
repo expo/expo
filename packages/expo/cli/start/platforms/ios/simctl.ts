@@ -1,6 +1,5 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
-import path from 'path';
 
 import * as Log from '../../../log';
 import { waitForActionAsync } from '../../../utils/delay';
@@ -67,39 +66,11 @@ export type XCTraceDevice = {
 
 type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
 
-type PermissionName =
-  | 'all'
-  | 'calendar'
-  | 'contacts-limited'
-  | 'contacts'
-  | 'location'
-  | 'location-always'
-  | 'photos-add'
-  | 'photos'
-  | 'media-library'
-  | 'microphone'
-  | 'motion'
-  | 'reminders'
-  | 'siri';
-
 type SimulatorDeviceList = {
   devices: {
     [runtime: string]: Device[];
   };
 };
-
-export async function getDefaultSimulatorDeviceUDIDAsync() {
-  try {
-    const { stdout: defaultDeviceUDID } = await spawnAsync('defaults', [
-      'read',
-      'com.apple.iphonesimulator',
-      'CurrentDeviceUDID',
-    ]);
-    return defaultDeviceUDID.trim();
-  } catch (e) {
-    return null;
-  }
-}
 
 /**
  * Returns the local path for the installed tar.app. Returns null when the app isn't installed.
@@ -206,7 +177,7 @@ export async function runBootAsync({ udid }: { udid: string }) {
   }
 }
 
-export async function installAsync(options: { udid: string; dir: string }): Promise<any> {
+export async function installAsync(options: { udid?: string; dir: string }): Promise<any> {
   return simctlAsync(['install', deviceUDIDOrBooted(options.udid), options.dir]);
 }
 
@@ -230,8 +201,6 @@ function parseSimControlJSONResults(input: string): any {
   }
 }
 
-// TODO: Compare with
-// const results = await SimControl.xcrunAsync(['instruments', '-s']);
 export async function listAsync(
   type: 'devices' | 'devicetypes' | 'runtimes' | 'pairs',
   query?: string | 'available'
@@ -264,107 +233,11 @@ export async function listSimulatorDevicesAsync() {
   }, []);
 }
 
-/**
- * Get a list of all connected devices.
- */
-export async function listDevicesAsync(): Promise<XCTraceDevice[]> {
-  const { output } = await xcrunAsync(['xctrace', 'list', 'devices']);
-
-  const text = output.join('');
-  const devices: XCTraceDevice[] = [];
-  if (!text.includes('== Simulators ==')) {
-    return [];
-  }
-
-  const lines = text.split('\n');
-  for (const line of lines) {
-    if (line === '== Simulators ==') {
-      break;
-    }
-    const device = line.match(/(.*?) (\(([0-9.]+)\) )?\(([0-9A-F-]+)\)/i);
-    if (device) {
-      const [, name, , osVersion, udid] = device;
-      const metadata: XCTraceDevice = {
-        name,
-        udid,
-        osVersion: osVersion ?? '??',
-        deviceType: osVersion ? 'device' : 'catalyst',
-      };
-
-      devices.push(metadata);
-    }
-  }
-
-  return devices;
-}
-
-export async function shutdownAsync(udid?: string) {
-  try {
-    return simctlAsync(['shutdown', deviceUDIDOrBooted(udid)]);
-  } catch (e: any) {
-    if (!e.message?.includes('No devices are booted.')) {
-      throw e;
-    }
-  }
-  return null;
-}
-
-// Some permission changes will terminate the application if running
-export async function updatePermissionsAsync(
-  udid: string,
-  action: 'grant' | 'revoke' | 'reset',
-  permission: PermissionName,
-  bundleIdentifier?: string
-) {
-  return simctlAsync(['privacy', deviceUDIDOrBooted(udid), action, permission, bundleIdentifier]);
-}
-
-export async function setAppearanceAsync(udid: string, theme: 'light' | 'dark') {
-  return simctlAsync(['ui', deviceUDIDOrBooted(udid), theme]);
-}
-
-// Cannot be invoked unless the simulator is `shutdown`
-export async function eraseAsync(udid: string) {
-  return simctlAsync(['erase', deviceUDIDOrBooted(udid)]);
-}
-
-export async function eraseAllAsync() {
-  return simctlAsync(['erase', 'all']);
-}
-
-// Add photos and videos to the simulator's gallery
-export async function addMediaAsync(udid: string, mediaPath: string) {
-  return simctlAsync(['addmedia', deviceUDIDOrBooted(udid), mediaPath]);
-}
-
-export async function captureScreenAsync(
-  udid: string,
-  captureType: 'screenshot' | 'recordVideo',
-  outputFilePath: string
-) {
-  return simctlAsync([
-    'io',
-    deviceUDIDOrBooted(udid),
-    captureType,
-    `—type=${path.extname(outputFilePath)}`,
-    outputFilePath,
-  ]);
-}
-
-// Clear all unused simulators
-export async function deleteUnavailableAsync() {
-  return simctlAsync(['delete', 'unavailable']);
-}
-
 export async function simctlAsync(
   [command, ...args]: (string | undefined)[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
-  return xcrunWithLogging(
-    // @ts-ignore
-    ['simctl', command, ...args.filter(Boolean)],
-    options
-  );
+  return xcrunWithLogging(['simctl', command, ...args.filter(Boolean)], options);
 }
 
 function deviceUDIDOrBooted(udid?: string): string {
@@ -380,7 +253,7 @@ export function isLicenseOutOfDate(text: string) {
   return lower.includes('xcode') && lower.includes('license');
 }
 
-export async function xcrunAsync(args: string[], options?: SpawnOptions) {
+async function xcrunAsync(args: string[], options?: SpawnOptions) {
   Log.debug('Running: xcrun ' + args.join(' '));
   try {
     return await spawnAsync('xcrun', args, options);
@@ -389,7 +262,7 @@ export async function xcrunAsync(args: string[], options?: SpawnOptions) {
   }
 }
 
-export function parseXcrunError(e: any): Error {
+function parseXcrunError(e: any): Error {
   if (isLicenseOutOfDate(e.stdout) || isLicenseOutOfDate(e.stderr)) {
     return new CommandError(
       'XCODE_LICENSE_NOT_ACCEPTED',
@@ -412,10 +285,7 @@ export function parseXcrunError(e: any): Error {
   return e;
 }
 
-export async function xcrunWithLogging(
-  args: string[],
-  options?: SpawnOptions
-): Promise<SpawnResult> {
+async function xcrunWithLogging(args: string[], options?: SpawnOptions): Promise<SpawnResult> {
   try {
     return await xcrunAsync(args, options);
   } catch (e: any) {

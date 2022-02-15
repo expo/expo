@@ -29,27 +29,38 @@ export class PlatformManager<
 > {
   constructor(
     protected projectRoot: string,
-    protected platform: 'ios' | 'android',
-    protected getDevServerUrl: () => string | null,
-    protected constructLoadingUrl: (platform?: string, type?: string) => string | null,
-    protected constructManifestUrl: (props: { scheme?: string }) => string | null,
-    private resolveDeviceAsync: (
-      resolver?: Partial<IResolveDeviceProps>
-    ) => Promise<DeviceManager<IDevice>>
+    protected props: {
+      platform: 'ios' | 'android';
+      getDevServerUrl: () => string | null;
+      getLoadingUrl: (platform?: string, type?: string) => string | null;
+      getManifestUrl: (props: { scheme?: string }) => string | null;
+      resolveDeviceAsync: (
+        resolver?: Partial<IResolveDeviceProps>
+      ) => Promise<DeviceManager<IDevice>>;
+    }
   ) {}
 
-  private constructDeepLink(scheme?: string, devClient?: boolean): string | null {
-    if (
-      process.env['EXPO_ENABLE_INTERSTITIAL_PAGE'] &&
-      !devClient &&
+  /** Should use the interstitial page for selecting which runtime to use. Exposed for testing. */
+  shouldUseInterstitialPage(): boolean {
+    return (
+      process.env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
       // TODO: >:0
       // Checks if dev client is installed.
       !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
+    );
+  }
+
+  private constructDeepLink(scheme?: string, devClient?: boolean): string | null {
+    if (
+      !devClient &&
+      // TODO: >:0
+      // Checks if dev client is installed.
+      this.shouldUseInterstitialPage()
     ) {
-      return this.constructLoadingUrl();
+      return this.props.getLoadingUrl();
     } else {
       try {
-        return this.constructManifestUrl({ scheme });
+        return this.props.getManifestUrl({ scheme });
       } catch (e) {
         if (devClient) {
           return null;
@@ -59,7 +70,7 @@ export class PlatformManager<
     }
   }
 
-  async openProjectInExpoGoAsync(
+  protected async openProjectInExpoGoAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
     // TODO: We shouldn't have so much extra stuff to support dc here.
@@ -67,7 +78,7 @@ export class PlatformManager<
     // This should never happen, but just in case...
     assert(url, 'Could not get dev server URL');
 
-    const deviceManager = await this.resolveDeviceAsync(resolveSettings);
+    const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
     deviceManager.logOpeningUrl(url);
     const installedExpo = await this.ensureDeviceHasValidExpoGoAsync(deviceManager);
 
@@ -75,7 +86,7 @@ export class PlatformManager<
     await deviceManager.openUrlAsync(url);
 
     logEvent('Open Url on Device', {
-      platform: this.platform,
+      platform: this.props.platform,
       installedExpo,
     });
 
@@ -90,7 +101,7 @@ export class PlatformManager<
     // TODO: It's unclear why we do application id validation when opening with a URL
     const applicationId = props.applicationId ?? (await this.resolveExistingAppIdAsync());
 
-    const deviceManager = await this.resolveDeviceAsync(resolveSettings);
+    const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
 
     if (!(await deviceManager.isAppInstalledAsync(applicationId))) {
       // TODO: Ensure links are up to date -- collapse redirects.
@@ -104,7 +115,7 @@ export class PlatformManager<
 
     // TODO: Rethink analytics
     logEvent('Open Url on Device', {
-      platform: this.platform,
+      platform: this.props.platform,
       installedExpo: false,
     });
 
@@ -147,10 +158,10 @@ export class PlatformManager<
   protected async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
     url: string;
   }> {
-    const url = this.getDevServerUrl();
+    const url = this.props.getDevServerUrl();
     assert(url, 'Dev server is not running.');
 
-    const deviceManager = await this.resolveDeviceAsync(resolveSettings);
+    const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
     deviceManager.logOpeningUrl(url);
     await deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url);

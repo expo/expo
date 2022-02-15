@@ -6,12 +6,10 @@ import { delayAsync, TimeoutError } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { validateUrl } from '../../../utils/url';
-import { SimulatorAppPrerequisite } from '../../doctor/apple/SimulatorAppPrerequisite';
-import { XcodePrerequisite } from '../../doctor/apple/XcodePrerequisite';
-import { XcrunPrerequisite } from '../../doctor/apple/XcrunPrerequisite';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import { BaseResolveDeviceProps } from '../PlatformManager';
+import { assertSystemRequirementsAsync } from './assertSystemRequirements';
 import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunning';
 import {
   getBestBootedSimulatorAsync,
@@ -58,12 +56,7 @@ async function ensureSimulatorOpenAsync(
   return bootedDevice;
 }
 export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
-  static async assertSystemRequirementsAsync() {
-    // Order is important
-    await XcodePrerequisite.instance.assertAsync();
-    await XcrunPrerequisite.instance.assertAsync();
-    await SimulatorAppPrerequisite.instance.assertAsync();
-  }
+  static assertSystemRequirementsAsync = assertSystemRequirementsAsync;
 
   static async resolveAsync({
     device,
@@ -208,7 +201,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     await osascript.execAsync(`tell application "Simulator" to activate`);
   }
 
-  async ensureExpoGoAsync(sdkVersion?: string) {
+  async ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
     const installer = new ExpoGoInstaller('ios', EXPO_GO_BUNDLE_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }

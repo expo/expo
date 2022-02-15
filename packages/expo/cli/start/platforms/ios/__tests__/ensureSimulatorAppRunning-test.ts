@@ -8,6 +8,7 @@ const asMock = (fn: any): jest.Mock => fn;
 
 jest.mock(`../../../../log`);
 jest.mock(`@expo/osascript`);
+jest.mock(`@expo/spawn-async`);
 
 beforeEach(() => {
   jest.mock(`../../../../log`).resetAllMocks();

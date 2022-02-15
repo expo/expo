@@ -7,18 +7,17 @@ export class ApplePlatformManager extends PlatformManager<Device> {
   constructor(
     protected projectRoot: string,
     protected port: number,
-    protected getDevServerUrl: () => string | null,
-    protected constructLoadingUrl: (platform?: string, type?: string) => string | null,
-    protected constructManifestUrl: (props: { scheme?: string }) => string | null
+    getDevServerUrl: () => string | null,
+    getLoadingUrl: (platform?: string, type?: string) => string | null,
+    getManifestUrl: (props: { scheme?: string }) => string | null
   ) {
-    super(
-      projectRoot,
-      'ios',
+    super(projectRoot, {
+      platform: 'ios',
       getDevServerUrl,
-      () => constructLoadingUrl(this.platform, 'localhost'),
-      constructManifestUrl,
-      AppleDeviceManager.resolveAsync
-    );
+      getLoadingUrl: () => getLoadingUrl('ios', 'localhost'),
+      getManifestUrl,
+      resolveDeviceAsync: AppleDeviceManager.resolveAsync,
+    });
   }
 
   public async openAsync(

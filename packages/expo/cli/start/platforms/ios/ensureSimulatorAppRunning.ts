@@ -1,14 +1,35 @@
 import * as osascript from '@expo/osascript';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import spawnAsync from '@expo/spawn-async';
 
 import * as Log from '../../../log';
-import { waitForActionAsync, TimeoutError } from '../../../utils/delay';
+import { TimeoutError, waitForActionAsync } from '../../../utils/delay';
 
-const execAsync = promisify(exec);
+export async function ensureSimulatorAppRunningAsync({
+  udid,
+  maxWaitTime,
+}: {
+  udid?: string;
+  maxWaitTime?: number;
+}): Promise<void> {
+  // Yes, simulators can be booted even if the app isn't running, obviously we'd never want this.
+  if (await isSimulatorAppRunningAsync()) {
+    return;
+  }
 
-export async function waitForSimulatorAppToStart({
+  Log.log(`\u203A Opening the iOS simulator, this might take a moment.`);
+
+  // In theory this would ensure the correct simulator is booted as well.
+  // This isn't theory though, this is Xcode.
+  await openSimulatorAppAsync({ udid });
+
+  if (!(await waitForSimulatorAppToStart({ maxWaitTime }))) {
+    throw new TimeoutError(
+      `Simulator app did not open fast enough. Try opening Simulator first, then running your app.`
+    );
+  }
+}
+
+async function waitForSimulatorAppToStart({
   maxWaitTime,
 }: { maxWaitTime?: number } = {}): Promise<boolean> {
   return waitForActionAsync<boolean>({
@@ -19,7 +40,7 @@ export async function waitForSimulatorAppToStart({
 }
 
 // I think the app can be open while no simulators are booted.
-export async function isSimulatorAppRunningAsync(): Promise<boolean> {
+async function isSimulatorAppRunningAsync(): Promise<boolean> {
   try {
     const zeroMeansNo = (
       await osascript.execAsync(
@@ -37,31 +58,6 @@ export async function isSimulatorAppRunningAsync(): Promise<boolean> {
   }
 
   return true;
-}
-
-export async function ensureSimulatorAppRunningAsync({
-  udid,
-  maxWaitTime,
-}: {
-  udid?: string;
-  maxWaitTime?: number;
-}) {
-  // Yes, simulators can be booted even if the app isn't running, obviously we'd never want this.
-  if (await isSimulatorAppRunningAsync()) {
-    return;
-  }
-
-  Log.log(`\u203A Opening the iOS simulator, this might take a moment.`);
-
-  // In theory this would ensure the correct simulator is booted as well.
-  // This isn't theory though, this is Xcode.
-  await openSimulatorAppAsync({ udid });
-
-  if (!(await waitForSimulatorAppToStart({ maxWaitTime }))) {
-    throw new TimeoutError(
-      `Simulator app did not open fast enough. Try opening Simulator first, then running your app.`
-    );
-  }
 }
 
 async function openSimulatorAppAsync({ udid }: { udid?: string }) {

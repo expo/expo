@@ -10,7 +10,7 @@ function getDefaultSimulatorDeviceUDID() {
       { stdio: 'pipe' }
     ).toString();
     return defaultDeviceUDID.trim();
-  } catch (e) {
+  } catch {
     return null;
   }
 }

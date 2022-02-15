@@ -28,7 +28,6 @@ async function multiBundlerStartOptions(
 ): Promise<Project.MultiBundlerStartOptions> {
   const multiBundlerStartOptions: Project.MultiBundlerStartOptions = [];
   const mode = options.dev ? 'development' : 'production';
-
   const commonOptions: BundlerStartOptions = {
     mode,
     devClient,
