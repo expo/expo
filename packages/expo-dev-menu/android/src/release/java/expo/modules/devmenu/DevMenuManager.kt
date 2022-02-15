@@ -4,11 +4,11 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuSessionInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
@@ -23,6 +23,10 @@ object DevMenuManager : DevMenuManagerInterface {
 
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
+
+  fun getReactInstanceManager(): ReactInstanceManager? {
+    return null
+  }
 
   val metroClient: DevMenuMetroClient by lazy {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
@@ -61,10 +65,6 @@ object DevMenuManager : DevMenuManagerInterface {
   }
 
   override fun serializedScreens(): List<Bundle> {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
-  override fun getSession(): DevMenuSessionInterface? {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
