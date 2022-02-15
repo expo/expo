@@ -1,4 +1,4 @@
-import { Button, Heading, Row, Spacer, View, XIcon } from 'expo-dev-client-components';
+import { Button, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Animated, StyleSheet, useWindowDimensions } from 'react-native';
 
@@ -6,7 +6,6 @@ import { createAsyncStack, StackItem, useStackItems } from '../functions/createA
 
 export type ModalProps = {
   element: React.ReactElement<any>;
-  title: string;
 };
 
 const ModalContext = React.createContext(createAsyncStack<ModalProps>());
@@ -119,42 +118,9 @@ function ModalScreen({ status, element, onPopEnd, onPushEnd, onClose, title }: M
       ]}>
       <Button.Container>
         <View mx="medium" bg="default" rounded="large" overflow="hidden" shadow="medium">
-          <ModalHeader title={title} />
-
-          <View px="small">{element}</View>
-
-          <Spacer.Vertical size="medium" />
+          {element}
         </View>
       </Button.Container>
     </Animated.View>
-  );
-}
-
-function ModalHeader({ title = '' }) {
-  const modalStack = useModalStack();
-
-  const onClosePress = () => {
-    modalStack.pop();
-  };
-
-  return (
-    <View padding="small">
-      <Row align="center" bg="default">
-        <View>
-          <Heading size="small">{title}</Heading>
-        </View>
-        <Spacer.Horizontal size="flex" />
-
-        <Button.ScaleOnPressContainer
-          bg="default"
-          rounded="full"
-          onPress={onClosePress}
-          minScale={0.85}>
-          <View padding="tiny" rounded="full">
-            <XIcon />
-          </View>
-        </Button.ScaleOnPressContainer>
-      </Row>
-    </View>
   );
 }

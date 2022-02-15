@@ -15,6 +15,7 @@ import { useDevSessions } from '../hooks/useDevSessions';
 import { useModalStack } from '../hooks/useModalStack';
 import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { BaseModal } from './BaseModal';
 import { LoadAppErrorModal } from './LoadAppErrorModal';
 
 type DeepLinkModalProps = {
@@ -29,7 +30,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
   };
 
   return (
-    <View>
+    <BaseModal title="Deep link received:">
       <Spacer.Vertical size="small" />
       <View py="small" bg="secondary" rounded="medium" px="medium">
         <Text type="mono" numberOfLines={3}>
@@ -63,7 +64,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
           </View>
         </Button.ScaleOnPressContainer>
       </View>
-    </View>
+    </BaseModal>
   );
 }
 

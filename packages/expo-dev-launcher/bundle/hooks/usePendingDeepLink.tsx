@@ -29,7 +29,6 @@ export function PendingDeepLinkProvider({
       if (url) {
         setPendingDeepLink(url);
         modalStack.push({
-          title: 'Deep link received:',
           element: <DeepLinkModal pendingDeepLink={url} />,
         });
       }
@@ -41,7 +40,6 @@ export function PendingDeepLinkProvider({
       if (url) {
         setPendingDeepLink(url);
         modalStack.push({
-          title: 'Deep link received:',
           element: <DeepLinkModal pendingDeepLink={url} />,
         });
       }
