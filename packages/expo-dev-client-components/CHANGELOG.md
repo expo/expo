@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Extend components to include the spacing scale from `@expo/styleguide-native`
+- Extend components to include the spacing scale from `@expo/styleguide-native` ([#16309](https://github.com/expo/expo/pull/16309) by [@ajsmth](https://github.com/ajsmth))
 
 ### 🐛 Bug fixes
 
