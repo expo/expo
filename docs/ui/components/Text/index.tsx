@@ -8,6 +8,7 @@ import { withAnchor } from './withAnchor';
 
 import { durations } from '~/ui/foundations/durations';
 
+export { LinkBase } from './Link';
 export { AnchorContext } from './withAnchor';
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
