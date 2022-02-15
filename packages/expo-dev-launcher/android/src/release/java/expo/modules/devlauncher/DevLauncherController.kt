@@ -1,5 +1,6 @@
 package expo.modules.devlauncher
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri

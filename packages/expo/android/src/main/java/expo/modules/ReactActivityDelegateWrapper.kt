@@ -25,12 +25,21 @@ class ReactActivityDelegateWrapper(
   private val reactActivityDelegateHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityDelegateHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
+
+  /**
+   * Opportunity for ReactActivityDelegateHandler to declare, at the time of initialization, that
+   * this instance should ignore certain method calls and not pass them through to the wrapped
+   * delegate. (Used by expo-dev-launcher)
+   */
   private var shouldNoop = false
 
   init {
     reactActivityDelegateHandlers.forEach {
       it.onWillCreateReactActivityDelegate(activity)
     }
+    shouldNoop = reactActivityDelegateHandlers
+      .map { it.shouldNoop() }
+      .fold(false) { accu, current -> accu || current }
   }
 
   //region ReactActivityDelegate
@@ -65,10 +74,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    shouldNoop = reactActivityDelegateHandlers
-      .map { it.shouldNoop() }
-      .fold(false) { accu, current -> accu || current }
-
     // Since we just wrap `ReactActivityDelegate` but not inherit it, in its `onCreate`,
     // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
     // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
