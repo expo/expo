@@ -35,16 +35,21 @@ export function preprocessSentryError(event: Event) {
   }
 
   // Only attempt to check against cached reported messages if we have localStorage
-  if (isLocalStorageAvailable()) {
-    // Clear the saved error messages every day
-    maybeResetReportedErrorsCache();
+  try {
+    if (isLocalStorageAvailable()) {
+      // Clear the saved error messages every day
+      maybeResetReportedErrorsCache();
 
-    // Bail out if we have reported the error already
-    if (userHasReportedErrorMessage(message)) {
-      return null;
+      // Bail out if we have reported the error already
+      if (userHasReportedErrorMessage(message)) {
+        return null;
+      }
+
+      saveReportedErrorMessage(message);
     }
-
-    saveReportedErrorMessage(message);
+  } catch {
+    // Ignore the local storage exceptions
+    return event;
   }
 
   return event;
@@ -53,11 +58,14 @@ export function preprocessSentryError(event: Event) {
 // https://gist.github.com/paulirish/5558557
 function isLocalStorageAvailable(): boolean {
   try {
-    if (!window.localStorage) {
+    if (!window.localStorage || localStorage === null || typeof localStorage === 'undefined') {
       return false;
     }
 
     localStorage.setItem('localStorage:test', 'value');
+    if (localStorage.getItem('localStorage:test') !== 'value') {
+      return false;
+    }
     localStorage.removeItem('localStorage:test');
     return true;
   } catch {
