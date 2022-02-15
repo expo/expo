@@ -54,7 +54,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
-  private var session: DevMenuSession? = null
   private var settings: DevMenuSettingsInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
@@ -70,6 +69,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   var currentManifestURL: String? = null
 
   //region helpers
+
+  fun getReactInstanceManager(): ReactInstanceManager? {
+    return delegate?.reactInstanceManager()
+  }
 
   private val delegateReactContext: ReactContext?
     get() = delegate?.reactInstanceManager()?.currentReactContext
@@ -305,11 +308,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun openMenu(activity: Activity, screen: String?) {
     setCurrentScreen(null)
-    session = DevMenuSession(
-      initReactInstanceManager = delegate!!.reactInstanceManager(),
-      initAppInfo = delegate!!.appInfo(),
-      screen = screen
-    )
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
 
@@ -431,8 +429,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
 
   override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }
-
-  override fun getSession(): DevMenuSession? = session
 
   override fun getSettings(): DevMenuSettingsInterface? = settings
 
