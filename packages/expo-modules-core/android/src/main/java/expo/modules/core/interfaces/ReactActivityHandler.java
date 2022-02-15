@@ -11,12 +11,11 @@ import com.facebook.react.ReactNativeHost;
 
 import androidx.annotation.Nullable;
 
+/**
+ * A handler API for modules to override default ReactActivity behaviors.
+ * Used by {@link expo.modules.ReactActivityWrapper}
+ */
 public interface ReactActivityHandler {
-
-  @Nullable
-  default ReactActivityDelegate onDidCreateReactActivityDelegate(ReactActivity activity) {
-    return null;
-  }
 
   default boolean onNewIntent(ReactActivity activity, Intent intent) {
     return false;

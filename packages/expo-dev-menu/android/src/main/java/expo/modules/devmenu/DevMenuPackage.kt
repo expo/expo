@@ -32,25 +32,5 @@ class DevMenuPackage: Package, ReactPackage {
     return emptyList()
   }
 
-  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
-    val listener = object : ReactActivityHandler {
-      override fun onPostCreate(savedInstanceState: Bundle?, reactNativeHost: ReactNativeHost) {
-        if (!DevMenuManager.isInitialized()) {
-          DevMenuManager.initializeWithReactNativeHost(reactNativeHost)
-        } else {
-          DevMenuManager.synchronizeDelegate()
-        }
-      }
-
-      override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        DevMenuManager.onTouchEvent(ev)
-        return false
-      }
-
-      override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        return DevMenuManager.onKeyEvent(keyCode, event)
-      }
-    }
-    return listOf(listener)
-  }
+  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = DevMenuPackageDelegate.createReactActivityHandlers(activityContext)
 }
