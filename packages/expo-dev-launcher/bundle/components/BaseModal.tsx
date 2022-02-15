@@ -16,13 +16,13 @@ export function BaseModal({ children, title }: BaseModalProps) {
   };
 
   return (
-    <View bg="default" rounded="large" shadow="medium">
+    <View bg="default" rounded="large" shadow="medium" mx="small">
       <View padding="small">
         <Row align="center" bg="default">
           <View>
-            <Heading size="small">{title}</Heading>
+            <Heading>{title}</Heading>
           </View>
-          <Spacer.Horizontal size="flex" />
+          <Spacer.Horizontal />
 
           <View style={{ transform: [{ translateX: 4 }, { translateY: -3 }] }}>
             <Button.ScaleOnPressContainer
@@ -40,11 +40,7 @@ export function BaseModal({ children, title }: BaseModalProps) {
 
       <Divider />
 
-      <View px="small" py="tiny">
-        {children}
-      </View>
-
-      <Spacer.Vertical size="medium" />
+      <View padding="small">{children}</View>
     </View>
   );
 }

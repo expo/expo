@@ -1,129 +1,24 @@
-export declare const scale: {
-    micro: number;
-    tiny: number;
-    small: number;
-    medium: number;
-    large: number;
-    xl: number;
-};
+import { spacing } from '@expo/styleguide-native';
+declare type SpacingKey = `${keyof typeof spacing}`;
+declare type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' | 'xl';
+declare type Scale = Record<SpacingKey | DescriptiveScale, number>;
+export declare const scale: Scale;
 export declare const padding: {
-    padding: {
-        micro: {
-            padding: number;
-        };
-        tiny: {
-            padding: number;
-        };
-        small: {
-            padding: number;
-        };
-        medium: {
-            padding: number;
-        };
-        large: {
-            padding: number;
-        };
-        xl: {
-            padding: number;
-        };
-    };
-    px: {
-        micro: {
-            paddingHorizontal: number;
-        };
-        tiny: {
-            paddingHorizontal: number;
-        };
-        small: {
-            paddingHorizontal: number;
-        };
-        medium: {
-            paddingHorizontal: number;
-        };
-        large: {
-            paddingHorizontal: number;
-        };
-        xl: {
-            paddingHorizontal: number;
-        };
-    };
-    py: {
-        micro: {
-            paddingVertical: number;
-        };
-        tiny: {
-            paddingVertical: number;
-        };
-        small: {
-            paddingVertical: number;
-        };
-        medium: {
-            paddingVertical: number;
-        };
-        large: {
-            paddingVertical: number;
-        };
-        xl: {
-            paddingVertical: number;
-        };
-    };
+    padding: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    px: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    py: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    pb: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    pt: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 };
 export declare const margin: {
-    margin: {
-        micro: {
-            margin: number;
-        };
-        tiny: {
-            margin: number;
-        };
-        small: {
-            margin: number;
-        };
-        medium: {
-            margin: number;
-        };
-        large: {
-            margin: number;
-        };
-        xl: {
-            margin: number;
-        };
-    };
-    mx: {
-        micro: {
-            marginHorizontal: number;
-        };
-        tiny: {
-            marginHorizontal: number;
-        };
-        small: {
-            marginHorizontal: number;
-        };
-        medium: {
-            marginHorizontal: number;
-        };
-        large: {
-            marginHorizontal: number;
-        };
-    };
-    my: {
-        micro: {
-            marginHorizontal: number;
-        };
-        tiny: {
-            marginVertical: number;
-        };
-        small: {
-            marginVertical: number;
-        };
-        medium: {
-            marginVertical: number;
-        };
-        large: {
-            marginVertical: number;
-        };
-    };
+    margin: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mx: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    my: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mb: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mt: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 };
+export declare const width: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+export declare const height: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 export declare const rounded: {
     rounded: {
         none: {

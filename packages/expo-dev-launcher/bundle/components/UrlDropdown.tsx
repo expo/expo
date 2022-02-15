@@ -84,7 +84,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
               clearButtonMode="while-editing"
               keyboardType="url"
               autoCapitalize="none"
-              autoCompleteType="off"
+              autoComplete="off"
               autoCorrect={false}
               placeholder="http://10.0.0.25:19000"
               placeholderTextColor={theme.text.secondary}
