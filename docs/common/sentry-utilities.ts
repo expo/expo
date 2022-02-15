@@ -19,10 +19,16 @@ const ERRORS_TO_DISCARD = [
 
 const REPORTED_ERRORS_KEY = 'sentry:reportedErrors';
 const TIMESTAMP_KEY = 'sentry:errorReportingInit';
-const ONE_DAY_MS = 60 * 60 * 24 * 1000;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const HALF_HOUR_MS = 0.5 * 60 * 60 * 1000;
 
 export function preprocessSentryError(event: Event) {
   const message = getMessage(event);
+
+  // Check if it's rate limited to avoid sending the same error over and over
+  if (isRateLimited(message || 'empty')) {
+    return null;
+  }
 
   // If we don't know about this particular type of event then just pass it along
   if (!message) {
@@ -71,6 +77,17 @@ function isLocalStorageAvailable(): boolean {
   } catch {
     return false;
   }
+}
+
+// https://github.com/getsentry/sentry-javascript/issues/435
+const rateLimiter: Record<string, number> = {};
+function isRateLimited(message: string) {
+  if (rateLimiter[message] && rateLimiter[message] > Date.now()) {
+    return true;
+  }
+
+  rateLimiter[message] = Date.now() + HALF_HOUR_MS;
+  return false;
 }
 
 // Extract a stable event error message out of the Sentry event object
