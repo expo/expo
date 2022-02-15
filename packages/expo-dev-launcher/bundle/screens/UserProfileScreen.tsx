@@ -43,7 +43,6 @@ export function UserProfileScreen({ navigation }) {
 
   const onLogoutPress = () => {
     modalStack.push({
-      title: 'Confirm logout?',
       element: (
         <LogoutConfirmationModal
           onClosePress={() => modalStack.pop()}

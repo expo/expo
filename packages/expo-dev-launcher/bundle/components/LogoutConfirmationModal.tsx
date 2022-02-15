@@ -1,9 +1,11 @@
 import { Button, Heading, Row, Spacer, View } from 'expo-dev-client-components';
 import * as React from 'react';
 
+import { BaseModal } from './BaseModal';
+
 export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
   return (
-    <View>
+    <BaseModal title="Confirm logout">
       <Spacer.Vertical size="medium" />
 
       <Heading size="small" weight="medium">
@@ -43,6 +45,6 @@ export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
           </Button.ScaleOnPressContainer>
         </View>
       </Row>
-    </View>
+    </BaseModal>
   );
 }
