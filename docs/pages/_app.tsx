@@ -17,7 +17,7 @@ import '../public/static/libs/algolia/algolia.css';
 import '../public/static/libs/algolia/algolia-mobile.css';
 
 Sentry.init({
-  dsn: 'https://67e35a01698649d5aa33aaab61777851@sentry.io/1526800',
+  dsn: 'https://1a2f5c8cec574bcea3971b74f91504d6@o30871.ingest.sentry.io/1526800',
   beforeSend: preprocessSentryError,
 });
 
