@@ -7,13 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactRootView;
 
 import expo.modules.ReactActivityDelegateWrapper;
-import expo.modules.devlauncher.DevLauncherController;
-import expo.modules.devmenu.react.DevMenuAwareReactActivity;
+import expo.modules.ReactActivityWrapper;
 
-public class MainActivity extends DevMenuAwareReactActivity {
+public class MainActivity extends ReactActivityWrapper {
 
   /**
    * Returns the name of the main component registered from JavaScript.
@@ -48,20 +46,6 @@ public class MainActivity extends DevMenuAwareReactActivity {
       }
     });
 
-    if (MainApplication.USE_DEV_CLIENT) {
-      return DevLauncherController.wrapReactActivityDelegate(this, () -> delegate);
-    }
-
     return delegate;
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    if (MainApplication.USE_DEV_CLIENT) {
-      if (DevLauncherController.tryToHandleIntent(this, intent)) {
-        return;
-      }
-    }
-    super.onNewIntent(intent);
   }
 }
