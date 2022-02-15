@@ -9,7 +9,7 @@ import { CommandError } from '../../../utils/errors';
 type DeviceState = 'Shutdown' | 'Booted';
 
 export type Device = {
-  availabilityError: 'runtime profile not found';
+  availabilityError?: 'runtime profile not found';
   /**
    * '/Users/name/Library/Developer/CoreSimulator/Devices/00E55DC0-0364-49DF-9EC6-77BE587137D4/data'
    */
@@ -23,7 +23,7 @@ export type Device = {
    */
   udid: string;
   /**
-   * com.apple.CoreSimulator.SimRuntime.tvOS-13-4
+   * 'com.apple.CoreSimulator.SimRuntime.tvOS-13-4'
    */
   runtime: string;
   isAvailable: boolean;
