@@ -26,7 +26,7 @@ public class ClipboardModule: Module {
         UIPasteboard.general.url = url
         promise.resolve()
       } else {
-        promise.reject(InvalidUrlError(url: content))
+        promise.reject(InvalidUrlException(url: content))
       }
     }
     
@@ -39,7 +39,7 @@ public class ClipboardModule: Module {
         UIPasteboard.general.image = UIImage(data: data)
         promise.resolve()
       } else {
-        promise.reject(InvalidImageError(image: content))
+        promise.reject(InvalidImageException(image: content))
       }
     }
     
@@ -87,19 +87,5 @@ public class ClipboardModule: Module {
     sendEvent(onClipboardChanged, [
       "content": UIPasteboard.general.string ?? ""
     ])
-  }
-}
-
-internal struct InvalidImageError: CodedError {
-  let image: String
-  var description: String {
-    return "Invalid base64 image: \(image.prefix(32))\(image.count ?? 0 > 32 ? "..." : "")"
-  }
-}
-
-internal struct InvalidUrlError: CodedError {
-  let url: String
-  var description: String {
-    "Invalid url: \(url)"
   }
 }
