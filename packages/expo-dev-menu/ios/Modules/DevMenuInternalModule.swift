@@ -18,10 +18,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     self.manager = DevMenuManager.shared
   }
 
-  init(manager: DevMenuManager) {
-    self.manager = manager
-  }
-
   // MARK: JavaScript API
 
   @objc
@@ -34,32 +30,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
   }
 
-  @objc
-  func fetchDataSourceAsync(_ dataSourceId: String?, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    guard let dataSourceId = dataSourceId else {
-      return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource ID not provided.", nil)
-    }
-
-    for dataSource in manager.devMenuDataSources {
-      if dataSource.id == dataSourceId {
-        dataSource.fetchData { data in
-          resolve(data.map { $0.serialize() })
-        }
-        return
-      }
-    }
-
-    return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource \(dataSourceId) not founded.", nil)
-  }
-
-  @objc
-  func dispatchCallableAsync(_ callableId: String?, args: [String: Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    guard let callableId = callableId else {
-      return reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.", nil)
-    }
-    manager.dispatchCallable(withId: callableId, args: args)
-    resolve(nil)
-  }
 
   @objc
   func hideMenu() {
@@ -107,5 +77,77 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   func onScreenChangeAsync(_ currentScreen: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     manager.setCurrentScreen(currentScreen)
     resolve(nil)
+  }
+
+  @objc
+  func getAppInfoAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    if let bridge = manager.currentBridge {
+      let manifest = manager.currentManifest
+      
+      let appInfo = EXDevMenuAppInfo.getFor(bridge, andManifest: manifest as Any as! [AnyHashable : Any])
+      
+      let hostUrl = manager.currentManifestURL?.absoluteString
+          
+      resolve([
+        "appName": appInfo["appName"],
+        "appIcon": appInfo["appIcon"],
+        "appVersion": appInfo["appVersion"],
+        "runtimeVersion": appInfo["runtimeVersion"],
+        "sdkVersion": appInfo["sdkVersion"],
+        "hostUrl": hostUrl,
+      ])
+    } else {
+      reject("E_MISSING_BRIDGE", "DevMenuManager does not have a currentBridge - getAppInfoAsync() ", nil);
+    }
+  }
+  
+  @objc
+  func getDevSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    resolve(DevMenuDevSettings.shared.getSettings())
+  }
+  
+  @objc
+  func toggleElementInspectorAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    DevMenuDevSettings.shared.toggleElementInspector()
+    resolve(nil)
+  }
+  
+  @objc
+  func togglePerformanceMonitorAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    DevMenuDevSettings.shared.togglePerformanceMonitor()
+    resolve(nil)
+  }
+  
+  @objc
+  func reloadAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    DevMenuDevSettings.shared.reload()
+    resolve(nil)
+  }
+  
+  @objc
+  func toggleDebugRemoteJSAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    DevMenuDevSettings.shared.toggleRemoteDebugging()
+    resolve(nil)
+  }
+  
+  @objc
+  func toggleFastRefreshAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    DevMenuDevSettings.shared.toggleFastRefresh()
+    resolve(nil)
+
+  }
+  
+  @objc
+  func navigateToLauncherAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    if let launcherDelegate = manager.devMenuLauncherDelegate {
+      DispatchQueue.main.async {
+        launcherDelegate.navigateToLauncher()
+      }
+      
+      resolve(nil)
+      return
+    }
+    
+    reject("E_MISSING_DELEGATE", "DevMenuManager does not have a delegate for navigateToLauncher() ", nil);
   }
 }

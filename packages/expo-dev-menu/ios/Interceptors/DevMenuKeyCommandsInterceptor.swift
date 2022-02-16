@@ -25,7 +25,11 @@ class DevMenuKeyCommandsInterceptor {
   }
 
   static let globalKeyCommands: [UIKeyCommand] = [
-    UIKeyCommand(input: "d", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_toggleDevMenu(_:)))
+    UIKeyCommand(input: "d", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_toggleDevMenu(_:))),
+    UIKeyCommand(input: "l", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_navigateToLauncher(_:))),
+    UIKeyCommand(input: "i", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_toggleElementInspector(_:))),
+    UIKeyCommand(input: "p", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_togglePerformanceMonitor(_:))),
+    UIKeyCommand(input: "r", modifierFlags: [], action: #selector(UIResponder.EXDevMenu_reload(_:))),
   ]
 }
 
@@ -40,10 +44,8 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
 
   @objc
   var EXDevMenu_keyCommands: [UIKeyCommand] {
-    let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
-    let actionsWithKeyCommands = actions.filter { $0.keyCommand != nil }
-    var keyCommands = actionsWithKeyCommands.map { $0.keyCommand! }
-    keyCommands.insert(contentsOf: DevMenuKeyCommandsInterceptor.globalKeyCommands, at: 0)
+    var keyCommands = DevMenuKeyCommandsInterceptor.globalKeyCommands
+    // swizzled so this is actually the default key commands
     keyCommands.append(contentsOf: self.EXDevMenu_keyCommands)
     return keyCommands
   }
@@ -69,6 +71,36 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
       DevMenuManager.shared.toggleMenu()
     }
   }
+  
+  @objc
+  func EXDevMenu_navigateToLauncher(_ key: UIKeyCommand) {
+    tryHandleKeyCommand(key) {
+      DevMenuManager.shared.devMenuLauncherDelegate?.navigateToLauncher()
+    }
+  }
+  
+  @objc
+  func EXDevMenu_toggleElementInspector(_ key: UIKeyCommand) {
+    tryHandleKeyCommand(key) {
+      DevMenuDevSettings.shared.toggleElementInspector()
+    }
+  }
+  
+  @objc
+  func EXDevMenu_togglePerformanceMonitor(_ key: UIKeyCommand) {
+    tryHandleKeyCommand(key) {
+      DevMenuDevSettings.shared.togglePerformanceMonitor()
+    }
+  }
+  
+  
+  @objc
+  func EXDevMenu_reload(_ key: UIKeyCommand) {
+    tryHandleKeyCommand(key) {
+      DevMenuDevSettings.shared.reload()
+    }
+  }
+
 
   private func shouldTriggerAction(_ key: UIKeyCommand) -> Bool {
     return UIResponder.lastKeyCommand !== key || CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5

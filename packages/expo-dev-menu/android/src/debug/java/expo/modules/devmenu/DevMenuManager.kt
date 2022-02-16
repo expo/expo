@@ -38,6 +38,7 @@ import expo.modules.devmenu.api.DevMenuExpoApiClient
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
+import expo.modules.devmenu.devtools.DevMenuDevSettings
 import expo.modules.devmenu.modules.DevMenuSettings
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
@@ -48,6 +49,10 @@ import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
+
+interface DevMenuLauncherDelegate {
+  fun navigateToLauncher()
+}
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
@@ -67,6 +72,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
+
+  var launcherDelegate: DevMenuLauncherDelegate? = null
+
+  fun getInstanceManager(): ReactInstanceManager? {
+    return delegate?.reactInstanceManager()
+  }
 
   //region helpers
 
@@ -376,6 +387,26 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
     if (settings?.keyCommandsEnabled != true) {
       return false
+    }
+
+    if (keyCode == KeyEvent.KEYCODE_L) {
+      launcherDelegate?.navigateToLauncher()
+      return true
+    }
+
+    if (keyCode == KeyEvent.KEYCODE_R) {
+      DevMenuDevSettings.reload()
+      return true
+    }
+
+    if (keyCode == KeyEvent.KEYCODE_P) {
+      DevMenuDevSettings.togglePerformanceMonitor()
+      return true
+    }
+
+    if (keyCode == KeyEvent.KEYCODE_I) {
+      DevMenuDevSettings.toggleElementInspector()
+      return true
     }
 
     val keyCommand = KeyCommand(

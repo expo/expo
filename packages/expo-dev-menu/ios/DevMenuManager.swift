@@ -28,6 +28,12 @@ class DevMenuCacheContainer<T> {
   }
 }
 
+@objc
+public protocol DevMenuLauncherDelegate {
+  @objc
+  func navigateToLauncher()
+}
+
 /**
  A hash map storing an array of dev menu items for specific extension.
  */
@@ -42,6 +48,7 @@ private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, 
  A hash map storing an array of dev menu screens for specific extension.
  */
 private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtocol, DevMenuCacheContainer<DevMenuDataSourceProtocol>>.weakToStrongObjects()
+
 
 /**
  Manages the dev menu and provides most of the public API.
@@ -92,6 +99,7 @@ open class DevMenuManager: NSObject {
       }
     }
   }
+  
   @objc
   public var currentManifest: [AnyHashable: Any] = [:]
   
@@ -103,6 +111,9 @@ open class DevMenuManager: NSObject {
   public func setSession(_ session: String) {
     self.expoApiClient.setSessionSecret(session)
   }
+  
+  @objc
+  public var devMenuLauncherDelegate: DevMenuLauncherDelegate?
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
@@ -194,24 +205,6 @@ open class DevMenuManager: NSObject {
   }
 
   // MARK: internals
-
-  func dispatchCallable(withId id: String, args: [String: Any]?) {
-    for callable in devMenuCallable {
-      if callable.id == id {
-        switch callable {
-          case let action as DevMenuExportedAction:
-            if args != nil {
-              NSLog("[DevMenu] Action $@ was called with arguments.", id)
-            }
-            action.call()
-          case let function as DevMenuExportedFunction:
-            function.call(args: args)
-          default:
-            NSLog("[DevMenu] Callable $@ has unknown type.", id)
-        }
-      }
-    }
-  }
 
   /**
    Returns an array of modules conforming to `DevMenuExtensionProtocol`.

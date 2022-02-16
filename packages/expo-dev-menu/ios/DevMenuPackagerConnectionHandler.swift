@@ -34,25 +34,24 @@ class DevMenuPackagerConnectionHandler {
   @objc
   func sendDevCommandNotificationHandler(_ params: [String: Any]) {
     guard let manager = manager,
-          let command = params["name"] as? String,
-          let bridge = manager.currentBridge
+          let command = params["name"] as? String
     else {
       return
     }
 
-    let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
+    let devSettings = DevMenuDevSettings.shared
 
     switch command {
     case "reload":
-      devDelegate.reload()
+      devSettings.reload()
     case "toggleDevMenu":
-      self.manager?.toggleMenu()
+      manager.toggleMenu()
     case "toggleRemoteDebugging":
-      devDelegate.toggleRemoteDebugging()
+      devSettings.toggleRemoteDebugging()
     case "toggleElementInspector":
-      devDelegate.toggleElementInsector()
+      devSettings.toggleElementInspector()
     case "togglePerformanceMonitor":
-      devDelegate.togglePerformanceMonitor()
+      devSettings.togglePerformanceMonitor()
     default:
       NSLog("Unknown command from packager: %@", command)
     }

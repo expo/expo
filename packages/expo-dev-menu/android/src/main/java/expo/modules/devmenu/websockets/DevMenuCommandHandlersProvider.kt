@@ -5,7 +5,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
+import expo.modules.devmenu.devtools.DevMenuDevSettings
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 
@@ -36,24 +36,22 @@ class DevMenuCommandHandlersProvider(
   private val onDevCommand = object : NotificationOnlyHandler() {
     override fun onNotification(params: Any?) {
       val instanceManager = instanceManager ?: return
-      val devDelegate = DevMenuDevToolsDelegate(manager, instanceManager)
 
       if (params is JSONObject) {
         val command = params.optString("name") ?: return
 
         when (command) {
-          "reload" -> devDelegate.reload()
+          "reload" -> DevMenuDevSettings.reload()
           "toggleDevMenu" -> {
             val activity = instanceManager.currentReactContext?.currentActivity ?: return
             manager.toggleMenu(activity)
           }
-          "toggleRemoteDebugging" -> devDelegate.toggleRemoteDebugging()
-          "toggleElementInspector" -> devDelegate.toggleElementInspector()
+          "toggleRemoteDebugging" -> DevMenuDevSettings.toggleRemoteDebugging()
+          "toggleElementInspector" -> DevMenuDevSettings.toggleElementInspector()
           "togglePerformanceMonitor" -> {
-            val activity = instanceManager.currentReactContext?.currentActivity ?: return
-            devDelegate.togglePerformanceMonitor(activity)
+            DevMenuDevSettings.togglePerformanceMonitor()
           }
-          "openJsInspector" -> devDelegate.openJsInspector()
+          "openJsInspector" -> DevMenuDevSettings.openJsInspector()
           else -> Log.w("DevMenu", "Unknown command: $command")
         }
       }

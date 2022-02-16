@@ -6,6 +6,8 @@
 #import <EXManifests/EXManifestsManifest.h>
 #import <EXUpdatesInterface/EXUpdatesExternalInterface.h>
 
+@import EXDevMenu;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class EXDevLauncherInstallationIDHelper;
@@ -20,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : NSObject <RCTBridgeDelegate>
+@interface EXDevLauncherController : NSObject <RCTBridgeDelegate, DevMenuLauncherDelegate>
 
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, strong) RCTBridge *launcherBridge;

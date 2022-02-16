@@ -27,8 +27,6 @@
 
 #import <EXManifests/EXManifestsManifestFactory.h>
 
-@import EXDevMenu;
-
 #ifdef EX_DEV_LAUNCHER_VERSION
 #define STRINGIZE(x) #x
 #define STRINGIZE2(x) STRINGIZE(x)
@@ -405,7 +403,7 @@
     
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
     
-    [self setDevMenuAppBridge];
+    [self setupDevMenu];
     
     [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
@@ -556,10 +554,11 @@
   clipboard.string = (content ? : @"");
 }
 
-- (void)setDevMenuAppBridge
+- (void)setupDevMenu
 {
   DevMenuManager *manager = [DevMenuManager shared];
   manager.currentBridge = self.appBridge;
+  manager.devMenuLauncherDelegate = self;
   
   if (self.manifest != nil) {
     // TODO - update to proper values / convert via instance method

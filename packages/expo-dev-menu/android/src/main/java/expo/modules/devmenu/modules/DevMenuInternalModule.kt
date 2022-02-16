@@ -11,9 +11,6 @@ import expo.modules.devmenu.modules.internals.DevMenuInternalMenuControllerModul
 
 interface DevMenuInternalMenuControllerModuleInterface {
   @ReactMethod
-  fun dispatchCallableAsync(callableId: String?, args: ReadableMap?, promise: Promise)
-
-  @ReactMethod
   fun hideMenu()
 
   @ReactMethod
@@ -29,13 +26,28 @@ interface DevMenuInternalMenuControllerModuleInterface {
   fun openDevMenuFromReactNative()
 
   @ReactMethod
-  fun onScreenChangeAsync(currentScreen: String?, promise: Promise)
-
-  @ReactMethod
   fun fetchDataSourceAsync(id: String?, promise: Promise)
 
   @ReactMethod
   fun copyToClipboardAsync(content: String, promise: Promise)
+
+  @ReactMethod
+  fun navigateToLauncherAsync(promise: Promise)
+
+  @ReactMethod
+  fun togglePerformanceMonitorAsync(promise: Promise)
+
+  @ReactMethod
+  fun toggleElementInspectorAsync(promise: Promise)
+
+  @ReactMethod
+  fun reloadAsync(promise: Promise)
+
+  @ReactMethod
+  fun toggleDebugRemoteJSAsync(promise: Promise)
+
+  @ReactMethod
+  fun toggleFastRefreshAsync(promise: Promise)
 }
 
 interface DevMenuInternalSessionManagerModuleInterface {

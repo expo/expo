@@ -6,60 +6,66 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
-import expo.interfaces.devmenu.DevMenuManagerInterface
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
 
-class DevMenuDevToolsDelegate(
-  private val manager: DevMenuManagerInterface,
-  reactInstanceManager: ReactInstanceManager
-) {
-  private val _reactDevManager = WeakReference(
-    reactInstanceManager.devSupportManager
-  )
-  private val _reactContext = WeakReference(
-    reactInstanceManager.currentReactContext
-  )
+object DevMenuDevSettings {
+  private fun getDevSupportManager(): DevSupportManager? {
+    val reactInstanceManager = DevMenuManager.getInstanceManager()
+    return reactInstanceManager?.devSupportManager
+  }
 
-  val reactDevManager
-    get() = _reactDevManager.get()
+  private fun getCurrentDevSettings(): DevInternalSettings? {
+    return getDevSupportManager()?.devSettings as DevInternalSettings
+  }
 
-  val devSettings
-    get() = reactDevManager?.devSettings
+  private fun getCurrentReactContext(): ReactContext? {
+    return DevMenuManager.getInstanceManager()?.currentReactContext
+  }
 
-  val reactContext
-    get() = _reactContext.get()
+  fun getSettings(): Map<String, Boolean> {
+    val devSettings = getCurrentDevSettings()
+
+    return mutableMapOf<String, Boolean>().apply {
+      put("isDebuggingRemotely", devSettings?.isRemoteJSDebugEnabled ?: false)
+      put("isElementInspectorShown", devSettings?.isElementInspectorEnabled ?: false)
+      put("isHotLoadingEnabled", devSettings?.isHotModuleReplacementEnabled ?: false)
+      put("isPerfMonitorShown", devSettings?.isFpsDebugEnabled ?: false)
+    }
+  }
 
   fun reload() {
-    val reactDevManager = reactDevManager ?: return
-    manager.closeMenu()
+    val devSupportManager = getDevSupportManager() ?: return
+    DevMenuManager.closeMenu()
     UiThreadUtil.runOnUiThread {
-      reactDevManager.handleReloadJS()
+      devSupportManager.handleReloadJS()
     }
   }
 
   fun toggleElementInspector() = runWithDevSupportEnabled {
-    reactDevManager?.toggleElementInspector()
+    getDevSupportManager()?.toggleElementInspector()
   }
 
   fun toggleRemoteDebugging() = runWithDevSupportEnabled {
-    val reactDevManager = reactDevManager ?: return
-    val devSettings = devSettings ?: return
-    manager.closeMenu()
+    val reactDevManager = getDevSupportManager() ?: return
+    val devSettings = getCurrentDevSettings() ?: return
+
+    DevMenuManager.closeMenu()
     UiThreadUtil.runOnUiThread {
       devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
       reactDevManager.handleReloadJS()
     }
   }
 
-  fun togglePerformanceMonitor(context: Context) {
-    val reactDevManager = reactDevManager ?: return
-    val devSettings = devSettings ?: return
+  fun togglePerformanceMonitor() {
+    val context = getCurrentReactContext() ?: return
+    val reactDevManager = getDevSupportManager() ?: return
+    val devSettings = getCurrentDevSettings() ?: return
 
     requestOverlaysPermission(context)
     runWithDevSupportEnabled {
@@ -68,11 +74,11 @@ class DevMenuDevToolsDelegate(
   }
 
   fun openJsInspector() = runWithDevSupportEnabled {
-    val devSettings = (devSettings as? DevInternalSettings) ?: return
-    val reactContext = reactContext ?: return
+    val devSettings = getCurrentDevSettings() ?: return
+    val reactContext = getCurrentReactContext() ?: return
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
 
-    manager.coroutineScope.launch {
+    DevMenuManager.coroutineScope.launch {
       try {
         DevMenuManager.metroClient.openJSInspector(metroHost, reactContext.packageName)
       } catch (e: Exception) {
@@ -81,13 +87,17 @@ class DevMenuDevToolsDelegate(
     }
   }
 
+  fun toggleFastRefresh() = runWithDevSupportEnabled {
+    val devSettings = getCurrentDevSettings() ?: return
+    devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
+  }
   /**
    * RN will temporary disable `devSupport` if the current activity isn't active.
    * Because of that we can't call some functions like `toggleElementInspector`.
    * However, we can temporary set the `devSupport` flag to true and run needed methods.
    */
   private inline fun runWithDevSupportEnabled(action: () -> Unit) {
-    val reactDevManager = reactDevManager ?: return
+    val reactDevManager = getDevSupportManager() ?: return
     val currentSetting = reactDevManager.devSupportEnabled
     reactDevManager.devSupportEnabled = true
     action()

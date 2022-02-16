@@ -18,13 +18,6 @@ export type DevSettings = {
 
 const DevMenu = NativeModules.ExpoDevMenuInternal;
 
-export async function dispatchCallableAsync(
-  callableId: string,
-  args: object | null = null
-): Promise<void> {
-  return await DevMenu.dispatchCallableAsync(callableId, args);
-}
-
 export function hideMenu(): void {
   DevMenu.hideMenu();
 }
@@ -42,27 +35,27 @@ export function openDevMenuFromReactNative() {
 }
 
 export async function navigateToLauncherAsync(): Promise<void> {
-  return await dispatchCallableAsync('backToLauncher');
+  return await DevMenu.navigateToLauncherAsync();
 }
 
 export async function togglePerformanceMonitorAsync() {
-  return await dispatchCallableAsync('performance-monitor');
+  return await DevMenu.togglePerformanceMonitorAsync();
 }
 
 export async function toggleElementInspectorAsync() {
-  return await dispatchCallableAsync('inspector');
+  return await DevMenu.toggleElementInspectorAsync();
 }
 
 export async function reloadAsync() {
-  return await dispatchCallableAsync('reload');
+  return await DevMenu.reloadAsync();
 }
 
 export async function toggleDebugRemoteJSAsync() {
-  return await dispatchCallableAsync('remote-debug');
+  return await DevMenu.toggleDebugRemoteJSAsync();
 }
 
 export async function toggleFastRefreshAsync() {
-  return await dispatchCallableAsync('fast-refresh');
+  return await DevMenu.toggleFastRefreshAsync();
 }
 
 export async function copyToClipboardAsync(content: string) {

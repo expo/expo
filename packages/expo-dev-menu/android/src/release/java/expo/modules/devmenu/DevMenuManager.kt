@@ -18,11 +18,21 @@ import expo.modules.manifests.core.Manifest
 
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
+interface DevMenuLauncherDelegate {
+  fun navigateToLauncher()
+}
+
 object DevMenuManager : DevMenuManagerInterface {
   internal var delegate: DevMenuDelegateInterface? = null
 
+
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
+  var launcherDelegate: DevMenuLauncherDelegate? = null
+
+  fun getInstanceManager(): ReactInstanceManager? {
+    return null
+  }
 
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null
