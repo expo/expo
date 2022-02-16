@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.test.core.ModuleMock
 import expo.modules.test.core.PromiseState
 import expo.modules.test.core.assertResolved
@@ -12,12 +13,16 @@ import io.mockk.confirmVerified
 import io.mockk.verify
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.Implementation
+import org.robolectric.annotation.Implements
+import org.robolectric.shadows.ShadowContextImpl
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P]) // API 28
@@ -86,8 +91,26 @@ class ClipboardModuleTest {
     confirmVerified(module.eventEmitter)
   }
 
+  @Test
+  @Config(shadows = [ContextWithoutClipboardService::class])
+  fun `should throw when ClipboardManager is unavailable`() {
+    val exception = runCatching { module.callFunction("getStringAsync") }.exceptionOrNull()
+    assertNotNull(exception)
+    assertTrue(exception is CodedException)
+    assertEquals(ERR_CLIPBOARD_UNAVAILABLE, (exception as CodedException).code)
+  }
+
   private val clipboardManager: ClipboardManager
     get() = ApplicationProvider
       .getApplicationContext<Context>()
       .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+}
+
+@Implements(className = ShadowContextImpl.CLASS_NAME)
+class ContextWithoutClipboardService : ShadowContextImpl() {
+  @Implementation
+  override fun getSystemService(name: String): Any? = when(name) {
+    Context.CLIPBOARD_SERVICE -> null
+    else -> super.getSystemService(name)
+  }
 }

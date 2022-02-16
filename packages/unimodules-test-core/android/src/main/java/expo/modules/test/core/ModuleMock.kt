@@ -1,5 +1,6 @@
 package expo.modules.test.core
 
+import android.content.Context
 import android.os.Bundle
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.bridge.JavaOnlyArray
@@ -34,6 +35,14 @@ class ModuleMock<T : Module>(
         reactContextHolder = WeakReference(context)
       )
     )
+
+    // NOTE (barthap): This initialization is often called in @Before method
+    // and Context sometimes isn't initialized yet. This workaround
+    // loads current context every time it is accessed
+    // TODO: Find a better solution for this
+    every { appContext getProperty "reactContext" } answers {
+      ReactApplicationContext(ApplicationProvider.getApplicationContext())
+    }
 
     val moduleSpy = spyk<Module>(module)
     every { moduleSpy getProperty "appContext" } returns appContext
