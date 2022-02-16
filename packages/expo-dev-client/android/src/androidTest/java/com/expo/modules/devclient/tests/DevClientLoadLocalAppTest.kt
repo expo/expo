@@ -157,20 +157,10 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
     }
 
     Views.DevMenu.main.isDisplayed()
-    val menuSession = DevMenuManager.getSession()
-    Truth.assertThat(DevMenuManager.getSession()).isNotNull()
-    requireNotNull(menuSession)
-    Truth.assertThat(menuSession.openScreen).isNull() // main screen
-    Truth.assertThat(menuSession.appInfo.getString("appName")).isEqualTo("Bundled App") // main screen
-
     onView(withText("Back to Launcher")).check(matches(isDisplayed()))
     onView(withText("Back to Launcher")).perform(ViewActions.click())
 
     Views.DevLauncher.main.isDisplayed()
-
-    Truth.assertThat(
-      DevMenuManager.getSession()?.reactInstanceManager?.currentReactContext?.currentActivity
-    ).isNull()
   }
 
   @Test
