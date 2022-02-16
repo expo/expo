@@ -21,16 +21,16 @@ import * as LoadingPageHandler from './server/middleware/LoadingPageHandler';
 import { openPlatformsAsync } from './server/openPlatforms';
 import * as Project from './server/startDevServers';
 
-async function multiBundlerStartOptions(
+async function getMultiBundlerStartOptions(
   projectRoot: string,
-  { devClient, forceManifestType, ...options }: Options,
+  { forceManifestType, ...options }: Options,
   settings: { webOnly?: boolean }
 ): Promise<Project.MultiBundlerStartOptions> {
   const multiBundlerStartOptions: Project.MultiBundlerStartOptions = [];
   const mode = options.dev ? 'development' : 'production';
   const commonOptions: BundlerStartOptions = {
     mode,
-    devClient,
+    devClient: options.devClient,
     forceManifestType,
     https: options.https,
     // host: options.host,
@@ -86,7 +86,7 @@ export async function startAsync(
     options.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
   }
 
-  const startOptions = await multiBundlerStartOptions(projectRoot, options, settings);
+  const startOptions = await getMultiBundlerStartOptions(projectRoot, options, settings);
 
   // Validations
 

@@ -23,7 +23,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
   async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     await this.stopAsync();
-
     const port =
       // If the manually defined port is busy then an error should be thrown...
       options.port ??
