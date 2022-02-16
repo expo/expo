@@ -42,7 +42,6 @@ import {
   ProjectsStackRoutes,
 } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
-import { KitchenSink } from 'screens/KitchenSink';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
@@ -212,18 +211,6 @@ function TabNavigator(props: { theme: string }) {
           tabBarLabel: 'Profile',
         }}
       />
-      {Boolean(__DEV__) && (
-        <BottomTab.Screen
-          name="KitchenSink"
-          component={KitchenSink}
-          options={{
-            tabBarIcon: (props) => (
-              <Ionicons {...props} style={styles.icon} name="pizza-outline" size={26} />
-            ),
-            tabBarLabel: 'Kitchen Sink',
-          }}
-        />
-      )}
     </BottomTab.Navigator>
   );
 }
