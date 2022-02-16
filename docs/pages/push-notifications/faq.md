@@ -7,7 +7,7 @@ This is a collection of FAQs and common issues when setting up push notification
 
 ### How much does Expo's push notification service cost?
 
-There is no cost associated with sending notifications through Expo's classic push notification service. EAS Notify, a push notification service with new features coming in 2021, will be part of EAS's pricing plans.
+There is no cost associated with sending notifications through Expo's classic push notification service. EAS Notify, an upcoming iteration of Expo's push notification service, will be a part of EAS's pricing plans.
 
 ### How many notifications can I send through Expo?
 
