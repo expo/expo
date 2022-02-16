@@ -1,11 +1,8 @@
 import { vol } from 'memfs';
 import nock from 'nock';
-import path from 'path';
 
 import { getExpoApiBaseUrl } from '../../../../api/endpoint';
 import { getBundledNativeModulesAsync } from '../bundledNativeModules';
-
-jest.mock('fs');
 
 describe(getBundledNativeModulesAsync, () => {
   const projectRoot = '/test-project';
@@ -43,12 +40,15 @@ describe(getBundledNativeModulesAsync, () => {
   });
 
   it('returns the cached bundled native modules if api is down', async () => {
-    vol.fromJSON({
-      [path.join(projectRoot, 'node_modules/expo/bundledNativeModules.json')]: JSON.stringify({
-        'expo-abc': '~1.2.3',
-        'expo-def': '~0.1.2',
-      }),
-    });
+    vol.fromJSON(
+      {
+        'node_modules/expo/bundledNativeModules.json': JSON.stringify({
+          'expo-abc': '~1.2.3',
+          'expo-def': '~0.1.2',
+        }),
+      },
+      projectRoot
+    );
     nock(getExpoApiBaseUrl()).get('/v2/sdks/66.0.0/native-modules').reply(504, 'api is down');
 
     const bundledNativeModules = await getBundledNativeModulesAsync(projectRoot, '66.0.0');

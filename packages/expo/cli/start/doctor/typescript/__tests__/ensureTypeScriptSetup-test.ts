@@ -2,7 +2,6 @@ import { vol } from 'memfs';
 
 import { shouldSetupTypeScriptAsync } from '../ensureTypeScriptSetup';
 
-jest.mock('fs');
 jest.mock('resolve-from');
 
 describe(shouldSetupTypeScriptAsync, () => {

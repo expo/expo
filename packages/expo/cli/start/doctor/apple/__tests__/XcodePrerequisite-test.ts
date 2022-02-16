@@ -4,15 +4,14 @@ import * as Log from '../../../../log';
 import { confirmAsync } from '../../../../utils/prompts';
 import { getXcodeVersionAsync, XcodePrerequisite } from '../XcodePrerequisite';
 
-const asMock = (fn: any): jest.Mock => fn;
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
-jest.mock('child_process', () => {
-  return {
-    execSync: jest.fn(),
-  };
-});
+jest.mock('child_process', () => ({
+  execSync: jest.fn(),
+}));
 
 function mockXcodeInstalled() {
   return asMock(execSync).mockReturnValue(`Xcode 13.1
@@ -79,11 +78,11 @@ for (const { xcodeVersion, promptRegex, condition } of [
 Build version 13A1030d`;
       })
       // Skip actually opening the app store.
-      .mockImplementationOnce((cmd) => {});
+      .mockImplementationOnce((cmd) => '');
 
     asMock(confirmAsync)
       // Ensure the confirmation is selected.
-      .mockImplementationOnce(() => true)
+      .mockImplementationOnce(async () => true)
       // Prevent any extra calls.
       .mockImplementationOnce((cc) => {
         throw new Error("shouldn't happen");

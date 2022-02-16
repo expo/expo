@@ -4,7 +4,8 @@ import resolveFrom from 'resolve-from';
 
 import { validateDependenciesVersionsAsync } from '../validateDependenciesVersions';
 
-jest.mock('fs');
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 jest.mock('../bundledNativeModules', () => ({
   getBundledNativeModulesAsync: () => ({
@@ -22,14 +23,17 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('resolves to true when the installed packages match bundled native modules', async () => {
-    vol.fromJSON({
-      [path.join(projectRoot, 'node_modules/expo-splash-screen/package.json')]: JSON.stringify({
-        version: '1.2.3',
-      }),
-      [path.join(projectRoot, 'node_modules/expo-updates/package.json')]: JSON.stringify({
-        version: '2.3.4',
-      }),
-    });
+    vol.fromJSON(
+      {
+        'node_modules/expo-splash-screen/package.json': JSON.stringify({
+          version: '1.2.3',
+        }),
+        'node_modules/expo-updates/package.json': JSON.stringify({
+          version: '2.3.4',
+        }),
+      },
+      projectRoot
+    );
     const exp = {
       sdkVersion: '41.0.0',
     };
@@ -43,14 +47,17 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('resolves to false when the installed packages do not match bundled native modules', async () => {
-    vol.fromJSON({
-      [path.join(projectRoot, 'node_modules/expo-splash-screen/package.json')]: JSON.stringify({
-        version: '0.2.3',
-      }),
-      [path.join(projectRoot, 'node_modules/expo-updates/package.json')]: JSON.stringify({
-        version: '1.3.4',
-      }),
-    });
+    vol.fromJSON(
+      {
+        'node_modules/expo-splash-screen/package.json': JSON.stringify({
+          version: '0.2.3',
+        }),
+        'node_modules/expo-updates/package.json': JSON.stringify({
+          version: '1.3.4',
+        }),
+      },
+      projectRoot
+    );
     const exp = {
       sdkVersion: '41.0.0',
     };
@@ -84,7 +91,7 @@ describe(validateDependenciesVersionsAsync, () => {
     // Manually trigger the Node import error for "exports".
     // This isn't triggered by memfs, or our mock, that's why we need to do it manually.
     // see: https://github.com/expo/expo-cli/pull/3878
-    (resolveFrom as jest.MockedFunction<typeof resolveFrom>).mockImplementationOnce(() => {
+    asMock(resolveFrom).mockImplementationOnce(() => {
       const message = `Package subpath './package.json' is not defined by "exports" in ${packageJsonPath}`;
       const error: any = new Error(message);
       error.code = 'ERR_PACKAGE_PATH_NOT_EXPORTED';

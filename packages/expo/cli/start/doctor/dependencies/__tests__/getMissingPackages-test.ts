@@ -1,17 +1,14 @@
 import { vol } from 'memfs';
-import path from 'path';
 
 import { getReleasedVersionsAsync } from '../../../../api/getVersions';
 import { getMissingPackagesAsync } from '../getMissingPackages';
 
-const asMock = (fn: any): jest.Mock => fn as jest.Mock;
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
-jest.mock('../../../../api/getVersions', () => {
-  return {
-    getReleasedVersionsAsync: jest.fn(),
-  };
-});
-jest.mock('fs');
+jest.mock('../../../../api/getVersions', () => ({
+  getReleasedVersionsAsync: jest.fn(),
+}));
 
 describe(getMissingPackagesAsync, () => {
   const projectRoot = '/test-project';
@@ -29,21 +26,24 @@ describe(getMissingPackagesAsync, () => {
       },
     });
 
-    vol.fromJSON({
-      [path.join(projectRoot, 'node_modules/react-native-web/package.json')]: JSON.stringify({}),
-      [path.join(projectRoot, 'app.json')]: JSON.stringify({
-        expo: {
-          // Mock out an SDK version to fetch from our mock endpoint.
-          sdkVersion: '43.0.0',
-        },
-      }),
-      [path.join(projectRoot, 'package.json')]: JSON.stringify({
-        name: 'my-app',
-        dependencies: {
-          'react-native-web': '1.0.0',
-        },
-      }),
-    });
+    vol.fromJSON(
+      {
+        'node_modules/react-native-web/package.json': JSON.stringify({}),
+        'app.json': JSON.stringify({
+          expo: {
+            // Mock out an SDK version to fetch from our mock endpoint.
+            sdkVersion: '43.0.0',
+          },
+        }),
+        'package.json': JSON.stringify({
+          name: 'my-app',
+          dependencies: {
+            'react-native-web': '1.0.0',
+          },
+        }),
+      },
+      projectRoot
+    );
 
     expect(
       await getMissingPackagesAsync(projectRoot, {

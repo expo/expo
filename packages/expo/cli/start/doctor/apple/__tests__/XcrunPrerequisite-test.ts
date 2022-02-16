@@ -4,16 +4,15 @@ import { execSync } from 'child_process';
 import { confirmAsync } from '../../../../utils/prompts';
 import { XcrunPrerequisite } from '../XcrunPrerequisite';
 
-const asMock = (fn: any): jest.Mock => fn;
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
 jest.mock('@expo/spawn-async');
-jest.mock('child_process', () => {
-  return {
-    execSync: jest.fn(),
-  };
-});
+jest.mock('child_process', () => ({
+  execSync: jest.fn(),
+}));
 
 it(`detects that xcrun is installed and is valid`, async () => {
   // Mock xcrun installed for CI
@@ -42,7 +41,7 @@ it(`asserts that xcrun is not installed and installs it successfully`, async () 
   asMock(confirmAsync)
     .mockReset()
     // Invoke the confirmation
-    .mockReturnValueOnce(true)
+    .mockResolvedValueOnce(true)
     .mockImplementation(() => {
       throw new Error("shouldn't happen");
     });
@@ -65,7 +64,7 @@ it(`asserts that xcrun is not installed and the user cancels`, async () => {
   asMock(confirmAsync)
     .mockReset()
     // Invoke the confirmation
-    .mockReturnValueOnce(false)
+    .mockResolvedValueOnce(false)
     .mockImplementation(() => {
       throw new Error("shouldn't happen");
     });
