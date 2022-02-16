@@ -21,6 +21,12 @@ export const EXPO_LOCAL = boolish('EXPO_LOCAL', false);
 /** Is running in non-interactive CI mode */
 export const CI = boolish('CI', false);
 
+/** Disable auto web setup */
+export const EXPO_NO_WEB_SETUP = () => boolish('EXPO_NO_WEB_SETUP', false);
+
+/** Disable auto TypeScript setup */
+export const EXPO_NO_TYPESCRIPT_SETUP = () => boolish('EXPO_NO_TYPESCRIPT_SETUP', false);
+
 /** Disable telemetry (analytics) */
 export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
 
