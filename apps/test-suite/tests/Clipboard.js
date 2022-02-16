@@ -15,11 +15,11 @@ export function test({ describe, expect, it, afterEach, ...t }) {
     };
 
     afterEach(async () => {
-      await Clipboard.setString('');
+      await Clipboard.setStringAsync('');
     });
 
     it('sets and gets a string', async () => {
-      await Clipboard.setString('test string');
+      await Clipboard.setStringAsync('test string');
       const result = await Clipboard.getStringAsync();
       expect(result).toEqual('test string');
     });
