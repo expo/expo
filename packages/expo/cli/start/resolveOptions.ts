@@ -166,9 +166,11 @@ export async function resolvePortsAsync(
     }
     multiBundlerSettings.webpackPort = webpackPort;
   } else {
+    const devClientDefaultPort = Number(process.env.RCT_METRO_PORT) || 8081;
+    const expoGoDefaultPort = 19000;
     const metroPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
-      fallbackPort: options.devClient ? 8081 : 19000,
+      fallbackPort: options.devClient ? devClientDefaultPort : expoGoDefaultPort,
     });
     if (!metroPort) {
       throw new AbortCommandError();
