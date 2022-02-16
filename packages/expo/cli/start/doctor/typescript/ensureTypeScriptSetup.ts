@@ -31,18 +31,21 @@ export async function ensureTypeScriptSetupAsync(projectRoot: string): Promise<v
   await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
 }
 
-export async function shouldSetupTypeScriptAsync(
-  projectRoot: string
-): Promise<{ isBootstrapping: boolean } | null> {
+export async function shouldSetupTypeScriptAsync(projectRoot: string): Promise<{
+  /** Indicates that TypeScript support is being bootstrapped. */
+  isBootstrapping: boolean;
+} | null> {
   const tsConfigPath = await hasTSConfig(projectRoot);
 
   // Enable TS setup if the project has a `tsconfig.json`
   if (tsConfigPath) {
     const content = await fs.readFile(tsConfigPath, { encoding: 'utf8' }).then(
       (txt) => txt.trim(),
+      // null when the file doesn't exist.
       () => null
     );
     const isBlankConfig = content === '' || content === '{}';
+    console.log('isBlankConfig', tsConfigPath, content);
     return { isBootstrapping: isBlankConfig };
   }
   // This is a somewhat heavy check in larger projects.
