@@ -18,6 +18,14 @@ export declare function getStringAsync(): Promise<string>;
  *
  * @param text The string to save to the clipboard.
  *
+ * @returns On web, this returns a promise that fulfills to a boolean value indicating whether or not
+ * the string was saved to the user's clipboard. On iOS and Android, an empty promise is returned.
+ */
+export declare function setStringAsync(text: string): Promise<boolean | void>;
+/**
+ * Sets the content of the user's clipboard.
+ * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext) instead.
+ *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
  */
