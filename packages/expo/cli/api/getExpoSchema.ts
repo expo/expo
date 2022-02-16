@@ -18,7 +18,7 @@ const schemaJson: { [sdkVersion: string]: Schema } = {};
 
 // TODO: Maybe move json-schema-deref-sync out of api (1.58MB -- lodash)
 // https://packagephobia.com/result?p=json-schema-deref-sync
-export async function getSchemaAsync(sdkVersion: string): Promise<Schema> {
+async function getSchemaAsync(sdkVersion: string): Promise<Schema> {
   const json = await getSchemaJSONAsync(sdkVersion);
   return schemaDerefSync(json.schema);
 }
@@ -75,13 +75,13 @@ async function getSchemaJSONAsync(sdkVersion: string): Promise<{ schema: Schema 
   return schemaJson[sdkVersion];
 }
 
-const fetchAsync = createCachedFetch({
-  cacheDirectory: 'schema-cache',
-  // We'll use a 1 week cache for versions so older versions get flushed out eventually.
-  ttl: 1000 * 60 * 60 * 24 * 7,
-});
-
 async function getConfigurationSchemaAsync(sdkVersion: string): Promise<JSONObject> {
+  // Reconstruct the cached fetch since caching could be disabled.
+  const fetchAsync = createCachedFetch({
+    cacheDirectory: 'schema-cache',
+    // We'll use a 1 week cache for versions so older versions get flushed out eventually.
+    ttl: 1000 * 60 * 60 * 24 * 7,
+  });
   const response = await fetchAsync(`project/configuration/schema/${sdkVersion}`);
   const { data } = await response.json();
   return data;

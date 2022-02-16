@@ -17,15 +17,16 @@ describe(resolveHostType, () => {
     expect(resolveHostType({ lan: true })).toBe('lan');
     expect(resolveHostType({ localhost: true })).toBe('localhost');
     expect(resolveHostType({ tunnel: true })).toBe('tunnel');
+    expect(resolveHostType({ offline: true })).toBe('lan');
     expect(resolveHostType({ host: 'tunnel' })).toBe('tunnel');
-    expect(resolveHostType({ offline: true })).toBe('localhost');
-    expect(resolveHostType({ offline: true, lan: true })).toBe('lan');
-    expect(resolveHostType({ offline: true, host: 'tunnel' })).toBe('tunnel');
+    // Default
+    expect(resolveHostType({})).toBe('lan');
   });
   it(`asserts invalid host type`, () => {
     expect(() => resolveHostType({ host: 'bacon' })).toThrow();
   });
   it(`asserts conflicting options`, () => {
+    expect(() => resolveHostType({ localhost: true, offline: true })).toThrow(/Specify at most/);
     expect(() => resolveHostType({ localhost: true, host: 'lan' })).toThrow(/Specify at most/);
     expect(() => resolveHostType({ localhost: true, lan: true })).toThrow(/Specify at most/);
     expect(() => resolveHostType({ tunnel: true, lan: true })).toThrow(/Specify at most/);
