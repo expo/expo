@@ -1,6 +1,5 @@
 package expo.modules.test.core
 
-import android.content.Context
 import android.os.Bundle
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.bridge.JavaOnlyArray

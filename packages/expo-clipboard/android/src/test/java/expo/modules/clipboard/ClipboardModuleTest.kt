@@ -86,7 +86,7 @@ class ClipboardModuleTest {
     // update clipboard content
     module.callFunction("setString", "ronald weasley")
 
-    // assert that event was NOT called
+    // assert that emit() was NOT called
     verify(inverse = true) { module.eventEmitter.emit("setString", any()) }
     confirmVerified(module.eventEmitter)
   }
@@ -109,7 +109,7 @@ class ClipboardModuleTest {
 @Implements(className = ShadowContextImpl.CLASS_NAME)
 class ContextWithoutClipboardService : ShadowContextImpl() {
   @Implementation
-  override fun getSystemService(name: String): Any? = when(name) {
+  override fun getSystemService(name: String): Any? = when (name) {
     Context.CLIPBOARD_SERVICE -> null
     else -> super.getSystemService(name)
   }
