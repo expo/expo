@@ -12,7 +12,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 private const val moduleName = "ExpoClipboard"
-private const val clipboardChangedEventName = "onClipboardChanged"
+const val clipboardChangedEventName = "onClipboardChanged"
 private val TAG = ClipboardModule::class.java.simpleName
 
 const val ERR_CLIPBOARD_UNAVAILABLE = "ERR_CLIPBOARD_UNAVAILABLE"
