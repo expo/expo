@@ -2,11 +2,13 @@ import { vol } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import * as Log from '../../../../log';
 import { validateDependenciesVersionsAsync } from '../validateDependenciesVersions';
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
+jest.mock(`../../../../log`);
 jest.mock('../bundledNativeModules', () => ({
   getBundledNativeModulesAsync: () => ({
     'expo-splash-screen': '~1.2.3',
@@ -47,6 +49,7 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('resolves to false when the installed packages do not match bundled native modules', async () => {
+    asMock(Log.warn).mockReset();
     vol.fromJSON(
       {
         'node_modules/expo-splash-screen/package.json': JSON.stringify({
@@ -68,6 +71,12 @@ describe(validateDependenciesVersionsAsync, () => {
     await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
       false
     );
+    expect(Log.warn).toHaveBeenNthCalledWith(
+      1,
+      'Some dependencies are incompatible with the installed expo package version:'
+    );
+    expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expo-splash-screen'));
+    expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('expo-updates'));
   });
 
   it('resolves to true when installed package uses "exports"', async () => {
