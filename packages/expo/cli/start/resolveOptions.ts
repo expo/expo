@@ -128,7 +128,7 @@ export function resolveHostType(options: {
   ) {
     throw new CommandError(
       'BAD_ARGS',
-      'Specify at most one of --offline, --host, --tunnel, --lan, and --localhost'
+      'Specify at most one of: --offline, --host, --tunnel, --lan, --localhost'
     );
   }
 
