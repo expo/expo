@@ -38,7 +38,7 @@ class ClipboardModuleTest {
   @Test
   fun `should save to and read from clipboard`() {
     // write to clipboard
-    val writePromise = module.callFunction("setString", "albus dumbledore")
+    val writePromise = module.callFunction("setStringAsync", "albus dumbledore")
     assertResolved(writePromise)
 
     // read from clipboard
@@ -63,7 +63,7 @@ class ClipboardModuleTest {
   @Test
   fun `should emit events when clipboard changes`() {
     // update clipboard content
-    val promise1 = module.callFunction("setString", "severus snape")
+    val promise1 = module.callFunction("setStringAsync", "severus snape")
     assertEquals(promise1.state, PromiseState.RESOLVED)
 
     // assert
@@ -84,7 +84,7 @@ class ClipboardModuleTest {
     module.activityGoesBackground()
 
     // update clipboard content
-    module.callFunction("setString", "ronald weasley")
+    module.callFunction("setStringAsync", "ronald weasley")
 
     // assert that emit() was NOT called
     verify(inverse = true) { module.eventEmitter.emit(clipboardChangedEventName, any()) }
