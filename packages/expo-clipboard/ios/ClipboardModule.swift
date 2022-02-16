@@ -12,7 +12,7 @@ public class ClipboardModule: Module {
       return UIPasteboard.general.string ?? ""
     }
 
-    function("setString") { (content: String?) in
+    function("setStringAsync") { (content: String?) in
       UIPasteboard.general.string = content ?? ""
     }
 
