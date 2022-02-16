@@ -197,7 +197,6 @@ export class BundlerDevServer {
     return new Promise<void>((resolve, reject) => {
       // Close the server.
       if (this.instance?.server) {
-        Log.log('\u203A Stopping server');
         this.instance.server.close((error) => {
           this.instance = null;
           if (error) {

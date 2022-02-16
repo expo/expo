@@ -12,6 +12,9 @@ import {
   TerminalReporter,
 } from './TerminalReporter';
 
+const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
+const DARK_BLOCK_CHAR = '\u2593';
+const LIGHT_BLOCK_CHAR = '\u2591';
 /**
  * Extends the default Metro logger and adds some additional features.
  * Also removes the giant Metro logo from the output.
@@ -23,11 +26,39 @@ export class MetroTerminalReporter extends TerminalReporter {
   /**
    * Extends the bundle progress to include the current platform that we're bundling.
    *
-   * @returns `iOS BUNDLE path/to/bundle.js ▓▓▓▓▓░░░░░░░░░░░ 36.6% (4790/7922)`
+   * @returns `iOS path/to/bundle.js ▓▓▓▓▓░░░░░░░░░░░ 36.6% (4790/7922)`
    */
   _getBundleStatusMessage(progress: BundleProgress, phase: BuildPhase): string {
     const platform = getPlatformTagForBuildDetails(progress.bundleDetails);
-    return platform + super._getBundleStatusMessage(progress, phase);
+    const inProgress = phase === 'in_progress';
+
+    if (!inProgress) {
+      const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
+      const color = phase === 'done' ? chalk.green : chalk.red;
+
+      const startTime = this._bundleTimers.get(progress.bundleDetails.buildID);
+      const time = chalk.dim(Date.now() - startTime + 'ms');
+      // iOS Bundling complete 150ms
+      return color(platform + status) + time;
+    }
+
+    const localPath = path.relative('.', progress.bundleDetails.entryFile);
+    const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
+
+    const _progress = inProgress
+      ? chalk.green.bgGreen(DARK_BLOCK_CHAR.repeat(filledBar)) +
+        chalk.bgWhite.white(LIGHT_BLOCK_CHAR.repeat(MAX_PROGRESS_BAR_CHAR_WIDTH - filledBar)) +
+        chalk.bold(` ${(100 * progress.ratio).toFixed(1)}% `) +
+        chalk.dim(`(${progress.transformedFileCount}/${progress.totalFileCount})`)
+      : '';
+
+    return (
+      platform +
+      chalk.reset.dim(`${path.dirname(localPath)}/`) +
+      chalk.bold(path.basename(localPath)) +
+      ' ' +
+      _progress
+    );
   }
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
@@ -144,80 +175,6 @@ function isAppRegistryStartupMessage(body: any[]): boolean {
       /^Running "main" with \{/.test(body[0]))
   );
 }
-
-// const { INTERNAL_CALLSITES_REGEX } = await import('@expo/metro-config');
-// const logLines = (msg: any, logFn: (...args: any[]) => void) => {
-//   if (typeof msg === 'string') {
-//     for (const line of msg.split('\n')) {
-//       logFn(line);
-//     }
-//   } else {
-//     logFn(msg);
-//   }
-// };
-// const logStackTrace = async (chunk: LogRecord, logFn: (...args: any[]) => void) => {
-//   let traceInfo;
-//   try {
-//     traceInfo = JSON.parse(chunk.msg);
-//   } catch (e) {
-//     return logFn(chunk.msg);
-//   }
-
-//   const { message, stack } = traceInfo;
-//   Log.log();
-//   logFn(chalk.bold(message));
-
-//   const isLibraryFrame = (line: string) => {
-//     return line.startsWith('node_modules');
-//   };
-
-//   const stackFrames: string[] = stack.split('\n').filter((line: string) => line);
-//   const lastAppCodeFrameIndex = findLastIndex(}Frames, (line) => {
-//     return !isLibraryFrame(line);
-//   });
-//   let lastFrameIndexToLog = Math.min(
-//     stackFrames.length - 1,
-//     lastAppCodeFrameIndex + 2 // show max two more frames after last app code frame
-//   );
-//   let unloggedFrames = stackFrames.length - lastFrameIndexToLog;
-
-//   // If we're only going to exclude one frame, just log them all
-//   if (unloggedFrames === 1) {
-//     lastFrameIndexToLog = stackFrames.length - 1;
-//     unloggedFrames = 0;
-//   }
-
-//   for (let i = 0; i <= lastFrameIndexToLog; i++) {
-//     const line = stackFrames[i];
-
-//     if (!line) {
-//       continue;
-//     }
-
-//     let isCollapsed = false;
-//     const fileNameOrUrl = matchFileNameOrURLFromStackTrace(line);
-//     if (fileNameOrUrl) {
-//       // Use the same regex we use in Metro config to filter out traces:
-//       isCollapsed = INTERNAL_CALLSITES_REGEX.test(fileNameOrUrl);
-
-//       // Unless the user is in debug mode, skip printing the collapsed files.
-//       if (!EXPO_DEBUG && isCollapsed) {
-//         continue;
-//       }
-//     }
-
-//     // If a file is collapsed, print it with dim styling.
-//     const style = isCollapsed ? chalk.dim : (message: string) => message;
-//     // Use the `at` prefix to match Node.js
-//     logFn(style('at ' + line));
-//   }
-
-//   if (unloggedFrames > 0) {
-//     logFn(`- ... ${unloggedFrames} more stack frames from framework internals`);
-//   }
-
-//   Log.log();
-// };
 
 function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null) {
   const platform = bundleDetails?.platform ?? null;

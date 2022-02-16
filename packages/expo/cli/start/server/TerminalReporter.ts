@@ -3,8 +3,11 @@ import { ReportableEvent } from 'metro';
 import UpstreamTerminalReporter, { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
 import util from 'util';
 
+import { stripAnsi } from '../../utils/ansi';
+
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
 export type BundleDetails = {
+  buildID?: string;
   bundleType: string;
   dev: boolean;
   entryFile: string;
@@ -55,8 +58,6 @@ export interface SnippetError extends Error {
 }
 
 import type { Terminal } from 'metro-core';
-import { stripAnsi } from '../../utils/ansi';
-
 /**
  * A standard way to log a warning to the terminal. This should not be called
  * from some arbitrary Metro logic, only from the reporters. Instead of
@@ -187,6 +188,9 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
    */
   _bundleDetails: Map<string, BundleDetails> = new Map();
 
+  /** Keep track of how long a bundle takes to complete */
+  _bundleTimers: Map<string, number> = new Map();
+
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
       case 'transform_cache_reset':
@@ -217,47 +221,29 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
   /** One of the first logs that will be printed. */
   protected dependencyGraphLoading(hasReducedPerformance: boolean): void {}
 
+  protected bundleBuildEnded(event, duration: number) {}
+
   /**
    * This function is exclusively concerned with updating the internal state.
    * No logging or status updates should be done at this point.
    */
-
   _updateState(event) {
+    // Append the buildID to the bundleDetails.
+    if (event.bundleDetails) {
+      event.bundleDetails.buildID = event.buildID;
+    }
+
+    super._updateState(event);
     switch (event.type) {
       case 'bundle_build_done':
       case 'bundle_build_failed':
-        this._activeBundles.delete(event.buildID);
-
+        this.bundleBuildEnded(event, Date.now() - this._bundleTimers.get(event.buildID));
+        this._bundleTimers.delete(event.buildID);
         break;
 
       case 'bundle_build_started':
-        {
-          const bundleProgress = {
-            bundleDetails: event.bundleDetails,
-            transformedFileCount: 0,
-            totalFileCount: 1,
-            ratio: 0,
-          };
-
-          this._activeBundles.set(event.buildID, bundleProgress);
-          this._bundleDetails.set(event.buildID, event.bundleDetails);
-        }
-        break;
-
-      case 'bundle_transform_progressed':
-        if (event.totalFileCount === event.transformedFileCount) {
-          this._scheduleUpdateBundleProgress.cancel();
-
-          this._updateBundleProgress(event);
-        } else {
-          this._scheduleUpdateBundleProgress(event);
-        }
-
-        break;
-
-      case 'bundle_transform_progressed_throttled':
-        this._updateBundleProgress(event);
-
+        this._bundleDetails.set(event.buildID, event.bundleDetails);
+        this._bundleTimers.set(event.buildID, Date.now());
         break;
     }
   }
