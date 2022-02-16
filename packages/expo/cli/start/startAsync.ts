@@ -33,7 +33,6 @@ async function getMultiBundlerStartOptions(
     devClient: options.devClient,
     forceManifestType,
     https: options.https,
-    // host: options.host,
     maxWorkers: options.maxWorkers,
     resetDevServer: options.clear,
     location: {
@@ -171,13 +170,17 @@ export async function startAsync(
     // Display the server location in CI...
     const url = Project.getDefaultDevServer()?.getDevServerUrl();
     if (url) {
-      Log.log(chalk`Waiting on {underline ${url}`);
+      Log.log(chalk`Waiting on {underline ${url}}`);
     }
   }
 
   // Final note about closing the server.
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';
-  Log.log(chalk`Logs for your project will appear ${logLocation}. {dim Press Ctrl+C to exit.}`);
+  Log.log(
+    chalk`Logs for your project will appear ${logLocation}.${
+      CI ? '' : chalk.dim(` Press Ctrl+C to exit.`)
+    }`
+  );
 }
 
 function track(projectRoot: string, exp: ExpoConfig) {

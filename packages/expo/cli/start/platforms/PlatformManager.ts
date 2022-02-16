@@ -76,7 +76,7 @@ export class PlatformManager<
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
     // TODO: We shouldn't have so much extra stuff to support dc here.
-    const url = this.constructDeepLink();
+    const url = this.constructDeepLink('exp');
     // This should never happen, but just in case...
     assert(url, 'Could not get dev server URL');
 
