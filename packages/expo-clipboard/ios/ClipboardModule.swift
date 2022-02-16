@@ -8,6 +8,8 @@ public class ClipboardModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoClipboard")
     
+    // MARK: Strings
+    
     function("getStringAsync") { () -> String in
       return UIPasteboard.general.string ?? ""
     }
@@ -17,30 +19,30 @@ public class ClipboardModule: Module {
       return true
     }
     
+    // MARK: URLs
+    
     function("getUrlAsync") { () -> String? in
       return UIPasteboard.general.url?.absoluteString
     }
     
-    function("setUrlAsync") { (content: String, promise: Promise) in
-      if let url = URL(string: content) {
-        UIPasteboard.general.url = url
-        promise.resolve()
-      } else {
-        promise.reject(InvalidUrlException(url: content))
+    function("setUrlAsync") { (content: String) in
+      guard let url = URL(string: content) else {
+        throw InvalidUrlException(url: content)
       }
+      UIPasteboard.general.url = url
     }
     
     function("hasUrlAsync") { () -> Bool in
       return UIPasteboard.general.hasURLs
     }
     
-    function("setImageAsync") { (content: String, promise: Promise) in
-      if let data = Data(base64Encoded: content), let image = UIImage(data: data) {
-        UIPasteboard.general.image = UIImage(data: data)
-        promise.resolve()
-      } else {
-        promise.reject(InvalidImageException(image: content))
+    // MARK: Images
+    
+    function("setImageAsync") { (content: String) in
+      guard let data = Data(base64Encoded: content), let image = UIImage(data: data) else {
+        throw InvalidImageException(image: content)
       }
+      UIPasteboard.general.image = image
     }
     
     function("hasImageAsync") { () -> Bool in
@@ -48,22 +50,22 @@ public class ClipboardModule: Module {
     }
     
     function("getPngImageAsync") { () -> String? in
-      let pngPrefix = "data:image/png;base64,"
-      if let image = UIPasteboard.general.image, let data = image.pngData() {
-        return pngPrefix + data.base64EncodedString()
-      } else {
+      guard let data = UIPasteboard.general.image?.pngData() else {
         return nil
       }
+      let pngPrefix = "data:image/png;base64,"
+      return pngPrefix + data.base64EncodedString()
     }
     
     function("getJpegImageAsync") { () -> String? in
-      let jpgPrefix = "data:image/jpeg;base64,"
-      if let image = UIPasteboard.general.image, let data = image.jpegData(compressionQuality: 1.0) {
-        return jpgPrefix + data.base64EncodedString()
-      } else {
+      guard let data = UIPasteboard.general.image?.jpegData(compressionQuality: 1.0) else {
         return nil
       }
+      let jpgPrefix = "data:image/jpeg;base64,"
+      return jpgPrefix + data.base64EncodedString()
     }
+    
+    // MARK: Events
     
     events(onClipboardChanged)
     
