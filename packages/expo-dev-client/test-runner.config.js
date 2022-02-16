@@ -4,7 +4,7 @@ module.exports = {
       preset: 'detox',
       reactVersion: '17.0.1',
       reactNativeVersion: '0.64.2',
-      detoxConfigFile: '.detoxrc.json',
+      detoxConfigFile: '.detoxrc.js',
       appEntryPoint: 'e2e/app/App.tsx',
       android: {
         mainApplication: 'e2e/android/MainApplication.java',

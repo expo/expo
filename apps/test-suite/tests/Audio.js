@@ -1,7 +1,7 @@
 'use strict';
 
 import { Asset } from 'expo-asset';
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { Platform } from 'react-native';
 
 import { retryForStatus, waitFor } from './helpers';
@@ -61,9 +61,9 @@ export function test(t) {
           const mode = {
             playsInSilentModeIOS: false,
             allowsRecordingIOS: true,
-            interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+            interruptionModeIOS: InterruptionModeIOS.DoNotMix,
             shouldDuckAndroid: false,
-            interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+            interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
             playThroughEarpieceAndroid: false,
             staysActiveInBackground: false,
           };

@@ -15,6 +15,7 @@
 #import "EXDevLauncherLoadingView.h"
 #import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
+#import "EXDevLauncherAuth.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -26,7 +27,6 @@
 
 #import <EXManifests/EXManifestsManifestFactory.h>
 
-@import EXDevMenuInterface;
 @import EXDevMenu;
 
 #ifdef EX_DEV_LAUNCHER_VERSION
@@ -53,6 +53,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
+@property (nonatomic, assign) BOOL isStarted;
 
 @end
 
@@ -94,8 +95,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
-   
-   return modules;
+  [modules addObject:[EXDevLauncherAuth new]];
+  
+  return modules;
 }
 
 + (NSString * _Nullable)version {
@@ -155,6 +157,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
+  _isStarted = YES;
   _delegate = delegate;
   _launchOptions = launchOptions;
   _window = window;
@@ -168,9 +171,26 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   }
 }
 
+- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
+{
+  _delegate = delegate;
+  _launchOptions = launchOptions;
+}
+
+- (void)autoSetupStart:(UIWindow *)window
+{
+  if (_delegate != nil) {
+    [self startWithWindow:window delegate:_delegate launchOptions:_launchOptions];
+  } else {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
+  }
+}
+
 - (void)navigateToLauncher
 {
   [_appBridge invalidate];
+  [self invalidateDevMenuApp];
+  
   self.manifest = nil;
   self.manifestURL = nil;
 
@@ -181,9 +201,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-
-  // Set up the `expo-dev-menu` delegate if menu is available
-  [self _maybeInitDevMenuDelegate:_launcherBridge];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
@@ -390,8 +407,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [self _addInitModuleObserver];
     
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
-    [self _maybeInitDevMenuDelegate:self.appBridge];
-
+    
+    [self setDevMenuAppBridge];
+    
     [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
@@ -456,19 +474,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
-}
-
-- (void)_maybeInitDevMenuDelegate:(RCTBridge *)bridge
-{
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    id<DevMenuManagerProviderProtocol> devMenuManagerProvider = [bridge modulesConformingToProtocol:@protocol(DevMenuManagerProviderProtocol)].firstObject;
-    
-    if (devMenuManagerProvider) {
-      id<DevMenuManagerProtocol> devMenuManager = [devMenuManagerProvider getDevMenuManager];
-      devMenuManager.delegate = [[EXDevLauncherMenuDelegate alloc] initWithLauncherController:self];
-    }
-  });
 }
 
 - (void)_addInitModuleObserver {
@@ -552,6 +557,26 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 -(void)copyToClipboard:(NSString *)content {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ? : @"");
+}
+
+- (void)setDevMenuAppBridge
+{
+  DevMenuManager *manager = [DevMenuManager shared];
+  manager.currentBridge = self.appBridge;
+  
+  if (self.manifest != nil) {
+    // TODO - update to proper values / convert via instance method
+    manager.currentManifest = [self.manifest.rawManifestJSON copy];
+    manager.currentManifestURL = self.manifestURL;
+  }
+}
+
+- (void)invalidateDevMenuApp
+{
+  DevMenuManager *manager = [DevMenuManager shared];
+  manager.currentBridge = nil;
+  manager.currentManifest = nil;
+  manager.currentManifestURL = nil;
 }
 
 @end

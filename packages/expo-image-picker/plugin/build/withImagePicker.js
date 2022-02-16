@@ -11,10 +11,10 @@ function setImagePickerManifestActivity(androidManifest) {
     if (!app.activity) {
         app.activity = [];
     }
-    if (!app.activity.find(({ $ }) => $['android:name'] === 'com.theartofdev.edmodo.cropper.CropImageActivity')) {
+    if (!app.activity.find(({ $ }) => $['android:name'] === 'com.canhub.cropper.CropImageActivity')) {
         app.activity.push({
             $: {
-                'android:name': 'com.theartofdev.edmodo.cropper.CropImageActivity',
+                'android:name': 'com.canhub.cropper.CropImageActivity',
                 'android:theme': '@style/Base.Theme.AppCompat',
             },
         });

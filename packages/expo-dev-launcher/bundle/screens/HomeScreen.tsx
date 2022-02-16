@@ -12,6 +12,7 @@ import {
   TerminalIcon,
   ChevronRightIcon,
   InfoIcon,
+  scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ScrollView } from 'react-native';
@@ -58,7 +59,6 @@ export function HomeScreen({
   const onLoadUrl = (url: string) => {
     loadApp(url).catch((error) => {
       modalStack.push({
-        title: 'Error loading app',
         element: <LoadAppErrorModal message={error.message} />,
       });
     });
@@ -85,11 +85,11 @@ export function HomeScreen({
   };
 
   const onDevServerQuestionPress = () => {
-    modalStack.push({ title: 'Development servers', element: <DevServerExplainerModal /> });
+    modalStack.push({ element: <DevServerExplainerModal /> });
   };
 
   return (
-    <View>
+    <View testID="DevLauncherMainScreen">
       <View bg="default">
         <AppHeader
           title={appName}
@@ -98,17 +98,16 @@ export function HomeScreen({
           onUserProfilePress={onUserProfilePress}
         />
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         <View py="large">
-          <Row px="medium" align="center">
-            <View px="small">
+          <Row px="small" align="center">
+            <View px="medium">
               <TerminalIcon />
             </View>
-            <Heading size="small" color="secondary">
-              Development servers
-            </Heading>
+            <Heading color="secondary">Development servers</Heading>
 
-            <Spacer.Horizontal size="flex" />
+            <Spacer.Horizontal />
+
             {devSessions.length > 0 && (
               <Button.ScaleOnPressContainer
                 bg="ghost"
@@ -129,7 +128,7 @@ export function HomeScreen({
               {devSessions.length === 0 && (
                 <>
                   <View padding="medium" bg="default" roundedTop="large">
-                    <Text size="medium">Start a local development server with:</Text>
+                    <Text>Start a local development server with:</Text>
                     <Spacer.Vertical size="small" />
 
                     <View bg="secondary" border="default" rounded="medium" padding="medium">
@@ -185,7 +184,7 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
         <Button.Text color="default">
           {isFetching ? 'Searching for development servers...' : 'Refetch development servers'}
         </Button.Text>
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
       </Row>
     </Button.ScaleOnPressContainer>
@@ -242,9 +241,7 @@ function RecentlyOpenedApps({ onAppPress }) {
   return (
     <View px="medium">
       <View padding="medium">
-        <Heading size="small" color="secondary">
-          Recently opened
-        </Heading>
+        <Heading color="secondary">Recently opened</Heading>
       </View>
 
       <View>

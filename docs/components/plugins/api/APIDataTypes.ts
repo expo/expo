@@ -51,6 +51,14 @@ export type TypeDefinitionData = {
   declaration?: TypeDeclarationContentData;
   value?: string | boolean | null;
   operator?: string;
+  objectType?: {
+    name: string;
+    type: string;
+  };
+  indexType?: {
+    type: string;
+    value: string;
+  };
 };
 
 export type MethodParamData = {
@@ -101,12 +109,13 @@ export type InterfaceDefinitionData = {
   children: PropData[];
   comment?: CommentData;
   kind: TypeDocKind;
+  extendedTypes?: TypeDefinitionData[];
+  implementedTypes?: TypeDefinitionData[];
 };
 
 // Classes section
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
-  extendedTypes?: TypeDefinitionData[];
   type?: TypeDefinitionData;
 };
 
@@ -131,6 +140,7 @@ export type PropsDefinitionData = {
   name: string;
   type: TypeDefinitionData;
   kind: TypeDocKind;
+  comment?: CommentData;
 };
 
 export type PropData = {
@@ -142,6 +152,8 @@ export type PropData = {
   defaultValue?: string;
   signatures?: MethodSignatureData[];
   overwrites?: TypeDefinitionData;
+  implementationOf?: TypeDefinitionData;
+  inheritedFrom?: TypeGeneralData;
 };
 
 export type DefaultPropsDefinitionData = {

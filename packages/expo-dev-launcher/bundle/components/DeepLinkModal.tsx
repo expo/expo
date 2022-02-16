@@ -15,6 +15,7 @@ import { useDevSessions } from '../hooks/useDevSessions';
 import { useModalStack } from '../hooks/useModalStack';
 import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { BaseModal } from './BaseModal';
 import { LoadAppErrorModal } from './LoadAppErrorModal';
 
 type DeepLinkModalProps = {
@@ -29,7 +30,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
   };
 
   return (
-    <View>
+    <BaseModal title="Deep link received:">
       <Spacer.Vertical size="small" />
       <View py="small" bg="secondary" rounded="medium" px="medium">
         <Text type="mono" numberOfLines={3}>
@@ -63,7 +64,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
           </View>
         </Button.ScaleOnPressContainer>
       </View>
-    </View>
+    </BaseModal>
   );
 }
 
@@ -77,7 +78,6 @@ function PackagersList() {
   const onPackagerPress = ({ url }: { url: string }) => {
     loadApp(url).catch((error) => {
       modalStack.push({
-        title: 'Error loading app',
         element: <LoadAppErrorModal message={error.message} />,
       });
     });
@@ -97,7 +97,7 @@ function PackagersList() {
         </Text>
 
         <Spacer.Vertical size="small" />
-        <Text size="medium">Start a local development server with:</Text>
+        <Text>Start a local development server with:</Text>
         <Spacer.Vertical size="small" />
 
         <View bg="secondary" border="default" rounded="medium" padding="medium">
@@ -153,7 +153,7 @@ function PackagerRow({ onPress, label }: PackagerRowProps) {
           <StatusIndicator size="small" status="success" />
           <Spacer.Horizontal size="small" />
           <Text>{label}</Text>
-          <Spacer.Horizontal size="flex" />
+          <Spacer.Horizontal />
           <ChevronRightIcon />
         </Row>
       </Button.ScaleOnPressContainer>

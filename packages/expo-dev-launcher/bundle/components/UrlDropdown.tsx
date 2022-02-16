@@ -62,7 +62,8 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
         onPress={onTogglePress}
         bg="default"
         roundedTop="none"
-        roundedBottom={open ? 'none' : 'large'}>
+        roundedBottom={open ? 'none' : 'large'}
+        testID="DevLauncherURLToggle">
         <Row align="center" padding="medium">
           <ChevronRightIcon style={arrowStyle} />
           <Spacer.Horizontal size="tiny" />
@@ -83,7 +84,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
               clearButtonMode="while-editing"
               keyboardType="url"
               autoCapitalize="none"
-              autoCompleteType="off"
+              autoComplete="off"
               autoCorrect={false}
               placeholder="http://10.0.0.25:19000"
               placeholderTextColor={theme.text.secondary}
@@ -91,6 +92,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
               value={inputValue}
               onChangeText={onChangeText}
               onBlur={onBlur}
+              testID="DevLauncherURLInput"
             />
             <View style={{ position: 'absolute', bottom: -20 }}>
               {!isValidUrl && inputValue !== '' && (
@@ -108,7 +110,8 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
             shadow="button"
             rounded="medium"
             disabled={!isValidUrl}
-            onPress={onConnectPress}>
+            onPress={onConnectPress}
+            testID="DevLauncherLoadAppButton">
             <View py="small">
               <Button.Text align="center" weight="semibold" color="tertiary">
                 Connect

@@ -6,8 +6,8 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.google.gson.Gson
+import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.modules.DevMenuInternalSessionManagerModuleInterface
-import expo.modules.devmenu.modules.DevMenuManagerProvider
 import org.json.JSONObject
 
 private const val UserLoginEvent = "expo.dev-menu.user-login"
@@ -20,11 +20,7 @@ private const val SessionStore = "expo.modules.devmenu.sessionstore"
 class DevMenuInternalSessionManagerModule(
   private val reactContext: ReactApplicationContext
 ) : DevMenuInternalSessionManagerModuleInterface {
-  private val devMenuManger by lazy {
-    reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)!!
-      .getDevMenuManager()
-  }
+  private val devMenuManager: DevMenuManager = DevMenuManager
 
   private val localStore = reactContext.getSharedPreferences(SessionStore, Context.MODE_PRIVATE)
 
@@ -60,9 +56,9 @@ class DevMenuInternalSessionManagerModule(
   }
 
   private fun setSessionSecret(sessionSecret: String?) {
-    val wasLoggedIn = devMenuManger.getExpoApiClient().isLoggedIn()
-    devMenuManger.getExpoApiClient().setSessionSecret(sessionSecret)
-    val isLoggedIn = devMenuManger.getExpoApiClient().isLoggedIn()
+    val wasLoggedIn = devMenuManager.getExpoApiClient().isLoggedIn()
+    devMenuManager.getExpoApiClient().setSessionSecret(sessionSecret)
+    val isLoggedIn = devMenuManager.getExpoApiClient().isLoggedIn()
 
     val eventName = if (!wasLoggedIn && isLoggedIn) {
       UserLoginEvent
@@ -73,7 +69,7 @@ class DevMenuInternalSessionManagerModule(
     }
 
     eventName?.let {
-      devMenuManger.sendEventToDelegateBridge(it, null)
+      devMenuManager.sendEventToDelegateBridge(it, null)
     }
   }
 

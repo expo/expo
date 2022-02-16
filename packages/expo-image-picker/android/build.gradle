@@ -72,7 +72,8 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
-  api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+  implementation "com.github.CanHub:Android-Image-Cropper:1.1.1"
+  implementation "androidx.exifinterface:exifinterface:1.3.3"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:2.6'

@@ -56,5 +56,11 @@ public interface AVManagerInterface {
 
   void unloadAudioRecorder(final Promise promise);
 
+  void getCurrentInput(final Promise promise);
+
+  void setInput(final String uid, final Promise promise);
+
+  void getAvailableInputs(final Promise promise);
+
   ModuleRegistry getModuleRegistry();
 }

@@ -64,6 +64,10 @@ export interface RawExpoModuleConfig {
          * Podspec relative path.
          */
         podspecPath?: string;
+        /**
+         * Swift product module name. If empty, the pod name is used for Swift imports.
+         */
+        swiftModuleName?: string;
     };
     /**
      * Android-specific config.
