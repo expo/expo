@@ -58,11 +58,11 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       }
 
       self.launchImagePicker(sourceType: .camera, options: options, promise: promise)
-    })
+    }).runOnQueue(DispatchQueue.main)
 
     function("launchImageLibraryAsync", { (options: ImagePickerOptions, promise: Promise) in
       self.launchImagePicker(sourceType: .photoLibrary, options: options, promise: promise)
-    })
+    }).runOnQueue(DispatchQueue.main)
   }
 
   private var currentPickingContext: PickingContext?
