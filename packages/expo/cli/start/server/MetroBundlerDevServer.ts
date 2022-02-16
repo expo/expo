@@ -36,7 +36,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     this.urlCreator = new UrlCreator(options.location, {
       port,
-      getTunnelUrl: this.getTunnelUrl,
+      getTunnelUrl: this.getTunnelUrl.bind(this),
     });
 
     const parsedOptions = {

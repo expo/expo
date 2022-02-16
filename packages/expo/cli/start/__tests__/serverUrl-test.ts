@@ -109,7 +109,7 @@ describe(UrlUtils.constructDeepLink, () => {
     ProcessSettings.devClient = false;
 
     const result = UrlUtils.constructDeepLink();
-    const expectedResult = UrlUtils.constructManifestUrl();
+    const expectedResult = UrlUtils.constructUrl();
     expect(result).toEqual(expectedResult);
   });
 });

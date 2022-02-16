@@ -1,172 +1,141 @@
 import assert from 'assert';
-import chalk from 'chalk';
-import QueryString from 'querystring';
-import url from 'url';
+import { URL } from 'url';
 
 import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
 import { getIpAddress } from '../../utils/ip';
 
-export interface URLOptions {
-  /** URL scheme to use when opening apps in custom runtimes. */
-  scheme: string | null;
-  /** Type of dev server host to use. */
-  hostType: 'localhost' | 'lan' | 'tunnel';
+export interface URLOptions extends CreateURLOptions {
   /** Should instruct the bundler to create minified bundles. */
   minify: boolean;
 
   mode?: 'production' | 'development';
 
-  urlType: null | 'exp' | 'http' | 'no-protocol' | 'custom';
-
   isOffline?: boolean;
 }
 
-export interface MetroQueryOptions {
-  dev?: boolean;
-  /** Should instruct the bundler to create minified bundles. */
-  minify: boolean;
+export interface CreateURLOptions {
+  /** URL scheme to use when opening apps in custom runtimes. */
+  scheme?: string | null;
+  /** Type of dev server host to use. */
+  hostType?: 'localhost' | 'lan' | 'tunnel';
+  /** Requested hostname. */
+  hostname?: string;
 }
 
 export class UrlCreator {
   constructor(
-    private defaults: Partial<URLOptions>,
+    private defaults: CreateURLOptions,
     private bundlerInfo: { port: number; getTunnelUrl?: () => string }
   ) {}
 
-  constructBundleUrl = (opts: Partial<URLOptions>, requestHostname?: string) =>
-    this.constructUrl(opts, true, requestHostname);
+  /**
+   * @returns URL like `http://localhost:19000/_expo/loading?platform=ios`
+   */
+  public constructLoadingUrl(opts: CreateURLOptions, platform: string) {
+    const url = new URL('_expo/loading', this.constructUrl({ scheme: 'http', ...opts }));
+    url.search = new URLSearchParams({ platform }).toString();
+    return url.toString();
+  }
 
-  constructManifestUrl = (opts?: Partial<URLOptions>, requestHostname?: string) =>
-    this.constructUrl(opts ?? null, false, requestHostname);
-
-  constructLogUrl = (requestHostname?: string) =>
-    `${this.constructUrl({ urlType: 'http' }, false, requestHostname)}/logs`;
-
-  constructLoadingUrl = (platform: string, requestHostname?: string) =>
-    `${this.constructUrl(
-      { urlType: 'http' },
-      false,
-      requestHostname
-    )}/_expo/loading?platform=${platform}`;
-
-  constructDebuggerHost = (requestHostname?: string) =>
-    this.constructUrl({ urlType: 'no-protocol' }, true, requestHostname);
-
-  constructDevClientUrl(opts?: Partial<URLOptions>, requestHostname?: string) {
-    let _scheme: string;
-    if (opts?.scheme) {
-      _scheme = opts?.scheme;
-    } else {
-      if (!this.defaults.scheme || typeof this.defaults.scheme !== 'string') {
-        throw new CommandError(
-          'NO_DEV_CLIENT_SCHEME',
-          'No scheme specified for development client'
-        );
-      }
-      _scheme = this.defaults.scheme;
+  public constructDevClientUrl(opts?: CreateURLOptions) {
+    const protocol: string = opts?.scheme || this.defaults.scheme;
+    if (!protocol) {
+      throw new CommandError('NO_DEV_CLIENT_SCHEME', 'No scheme specified for development client');
     }
-    const protocol = resolveProtocol({ scheme: _scheme, urlType: 'custom' });
-    const manifestUrl = this.constructManifestUrl({ ...opts, urlType: 'http' }, requestHostname);
+
+    const manifestUrl = this.constructUrl({ scheme: 'http', ...opts });
     return `${protocol}://expo-development-client/?url=${encodeURIComponent(manifestUrl)}`;
   }
 
-  // gets the base manifest URL and removes the scheme
-  constructHostUri(requestHostname?: string): string {
-    const urlString = this.constructUrl(null, false, requestHostname);
-    // we need to use node's legacy urlObject api since the newer one doesn't like empty protocols
-    const urlObj = url.parse(urlString);
-    urlObj.protocol = '';
-    urlObj.slashes = false;
-    return url.format(urlObj);
-  }
-
-  resolveOptions(opts: Partial<URLOptions> | null): URLOptions {
-    return assertValidOptions({
-      urlType: null,
+  public constructUrl(opts?: Partial<CreateURLOptions> | null): string {
+    const urlComponents = this.getUrlComponents({
       ...this.defaults,
-
       ...opts,
     });
+    return joinUrlComponents(urlComponents);
   }
 
-  constructBundleQueryParams(opts: MetroQueryOptions): string {
-    const queryParams: Record<string, boolean | string> = {
-      dev: !!opts.dev,
-      hot: false,
+  private getTunnelUrlComponents(opts: Pick<URLOptions, 'scheme'>) {
+    const tunnelUrl = this.bundlerInfo.getTunnelUrl();
+    if (!tunnelUrl) {
+      return null;
+    }
+    const parsed = new URL(tunnelUrl);
+    return {
+      port: parsed.port,
+      hostname: parsed.hostname,
+      protocol: opts.scheme ?? 'http',
     };
-
-    if ('minify' in opts) {
-      // TODO: Maybe default this to true if dev is false
-      queryParams.minify = !!opts.minify;
-    }
-
-    return QueryString.stringify(queryParams);
   }
 
-  constructUrl(
-    incomingOpts: Partial<URLOptions> | null,
-    isPackager: boolean,
-    requestHostname?: string
-  ): string {
-    const opts = this.resolveOptions(incomingOpts);
-
-    let protocol = resolveProtocol(opts);
-
-    let hostname;
-    let port;
-
-    const proxyURL = getProxyUrl(isPackager);
+  private getUrlComponents(opts: CreateURLOptions): {
+    port: string;
+    hostname: string;
+    protocol: string;
+  } {
+    // Proxy comes first.
+    const proxyURL = getProxyUrl();
     if (proxyURL) {
-      const parsedProxyURL = url.parse(proxyURL);
-      hostname = parsedProxyURL.hostname;
-      port = parsedProxyURL.port;
-      if (parsedProxyURL.protocol === 'https:') {
-        if (protocol === 'http') {
-          protocol = 'https';
-        }
-        if (!port) {
-          port = '443';
-        }
-      }
-    } else if (opts.hostType === 'localhost' || requestHostname === 'localhost') {
-      hostname = '127.0.0.1';
-      port = this.bundlerInfo.port;
-    } else if (opts.hostType === 'lan' || this.defaults.isOffline) {
-      // TODO: Drop EXPO_PACKAGER_HOSTNAME and REACT_NATIVE_PACKAGER_HOSTNAME
-      if (process.env.EXPO_PACKAGER_HOSTNAME) {
-        hostname = process.env.EXPO_PACKAGER_HOSTNAME.trim();
-      } else if (process.env.REACT_NATIVE_PACKAGER_HOSTNAME) {
-        hostname = process.env.REACT_NATIVE_PACKAGER_HOSTNAME.trim();
-      } else if (requestHostname) {
-        hostname = requestHostname;
-      } else {
-        hostname = getIpAddress();
-      }
-      port = this.bundlerInfo.port;
-    } else {
-      if (this.bundlerInfo.getTunnelUrl()) {
-        const pnu = url.parse(this.bundlerInfo.getTunnelUrl());
-        hostname = pnu.hostname;
-        port = pnu.port;
-      } else {
-        Log.warn(
-          chalk.yellow('Tunnel URL not found (it might not be ready yet), falling back to LAN URL.')
-        );
-
-        return this.constructUrl({ ...opts, hostType: 'lan' }, isPackager, requestHostname);
-      }
+      return getUrlComponentsFromProxyUrl(opts, proxyURL);
     }
 
-    return joinURLComponents({ protocol, hostname, port });
+    // Ngrok.
+    if (opts.hostType === 'tunnel') {
+      const components = this.getTunnelUrlComponents(opts);
+      if (components) {
+        return components;
+      }
+      Log.warn('Tunnel URL not found (it might not be ready yet), falling back to LAN URL.');
+    } else if (opts.hostType === 'localhost' && !opts.hostname) {
+      opts.hostname = 'localhost';
+    }
+
+    return {
+      hostname: getDefaultHostname(opts),
+      port: this.bundlerInfo.port.toString(),
+      protocol: opts.scheme ?? 'http',
+    };
   }
 }
 
-function joinURLComponents({
+function getUrlComponentsFromProxyUrl(opts: Pick<CreateURLOptions, 'scheme'>, url: string) {
+  const parsedProxyUrl = new URL(url);
+  let protocol = opts.scheme || 'http';
+  if (parsedProxyUrl.protocol === 'https:') {
+    if (protocol === 'http') {
+      protocol = 'https';
+    }
+    if (!parsedProxyUrl.port) {
+      parsedProxyUrl.port = '443';
+    }
+  }
+  return {
+    port: parsedProxyUrl.port,
+    hostname: parsedProxyUrl.hostname,
+    protocol,
+  };
+}
+
+function getDefaultHostname(opts: Pick<CreateURLOptions, 'hostname'>) {
+  // TODO: Drop REACT_NATIVE_PACKAGER_HOSTNAME
+  if (process.env.REACT_NATIVE_PACKAGER_HOSTNAME) {
+    return process.env.REACT_NATIVE_PACKAGER_HOSTNAME.trim();
+  } else if (opts.hostname === 'localhost') {
+    // Restrict the use of `localhost`
+    // TODO: Note why we do this.
+    return '127.0.0.1';
+  }
+
+  return opts.hostname || getIpAddress();
+}
+
+function joinUrlComponents({
   protocol,
   hostname,
   port,
 }: {
+  /** Empty string or nullish means no protocol will be added. */
   protocol?: string | null;
   hostname?: string | null;
   port?: string | number | null;
@@ -182,41 +151,9 @@ function joinURLComponents({
   return `${validProtocol}${hostname}:${validPort}`;
 }
 
-export function stripJSExtension(entryPoint: string): string {
-  return entryPoint.replace(/\.js$/, '');
-}
-
-function resolveProtocol({
-  urlType,
-  ...options
-}: Pick<URLOptions, 'urlType' | 'scheme'>): string | null {
-  if (urlType === 'http') {
-    return 'http';
-  } else if (urlType === 'no-protocol') {
-    return null;
-  } else if (urlType === 'custom') {
-    return options.scheme;
-  }
-  return 'exp';
-}
-
-function assertValidOptions(opts: Partial<URLOptions>): URLOptions {
-  assert(opts.minify == null || typeof opts.minify === 'boolean', `"minify" must be a boolean`);
-  assert(
-    opts.isOffline == null || typeof opts.isOffline === 'boolean',
-    `"isOffline" must be a boolean`
-  );
-  assert(opts.scheme == null || typeof opts.scheme === 'string', `"scheme" must be a string`);
-  if (!opts.urlType != null) assert.match(opts.urlType, /^(exp|http|no-protocol)$/);
-  if (!opts.hostType != null) assert.match(opts.hostType, /^(localhost|lan|tunnel)$/);
-  if (!opts.mode != null) assert.match(opts.mode, /^(development|production)$/);
-
-  return opts as URLOptions;
-}
-
 /** @deprecated */
-function getProxyUrl(isPackager: boolean): string | undefined {
-  return isPackager ? process.env.EXPO_PACKAGER_PROXY_URL : process.env.EXPO_MANIFEST_PROXY_URL;
+function getProxyUrl(): string | undefined {
+  return process.env.EXPO_PACKAGER_PROXY_URL;
 }
 
 // TODO: Drop the undocumented env variables:

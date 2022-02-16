@@ -5,6 +5,7 @@ import resolveFrom from 'resolve-from';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
+import { CreateURLOptions } from '../server/UrlCreator';
 import { DeviceManager } from './DeviceManager';
 
 export interface BaseOpenInCustomProps {
@@ -31,8 +32,9 @@ export class PlatformManager<
     protected projectRoot: string,
     protected props: {
       platform: 'ios' | 'android';
+      /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
-      getLoadingUrl: (platform?: string, type?: string) => string | null;
+      getLoadingUrl: (opts?: CreateURLOptions, platform?: string) => string | null;
       getManifestUrl: (props: { scheme?: string }) => string | null;
       resolveDeviceAsync: (
         resolver?: Partial<IResolveDeviceProps>

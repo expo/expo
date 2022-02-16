@@ -1,3 +1,4 @@
+import { CreateURLOptions } from '../../server/UrlCreator';
 import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
 import { AppleDeviceManager } from './AppleDeviceManager';
 import { resolveAppIdAsync } from './resolveAppId';
@@ -8,13 +9,13 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     protected projectRoot: string,
     protected port: number,
     getDevServerUrl: () => string | null,
-    getLoadingUrl: (platform?: string, type?: string) => string | null,
+    getLoadingUrl: (opts: CreateURLOptions, platform: string) => string | null,
     getManifestUrl: (props: { scheme?: string }) => string | null
   ) {
     super(projectRoot, {
       platform: 'ios',
       getDevServerUrl,
-      getLoadingUrl: () => getLoadingUrl('ios', 'localhost'),
+      getLoadingUrl: () => getLoadingUrl({ hostType: 'localhost' }, 'ios'),
       getManifestUrl,
       resolveDeviceAsync: AppleDeviceManager.resolveAsync,
     });

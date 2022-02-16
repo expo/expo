@@ -56,7 +56,7 @@ export interface BundlerStartOptions {
   // Webpack options
   isImageEditingEnabled?: boolean;
 
-  location: Omit<URLOptions, 'urlType'>;
+  location: URLOptions;
 }
 
 const PLATFORM_MANAGERS = {
@@ -215,7 +215,7 @@ export class BundlerDevServer {
   public getNativeRuntimeUrl() {
     return this.isDevClient
       ? this.urlCreator.constructDevClientUrl()
-      : this.urlCreator.constructManifestUrl();
+      : this.urlCreator.constructUrl({ scheme: 'exp' });
   }
 
   /** Get the URL for the running instance of the dev server. */
@@ -258,8 +258,8 @@ export class BundlerDevServer {
         this.projectRoot,
         this.getInstance()?.location?.port,
         this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
-        this.urlCreator.constructLoadingUrl,
-        this.urlCreator.constructManifestUrl
+        this.urlCreator.constructLoadingUrl.bind(this.urlCreator),
+        this.urlCreator.constructUrl.bind(this.urlCreator)
       );
     }
     return this.platformManagers[platform];

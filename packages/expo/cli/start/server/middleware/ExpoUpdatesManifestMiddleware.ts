@@ -12,9 +12,8 @@ import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import UserSettings from '../../../api/user/UserSettings';
 import * as Log from '../../../log';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
-import { stripPort } from '../../../utils/url';
+import { stripExtension, stripPort } from '../../../utils/url';
 import { ProcessSettings } from '../../ProcessSettings';
-import { stripJSExtension } from '../UrlCreator';
 import { getPlatformFromRequest } from './getPlatformFromRequest';
 import { ManifestHandlerMiddleware } from './ManifestMiddleware';
 import { resolveManifestAssets } from './resolveAssets';
@@ -67,7 +66,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
     const hostname = stripPort(host);
     const projectConfig = getConfig(projectRoot);
     const entryPoint = resolveEntryPoint(projectRoot, platform, projectConfig);
-    const mainModuleName = stripJSExtension(entryPoint);
+    const mainModuleName = stripExtension(entryPoint, 'js');
     const expoConfig = projectConfig.exp;
     const expoGoConfig = this.getExpoGoConfig({
       projectRoot,
@@ -78,7 +77,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
       hostname,
     });
 
-    const hostUri = this.urlCreator.constructHostUri(hostname);
+    const hostUri = this.urlCreator.constructUrl({ scheme: '', hostname });
 
     const runtimeVersion = Updates.getRuntimeVersion(
       { ...expoConfig, runtimeVersion: expoConfig.runtimeVersion ?? { policy: 'sdkVersion' } },

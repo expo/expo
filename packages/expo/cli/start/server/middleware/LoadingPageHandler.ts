@@ -86,8 +86,9 @@ export function getLoadingPageHandler(projectRoot: string, urlCreator: UrlCreato
       });
       res.setHeader('Location', projectUrl);
     } else {
-      const projectUrl = urlCreator.constructManifestUrl({
-        hostType: 'localhost',
+      const projectUrl = urlCreator.constructUrl({
+        scheme: 'exp',
+        hostname: 'localhost',
       });
       res.setHeader('Location', projectUrl);
     }

@@ -131,6 +131,8 @@ export class AsyncNgrok {
   }
 
   public async stopAsync(): Promise<void> {
+    Log.debug('[ngrok] Stopping Tunnel');
+
     await this.instance?.kill?.();
     this.serverUrl = null;
   }

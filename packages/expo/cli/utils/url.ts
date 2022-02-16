@@ -49,9 +49,13 @@ export function validateUrl(
   }
 }
 
-export function stripPort(host: string | undefined): string | undefined {
+export function stripPort(host?: string): string | undefined {
   if (!host) {
     return host;
   }
   return new URL('/', `http://${host}`).hostname;
+}
+
+export function stripExtension(url: string, extension: string): string {
+  return url.replace(new RegExp(`.${extension}$`), '');
 }

@@ -1,3 +1,4 @@
+import { CreateURLOptions } from '../../server/UrlCreator';
 import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 import { Device } from './AndroidDeviceBridge';
 import * as AndroidDeviceBridge from './AndroidDeviceBridge';
@@ -13,13 +14,13 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     protected projectRoot: string,
     protected port: number,
     getDevServerUrl: () => string | null,
-    getLoadingUrl: (platform?: string, type?: string) => string | null,
+    getLoadingUrl: (opts: CreateURLOptions, platform: string) => string | null,
     getManifestUrl: (props: { scheme?: string }) => string | null
   ) {
     super(projectRoot, {
       platform: 'android',
       getDevServerUrl,
-      getLoadingUrl: () => getLoadingUrl('android'),
+      getLoadingUrl: () => getLoadingUrl({}, 'android'),
       getManifestUrl,
       resolveDeviceAsync: AndroidDeviceManager.resolveAsync,
     });

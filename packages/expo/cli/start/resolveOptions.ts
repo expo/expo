@@ -122,21 +122,27 @@ export function resolveHostType(options: {
   localhost?: boolean;
   tunnel?: boolean;
 }): 'lan' | 'tunnel' | 'localhost' {
-  if ([options.host, options.lan, options.localhost, options.tunnel].filter((i) => i).length > 1) {
+  if (
+    [options.offline, options.host, options.lan, options.localhost, options.tunnel].filter((i) => i)
+      .length > 1
+  ) {
     throw new CommandError(
       'BAD_ARGS',
-      'Specify at most one of --host, --tunnel, --lan, and --localhost'
+      'Specify at most one of --offline, --host, --tunnel, --lan, and --localhost'
     );
   }
 
-  if (options.host) {
+  if (options.offline) {
+    // Force `lan` in offline mode.
+    return 'lan';
+  } else if (options.host) {
     assert.match(options.host, /^(lan|tunnel|localhost)$/);
     return options.host as 'lan' | 'tunnel' | 'localhost';
   } else if (options.tunnel) {
     return 'tunnel';
   } else if (options.lan) {
     return 'lan';
-  } else if (options.localhost || options.offline) {
+  } else if (options.localhost) {
     return 'localhost';
   }
   return 'lan';

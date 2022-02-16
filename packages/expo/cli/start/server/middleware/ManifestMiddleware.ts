@@ -20,7 +20,7 @@ export class ManifestHandlerMiddleware {
   constructor(
     protected projectRoot: string,
     protected urlCreator: UrlCreator,
-    protected options: { location: Omit<URLOptions, 'urlType'>; isNativeWebpack?: boolean }
+    protected options: { location: URLOptions; isNativeWebpack?: boolean }
   ) {}
 
   protected getBundleUrl({
@@ -32,28 +32,21 @@ export class ManifestHandlerMiddleware {
     hostname?: string;
     mainModuleName: string;
   }): string {
-    const queryParams = this.urlCreator.constructBundleQueryParams({
-      dev: this.options.location.mode === 'development',
-      minify: this.options.location.minify,
+    const queryParams = new URLSearchParams({
+      platform: encodeURIComponent(platform),
+      dev: String(this.options.location.mode === 'development'),
+      minify: String(!!this.options.location.minify),
+      hot: String(false),
     });
 
-    const path = `/${encodeURI(mainModuleName)}.bundle?platform=${encodeURIComponent(
-      platform
-    )}&${queryParams}`;
+    const path = `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 
     return (
-      this.urlCreator.constructBundleUrl(
-        {
-          hostType: this.options.location.hostType,
-          scheme: this.options.location.scheme,
-          minify: this.options.location.minify,
-          mode: this.options.location.mode,
-          urlType: 'http',
-
-          // urlType: ??
-        },
-        hostname
-      ) + path
+      this.urlCreator.constructUrl({
+        scheme: 'http',
+        hostType: this.options.location.hostType,
+        hostname,
+      }) + path
     );
   }
 
@@ -79,8 +72,11 @@ export class ManifestHandlerMiddleware {
     mainModuleName: string;
     hostname: string | undefined;
   }): ExpoGoConfig {
-    const debuggerHost = this.urlCreator.constructDebuggerHost(hostname);
-    const logUrl = this.urlCreator.constructLogUrl(hostname);
+    // localhost:19000
+    const debuggerHost = this.urlCreator.constructUrl({ scheme: '', hostname });
+    // http://localhost:19000/logs
+    const logUrl = this.urlCreator.constructUrl({ scheme: 'http', hostname }) + '/logs';
+
     return {
       // Required for Expo Go to function.
       developer: {

@@ -11,10 +11,9 @@ import UserSettings from '../../../api/user/UserSettings';
 import * as Log from '../../../log';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { learnMore } from '../../../utils/link';
-import { stripPort } from '../../../utils/url';
+import { stripExtension, stripPort } from '../../../utils/url';
 import { ProcessSettings } from '../../ProcessSettings';
 import * as ProjectDevices from '../../project/ProjectDevices';
-import { stripJSExtension } from '../UrlCreator';
 import { getPlatformFromLegacyRequest } from './getPlatformFromRequest';
 import { DEVELOPER_TOOL, ManifestHandlerMiddleware } from './ManifestMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
@@ -87,7 +86,7 @@ export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
     if (isNativeWebpack) {
       entryPoint = 'index.js';
     }
-    const mainModuleName = stripJSExtension(entryPoint);
+    const mainModuleName = stripExtension(entryPoint, 'js');
     // Gather packager and host info
     const hostInfo = await createHostInfoAsync();
     // Create the manifest and set fields within it
@@ -99,7 +98,7 @@ export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
       mainModuleName,
       hostname,
     });
-    const hostUri = this.urlCreator.constructHostUri(hostname);
+    const hostUri = this.urlCreator.constructUrl({ scheme: '', hostname });
     const manifest: ExpoAppManifest = {
       ...(projectConfig.exp as ExpoAppManifest),
       ...expoGoConfig,
