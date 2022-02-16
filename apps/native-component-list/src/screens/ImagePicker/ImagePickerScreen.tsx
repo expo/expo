@@ -3,10 +3,10 @@ import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
-import ListButton from '../components/ListButton';
-import MonoText from '../components/MonoText';
-import SimpleActionDemo from '../components/SimpleActionDemo';
-import TitleSwitch from '../components/TitledSwitch';
+import ListButton from '../../components/ListButton';
+import MonoText from '../../components/MonoText';
+import SimpleActionDemo from '../../components/SimpleActionDemo';
+import TitleSwitch from '../../components/TitledSwitch';
 
 async function requestCameraPermissionAsync() {
   // Image Picker doesn't need permissions in the web

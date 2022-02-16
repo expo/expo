@@ -241,7 +241,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ImagePickerScreen'));
+      return optionalRequire(() => require('../screens/ImagePicker/ImagePickerScreen'));
     },
     name: 'ImagePicker',
   },
