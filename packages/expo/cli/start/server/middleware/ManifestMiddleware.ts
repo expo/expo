@@ -35,9 +35,12 @@ export class ManifestHandlerMiddleware {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
       dev: String(this.options.location.mode === 'development'),
-      minify: String(!!this.options.location.minify),
       hot: String(false),
     });
+
+    if (this.options.location.minify) {
+      queryParams.append('minify', String(this.options.location.minify));
+    }
 
     const path = `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 
