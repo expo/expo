@@ -20,6 +20,7 @@ import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
+import { KitchenSink } from '../screens/KitchenSink';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
 import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
@@ -42,7 +43,6 @@ import {
   ProjectsStackRoutes,
 } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
-import { KitchenSink } from 'screens/KitchenSink';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
