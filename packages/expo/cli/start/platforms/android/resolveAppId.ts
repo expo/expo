@@ -39,6 +39,7 @@ export async function resolveAppIdAsync(projectRoot: string): Promise<string> {
     const applicationId = getConfig(projectRoot).exp.android?.package;
     if (!applicationId) {
       throw new CommandError(
+        'APP_ID',
         `Could not find property android.package in app.config.js/app.json. This setting is required to launch the app.`
       );
     }
@@ -48,6 +49,7 @@ export async function resolveAppIdAsync(projectRoot: string): Promise<string> {
   const applicationId = await resolveNativeApplicationIdAsync(projectRoot);
   if (!applicationId) {
     throw new CommandError(
+      'APP_ID',
       `Could not find applicationId in ${AndroidConfig.Paths.getAppBuildGradleFilePath(
         projectRoot
       )}`

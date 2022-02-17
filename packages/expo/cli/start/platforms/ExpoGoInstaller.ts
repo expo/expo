@@ -7,6 +7,7 @@ import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
 import { DeviceManager } from './DeviceManager';
 
+/** Given a platform, appId, and sdkVersion, this module will ensure that Expo Go is up-to-date on the provided device. */
 export class ExpoGoInstaller<IDevice> {
   // Keep a list of [platform-deviceId] so we can prevent asking multiple times if a user wants to upgrade.
   // This can prevent annoying interactions when they don't want to upgrade for whatever reason.
@@ -27,11 +28,12 @@ export class ExpoGoInstaller<IDevice> {
     return semver.lt(installedVersion, version);
   }
 
-  private async getExpectedClientVersionAsync() {
+  /** Returns the expected version of Expo Go given the project SDK Version. */
+  private async getExpectedClientVersionAsync(): Promise<string | null> {
     const versions = await getVersionsAsync();
     const specificVersion = versions?.[this.sdkVersion]?.[`${this.platform}ClientVersion`];
     const latestVersion = versions[`${this.platform}Version`];
-    return specificVersion ?? latestVersion;
+    return specificVersion ?? latestVersion ?? null;
   }
 
   /** Returns a boolean indicating if Expo Go should be installed. */

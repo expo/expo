@@ -3,13 +3,15 @@ import { IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import fs from 'fs';
 
+import { CommandError } from '../../../utils/errors';
+
 /**
  * Resolve the best possible bundle identifier for the project.
  * 1. Check the bundle identifier in the Xcode project.
  * 2. Check the Info.plist file.
  * 3. Check the Expo config.
  */
-export async function resolveAppIdAsync(projectRoot: string): Promise<string | null> {
+export async function resolveAppIdAsync(projectRoot: string): Promise<string> {
   // Check xcode project
   try {
     const bundleId = IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj(projectRoot);
@@ -28,5 +30,12 @@ export async function resolveAppIdAsync(projectRoot: string): Promise<string | n
   } catch {}
 
   // Check Expo config
-  return getConfig(projectRoot).exp.ios?.bundleIdentifier ?? null;
+  const bundleIdentifier = getConfig(projectRoot).exp.ios?.bundleIdentifier;
+  if (!bundleIdentifier) {
+    throw new CommandError(
+      'APP_ID',
+      `Project does not define an iOS bundle identifier in the Expo config.`
+    );
+  }
+  return bundleIdentifier;
 }

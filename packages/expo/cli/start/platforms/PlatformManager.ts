@@ -35,7 +35,10 @@ export class PlatformManager<
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
       getLoadingUrl: (opts?: CreateURLOptions, platform?: string) => string | null;
-      getManifestUrl: (props: { scheme?: string }) => string | null;
+
+      // TODO: Combine the dev server url methods
+      getNativeDevServerUrl: (props?: { scheme?: string }) => string | null;
+      /** Resolve a device, this function should automatically handle opening the device and asserting any system validations. */
       resolveDeviceAsync: (
         resolver?: Partial<IResolveDeviceProps>
       ) => Promise<DeviceManager<IDevice>>;
@@ -43,7 +46,7 @@ export class PlatformManager<
   ) {}
 
   /** Should use the interstitial page for selecting which runtime to use. Exposed for testing. */
-  shouldUseInterstitialPage(): boolean {
+  private shouldUseInterstitialPage(): boolean {
     return (
       process.env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
       // TODO: >:0
@@ -62,7 +65,7 @@ export class PlatformManager<
       return this.props.getLoadingUrl();
     } else {
       try {
-        return this.props.getManifestUrl({ scheme });
+        return this.props.getNativeDevServerUrl({ scheme });
       } catch (e) {
         if (devClient) {
           return null;
@@ -95,7 +98,7 @@ export class PlatformManager<
     return { url };
   }
 
-  private async openProjectInDevClientAsync(
+  private async openProjectInCustomRuntimeAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {},
     props: Partial<IOpenInCustomProps> = {}
   ): Promise<{ url: string }> {
@@ -134,6 +137,7 @@ export class PlatformManager<
     };
   }
 
+  /** Launch the project on a device given the input runtime. */
   public async openAsync(
     options:
       | {
@@ -150,7 +154,7 @@ export class PlatformManager<
     } else if (options.runtime === 'web') {
       return this.openWebProjectAsync(resolveSettings);
     } else if (options.runtime === 'custom') {
-      return this.openProjectInDevClientAsync(resolveSettings, options.props);
+      return this.openProjectInCustomRuntimeAsync(resolveSettings, options.props);
     } else {
       throw new CommandError(`Invalid runtime target: ${options.runtime}`);
     }
@@ -160,7 +164,8 @@ export class PlatformManager<
   protected async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
     url: string;
   }> {
-    const url = this.props.getDevServerUrl();
+    const url = this.props.getNativeDevServerUrl();
+    // const url =  this.props.getDevServerUrl();
     assert(url, 'Dev server is not running.');
 
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
@@ -171,6 +176,7 @@ export class PlatformManager<
     return { url };
   }
 
+  /** If the launch URL cannot be determined (`custom` runtimes) then an alternative string can be provided to open the device. Often a device ID or activity to launch. */
   protected resolveAlternativeLaunchUrl(
     applicationId: string,
     props: Partial<IOpenInCustomProps> = {}
@@ -178,6 +184,7 @@ export class PlatformManager<
     throw new UnimplementedError();
   }
 
+  /** Returns true if the project has a valid version of Expo Go installed. */
   protected async ensureDeviceHasValidExpoGoAsync(
     deviceManager: DeviceManager<IDevice>
   ): Promise<boolean> {
@@ -185,6 +192,7 @@ export class PlatformManager<
     return deviceManager.ensureExpoGoAsync(exp.sdkVersion);
   }
 
+  /** Returns the project application identifier or asserts that one is not defined. */
   protected async resolveExistingAppIdAsync(): Promise<string> {
     throw new UnimplementedError();
   }

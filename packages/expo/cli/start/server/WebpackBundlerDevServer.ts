@@ -157,10 +157,16 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       defaultPort: options.port,
     });
 
-    this.urlCreator = new UrlCreator(options.location, {
-      port,
-      getTunnelUrl: this.getTunnelUrl.bind(this),
-    });
+    this.urlCreator = new UrlCreator(
+      {
+        scheme: https ? 'https' : 'http',
+        ...options.location,
+      },
+      {
+        port,
+        getTunnelUrl: this.getTunnelUrl.bind(this),
+      }
+    );
 
     Log.debug('Starting webpack on port: ' + port);
 
