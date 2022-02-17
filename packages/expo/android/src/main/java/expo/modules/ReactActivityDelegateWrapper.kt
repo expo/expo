@@ -22,8 +22,8 @@ class ReactActivityDelegateWrapper(
 ) : ReactActivityDelegate(activity, null) {
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
-  private val reactActivityDelegateHandlers = ExpoModulesPackage.packageList
-    .flatMap { it.createReactActivityDelegateHandlers(activity) }
+  private val reactActivityHandlers = ExpoModulesPackage.packageList
+    .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
   /**
@@ -34,10 +34,10 @@ class ReactActivityDelegateWrapper(
   private var shouldNoop = false
 
   init {
-    reactActivityDelegateHandlers.forEach {
+    reactActivityHandlers.forEach {
       it.onWillCreateReactActivityDelegate(activity)
     }
-    shouldNoop = reactActivityDelegateHandlers
+    shouldNoop = reactActivityHandlers
       .map { it.shouldNoop() }
       .fold(false) { accu, current -> accu || current }
   }
@@ -49,11 +49,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    val reactRootView = reactActivityDelegateHandlers.asSequence()
+    return reactActivityHandlers.asSequence()
       .mapNotNull { it.createReactRootView(activity) }
       .firstOrNull() ?: invokeDelegateMethod("createRootView")
-
-    return reactRootView
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -138,7 +136,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-    return reactActivityDelegateHandlers
+    return reactActivityHandlers
       .map { it.onKeyUp(keyCode, event) }
       .fold(false) { accu, current -> accu || current } || delegate.onKeyUp(keyCode, event)
   }

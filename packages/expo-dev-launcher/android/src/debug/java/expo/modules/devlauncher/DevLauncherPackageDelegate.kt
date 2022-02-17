@@ -10,9 +10,8 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ApplicationLifecycleListener
-import expo.modules.core.interfaces.ReactActivityDelegateHandler
-import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.core.interfaces.ReactActivityHandler
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtensions
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
@@ -52,9 +51,9 @@ object DevLauncherPackageDelegate {
       }
     )
 
-  fun createReactActivityDelegateHandlers(activityContext: Context?): List<ReactActivityDelegateHandler> =
+  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
     listOf(
-      object : ReactActivityDelegateHandler {
+      object : ReactActivityHandler {
         override fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
           DevLauncherController.onWillCreateReactActivityDelegate(activity)
         }
