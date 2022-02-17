@@ -49,6 +49,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
       @"channel": channel
     };
   }
+
+  long long commitTime = [@(floor([launchedUpdate.commitTime timeIntervalSince1970] * 1000)) longLongValue];
   
   return @{
     @"isEnabled": @(YES),
@@ -60,7 +62,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
     @"isMissingRuntimeVersion": isMissingRuntimeVersion,
     @"releaseChannel": releaseChannel,
     @"runtimeVersion": runtimeVersion,
-    @"channel": channel
+    @"channel": channel,
+    @"commitTime": @(commitTime)
   };
 }
 

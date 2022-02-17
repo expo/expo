@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Added `Updates.createdAt` constant export. ([#16344](https://github.com/expo/expo/pull/16344)) by [@hannojg](https://github.com/hannojg)
+
 ## 0.11.6 — 2022-02-01
 
 ### 🐛 Bug fixes
