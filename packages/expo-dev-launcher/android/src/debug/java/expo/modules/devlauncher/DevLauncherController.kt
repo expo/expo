@@ -47,8 +47,6 @@ import okhttp3.OkHttpClient
 import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.dsl.module
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 // Use this to load from a development server for the development client launcher UI
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
@@ -371,6 +369,13 @@ class DevLauncherController private constructor()
       return devLauncherKoin()
         .get<DevLauncherControllerInterface>()
         .getCurrentReactActivityDelegate(activity, devLauncherReactActivityDelegateSupplier)
+    }
+
+    @JvmStatic
+    fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
+      devLauncherKoin()
+        .get<DevLauncherLifecycle>()
+        .delegateWillBeCreated(activity)
     }
 
     @JvmStatic
