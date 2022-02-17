@@ -54,7 +54,7 @@ export default {
 Extras can be accessed via `expo-constants`:
 
 ```ts
-// App.js
+// App.json
 import Constants from 'expo-constants';
 
 Constants.manifest.extra.fact === 'kittens are cool';
