@@ -63,7 +63,7 @@ EX_EXPORT_MODULE(ExpoUpdates);
     @"releaseChannel": releaseChannel,
     @"runtimeVersion": runtimeVersion,
     @"channel": channel,
-    @"commitTime": @(commitTime),
+    @"commitTime": @(commitTime)
   };
 }
 
