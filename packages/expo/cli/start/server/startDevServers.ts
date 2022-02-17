@@ -20,12 +20,20 @@ export type MultiBundlerStartOptions = {
   options?: BundlerStartOptions;
 }[];
 
+// Only store the settings in-memory.
+let persistedOptions: BundlerStartOptions | null = null;
+
+// Keep track of the original CLI options for bundlers that are started interactively.
+export function setPersistedOptions(options: BundlerStartOptions) {
+  persistedOptions = options;
+}
+
 /**
  * Sends a message over web sockets to any connected device,
  * does nothing when the dev server is not running.
  *
  * @param method name of the command. In RN projects `reload`, and `devMenu` are available. In Expo Go, `sendDevCommand` is available.
- * @param params
+ * @param params extra event info to send over the socket.
  */
 export function broadcastMessage(
   method: 'reload' | 'devMenu' | 'sendDevCommand',
@@ -101,11 +109,4 @@ export async function stopAsync(): Promise<void> {
     ]),
     new Promise((resolve) => setTimeout(resolve, 2000, 'stopFailed')),
   ]);
-}
-
-let persistedOptions: BundlerStartOptions | null = null;
-
-// Keep track of the original CLI options for bundlers that are started interactively.
-export function setPersistedOptions(options: BundlerStartOptions) {
-  persistedOptions = options;
 }

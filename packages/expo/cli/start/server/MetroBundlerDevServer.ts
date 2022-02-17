@@ -5,11 +5,11 @@ import { Terminal } from 'metro-core';
 
 import { getFreePortAsync } from '../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
+import { MetroTerminalReporter } from './metro/MetroTerminalReporter';
 import {
   importExpoMetroConfigFromProject,
   importMetroFromProject,
 } from './metro/resolveFromProject';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { createDevServerMiddleware } from './middleware/createDevServerMiddleware';
 import * as LoadingPageHandler from './middleware/LoadingPageHandler';
 import { UrlCreator } from './UrlCreator';
@@ -109,6 +109,7 @@ type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
+/** The most generic possible setup for Metro bundler. */
 async function runMetroDevServerAsync(
   projectRoot: string,
   options: Omit<MetroDevServerOptions, 'logger'>

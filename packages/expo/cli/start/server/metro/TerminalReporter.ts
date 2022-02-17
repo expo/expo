@@ -1,11 +1,13 @@
 import chalk from 'chalk';
 import { ReportableEvent } from 'metro';
+import { Terminal } from 'metro-core';
 import UpstreamTerminalReporter, { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
 import util from 'util';
 
-import { stripAnsi } from '../../utils/ansi';
+import { stripAnsi } from '../../../utils/ansi';
 
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
+
 export type BundleDetails = {
   buildID?: string;
   bundleType: string;
@@ -57,14 +59,13 @@ export interface SnippetError extends Error {
   errors?: any[];
 }
 
-import type { Terminal } from 'metro-core';
 /**
  * A standard way to log a warning to the terminal. This should not be called
  * from some arbitrary Metro logic, only from the reporters. Instead of
  * calling this, add a new type of ReportableEvent instead, and implement a
  * proper handler in the reporter(s).
  */
-export function logWarning(terminal: Terminal, format: string, ...args: Array<any>): void {
+export function logWarning(terminal: Terminal, format: string, ...args: any[]): void {
   const str = util.format(format, ...args);
   terminal.log('%s: %s', chalk.yellow('warning'), str);
 }
@@ -72,7 +73,7 @@ export function logWarning(terminal: Terminal, format: string, ...args: Array<an
 /**
  * Similar to `logWarning`, but for messages that require the user to act.
  */
-export function logError(terminal: Terminal, format: string, ...args: Array<any>): void {
+export function logError(terminal: Terminal, format: string, ...args: any[]): void {
   terminal.log(
     '%s: %s',
     chalk.red('error'),

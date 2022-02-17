@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { Terminal } from 'metro-core';
 import path from 'path';
 
-import { learnMore } from '../../utils/link';
+import { learnMore } from '../../../utils/link';
 import {
   BuildPhase,
   BundleDetails,
