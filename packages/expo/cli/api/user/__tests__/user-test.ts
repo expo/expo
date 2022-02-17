@@ -1,6 +1,5 @@
 import { getUserStatePath } from '@expo/config/build/getUserState';
-import fs from 'fs-extra';
-import { vol } from 'memfs';
+import { fs, vol } from 'memfs';
 import nock from 'nock';
 
 import { getExpoApiBaseUrl } from '../../endpoint';
@@ -73,7 +72,7 @@ describe(loginAsync, () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
 
-    expect(await fs.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
+    expect(await fs.promises.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
       "{
         \\"auth\\": {
           \\"sessionSecret\\": \\"SESSION_SECRET\\",

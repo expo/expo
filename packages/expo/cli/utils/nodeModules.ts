@@ -6,7 +6,6 @@ import path from 'path';
 import semver from 'semver';
 
 import * as Log from '../log';
-import { removeAsync } from './dir';
 import { EXPO_DEBUG } from './env';
 import { SilentError } from './errors';
 import { logNewSection } from './ora';
@@ -49,7 +48,7 @@ export async function installNodeDependenciesAsync(
     const time = Date.now();
     // nuke the node modules
     // TODO: this is substantially slower, we should find a better alternative to ensuring the modules are installed.
-    await removeAsync('node_modules');
+    await fs.promises.rmdir('node_modules');
     cleanJsDepsStep.succeed(
       `Cleaned JavaScript dependencies ${chalk.gray(Date.now() - time + 'ms')}`
     );
