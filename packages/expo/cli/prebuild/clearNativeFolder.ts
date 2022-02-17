@@ -14,7 +14,12 @@ export async function clearNativeFolder(projectRoot: string, folders: string[]) 
   const step = logNewSection(`Clearing ${folders.join(', ')}`);
   try {
     await Promise.all(
-      folders.map((folderName) => fs.promises.rmdir(path.join(projectRoot, folderName)))
+      folders.map((folderName) =>
+        fs.promises.rm(path.join(projectRoot, folderName), {
+          recursive: true,
+          force: true,
+        })
+      )
     );
     step.succeed(`Cleared ${folders.join(', ')} code`);
   } catch (error: any) {

@@ -48,7 +48,7 @@ export async function installNodeDependenciesAsync(
     const time = Date.now();
     // nuke the node modules
     // TODO: this is substantially slower, we should find a better alternative to ensuring the modules are installed.
-    await fs.promises.rmdir('node_modules');
+    await fs.promises.rm('node_modules', { recursive: true, force: true });
     cleanJsDepsStep.succeed(
       `Cleaned JavaScript dependencies ${chalk.gray(Date.now() - time + 'ms')}`
     );
