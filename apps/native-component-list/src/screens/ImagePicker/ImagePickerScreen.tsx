@@ -1,4 +1,5 @@
 import { ResizeMode, Video } from 'expo-av';
+import { writeContactToFileAsync } from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -7,6 +8,7 @@ import ListButton from '../../components/ListButton';
 import MonoText from '../../components/MonoText';
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import TitleSwitch from '../../components/TitledSwitch';
+import PermissionMethodDemo from './PermissionMethodDemo';
 
 async function requestCameraPermissionAsync() {
   // Image Picker doesn't need permissions in the web
@@ -26,7 +28,7 @@ async function requestMediaLibraryPermissionAsync() {
   return status === 'granted';
 }
 
-function ImagePickerScreen() {
+function OldImagePickerScreen() {
   const [base64Enabled, setB64Enabled] = React.useState(false);
   const [selection, setSelection] = React.useState<ImagePicker.ImagePickerResult | undefined>(
     undefined
@@ -78,18 +80,18 @@ function ImagePickerScreen() {
     }
 
     return (
-      <View style={styles.detailsContainer}>
-        <View style={styles.previewContainer}>
+      <View style={oldstyles.detailsContainer}>
+        <View style={oldstyles.previewContainer}>
           {selection.type === 'video' ? (
             <Video
               source={{ uri: selection.uri }}
-              style={styles.video}
+              style={oldstyles.video}
               resizeMode={ResizeMode.CONTAIN}
               shouldPlay
               isLooping
             />
           ) : (
-            <Image source={{ uri: selection.uri }} style={styles.image} />
+            <Image source={{ uri: selection.uri }} style={oldstyles.image} />
           )}
         </View>
         <MonoText>{JSON.stringify(selection, null, 2)}</MonoText>
@@ -98,7 +100,7 @@ function ImagePickerScreen() {
   };
 
   return (
-    <ScrollView style={styles.mainContainer}>
+    <ScrollView style={oldstyles.mainContainer}>
       <SimpleActionDemo
         title="requestMediaLibraryPermissionsAsync"
         action={() => ImagePicker.requestMediaLibraryPermissionsAsync()}
@@ -167,11 +169,11 @@ function ImagePickerScreen() {
   );
 }
 
-ImagePickerScreen.navigationOptions = {
+OldImagePickerScreen.navigationOptions = {
   title: 'ImagePicker',
 };
 
-const styles = StyleSheet.create({
+const oldstyles = StyleSheet.create({
   mainContainer: {
     padding: 10,
   },
@@ -207,6 +209,55 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     marginVertical: 16,
+  },
+});
+
+const PERMISSION_METHODS_DEFINITIONS = [
+  {
+    name: 'requestMediaLibraryPermissionsAsync',
+    params: [{ name: 'writeOnly', type: 'boolean', initial: false, title: 'write only' }],
+    action: (writeOnly: boolean) => ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly),
+  },
+  {
+    name: 'getMediaLibraryPermissionsAsync',
+    params: [{ name: 'writeOnly', type: 'boolean', initial: false, title: 'write only' }],
+    action: (writeOnly: boolean) => ImagePicker.getMediaLibraryPermissionsAsync(writeOnly),
+  },
+  {
+    name: 'requestCameraPermissionsAsync',
+    action: () => ImagePicker.requestCameraPermissionsAsync(),
+  },
+  {
+    name: 'getCameraPermissionsAsync',
+    action: () => ImagePicker.getCameraPermissionsAsync(),
+  },
+];
+
+function ImagePickerScreen() {
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {PERMISSION_METHODS_DEFINITIONS.map(({ params, ...props }, idx) => (
+        <PermissionMethodDemo
+          key={idx}
+          methodSignatureGenerator={(name: string, args: Record<string, any>) =>
+            `ImagePicker.${name}(${params ? args.writeOnly : ''})`
+          }
+          params={params}
+          {...props}
+        />
+      ))}
+    </ScrollView>
+  );
+}
+
+ImagePickerScreen.navigationOptions = {
+  title: 'ImagePicker',
+};
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 10,
+    justifyContent: 'center',
   },
 });
 
