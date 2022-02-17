@@ -1,5 +1,5 @@
 import JsonFile, { JSONObject } from '@expo/json-file';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 /** Create a set of functions for managing a file in the project's `.expo` directory. */
@@ -46,7 +46,7 @@ function getDotExpoProjectDirectory(projectRoot: string): string {
 
 function ensureDotExpoProjectDirectoryInitialized(projectRoot: string): string {
   const dirPath = getDotExpoProjectDirectory(projectRoot);
-  fs.ensureDirSync(dirPath);
+  fs.mkdirSync(dirPath, { recursive: true });
 
   const readmeFilePath = path.resolve(dirPath, 'README.md');
   if (!fs.existsSync(readmeFilePath)) {
