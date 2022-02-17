@@ -14,11 +14,14 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
+import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
-  private val delegate: ReactActivityDelegate
+  private var delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
@@ -26,21 +29,20 @@ class ReactActivityDelegateWrapper(
     .flatMap { it.createReactActivityDelegateHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
-  /**
-   * Opportunity for ReactActivityDelegateHandler to declare, at the time of initialization, that
-   * this instance should ignore certain method calls and not pass them through to the wrapped
-   * delegate. (Used by expo-dev-launcher)
-   */
-  private var shouldNoop = false
-
-  init {
-    reactActivityDelegateHandlers.forEach {
-      it.onWillCreateReactActivityDelegate(activity)
-    }
-    shouldNoop = reactActivityDelegateHandlers
-      .map { it.shouldNoop() }
-      .fold(false) { accu, current -> accu || current }
-  }
+//  init {
+//    val newDelegate = reactActivityDelegateHandlers.asSequence()
+//      .mapNotNull { it.onDidCreateReactActivityDelegate(activity, this) }
+//      .firstOrNull()
+//
+//    if (newDelegate != null && newDelegate != this) {
+//      val mDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
+//      mDelegateField.isAccessible = true
+//      val modifiers = Field::class.java.getDeclaredField("accessFlags")
+//      modifiers.isAccessible = true
+//      modifiers.setInt(mDelegateField, mDelegateField.modifiers and Modifier.FINAL.inv())
+//      mDelegateField.set(activity, newDelegate)
+//    }
+//  }
 
   //region ReactActivityDelegate
 
@@ -49,11 +51,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    val reactRootView = reactActivityDelegateHandlers.asSequence()
+    return reactActivityDelegateHandlers.asSequence()
       .mapNotNull { it.createReactRootView(activity) }
       .firstOrNull() ?: invokeDelegateMethod("createRootView")
-
-    return reactRootView
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -69,13 +69,25 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun loadApp(appKey: String?) {
-    if (shouldNoop) {
-      return
-    }
     return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    val newDelegate = reactActivityDelegateHandlers.asSequence()
+      .mapNotNull { it.onDidCreateReactActivityDelegate(activity, this) }
+      .firstOrNull()
+
+    if (newDelegate != null && newDelegate != this) {
+      val mDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
+      mDelegateField.isAccessible = true
+      val modifiers = Field::class.java.getDeclaredField("accessFlags")
+      modifiers.isAccessible = true
+      modifiers.setInt(mDelegateField, mDelegateField.modifiers and Modifier.FINAL.inv())
+      mDelegateField.set(activity, newDelegate)
+      delegate = newDelegate
+      return invokeDelegateMethod("onCreate", arrayOf(Bundle::class.java), arrayOf(savedInstanceState))
+    }
+
     // Since we just wrap `ReactActivityDelegate` but not inherit it, in its `onCreate`,
     // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
     // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
@@ -100,9 +112,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
-    if (shouldNoop) {
-      return
-    }
     invokeDelegateMethod<Unit>("onResume")
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onResume(activity)
@@ -110,9 +119,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onPause() {
-    if (shouldNoop) {
-      return
-    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
     }
@@ -120,9 +126,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onDestroy() {
-    if (shouldNoop) {
-      return
-    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)
     }
@@ -148,9 +151,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onBackPressed(): Boolean {
-    if (shouldNoop) {
-      return true
-    }
     val listenerResult = reactActivityLifecycleListeners
       .map(ReactActivityLifecycleListener::onBackPressed)
       .fold(false) { accu, current -> accu || current }
@@ -159,9 +159,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onNewIntent(intent: Intent?): Boolean {
-    if (shouldNoop) {
-      return true
-    }
     val listenerResult = reactActivityLifecycleListeners
       .map { it.onNewIntent(intent, activity) }
       .fold(false) { accu, current -> accu || current }
@@ -170,9 +167,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
-    if (shouldNoop) {
-      return
-    }
     delegate.onWindowFocusChanged(hasFocus)
   }
 
@@ -181,9 +175,6 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
-    if (shouldNoop) {
-      return
-    }
     delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
   }
 
