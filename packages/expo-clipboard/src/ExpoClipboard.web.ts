@@ -30,6 +30,9 @@ export default {
     document.body.removeChild(textField);
     return success;
   },
+  async setStringAsync(text: string): Promise<boolean> {
+    return this.setString(text);
+  },
   addClipboardListener(): void {},
   removeClipboardListener(): void {},
 };

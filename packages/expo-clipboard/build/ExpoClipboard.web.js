@@ -33,6 +33,9 @@ export default {
         document.body.removeChild(textField);
         return success;
     },
+    async setStringAsync(text) {
+        return this.setString(text);
+    },
     addClipboardListener() { },
     removeClipboardListener() { },
 };

@@ -29,9 +29,10 @@ class ClipboardModule : Module() {
       clip?.getItemAt(0)?.text ?: ""
     }
 
-    function("setString") { content: String ->
+    function("setStringAsync") { content: String ->
       val clip = ClipData.newPlainText(null, content)
       clipboardManager.setPrimaryClip(clip)
+      return@function true
     }
 
     events(clipboardChangedEventName)
