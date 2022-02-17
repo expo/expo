@@ -1,5 +1,5 @@
 import JsonFile, { JSONObject } from '@expo/json-file';
-import fs, { ensureDirSync } from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
 
 /** Create a set of functions for managing a file in the project's `.expo` directory. */
@@ -13,7 +13,7 @@ export function createTemporaryProjectFile<T extends JSONObject>(fileName: strin
     let projectSettings;
     try {
       projectSettings = await getFile(projectRoot).readAsync();
-    } catch (e) {
+    } catch {
       projectSettings = await getFile(projectRoot).writeAsync(defaults);
     }
     // Set defaults for any missing fields
@@ -25,7 +25,7 @@ export function createTemporaryProjectFile<T extends JSONObject>(fileName: strin
       return await getFile(projectRoot).mergeAsync(json, {
         cantReadFileDefault: defaults,
       });
-    } catch (e) {
+    } catch {
       return await getFile(projectRoot).writeAsync({
         ...defaults,
         ...json,
@@ -46,7 +46,7 @@ function getDotExpoProjectDirectory(projectRoot: string): string {
 
 function ensureDotExpoProjectDirectoryInitialized(projectRoot: string): string {
   const dirPath = getDotExpoProjectDirectory(projectRoot);
-  ensureDirSync(dirPath);
+  fs.ensureDirSync(dirPath);
 
   const readmeFilePath = path.resolve(dirPath, 'README.md');
   if (!fs.existsSync(readmeFilePath)) {
