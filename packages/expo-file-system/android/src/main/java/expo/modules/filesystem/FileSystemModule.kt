@@ -83,13 +83,13 @@ private const val HEADER_KEY = "headers"
 private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
 
 private fun slashifyFilePath(path: String?): String {
-    return if (path == null) {
-      null
-    } else if (path.startsWith("file:///")) {
-        path
-    } else {
-        path.replace("file:/", "file:///")
-    }
+  return if (path == null) {
+    null
+  } else if (path.startsWith("file:///")) {
+    path
+  } else {
+    path.replace("file:/", "file:///")
+  }
 }
 
 // The class needs to be 'open', because it's inherited in expoview
