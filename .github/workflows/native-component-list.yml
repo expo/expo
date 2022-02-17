@@ -8,10 +8,11 @@ on:
       - apps/native-component-list/**
       - packages/**
       - yarn.lock
+    paths-ignore:
       # Ignore Expo CLI for now...
-      - !packages/expo/cli/**
-      - !packages/expo/bin/**
-      - !packages/expo/e2e/**
+      - packages/expo/cli/**
+      - packages/expo/bin/**
+      - packages/expo/e2e/**
   push:
     branches: [main]
     paths:
@@ -19,10 +20,11 @@ on:
       - apps/native-component-list/**
       - packages/**
       - yarn.lock
+    paths-ignore:
       # Ignore Expo CLI for now...
-      - !packages/expo/cli/**
-      - !packages/expo/bin/**
-      - !packages/expo/e2e/**
+      - packages/expo/cli/**
+      - packages/expo/bin/**
+      - packages/expo/e2e/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
