@@ -87,9 +87,7 @@ export const manifest: Partial<Manifest> =
  * empty.
  */
 export const commitTime: Date | null = ExpoUpdates.commitTime
-  ? ExpoUpdates.commitTime > 0
-    ? new Date(ExpoUpdates.commitTime)
-    : null
+  ? new Date(ExpoUpdates.commitTime)
   : null;
 
 const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
