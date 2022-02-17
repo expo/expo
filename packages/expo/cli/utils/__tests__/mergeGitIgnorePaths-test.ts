@@ -6,7 +6,7 @@ import * as GitIgnore from '../mergeGitIgnorePaths';
 
 const testRoot = temporary.directory();
 beforeAll(async () => {
-  fs.mkdirSync(testRoot, { recursive: true });
+  await fs.promises.mkdir(testRoot, { recursive: true });
 });
 afterAll(async () => {
   await fs.promises.rm(testRoot, { recursive: true, force: true });
@@ -84,7 +84,7 @@ describe('mergeGitIgnore', () => {
   it(`skips merging if the target file is missing`, async () => {
     // fs
     const projectRoot = path.join(testRoot, 'merge-git-ignore-skip-when-target-missing');
-    fs.mkdirSync(projectRoot, { recursive: true });
+    await fs.promises.mkdir(projectRoot, { recursive: true });
     // Setup
 
     const targetGitIgnorePath = path.join(projectRoot, '.gitignore');
@@ -108,8 +108,7 @@ describe('mergeGitIgnore', () => {
   it(`merges two git ignore files in the filesystem`, async () => {
     // fs
     const projectRoot = path.join(testRoot, 'merge-git-ignore-works');
-    await fs.mkdirSync(projectRoot);
-    await fs.promises.rm(testRoot, { recursive: true, force: true });
+    await fs.promises.mkdir(projectRoot, { recursive: true });
     // Setup
     const targetGitIgnorePath = path.join(projectRoot, '.gitignore');
     await fs.promises.writeFile(
