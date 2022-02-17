@@ -1,5 +1,5 @@
 export type ModalStackRoutes = {
-  QRCode: object;
+  QRCode: undefined;
 };
 
 export type ProjectsStackRoutes = {
@@ -11,7 +11,7 @@ export type ProfileStackRoutes = {
   ProfileAllProjects: object;
   ProfileAllSnacks: object;
   Account: { accountName: string };
-  UserSettings: object;
+  UserSettings: undefined;
   ProjectsForAccount: { accountName: string };
   SnacksForAccount: { accountName: string };
   Project: { id: string };

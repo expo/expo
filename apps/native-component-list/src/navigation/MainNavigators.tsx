@@ -1,7 +1,5 @@
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { DrawerNavigationOptions } from '@react-navigation/drawer';
+import { BottomTabNavigationOptions, BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { PathConfig } from '@react-navigation/native';
-import { StackNavigationOptions } from '@react-navigation/stack';
 
 import ExpoApisStackNavigator, { Screens as APIScreens } from './ExpoApisStackNavigator';
 import ExpoComponentsStackNavigator, {
@@ -12,9 +10,9 @@ import ExpoComponentsStackNavigator, {
 // so make sure they still work there once you change something here.
 
 type ScreenConfig = {
-  linking: PathConfig;
+  linking: PathConfig<{ ExpoApis: undefined; ExpoComponents: undefined }>;
   navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
-    navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
+    navigationOptions: BottomTabNavigationOptions;
   };
 };
 
@@ -36,7 +34,7 @@ const apis: ScreenConfig = {
   navigator: ExpoApisStackNavigator,
 };
 
-const components = {
+const components: ScreenConfig = {
   linking: {
     path: '/components',
     initialRouteName: 'ExpoComponents',

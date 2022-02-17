@@ -1,6 +1,6 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Assets as StackAssets } from '@react-navigation/stack';
+import { Assets as StackAssets } from '@react-navigation/elements';
 import { Asset } from 'expo-asset';
 import { ThemePreferenceProvider } from 'expo-dev-client-components';
 import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';

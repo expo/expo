@@ -1,13 +1,14 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { NavigationProp, useNavigation, useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
+import { ProfileStackRoutes } from '../navigation/Navigation.types';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 
 function UserSettingsButton() {
   const theme = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<ProfileStackRoutes>>();
   const onPress = () => {
     navigation.navigate('UserSettings');
   };

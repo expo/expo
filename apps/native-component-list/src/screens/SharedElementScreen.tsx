@@ -56,7 +56,6 @@ export default function SharedElementScreen() {
   return (
     <NavigationContainer independent>
       <Stack.Navigator
-        headerMode="none"
         screenOptions={{
           headerTintColor: Colors.tabIconSelected,
           headerTitleStyle: { color: '#000' },
@@ -72,6 +71,7 @@ export default function SharedElementScreen() {
 
             return { cardStyle: { opacity } };
           },
+          headerShown: false,
         }}>
         <Stack.Screen
           options={{

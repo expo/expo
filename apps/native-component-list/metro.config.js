@@ -17,7 +17,7 @@ module.exports = {
       return (req, res, next) => {
         // When an asset is imported outside the project root, it has wrong path on Android
         // This happens for the back button in stack, so we fix the path to correct one
-        const assets = '/node_modules/@react-navigation/stack/src/views/assets';
+        const assets = '/node_modules/@react-navigation/elements/src/assets';
 
         if (req.url.startsWith(assets)) {
           req.url = req.url.replace(assets, `/assets/../..${assets}`);
