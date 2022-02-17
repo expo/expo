@@ -20,16 +20,6 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
     self.sessionSecret = sessionSecret
   }
 
-  func queryDevSessionsAsync(_ installationID: String?, completionHandler: @escaping HTTPCompletionHandler) {
-    var url = URL(string: "development-sessions", relativeTo: DevMenuExpoApiClient.restEndpoint)!
-    if installationID != nil {
-      var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
-      urlComponents?.queryItems = [URLQueryItem(name: "deviceId", value: installationID)]
-      url = urlComponents?.url ?? url
-    }
-    fetch(url, completionHandler: completionHandler)
-  }
-
   func queryUpdateChannels(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Channel]?, URLResponse?, Error?) -> Void,
