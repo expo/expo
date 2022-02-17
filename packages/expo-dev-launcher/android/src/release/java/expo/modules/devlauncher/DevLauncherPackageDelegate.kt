@@ -13,5 +13,4 @@ object DevLauncherPackageDelegate {
   fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> = emptyList()
   fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> = emptyList()
   fun createReactActivityDelegateHandlers(activityContext: Context?): List<ReactActivityDelegateHandler> = emptyList()
-  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = emptyList()
 }

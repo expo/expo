@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.facebook.react.ReactActivity;
+
 public interface ReactActivityLifecycleListener {
   default void onCreate(Activity activity, Bundle savedInstanceState) {}
 
@@ -20,7 +22,7 @@ public interface ReactActivityLifecycleListener {
    *
    * @return true if this module wants to return `true` from `ReactActivityDelegateWrapper.onNewIntent`
    */
-  default boolean onNewIntent(Intent intent) {
+  default boolean onNewIntent(Intent intent, ReactActivity activity) {
     return false;
   }
 

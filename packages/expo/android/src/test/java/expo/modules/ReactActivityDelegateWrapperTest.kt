@@ -71,14 +71,14 @@ internal class ReactActivityDelegateWrapperTest {
   fun `onNewIntent should call each handler's callback just once`() {
     val intent = mockk<Intent>()
     val delegateWrapper = ReactActivityDelegateWrapper(activity, delegate)
-    every { mockPackage0.reactActivityLifecycleListener.onNewIntent(intent) } returns false
-    every { mockPackage1.reactActivityLifecycleListener.onNewIntent(intent) } returns true
+    every { mockPackage0.reactActivityLifecycleListener.onNewIntent(intent, ) } returns false
+    every { mockPackage1.reactActivityLifecycleListener.onNewIntent(intent, ) } returns true
     every { delegate.onNewIntent(intent) } returns false
 
     delegateWrapper.onNewIntent(intent)
 
-    verify(exactly = 1) { mockPackage0.reactActivityLifecycleListener.onNewIntent(any()) }
-    verify(exactly = 1) { mockPackage1.reactActivityLifecycleListener.onNewIntent(any()) }
+    verify(exactly = 1) { mockPackage0.reactActivityLifecycleListener.onNewIntent(any(), ) }
+    verify(exactly = 1) { mockPackage1.reactActivityLifecycleListener.onNewIntent(any(), ) }
     verify(exactly = 1) { delegate.onNewIntent(any()) }
   }
 
@@ -86,8 +86,8 @@ internal class ReactActivityDelegateWrapperTest {
   fun `onNewIntent should return true if someone returns true`() {
     val intent = mockk<Intent>()
     val delegateWrapper = ReactActivityDelegateWrapper(activity, delegate)
-    every { mockPackage0.reactActivityLifecycleListener.onNewIntent(intent) } returns false
-    every { mockPackage1.reactActivityLifecycleListener.onNewIntent(intent) } returns true
+    every { mockPackage0.reactActivityLifecycleListener.onNewIntent(intent, ) } returns false
+    every { mockPackage1.reactActivityLifecycleListener.onNewIntent(intent, ) } returns true
     every { delegate.onNewIntent(intent) } returns false
 
     val result = delegateWrapper.onNewIntent(intent)

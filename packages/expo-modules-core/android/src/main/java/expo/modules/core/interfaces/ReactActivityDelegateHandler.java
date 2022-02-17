@@ -1,8 +1,10 @@
 package expo.modules.core.interfaces;
 
 import android.app.Activity;
+import android.view.KeyEvent;
 
 import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactDelegate;
 import com.facebook.react.ReactRootView;
 
 import androidx.annotation.Nullable;
@@ -19,6 +21,10 @@ public interface ReactActivityDelegateHandler {
   @Nullable
   default ReactRootView createReactRootView(Activity activity) {
     return null;
+  }
+
+  default boolean onKeyUp(int keyCode, KeyEvent event) {
+    return false;
   }
 
   /**

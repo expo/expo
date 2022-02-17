@@ -49,9 +49,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    return reactActivityDelegateHandlers.asSequence()
+    val reactRootView = reactActivityDelegateHandlers.asSequence()
       .mapNotNull { it.createReactRootView(activity) }
       .firstOrNull() ?: invokeDelegateMethod("createRootView")
+
+    return reactRootView
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -136,7 +138,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyUp(keyCode, event)
+    return reactActivityDelegateHandlers
+      .map { it.onKeyUp(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyUp(keyCode, event)
   }
 
   override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
@@ -159,7 +163,7 @@ class ReactActivityDelegateWrapper(
       return true
     }
     val listenerResult = reactActivityLifecycleListeners
-      .map { it.onNewIntent(intent) }
+      .map { it.onNewIntent(intent, activity) }
       .fold(false) { accu, current -> accu || current }
     val delegateResult = delegate.onNewIntent(intent)
     return listenerResult || delegateResult

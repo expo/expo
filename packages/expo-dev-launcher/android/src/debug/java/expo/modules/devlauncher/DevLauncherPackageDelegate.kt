@@ -45,6 +45,10 @@ object DevLauncherPackageDelegate {
         override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
           DevLauncherController.maybeRedirect(activity)
         }
+
+        override fun onNewIntent(intent: Intent?, activity: ReactActivity): Boolean {
+          return intent != null && DevLauncherController.tryToHandleIntent(activity, intent)
+        }
       }
     )
 
@@ -57,15 +61,6 @@ object DevLauncherPackageDelegate {
 
         override fun shouldNoop(): Boolean {
           return DevLauncherController.wasInitialized() && DevLauncherController.instance.mode == DevLauncherController.Mode.LAUNCHER
-        }
-      }
-    )
-
-  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
-    listOf(
-      object : ReactActivityHandler {
-        override fun onNewIntent(activity: ReactActivity, intent: Intent): Boolean {
-          return DevLauncherController.tryToHandleIntent(activity, intent)
         }
       }
     )
