@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { EventEmitter, UnavailabilityError, Platform } from 'expo-modules-core';
 import ExpoClipboard from './ExpoClipboard';
 const emitter = new EventEmitter(ExpoClipboard);
 const onClipboardEventName = 'onClipboardChanged';
@@ -20,14 +20,31 @@ export async function getStringAsync() {
  *
  * @param text The string to save to the clipboard.
  *
+ * @returns On web, this returns a promise that fulfills to a boolean value indicating whether or not
+ * the string was saved to the user's clipboard. On iOS and Android, the promise always resolves to `true`.
+ */
+export async function setStringAsync(text) {
+    if (!ExpoClipboard.setStringAsync) {
+        throw new UnavailabilityError('Clipboard', 'setStringAsync');
+    }
+    return ExpoClipboard.setStringAsync(text);
+}
+/**
+ * Sets the content of the user's clipboard.
+ * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext) instead.
+ *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
  */
 export function setString(text) {
-    if (!ExpoClipboard.setString) {
-        throw new UnavailabilityError('Clipboard', 'setString');
+    if (Platform.OS === 'web') {
+        // on web, we need to return legacy method,
+        // because of different return type
+        return ExpoClipboard.setString(text);
     }
-    return ExpoClipboard.setString(text);
+    else {
+        setStringAsync(text);
+    }
 }
 /**
  * Adds a listener that will fire whenever the content of the user's clipboard changes. This method

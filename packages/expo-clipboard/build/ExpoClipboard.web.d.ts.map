@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoClipboard.web.d.ts","sourceRoot":"","sources":["../src/ExpoClipboard.web.ts"],"names":[],"mappings":";;sBAI0B,QAAQ,MAAM,CAAC;oBAevB,MAAM,GAAG,OAAO;4BAaR,IAAI;+BACD,IAAI;;AAjCjC,wBAkCE"}
+{"version":3,"file":"ExpoClipboard.web.d.ts","sourceRoot":"","sources":["../src/ExpoClipboard.web.ts"],"names":[],"mappings":";;sBAI0B,QAAQ,MAAM,CAAC;oBAevB,MAAM,GAAG,OAAO;yBAaL,MAAM,GAAG,QAAQ,OAAO,CAAC;4BAG5B,IAAI;+BACD,IAAI;;AApCjC,wBAqCE"}
