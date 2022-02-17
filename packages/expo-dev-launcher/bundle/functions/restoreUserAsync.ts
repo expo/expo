@@ -1,4 +1,4 @@
-import { apiClient } from '../apiClient';
+import { setSessionAsync } from '../apiClient';
 import { restoreSessionAsync } from '../native-modules/DevLauncherAuth';
 import { getUserProfileAsync } from './getUserProfileAsync';
 
@@ -7,7 +7,7 @@ export async function restoreUserAsync() {
 
   if (session) {
     // @ts-ignore
-    apiClient.setHeader('expo-session', session);
+    await setSessionAsync(session);
     const userData = await getUserProfileAsync();
     return userData;
   }

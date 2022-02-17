@@ -29,50 +29,6 @@ private class MockedSession: URLSession {
 }
 
 class DevMenuExpoApiClientTests: XCTestCase {
-  func test_queryDevSessionsAsync() {
-    let expectedData = Data()
-    let expect = expectation(description: "request callback should be called")
-    let apiClient = DevMenuExpoApiClient()
-    let mockedSession = MockedSession()
-    mockedSession.requestInspector = {
-      XCTAssertEqual($0.url?.absoluteString, "https://exp.host/--/api/v2/development-sessions")
-      XCTAssertEqual($0.httpMethod, "GET")
-    }
-    mockedSession.completionHandlerSeeder = {
-      $0(expectedData, nil, nil)
-    }
-    apiClient.session = mockedSession
-
-    apiClient.queryDevSessionsAsync(nil, completionHandler: { data, _, _ in
-      XCTAssertIdentical(data as AnyObject, expectedData as AnyObject)
-      expect.fulfill()
-    })
-
-    waitForExpectations(timeout: 0)
-  }
-
-  func test_queryDevSessionsAsync_installationID() {
-    let expectedData = Data()
-    let expect = expectation(description: "request callback should be called")
-    let apiClient = DevMenuExpoApiClient()
-    let mockedSession = MockedSession()
-    mockedSession.requestInspector = {
-      XCTAssertEqual($0.url?.absoluteString, "https://exp.host/--/api/v2/development-sessions?deviceId=test-installation-id")
-      XCTAssertEqual($0.httpMethod, "GET")
-    }
-    mockedSession.completionHandlerSeeder = {
-      $0(expectedData, nil, nil)
-    }
-    apiClient.session = mockedSession
-
-    apiClient.queryDevSessionsAsync("test-installation-id", completionHandler: { data, _, _ in
-      XCTAssertIdentical(data as AnyObject, expectedData as AnyObject)
-      expect.fulfill()
-    })
-
-    waitForExpectations(timeout: 0)
-  }
-
   func test_if_isLoggedIn_returns_correct_values() {
     let apiClient = DevMenuExpoApiClient()
 
@@ -91,7 +47,7 @@ class DevMenuExpoApiClientTests: XCTestCase {
     }
     apiClient.session = mockedSession
 
-    apiClient.queryDevSessionsAsync(nil, completionHandler: { _, _, _ in
+    apiClient.queryUpdateBranches(appId: "app_id", completionHandler: { _, _, _ in
       expect.fulfill()
     })
 
