@@ -14,6 +14,7 @@ public class ClipboardModule: Module {
 
     function("setStringAsync") { (content: String?) in
       UIPasteboard.general.string = content ?? ""
+      return true
     }
 
     events(onClipboardChanged)
