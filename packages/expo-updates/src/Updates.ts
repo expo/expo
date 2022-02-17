@@ -79,6 +79,19 @@ export const manifest: Partial<Manifest> =
   (ExpoUpdates.manifestString ? JSON.parse(ExpoUpdates.manifestString) : ExpoUpdates.manifest) ??
   {};
 
+/**
+ * If `expo-updates` is enabled, this is either the creation time of the embedded update,
+ * or the commitTime timestamp of the manifest for the update that's currently running.
+ *
+ * In development mode, or any other environment in which `expo-updates` is disabled, this object is
+ * empty.
+ */
+export const commitTime: Date | null = ExpoUpdates.commitTime
+  ? ExpoUpdates.commitTime > 0
+    ? new Date(ExpoUpdates.commitTime)
+    : null
+  : null;
+
 const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
 const manualUpdatesInstructions = isUsingExpoDevelopmentClient

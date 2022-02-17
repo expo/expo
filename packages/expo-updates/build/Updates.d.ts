@@ -49,6 +49,14 @@ export declare const isUsingEmbeddedAssets: boolean;
  */
 export declare const manifest: Partial<Manifest>;
 /**
+ * If `expo-updates` is enabled, this is either the creation time of the embedded update,
+ * or the commitTime timestamp of the manifest for the update that's currently running.
+ *
+ * In development mode, or any other environment in which `expo-updates` is disabled, this object is
+ * empty.
+ */
+export declare const commitTime: Date | null;
+/**
  * Instructs the app to reload using the most recently downloaded version. This is useful for
  * triggering a newly downloaded update to launch without the user needing to manually restart the
  * app.

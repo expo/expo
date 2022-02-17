@@ -54,6 +54,18 @@ export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
  */
 export const manifest = (ExpoUpdates.manifestString ? JSON.parse(ExpoUpdates.manifestString) : ExpoUpdates.manifest) ??
     {};
+/**
+ * If `expo-updates` is enabled, this is either the creation time of the embedded update,
+ * or the commitTime timestamp of the manifest for the update that's currently running.
+ *
+ * In development mode, or any other environment in which `expo-updates` is disabled, this object is
+ * empty.
+ */
+export const commitTime = ExpoUpdates.commitTime
+    ? ExpoUpdates.commitTime > 0
+        ? new Date(ExpoUpdates.commitTime)
+        : null
+    : null;
 const isUsingDeveloperTool = !!manifest.developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
 const manualUpdatesInstructions = isUsingExpoDevelopmentClient
