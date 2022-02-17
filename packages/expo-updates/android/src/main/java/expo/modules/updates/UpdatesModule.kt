@@ -56,6 +56,7 @@ class UpdatesModule(
         val launchedUpdate = updatesServiceLocal.launchedUpdate
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
+          constants["commitTime"] = launchedUpdate.commitTime.time
           constants["manifestString"] =
             if (launchedUpdate.manifest != null) launchedUpdate.manifest.toString() else "{}"
         }
