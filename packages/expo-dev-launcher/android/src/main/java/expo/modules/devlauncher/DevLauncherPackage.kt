@@ -30,6 +30,4 @@ class DevLauncherPackage : Package, ReactPackage {
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> = DevLauncherPackageDelegate.createReactActivityLifecycleListeners(activityContext);
 
   override fun createReactActivityDelegateHandlers(activityContext: Context?): List<ReactActivityDelegateHandler> = DevLauncherPackageDelegate.createReactActivityDelegateHandlers(activityContext);
-
-  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = DevLauncherPackageDelegate.createReactActivityHandlers(activityContext);
 }
