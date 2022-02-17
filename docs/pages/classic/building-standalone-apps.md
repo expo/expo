@@ -2,7 +2,9 @@
 title: Building Standalone Apps
 ---
 
-> 🆕 [Try creating your build with EAS Build](/build/setup.md), our new and improved build service.
+> 🆕 [Try creating your build with EAS Build](/build/setup.md), the modern build service with support for custom native code and smaller app archives.
+
+> ⚠️ [The Classic Build service (`expo build:{android,ios}`) is in maintenance mode](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60) and has been superseded by [EAS Build](/build/setup.md). SDK 46 will be the last SDK supported by Classic Builds and the Classic Build service will stop running for all SDK versions after January 4, 2023.
 
 The purpose of this guide is to help you create standalone binaries of your Expo app for iOS and
 Android which can be submitted to the Apple App Store and Google Play Store.

@@ -2,7 +2,7 @@
 title: Universal Modules and ExpoKit
 ---
 
-> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.**
+> 🚫 ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.
 
 Universal Modules are pieces of the Expo SDK with some special properties:
 
