@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.launcher
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import com.facebook.react.ReactActivity
@@ -19,7 +18,6 @@ interface DevLauncherControllerInterface {
   fun getRecentlyOpenedApps(): Map<String, String?>
   fun navigateToLauncher()
   fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate
-  fun maybeRedirectFromActivity(activity: Activity)
   fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean
 
   val manifest: Manifest?

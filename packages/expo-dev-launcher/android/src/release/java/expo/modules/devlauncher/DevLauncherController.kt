@@ -1,6 +1,5 @@
 package expo.modules.devlauncher
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -52,10 +51,6 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  override fun maybeRedirectFromActivity(activity: Activity) {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
-  }
-
   override fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
@@ -104,12 +99,6 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     fun wrapReactActivityDelegate(reactActivity: ReactActivity, devLauncherReactActivityDelegateSupplier: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate {
       return devLauncherReactActivityDelegateSupplier.get()
     }
-
-    @JvmStatic
-    fun onWillCreateReactActivityDelegate(activity: ReactActivity) { }
-
-    @JvmStatic
-    fun maybeRedirect(activity: Activity) { }
 
     @JvmStatic
     fun tryToHandleIntent(reactActivity: ReactActivity, intent: Intent): Boolean = false

@@ -1,6 +1,5 @@
 package expo.modules.devlauncher
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -36,7 +35,6 @@ import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
-import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
@@ -258,13 +256,6 @@ class DevLauncherController private constructor()
     }
   }
 
-  override fun maybeRedirectFromActivity(activity: Activity) {
-    if (mode == Mode.LAUNCHER) {
-      DevLauncherSplashScreenProvider().attachSplashScreenViewAsync(activity)
-      redirectFromStartActivity(activity.intent)
-    }
-  }
-
   /**
    * If we try to launch a different app when the `MainActivity` is active, the app will crash
    * (NPE caused by missing activity reference in the [ReactActivityDelegate]).
@@ -369,20 +360,6 @@ class DevLauncherController private constructor()
       return devLauncherKoin()
         .get<DevLauncherControllerInterface>()
         .getCurrentReactActivityDelegate(activity, devLauncherReactActivityDelegateSupplier)
-    }
-
-    @JvmStatic
-    fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
-      devLauncherKoin()
-        .get<DevLauncherLifecycle>()
-        .delegateWillBeCreated(activity)
-    }
-
-    @JvmStatic
-    fun maybeRedirect(activity: Activity) {
-      devLauncherKoin()
-        .get<DevLauncherControllerInterface>()
-        .maybeRedirectFromActivity(activity)
     }
 
     @JvmStatic

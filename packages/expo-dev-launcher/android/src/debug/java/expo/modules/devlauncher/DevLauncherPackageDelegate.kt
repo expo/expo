@@ -1,17 +1,17 @@
 package expo.modules.devlauncher
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtensions
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
@@ -47,12 +47,6 @@ object DevLauncherPackageDelegate {
   fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> =
     listOf(
       object : ReactActivityLifecycleListener {
-        override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
-          if (shouldEnableAutoSetup) {
-            DevLauncherController.maybeRedirect(activity)
-          }
-        }
-
         override fun onNewIntent(intent: Intent?, activity: ReactActivity): Boolean {
           return shouldEnableAutoSetup && intent != null && DevLauncherController.tryToHandleIntent(activity, intent)
         }
@@ -62,14 +56,15 @@ object DevLauncherPackageDelegate {
   fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
     listOf(
       object : ReactActivityHandler {
-        override fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
-          if (shouldEnableAutoSetup) {
-            DevLauncherController.onWillCreateReactActivityDelegate(activity)
+        override fun onDidCreateReactActivityDelegate(activity: ReactActivity, delegate: ReactActivityDelegate): ReactActivityDelegate? {
+          if (!shouldEnableAutoSetup) {
+            return null
           }
-        }
-
-        override fun shouldNoop(): Boolean {
-          return shouldEnableAutoSetup && DevLauncherController.wasInitialized() && DevLauncherController.instance.mode == DevLauncherController.Mode.LAUNCHER
+          return DevLauncherController.wrapReactActivityDelegate(activity, object : DevLauncherReactActivityDelegateSupplier {
+            override fun get(): ReactActivityDelegate {
+              return delegate
+            }
+          })
         }
       }
     )
