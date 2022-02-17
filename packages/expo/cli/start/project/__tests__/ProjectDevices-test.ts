@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import { fs } from 'memfs';
 import path from 'path';
 
 import * as ProjectDevices from '../ProjectDevices';
@@ -16,7 +16,7 @@ describe('devices info', () => {
 
   afterAll(() => {
     if (projectRoot) {
-      fs.removeSync(projectRoot);
+      fs.rmdirSync(projectRoot);
     }
   });
 
@@ -26,7 +26,7 @@ describe('devices info', () => {
     const file = path.join(projectRoot, '.expo', 'devices.json');
     expect(fs.existsSync(file)).toBe(true);
 
-    const { devices } = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const { devices } = JSON.parse(fs.readFileSync(file, 'utf8').toString());
     expect(devices.length).toBe(1);
     expect(devices[0].installationId).toBe('test-device-id');
   });
