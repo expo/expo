@@ -19,7 +19,7 @@ class EXDevMenuAppInfoTest: XCTestCase {
       "version": "123"
     ]
 
-    let appInfo = EXDevMenuAppInfo.getFor(MockedNOOPBridge(delegate: nil, launchOptions: nil), andManifest: manifest)
+    let appInfo = EXDevMenuAppInfo.getAppInfo()
 
     XCTAssertEqual(appInfo["appName"] as! String, "Test App")
     XCTAssertEqual(appInfo["appVersion"] as! String, "123")
@@ -27,8 +27,8 @@ class EXDevMenuAppInfoTest: XCTestCase {
   }
 
   func test_if_app_info_gets_host_from_bridge() {
-    let appInfo = EXDevMenuAppInfo.getFor(MockedNOOPBridge(delegate: nil, launchOptions: nil), andManifest: [:])
-
+    let appInfo = EXDevMenuAppInfo.getAppInfo()
+    
     let host = appInfo["hostUrl"] as! String
     XCTAssertEqual(host, "localhost")
   }
