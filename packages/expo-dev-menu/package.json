@@ -43,7 +43,7 @@
       "@testing-library/jest-native/extend-expect",
       "./setupTests.ts"
     ],
-    "transformIgnorePatterns": []  
+    "transformIgnorePatterns": []
   },
   "dependencies": {
     "@expo/config-plugins": "^4.0.14",
@@ -52,9 +52,6 @@
   "devDependencies": {
     "@apollo/client": "^3.4.10",
     "@babel/preset-typescript": "^7.7.4",
-    "@react-navigation/core": "5.15.1",
-    "@react-navigation/native": "5.9.2",
-    "@react-navigation/stack": "5.14.2",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
     "babel-plugin-module-resolver": "^4.1.0",

@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import React from 'react';
@@ -48,7 +48,7 @@ const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
 
-let nclLinking: Record<string, any> = {};
+const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
   routes.apis = NativeComponentList.apis.navigator;
   routes.components = NativeComponentList.components.navigator;
@@ -59,8 +59,13 @@ if (NativeComponentList) {
 const Tab = createBottomTabNavigator();
 const Switch = createStackNavigator();
 
-const linking = {
-  prefixes: [Platform.select({ web: Linking.createURL('/', { scheme: 'bareexpo' }), default: 'bareexpo://' })],
+const linking: LinkingOptions<object> = {
+  prefixes: [
+    Platform.select({
+      web: Linking.createURL('/', { scheme: 'bareexpo' }),
+      default: 'bareexpo://',
+    }),
+  ],
   config: {
     screens: {
       main: {
@@ -84,15 +89,13 @@ const linking = {
 function TabNavigator() {
   return (
     <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: Colors.activeTintColor,
-        inactiveTintColor: Colors.inactiveTintColor,
-        safeAreaInsets: {
-          top: 5,
-        },
+      screenOptions={{
+        tabBarActiveTintColor: Colors.activeTintColor,
+        tabBarInactiveTintColor: Colors.inactiveTintColor,
+        headerShown: false,
       }}
       initialRouteName="test-suite">
-      {Object.keys(routes).map(name => (
+      {Object.keys(routes).map((name) => (
         <Tab.Screen
           name={name}
           key={name}
@@ -106,7 +109,7 @@ function TabNavigator() {
 
 export default () => (
   <NavigationContainer linking={linking}>
-    <Switch.Navigator headerMode="none" initialRouteName="main">
+    <Switch.Navigator initialRouteName="main" screenOptions={{ headerShown: false }}>
       {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
       {Search && <Switch.Screen name="search" component={Search} />}
       <Switch.Screen name="main" component={TabNavigator} />

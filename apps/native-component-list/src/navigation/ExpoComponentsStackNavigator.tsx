@@ -1,6 +1,7 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
+import { View } from 'react-native';
 
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';

@@ -1,12 +1,6 @@
-import {
-  createDrawerNavigator,
-  DrawerContentComponentProps,
-  DrawerContentOptions,
-  DrawerContentScrollView,
-  DrawerItemList,
-} from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import * as React from 'react';
-import { Platform, ScrollViewProps, StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors } from '../constants';
@@ -16,20 +10,6 @@ import createTabNavigator from './createTabNavigator';
 const Tab = createTabNavigator();
 
 const Drawer = createDrawerNavigator();
-
-function CustomDrawerContent({
-  hideLabels,
-  ...props
-}: ScrollViewProps & {
-  children?: React.ReactNode;
-  hideLabels?: boolean;
-} & DrawerContentComponentProps<DrawerContentOptions>) {
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItemList {...props} labelStyle={hideLabels ? { display: 'none' } : undefined} />
-    </DrawerContentScrollView>
-  );
-}
 
 export default function MainTabbedNavigator(props: any) {
   const { width } = useWindowDimensions();
@@ -64,7 +44,8 @@ export default function MainTabbedNavigator(props: any) {
           },
           activeTintColor: Colors.tabIconSelected,
           inactiveTintColor: Colors.tabIconDefault,
-        }}>
+        }}
+        screenOptions={{ headerShown: false }}>
         {Object.entries(Screens).map(([name, Screen]) => (
           <Tab.Screen
             name={name}
@@ -80,9 +61,11 @@ export default function MainTabbedNavigator(props: any) {
   return (
     <Drawer.Navigator
       {...props}
-      drawerContent={(props) => <CustomDrawerContent {...props} hideLabels={isTablet} />}
-      drawerStyle={{ width: isLargeScreen ? undefined : 64 + left }}
-      drawerType="permanent">
+      screenOptions={{
+        headerShown: false,
+        drawerType: 'permanent',
+        drawerStyle: { width: isLargeScreen ? undefined : 64 + left },
+      }}>
       {Object.entries(Screens).map(([name, Screen]) => (
         <Tab.Screen
           name={name}
