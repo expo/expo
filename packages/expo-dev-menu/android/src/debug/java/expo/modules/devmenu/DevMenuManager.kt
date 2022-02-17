@@ -53,7 +53,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
 
   private var shakeDetector: ShakeDetector? = null
-  internal var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
+  private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var settings: DevMenuSettingsInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)

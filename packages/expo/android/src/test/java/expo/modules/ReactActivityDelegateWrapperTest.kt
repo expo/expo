@@ -6,7 +6,7 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.google.common.truth.Truth.assertThat
 import expo.modules.core.interfaces.Package
-import expo.modules.core.interfaces.ReactActivityDelegateHandler
+import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -97,13 +97,13 @@ internal class ReactActivityDelegateWrapperTest {
 
 internal class MockPackage : Package {
   val reactActivityLifecycleListener = mockk<ReactActivityLifecycleListener>(relaxed = true)
-  val reactActivityHandler = mockk<ReactActivityDelegateHandler>(relaxed = true)
+  val reactActivityHandler = mockk<ReactActivityHandler>(relaxed = true)
 
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
     return listOf(reactActivityLifecycleListener)
   }
 
-  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityDelegateHandler> {
+  override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
     return listOf(reactActivityHandler)
   }
 }

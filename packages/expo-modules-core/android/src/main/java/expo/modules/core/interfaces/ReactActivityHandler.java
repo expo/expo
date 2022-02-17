@@ -1,33 +1,44 @@
 package expo.modules.core.interfaces;
 
-import android.content.Intent;
-import android.os.Bundle;
+import android.app.Activity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 
 import com.facebook.react.ReactActivity;
-import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactDelegate;
+import com.facebook.react.ReactRootView;
 
 import androidx.annotation.Nullable;
 
 /**
- * A handler API for modules to override default ReactActivity behaviors.
- * Used by {@link expo.modules.ReactActivityWrapper}
+ * A handler API for modules to override default ReactActivityDelegate behaviors.
+ * Used by {@link ReactActivityDelegateWrapper}
  */
 public interface ReactActivityHandler {
-
-  default boolean onNewIntent(ReactActivity activity, Intent intent) {
-    return false;
-  }
-
-  default void onPostCreate(Bundle savedInstanceState, ReactNativeHost reactNativeHost) {}
-
-  default boolean dispatchTouchEvent(MotionEvent ev) {
-    return false;
+  /**
+   * Given modules a chance to override the default {@link ReactRootView}
+   * @return the override ReactRootView instance or null if not to override
+   */
+  @Nullable
+  default ReactRootView createReactRootView(Activity activity) {
+    return null;
   }
 
   default boolean onKeyUp(int keyCode, KeyEvent event) {
     return false;
   }
+
+  /**
+   * Called once, at the time the wrapper object is initialized. Opportunity for a module to declare
+   * that this wrapper should ignore certain method calls and not pass them through to the wrapped
+   * delegate.
+   * @return true if this wrapper should no-op on certain method calls, false otherwise
+   */
+  default boolean shouldNoop() {
+    return false;
+  }
+
+  /**
+   * Called when the wrapper object is initialized.
+   */
+  default void onWillCreateReactActivityDelegate(ReactActivity activity) {}
 }

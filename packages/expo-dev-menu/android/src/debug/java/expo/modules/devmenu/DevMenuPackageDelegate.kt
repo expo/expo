@@ -1,27 +1,33 @@
 package expo.modules.devmenu
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.MotionEvent
-import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactRootView
 import expo.modules.core.interfaces.ReactActivityHandler
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
 object DevMenuPackageDelegate {
-  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
+  fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> =
     listOf(
-      object : ReactActivityHandler {
-        override fun onPostCreate(savedInstanceState: Bundle?, reactNativeHost: ReactNativeHost) {
+      object : ReactActivityLifecycleListener {
+        override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
           if (!DevMenuManager.isInitialized()) {
-            DevMenuManager.initializeWithReactNativeHost(reactNativeHost)
+            DevMenuManager.initializeWithReactNativeHost((activity.application as ReactApplication).reactNativeHost)
           } else {
             DevMenuManager.synchronizeDelegate()
           }
         }
+      }
+    )
 
-        override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-          DevMenuManager.onTouchEvent(ev)
-          return false
+  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
+    listOf(
+      object : ReactActivityHandler {
+        override fun createReactRootView(activity: Activity): ReactRootView? {
+          return DevMenuEnabledReactRootView(activity as Context)
         }
 
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

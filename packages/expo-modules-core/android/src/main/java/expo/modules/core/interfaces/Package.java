@@ -44,10 +44,6 @@ public interface Package {
     return Collections.emptyList();
   }
 
-  default List<? extends ReactActivityDelegateHandler> createReactActivityDelegateHandlers(Context activityContext) {
-    return Collections.emptyList();
-  }
-
   default List<? extends ReactActivityHandler> createReactActivityHandlers(Context activityContext) {
     return Collections.emptyList();
   }
