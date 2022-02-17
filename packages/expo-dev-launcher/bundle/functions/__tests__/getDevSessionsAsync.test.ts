@@ -9,6 +9,8 @@ describe('getDevSessionsAsync()', () => {
   });
 
   test('authenticated call', async () => {
+    expect(fetch).not.toHaveBeenCalled();
+
     await getDevSessionsAsync({ isAuthenticated: true, installationID: '321', isDevice: true });
 
     expect(fetch).toHaveBeenCalledWith(
@@ -17,8 +19,10 @@ describe('getDevSessionsAsync()', () => {
     );
   });
 
-  test('does not use installationI if sessions are found via authenticated request', async () => {
+  test('does not use installationId if sessions are found via authenticated request', async () => {
     mockFetchReturn({ data: [{ test: '123' }] });
+
+    expect(fetch).not.toHaveBeenCalled();
 
     await getDevSessionsAsync({ isAuthenticated: true, installationID: '321', isDevice: true });
 
@@ -33,8 +37,28 @@ describe('getDevSessionsAsync()', () => {
     );
   });
 
+  test('uses installationId if no sessions are found via authenticated request', async () => {
+    mockFetchReturn({ data: [] });
+
+    expect(fetch).not.toHaveBeenCalled();
+
+    await getDevSessionsAsync({ isAuthenticated: true, installationID: '321', isDevice: true });
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/development-sessions'),
+      expect.any(Object)
+    );
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/development-sessions?deviceId'),
+      expect.any(Object)
+    );
+  });
+
   test('installationId used when no authorized sessions are found', async () => {
     mockFetchReturn({ data: [] });
+
+    expect(fetch).not.toHaveBeenCalled();
 
     await getDevSessionsAsync({ isAuthenticated: false, installationID: '321', isDevice: true });
 

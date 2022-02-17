@@ -47,7 +47,7 @@ class DevMenuExpoApiClientTests: XCTestCase {
     }
     apiClient.session = mockedSession
 
-    apiClient.queryUpdateBranches(nil, completionHandler: { _, _, _ in
+    apiClient.queryUpdateBranches(appId: "app_id", completionHandler: { _, _, _ in
       expect.fulfill()
     })
 
