@@ -77,7 +77,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
       hostname,
     });
 
-    const hostUri = this.urlCreator.constructUrl({ scheme: '', hostname });
+    const hostUri = this.options.constructUrl({ scheme: '', hostname });
 
     const runtimeVersion = Updates.getRuntimeVersion(
       { ...expoConfig, runtimeVersion: expoConfig.runtimeVersion ?? { policy: 'sdkVersion' } },

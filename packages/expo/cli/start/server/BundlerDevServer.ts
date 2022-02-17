@@ -50,12 +50,13 @@ export interface BundlerStartOptions {
 
   /** Max amount of workers (threads) to use with Metro bundler, defaults to undefined for max workers. */
   maxWorkers?: number;
-
+  /** Port to start the dev server on. */
   port?: number;
   /** Should instruct the bundler to create minified bundles. */
   minify?: boolean;
 
   // Webpack options
+  /** Should modify and create PWA icons. */
   isImageEditingEnabled?: boolean;
 
   location: CreateURLOptions;
@@ -72,23 +73,28 @@ const MIDDLEWARES = {
 };
 
 export class BundlerDevServer {
+  /** Name of the bundler. */
   get name(): string {
     throw new UnimplementedError();
   }
 
+  /** Ngrok instance for managing tunnel connections. */
   private ngrok: AsyncNgrok | null = null;
+  /** Interfaces with the Expo 'Development Session' API. */
   private devSession: DevelopmentSession | null = null;
+  /** Http server and related info. */
   protected instance: DevServerInstance | null = null;
+  /** Native platform interfaces for opening projects.  */
   private platformManagers: Record<string, PlatformManager<any>> = {};
-
-  // TODO: Not public
-  public urlCreator?: UrlCreator | null = null;
+  /** Manages the creation of dev server URLs. */
+  protected urlCreator?: UrlCreator | null = null;
 
   constructor(
     /** Project root folder. */
     public projectRoot: string,
     /** Single instance of the Expo config to pass around. */
     protected exp: ExpoConfig,
+    // TODO: Replace with custom scheme maybe...
     public isDevClient?: boolean
   ) {}
 
@@ -102,8 +108,7 @@ export class BundlerDevServer {
     const Middleware = MIDDLEWARES[options.forceManifestType || 'classic'];
     assert(Middleware, `Manifest middleware for type '${options.forceManifestType}' not found`);
     const middleware = new Middleware(this.projectRoot, {
-      constructUrl: this.urlCreator.constructUrl
-      location: options.location,
+      constructUrl: this.urlCreator.constructUrl.bind(this.urlCreator),
       mode: options.mode,
       minify: options.minify,
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),

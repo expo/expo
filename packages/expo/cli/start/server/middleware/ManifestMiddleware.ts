@@ -20,7 +20,7 @@ export const DEVELOPER_TOOL = 'expo-cli';
 export class ManifestHandlerMiddleware {
   constructor(
     protected projectRoot: string,
-    protected options: Pick<BundlerStartOptions, 'location' | 'mode' | 'minify'> & {
+    protected options: Pick<BundlerStartOptions, 'mode' | 'minify'> & {
       constructUrl: UrlCreator['constructUrl'];
       isNativeWebpack?: boolean;
     }
@@ -50,7 +50,7 @@ export class ManifestHandlerMiddleware {
     return (
       this.options.constructUrl({
         scheme: 'http',
-        hostType: this.options.location.hostType,
+        // hostType: this.options.location.hostType,
         hostname,
       }) + path
     );

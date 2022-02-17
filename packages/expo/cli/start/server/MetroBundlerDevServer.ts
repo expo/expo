@@ -2,10 +2,13 @@ import { MetroDevServerOptions, prependMiddleware } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
-import resolveFrom from 'resolve-from';
 
 import { getFreePortAsync } from '../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
+import {
+  importExpoMetroConfigFromProject,
+  importMetroFromProject,
+} from './metro/resolveFromProject';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { createDevServerMiddleware } from './middleware/createDevServerMiddleware';
 import * as LoadingPageHandler from './middleware/LoadingPageHandler';
@@ -21,6 +24,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   get name(): string {
     return 'metro';
   }
+
   async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     await this.stopAsync();
     const port =
@@ -104,38 +108,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
-class MetroImportError extends Error {
-  constructor(projectRoot: string, moduleId: string) {
-    super(
-      `Missing package "${moduleId}" in the project at: ${projectRoot}\n` +
-        'This usually means `react-native` is not installed. ' +
-        'Please verify that dependencies in package.json include "react-native" ' +
-        'and run `yarn` or `npm install`.'
-    );
-  }
-}
-
-function resolveFromProject(projectRoot: string, moduleId: string) {
-  const resolvedPath = resolveFrom.silent(projectRoot, moduleId);
-  if (!resolvedPath) {
-    throw new MetroImportError(projectRoot, moduleId);
-  }
-  return resolvedPath;
-}
-
-function importFromProject(projectRoot: string, moduleId: string) {
-  return require(resolveFromProject(projectRoot, moduleId));
-}
-
-export function importMetroFromProject(projectRoot: string): typeof Metro {
-  return importFromProject(projectRoot, 'metro');
-}
-
-export function importExpoMetroConfigFromProject(
-  projectRoot: string
-): typeof import('@expo/metro-config') {
-  return importFromProject(projectRoot, '@expo/metro-config');
-}
 
 async function runMetroDevServerAsync(
   projectRoot: string,
