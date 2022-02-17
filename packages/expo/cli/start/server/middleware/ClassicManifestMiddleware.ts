@@ -93,12 +93,12 @@ export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
     const expoGoConfig = this.getExpoGoConfig({
       projectRoot,
       packagerOpts: {
-        dev: this.options.location.mode === 'development',
+        dev: this.options.mode === 'development',
       },
       mainModuleName,
       hostname,
     });
-    const hostUri = this.urlCreator.constructUrl({ scheme: '', hostname });
+    const hostUri = this.options.constructUrl({ scheme: '', hostname });
     const manifest: ExpoAppManifest = {
       ...(projectConfig.exp as ExpoAppManifest),
       ...expoGoConfig,

@@ -3,7 +3,8 @@ import express from 'express';
 import http from 'http';
 
 import { UnimplementedError } from '../../../utils/errors';
-import { UrlCreator, URLOptions } from '../UrlCreator';
+import { BundlerStartOptions } from '../BundlerDevServer';
+import { UrlCreator } from '../UrlCreator';
 
 export interface HostInfo {
   host: string;
@@ -19,8 +20,10 @@ export const DEVELOPER_TOOL = 'expo-cli';
 export class ManifestHandlerMiddleware {
   constructor(
     protected projectRoot: string,
-    protected urlCreator: UrlCreator,
-    protected options: { location: URLOptions; isNativeWebpack?: boolean }
+    protected options: Pick<BundlerStartOptions, 'location' | 'mode' | 'minify'> & {
+      constructUrl: UrlCreator['constructUrl'];
+      isNativeWebpack?: boolean;
+    }
   ) {}
 
   protected getBundleUrl({
@@ -34,18 +37,18 @@ export class ManifestHandlerMiddleware {
   }): string {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
-      dev: String(this.options.location.mode === 'development'),
+      dev: String(this.options.mode === 'development'),
       hot: String(false),
     });
 
-    if (this.options.location.minify) {
-      queryParams.append('minify', String(this.options.location.minify));
+    if (this.options.minify) {
+      queryParams.append('minify', String(this.options.minify));
     }
 
     const path = `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 
     return (
-      this.urlCreator.constructUrl({
+      this.options.constructUrl({
         scheme: 'http',
         hostType: this.options.location.hostType,
         hostname,
@@ -76,9 +79,9 @@ export class ManifestHandlerMiddleware {
     hostname: string | undefined;
   }): ExpoGoConfig {
     // localhost:19000
-    const debuggerHost = this.urlCreator.constructUrl({ scheme: '', hostname });
+    const debuggerHost = this.options.constructUrl({ scheme: '', hostname });
     // http://localhost:19000/logs
-    const logUrl = this.urlCreator.constructUrl({ scheme: 'http', hostname }) + '/logs';
+    const logUrl = this.options.constructUrl({ scheme: 'http', hostname }) + '/logs';
 
     return {
       // Required for Expo Go to function.

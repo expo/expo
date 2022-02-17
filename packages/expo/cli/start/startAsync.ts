@@ -35,12 +35,10 @@ async function getMultiBundlerStartOptions(
     https: options.https,
     maxWorkers: options.maxWorkers,
     resetDevServer: options.clear,
+    minify: options.minify,
     location: {
       hostType: options.host,
-      minify: options.minify,
       scheme: options.scheme,
-      isOffline: options.offline,
-      mode,
     },
   };
   const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, settings);

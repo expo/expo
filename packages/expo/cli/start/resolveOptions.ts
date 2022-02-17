@@ -16,6 +16,7 @@ export type Options = {
   https: boolean;
   maxWorkers: number;
   port: number;
+  /** Should instruct the bundler to create minified bundles. */
   minify: boolean;
   devClient: boolean;
   scheme: string;
@@ -33,12 +34,10 @@ export async function persistOptionsAsync(options: Options) {
     maxWorkers: options.maxWorkers,
     mode: options.dev ? 'development' : 'production',
     resetDevServer: options.clear,
+    minify: options.minify,
     location: {
       hostType: options.host,
-      minify: options.minify,
       scheme: options.scheme,
-      isOffline: options.offline,
-      mode: options.dev ? 'development' : 'production',
     },
   });
 }

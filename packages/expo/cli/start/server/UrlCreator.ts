@@ -5,15 +5,6 @@ import * as Log from '../../log';
 import { CommandError } from '../../utils/errors';
 import { getIpAddress } from '../../utils/ip';
 
-export interface URLOptions extends CreateURLOptions {
-  /** Should instruct the bundler to create minified bundles. */
-  minify: boolean;
-
-  mode?: 'production' | 'development';
-
-  isOffline?: boolean;
-}
-
 export interface CreateURLOptions {
   /** URL scheme to use when opening apps in custom runtimes. */
   scheme?: string | null;
@@ -44,7 +35,7 @@ export class UrlCreator {
       throw new CommandError('NO_DEV_CLIENT_SCHEME', 'No scheme specified for development client');
     }
 
-    const manifestUrl = this.constructUrl({ scheme: 'http', ...opts });
+    const manifestUrl = this.constructUrl({ ...opts, scheme: 'http' });
     return `${protocol}://expo-development-client/?url=${encodeURIComponent(manifestUrl)}`;
   }
 
@@ -56,7 +47,7 @@ export class UrlCreator {
     return joinUrlComponents(urlComponents);
   }
 
-  private getTunnelUrlComponents(opts: Pick<URLOptions, 'scheme'>) {
+  private getTunnelUrlComponents(opts: Pick<CreateURLOptions, 'scheme'>) {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl();
     if (!tunnelUrl) {
       return null;

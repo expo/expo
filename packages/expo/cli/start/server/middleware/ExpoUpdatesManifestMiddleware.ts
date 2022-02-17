@@ -71,7 +71,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
     const expoGoConfig = this.getExpoGoConfig({
       projectRoot,
       packagerOpts: {
-        dev: this.options.location.mode === 'development',
+        dev: this.options.mode === 'development',
       },
       mainModuleName,
       hostname,

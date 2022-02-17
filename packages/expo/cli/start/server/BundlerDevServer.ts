@@ -14,7 +14,7 @@ import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { ClassicManifestMiddleware } from './middleware/ClassicManifestMiddleware';
 import { ExpoGoManifestHandlerMiddleware } from './middleware/ExpoUpdatesManifestMiddleware';
-import { UrlCreator, URLOptions } from './UrlCreator';
+import { CreateURLOptions, UrlCreator } from './UrlCreator';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void);
@@ -52,11 +52,13 @@ export interface BundlerStartOptions {
   maxWorkers?: number;
 
   port?: number;
+  /** Should instruct the bundler to create minified bundles. */
+  minify?: boolean;
 
   // Webpack options
   isImageEditingEnabled?: boolean;
 
-  location: URLOptions;
+  location: CreateURLOptions;
 }
 
 const PLATFORM_MANAGERS = {
@@ -95,12 +97,15 @@ export class BundlerDevServer {
   }
 
   protected getManifestMiddleware(
-    options: Pick<BundlerStartOptions, 'location' | 'forceManifestType'>
+    options: Pick<BundlerStartOptions, 'location' | 'minify' | 'mode' | 'forceManifestType'>
   ) {
     const Middleware = MIDDLEWARES[options.forceManifestType || 'classic'];
     assert(Middleware, `Manifest middleware for type '${options.forceManifestType}' not found`);
-    const middleware = new Middleware(this.projectRoot, this.urlCreator, {
+    const middleware = new Middleware(this.projectRoot, {
+      constructUrl: this.urlCreator.constructUrl
       location: options.location,
+      mode: options.mode,
+      minify: options.minify,
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
     });
     return middleware.getHandler();
