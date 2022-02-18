@@ -53,7 +53,11 @@ class StoreReviewModule(private val mContext: Context) :
           }
         }
       } else {
+<<<<<<< HEAD
         promise.reject(null)
+=======
+        promise.reject("ERR_STORE_REVIEW_FAILED", "Android ReviewManager taks was not successful")
+>>>>>>> 297f88f4f7 (Updated error message)
       }
     }
   }
