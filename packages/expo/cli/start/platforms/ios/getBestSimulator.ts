@@ -3,6 +3,10 @@ import { execSync } from 'child_process';
 import { CommandError } from '../../../utils/errors';
 import * as SimControl from './simctl';
 
+/**
+ * Returns the default device stored in the Simulator.app settings.
+ * This helps us to get the device that the user opened most recently regardless of which tool they used.
+ */
 function getDefaultSimulatorDeviceUDID() {
   try {
     const defaultDeviceUDID = execSync(
@@ -16,10 +20,7 @@ function getDefaultSimulatorDeviceUDID() {
 }
 
 export async function getBestBootedSimulatorAsync({ osType }: { osType?: string }) {
-  const simulatorDeviceInfo = await SimControl.listAsync('devices');
-  const devices = Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
-    return prev.concat(runtime.filter((device) => device.state === 'Booted'));
-  }, []);
+  const devices = await SimControl.getBootedSimulatorsAsync();
   const simulatorOpenedByApp = devices[0];
 
   // This should prevent opening a second simulator in the chance that default
@@ -73,7 +74,7 @@ export async function getBestUnbootedSimulatorAsync({
 export async function getSelectableSimulatorsAsync({
   osType = 'iOS',
 }: { osType?: string } = {}): Promise<SimControl.Device[]> {
-  const simulators = await SimControl.listSimulatorDevicesAsync();
+  const simulators = await SimControl.getDevicesAsync();
   return simulators.filter((device) => device.isAvailable && device.osType === osType);
 }
 

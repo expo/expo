@@ -2,9 +2,8 @@ import * as osascript from '@expo/osascript';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { delayAsync, TimeoutError } from '../../../utils/delay';
+import { delayAsync, waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
-import { profile } from '../../../utils/profile';
 import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
@@ -41,7 +40,9 @@ async function ensureSimulatorOpenAsync(
     udid = await getBestUnbootedSimulatorAsync({ osType });
   }
 
-  const bootedDevice = await profile(SimControl.waitForDeviceToBootAsync)({ udid });
+  const bootedDevice = await waitForActionAsync({
+    action: () => SimControl.bootAsync({ udid }),
+  });
 
   if (!bootedDevice) {
     // Give it a second chance, this might not be needed but it could potentially lead to a better UX on slower devices.
@@ -49,7 +50,8 @@ async function ensureSimulatorOpenAsync(
       return await ensureSimulatorOpenAsync({ udid, osType }, false);
     }
     // TODO: We should eliminate all needs for a timeout error, it's bad UX to get an error about the simulator not starting while the user can clearly see it starting on their slow computer.
-    throw new TimeoutError(
+    throw new CommandError(
+      'SIMULATOR_TIMEOUT',
       `Simulator didn't boot fast enough. Try opening Simulator first, then running your app.`
     );
   }
@@ -80,14 +82,13 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     return this.device.udid;
   }
 
-  async getAppVersionAsync(applicationId: string): Promise<string | null> {
+  async getAppVersionAsync(appId: string): Promise<string | null> {
     assert(
-      applicationId === EXPO_GO_BUNDLE_IDENTIFIER,
+      appId === EXPO_GO_BUNDLE_IDENTIFIER,
       'Only the Expo Go app is supported for version fetching'
     );
-    const localPath = await SimControl.getContainerPathAsync({
-      udid: this.device.udid,
-      bundleIdentifier: applicationId,
+    const localPath = await SimControl.getContainerPathAsync(this.device, {
+      appId,
     });
     if (!localPath) {
       return null;
@@ -111,10 +112,9 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     return ensureSimulatorOpenAsync({ osType: this.device.osType, udid: this.device.udid });
   }
 
-  async launchApplicationIdAsync(applicationId: string) {
-    const result = await SimControl.openBundleIdAsync({
-      udid: this.device.udid,
-      bundleIdentifier: applicationId,
+  async launchApplicationIdAsync(appId: string) {
+    const result = await SimControl.openBundleIdAsync(this.device, {
+      appId,
     }).catch((error) => {
       if ('status' in error) {
         return error;
@@ -124,7 +124,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     if (result.status === 0) {
       await this.activateWindowAsync();
     } else {
-      let errorMessage = `Couldn't open iOS app with ID "${applicationId}" on device "${this.name}".`;
+      let errorMessage = `Couldn't open iOS app with ID "${appId}" on device "${this.name}".`;
       if (result.status === 4) {
         errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
           `expo run:ios -d ${this.device.udid}`
@@ -135,16 +135,15 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     }
   }
 
-  async installAppAsync(binaryPath: string) {
-    await SimControl.installAsync({
-      udid: this.device.udid,
-      dir: binaryPath,
+  async installAppAsync(filePath: string) {
+    await SimControl.installAsync(this.device, {
+      filePath,
     });
 
-    await this.waitForAppInstalledAsync(await this.getApplicationIdFromBundle(binaryPath));
+    await this.waitForAppInstalledAsync(await this.getApplicationIdFromBundle(filePath));
   }
 
-  private async getApplicationIdFromBundle(binaryPath: string): Promise<string> {
+  private async getApplicationIdFromBundle(filePath: string): Promise<string> {
     // TODO: Implement...
     return EXPO_GO_BUNDLE_IDENTIFIER;
   }
@@ -158,17 +157,15 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     }
   }
 
-  async uninstallAppAsync(applicationId: string) {
-    await SimControl.uninstallAsync({
-      udid: this.device.udid,
-      bundleIdentifier: applicationId,
+  async uninstallAppAsync(appId: string) {
+    await SimControl.uninstallAsync(this.device, {
+      appId,
     });
   }
 
-  async isAppInstalledAsync(applicationId: string) {
-    return !!(await SimControl.getContainerPathAsync({
-      udid: this.device.udid,
-      bundleIdentifier: applicationId,
+  async isAppInstalledAsync(appId: string) {
+    return !!(await SimControl.getContainerPathAsync(this.device, {
+      appId,
     }));
   }
 
@@ -179,7 +176,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     }
 
     try {
-      await SimControl.openUrlAsync({ udid: this.device.udid, url });
+      await SimControl.openUrlAsync(this.device, { url });
     } catch (error) {
       if (error.status === 194) {
         // An error was encountered processing the command (domain=NSOSStatusErrorDomain, code=-10814):

@@ -16,7 +16,7 @@ export class ApplePlatformManager extends PlatformManager<Device> {
       platform: 'ios',
       getDevServerUrl,
       getLoadingUrl: () => getLoadingUrl({ hostType: 'localhost' }, 'ios'),
-      getManifestUrl,
+      getNativeDevServerUrl: getManifestUrl,
       resolveDeviceAsync: AppleDeviceManager.resolveAsync,
     });
   }

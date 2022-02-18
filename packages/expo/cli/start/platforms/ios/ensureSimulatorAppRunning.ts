@@ -2,15 +2,18 @@ import * as osascript from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
 import * as Log from '../../../log';
-import { TimeoutError, waitForActionAsync } from '../../../utils/delay';
+import { waitForActionAsync } from '../../../utils/delay';
+import { CommandError } from '../../../utils/errors';
 
-export async function ensureSimulatorAppRunningAsync({
-  udid,
-  maxWaitTime,
-}: {
-  udid?: string;
-  maxWaitTime?: number;
-}): Promise<void> {
+/** Open the Simulator.app and return when the system registers it as 'open'. */
+export async function ensureSimulatorAppRunningAsync(
+  device: { udid?: string },
+  {
+    maxWaitTime,
+  }: {
+    maxWaitTime?: number;
+  } = {}
+): Promise<void> {
   // Yes, simulators can be booted even if the app isn't running, obviously we'd never want this.
   if (await isSimulatorAppRunningAsync()) {
     return;
@@ -20,10 +23,11 @@ export async function ensureSimulatorAppRunningAsync({
 
   // In theory this would ensure the correct simulator is booted as well.
   // This isn't theory though, this is Xcode.
-  await openSimulatorAppAsync({ udid });
+  await openSimulatorAppAsync(device);
 
   if (!(await waitForSimulatorAppToStart({ maxWaitTime }))) {
-    throw new TimeoutError(
+    throw new CommandError(
+      'SIMULATOR_TIMEOUT',
       `Simulator app did not open fast enough. Try opening Simulator first, then running your app.`
     );
   }
@@ -60,11 +64,11 @@ async function isSimulatorAppRunningAsync(): Promise<boolean> {
   return true;
 }
 
-async function openSimulatorAppAsync({ udid }: { udid?: string }) {
+async function openSimulatorAppAsync(device: { udid?: string }) {
   const args = ['-a', 'Simulator'];
-  if (udid) {
+  if (device.udid) {
     // This has no effect if the app is already running.
-    args.push('--args', '-CurrentDeviceUDID', udid);
+    args.push('--args', '-CurrentDeviceUDID', device.udid);
   }
   await spawnAsync('open', args);
 }

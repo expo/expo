@@ -7,7 +7,8 @@ import { Device } from './simctl';
 /**
  * Sort the devices so the last simulator that was opened (user's default) is the first suggested.
  *
- * @param devices
+ * @param devices list of devices to sort.
+ * @param osType optional sort by operating system.
  */
 async function sortDefaultDeviceToBeginningAsync(
   devices: Device[],

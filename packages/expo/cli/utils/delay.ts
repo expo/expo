@@ -1,9 +1,9 @@
-export class TimeoutError extends Error {}
-
+/** Await for a given duration of milliseconds. */
 export function delayAsync(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/** Wait for a given action to return a truthy value. */
 export async function waitForActionAsync<T>({
   action,
   interval = 100,

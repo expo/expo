@@ -43,9 +43,9 @@ it('should activate the window when Simulator.app is not running', async () => {
 it('should throw a timeout warning when Simulator.app takes too long to start', async () => {
   asMock(execAsync).mockRejectedValue(new Error('Application isn’t running'));
 
-  await expect(ensureSimulatorAppRunningAsync({ udid: '123', maxWaitTime: 100 })).rejects.toThrow(
-    /Simulator app did not open fast enough/
-  );
+  await expect(
+    ensureSimulatorAppRunningAsync({ udid: '123' }, { maxWaitTime: 100 })
+  ).rejects.toThrow(/Simulator app did not open fast enough/);
 
   // initial call (1) + interval / timeout (2)
   expect(execAsync).toBeCalledTimes(3);

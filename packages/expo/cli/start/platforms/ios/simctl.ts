@@ -1,11 +1,11 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import chalk from 'chalk';
+import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 
 import * as Log from '../../../log';
-import { waitForActionAsync } from '../../../utils/delay';
-import { CommandError } from '../../../utils/errors';
+import { xcrunAsync } from './xcrun';
 
 type DeviceState = 'Shutdown' | 'Booted';
+
+type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
 
 export type Device = {
   availabilityError?: 'runtime profile not found';
@@ -47,52 +47,31 @@ export type Device = {
   windowName: string;
 };
 
-export type XCTraceDevice = {
-  /**
-   * '00E55DC0-0364-49DF-9EC6-77BE587137D4'
-   */
-  udid: string;
-  /**
-   * 'Apple TV'
-   */
-  name: string;
-
-  deviceType: 'device' | 'catalyst';
-  /**
-   * '13.4'
-   */
-  osVersion: string;
-};
-
-type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
-
 type SimulatorDeviceList = {
   devices: {
     [runtime: string]: Device[];
   };
 };
 
+type DeviceContext = Pick<Device, 'udid'>;
+
 /**
  * Returns the local path for the installed tar.app. Returns null when the app isn't installed.
  *
- * @param props.udid device udid.
- * @param props.bundleIdentifier bundle identifier for app
+ * @param device context for selecting a device.
+ * @param props.appId bundle identifier for app.
  * @returns local file path to installed app binary, e.g. '/Users/evanbacon/Library/Developer/CoreSimulator/Devices/EFEEA6EF-E3F5-4EDE-9B72-29EAFA7514AE/data/Containers/Bundle/Application/FA43A0C6-C2AD-442D-B8B1-EAF3E88CF3BF/Exponent-2.21.3.tar.app'
  */
-export async function getContainerPathAsync({
-  udid,
-  bundleIdentifier,
-}: {
-  udid: string;
-  bundleIdentifier: string;
-}): Promise<string | null> {
+export async function getContainerPathAsync(
+  device: Partial<DeviceContext>,
+  {
+    appId,
+  }: {
+    appId: string;
+  }
+): Promise<string | null> {
   try {
-    const { stdout } = await xcrunAsync([
-      'simctl',
-      'get_app_container',
-      deviceUDIDOrBooted(udid),
-      bundleIdentifier,
-    ]);
+    const { stdout } = await simctlAsync(['get_app_container', resolveId(device), appId]);
     return stdout.trim();
   } catch (error: any) {
     if (error.stderr?.match(/No such file or directory/)) {
@@ -102,18 +81,14 @@ export async function getContainerPathAsync({
   }
 }
 
-export async function waitForDeviceToBootAsync({
-  udid,
-}: Pick<Device, 'udid'>): Promise<Device | null> {
-  return waitForActionAsync<Device | null>({
-    action: () => bootAsync({ udid }),
-  });
-}
-
-export async function openUrlAsync(options: { udid?: string; url: string }): Promise<void> {
+/** Open a URL on a device. The url can have any protocol. */
+export async function openUrlAsync(
+  device: Partial<DeviceContext>,
+  options: { url: string }
+): Promise<void> {
   try {
     // Skip logging since this is likely to fail.
-    await xcrunAsync(['simctl', 'openurl', deviceUDIDOrBooted(options.udid), options.url]);
+    await simctlAsync(['openurl', resolveId(device), options.url]);
   } catch (error: any) {
     if (!error.stderr?.match(/Unable to lookup in current state: Shut/)) {
       throw error;
@@ -123,53 +98,53 @@ export async function openUrlAsync(options: { udid?: string; url: string }): Pro
     // This can happen when quitting the Simulator app, and immediately pressing `i` to reopen the project.
 
     // First boot the simulator
-    await runBootAsync({ udid: deviceUDIDOrBooted(options.udid) });
+    await bootDeviceAsync({ udid: resolveId(device) });
 
     // Finally, try again...
-    return await openUrlAsync(options);
+    return await openUrlAsync(device, options);
   }
 }
 
-export async function openBundleIdAsync(options: {
-  udid?: string;
-  bundleIdentifier: string;
-}): Promise<SpawnResult> {
-  return xcrunAsync([
-    'simctl',
-    'launch',
-    deviceUDIDOrBooted(options.udid),
-    options.bundleIdentifier,
-  ]);
+/** Open a simulator using a bundle identifier. If no app with a matching bundle identifier is installed then an error will be thrown. */
+export async function openBundleIdAsync(
+  device: Partial<DeviceContext>,
+  options: {
+    appId: string;
+  }
+): Promise<SpawnResult> {
+  return simctlAsync(['launch', resolveId(device), options.appId]);
 }
 
 // This will only boot in headless mode if the Simulator app is not running.
-export async function bootAsync({ udid }: { udid: string }): Promise<Device | null> {
-  // TODO: Deprecate
-  await runBootAsync({ udid });
-  return await isSimulatorBootedAsync({ udid });
+export async function bootAsync(device: DeviceContext): Promise<Device | null> {
+  await bootDeviceAsync(device);
+  return isDeviceBootedAsync(device);
 }
 
-async function getBootedSimulatorsAsync(): Promise<Device[]> {
-  const simulatorDeviceInfo = await listAsync('devices');
+/** Returns a list of devices which current state is 'Booted' as an array. */
+export async function getBootedSimulatorsAsync(): Promise<Device[]> {
+  const simulatorDeviceInfo = await getRuntimesAsync('devices');
   return Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
     return prev.concat(runtime.filter((device) => device.state === 'Booted'));
   }, []);
 }
 
-async function isSimulatorBootedAsync({ udid }: { udid?: string }): Promise<Device | null> {
+/** Returns the current device if its state is 'Booted'. */
+export async function isDeviceBootedAsync(device: Partial<DeviceContext>): Promise<Device | null> {
   // Simulators can be booted even if the app isn't running :(
   const devices = await getBootedSimulatorsAsync();
-  if (udid) {
-    return devices.find((bootedDevice) => bootedDevice.udid === udid) ?? null;
-  } else {
-    return devices[0] ?? null;
+  if (device.udid) {
+    return devices.find((bootedDevice) => bootedDevice.udid === device.udid) ?? null;
   }
+
+  return devices[0] ?? null;
 }
 
-export async function runBootAsync({ udid }: { udid: string }) {
+/** Boot a device. */
+export async function bootDeviceAsync(device: DeviceContext): Promise<void> {
   try {
     // Skip logging since this is likely to fail.
-    await xcrunAsync(['simctl', 'boot', udid]);
+    await simctlAsync(['boot', device.udid]);
   } catch (error: any) {
     if (!error.stderr?.match(/Unable to boot device in current state: Booted/)) {
       throw error;
@@ -177,22 +152,33 @@ export async function runBootAsync({ udid }: { udid: string }) {
   }
 }
 
-export async function installAsync(options: { udid?: string; dir: string }): Promise<any> {
-  return simctlAsync(['install', deviceUDIDOrBooted(options.udid), options.dir]);
+/** Install a binary file on the device. */
+export async function installAsync(
+  device: Partial<DeviceContext>,
+  options: {
+    /** Local absolute file path to an app binary that is built and provisioned for iOS simulators. */
+    filePath: string;
+  }
+): Promise<any> {
+  return simctlAsync(['install', resolveId(device), options.filePath]);
 }
 
-export async function uninstallAsync(options: {
-  udid?: string;
-  bundleIdentifier: string;
-}): Promise<any> {
-  return simctlAsync(['uninstall', deviceUDIDOrBooted(options.udid), options.bundleIdentifier]);
+/** Uninstall an app from the provided device. */
+export async function uninstallAsync(
+  device: Partial<DeviceContext>,
+  options: {
+    /** Bundle identifier */
+    appId: string;
+  }
+): Promise<any> {
+  return simctlAsync(['uninstall', resolveId(device), options.appId]);
 }
 
 function parseSimControlJSONResults(input: string): any {
   try {
     return JSON.parse(input);
   } catch (error: any) {
-    // Nov 15, 2020: Observed this can happen when opening the simulator and the simulator prompts the user to update the XC command line tools.
+    // Nov 15, 2020: Observed this can happen when opening the simulator and the simulator prompts the user to update the xcode command line tools.
     // Unexpected token I in JSON at position 0
     if (error.message.match('Unexpected token')) {
       Log.error(`Apple's simctl returned malformed JSON:\n${input}`);
@@ -201,7 +187,8 @@ function parseSimControlJSONResults(input: string): any {
   }
 }
 
-export async function listAsync(
+/** Get all runtime devices given a certain type. */
+async function getRuntimesAsync(
   type: 'devices' | 'devicetypes' | 'runtimes' | 'pairs',
   query?: string | 'available'
 ): Promise<SimulatorDeviceList> {
@@ -226,70 +213,23 @@ export async function listAsync(
   return info;
 }
 
-export async function listSimulatorDevicesAsync() {
-  const simulatorDeviceInfo = await listAsync('devices');
-  return Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
-    return prev.concat(runtime);
-  }, []);
+/** Return a list of iOS simulators. */
+export async function getDevicesAsync(): Promise<Device[]> {
+  const simulatorDeviceInfo = await getRuntimesAsync('devices');
+  return Object.values(simulatorDeviceInfo.devices).reduce(
+    (prev, runtime) => prev.concat(runtime),
+    []
+  );
 }
 
+/** Run a `simctl` command. */
 export async function simctlAsync(
-  [command, ...args]: (string | undefined)[],
+  args: (string | undefined)[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
-  return xcrunWithLogging(['simctl', command, ...args.filter(Boolean)], options);
+  return xcrunAsync(['simctl', ...args], options);
 }
 
-function deviceUDIDOrBooted(udid?: string): string {
-  return udid ? udid : 'booted';
-}
-
-export function isLicenseOutOfDate(text: string) {
-  if (!text) {
-    return false;
-  }
-
-  const lower = text.toLowerCase();
-  return lower.includes('xcode') && lower.includes('license');
-}
-
-async function xcrunAsync(args: string[], options?: SpawnOptions) {
-  Log.debug('Running: xcrun ' + args.join(' '));
-  try {
-    return await spawnAsync('xcrun', args, options);
-  } catch (e) {
-    throw parseXcrunError(e);
-  }
-}
-
-function parseXcrunError(e: any): Error {
-  if (isLicenseOutOfDate(e.stdout) || isLicenseOutOfDate(e.stderr)) {
-    return new CommandError(
-      'XCODE_LICENSE_NOT_ACCEPTED',
-      'Xcode license is not accepted. Please run `sudo xcodebuild -license`.'
-    );
-  } else if (e.stderr?.includes('not a developer tool or in PATH')) {
-    return new CommandError(
-      'SIMCTL_NOT_AVAILABLE',
-      `You may need to run ${chalk.bold(
-        'sudo xcode-select -s /Applications/Xcode.app'
-      )} and try again.`
-    );
-  }
-  // Attempt to craft a better error message...
-  if (Array.isArray(e.output)) {
-    e.message += '\n' + e.output.join('\n').trim();
-  } else if (e.stderr) {
-    e.message += '\n' + e.stderr;
-  }
-  return e;
-}
-
-async function xcrunWithLogging(args: string[], options?: SpawnOptions): Promise<SpawnResult> {
-  try {
-    return await xcrunAsync(args, options);
-  } catch (e: any) {
-    Log.error(`Error running \`xcrun ${args.join(' ')}\`: ${e.stderr || e.message}`);
-    throw e;
-  }
+function resolveId(device: Partial<DeviceContext>): string {
+  return device.udid ?? 'booted';
 }
