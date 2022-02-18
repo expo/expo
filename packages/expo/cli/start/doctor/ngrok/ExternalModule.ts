@@ -10,34 +10,48 @@ import { EXPO_DEBUG } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
 
+/** An error that is thrown when a package is installed but doesn't meet the version criteria. */
 export class ExternalModuleVersionError extends CommandError {
   constructor(message: string, public shouldGloballyInstall: boolean) {
     super('EXTERNAL_MODULE_VERSION', message);
   }
 }
 
-export type InstallPromptOptions = {
+interface PromptOptions {
   /** Should prompt the user to install, when false the module will just assert on missing packages, default `true` */
   shouldPrompt?: boolean;
   /** Should automatically install the package without prompting, default `false` */
   autoInstall?: boolean;
+}
+
+export interface InstallPromptOptions extends PromptOptions {
   /** Should install the package globally, default `false` */
   shouldGloballyInstall?: boolean;
-};
-export type ResolvePromptOptions = Omit<InstallPromptOptions, 'shouldGloballyInstall'> & {
+}
+
+export interface ResolvePromptOptions extends PromptOptions {
   /**
    * Prefer to install the package globally, this can be overwritten if the function
-   * detects that a locally installed package simply needs an upgrade, default `false` */
+   * detects that a locally installed package simply needs an upgrade, default `false`
+   */
   prefersGlobalInstall?: boolean;
-};
+}
 
 /** Resolves a local or globally installed package, prompts to install if missing. */
 export class ExternalModule<IModule> {
   private instance: IModule | null = null;
 
   constructor(
+    /** Project root for checking if the package is installed locally. */
     private projectRoot: string,
-    private pkg: { name: string; versionRange: string },
+    /** Info on the external package. */
+    private pkg: {
+      /** NPM package name. */
+      name: string;
+      /** Required semver range, ex: `^1.0.0`. */
+      versionRange: string;
+    },
+    /** A function used to create the installation prompt message. */
     private promptMessage: (pkgName: string) => string
   ) {}
 
