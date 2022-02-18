@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import {
   AppInfo,
-  getAppInfoAsync,
   toggleDebugRemoteJSAsync,
   toggleElementInspectorAsync,
   toggleFastRefreshAsync,
@@ -14,7 +13,6 @@ import {
 import { render, waitFor, fireEvent, act } from '../../test-utils';
 import { Main } from '../Main';
 
-const mockGetAppInfoAsync = getAppInfoAsync as jest.Mock;
 const mockToggleDebugRemoteJSAsync = toggleDebugRemoteJSAsync as jest.Mock;
 const mockToggleElementInspectorAsync = toggleElementInspectorAsync as jest.Mock;
 const mockToggleFastRefreshAsync = toggleFastRefreshAsync as jest.Mock;
@@ -24,7 +22,6 @@ const mockNavigateToLauncherAsync = navigateToLauncherAsync as jest.Mock;
 const mockReloadAsync = reloadAsync as jest.Mock;
 
 const mockFns: jest.Mock[] = [
-  mockGetAppInfoAsync,
   mockToggleDebugRemoteJSAsync,
   mockToggleElementInspectorAsync,
   mockToggleFastRefreshAsync,
@@ -54,17 +51,9 @@ describe('<Main />', () => {
       runtimeVersion: '10',
     };
 
-    mockGetAppInfoAsync.mockClear();
-    mockGetAppInfoAsync.mockResolvedValueOnce(fakeAppInfo);
-
-    const { getByText, queryByText } = render(<Main />);
-
-    expect(getAppInfoAsync).toHaveBeenCalledTimes(1);
-
-    expect(queryByText(fakeAppInfo.appName)).toBe(null);
-    expect(queryByText(fakeAppInfo.appVersion)).toBe(null);
-    expect(queryByText(fakeAppInfo.hostUrl)).toBe(null);
-    expect(queryByText(fakeAppInfo.runtimeVersion)).toBe(null);
+    const { getByText, queryByText } = render(<Main />, {
+      initialAppProviderProps: { appInfo: fakeAppInfo },
+    });
 
     await waitFor(() => getByText(/go home/i));
 
@@ -105,10 +94,9 @@ describe('<Main />', () => {
       runtimeVersion: '10',
     };
 
-    mockGetAppInfoAsync.mockClear();
-    mockGetAppInfoAsync.mockResolvedValueOnce(fakeAppInfo);
-
-    const { getByText } = render(<Main />);
+    const { getByText } = render(<Main />, {
+      initialAppProviderProps: { appInfo: fakeAppInfo },
+    });
     await waitFor(() => getByText(/go home/i));
 
     expect(copyToClipboardAsync).toHaveBeenCalledTimes(0);

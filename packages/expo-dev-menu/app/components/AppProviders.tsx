@@ -5,12 +5,12 @@ import { BottomSheetProvider } from '../hooks/useBottomSheet';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
-  initialAppInfo?: AppInfoContextProviderProps['initialAppInfo'];
+  appInfo?: AppInfoContextProviderProps['appInfo'];
 };
 
-export function AppProviders({ children, initialAppInfo }: AppProvidersProps) {
+export function AppProviders({ children, appInfo }: AppProvidersProps) {
   return (
-    <AppInfoContextProvider initialAppInfo={initialAppInfo}>
+    <AppInfoContextProvider appInfo={appInfo}>
       <BottomSheetProvider>{children}</BottomSheetProvider>
     </AppInfoContextProvider>
   );

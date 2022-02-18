@@ -110,28 +110,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   @objc
-  func getAppInfoAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let bridge = manager.currentBridge {
-      let manifest = manager.currentManifest
-      
-      let appInfo = EXDevMenuAppInfo.getFor(bridge, andManifest: manifest as Any as! [AnyHashable : Any])
-      
-      let hostUrl = manager.currentManifestURL?.absoluteString
-          
-      resolve([
-        "appName": appInfo["appName"],
-        "appIcon": appInfo["appIcon"],
-        "appVersion": appInfo["appVersion"],
-        "runtimeVersion": appInfo["runtimeVersion"],
-        "sdkVersion": appInfo["sdkVersion"],
-        "hostUrl": hostUrl,
-      ])
-    } else {
-      reject("E_MISSING_BRIDGE", "DevMenuManager does not have a currentBridge - getAppInfoAsync() ", nil);
-    }
-  }
-  
-  @objc
   func getDevSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     if let bridge = manager.currentBridge {
       if let devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
