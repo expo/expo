@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Added `android:exported="true"` to the activity. Cause on Android 12 and higher it needs to [explicity decalred](https://developer.android.com/about/versions/12/behavior-changes-12#exported) . ([#16367](https://github.com/expo/expo/pull/16367) by [@wbroek](https://github.com/wbroek))
 - Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
