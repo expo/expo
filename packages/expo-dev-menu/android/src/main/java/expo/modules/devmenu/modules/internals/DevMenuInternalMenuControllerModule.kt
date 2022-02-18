@@ -104,75 +104,11 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
 
     promise.resolve(map)
   }
-
-  override fun getAppInfoAsync(promise: Promise) {
-    val map = Arguments.createMap()
-    val packageManager = reactContext.packageManager
-    val packageName = reactContext.packageName
-    val packageInfo =  packageManager.getPackageInfo(packageName, 0)
-
-    var appVersion = packageInfo.versionName
-    val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    var appName = packageManager.getApplicationLabel(applicationInfo).toString()
-    val runtimeVersion = getMetadataValue("expo.modules.updates.EXPO_RUNTIME_VERSION")
-    val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
-    var appIcon = getApplicationIconUri()
-    var hostUrl = reactContext.sourceURL
-
-    val manifest = devMenuManager.currentManifest
-
-    if (manifest != null) {
-      val manifestName = manifest.getName()
-      if (manifestName != null) {
-        appName = manifestName
-      }
-
-      val manifestVersion = manifest.getVersion()
-      if (manifestVersion != null) {
-        appVersion = manifestVersion
-      }
-    }
-
-    if (devMenuManager.currentManifestURL != null) {
-      hostUrl = devMenuManager.currentManifestURL
-    }
-
-    map.apply {
-      putString("appVersion", appVersion)
-      putString("appName", appName)
-      putString("appIcon", appIcon)
-      putString("runtimeVersion", runtimeVersion)
-      putString("sdkVersion", sdkVersion)
-      putString("hostUrl", hostUrl)
-    }
-
-    promise.resolve(map)
-  }
-
+  
   override fun copyToClipboardAsync(content: String, promise: Promise) {
     val clipboard = reactContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(null, content)
     clipboard.setPrimaryClip(clip)
     promise.resolve(null)
-  }
-
-  private fun getMetadataValue(key: String): String {
-    val packageManager = reactContext.packageManager
-    val packageName = reactContext.packageName
-    val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    return applicationInfo.metaData?.get(key)?.toString() ?: ""
-  }
-
-  private fun getApplicationIconUri(): String {
-    var appIcon = ""
-    val packageManager = reactContext.packageManager
-    val packageName = reactContext.packageName
-    val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-
-    if (applicationInfo.icon != null) {
-      appIcon = "" + applicationInfo.icon
-    }
-    //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return appIcon
   }
 }

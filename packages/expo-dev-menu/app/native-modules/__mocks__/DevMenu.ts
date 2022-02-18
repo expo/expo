@@ -1,6 +1,5 @@
 export const hideMenu = jest.fn();
 export const getDevSettingsAsync = jest.fn().mockResolvedValue({});
-export const getAppInfoAsync = jest.fn().mockResolvedValue({});
 export const navigateToLauncherAsync = jest.fn();
 export const reloadAsync = jest.fn();
 export const toggleDebugRemoteJSAsync = jest.fn();
