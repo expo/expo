@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS issue where splash screen wouldn't show when using expo-updates and expo-splash-screen ([#16163](https://github.com/expo/expo/pull/16163)) by [@hannojg](https://github.com/hannojg)
+
 ### 💡 Others
 
 ## 0.11.6 — 2022-02-01
