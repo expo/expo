@@ -9,11 +9,10 @@ on:
       - yarn.lock
       - apps/**
       - packages/**
-    paths-ignore:
       # Ignore Expo CLI for now...
-      - packages/expo/cli/**
-      - packages/expo/bin/**
-      - packages/expo/e2e/**
+      - '!packages/expo/bin/**'
+      - '!packages/expo/cli/**'
+      - '!packages/expo/e2e/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
