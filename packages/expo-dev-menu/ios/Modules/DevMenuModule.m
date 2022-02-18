@@ -14,7 +14,6 @@ RCT_EXTERN_METHOD(openProfile)
 RCT_EXTERN_METHOD(openSettings)
 
 RCT_EXTERN_METHOD(isLoggedInAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(queryDevSessionsAsync:(NSString *)installationID resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(queryUpdateChannels:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(queryUpdateBranches:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 

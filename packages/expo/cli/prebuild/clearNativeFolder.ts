@@ -1,9 +1,10 @@
 import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
+import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
-import { directoryExistsAsync, removeAsync } from '../utils/dir';
+import { directoryExistsAsync } from '../utils/dir';
 import { CI } from '../utils/env';
 import { logNewSection } from '../utils/ora';
 import { confirmAsync } from '../utils/prompts';
@@ -12,7 +13,14 @@ import { confirmAsync } from '../utils/prompts';
 export async function clearNativeFolder(projectRoot: string, folders: string[]) {
   const step = logNewSection(`Clearing ${folders.join(', ')}`);
   try {
-    await Promise.all(folders.map((folderName) => removeAsync(path.join(projectRoot, folderName))));
+    await Promise.all(
+      folders.map((folderName) =>
+        fs.promises.rm(path.join(projectRoot, folderName), {
+          recursive: true,
+          force: true,
+        })
+      )
+    );
     step.succeed(`Cleared ${folders.join(', ')} code`);
   } catch (error: any) {
     step.fail(`Failed to delete ${folders.join(', ')} code: ${error.message}`);

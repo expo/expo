@@ -8,8 +8,6 @@ export async function fileExistsAsync(file: string): Promise<boolean> {
   return (await fs.promises.stat(file).catch(() => null))?.isFile() ?? false;
 }
 
-export const removeAsync = fs.remove;
-
-export const ensureDirectoryAsync = fs.ensureDir;
+export const ensureDirectoryAsync = (path: string) => fs.promises.mkdir(path, { recursive: true });
 
 export const copySync = fs.copySync;

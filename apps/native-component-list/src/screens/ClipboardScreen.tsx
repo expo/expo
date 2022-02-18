@@ -50,7 +50,7 @@ function SetStringExample() {
     <>
       <Button
         onPress={() => {
-          Clipboard.setString(value);
+          Clipboard.setStringAsync(value);
         }}
         title="Copy to clipboard"
       />

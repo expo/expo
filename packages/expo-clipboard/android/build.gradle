@@ -69,6 +69,7 @@ repositories {
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "androidx.core:core-ktx:1.6.0"
 
   if (project.findProject(':unimodules-test-core')) {
     testImplementation project(':unimodules-test-core')
