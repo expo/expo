@@ -470,13 +470,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   // Standard
   if (moduleClass == RCTImageLoader.class) {
-    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
+    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *) {
       return @[[RCTLocalAssetImageLoader new], [EXMediaLibraryImageLoader new]];
-    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
+    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *) {
       return @[[RCTGIFImageDecoder new]];
     }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *{
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *) {
       return @[
         [RCTHTTPRequestHandler new],
         [RCTDataRequestHandler new],
