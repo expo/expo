@@ -42,7 +42,7 @@ export function CrashReportScreen({ route }) {
         stack,
       },
       null,
-      '\t'
+      2
     );
 
     setClipboardError('');
@@ -68,7 +68,7 @@ export function CrashReportScreen({ route }) {
             roundedBottom="large">
             <Row px="medium" py="small" align="center">
               <Text color="primary" size="large">
-                {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy Raport'}
+                {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy Report'}
               </Text>
             </Row>
           </Button.ScaleOnPressContainer>
