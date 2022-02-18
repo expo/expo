@@ -24,11 +24,11 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
 
   override fun getName() = "ExpoLocalization"
 
-  override fun getConstants(): Map<String, Any> {
-    val constants = HashMap<String, Any>()
+  override fun getConstants(): Map<String, Any?> {
+    val constants = HashMap<String, Any?>()
     val bundle = bundledConstants
     for (key in bundle.keySet()) {
-      constants[key] = bundle[key] as Any
+      constants[key] = bundle[key] as Any?
     }
     return constants
   }
