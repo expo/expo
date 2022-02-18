@@ -533,7 +533,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
   [bridge moduleForClass:[RCTEventDispatcher class]];
   RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
-  [eventDispatcher setBridge:bridge];
+  RCTCallableJSModules *callableJSModules = [RCTCallableJSModules new];
+  [bridge setValue:callableJSModules forKey:@"_callableJSModules"];
+  [callableJSModules setBridge:bridge];
+  [eventDispatcher setValue:callableJSModules forKey:@"_callableJSModules"];
+  [eventDispatcher setValue:bridge forKey:@"_bridge"];
+  [eventDispatcher initialize];
   [bridge updateModuleWithInstance:eventDispatcher];
 
   EX_WEAKIFY(self);
