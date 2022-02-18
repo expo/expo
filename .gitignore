@@ -58,6 +58,8 @@ xcuserdata
 /android/captures
 /android/expoview/libs/ReactAndroid-temp
 /android/versioned-react-native/ReactAndroid
+/android/versioned-react-native/ReactCommon
+/android/versioned-react-native/codegen
 ReactAndroid-temp.aar
 
 # Tools
