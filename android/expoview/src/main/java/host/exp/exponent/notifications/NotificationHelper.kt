@@ -37,7 +37,9 @@ import host.exp.exponent.utils.ColorParser
 import host.exp.exponent.utils.JSONUtils.getJSONString
 import host.exp.expoview.R
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -137,7 +139,7 @@ object NotificationHelper {
             }
           }
 
-          val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString())
+          val body = params.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
           val request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/getExpoPushToken")
             .header("Content-Type", "application/json")
             .post(body)

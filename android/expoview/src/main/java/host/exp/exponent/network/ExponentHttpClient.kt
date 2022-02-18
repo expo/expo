@@ -6,8 +6,10 @@ import host.exp.exponent.Constants
 import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.BufferedSource
-import okio.Okio
+import okio.buffer
+import okio.source
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.FileNotFoundException
@@ -41,7 +43,7 @@ class ExponentHttpClient(
   }
 
   fun callSafe(request: Request, callback: SafeCallback) {
-    val uri = request.url().toString()
+    val uri = request.url.toString()
     okHttpClientFactory.getNewClient().newCall(request).enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
         tryForcedCachedResponse(uri, request, callback, null, e)
@@ -60,7 +62,7 @@ class ExponentHttpClient(
 
   fun callDefaultCache(request: Request, callback: SafeCallback) {
     tryForcedCachedResponse(
-      request.url().toString(),
+      request.url.toString(),
       request,
       object : SafeCallback {
         override fun onFailure(e: IOException) {
@@ -146,7 +148,7 @@ class ExponentHttpClient(
             .body(
               responseBodyForFile(
                 embeddedResponse.responseFilePath,
-                MediaType.parse(embeddedResponse.mediaType)
+                embeddedResponse.mediaType.toMediaTypeOrNull()
               )
             )
             .build()
@@ -174,8 +176,8 @@ class ExponentHttpClient(
       }
 
       val stream = context.assets.open(strippedAssetsPath)
-      val source = Okio.source(stream)
-      val buffer = Okio.buffer(source)
+      val source = stream.source()
+      val buffer = source.buffer()
 
       object : ResponseBody() {
         override fun contentType(): MediaType? {
