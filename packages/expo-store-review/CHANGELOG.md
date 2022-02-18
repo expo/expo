@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
-- Fixed null pointer exception when store review request failed
+- Fixed null pointer exception when store review request failed ([#16365](https://github.com/expo/expo/pull/16365) by [@mariomurrent-softwaresolutions](https://github.com/mariomurrent-softwaresolutions))
 
 ### 💡 Others
 
