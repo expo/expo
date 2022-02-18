@@ -53,7 +53,7 @@ class StoreReviewModule(private val mContext: Context) :
           }
         }
       } else {
-        promise.reject("ERR_STORE_REVIEW_REQUEST_FAILED", "Android review request failed")
+        promise.reject("ERR_STORE_REVIEW_FAILED", "Android ReviewManager taks was not successful")
       }
     }
   }
