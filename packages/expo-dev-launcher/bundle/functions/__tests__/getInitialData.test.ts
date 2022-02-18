@@ -1,4 +1,8 @@
-import { getBuildInfoAsync, installationID } from '../../native-modules/DevLauncherInternal';
+import {
+  getBuildInfoAsync,
+  getCrashReport,
+  installationID,
+} from '../../native-modules/DevLauncherInternal';
 import { getSettingsAsync } from '../../native-modules/DevMenuInternal';
 import { getDevSessionsAsync } from '../getDevSessionsAsync';
 import { getInitialData } from '../getInitialData';
@@ -14,6 +18,7 @@ const mockFns = [
   getSettingsAsync,
   restoreUserAsync,
   getDevSessionsAsync,
+  getCrashReport,
 ] as jest.Mock[];
 
 describe('getInitialData()', () => {
@@ -26,6 +31,7 @@ describe('getInitialData()', () => {
     expect(getSettingsAsync).not.toHaveBeenCalled();
     expect(restoreUserAsync).not.toHaveBeenCalled();
     expect(getDevSessionsAsync).not.toHaveBeenCalled();
+    expect(getCrashReport).not.toHaveBeenCalled();
 
     await getInitialData();
 
@@ -37,15 +43,16 @@ describe('getInitialData()', () => {
     expect(getBuildInfoAsync).toHaveBeenCalled();
     expect(getSettingsAsync).toHaveBeenCalled();
     expect(restoreUserAsync).toHaveBeenCalled();
+    expect(getCrashReport).toHaveBeenCalled();
   });
 
   test('queries dev sessions if logged in', async () => {
     mockRestoreUserAsync.mockResolvedValueOnce({ username: '123' });
-
     expect(getBuildInfoAsync).not.toHaveBeenCalled();
     expect(getSettingsAsync).not.toHaveBeenCalled();
     expect(restoreUserAsync).not.toHaveBeenCalled();
     expect(getDevSessionsAsync).not.toHaveBeenCalled();
+    expect(getCrashReport).not.toHaveBeenCalled();
 
     await getInitialData();
 
@@ -56,5 +63,6 @@ describe('getInitialData()', () => {
     expect(getBuildInfoAsync).toHaveBeenCalled();
     expect(getSettingsAsync).toHaveBeenCalled();
     expect(restoreUserAsync).toHaveBeenCalled();
+    expect(getCrashReport).toHaveBeenCalled();
   });
 });
