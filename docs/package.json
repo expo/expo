@@ -88,6 +88,7 @@
     "prettier": "^2.3.1",
     "puppeteer": "^10.2.0",
     "react-test-renderer": "^17.0.2",
+    "rehype-slug": "^4.0.1",
     "remark-cli": "^9.0.0",
     "remark-frontmatter": "^2.0.0",
     "remark-validate-links": "^10.0.4",
@@ -95,6 +96,7 @@
     "semver": "^7.3.5",
     "sitemap": "^6.3.0",
     "typescript": "^4.5.4",
-    "unist-builder": "^2.0.0"
+    "unist-builder": "^2.0.0",
+    "unist-util-visit": "^2.0.3"
   }
 }

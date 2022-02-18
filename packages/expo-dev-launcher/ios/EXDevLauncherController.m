@@ -15,6 +15,7 @@
 #import "EXDevLauncherLoadingView.h"
 #import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
+#import "EXDevLauncherAuth.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -52,6 +53,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
+@property (nonatomic, assign) BOOL isStarted;
 
 @end
 
@@ -93,8 +95,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
-   
-   return modules;
+  [modules addObject:[EXDevLauncherAuth new]];
+  
+  return modules;
 }
 
 + (NSString * _Nullable)version {
@@ -154,6 +157,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
+  _isStarted = YES;
   _delegate = delegate;
   _launchOptions = launchOptions;
   _window = window;
@@ -164,6 +168,21 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   } else {
     // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
     [_window makeKeyWindow];
+  }
+}
+
+- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
+{
+  _delegate = delegate;
+  _launchOptions = launchOptions;
+}
+
+- (void)autoSetupStart:(UIWindow *)window
+{
+  if (_delegate != nil) {
+    [self startWithWindow:window delegate:_delegate launchOptions:_launchOptions];
+  } else {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
   }
 }
 

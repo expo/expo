@@ -44,6 +44,7 @@ import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
 import expo.modules.devmenu.tests.DevMenuTestInterceptor
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
+import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
@@ -53,7 +54,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
-  private var session: DevMenuSession? = null
   private var settings: DevMenuSettingsInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
@@ -65,7 +65,14 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
+  var currentManifest: Manifest? = null
+  var currentManifestURL: String? = null
+
   //region helpers
+
+  fun getReactInstanceManager(): ReactInstanceManager? {
+    return delegate?.reactInstanceManager()
+  }
 
   private val delegateReactContext: ReactContext?
     get() = delegate?.reactInstanceManager()?.currentReactContext
@@ -226,7 +233,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         } else {
           DevMenuDefaultSettings()
         }).also {
-          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
+          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && it.showsAtLaunch
           if (shouldLaunchDevMenuOnStart) {
             reactContext.addLifecycleEventListener(this)
           }
@@ -301,11 +308,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun openMenu(activity: Activity, screen: String?) {
     setCurrentScreen(null)
-    session = DevMenuSession(
-      initReactInstanceManager = delegate!!.reactInstanceManager(),
-      initAppInfo = delegate!!.appInfo(),
-      screen = screen
-    )
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
 
@@ -427,8 +429,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
 
   override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }
-
-  override fun getSession(): DevMenuSession? = session
 
   override fun getSettings(): DevMenuSettingsInterface? = settings
 

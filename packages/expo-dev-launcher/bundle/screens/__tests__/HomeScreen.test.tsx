@@ -3,25 +3,18 @@ import * as React from 'react';
 import { getDevSessionsAsync } from '../../functions/getDevSessionsAsync';
 import { UserData } from '../../functions/getUserProfileAsync';
 import { RecentApp } from '../../hooks/useRecentlyOpenedApps';
-import {
-  clientUrlScheme,
-  getRecentlyOpenedApps,
-  loadApp,
-} from '../../native-modules/DevLauncherInternal';
-import { queryDevSessionsAsync } from '../../native-modules/DevMenu';
+import { getRecentlyOpenedApps, loadApp } from '../../native-modules/DevLauncherInternal';
 import { render, waitFor, fireEvent, act } from '../../test-utils';
 import { DevSession } from '../../types';
 import { HomeScreen, HomeScreenProps } from '../HomeScreen';
 
 jest.mock('../../functions/getDevSessionsAsync');
 jest.mock('../../hooks/useDebounce');
-jest.mock('../../native-modules/DevMenu');
 
 const mockGetDevSessionsAsync = getDevSessionsAsync as jest.Mock;
-const mockQueryDevSessionsAsync = queryDevSessionsAsync as jest.Mock;
 const mockGetRecentlyOpenedApps = getRecentlyOpenedApps as jest.Mock;
 
-const mockFns = [mockGetDevSessionsAsync, mockQueryDevSessionsAsync, mockGetRecentlyOpenedApps];
+const mockFns = [mockGetDevSessionsAsync, mockGetRecentlyOpenedApps];
 
 function mockGetDevSessionsResponse(response: DevSession[]) {
   return mockGetDevSessionsAsync.mockResolvedValueOnce(response);

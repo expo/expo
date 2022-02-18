@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.swiftModuleName` to module config. ([#16260](https://github.com/expo/expo/pull/16260) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

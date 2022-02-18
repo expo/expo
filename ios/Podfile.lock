@@ -1885,8 +1885,6 @@ PODS:
   - EXImageLoader (3.1.0):
     - ExpoModulesCore
     - React-Core
-  - EXImagePicker (12.0.0):
-    - ExpoModulesCore
   - EXJSONUtils (0.2.0)
   - EXJSONUtils/Tests (0.2.0)
   - EXLocalAuthentication (12.1.0):
@@ -1922,6 +1920,8 @@ PODS:
   - ExpoImageManipulator (10.2.0):
     - EXImageLoader
     - ExpoModulesCore
+  - ExpoImagePicker (12.0.0):
+    - ExpoModulesCore
   - ExpoKeepAwake (10.0.1):
     - ExpoModulesCore
   - ExpoLinearGradient (11.2.0):
@@ -1939,6 +1939,8 @@ PODS:
   - ExpoRandom (12.1.0):
     - ExpoModulesCore
   - ExpoSystemUI (1.1.0):
+    - ExpoModulesCore
+  - ExpoWebBrowser (10.1.0):
     - ExpoModulesCore
   - EXPrint (11.1.0):
     - ExpoModulesCore
@@ -1992,8 +1994,6 @@ PODS:
     - React-Core
   - EXUpdatesInterface (0.5.0)
   - EXVideoThumbnails (6.2.0):
-    - ExpoModulesCore
-  - EXWebBrowser (10.1.0):
     - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
@@ -2839,7 +2839,6 @@ DEPENDENCIES:
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
-  - EXImagePicker (from `../packages/expo-image-picker/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../packages/expo-json-utils/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
@@ -2857,6 +2856,7 @@ DEPENDENCIES:
   - ExpoCrypto (from `../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
+  - ExpoImagePicker (from `../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - ExpoLocalization (from `../packages/expo-localization/ios`)
@@ -2864,6 +2864,7 @@ DEPENDENCIES:
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
+  - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
@@ -2884,7 +2885,6 @@ DEPENDENCIES:
   - EXUpdates/Tests (from `../packages/expo-updates/ios`)
   - EXUpdatesInterface (from `../packages/expo-updates-interface/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
-  - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../react-native-lab/react-native/React/FBReactNativeSpec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
@@ -3668,8 +3668,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-google-sign-in/ios"
   EXImageLoader:
     :path: "../packages/expo-image-loader/ios"
-  EXImagePicker:
-    :path: "../packages/expo-image-picker/ios"
   EXJSONUtils:
     :path: "../packages/expo-json-utils/ios"
   EXLocalAuthentication:
@@ -3700,6 +3698,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-haptics/ios"
   ExpoImageManipulator:
     :path: "../packages/expo-image-manipulator/ios"
+  ExpoImagePicker:
+    :path: "../packages/expo-image-picker/ios"
   ExpoKeepAwake:
     :path: "../packages/expo-keep-awake/ios"
   ExpoLinearGradient:
@@ -3712,6 +3712,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-random/ios"
   ExpoSystemUI:
     :path: "../packages/expo-system-ui/ios"
+  ExpoWebBrowser:
+    :path: "../packages/expo-web-browser/ios"
   EXPrint:
     :path: "../packages/expo-print/ios"
   EXScreenCapture:
@@ -3748,8 +3750,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-updates-interface/ios"
   EXVideoThumbnails:
     :path: "../packages/expo-video-thumbnails/ios"
-  EXWebBrowser:
-    :path: "../packages/expo-web-browser/ios"
   FBLazyVector:
     :path: "../react-native-lab/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -4186,7 +4186,6 @@ SPEC CHECKSUMS:
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
   EXImageLoader: ad85d98d686b33a2cf3788d1e35c5156d3ffd2e0
-  EXImagePicker: f17d99eb5344d0d1bcfc2f37fb57fb6517ca5567
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
   EXLocation: 2d5cf099880b0dc3bc72b64d71007c536e538790
@@ -4202,12 +4201,14 @@ SPEC CHECKSUMS:
   ExpoCrypto: 6e4cb4a1e74be91e4c6671ce03a4c79fb18959c5
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
   ExpoImageManipulator: 05558f43cbfa3525d6a56fc71c8f54b2ca388ea3
+  ExpoImagePicker: fcb2c6ef0267c2ec4274d9b7eea61063fa2433f3
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
   ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
   ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
+  ExpoWebBrowser: 860eff8b9f413111bba517fedaa642b745af99d4
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
   EXScreenCapture: 0146fdf6ca4c3402a1cf62b2ddb739a840e08c94
   EXScreenOrientation: 35776938aaa9b6460b4df72ff96f2b35e9a4e28b
@@ -4226,7 +4227,6 @@ SPEC CHECKSUMS:
   EXUpdates: be270fbdfcd531a8086504c7edecd1e9e7e29f0d
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: 847d648d6f4bc0c1afad05caa56a487dc543445e
-  EXWebBrowser: 37388663fa51cbfc883de2244931a5182d948e5f
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971

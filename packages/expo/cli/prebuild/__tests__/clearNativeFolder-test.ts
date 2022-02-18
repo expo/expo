@@ -1,7 +1,24 @@
 import { vol } from 'memfs';
 
-import { getMalformedNativeProjectsAsync } from '../clearNativeFolder';
+import { clearNativeFolder, getMalformedNativeProjectsAsync } from '../clearNativeFolder';
 import rnFixture from './fixtures/react-native-project';
+
+describe(clearNativeFolder, () => {
+  it(`clears folders`, async () => {
+    const platforms = ['android', 'ios'];
+    // mock out some non-empty ios and android folders.
+    vol.fromJSON(
+      {
+        'android/foobar': 'x',
+        'ios/Info.plist': 'xx',
+        'ios/another/file': 'xx',
+      },
+      '/'
+    );
+    await clearNativeFolder('/', platforms);
+    expect(vol.toJSON()).toEqual({});
+  });
+});
 
 describe(getMalformedNativeProjectsAsync, () => {
   afterEach(() => {

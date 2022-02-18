@@ -63,32 +63,22 @@ export async function saveDevicesAsync(
   projectRoot: string,
   deviceIds: string | string[]
 ): Promise<void> {
-  const currentTime = new Date().getTime();
+  const currentTime = Date.now();
   const newDeviceIds = typeof deviceIds === 'string' ? [deviceIds] : deviceIds;
 
   const { devices } = await getDevicesInfoAsync(projectRoot);
   const newDevicesJson = devices
-    .filter((device) => {
-      if (newDeviceIds.includes(device.installationId)) {
-        return false;
-      }
-      return true;
-    })
+    .filter((device) => !newDeviceIds.includes(device.installationId))
     .concat(newDeviceIds.map((deviceId) => ({ installationId: deviceId, lastUsed: currentTime })));
   await setDevicesInfoAsync(projectRoot, { devices: filterOldDevices(newDevicesJson) });
 }
 
 function filterOldDevices(devices: DeviceInfo[]) {
-  const currentTime = new Date().getTime();
+  const currentTime = Date.now();
   return (
     devices
-      .filter((device) => {
-        // filter out any devices that haven't been used to open this project in 30 days
-        if (currentTime - device.lastUsed > MILLISECONDS_IN_30_DAYS) {
-          return false;
-        }
-        return true;
-      })
+      // filter out any devices that haven't been used to open this project in 30 days
+      .filter((device) => currentTime - device.lastUsed <= MILLISECONDS_IN_30_DAYS)
       // keep only the 10 most recently used devices
       .sort((a, b) => b.lastUsed - a.lastUsed)
       .slice(0, 10)

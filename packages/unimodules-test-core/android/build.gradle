@@ -72,5 +72,8 @@ dependencies {
   api 'junit:junit:4.12'
   api 'io.mockk:mockk:1.10.6'
 
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 }

@@ -43,7 +43,6 @@ export function UserProfileScreen({ navigation }) {
 
   const onLogoutPress = () => {
     modalStack.push({
-      title: 'Confirm logout?',
       element: (
         <LogoutConfirmationModal
           onClosePress={() => modalStack.pop()}
@@ -98,10 +97,10 @@ function AccountScreenHeader({ onClosePress }) {
       <Spacer.Vertical size="small" />
       <Row align="center">
         <View px="medium">
-          <Heading size="medium">Account</Heading>
+          <Heading size="large">Account</Heading>
         </View>
 
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
 
         <Button.ScaleOnPressContainer
           onPress={onClosePress}
@@ -208,10 +207,10 @@ function UserAccountSelector({
                   <Spacer.Horizontal size="small" />
 
                   <View>
-                    <Heading size="small">{account.owner.username}</Heading>
+                    <Heading>{account.owner.username}</Heading>
                   </View>
 
-                  <Spacer.Vertical size="flex" />
+                  <Spacer.Vertical />
                   {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
                 </Row>
                 {!isLast && <Divider />}

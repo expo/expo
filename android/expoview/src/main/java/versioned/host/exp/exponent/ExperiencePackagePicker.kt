@@ -14,7 +14,7 @@ import expo.modules.brightness.BrightnessPackage
 import expo.modules.calendar.CalendarPackage
 import expo.modules.camera.CameraPackage
 import expo.modules.cellular.CellularModule
-import expo.modules.clipboard.ClipboardPackage
+import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
@@ -80,7 +80,6 @@ object ExperiencePackagePicker : ModulesProvider {
     BrightnessPackage(),
     CalendarPackage(),
     CameraPackage(),
-    ClipboardPackage(),
     ConstantsPackage(),
     ContactsPackage(),
     CryptoPackage(),
@@ -146,6 +145,7 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
     CellularModule::class.java,
+    ClipboardModule::class.java,
     LinearGradientModule::class.java
   )
 }

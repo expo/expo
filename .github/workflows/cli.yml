@@ -5,12 +5,12 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/cli.yml
-      - packages/**
+      - packages/expo/**
       - yarn.lock
   pull_request:
     paths:
       - .github/workflows/cli.yml
-      - packages/**
+      - packages/expo/**
       - yarn.lock
   schedule:
     - cron: 0 14 * * *

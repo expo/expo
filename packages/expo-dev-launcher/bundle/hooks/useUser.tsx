@@ -1,10 +1,9 @@
 import * as React from 'react';
 
-import { apiClient } from '../apiClient';
+import { setSessionAsync } from '../apiClient';
 import { getUserProfileAsync, UserAccount, UserData } from '../functions/getUserProfileAsync';
 import { restoreUserAsync } from '../functions/restoreUserAsync';
 import { startAuthSessionAsync } from '../functions/startAuthSessionAsync';
-import { setSessionAsync } from '../native-modules/DevMenuInternal';
 import { useIsMounted } from './useIsMounted';
 
 type UserContext = {
@@ -41,8 +40,7 @@ export function UserContextProvider({ children, initialUserData }: UserContextPr
     const sessionSecret = await startAuthSessionAsync(type).catch((cancelled) => {});
 
     if (sessionSecret) {
-      await setSessionAsync({ sessionSecret });
-      apiClient.setHeader('expo-session', sessionSecret);
+      await setSessionAsync(sessionSecret);
       const userData = await getUserProfileAsync();
 
       if (isMounted()) {
@@ -76,7 +74,7 @@ export function UserContextProvider({ children, initialUserData }: UserContextPr
       setUserData(undefined);
       setSelectedAccount(undefined);
     }
-    apiClient.setHeader('expo-session', '');
+
     await setSessionAsync(null);
   }
 

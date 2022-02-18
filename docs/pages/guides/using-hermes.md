@@ -11,17 +11,17 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 ## Android setup
 
-> Hermes for Android is supported from SDK 42 and above. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
+> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.md) built with `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
 <!-- prettier-ignore -->
-```json
+```js
 {
   "expo": {
     /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
     "jsEngine": "hermes"
-  /* @end */
+   /* @end */
   }
 }
 ```
@@ -30,12 +30,12 @@ Now you can build an APK or AAB through `eas build` and your app will run with H
 
 ## iOS setup
 
-> Hermes for iOS is supported from SDK 43 and above. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
+> Hermes for iOS is supported from SDK 43 and above in [development builds](/development/introduction.md) using `expo-dev-client` and standalone apps built with EAS Build. Hermes is not supported in Expo Go for iOS. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
 <!-- prettier-ignore -->
-```json
+```js
 {
   "expo": {
     /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
@@ -101,7 +101,7 @@ $ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName
 You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.
 
 <!-- prettier-ignore -->
-```json
+```js
 {
   "expo": {
     "jsEngine": "hermes",

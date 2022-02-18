@@ -1,4 +1,5 @@
 import { ModuleDescriptor, PackageRevision, SearchOptions } from '../types';
+export declare function getSwiftModuleName(podName: string, swiftModuleName?: string): string;
 /**
  * Resolves module search result with additional details required for iOS platform.
  */
