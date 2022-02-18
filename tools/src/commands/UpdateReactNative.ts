@@ -62,7 +62,13 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
   await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
     {
       find: /^(\s*jsRootDir\s*=\s*)file\(.+\)$/m,
-      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native/Libraries")',
+      replaceWith:
+        '$1file("$projectDir/../../react-native-lab/react-native/Libraries")' +
+        '\n    codegenDir = file("$projectDir/../../react-native-lab/react-native/packages/react-native-codegen")',
+    },
+    {
+      find: /^(\s*reactRoot\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
     },
     {
       find: /^(\s*reactNativeRootDir\s*=\s*)file\(.+\)$/m,
