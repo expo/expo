@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import fetch from 'node-fetch';
 import path from 'path';
 import { Stream } from 'stream';

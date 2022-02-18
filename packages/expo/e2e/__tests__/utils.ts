@@ -3,9 +3,11 @@ import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import execa from 'execa';
-import fs from 'fs-extra';
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
+
+import { copySync } from '../../cli/utils/dir';
 
 export const bin = require.resolve('../../build-cli/bin/cli');
 
@@ -94,7 +96,7 @@ export async function createFromFixtureAsync(
       return projectRoot;
     } else {
       console.log('[setup] Clearing existing fixture project:', projectRoot);
-      await fs.remove(projectRoot);
+      await fs.promises.rm(projectRoot, { recursive: true, force: true });
     }
   }
 
@@ -110,7 +112,7 @@ export async function createFromFixtureAsync(
     console.log('[setup] Created fixture project:', projectRoot);
 
     // Copy all files recursively into the temporary directory
-    await fs.copySync(fixturePath, projectRoot);
+    await copySync(fixturePath, projectRoot);
 
     // Add additional modifications to the package.json
     if (pkg) {
