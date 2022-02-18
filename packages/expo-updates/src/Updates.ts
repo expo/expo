@@ -80,8 +80,7 @@ export const manifest: Partial<Manifest> =
   {};
 
 /**
- * If `expo-updates` is enabled, this is either the creation time of the embedded update,
- * or the commitTime timestamp of the manifest for the update that's currently running.
+ * If `expo-updates` is enabled, this is a `Date` object representing the creation time of the update that's currently running (whether it was embedded or downloaded at runtime).
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
