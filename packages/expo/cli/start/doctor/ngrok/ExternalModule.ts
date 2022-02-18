@@ -1,5 +1,4 @@
 import * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
 import requireGlobal from 'requireg';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
@@ -100,7 +99,7 @@ export class ExternalModule<IModule> {
           initial: true,
         })));
     if (answer) {
-      Log.log(chalk`Installing ${packageName}...`);
+      Log.log(`Installing ${packageName}...`);
 
       // Always use npm for global installs
       const packageManager = shouldGloballyInstall
