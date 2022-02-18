@@ -86,7 +86,7 @@ export const manifest: Partial<Manifest> =
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
  */
-export const commitTime: Date | null = ExpoUpdates.commitTime
+export const creationTime: Date | null = ExpoUpdates.commitTime
   ? new Date(ExpoUpdates.commitTime)
   : null;
 
