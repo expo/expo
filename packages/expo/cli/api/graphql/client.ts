@@ -16,7 +16,7 @@ import fetch from 'node-fetch';
 
 import * as Log from '../../log';
 import { getExpoApiBaseUrl } from '../endpoint';
-import { getAccessToken, getSessionSecret } from '../user/sessionStorage';
+import UserSettings from '../user/UserSettings';
 
 type AccessTokenHeaders = {
   authorization: string;
@@ -41,7 +41,7 @@ export const graphqlClient = createUrqlClient({
   // @ts-expect-error Type 'typeof fetch' is not assignable to type '(input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>'.
   fetch,
   fetchOptions: (): { headers?: AccessTokenHeaders | SessionHeaders } => {
-    const token = getAccessToken();
+    const token = UserSettings.getAccessToken();
     if (token) {
       return {
         headers: {
@@ -49,7 +49,7 @@ export const graphqlClient = createUrqlClient({
         },
       };
     }
-    const sessionSecret = getSessionSecret();
+    const sessionSecret = UserSettings.getSession()?.sessionSecret;
     if (sessionSecret) {
       return {
         headers: {
