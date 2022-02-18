@@ -83,10 +83,10 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: `$1${versionName}$2`,
       },
       {
-        // Disable codegen from build phase script
+        // Remove codegen from build phase script
         paths: 'FBReactNativeSpec.podspec',
-        replace: /(use_react_native_codegen!)/g,
-        with: '# $1',
+        replace: /\n  use_react_native_codegen!\((.|\n)+?\n  }\)\n/mg,
+        with: '',
       },
     ],
   };

@@ -816,6 +816,9 @@ function getCppLibrariesToVersion() {
     {
       libName: 'runtimeexecutor',
     },
+    {
+      libName: 'logger',
+    },
   ];
 }
 
