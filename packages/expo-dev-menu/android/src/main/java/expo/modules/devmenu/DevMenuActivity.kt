@@ -61,6 +61,7 @@ class DevMenuActivity : ReactActivity() {
         putBoolean("showOnboardingView", DevMenuManager.getSettings()?.isOnboardingFinished != true)
         putString("uuid", UUID.randomUUID().toString())
         putBundle("appInfo", DevMenuManager.getAppInfo())
+        putBundle("devSettings", DevMenuManager.getDevSettings())
       }
 
       override fun createRootView() = createRootView(this@DevMenuActivity)

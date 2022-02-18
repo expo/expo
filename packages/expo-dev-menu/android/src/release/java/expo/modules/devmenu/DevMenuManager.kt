@@ -32,6 +32,10 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
+  fun getDevSettings(): Bundle {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
   val metroClient: DevMenuMetroClient by lazy {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
