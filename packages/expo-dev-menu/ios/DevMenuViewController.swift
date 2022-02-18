@@ -76,6 +76,7 @@ class DevMenuViewController: UIViewController {
     return [
       "showOnboardingView": manager.shouldShowOnboarding(),
       "appInfo": manager.getAppInfo(),
+      "devSettings": manager.getDevSettings(),
       "uuid": UUID.init().uuidString,
     ]
   }
