@@ -1,5 +1,5 @@
 import { CommandError } from '../../../utils/errors';
-import * as AndroidDeviceBridge from './AndroidDeviceBridge';
+import * as AndroidDeviceBridge from './adb';
 import { listAvdsAsync } from './emulator';
 
 export async function getDevicesAsync(): Promise<AndroidDeviceBridge.Device[]> {

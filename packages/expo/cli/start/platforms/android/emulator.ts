@@ -4,7 +4,7 @@ import child_process from 'child_process';
 import os from 'os';
 
 import * as Log from '../../../log';
-import * as AndroidDeviceBridge from './AndroidDeviceBridge';
+import * as AndroidDeviceBridge from './adb';
 
 export const EMULATOR_MAX_WAIT_TIMEOUT = 60 * 1000 * 3;
 

@@ -113,7 +113,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async launchApplicationIdAsync(appId: string) {
-    const result = await SimControl.openBundleIdAsync(this.device, {
+    const result = await SimControl.openAppIdAsync(this.device, {
       appId,
     }).catch((error) => {
       if ('status' in error) {

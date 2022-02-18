@@ -16,7 +16,104 @@ export type Device = {
   isAuthorized: boolean;
 };
 
-let _isAdbOwner: boolean | null = null;
+export class ADBServer {
+  isRunning: boolean = false;
+
+  /** Returns the command line reference to ADB. */
+  getAdbExecutablePath(): string {
+    if (process.env.ANDROID_HOME) {
+      return `${process.env.ANDROID_HOME}/platform-tools/adb`;
+    }
+    return 'adb';
+  }
+
+  /** Start the ADB server. */
+  async startAsync() {
+    if (this.isRunning) {
+      return;
+    }
+    // clean up
+    installExitHooks(() => {
+      if (this.isRunning) {
+        this.stopAsync();
+      }
+    });
+    try {
+      const adb = this.getAdbExecutablePath();
+      const result = await spawnAsync(adb, ['start-server']);
+      const lines = result.stderr.trim().split(/\r?\n/);
+      const isStarted = lines.includes('* daemon started successfully');
+      this.isRunning = isStarted;
+      return isStarted;
+    } catch (e) {
+      let errorMessage = (e.stderr || e.stdout).trim();
+      if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
+        errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
+      }
+      e.message = errorMessage;
+      throw e;
+    }
+  }
+
+  async stopAsync() {
+    try {
+      await this.runAsync(['kill-server']);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      this.isRunning = false;
+    }
+  }
+
+  async runAsync(args: string[]): Promise<string> {
+    // await Binaries.addToPathAsync('adb');
+    const adb = this.getAdbExecutablePath();
+
+    await server.startAsync();
+
+    Log.debug([adb, ...args].join(' '));
+    try {
+      const result = await spawnAsync(adb, args);
+      return result.output.join('\n');
+    } catch (e) {
+      // User pressed ctrl+c to cancel the process...
+      if (e.signal === 'SIGINT') {
+        e.isAbortError = true;
+      }
+      // TODO: Support heap corruption for adb 29 (process exits with code -1073740940) (windows and linux)
+      let errorMessage = (e.stderr || e.stdout || e.message).trim();
+      if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
+        errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
+      }
+      e.message = errorMessage;
+      throw e;
+    }
+  }
+
+  async getFileOutputAsync(args: string[]) {
+    // await Binaries.addToPathAsync('adb');
+    const adb = this.getAdbExecutablePath();
+
+    await this.startAsync();
+
+    try {
+      return await execFileSync(adb, args, {
+        encoding: 'latin1',
+        stdio: 'pipe',
+      });
+    } catch (e) {
+      let errorMessage = (e.stderr || e.stdout || e.message).trim();
+      if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
+        errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
+      }
+      e.message = errorMessage;
+      throw e;
+    }
+  }
+}
+
+export const server = new ADBServer();
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 
@@ -28,12 +125,13 @@ export function logUnauthorized(device: Device) {
   );
 }
 
+/** Returns true if the provided package name is installed on the provided Android device. */
 export async function isPackageInstalledAsync(
   device: Device,
   androidPackage: string
 ): Promise<boolean> {
-  const packages = await getAdbOutputAsync(
-    adbPidArgs(device.pid, 'shell', 'pm', 'list', 'packages', androidPackage)
+  const packages = await server.runAsync(
+    adbArgs(device.pid, 'shell', 'pm', 'list', 'packages', androidPackage)
   );
 
   const lines = packages.split(/\r?\n/);
@@ -44,41 +142,6 @@ export async function isPackageInstalledAsync(
     }
   }
   return false;
-}
-
-export async function stopAdbDaemonAsync() {
-  if (_isAdbOwner !== true) {
-    return false;
-  }
-
-  try {
-    await getAdbOutputAsync(['kill-server']);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function whichADB(): string {
-  if (process.env.ANDROID_HOME) {
-    return `${process.env.ANDROID_HOME}/platform-tools/adb`;
-  }
-  return 'adb';
-}
-
-async function adbAlreadyRunning(adb: string): Promise<boolean> {
-  try {
-    const result = await spawnAsync(adb, ['start-server']);
-    const lines = result.stderr.trim().split(/\r?\n/);
-    return lines.includes('* daemon started successfully') === false;
-  } catch (e) {
-    let errorMessage = (e.stderr || e.stdout).trim();
-    if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
-      errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
-    }
-    e.message = errorMessage;
-    throw e;
-  }
 }
 
 /**
@@ -93,8 +156,8 @@ export async function launchActivityAsync(
     launchActivity: string;
   }
 ) {
-  const openProject = await getAdbOutputAsync(
-    adbPidArgs(
+  const openProject = await server.runAsync(
+    adbArgs(
       device.pid,
       'shell',
       'am',
@@ -127,7 +190,7 @@ const CANT_START_ACTIVITY_ERROR = 'Activity not started, unable to resolve Inten
  * @param device Android device to open on
  * @param props.launchActivity Activity to launch `[application identifier]/.[main activity name]`, ex: `com.bacon.app/.MainActivity`
  */
-export async function launchApplicationIdAsync(
+export async function openAppIdAsync(
   device: Pick<Device, 'pid'>,
   {
     applicationId,
@@ -135,8 +198,8 @@ export async function launchApplicationIdAsync(
     applicationId: string;
   }
 ) {
-  const openClient = await getAdbOutputAsync(
-    adbPidArgs(
+  const openClient = await server.runAsync(
+    adbArgs(
       device.pid,
       'shell',
       'monkey',
@@ -157,7 +220,7 @@ export async function launchApplicationIdAsync(
 /**
  * @param device Android device to open on
  */
-export async function launchUrlAsync(
+export async function openUrlAsync(
   device: Pick<Device, 'pid'>,
   {
     url,
@@ -165,8 +228,8 @@ export async function launchUrlAsync(
     url: string;
   }
 ) {
-  const openProject = await getAdbOutputAsync(
-    adbPidArgs(device.pid, 'shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url)
+  const openProject = await server.runAsync(
+    adbArgs(device.pid, 'shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url)
   );
   if (openProject.includes(CANT_START_ACTIVITY_ERROR)) {
     throw new CommandError(
@@ -178,58 +241,30 @@ export async function launchUrlAsync(
   return openProject;
 }
 
-export async function uninstallPackageAsync(
+/** Uninstall an app given its Android package name. */
+export async function uninstallAsync(
   device: Pick<Device, 'pid'>,
-  { packageName }: { packageName: string }
+  { appId }: { appId: string }
 ): Promise<string> {
-  return await getAdbOutputAsync(adbPidArgs(device.pid, 'uninstall', packageName));
+  return await server.runAsync(adbArgs(device.pid, 'uninstall', appId));
 }
 
+/** Get package info from an app based on its Android package name. */
 export async function getPackageInfoAsync(
   device: Pick<Device, 'pid'>,
-  { packageName }: { packageName: string }
+  { appId }: { appId: string }
 ): Promise<string> {
-  return await getAdbOutputAsync(
-    adbPidArgs(device.pid, 'shell', 'dumpsys', 'package', packageName)
-  );
+  return await server.runAsync(adbArgs(device.pid, 'shell', 'dumpsys', 'package', appId));
 }
 
-export async function installOnDeviceAsync(
+export async function installAsync(
   device: Pick<Device, 'pid'>,
-  { binaryPath }: { binaryPath: string }
+  { filePath }: { filePath: string }
 ) {
-  return await getAdbOutputAsync(adbPidArgs(device.pid, 'install', '-r', '-d', binaryPath));
+  return await server.runAsync(adbArgs(device.pid, 'install', '-r', '-d', filePath));
 }
 
-async function getAdbOutputAsync(args: string[]): Promise<string> {
-  // await Binaries.addToPathAsync('adb');
-  const adb = whichADB();
-
-  if (_isAdbOwner === null) {
-    const alreadyRunning = await adbAlreadyRunning(adb);
-    _isAdbOwner = alreadyRunning === false;
-  }
-
-  Log.debug([adb, ...args].join(' '));
-  try {
-    const result = await spawnAsync(adb, args);
-    return result.output.join('\n');
-  } catch (e) {
-    // User pressed ctrl+c to cancel the process...
-    if (e.signal === 'SIGINT') {
-      e.isAbortError = true;
-    }
-    // TODO: Support heap corruption for adb 29 (process exits with code -1073740940) (windows and linux)
-    let errorMessage = (e.stderr || e.stdout || e.message).trim();
-    if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
-      errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
-    }
-    e.message = errorMessage;
-    throw e;
-  }
-}
-
-function adbPidArgs(pid: Device['pid'], ...options: string[]): string[] {
+function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
   const args = [];
   if (pid) {
     args.push('-s', pid);
@@ -239,7 +274,7 @@ function adbPidArgs(pid: Device['pid'], ...options: string[]): string[] {
 
 // TODO: This is very expensive for some operations.
 export async function getAttachedDevicesAsync(): Promise<Device[]> {
-  const output = await getAdbOutputAsync(['devices', '-l']);
+  const output = await server.runAsync(['devices', '-l']);
 
   const splitItems = output.trim().replace(/\n$/, '').split(os.EOL);
   // First line is `"List of devices attached"`, remove it
@@ -309,7 +344,7 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
  */
 async function getAbdNameForEmulatorIdAsync(emulatorId: string): Promise<string | null> {
   return (
-    (await getAdbOutputAsync(['-s', emulatorId, 'emu', 'avd', 'name']))
+    (await server.runAsync(['-s', emulatorId, 'emu', 'avd', 'name']))
       .trim()
       .split(/\r?\n/)
       .shift() ?? null
@@ -328,16 +363,16 @@ export async function isDeviceBootedAsync({
   return devices.find((device) => device.name === name) ?? null;
 }
 
-export async function startAdbReverseAsync(adbReversePorts: number[]): Promise<boolean> {
+export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   // Install cleanup automatically...
   installExitHooks(() => {
-    stopAdbReverseAsync(adbReversePorts);
+    stopAdbReverseAsync(ports);
   });
 
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
-    for (const port of adbReversePorts) {
-      if (!(await adbReverseAsync({ device, port }))) {
+    for (const port of ports) {
+      if (!(await adbReverseAsync(device, { port }))) {
         Log.debug(`[ADB] Failed to start reverse port '${port}' on device '${device.name}'`);
         return false;
       }
@@ -346,82 +381,55 @@ export async function startAdbReverseAsync(adbReversePorts: number[]): Promise<b
   return true;
 }
 
-export async function stopAdbReverseAsync(adbReversePorts: number[]): Promise<void> {
+export async function stopAdbReverseAsync(ports: number[]): Promise<void> {
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
-    for (const port of adbReversePorts) {
-      await adbReverseRemoveAsync({ device, port });
+    for (const port of ports) {
+      await adbReverseRemoveAsync(device, { port });
     }
   }
 }
 
-async function adbReverseAsync({
-  device,
-  port,
-}: {
-  device: Device;
-  port: number;
-}): Promise<boolean> {
-  if (!(await _isDeviceAuthorizedAsync(device))) {
+async function adbReverseAsync(
+  device: Device,
+  {
+    port,
+  }: {
+    port: number;
+  }
+): Promise<boolean> {
+  if (!device.isAuthorized) {
     return false;
   }
 
   try {
-    await getAdbOutputAsync(adbPidArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`));
+    await server.runAsync(adbArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`));
     return true;
   } catch (e) {
-    Log.warn(`Couldn't adb reverse: ${e.message}`);
+    Log.warn(`[ADB] Couldn't reverse port '${port}': ${e.message}`);
     return false;
   }
 }
 
-async function adbReverseRemoveAsync({
-  device,
-  port,
-}: {
-  device: Device;
-  port: number;
-}): Promise<boolean> {
-  if (!(await _isDeviceAuthorizedAsync(device))) {
+async function adbReverseRemoveAsync(
+  device: Device,
+  {
+    port,
+  }: {
+    port: number;
+  }
+): Promise<boolean> {
+  if (!device.isAuthorized) {
     return false;
   }
 
   try {
-    await getAdbOutputAsync(adbPidArgs(device.pid, 'reverse', '--remove', `tcp:${port}`));
+    await server.runAsync(adbArgs(device.pid, 'reverse', '--remove', `tcp:${port}`));
     return true;
   } catch (e) {
     // Don't send this to warn because we call this preemptively sometimes
-    Log.debug(`Couldn't adb reverse remove: ${e.message}`);
+    Log.debug(`[ADB] Couldn't reverse remove port '${port}': ${e.message}`);
     return false;
-  }
-}
-
-async function _isDeviceAuthorizedAsync(device: Device): Promise<boolean> {
-  // TODO: Get the latest version of the device in case isAuthorized changes.
-  return device.isAuthorized;
-}
-
-async function getAdbFileOutputAsync(args: string[]) {
-  // await Binaries.addToPathAsync('adb');
-  const adb = whichADB();
-
-  if (_isAdbOwner === null) {
-    const alreadyRunning = await adbAlreadyRunning(adb);
-    _isAdbOwner = alreadyRunning === false;
-  }
-
-  try {
-    return await execFileSync(adb, args, {
-      encoding: 'latin1',
-      stdio: 'pipe',
-    });
-  } catch (e) {
-    let errorMessage = (e.stderr || e.stdout || e.message).trim();
-    if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
-      errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
-    }
-    e.message = errorMessage;
-    throw e;
   }
 }
 
@@ -465,10 +473,10 @@ async function getPropertyDataForDeviceAsync(
   prop?: string
 ): Promise<DeviceProperties> {
   // @ts-ignore
-  const propCommand = adbPidArgs(...[device.pid, 'shell', 'getprop', prop].filter(Boolean));
+  const propCommand = adbArgs(...[device.pid, 'shell', 'getprop', prop].filter(Boolean));
   try {
     // Prevent reading as UTF8.
-    const results = await getAdbFileOutputAsync(propCommand);
+    const results = await server.getFileOutputAsync(propCommand);
     // Like:
     // [wifi.direct.interface]: [p2p-dev-wlan0]
     // [wifi.interface]: [wlan0]

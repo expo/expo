@@ -7,7 +7,7 @@ const defaultOptions: ExecSyncOptionsWithStringEncoding = {
 };
 
 /** Returns a pid value for a running port like `63828` or null if nothing is running on the given port. */
-function getPID(port: number): number | null {
+export function getPID(port: number): number | null {
   try {
     const results = execFileSync('lsof', [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'], defaultOptions)
       .split('\n')[0]
@@ -38,8 +38,8 @@ function getProcessCommand(pid: number, procDirectory: string): string {
   return execSync(`ps -o command -p ${pid} | sed -n 2p`, defaultOptions).replace(/\n$/, '').trim();
 }
 
-/** Get directory for a given process ID.  */
-function getDirectoryOfProcessById(processId: number): string {
+/** Get directory for a given process ID. */
+export function getDirectoryOfProcessById(processId: number): string {
   return execSync(
     `lsof -p ${processId} | awk '$4=="cwd" {for (i=9; i<=NF; i++) printf "%s ", $i}'`,
     defaultOptions

@@ -6,6 +6,7 @@ import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import { CreateURLOptions } from '../server/UrlCreator';
+import { AppIdResolver } from './AppIdResolver';
 import { DeviceManager } from './DeviceManager';
 
 export interface BaseOpenInCustomProps {
@@ -44,6 +45,11 @@ export class PlatformManager<
       ) => Promise<DeviceManager<IDevice>>;
     }
   ) {}
+
+  /** Returns the project application identifier or asserts that one is not defined. */
+  protected getAppIdResolver(): AppIdResolver {
+    throw new UnimplementedError();
+  }
 
   /** Should use the interstitial page for selecting which runtime to use. Exposed for testing. */
   private shouldUseInterstitialPage(): boolean {
@@ -104,7 +110,7 @@ export class PlatformManager<
   ): Promise<{ url: string }> {
     let url = this.constructDeepLink(props.scheme, true);
     // TODO: It's unclear why we do application id validation when opening with a URL
-    const applicationId = props.applicationId ?? (await this.resolveExistingAppIdAsync());
+    const applicationId = props.applicationId ?? (await this.getAppIdResolver().getAppIdAsync());
 
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
 
@@ -190,10 +196,5 @@ export class PlatformManager<
   ): Promise<boolean> {
     const { exp } = getConfig(this.projectRoot);
     return deviceManager.ensureExpoGoAsync(exp.sdkVersion);
-  }
-
-  /** Returns the project application identifier or asserts that one is not defined. */
-  protected async resolveExistingAppIdAsync(): Promise<string> {
-    throw new UnimplementedError();
   }
 }

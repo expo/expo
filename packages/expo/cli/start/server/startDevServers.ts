@@ -105,7 +105,7 @@ export async function stopAsync(): Promise<void> {
       // Stop all dev servers
       ...devServers.map((server) => server.stopAsync()),
       // Stop ADB
-      AndroidDeviceBridge.stopAdbDaemonAsync(),
+      AndroidDeviceBridge.server.stopAdbDaemonAsync(),
     ]),
     new Promise((resolve) => setTimeout(resolve, 2000, 'stopFailed')),
   ]);

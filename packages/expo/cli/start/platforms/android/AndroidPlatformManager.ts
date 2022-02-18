@@ -1,9 +1,10 @@
 import { CreateURLOptions } from '../../server/UrlCreator';
+import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
-import { Device } from './AndroidDeviceBridge';
-import * as AndroidDeviceBridge from './AndroidDeviceBridge';
+import { Device } from './adb';
+import * as AndroidDeviceBridge from './adb';
+import { AndroidAppIdResolver } from './AndroidAppIdResolver';
 import { AndroidDeviceManager } from './AndroidDeviceManager';
-import { resolveAppIdAsync } from './resolveAppId';
 
 interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   launchActivity?: string;
@@ -21,7 +22,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
       platform: 'android',
       getDevServerUrl,
       getLoadingUrl: () => getLoadingUrl({}, 'android'),
-      getManifestUrl,
+      getNativeDevServerUrl: getManifestUrl,
       resolveDeviceAsync: AndroidDeviceManager.resolveAsync,
     });
   }
@@ -36,8 +37,8 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     return super.openAsync(options, resolveSettings);
   }
 
-  protected async resolveExistingAppIdAsync(): Promise<string> {
-    return resolveAppIdAsync(this.projectRoot);
+  protected getAppIdResolver(): AppIdResolver {
+    return new AndroidAppIdResolver(this.projectRoot);
   }
 
   protected resolveAlternativeLaunchUrl(

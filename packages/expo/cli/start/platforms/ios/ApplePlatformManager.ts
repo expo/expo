@@ -1,7 +1,8 @@
 import { CreateURLOptions } from '../../server/UrlCreator';
+import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
+import { AppleAppIdResolver } from './AppleAppIdResolver';
 import { AppleDeviceManager } from './AppleDeviceManager';
-import { resolveAppIdAsync } from './resolveAppId';
 import { Device } from './simctl';
 
 export class ApplePlatformManager extends PlatformManager<Device> {
@@ -31,8 +32,8 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     return super.openAsync(options, resolveSettings);
   }
 
-  protected async resolveExistingAppIdAsync(): Promise<string> {
-    return resolveAppIdAsync(this.projectRoot);
+  protected getAppIdResolver(): AppIdResolver {
+    return new AppleAppIdResolver(this.projectRoot);
   }
 
   protected resolveAlternativeLaunchUrl(

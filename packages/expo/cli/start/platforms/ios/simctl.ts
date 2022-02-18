@@ -106,7 +106,7 @@ export async function openUrlAsync(
 }
 
 /** Open a simulator using a bundle identifier. If no app with a matching bundle identifier is installed then an error will be thrown. */
-export async function openBundleIdAsync(
+export async function openAppIdAsync(
   device: Partial<DeviceContext>,
   options: {
     appId: string;

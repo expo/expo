@@ -80,8 +80,11 @@ export async function choosePortAsync(
 export async function resolvePortAsync(
   projectRoot: string,
   {
+    /** Should opt to reuse a port that is running the same project in another window. */
     reuseExistingPort,
+    /** Preferred port. */
     defaultPort,
+    /** Backup port for when the default isn't available. */
     fallbackPort,
   }: {
     reuseExistingPort?: boolean;

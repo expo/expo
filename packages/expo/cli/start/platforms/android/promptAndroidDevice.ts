@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { AbortCommandError } from '../../../utils/errors';
 import { promptAsync } from '../../../utils/prompts';
-import * as AndroidDeviceBridge from './AndroidDeviceBridge';
+import * as AndroidDeviceBridge from './adb';
 
 function nameStyleForDevice(device: AndroidDeviceBridge.Device) {
   const isActive = device.isBooted;

@@ -1,7 +1,7 @@
 import * as osascript from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
-import * as AndroidDeviceBridge from './AndroidDeviceBridge';
+import * as AndroidDeviceBridge from './adb';
 
 function getUnixPID(port: number | string) {
   return execFileSync('lsof', [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'], {
@@ -12,6 +12,7 @@ function getUnixPID(port: number | string) {
     .trim();
 }
 
+/** Activate the Emulator window on OSX. */
 export async function activateWindowAsync(
   device: Pick<AndroidDeviceBridge.Device, 'type' | 'pid'>
 ) {
