@@ -15,9 +15,9 @@ on:
       - packages/**
       - yarn.lock
       # Ignore Expo CLI for now...
-      - !packages/expo/cli/**
-      - !packages/expo/bin/**
-      - !packages/expo/e2e/**
+      - '!packages/expo/cli/**'
+      - '!packages/expo/bin/**'
+      - '!packages/expo/e2e/**'
   pull_request:
     paths:
       - .github/workflows/sdk.yml
@@ -25,9 +25,9 @@ on:
       - packages/**
       - yarn.lock
       # Ignore Expo CLI for now...
-      - !packages/expo/cli/**
-      - !packages/expo/bin/**
-      - !packages/expo/e2e/**
+      - '!packages/expo/cli/**'
+      - '!packages/expo/bin/**'
+      - '!packages/expo/e2e/**'
   schedule:
     - cron: 0 14 * * *
 
