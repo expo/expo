@@ -6,6 +6,7 @@ import * as React from 'react';
 import { AppProviders } from './components/AppProviders';
 import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
+import { CrashReportScreen } from './screens/CrashReportScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
@@ -29,6 +30,8 @@ export function App(props: LauncherAppProps) {
             component={UserProfileScreen}
             options={{ header: () => null }}
           />
+
+          <Stack.Screen name="Crash Report" component={CrashReportScreen} />
         </Stack.Navigator>
       </AppProviders>
     </LoadInitialData>

@@ -10,6 +10,7 @@
 - Add support for auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
 - Send uncaught exceptions to the bundler server if possible. ([#15938](https://github.com/expo/expo/pull/15938) & [#15964](https://github.com/expo/expo/pull/15964) by [@lukmccall](https://github.com/lukmccall))
 - Add support for React Native `0.67.X`. ([#16038](https://github.com/expo/expo/pull/16038) by [@kudo](https://github.com/kudo))
+- Add the crash report screen. ([#16341](https://github.com/expo/expo/pull/16341) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

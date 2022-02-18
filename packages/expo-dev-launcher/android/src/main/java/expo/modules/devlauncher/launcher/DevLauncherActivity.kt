@@ -13,8 +13,6 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
-import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreen
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
 import expo.modules.devmenu.DevMenuManager

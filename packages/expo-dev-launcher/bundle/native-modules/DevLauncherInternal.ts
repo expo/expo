@@ -17,6 +17,16 @@ export async function getPendingDeepLink(): Promise<string | null> {
   return await DevLauncher.getPendingDeepLink();
 }
 
+export type CrashReport = {
+  timestamp: number;
+  message: string;
+  stack: string;
+};
+
+export async function getCrashReport(): Promise<CrashReport | null> {
+  return await DevLauncher.getCrashReport();
+}
+
 export async function openCamera(): Promise<void> {
   return await DevLauncher.openCamera();
 }

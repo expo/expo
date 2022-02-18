@@ -23,6 +23,7 @@ import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
 import { UrlDropdown } from '../components/UrlDropdown';
 import { useBuildInfo } from '../hooks/useBuildInfo';
+import { useCrashReport } from '../hooks/useCrashReport';
 import { useDevSessions } from '../hooks/useDevSessions';
 import { useModalStack } from '../hooks/useModalStack';
 import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
@@ -47,6 +48,8 @@ export function HomeScreen({
 
   const buildInfo = useBuildInfo();
   const { appName, appIcon } = buildInfo;
+
+  const crashReport = useCrashReport();
 
   const initialDevSessionData = React.useRef(devSessions);
 
@@ -88,6 +91,10 @@ export function HomeScreen({
     modalStack.push({ element: <DevServerExplainerModal /> });
   };
 
+  const onCrashReportPress = () => {
+    navigation.navigate('Crash Report', crashReport);
+  };
+
   return (
     <View testID="DevLauncherMainScreen">
       <View bg="default">
@@ -99,6 +106,18 @@ export function HomeScreen({
         />
       </View>
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
+        {crashReport && (
+          <View px="medium" py="small">
+            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default">
+              <Row align="center" padding="medium">
+                <Button.Text color="default">
+                  The last time you tried to open an app the development build crashed. Tap to get
+                  more information.
+                </Button.Text>
+              </Row>
+            </Button.ScaleOnPressContainer>
+          </View>
+        )}
         <View py="large">
           <Row px="small" align="center">
             <View px="medium">
