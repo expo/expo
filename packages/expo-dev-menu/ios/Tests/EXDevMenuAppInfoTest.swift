@@ -1,16 +1,16 @@
-// import XCTest
+ import XCTest
 
-// @testable import EXDevMenu
+ @testable import EXDevMenu
 
-// class MockedNOOPBridge: RCTBridge {
-//   override func invalidate() {
-//     // NOOP
-//   }
+ class MockedNOOPBridge: RCTBridge {
+   override func invalidate() {
+     // NOOP
+   }
 
-//   override func setUp() {
-//     bundleURL = URL(string: "http://localhost:1234")
-//   }
-// }
+   override func setUp() {
+     bundleURL = URL(string: "http://localhost:1234")
+   }
+ }
 
 // class EXDevMenuAppInfoTest: XCTestCase {
 //   func test_if_app_info_uses_provided_data() {
