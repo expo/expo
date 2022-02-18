@@ -53,7 +53,7 @@ class StoreReviewModule(private val mContext: Context) :
           }
         }
       } else {
-        promise.reject(null)
+        promise.reject("ERR_STORE_REVIEW_REQUEST_FAILED", "Android review request failed")
       }
     }
   }
