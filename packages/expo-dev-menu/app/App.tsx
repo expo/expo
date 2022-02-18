@@ -1,4 +1,5 @@
 import React from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AppProviders } from './components/AppProviders';
 import { LoadInitialData } from './components/LoadInitialData';
@@ -24,10 +25,12 @@ export function App({
 }: DevMenuInitialProps) {
   return (
     <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
-      <LoadInitialData loader={<Splash />}>
-        <Main registeredCallbacks={registeredCallbacks} />
-        <Onboarding isDevice={isDevice} />
-      </LoadInitialData>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <LoadInitialData loader={<Splash />}>
+          <Main registeredCallbacks={registeredCallbacks} />
+          <Onboarding isDevice={isDevice} />
+        </LoadInitialData>
+      </GestureHandlerRootView>
     </AppProviders>
   );
 }
