@@ -11,13 +11,13 @@ import { confirmAsync } from '../../../utils/prompts';
 
 /** An error that is thrown when a package is installed but doesn't meet the version criteria. */
 export class ExternalModuleVersionError extends CommandError {
-  constructor(message: string, public shouldGloballyInstall: boolean) {
+  constructor(message: string, public readonly shouldGloballyInstall: boolean) {
     super('EXTERNAL_MODULE_VERSION', message);
   }
 }
 
 interface PromptOptions {
-  /** Should prompt the user to install, when false the module will just assert on missing packages, default `true` */
+  /** Should prompt the user to install, when false the module will just assert on missing packages, default `true`. Ignored when `autoInstall` is true. */
   shouldPrompt?: boolean;
   /** Should automatically install the package without prompting, default `false` */
   autoInstall?: boolean;
@@ -30,7 +30,7 @@ export interface InstallPromptOptions extends PromptOptions {
 
 export interface ResolvePromptOptions extends PromptOptions {
   /**
-   * Prefer to install the package globally, this can be overwritten if the function
+   * Prefer to install the package globally, this can be overridden if the function
    * detects that a locally installed package simply needs an upgrade, default `false`
    */
   prefersGlobalInstall?: boolean;
