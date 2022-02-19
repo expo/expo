@@ -3,7 +3,10 @@
 #import <jsi/jsi.h>
 
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
+
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/ExpoModulesProxySpec.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/Swift.h>
 
 using namespace facebook;

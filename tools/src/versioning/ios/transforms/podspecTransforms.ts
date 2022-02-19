@@ -77,9 +77,9 @@ export function podspecTransforms(versionName: string): TransformPipeline {
 
       // FBReactNativeSpec
       {
-        // Fixes HEADER_SEARCH_PATHS
+        // source_files from versioned code
         paths: 'FBReactNativeSpec.podspec',
-        replace: /(\/Libraries\/)(FBReactNativeSpec)/g,
+        replace: /(s\.source_files\s+=\s+"\*\*\/)(FBReactNativeSpec\*)/g,
         with: `$1${versionName}$2`,
       },
       {

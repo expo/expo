@@ -1,14 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXLegacyAppDelegateWrapper.h>
+
 #import <ExpoModulesCore/EXAppDelegatesLoader.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
-
-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
-// When `use_frameworks!` is used, the generated Swift header is inside ExpoModulesCore module.
-#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
-#else
-#import "ExpoModulesCore-Swift.h"
-#endif
+#import <ExpoModulesCore/Swift.h>
 
 // Make the legacy wrapper conform to the protocol for subscribers.
 @interface EXLegacyAppDelegateWrapper () <EXAppDelegateSubscriberProtocol>
