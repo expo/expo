@@ -176,7 +176,14 @@ export class ExternalModule<TModule> {
       if (packageJson) {
         if (semver.satisfies(packageJson.version, this.pkg.versionRange)) {
           const modulePath = resolver(this.pkg.name);
-          return this._require(modulePath);
+          const requiredModule = this._require(modulePath);
+          if (requiredModule == null) {
+            throw new CommandError(
+              'EXTERNAL_MODULE_EXPORT',
+              `${this.pkg.name} exports a nullish value, which is not allowed.`
+            );
+          }
+          return requiredModule;
         }
         throw new ExternalModuleVersionError(
           `Required module '${this.pkg.name}@${packageJson.version}' does not satisfy ${this.pkg.versionRange}. Installed at: ${packageJsonPath}`,
@@ -184,7 +191,7 @@ export class ExternalModule<TModule> {
         );
       }
     } catch (e) {
-      if (e instanceof ExternalModuleVersionError) {
+      if (e instanceof CommandError) {
         throw e;
       }
       Log.debug('[External Module] Failed to resolve module', e);

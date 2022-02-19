@@ -63,6 +63,17 @@ describe('get', () => {
     expect(instance).toBe(null);
   });
 });
+describe('_resolveModule', () => {
+  it(`asserts when the required package exports a nullish value.`, () => {
+    const { externalModule } = createExternalModuleResolver();
+    asMock(externalModule._require)
+      .mockReturnValueOnce({ version: '4.1.0' })
+      .mockReturnValueOnce(null);
+    asMock(externalModule._resolveLocal).mockReturnValue('/');
+
+    expect(() => externalModule._resolveModule(true)).toThrowError(/exports a nullish value/);
+  });
+});
 
 describe('getVersioned', () => {
   it('resolves the local instance of a package', () => {
