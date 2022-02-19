@@ -43,11 +43,11 @@ source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 
 ## Step 2: Set up a virtual device
 
-- On the Android Studio main screen, click "Configure", then "AVD Manager" in the dropdown.
+- On the Android Studio main screen, click "More Actions", then "Virtual Device Manager" in the dropdown.
 
 <ImageSpotlight alt="Android Studio configure" src="/static/images/android-studio-configure.png" containerStyle={{ paddingBottom: 0 }} />
 
-- Press the "+ Create Virtual Device" button.
+- Press the "Create device" button.
 
 <ImageSpotlight alt="Android Studio create virtual device" src="/static/images/android-studio-avd-manager.png" containerStyle={{ paddingBottom: 0 }} />
 
