@@ -37,8 +37,8 @@ export interface ResolvePromptOptions extends PromptOptions {
 }
 
 /** Resolves a local or globally installed package, prompts to install if missing. */
-export class ExternalModule<IModule> {
-  private instance: IModule | null = null;
+export class ExternalModule<TModule> {
+  private instance: TModule | null = null;
 
   constructor(
     /** Project root for checking if the package is installed locally. */
@@ -58,7 +58,7 @@ export class ExternalModule<IModule> {
   async resolveAsync({
     prefersGlobalInstall,
     ...options
-  }: ResolvePromptOptions = {}): Promise<IModule> {
+  }: ResolvePromptOptions = {}): Promise<TModule> {
     try {
       return (
         this.getVersioned() ??
@@ -85,7 +85,7 @@ export class ExternalModule<IModule> {
     shouldPrompt = true,
     autoInstall,
     shouldGloballyInstall,
-  }: InstallPromptOptions = {}): Promise<IModule> {
+  }: InstallPromptOptions = {}): Promise<TModule> {
     const packageName = [this.pkg.name, this.pkg.versionRange].join('@');
     if (!autoInstall) {
       // Delay the prompt so it doesn't conflict with other dev tool logs
@@ -135,7 +135,7 @@ export class ExternalModule<IModule> {
   }
 
   /** Get the module. */
-  get(): IModule | null {
+  get(): TModule | null {
     try {
       return this.getVersioned();
     } catch {
@@ -144,7 +144,7 @@ export class ExternalModule<IModule> {
   }
 
   /** Get the module, throws if the module is not versioned correctly. */
-  getVersioned(): IModule | null {
+  getVersioned(): TModule | null {
     if (!this.instance) {
       this.instance = this._resolveModule(true) ?? this._resolveModule(false);
     }
@@ -168,7 +168,7 @@ export class ExternalModule<IModule> {
   }
 
   /** Resolve the module and verify the version. Exposed for testing. */
-  _resolveModule(isLocal: boolean): IModule | null {
+  _resolveModule(isLocal: boolean): TModule | null {
     const resolver = isLocal ? this._resolveLocal : this._resolveGlobal;
     try {
       const packageJsonPath = resolver(`${this.pkg.name}/package.json`);
