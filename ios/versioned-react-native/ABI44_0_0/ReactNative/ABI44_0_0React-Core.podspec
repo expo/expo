@@ -45,7 +45,6 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/RCT-Folly\"", "DEFINES_MODULE" => "YES" }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/ABI44_0_0React-Core\""}
   s.default_subspec        = "Default"
-  s.module_map             = "ABI44_0_0React-Core.modulemap"
 
   s.subspec "Default" do |ss|
     ss.source_files           = "React/**/*.{c,h,m,mm,S,cpp}"
@@ -56,18 +55,6 @@ Pod::Spec.new do |s|
                                 "React/Tests/**/*",
                                 "React/Inspector/**/*"
     ss.private_header_files   = "React/Cxx*/*.h"
-  end
-
-  s.subspec "Hermes" do |ss|
-    ss.private_header_files = "ReactCommon/hermes/executor/*.h", "ReactCommon/hermes/inspector/*.h", "ReactCommon/hermes/inspector/chrome/*.h", "ReactCommon/hermes/inspector/detail/*.h"
-    ss.platforms = { :osx => "10.14", :ios => "10.0" }
-    ss.source_files = "ReactCommon/hermes/executor/*.{cpp,h}",
-                      "ReactCommon/hermes/inspector/*.{cpp,h}",
-                      "ReactCommon/hermes/inspector/chrome/*.{cpp,h}",
-                      "ReactCommon/hermes/inspector/detail/*.{cpp,h}"
-    ss.pod_target_xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
-    ss.dependency "RCT-Folly/Futures"
-    ss.dependency "hermes-engine"
   end
 
   s.subspec "DevSupport" do |ss|
