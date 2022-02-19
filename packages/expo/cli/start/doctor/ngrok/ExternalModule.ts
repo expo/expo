@@ -145,11 +145,8 @@ export class ExternalModule<TModule> {
 
   /** Get the module, throws if the module is not versioned correctly. */
   getVersioned(): TModule | null {
-    if (!this.instance) {
-      this.instance = this._resolveModule(true) ?? this._resolveModule(false);
-    }
-
-    return this.instance ?? null;
+    this.instance ??= this._resolveModule(true) ?? this._resolveModule(false);
+    return this.instance;
   }
 
   /** Exposed for testing. */
