@@ -8,7 +8,7 @@ Below (in no particular order) are some of the most popular UI Libraries. Test t
 
 - [React Native Paper](https://github.com/callstack/react-native-paper), and their [docs](https://callstack.github.io/react-native-paper/index.html)
 - [React Native UI Lib](https://github.com/wix/react-native-ui-lib), and their [docs](https://wix.github.io/react-native-ui-lib/)
-- [React Native Elements](https://react-native-training.github.io/react-native-elements/), and their [docs](https://react-native-training.github.io/react-native-elements/docs/getting_started.html)
+- [React Native Elements](https://reactnativeelements.com/), and their [docs](https://reactnativeelements.com/docs)
 - [Native Base](https://nativebase.io/), and their [docs](https://docs.nativebase.io/)
 - [React Native Material UI](https://github.com/xotahal/react-native-material-ui), and their [docs](https://github.com/xotahal/react-native-material-ui/blob/master/docs/GettingStarted.md)
 - [React Native UI Kitten](https://akveo.github.io/react-native-ui-kitten/#/home), and their [docs](https://akveo.github.io/react-native-ui-kitten/#/docs/quick-start/getting-started)
