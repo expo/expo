@@ -74,10 +74,9 @@ class DevMenuViewController: UIViewController {
 
   private func initialProps() -> [String: Any] {
     return [
-      "enableDevelopmentTools": true,
       "showOnboardingView": manager.shouldShowOnboarding(),
-      "devMenuItems": manager.serializedDevMenuItems(),
-      "devMenuScreens": manager.serializedDevMenuScreens(),
+      "appInfo": manager.getAppInfo(),
+      "devSettings": manager.getDevSettings(),
       "uuid": UUID.init().uuidString,
     ]
   }

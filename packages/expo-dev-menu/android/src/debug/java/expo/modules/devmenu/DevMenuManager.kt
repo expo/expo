@@ -240,6 +240,23 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         }
   }
 
+  fun getAppInfo(): Bundle {
+    if (delegateReactContext != null) {
+      return DevMenuAppInfo.getAppInfo(delegateReactContext!!)
+    }
+
+    return Bundle.EMPTY
+  }
+
+  fun getDevSettings(): Bundle {
+    if (delegate?.reactInstanceManager() != null) {
+      val reactInstanceManager = delegate!!.reactInstanceManager()
+      return DevMenuDevSettings.getDevSettings(reactInstanceManager)
+    }
+
+    return Bundle.EMPTY
+  }
+
   //endregion
 
   //region shake detector

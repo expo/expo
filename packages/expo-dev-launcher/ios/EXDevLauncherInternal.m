@@ -86,6 +86,12 @@ RCT_EXPORT_METHOD(getPendingDeepLink:(RCTPromiseResolveBlock)resolve
   resolve([EXDevLauncherController sharedInstance].pendingDeepLinkRegistry.pendingDeepLink.absoluteString);
 }
 
+RCT_EXPORT_METHOD(getCrashReport:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve([[[EXDevLauncherErrorRegistry new] consumeException] toDict]);
+}
+
 RCT_EXPORT_METHOD(loadApp:(NSString *)urlString
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)

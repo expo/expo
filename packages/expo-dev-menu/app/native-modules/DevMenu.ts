@@ -65,14 +65,6 @@ export async function toggleFastRefreshAsync() {
   return await dispatchCallableAsync('fast-refresh');
 }
 
-export async function getDevSettingsAsync(): Promise<DevSettings> {
-  return await DevMenu.getDevSettingsAsync();
-}
-
-export async function getAppInfoAsync(): Promise<AppInfo> {
-  return await DevMenu.getAppInfoAsync();
-}
-
 export async function copyToClipboardAsync(content: string) {
   return await DevMenu.copyToClipboardAsync(content);
 }

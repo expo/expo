@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Exception in HostObject::get for prop 'NativeUnimoduleProxy': java.lang.NullPointerException ([#16316](https://github.com/expo/expo/pull/16316) by [@nomi9995](https://github.com/nomi9995))
 
 ### 💡 Others
 

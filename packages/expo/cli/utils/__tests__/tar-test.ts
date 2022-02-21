@@ -4,7 +4,7 @@ import tar from 'tar';
 import * as Log from '../../log';
 import { extractAsync } from '../tar';
 
-const asMock = (fn: any): jest.Mock => fn as jest.Mock;
+const asMock = (fn: any): jest.Mock => fn;
 
 jest.mock(`@expo/spawn-async`, () => ({
   __esModule: true,

@@ -5,7 +5,7 @@ import path from 'path';
 
 import { EXPO_BETA, env } from '../../utils/env';
 import { getExpoApiBaseUrl } from '../endpoint';
-import { getAccessToken, getSessionSecret } from '../user/sessionStorage';
+import UserSettings from '../user/UserSettings';
 import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import { FetchLike } from './client.types';
@@ -52,11 +52,11 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
 
     const resolvedHeaders = options.headers ?? ({} as any);
 
-    const token = getAccessToken();
+    const token = UserSettings.getAccessToken();
     if (token) {
       resolvedHeaders.authorization = `Bearer ${token}`;
     } else {
-      const sessionSecret = getSessionSecret();
+      const sessionSecret = UserSettings.getSession()?.sessionSecret;
       if (sessionSecret) {
         resolvedHeaders['expo-session'] = sessionSecret;
       }

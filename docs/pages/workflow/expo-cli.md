@@ -31,7 +31,7 @@ The commands listed below are derived from the latest version of Expo CLI. You c
 
 <!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts -->
 
-> Based on `expo-cli` v5.1.2
+> Based on `expo-cli` v5.2.0
 
 ---
 

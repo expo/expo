@@ -17,8 +17,8 @@ describe(getNativeModuleVersionsAsync, () => {
     expect(Object.keys(versions).length).toBeGreaterThan(4);
 
     for (const [key, value] of Object.entries(versions)) {
-      expect(typeof key).toBe('string');
-      expect(typeof value).toBe('string');
+      expect(key).toEqual(expect.any(String));
+      expect(value).toEqual(expect.any(String));
     }
 
     expect(scope.isDone()).toBe(true);

@@ -16,9 +16,14 @@ export async function waitForActionAsync<T>({
   let complete: T;
   const start = Date.now();
   do {
+    const actionStartTime = Date.now();
     complete = await action();
 
-    await delayAsync(interval);
+    const actionTimeElapsed = Date.now() - actionStartTime;
+    const remainingDelayInterval = interval - actionTimeElapsed;
+    if (remainingDelayInterval > 0) {
+      await delayAsync(remainingDelayInterval);
+    }
     if (Date.now() - start > maxWaitTime) {
       break;
     }

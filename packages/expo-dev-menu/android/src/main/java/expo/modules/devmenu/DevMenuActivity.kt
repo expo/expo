@@ -58,11 +58,10 @@ class DevMenuActivity : ReactActivity() {
       override fun getReactNativeHost() = DevMenuManager.getMenuHost()
 
       override fun getLaunchOptions() = Bundle().apply {
-        putBoolean("enableDevelopmentTools", true)
         putBoolean("showOnboardingView", DevMenuManager.getSettings()?.isOnboardingFinished != true)
-        putParcelableArray("devMenuItems", DevMenuManager.serializedItems().toTypedArray())
-        putParcelableArray("devMenuScreens", DevMenuManager.serializedScreens().toTypedArray())
         putString("uuid", UUID.randomUUID().toString())
+        putBundle("appInfo", DevMenuManager.getAppInfo())
+        putBundle("devSettings", DevMenuManager.getDevSettings())
       }
 
       override fun createRootView() = createRootView(this@DevMenuActivity)
