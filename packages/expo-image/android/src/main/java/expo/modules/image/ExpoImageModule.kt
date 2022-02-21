@@ -1,22 +1,36 @@
 package expo.modules.image
 
 import android.util.Log
+
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.request.RequestOptions
+
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import expo.modules.image.targets.ExpoImageSizeTarget
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import kotlin.Exception
+
 import java.lang.IllegalStateException
 import java.util.concurrent.CancellationException
 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+
+  private val sizeOptions by lazy {
+    RequestOptions()
+        .skipMemoryCache(true)
+        .diskCacheStrategy(DiskCacheStrategy.DATA)
+  }
+
   override fun getName() = "ExpoImageModule"
 
   @ReactMethod
@@ -36,6 +50,21 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
       } catch (e: Exception) {
         promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${e.message}", e)
       }
+    }
+  }
+
+  @ReactMethod
+  fun getSize(url: String, promise: Promise) {
+    try {
+      Glide
+          .with(context)
+          .`as`(ExpoImageSize::class.java)
+          .apply(sizeOptions)
+          .load(url)
+          .listener(ExpoImageSizeRequestListener(promise, url))
+          .into(ExpoImageSizeTarget())
+    } catch (e: Exception) {
+      promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url. Error message: ${e.message}", e)
     }
   }
 

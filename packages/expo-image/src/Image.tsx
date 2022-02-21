@@ -81,6 +81,19 @@ export default class Image extends React.Component<ImageProps, ImageState> {
     return await ExpoImageModule.prefetch(url);
   }
 
+  static async getSize(
+    url: string,
+    onSuccess: (width: number, height: number) => void,
+    onFailure?: (error: any) => void
+  ): Promise<void> {
+    if (!ExpoImageModule.getSize) {
+      throw new UnavailabilityError('Image', 'getSize');
+    }
+    return ExpoImageModule.getSize(url)
+      .then((sizes: { width: number; height: number }) => onSuccess(sizes.width, sizes.height))
+      .catch(onFailure || console.warn('Failed to acquire size for image: ' + url));
+  }
+
   state = {
     onLoad: undefined,
     onError: undefined,
