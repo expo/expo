@@ -8,7 +8,7 @@ import {
 import chalk from 'chalk';
 
 import * as Log from '../../../log';
-import { EXPO_NO_WEB_SETUP } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 
 // Only check once per run.
@@ -54,7 +54,7 @@ export function isWebPlatformExcluded(rootConfig: AppJSONConfig): boolean {
 export async function shouldSetupWebSupportAsync(
   projectRoot: string
 ): Promise<{ failureReason: string } | ProjectConfig> {
-  if (EXPO_NO_WEB_SETUP()) {
+  if (env.EXPO_NO_WEB_SETUP) {
     return { failureReason: '\u203A Skipping web setup: EXPO_NO_WEB_SETUP is enabled.' };
   }
 

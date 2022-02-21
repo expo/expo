@@ -4,14 +4,14 @@ import path from 'path';
 
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
-import { EXPO_NO_TYPESCRIPT_SETUP } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
 import { profile } from '../../../utils/profile';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 import { updateTSConfigAsync } from './updateTSConfig';
 
 export async function ensureTypeScriptSetupAsync(projectRoot: string): Promise<void> {
-  if (EXPO_NO_TYPESCRIPT_SETUP()) {
+  if (env.EXPO_NO_TYPESCRIPT_SETUP) {
     Log.log(chalk.dim('\u203A Skipping TypeScript verification'));
     return;
   }
