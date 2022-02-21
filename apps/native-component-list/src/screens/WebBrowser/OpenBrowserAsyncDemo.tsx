@@ -1,11 +1,12 @@
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Button from 'src/components/Button';
-import Configurator, { ConfiguratorChoiceType } from 'src/components/Configurator';
-import HeadingText from 'src/components/HeadingText';
-import MonoText from 'src/components/MonoText';
-import { Colors } from 'src/constants';
+
+import Button from '../../components/Button';
+import Configurator, { ConfiguratorChoiceType } from '../../components/Configurator';
+import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
+import { Colors } from '../../constants';
 
 const url = 'https://blog.expo.dev/expo-sdk-44-4c4b8306584a';
 
