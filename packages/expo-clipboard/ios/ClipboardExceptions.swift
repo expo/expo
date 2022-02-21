@@ -8,12 +8,6 @@ internal class InvalidImageException: GenericException<String> {
   }
 }
 
-internal class InvalidUrlException: GenericException<String> {
-  override var reason: String {
-    "Invalid url: \(param)"
-  }
-}
-
 internal class PasteFailureException: Exception {
   override var reason: String {
     "Failed to get item from clipboard"

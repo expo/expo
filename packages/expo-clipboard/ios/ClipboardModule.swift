@@ -30,10 +30,7 @@ public class ClipboardModule: Module {
       return UIPasteboard.general.url?.absoluteString
     }
 
-    function("setUrlAsync") { (content: String) in
-      guard let url = URL(string: content) else {
-        throw InvalidUrlException(content)
-      }
+    function("setUrlAsync") { (url: URL) in
       UIPasteboard.general.url = url
     }
 
