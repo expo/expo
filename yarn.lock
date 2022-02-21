@@ -1574,6 +1574,11 @@
   resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-0.4.1.tgz#93f8e5e40a68c4f776f59ea43a542ba2e926a0d7"
   integrity sha512-g4PWLTJwzH4GKFfrYN8NP0OY3DtFbqIggiFebeWyFfTrmD/Kgb2ZDWQRAe9AyfukzTvhfg+IG9289anaLHBydg==
 
+"@expo/styleguide-native@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.0.tgz#12251f4e22054c6288d1273031d011930cee5898"
+  integrity sha512-izMGG/1BtnFvYfH5QO+DDWNWbm5EvQ987j8fFUlwMYtqsSQ83frFYP8swiInfw1/W/qJtuFqtiHU+g/w962Aow==
+
 "@expo/vector-icons@^12.0.4":
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-12.0.5.tgz#bc508ad05fb7e9a3e008704977cfec6c18aa7728"
