@@ -72,7 +72,7 @@ export class XcodePrerequisite extends Prerequisite {
   static instance = new XcodePrerequisite();
 
   /**
-   * Ensure Xcode is installed an recent enough to be used with Expo.
+   * Ensure Xcode is installed and recent enough to be used with Expo.
    */
   async assertImplementation(): Promise<void> {
     const version = profile(getXcodeVersionAsync)();
