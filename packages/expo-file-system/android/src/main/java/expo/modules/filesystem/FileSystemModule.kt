@@ -48,6 +48,7 @@ import java.net.CookieHandler
 import java.net.URLConnection
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 import kotlin.math.pow
 
@@ -89,7 +90,7 @@ private fun slashifyFilePath(path: String?): String? {
     path
   } else {
     // Ensure leading schema with a triple slash
-    path.replace("^file:/*".toRegex(), "file:///")
+    Pattern.compile("^file:/*").matcher(path).replaceAll(path, "file:///")
   }
 }
 
