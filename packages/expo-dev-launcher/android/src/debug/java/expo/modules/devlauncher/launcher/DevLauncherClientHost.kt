@@ -1,9 +1,14 @@
 package expo.modules.devlauncher.launcher
 
 import android.app.Application
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.JavaScriptExecutorFactory
+import com.facebook.react.jscexecutor.JSCExecutorFactory
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
+import com.facebook.soloader.SoLoader
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
@@ -44,6 +49,14 @@ class DevLauncherClientHost(
     ) +
       devMenuRelatedPackages +
       additionalPackages
+  }
+
+  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
+    SoLoader.init(application.applicationContext, /* native exopackage */ false)
+    if (SoLoader.getLibraryPath("libjsc.so") != null) {
+      return JSCExecutorFactory(application.packageName, AndroidInfoHelpers.getFriendlyDeviceName())
+    }
+    return HermesExecutorFactory()
   }
 
   override fun getJSMainModuleName() = "index"
