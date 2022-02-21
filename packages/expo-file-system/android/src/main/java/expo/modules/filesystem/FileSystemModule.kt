@@ -88,7 +88,8 @@ private fun slashifyFilePath(path: String?): String? {
   } else if (path.startsWith("file:///")) {
     path
   } else {
-    path.replace("file:/", "file:///")
+    // Ensure leading schema with a triple slash
+    path.replace("^file:/*".toRegex(), "file:///")
   }
 }
 
