@@ -18,7 +18,6 @@ RCT_EXTERN_METHOD(getSettingsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPr
 RCT_EXTERN_METHOD(setSettingsAsync:(NSDictionary *)dict resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(openDevMenuFromReactNative)
 RCT_EXTERN_METHOD(onScreenChangeAsync:(NSString *)currentScreen resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(getDevSettingsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 
 
 RCT_EXPORT_METHOD(copyToClipboardAsync:(NSString *)content
