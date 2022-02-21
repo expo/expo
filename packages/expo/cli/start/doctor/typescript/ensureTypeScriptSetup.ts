@@ -76,6 +76,7 @@ async function ensureRequiredDependenciesAsync(projectRoot: string): Promise<boo
 async function queryFirstProjectTypeScriptFileAsync(projectRoot: string): Promise<null | string> {
   const results = await wrapGlobWithTimeout(
     () =>
+      // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
       everyMatchAsync('**/*.@(ts|tsx)', {
         cwd: projectRoot,
         ignore: [
