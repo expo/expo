@@ -56,6 +56,7 @@ module.exports = {
     rootDir: artifactsPath,
     plugins: {
       uiHierarchy: { enabled: true, keepOnlyFailedTestsArtifacts: true },
+      log: { enabled: true, keepOnlyFailedTestsArtifacts: true },
       screenshot: {
         enabled: true,
         keepOnlyFailedTestsArtifacts: true,
