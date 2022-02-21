@@ -32,7 +32,7 @@ public class ClipboardModule: Module {
 
     function("setUrlAsync") { (content: String) in
       guard let url = URL(string: content) else {
-        throw InvalidUrlException(url: content)
+        throw InvalidUrlException(content)
       }
       UIPasteboard.general.url = url
     }
@@ -44,8 +44,9 @@ public class ClipboardModule: Module {
     // MARK: Images
 
     function("setImageAsync") { (content: String) in
-      guard let data = Data(base64Encoded: content), let image = UIImage(data: data) else {
-        throw InvalidImageException(image: content)
+      guard let data = Data(base64Encoded: content),
+            let image = UIImage(data: data) else {
+        throw InvalidImageException(content)
       }
       UIPasteboard.general.image = image
     }
@@ -58,17 +59,11 @@ public class ClipboardModule: Module {
       guard let image = UIPasteboard.general.image else {
         return nil
       }
-
-      guard let data: Data = {
-        switch options.imageFormat {
-          case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
-          case .png: return image.pngData()
-        }
-      }() else {
+      guard let data = imageToData(image, options: options) else {
         throw PasteFailureException()
       }
 
-      let imgData = options.imageFormat.getBase64Prefix() + data.base64EncodedString()
+      let imgData = "data:\(options.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
       return [
         "data": imgData,
         // TODO (barthap): Use CGSize when returning Records is possible
@@ -103,5 +98,12 @@ public class ClipboardModule: Module {
     sendEvent(onClipboardChanged, [
       "content": UIPasteboard.general.string ?? ""
     ])
+  }
+}
+
+private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
+  switch options.imageFormat {
+    case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
+    case .png: return image.pngData()
   }
 }

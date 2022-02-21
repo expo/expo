@@ -53,7 +53,7 @@ export declare function setUrlAsync(url: string): Promise<void>;
  */
 export declare function hasUrlAsync(): Promise<boolean>;
 /**
- * Gets the image from user's clipboard and returns it in the specified format.
+ * Gets the image from the user's clipboard and returns it in the specified format.
  *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to

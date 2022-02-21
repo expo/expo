@@ -2,23 +2,15 @@
 
 import ExpoModulesCore
 
-internal class InvalidImageException: Exception {
-  private let image: String
-  init(image: String) {
-    self.image = image
-  }
+internal class InvalidImageException: GenericException<String> {
   override var reason: String {
-    "Invalid base64 image: \(image.prefix(32))\(image.count ?? 0 > 32 ? "..." : "")"
+    "Invalid base64 image: \(param.prefix(32))\(param.count ?? 0 > 32 ? "..." : "")"
   }
 }
 
-internal class InvalidUrlException: Exception {
-  private let url: String
-  init(url: String) {
-    self.url = url
-  }
+internal class InvalidUrlException: GenericException<String> {
   override var reason: String {
-    "Invalid url: \(url)"
+    "Invalid url: \(param)"
   }
 }
 

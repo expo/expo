@@ -14,12 +14,12 @@ internal enum ImageFormat: String, EnumArgument {
   case jpeg
   case png
 
-  func getBase64Prefix() -> String {
+  func getMimeType() -> String {
     switch self {
     case .jpeg:
-      return "data:image/jpeg;base64,"
+      return "image/jpeg"
     case .png:
-      return "data:image/png;base64,"
+      return "image/png"
     }
   }
 }

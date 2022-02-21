@@ -1,7 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import * as React from 'react';
-import { Button, Text, TextInput, Image, Alert } from 'react-native';
+import { Button, Text, TextInput, Image, Alert, StyleSheet } from 'react-native';
 
 import { ScrollPage, Section } from '../components/Page';
 
@@ -109,12 +109,7 @@ function SetUrlExample() {
         }}
         title="Copy to clipboard"
       />
-      <TextInput
-        multiline
-        onChangeText={setValue}
-        value={value}
-        style={{ padding: 8, height: 48, margin: 8, borderBottomWidth: 1 }}
-      />
+      <TextInput multiline onChangeText={setValue} value={value} style={styles.textInput} />
     </>
   );
 }
@@ -227,3 +222,12 @@ function ListenerExample() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  textInput: {
+    padding: 8,
+    height: 48,
+    margin: 8,
+    borderBottomWidth: 1,
+  },
+});

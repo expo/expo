@@ -4,7 +4,7 @@ export interface GetImageOptions {
      */
     format: 'png' | 'jpeg';
     /**
-     * Specift the quality of the returned image, between 0 and 1. Defaults to `1` (highest quality).
+     * Specify the quality of the returned image, between `0` and `1`. Defaults to `1` (highest quality).
      * Applicable only when `format` is set to `jpeg`, ignored otherwise.
      * @default 1
      */
@@ -12,12 +12,13 @@ export interface GetImageOptions {
 }
 export interface ClipboardImage {
     /**
-     * Base64-encoded string of the image data.
+     * A Base64-encoded string of the image data.
      * Its format is dependent on the `format` option.
      *
      * > **NOTE:** The string is already prepended with `data:image/png;base64,` or `data:image/jpeg;base64,` prefix.
      *
-     * You can use it directly as the source of an `Image` element; for example:
+     * You can use it directly as the source of an `Image` element.
+     * @example
      * ```ts
      * <Image
      *   source={{ uri: clipboardImage.data }}
