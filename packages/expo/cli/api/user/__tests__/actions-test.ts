@@ -14,15 +14,15 @@ jest.mock('../../rest/client', () => {
 jest.mock('../otp');
 jest.mock('../user');
 
-const asMock = (fn: any): jest.Mock => fn as jest.Mock;
+const asMock = (fn: any): jest.Mock => fn;
 
 beforeEach(() => {
-  asMock(promptAsync).mockReset();
+  asMock(promptAsync).mockClear();
   asMock(promptAsync).mockImplementation(() => {
     throw new Error('Should not be called');
   });
 
-  asMock(loginAsync).mockReset();
+  asMock(loginAsync).mockClear();
 });
 
 describe(showLoginPromptAsync, () => {

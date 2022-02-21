@@ -1,36 +1,86 @@
+import { getExpoHomeDirectory, getUserStatePath } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
-import os from 'os';
-import path from 'path';
-import process from 'process';
+import { v4 as uuidv4 } from 'uuid';
 
-// Extracted from https://github.com/sindresorhus/env-paths/blob/main/index.js
-function getConfigDirectory() {
-  // Share data between eas-cli and expo.
-  const name = 'eas-cli';
-  const homedir = os.homedir();
-
-  if (process.platform === 'darwin') {
-    const library = path.join(homedir, 'Library');
-    return path.join(library, 'Preferences', name);
-  }
-
-  if (process.platform === 'win32') {
-    const appData = process.env.APPDATA || path.join(homedir, 'AppData', 'Roaming');
-    return path.join(appData, name, 'Config');
-  }
-
-  // https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-  return path.join(process.env.XDG_CONFIG_HOME || path.join(homedir, '.config'), name);
-}
-
-const SETTINGS_FILE_PATH = path.join(getConfigDirectory(), 'user-settings.json');
-
-export type UserSettingsData = {
-  analyticsDeviceId?: string;
+type SessionData = {
+  sessionSecret: string;
+  // These fields are potentially used by Expo CLI.
+  userId: string;
+  username: string;
+  currentConnection: 'Username-Password-Authentication';
 };
 
-export const UserSettings = new JsonFile<UserSettingsData>(SETTINGS_FILE_PATH, {
-  jsonParseErrorDefault: {},
-  cantReadFileDefault: {},
-  ensureDir: true,
+export type UserSettingsData = {
+  auth?: SessionData | null;
+  ignoreBundledBinaries?: string[];
+  PATH?: string;
+  /** Last development code signing ID used for `expo run:ios`. */
+  developmentCodeSigningId?: string;
+  /** Unique user ID which is generated anonymously and can be cleared locally. */
+  uuid?: string;
+};
+
+/** Return the user cache directory. */
+function getDirectory() {
+  return getExpoHomeDirectory();
+}
+
+function getFilePath(): string {
+  return getUserStatePath();
+}
+
+function userSettingsJsonFile(): JsonFile<UserSettingsData> {
+  return new JsonFile<UserSettingsData>(getFilePath(), {
+    ensureDir: true,
+    jsonParseErrorDefault: {},
+    cantReadFileDefault: {},
+  });
+}
+
+async function setSessionAsync(sessionData?: SessionData): Promise<void> {
+  await UserSettings.setAsync('auth', sessionData, {
+    default: {},
+    ensureDir: true,
+  });
+}
+
+function getSession(): SessionData | null {
+  try {
+    return JsonFile.read<UserSettingsData>(getUserStatePath())?.auth ?? null;
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+}
+
+function getAccessToken(): string | null {
+  // TODO: Move to env
+  return process.env.EXPO_TOKEN ?? null;
+}
+
+// returns an anonymous, unique identifier for a user on the current computer
+async function getAnonymousIdentifierAsync(): Promise<string> {
+  const settings = await userSettingsJsonFile();
+  let id = await settings.getAsync('uuid', null);
+
+  if (!id) {
+    id = uuidv4();
+    await settings.setAsync('uuid', id);
+  }
+
+  return id;
+}
+
+const UserSettings = Object.assign(userSettingsJsonFile(), {
+  getSession,
+  setSessionAsync,
+  getAccessToken,
+  getDirectory,
+  getFilePath,
+  userSettingsJsonFile,
+  getAnonymousIdentifierAsync,
 });
+
+export default UserSettings;

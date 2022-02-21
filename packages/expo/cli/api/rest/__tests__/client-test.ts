@@ -4,16 +4,12 @@ import { FetchError } from 'node-fetch';
 import { URLSearchParams } from 'url';
 
 import { getExpoApiBaseUrl } from '../../endpoint';
-import { getAccessToken, getSessionSecret } from '../../user/sessionStorage';
+import UserSettings from '../../user/UserSettings';
 import { ApiV2Error, fetchAsync } from '../client';
 
-jest.mock('../../user/sessionStorage');
-const asMock = (fn: any): jest.Mock => fn as jest.Mock;
+jest.mock('../../user/UserSettings');
 
-beforeEach(() => {
-  asMock(getAccessToken).mockReset();
-  asMock(getSessionSecret).mockReset();
-});
+const asMock = (fn: any): jest.Mock => fn;
 
 it('converts Expo APIv2 error to ApiV2Error', async () => {
   const scope = nock(getExpoApiBaseUrl())
@@ -118,7 +114,7 @@ it('makes a request using an absolute URL', async () => {
 });
 
 it('makes an authenticated request with access token', async () => {
-  asMock(getAccessToken).mockReturnValue('my-access-token');
+  asMock(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', (val) => val.length === 1 && val[0] === 'Bearer my-access-token')
@@ -131,7 +127,8 @@ it('makes an authenticated request with access token', async () => {
 });
 
 it('makes an authenticated request with session secret', async () => {
-  asMock(getSessionSecret).mockReturnValue('my-secret-token');
+  asMock(UserSettings.getSession).mockClear().mockReturnValue({ sessionSecret: 'my-secret-token' });
+  asMock(UserSettings.getAccessToken).mockReturnValue(null);
 
   nock(getExpoApiBaseUrl())
     .matchHeader('expo-session', (val) => val.length === 1 && val[0] === 'my-secret-token')
@@ -144,8 +141,8 @@ it('makes an authenticated request with session secret', async () => {
 });
 
 it('only uses access token when both authentication methods are available', async () => {
-  asMock(getAccessToken).mockReturnValue('my-access-token');
-  asMock(getSessionSecret).mockReturnValue('my-secret-token');
+  asMock(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
+  asMock(UserSettings.getSession).mockClear().mockReturnValue({ sessionSecret: 'my-secret-token' });
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', (val) => val.length === 1 && val[0] === 'Bearer my-access-token')

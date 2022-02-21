@@ -1,4 +1,4 @@
-import { boolish } from 'getenv';
+import { boolish, string } from 'getenv';
 
 /** Skip warning users about a dirty git status */
 export const EXPO_NO_GIT_STATUS = boolish('EXPO_NO_GIT_STATUS', false);
@@ -23,6 +23,9 @@ export const CI = boolish('CI', false);
 
 /** Disable telemetry (analytics) */
 export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
+
+/** Local directory to the universe repo for testing Expo schemas locally */
+export const EXPO_UNIVERSE_DIR = string('EXPO_UNIVERSE_DIR', '');
 
 /** Expo automated authentication token for use in CI environments */
 export const EXPO_TOKEN = process.env.EXPO_TOKEN ?? null;

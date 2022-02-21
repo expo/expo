@@ -10,21 +10,21 @@ jest.mock('../../../utils/prompts');
 jest.mock('../user');
 jest.mock('../../../log');
 
-const asMock = (fn: any): jest.Mock => fn as jest.Mock;
+const asMock = (fn: any): jest.Mock => fn;
 
 beforeEach(() => {
-  asMock(promptAsync).mockReset();
+  asMock(promptAsync).mockClear();
   asMock(promptAsync).mockImplementation(() => {
     throw new Error('Should not be called');
   });
 
-  asMock(selectAsync).mockReset();
+  asMock(selectAsync).mockClear();
   asMock(selectAsync).mockImplementation(() => {
     throw new Error('Should not be called');
   });
 
-  asMock(loginAsync).mockReset();
-  asMock(Log.log).mockReset();
+  asMock(loginAsync).mockClear();
+  asMock(Log.log).mockClear();
 });
 
 describe(retryUsernamePasswordAuthWithOTPAsync, () => {
