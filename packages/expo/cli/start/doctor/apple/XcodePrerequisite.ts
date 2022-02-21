@@ -17,7 +17,7 @@ const promptToOpenAppStoreAsync = async (message: string) => {
   // This prompt serves no purpose accept informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
   const confirm = await confirmAsync({ initial: true, message });
   if (confirm) {
-    Log.log(`Going to the App Store, re-run Expo when Xcode is finished installing.`);
+    Log.log(`Going to the App Store, re-run Expo when Xcode has finished installing.`);
     openAppStore(APP_STORE_ID);
   }
 };
