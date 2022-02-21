@@ -51,8 +51,8 @@ export function test({ describe, expect, it, afterEach, ...t }) {
       await Clipboard.setImageAsync(imageBase64);
       hasImage = await Clipboard.hasImageAsync();
       expect(hasImage).toEqual(true);
-      const result = await Clipboard.getPngImageAsync();
-      expect(result).toMatch(expectedResultRegex);
+      const result = await Clipboard.getImageAsync({ format: 'png' });
+      expect(result.data).toMatch(expectedResultRegex);
     });
 
     it('sets and gets a jpg image', async () => {
@@ -64,8 +64,8 @@ export function test({ describe, expect, it, afterEach, ...t }) {
       await Clipboard.setImageAsync(imageBase64);
       hasImage = await Clipboard.hasImageAsync();
       expect(hasImage).toEqual(true);
-      const result = await Clipboard.getJpegImageAsync();
-      expect(result).toMatch(expectedResultRegex);
+      const result = await Clipboard.getImageAsync({ format: 'jpeg' });
+      expect(result.data).toMatch(expectedResultRegex);
     });
 
     it('rejects invalid base64', async () => {

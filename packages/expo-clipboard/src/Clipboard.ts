@@ -1,5 +1,6 @@
 import { EventEmitter, Subscription, UnavailabilityError, Platform } from 'expo-modules-core';
 
+import { ClipboardImage, GetImageOptions } from './Clipboard.types';
 import ExpoClipboard from './ExpoClipboard';
 
 const emitter = new EventEmitter(ExpoClipboard);
@@ -100,31 +101,19 @@ export async function hasUrlAsync(): Promise<boolean> {
 }
 
 /**
- * Gets the image from the user's clipboard in the png format.
+ * Gets the image from user's clipboard and returns it in the specified format.
  *
- * @returns A promise that fulfills to base64 png image from the clipboard. You can use it
- * for example as the Image component source.
+ * @param options A `GetImageOptions` object to specify the desired format of the image.
+ * @returns If there was an image in the clipboard, the promise resolves to
+ * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
+ * Otherwise, it resolves to `null`.
  * @platform iOS
  */
-export async function getPngImageAsync(): Promise<string | null> {
-  if (!ExpoClipboard.getPngImageAsync) {
-    throw new UnavailabilityError('Clipboard', 'getPngImageAsync');
+export async function getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null> {
+  if (!ExpoClipboard.getImageAsync) {
+    throw new UnavailabilityError('Clipboard', 'getImageAsync');
   }
-  return await ExpoClipboard.getPngImageAsync();
-}
-
-/**
- * Gets the image from the user's clipboard in the jpg format.
- *
- * @returns A promise that resolves to base64 jpg image from the clipboard. You can use it
- * for example as the `Image` component source.
- * @platform iOS
- */
-export async function getJpegImageAsync(): Promise<string | null> {
-  if (!ExpoClipboard.getJpegImageAsync) {
-    throw new UnavailabilityError('Clipboard', 'getJpegImageAsync');
-  }
-  return await ExpoClipboard.getJpegImageAsync();
+  return await ExpoClipboard.getImageAsync(options);
 }
 
 /**

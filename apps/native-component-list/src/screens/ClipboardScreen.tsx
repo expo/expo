@@ -171,8 +171,8 @@ function GetPngImageExample() {
 
       <Button
         onPress={async () => {
-          const value = await Clipboard.getPngImageAsync();
-          setValue(value);
+          const value = await Clipboard.getImageAsync({ format: 'png' });
+          setValue(value?.data ?? null);
         }}
         title="Get Clipboard"
       />
@@ -192,8 +192,8 @@ function GetJpgImageExample() {
 
       <Button
         onPress={async () => {
-          const value = await Clipboard.getJpegImageAsync();
-          setValue(value);
+          const value = await Clipboard.getImageAsync({ format: 'jpeg' });
+          setValue(value?.data ?? null);
         }}
         title="Get Clipboard"
       />

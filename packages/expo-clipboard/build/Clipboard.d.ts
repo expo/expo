@@ -1,4 +1,5 @@
 import { EventEmitter, Subscription } from 'expo-modules-core';
+import { ClipboardImage, GetImageOptions } from './Clipboard.types';
 declare type ClipboardEvent = {
     /**
      * The new content of the user's clipboard.
@@ -52,21 +53,15 @@ export declare function setUrlAsync(url: string): Promise<void>;
  */
 export declare function hasUrlAsync(): Promise<boolean>;
 /**
- * Gets the image from the user's clipboard in the png format.
+ * Gets the image from user's clipboard and returns it in the specified format.
  *
- * @returns A promise that fulfills to base64 png image from the clipboard. You can use it
- * for example as the Image component source.
+ * @param options A `GetImageOptions` object to specify the desired format of the image.
+ * @returns If there was an image in the clipboard, the promise resolves to
+ * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
+ * Otherwise, it resolves to `null`.
  * @platform iOS
  */
-export declare function getPngImageAsync(): Promise<string | null>;
-/**
- * Gets the image from the user's clipboard in the jpg format.
- *
- * @returns A promise that resolves to base64 jpg image from the clipboard. You can use it
- * for example as the `Image` component source.
- * @platform iOS
- */
-export declare function getJpegImageAsync(): Promise<string | null>;
+export declare function getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null>;
 /**
  * Sets an image in the user's clipboard.
  *
