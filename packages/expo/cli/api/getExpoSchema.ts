@@ -1,16 +1,15 @@
 import { JSONObject } from '@expo/json-file';
-import assert from 'assert';
 import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
-import { EXPO_UNIVERSE_DIR, LOCAL_XDL_SCHEMA } from '../utils/env';
+import { EXPO_UNIVERSE_DIR } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { createCachedFetch } from './rest/client';
 
 export type Schema = any;
+
 export type AssetSchema = {
-  // schema: Schema;
   fieldPath: string;
 };
 
@@ -28,9 +27,9 @@ async function getSchemaAsync(sdkVersion: string): Promise<Schema> {
  *
  * @param sdkVersion
  */
-export async function getAssetSchemasAsync(sdkVersion: string | undefined): Promise<string[]> {
+export async function getAssetSchemasAsync(sdkVersion: string = 'UNVERSIONED'): Promise<string[]> {
   // If no SDK version is available then fall back to unversioned
-  const schema = await getSchemaAsync(sdkVersion ?? 'UNVERSIONED');
+  const schema = await getSchemaAsync(sdkVersion);
   const assetSchemas: string[] = [];
   const visit = (node: Schema, fieldPath: string) => {
     if (node.meta && node.meta.asset) {
@@ -49,8 +48,7 @@ export async function getAssetSchemasAsync(sdkVersion: string | undefined): Prom
 }
 
 async function getSchemaJSONAsync(sdkVersion: string): Promise<{ schema: Schema }> {
-  if (LOCAL_XDL_SCHEMA) {
-    assert(EXPO_UNIVERSE_DIR, `LOCAL_XDL_SCHEMA is set but EXPONENT_UNIVERSE_DIR is not.`);
+  if (EXPO_UNIVERSE_DIR) {
     return JSON.parse(
       fs
         .readFileSync(

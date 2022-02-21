@@ -45,7 +45,7 @@ export async function getNativeModuleVersionsAsync(
   }
   const { data } = await results.json();
   if (!data.length) {
-    throw new CommandError('VERSIONS', 'The bundled native module list from www is empty');
+    throw new CommandError('VERSIONS', 'The bundled native module list from the Expo API is empty');
   }
   return fromBundledNativeModuleList(data);
 }

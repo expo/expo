@@ -1,5 +1,4 @@
 import * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
 import requireGlobal from 'requireg';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
@@ -10,34 +9,48 @@ import { EXPO_DEBUG } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
 
+/** An error that is thrown when a package is installed but doesn't meet the version criteria. */
 export class ExternalModuleVersionError extends CommandError {
-  constructor(message: string, public shouldGloballyInstall: boolean) {
+  constructor(message: string, public readonly shouldGloballyInstall: boolean) {
     super('EXTERNAL_MODULE_VERSION', message);
   }
 }
 
-export type InstallPromptOptions = {
-  /** Should prompt the user to install, when false the module will just assert on missing packages, default `true` */
+interface PromptOptions {
+  /** Should prompt the user to install, when false the module will just assert on missing packages, default `true`. Ignored when `autoInstall` is true. */
   shouldPrompt?: boolean;
   /** Should automatically install the package without prompting, default `false` */
   autoInstall?: boolean;
+}
+
+export interface InstallPromptOptions extends PromptOptions {
   /** Should install the package globally, default `false` */
   shouldGloballyInstall?: boolean;
-};
-export type ResolvePromptOptions = Omit<InstallPromptOptions, 'shouldGloballyInstall'> & {
+}
+
+export interface ResolvePromptOptions extends PromptOptions {
   /**
-   * Prefer to install the package globally, this can be overwritten if the function
-   * detects that a locally installed package simply needs an upgrade, default `false` */
+   * Prefer to install the package globally, this can be overridden if the function
+   * detects that a locally installed package simply needs an upgrade, default `false`
+   */
   prefersGlobalInstall?: boolean;
-};
+}
 
 /** Resolves a local or globally installed package, prompts to install if missing. */
-export class ExternalModule<IModule> {
-  private instance: IModule | null = null;
+export class ExternalModule<TModule> {
+  private instance: TModule | null = null;
 
   constructor(
+    /** Project root for checking if the package is installed locally. */
     private projectRoot: string,
-    private pkg: { name: string; versionRange: string },
+    /** Info on the external package. */
+    private pkg: {
+      /** NPM package name. */
+      name: string;
+      /** Required semver range, ex: `^1.0.0`. */
+      versionRange: string;
+    },
+    /** A function used to create the installation prompt message. */
     private promptMessage: (pkgName: string) => string
   ) {}
 
@@ -45,7 +58,7 @@ export class ExternalModule<IModule> {
   async resolveAsync({
     prefersGlobalInstall,
     ...options
-  }: ResolvePromptOptions = {}): Promise<IModule> {
+  }: ResolvePromptOptions = {}): Promise<TModule> {
     try {
       return (
         this.getVersioned() ??
@@ -72,7 +85,7 @@ export class ExternalModule<IModule> {
     shouldPrompt = true,
     autoInstall,
     shouldGloballyInstall,
-  }: InstallPromptOptions = {}): Promise<IModule> {
+  }: InstallPromptOptions = {}): Promise<TModule> {
     const packageName = [this.pkg.name, this.pkg.versionRange].join('@');
     if (!autoInstall) {
       // Delay the prompt so it doesn't conflict with other dev tool logs
@@ -86,7 +99,7 @@ export class ExternalModule<IModule> {
           initial: true,
         })));
     if (answer) {
-      Log.log(chalk`Installing ${packageName}...`);
+      Log.log(`Installing ${packageName}...`);
 
       // Always use npm for global installs
       const packageManager = shouldGloballyInstall
@@ -122,7 +135,7 @@ export class ExternalModule<IModule> {
   }
 
   /** Get the module. */
-  get(): IModule | null {
+  get(): TModule | null {
     try {
       return this.getVersioned();
     } catch {
@@ -131,12 +144,9 @@ export class ExternalModule<IModule> {
   }
 
   /** Get the module, throws if the module is not versioned correctly. */
-  getVersioned(): IModule | null {
-    if (!this.instance) {
-      this.instance = this._resolveModule(true) ?? this._resolveModule(false);
-    }
-
-    return this.instance ?? null;
+  getVersioned(): TModule | null {
+    this.instance ??= this._resolveModule(true) ?? this._resolveModule(false);
+    return this.instance;
   }
 
   /** Exposed for testing. */
@@ -155,7 +165,7 @@ export class ExternalModule<IModule> {
   }
 
   /** Resolve the module and verify the version. Exposed for testing. */
-  _resolveModule(isLocal: boolean): IModule | null {
+  _resolveModule(isLocal: boolean): TModule | null {
     const resolver = isLocal ? this._resolveLocal : this._resolveGlobal;
     try {
       const packageJsonPath = resolver(`${this.pkg.name}/package.json`);
@@ -163,7 +173,14 @@ export class ExternalModule<IModule> {
       if (packageJson) {
         if (semver.satisfies(packageJson.version, this.pkg.versionRange)) {
           const modulePath = resolver(this.pkg.name);
-          return this._require(modulePath);
+          const requiredModule = this._require(modulePath);
+          if (requiredModule == null) {
+            throw new CommandError(
+              'EXTERNAL_MODULE_EXPORT',
+              `${this.pkg.name} exports a nullish value, which is not allowed.`
+            );
+          }
+          return requiredModule;
         }
         throw new ExternalModuleVersionError(
           `Required module '${this.pkg.name}@${packageJson.version}' does not satisfy ${this.pkg.versionRange}. Installed at: ${packageJsonPath}`,
@@ -171,7 +188,7 @@ export class ExternalModule<IModule> {
         );
       }
     } catch (e) {
-      if (e instanceof ExternalModuleVersionError) {
+      if (e instanceof CommandError) {
         throw e;
       }
       Log.debug('[External Module] Failed to resolve module', e);

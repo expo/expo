@@ -2,9 +2,10 @@ import { ExpoConfig } from '@expo/config';
 import os from 'os';
 import { URLSearchParams } from 'url';
 
-import * as Log from '../log';
+import { CommandError } from '../utils/errors';
 import { fetchAsync } from './rest/client';
 
+/** Create the expected session info. */
 export function createSessionInfo({
   exp,
   runtime,
@@ -32,6 +33,7 @@ export function createSessionInfo({
   };
 }
 
+/** Send a request to Expo API to keep the 'development session' alive for the provided devices. */
 export async function updateDevelopmentSessionAsync({
   deviceIds,
   exp,
@@ -48,13 +50,18 @@ export async function updateDevelopmentSessionAsync({
     searchParams.append('deviceId', id);
   });
 
-  await fetchAsync('development-sessions/notify-alive', {
+  const results = await fetchAsync('development-sessions/notify-alive', {
     searchParams,
     method: 'POST',
     body: JSON.stringify({
       data: createSessionInfo({ exp, runtime, url }),
     }),
-  }).catch((e) => {
-    Log.debug(`Error updating dev session: ${e}`);
   });
+
+  if (!results.ok) {
+    throw new CommandError(
+      'API',
+      `Unexpected response when updating the development session on Expo servers: ${results.statusText}.`
+    );
+  }
 }

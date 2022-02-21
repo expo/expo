@@ -8,6 +8,9 @@
 
 - Add expo-modules and ReactDelegate-based automatic setup on iOS. ([#16190](https://github.com/expo/expo/pull/16190) by [@esamelson](https://github.com/esamelson))
 - Add support for auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
+- Send uncaught exceptions to the bundler server if possible. ([#15938](https://github.com/expo/expo/pull/15938) & [#15964](https://github.com/expo/expo/pull/15964) by [@lukmccall](https://github.com/lukmccall))
+- Add support for React Native `0.67.X`. ([#16038](https://github.com/expo/expo/pull/16038) by [@kudo](https://github.com/kudo))
+- Add the crash report screen. ([#16341](https://github.com/expo/expo/pull/16341) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -16,7 +19,6 @@
 - Move unrelated dev-menu functions into dev-launcher. ([#16124](https://github.com/expo/expo/pull/16124) by [@ajsmth](https://github.com/ajsmth))
 - Simplify dev-launcher / dev-menu relationship on iOS. ([#16067](https://github.com/expo/expo/pull/16067) by [@ajsmth](https://github.com/ajsmth))
 - Simplify dev-launcher / dev-menu relationship on Android. ([#16228](https://github.com/expo/expo/pull/16228) by [@ajsmth](https://github.com/ajsmth))
-
 
 ## 0.10.4 — 2022-02-07
 
@@ -28,6 +30,7 @@
 
 ### 🐛 Bug fixes
 
+- Added `android:exported="true"` to the activity, cause on Android 12 and higher it needs to [explicity declared](https://developer.android.com/about/versions/12/behavior-changes-12#exported). ([#16367](https://github.com/expo/expo/pull/16367) by [@wbroek](https://github.com/wbroek))
 - Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Fix regression in deep linking configuration. ([#16125](https://github.com/expo/expo/pull/16125) by [@ajsmth](https://github.com/ajsmth))
@@ -70,7 +73,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Added support for th React Native `0.66.X`. ([#15242](https://github.com/expo/expo/pull/15242) by [@lukmccall](https://github.com/lukmccall))
+- Added support for React Native `0.66.X`. ([#15242](https://github.com/expo/expo/pull/15242) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

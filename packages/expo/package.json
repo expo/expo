@@ -104,6 +104,7 @@
     "graphql-tag": "2.12.5",
     "invariant": "^2.2.4",
     "js-yaml": "^3.13.1",
+    "json-schema-deref-sync": "^0.13.0",
     "md5-file": "^3.2.3",
     "minipass": "2.3.5",
     "progress": "2.0.3",

@@ -5,7 +5,8 @@ import { fetchAsync } from './rest/client';
 import { ensureLoggedInAsync } from './user/actions';
 import { getActorDisplayName, getUserAsync } from './user/user';
 
-export async function signEASManifestAsync(manifest: ExpoUpdatesManifest): Promise<string> {
+/** Sign an Expo Updates manifest to access secure features in sandboxed environments like Expo Go. */
+export async function signExpoGoManifestAsync(manifest: ExpoUpdatesManifest): Promise<string> {
   await ensureLoggedInAsync();
   const response = await fetchAsync(`manifest/eas/sign`, {
     method: 'POST',
@@ -13,11 +14,14 @@ export async function signEASManifestAsync(manifest: ExpoUpdatesManifest): Promi
       manifest,
     }),
   });
-  const json = await response.json();
-  return json.data.signature;
+  const { data } = await response.json();
+  return data.signature;
 }
 
-export async function signExpoGoManifestAsync(manifest: Partial<ExpoAppManifest>): Promise<string> {
+/** Sign a classic manifest to access secure features in sandboxed environments like Expo Go. */
+export async function signClassicExpoGoManifestAsync(
+  manifest: Partial<ExpoAppManifest>
+): Promise<string> {
   await ensureLoggedInAsync();
   const res = await fetchAsync('manifest/sign', {
     method: 'POST',

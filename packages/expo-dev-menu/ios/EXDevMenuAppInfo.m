@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import "EXDevMenuAppInfo.h"
+#import <EXDevMenu-Swift.h>
 
 @implementation EXDevMenuAppInfo
 
@@ -22,24 +23,30 @@
 //- (nullable NSString *)facebookApplicationName;
 //- (BOOL)facebookAutoInitEnabled;
 
-+(NSDictionary *)getAppInfoForBridge:(RCTBridge *)bridge andManifest:(NSDictionary *)manifest
++(NSDictionary *)getAppInfo
 {
   NSMutableDictionary *appInfo = [NSMutableDictionary new];
-
+  
   NSString *appIcon = [EXDevMenuAppInfo getAppIcon];
   NSString *runtimeVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
   NSString *sdkVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [EXDevMenuAppInfo getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
-  NSString *hostUrl = [bridge.bundleURL host] ?: @"";
-
-  if (manifest[@"name"] != nil) {
-    appName = manifest[@"name"];
+  
+  DevMenuManager *manager = [DevMenuManager shared];
+  
+  if (manager.currentManifest != nil) {
+    
+    if (manager.currentManifest[@"name"] != nil) {
+      appName = manager.currentManifest[@"name"];
+    }
+    
+    if (manager.currentManifest[@"version"] != nil) {
+      appVersion = manager.currentManifest[@"version"];
+    }
   }
   
-  if (manifest[@"version"] != nil) {
-    appVersion = manifest[@"version"];
-  }
+  NSString *hostUrl = [manager.currentManifestURL absoluteString] ?: @"";
 
   appInfo[@"appName"] = appName;
   appInfo[@"appIcon"] = appIcon;

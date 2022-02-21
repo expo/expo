@@ -1,4 +1,3 @@
-import { getUserStatePath } from '@expo/config/build/getUserState';
 import fs from 'fs-extra';
 import { vol } from 'memfs';
 import path from 'path';
@@ -7,6 +6,11 @@ import UserSettings from '../UserSettings';
 
 describe(UserSettings.getDirectory, () => {
   beforeEach(() => {
+    delete process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
+    delete process.env.EXPO_STAGING;
+    delete process.env.EXPO_LOCAL;
+  });
+  afterAll(() => {
     delete process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
     delete process.env.EXPO_STAGING;
     delete process.env.EXPO_LOCAL;
@@ -29,8 +33,6 @@ describe(UserSettings.getDirectory, () => {
   });
 });
 
-jest.mock('fs');
-
 const authStub: any = {
   sessionSecret: 'SESSION_SECRET',
   userId: 'USER_ID',
@@ -48,8 +50,8 @@ describe(UserSettings.getSession, () => {
   });
 
   it('returns stored session data', async () => {
-    await fs.mkdirp(path.dirname(getUserStatePath()));
-    await fs.writeJSON(getUserStatePath(), { auth: authStub });
+    await fs.mkdirp(path.dirname(UserSettings.getFilePath()));
+    await fs.writeJSON(UserSettings.getFilePath(), { auth: authStub });
     expect(UserSettings.getSession()).toMatchObject(authStub);
   });
 });
@@ -57,12 +59,12 @@ describe(UserSettings.getSession, () => {
 describe(UserSettings.setSessionAsync, () => {
   it('stores empty session data', async () => {
     await UserSettings.setSessionAsync();
-    expect(await fs.pathExists(getUserStatePath())).toBeTruthy();
+    expect(await fs.pathExists(UserSettings.getFilePath())).toBeTruthy();
   });
 
   it('stores actual session data', async () => {
     await UserSettings.setSessionAsync(authStub);
-    expect(await fs.readJSON(getUserStatePath())).toMatchObject({ auth: authStub });
+    expect(await fs.readJSON(UserSettings.getFilePath())).toMatchObject({ auth: authStub });
   });
 });
 

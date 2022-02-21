@@ -1,4 +1,5 @@
 import nock from 'nock';
+
 import { getExpoApiBaseUrl } from '../endpoint';
 import { getAssetSchemasAsync } from '../getExpoSchema';
 
@@ -27,7 +28,9 @@ describe(`getAssetSchemasAsync return array of strings including some known valu
     ],
   ])('for SDK %s', async (sdkVersion, expectedAssetsPaths) => {
     const schemas = await getAssetSchemasAsync(sdkVersion);
-    expect(schemas.every((field) => typeof field === 'string')).toBe(true);
+    for (const field of schemas) {
+      expect(field).toEqual(expect.any(String));
+    }
     for (const el of expectedAssetsPaths) {
       expect(schemas).toContain(el);
     }

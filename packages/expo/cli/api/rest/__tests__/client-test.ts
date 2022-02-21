@@ -114,7 +114,7 @@ it('makes a request using an absolute URL', async () => {
 });
 
 it('makes an authenticated request with access token', async () => {
-  asMock(UserSettings.getAccessToken).mockReset().mockReturnValue('my-access-token');
+  asMock(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', (val) => val.length === 1 && val[0] === 'Bearer my-access-token')
@@ -127,7 +127,8 @@ it('makes an authenticated request with access token', async () => {
 });
 
 it('makes an authenticated request with session secret', async () => {
-  asMock(UserSettings.getSession).mockReset().mockReturnValue({ sessionSecret: 'my-secret-token' });
+  asMock(UserSettings.getSession).mockClear().mockReturnValue({ sessionSecret: 'my-secret-token' });
+  asMock(UserSettings.getAccessToken).mockReturnValue(null);
 
   nock(getExpoApiBaseUrl())
     .matchHeader('expo-session', (val) => val.length === 1 && val[0] === 'my-secret-token')
@@ -140,8 +141,8 @@ it('makes an authenticated request with session secret', async () => {
 });
 
 it('only uses access token when both authentication methods are available', async () => {
-  asMock(UserSettings.getAccessToken).mockReset().mockReturnValue('my-access-token');
-  asMock(UserSettings.getSession).mockReset().mockReturnValue({ sessionSecret: 'my-secret-token' });
+  asMock(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
+  asMock(UserSettings.getSession).mockClear().mockReturnValue({ sessionSecret: 'my-secret-token' });
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', (val) => val.length === 1 && val[0] === 'Bearer my-access-token')

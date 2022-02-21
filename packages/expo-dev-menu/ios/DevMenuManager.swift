@@ -381,4 +381,13 @@ open class DevMenuManager: NSObject {
     return true
   }
   
+  @objc
+  public func getAppInfo() -> [AnyHashable: Any] {
+    return EXDevMenuAppInfo.getAppInfo()
+  }
+  
+  @objc
+  public func getDevSettings() -> [AnyHashable: Any] {
+    return EXDevMenuDevSettings.getDevSettings()
+  }
 }

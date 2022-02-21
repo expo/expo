@@ -94,7 +94,7 @@ describe(logoutAsync, () => {
     expect(UserSettings.getSession()?.sessionSecret).toBe('SESSION_SECRET');
 
     await logoutAsync();
-    expect(UserSettings.getSession()?.sessionSecret).toBe(null);
+    expect(UserSettings.getSession()?.sessionSecret).toBeUndefined();
   });
 });
 
