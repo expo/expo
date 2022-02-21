@@ -91,6 +91,22 @@ You can also set a custom runtime version that meets the [runtime version format
 
 This option is good for developers who want to manage the runtime version manually, separately from any other version numbers present in a project's app config. It gives the developer complete control over which updates are compatible with which builds.
 
+### Platform specific `"runtimeVersion"`
+
+You can also set a runtime version for a specific platform:
+
+```json
+{
+  "expo": {
+    "android": {
+        "runtimeVersion": "1.0.0"
+    }
+  }
+}
+```
+
+When both a top level runtime and a platform specific runtime are set, the platform specific one takes precedence.
+
 ## Avoiding crashes with incompatible updates
 
 The main issue that can arise when publishing updates is that the update could rely on native code that the build it's running on does not support. For instance, imagine we made a build with a runtime version of `"1.0.0"`. Then, we submitted that build to the app stores and released it to the public.
