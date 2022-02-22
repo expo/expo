@@ -26,9 +26,6 @@ target 'ExpoKitApp' do
     ],
   )
 
-  # Pods that are not expo modules
-  pod 'EXRandom', path: '../../../packages/expo-random/ios'
-
   # Install React Native and its dependencies
   require_relative '../node_modules/react-native/scripts/react_native_pods'
   use_react_native!(production: true)
