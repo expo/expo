@@ -38,7 +38,12 @@ export type ObjectParameter = Parameter & {
   properties: PrimitiveParameter[];
 };
 
-export type FunctionParameter = PrimitiveParameter | ObjectParameter;
+export type ConstantParameter = Parameter & {
+  type: 'constant';
+  value: any;
+};
+
+export type FunctionParameter = PrimitiveParameter | ObjectParameter | ConstantParameter;
 
 export type PrimitiveArgument = boolean | number | string | Tuple;
 

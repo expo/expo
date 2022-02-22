@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
 import { Colors } from '../constants';
-import DisappearingMonoText from './DisappearingMonoText';
 import FunctionConfigurator from './FunctionConfigurator';
 import {
   FunctionArgument,
@@ -12,6 +11,7 @@ import {
 } from './FunctionDemo.types';
 import HeadingText from './HeadingText';
 import MonoText from './MonoText';
+import MonoTextWithCountdown from './MonoTextWithCountdown';
 
 function FunctionSignature({
   namespace,
@@ -41,7 +41,8 @@ function FunctionSignature({
               .join(',\n  ');
 
             return `{\n  ${entries}\n}`;
-
+          case 'constant':
+            return parameter.name;
           case 'enum':
             return parameter.values.find(({ value }) => value === args[idx])!.name;
           default:
@@ -79,6 +80,8 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
             return [property.name, initialArgumentFromParameter(property)];
           })
         );
+      case 'constant':
+        return parameter.value;
       default:
         return initialArgumentFromParameter(parameter);
     }
@@ -114,54 +117,122 @@ function useArguments(
   return [args, updateArgument];
 }
 
+type ActionFunction = (...args: any[]) => Promise<unknown>;
+
 type Props = {
+  /**
+   * Function namespace/scope (e.g. module name). Used in signature rendering.
+   */
   namespace: string;
+  /**
+   * Function name. Used in signature rendering.
+   */
   name: string;
+  /**
+   * Function-only parameters. Function's arguments are constructed based on these parameters and passed as-is to the actions callbacks.
+   * These should reflect the actual function signature (type of arguments, default values, order, etc.).
+   */
   parameters?: FunctionParameter[];
-  action: (...args: any[]) => Promise<unknown>;
+  /**
+   * Additional parameters that are directly mappable to the function arguments.
+   * If you need to add some additional logic to the function call you can do it here.
+   * The current value for these parameters is passed to the actions' callbacks as the additional arguments.
+   */
+  additionalParameters?: PrimitiveParameter[];
+  /**
+   * Single action or a list of actions that could be called by the user. Each action would be fetched with the arguments constructed from the parameters.
+   */
+  actions: ActionFunction | { name: string; action: ActionFunction }[];
+  /**
+   * Rendering function to render some additional components based on the function's result.
+   */
   renderAdditionalResult?: (result: unknown) => JSX.Element | void;
 };
 
-export type FunctionDescription = Pick<Props, 'name' | 'parameters' | 'action'>;
+export type FunctionDescription = Pick<Props, 'name' | 'parameters' | 'actions'>;
 
+/**
+ * FunctionDemo is a component that allows to visualize the function call.
+ * It allows the function's arguments manipulation and calling the function.
+ * Additionally it present the result of the function call.
+ */
 export default function FunctionDemo({
   namespace,
   name,
   parameters = [],
-  action,
-  renderAdditionalResult: renderResult,
+  actions,
+  renderAdditionalResult,
+  additionalParameters = [],
 }: Props) {
   const [result, setResult] = useState<unknown | undefined>(undefined);
   const [args, updateArgument] = useArguments(parameters);
+  const [additionalArgs, updateAdditionalArgs] = useArguments(additionalParameters);
 
-  console.log(args);
+  const actionsList = Array.isArray(actions) ? actions : [{ name: 'RUN ▶️', action: actions }];
 
-  const handlePress = useCallback(async () => {
-    const r = await action(...args);
-    setResult(r);
-  }, [args]);
+  const handlePress = useCallback(
+    async (action: ActionFunction) => {
+      const r = await action(...args, ...additionalArgs);
+      setResult(r);
+    },
+    [args, additionalArgs]
+  );
 
   return (
     <>
       <HeadingText>{name}</HeadingText>
       <FunctionConfigurator parameters={parameters} onChange={updateArgument} value={args} />
+      {additionalParameters.length > 0 && (
+        <>
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>ADDITIONAL PARAMETERS</Text>
+            <View style={styles.dividerLine} />
+          </View>
+          <FunctionConfigurator
+            parameters={additionalParameters}
+            onChange={updateAdditionalArgs}
+            value={additionalArgs}
+          />
+        </>
+      )}
       <View style={styles.container}>
         <FunctionSignature namespace={namespace} name={name} parameters={parameters} args={args} />
-        <View style={styles.button}>
-          <TouchableOpacity onPress={handlePress}>
-            <Text style={styles.buttonText}>RUN ▶️</Text>
-          </TouchableOpacity>
+        <View style={styles.buttonsContainer}>
+          {actionsList.map(({ name, action }) => (
+            <ActionButton key={name} name={name} action={action} onPress={handlePress} />
+          ))}
         </View>
       </View>
       {result && (
         <>
-          {renderResult?.(result)}
-          <DisappearingMonoText onDisappear={() => setResult(undefined)}>
+          <MonoTextWithCountdown onCountdownEnded={() => setResult(undefined)}>
             {typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)}
-          </DisappearingMonoText>
+          </MonoTextWithCountdown>
+          {renderAdditionalResult?.(result)}
         </>
       )}
     </>
+  );
+}
+
+function ActionButton({
+  name,
+  action,
+  onPress,
+}: {
+  name: string;
+  action: ActionFunction;
+  onPress: (action: ActionFunction) => void;
+}) {
+  const handlePress = useCallback(() => onPress(action), [onPress, action]);
+
+  return (
+    <View style={styles.button}>
+      <TouchableOpacity onPress={handlePress}>
+        <Text style={styles.buttonText}>{name}</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -171,12 +242,32 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 
-  button: {
+  divider: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
+  dividerLine: {
+    backgroundColor: 'black',
+    height: 1,
+    flex: 1,
+  },
+
+  dividerText: {
+    paddingHorizontal: 5,
+    fontSize: 8,
+  },
+
+  buttonsContainer: {
     position: 'absolute',
     right: 0,
     bottom: 3,
+    flexDirection: 'row',
+  },
+  button: {
     paddingVertical: 3,
     paddingHorizontal: 6,
+    marginLeft: 5,
     backgroundColor: Colors.tintColor,
     borderRadius: 5,
   },

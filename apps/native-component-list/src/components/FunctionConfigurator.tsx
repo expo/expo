@@ -13,17 +13,21 @@ import {
   StringParameter,
 } from './FunctionDemo.types';
 
-type ConfiguratorProps = {
+type FunctionConfiguratorProps = {
   parameters: FunctionParameter[];
   value: FunctionArgument[];
   onChange: (name: string | [string, string], newValue: PrimitiveArgument) => void;
 };
 
-export default function FunctionConfigurator({ parameters, value, onChange }: ConfiguratorProps) {
+export default function FunctionConfigurator({
+  parameters,
+  value,
+  onChange,
+}: FunctionConfiguratorProps) {
   return (
     <View style={styles.configurator}>
       {parameters.map((parameter, index) =>
-        parameter.type === 'object' ? (
+        parameter.type === 'constant' ? null : parameter.type === 'object' ? (
           parameter.properties.map(({ name, ...properties }) => (
             <ConfiguratorChoice
               {...properties}
