@@ -182,7 +182,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     `api 'com.facebook.react:react-native:${sdkVersion}'`
   );
   await _regexFileAsync(
-    path.join(ANDROID_DIR, 'ReactAndroid', 'release.gradle'),
+    path.join(ANDROID_DIR, 'ReactAndroid', 'build.gradle'),
     /version = '[\d.]+'/,
     `version = '${sdkVersion}'`
   );
@@ -239,9 +239,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   for (const pkg of packages) {
     process.stdout.write(` 🛠   Building ${pkg.name}...`);
     try {
-      // TODO: Update to the actual action when we upgrade our react-native fork
-      const gradleAction = pkg.name === 'ReactAndroid' ? 'uploadArchives' : 'publish';
-      await spawnAsync('./gradlew', [`:${pkg.name}:${gradleAction}`], {
+      await spawnAsync('./gradlew', [`:${pkg.name}:publish`], {
         cwd: ANDROID_DIR,
       });
       readline.clearLine(process.stdout, 0);
