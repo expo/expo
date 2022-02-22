@@ -1,11 +1,9 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
-import resolveFrom from 'resolve-from';
 
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import { CreateURLOptions } from '../server/UrlCreator';
 import { AppIdResolver } from './AppIdResolver';
 import { DeviceManager } from './DeviceManager';
 
@@ -19,8 +17,6 @@ export interface BaseResolveDeviceProps<IDevice> {
   shouldPrompt?: boolean;
   /** The target device to use. */
   device?: IDevice;
-  /** Indicates the type of device to use, useful for launching TVs, watches, etc. */
-  osType?: string;
 }
 
 /** An abstract class for launching a URL on a device. */
@@ -35,10 +31,10 @@ export class PlatformManager<
       platform: 'ios' | 'android';
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
-      getLoadingUrl: (opts?: CreateURLOptions, platform?: string) => string | null;
-
-      // TODO: Combine the dev server url methods
-      getNativeDevServerUrl: (props?: { scheme?: string }) => string | null;
+      /** Expo Go URL */
+      getExpoGoUrl: () => string | null;
+      /** Dev Client */
+      getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
       /** Resolve a device, this function should automatically handle opening the device and asserting any system validations. */
       resolveDeviceAsync: (
         resolver?: Partial<IResolveDeviceProps>
@@ -46,46 +42,16 @@ export class PlatformManager<
     }
   ) {}
 
-  /** Returns the project application identifier or asserts that one is not defined. */
-  protected getAppIdResolver(): AppIdResolver {
+  /** Returns the project application identifier or asserts that one is not defined. Exposed for testing. */
+  public _getAppIdResolver(): AppIdResolver {
     throw new UnimplementedError();
-  }
-
-  /** Should use the interstitial page for selecting which runtime to use. Exposed for testing. */
-  private shouldUseInterstitialPage(): boolean {
-    return (
-      process.env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
-      // TODO: >:0
-      // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
-    );
-  }
-
-  private constructDeepLink(scheme?: string, devClient?: boolean): string | null {
-    if (
-      !devClient &&
-      // TODO: >:0
-      // Checks if dev client is installed.
-      this.shouldUseInterstitialPage()
-    ) {
-      return this.props.getLoadingUrl();
-    } else {
-      try {
-        return this.props.getNativeDevServerUrl({ scheme });
-      } catch (e) {
-        if (devClient) {
-          return null;
-        }
-        throw e;
-      }
-    }
   }
 
   protected async openProjectInExpoGoAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
     // TODO: We shouldn't have so much extra stuff to support dc here.
-    const url = this.constructDeepLink('exp');
+    const url = this.props.getExpoGoUrl();
     // This should never happen, but just in case...
     assert(url, 'Could not get dev server URL');
 
@@ -108,9 +74,9 @@ export class PlatformManager<
     resolveSettings: Partial<IResolveDeviceProps> = {},
     props: Partial<IOpenInCustomProps> = {}
   ): Promise<{ url: string }> {
-    let url = this.constructDeepLink(props.scheme, true);
+    let url = this.props.getCustomRuntimeUrl({ scheme: props.scheme });
     // TODO: It's unclear why we do application id validation when opening with a URL
-    const applicationId = props.applicationId ?? (await this.getAppIdResolver().getAppIdAsync());
+    const applicationId = props.applicationId ?? (await this._getAppIdResolver().getAppIdAsync());
 
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
 
@@ -170,8 +136,7 @@ export class PlatformManager<
   protected async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
     url: string;
   }> {
-    const url = this.props.getNativeDevServerUrl();
-    // const url =  this.props.getDevServerUrl();
+    const url = this.props.getDevServerUrl();
     assert(url, 'Dev server is not running.');
 
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);

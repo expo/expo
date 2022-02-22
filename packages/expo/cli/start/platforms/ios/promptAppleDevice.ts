@@ -10,9 +10,9 @@ import { Device } from './simctl';
  * @param devices list of devices to sort.
  * @param osType optional sort by operating system.
  */
-async function sortDefaultDeviceToBeginningAsync(
+export async function sortDefaultDeviceToBeginningAsync(
   devices: Device[],
-  osType?: string
+  osType?: Device['osType']
 ): Promise<Device[]> {
   const defaultId = await getBestSimulatorAsync({ osType });
   if (defaultId) {
@@ -26,7 +26,10 @@ async function sortDefaultDeviceToBeginningAsync(
 }
 
 /** Prompt the user to select an Apple device, sorting the most likely option to the beginning. */
-export async function promptAppleDeviceAsync(devices: Device[], osType?: string): Promise<Device> {
+export async function promptAppleDeviceAsync(
+  devices: Device[],
+  osType?: Device['osType']
+): Promise<Device> {
   devices = await sortDefaultDeviceToBeginningAsync(devices, osType);
   const results = await promptAppleDeviceInternalAsync(devices);
   return devices.find(({ udid }) => results === udid)!;

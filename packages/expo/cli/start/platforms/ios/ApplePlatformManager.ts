@@ -1,4 +1,3 @@
-import { CreateURLOptions } from '../../server/UrlCreator';
 import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
 import { AppleAppIdResolver } from './AppleAppIdResolver';
@@ -9,15 +8,18 @@ export class ApplePlatformManager extends PlatformManager<Device> {
   constructor(
     protected projectRoot: string,
     protected port: number,
-    getDevServerUrl: () => string | null,
-    getLoadingUrl: (opts: CreateURLOptions, platform: string) => string | null,
-    getManifestUrl: (props: { scheme?: string }) => string | null
+    options: {
+      /** Get the base URL for the dev server hosting this platform manager. */
+      getDevServerUrl: () => string | null;
+      /** Expo Go URL */
+      getExpoGoUrl: () => string | null;
+      /** Dev Client */
+      getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
+    }
   ) {
     super(projectRoot, {
       platform: 'ios',
-      getDevServerUrl,
-      getLoadingUrl: () => getLoadingUrl({ hostType: 'localhost' }, 'ios'),
-      getNativeDevServerUrl: getManifestUrl,
+      ...options,
       resolveDeviceAsync: AppleDeviceManager.resolveAsync,
     });
   }
@@ -26,13 +28,13 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     options:
       | { runtime: 'expo' | 'web' }
       | { runtime: 'custom'; props?: Partial<BaseOpenInCustomProps> },
-    resolveSettings?: Partial<{ shouldPrompt?: boolean; device?: Device; osType?: string }>
+    resolveSettings?: Partial<{ shouldPrompt?: boolean; device?: Device }>
   ): Promise<{ url: string }> {
     await AppleDeviceManager.assertSystemRequirementsAsync();
     return super.openAsync(options, resolveSettings);
   }
 
-  protected getAppIdResolver(): AppIdResolver {
+  public _getAppIdResolver(): AppIdResolver {
     return new AppleAppIdResolver(this.projectRoot);
   }
 

@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import child_process from 'child_process';
+import { spawn } from 'child_process';
 import os from 'os';
 
 import * as Log from '../../../log';
@@ -34,13 +34,22 @@ export async function listAvdsAsync(): Promise<AndroidDeviceBridge.Device[]> {
   }
 }
 
+/** Start an Android device and wait until it is booted. */
 export async function startDeviceAsync(
-  device: Pick<AndroidDeviceBridge.Device, 'name'>
+  device: Pick<AndroidDeviceBridge.Device, 'name'>,
+  {
+    timeout = EMULATOR_MAX_WAIT_TIMEOUT,
+    interval = 1000,
+  }: {
+    /** Time in milliseconds to wait before asserting a timeout error. */
+    timeout?: number;
+    interval?: number;
+  } = {}
 ): Promise<AndroidDeviceBridge.Device> {
   Log.log(`\u203A Opening emulator ${chalk.bold(device.name)}`);
 
   // Start a process to open an emulator
-  const emulatorProcess = child_process.spawn(
+  const emulatorProcess = spawn(
     whichEmulator(),
     [
       `@${device.name}`,
@@ -57,16 +66,21 @@ export async function startDeviceAsync(
 
   return new Promise<AndroidDeviceBridge.Device>((resolve, reject) => {
     const waitTimer = setInterval(async () => {
-      const bootedDevices = await AndroidDeviceBridge.getAttachedDevicesAsync();
-      const connected = bootedDevices.find(({ name }) => name === device.name);
-      if (connected) {
-        const isBooted = await AndroidDeviceBridge.isBootAnimationCompleteAsync(connected.pid);
-        if (isBooted) {
-          stopWaiting();
-          resolve(connected);
+      try {
+        const bootedDevices = await AndroidDeviceBridge.getAttachedDevicesAsync();
+        const connected = bootedDevices.find(({ name }) => name === device.name);
+        if (connected) {
+          const isBooted = await AndroidDeviceBridge.isBootAnimationCompleteAsync(connected.pid);
+          if (isBooted) {
+            stopWaiting();
+            resolve(connected);
+          }
         }
+      } catch (error) {
+        stopWaiting();
+        reject(error);
       }
-    }, 1000);
+    }, interval);
 
     // Reject command after timeout
     const maxTimer = setTimeout(() => {
@@ -74,7 +88,7 @@ export async function startDeviceAsync(
       stopWaitingAndReject(
         `It took too long to start the Android emulator: ${device.name}. You can try starting the emulator manually from the terminal with: ${manualCommand}`
       );
-    }, EMULATOR_MAX_WAIT_TIMEOUT);
+    }, timeout);
 
     const stopWaiting = () => {
       clearTimeout(maxTimer);

@@ -1,7 +1,10 @@
 import { execSync } from 'child_process';
 
+import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import * as SimControl from './simctl';
+
+type DeviceContext = Partial<Pick<SimControl.Device, 'osType'>>;
 
 /**
  * Returns the default device stored in the Simulator.app settings.
@@ -19,28 +22,36 @@ function getDefaultSimulatorDeviceUDID() {
   }
 }
 
-export async function getBestBootedSimulatorAsync({ osType }: { osType?: string }) {
-  const devices = await SimControl.getBootedSimulatorsAsync();
-  const simulatorOpenedByApp = devices[0];
-
+export async function getBestBootedSimulatorAsync({
+  osType,
+}: DeviceContext = {}): Promise<SimControl.Device | null> {
+  const [simulatorOpenedByApp] = await SimControl.getBootedSimulatorsAsync();
   // This should prevent opening a second simulator in the chance that default
   // simulator doesn't match what the Simulator app would open by default.
   if (
     simulatorOpenedByApp?.udid &&
     (!osType || (osType && simulatorOpenedByApp.osType === osType))
   ) {
+    Log.debug(`First booted simulator: ${simulatorOpenedByApp?.windowName}`);
     return simulatorOpenedByApp;
   }
 
+  Log.debug(`No booted simulator matching requirements (osType: ${osType}).`);
   return null;
 }
 
-export async function getBestUnbootedSimulatorAsync({
-  osType,
-}: {
-  osType?: string;
-}): Promise<string> {
+/**
+ * Returns the most preferred simulator UDID without booting anything.
+ *
+ * 1. If the simulator app defines a default simulator and the osType is not defined.
+ * 2. If the osType is defined, then check if the default udid matches the osType.
+ * 3. If all else fails, return the first found simulator.
+ */
+export async function getBestUnbootedSimulatorAsync({ osType }: DeviceContext = {}): Promise<
+  string | null
+> {
   const defaultId = getDefaultSimulatorDeviceUDID();
+  Log.debug(`Default simulator ID: ${defaultId}`);
 
   if (defaultId && !osType) {
     return defaultId;
@@ -65,15 +76,15 @@ export async function getBestUnbootedSimulatorAsync({
   }
 
   // Return first selectable device.
-  return simulators[0].udid;
+  return simulators[0]?.udid ?? null;
 }
 
 /**
- * Get all simulators supported by Expo (iOS only).
+ * Get all simulators supported by Expo Go (iOS only).
  */
-export async function getSelectableSimulatorsAsync({
-  osType = 'iOS',
-}: { osType?: string } = {}): Promise<SimControl.Device[]> {
+export async function getSelectableSimulatorsAsync({ osType = 'iOS' }: DeviceContext = {}): Promise<
+  SimControl.Device[]
+> {
   const simulators = await SimControl.getDevicesAsync();
   return simulators.filter((device) => device.isAvailable && device.osType === osType);
 }
@@ -84,7 +95,7 @@ export async function getSelectableSimulatorsAsync({
  * 2. Last simulator that was opened.
  * 3. First simulator that was opened.
  */
-export async function getBestSimulatorAsync({ osType }: { osType?: string }): Promise<string> {
+export async function getBestSimulatorAsync({ osType }: DeviceContext): Promise<string> {
   const simulatorOpenedByApp = await getBestBootedSimulatorAsync({ osType });
 
   if (simulatorOpenedByApp) {

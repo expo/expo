@@ -4,10 +4,11 @@ import spawnAsync from '@expo/spawn-async';
 import * as Log from '../../../log';
 import { waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
+import { Device } from './simctl';
 
 /** Open the Simulator.app and return when the system registers it as 'open'. */
 export async function ensureSimulatorAppRunningAsync(
-  device: { udid?: string },
+  device: Partial<Pick<Device, 'udid'>>,
   {
     maxWaitTime,
   }: {

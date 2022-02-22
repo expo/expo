@@ -3,10 +3,10 @@ import assert from 'assert';
 
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import * as AndroidDeviceBridge from '../platforms/android/AndroidDeviceBridge';
+import * as AndroidDeviceBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { WebpackBundlerDevServer } from './WebpackBundlerDevServer';
+import { MetroBundlerDevServer } from './metro/MetroBundlerDevServer';
+import { WebpackBundlerDevServer } from './webpack/WebpackBundlerDevServer';
 
 const devServers: BundlerDevServer[] = [];
 
@@ -78,6 +78,7 @@ export async function ensureWebDevServerRunningAsync(projectRoot: string) {
   ]);
 }
 
+/** Start all dev servers. */
 export async function startDevServersAsync(
   projectRoot: string,
   startOptions: MultiBundlerStartOptions
@@ -99,13 +100,14 @@ export async function startDevServersAsync(
   return exp;
 }
 
+/** Stop all servers including ADB. */
 export async function stopAsync(): Promise<void> {
   await Promise.race([
     Promise.allSettled([
       // Stop all dev servers
       ...devServers.map((server) => server.stopAsync()),
       // Stop ADB
-      AndroidDeviceBridge.server.stopAdbDaemonAsync(),
+      AndroidDeviceBridge.server.stopAsync(),
     ]),
     new Promise((resolve) => setTimeout(resolve, 2000, 'stopFailed')),
   ]);

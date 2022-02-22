@@ -2,7 +2,6 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
-import { CommandError } from '../../utils/errors';
 import { getIpAddress } from '../../utils/ip';
 
 export interface CreateURLOptions {
@@ -29,10 +28,10 @@ export class UrlCreator {
     return url.toString();
   }
 
-  public constructDevClientUrl(opts?: CreateURLOptions) {
+  public constructDevClientUrl(opts?: CreateURLOptions): null | string {
     const protocol: string = opts?.scheme || this.defaults.scheme;
     if (!protocol) {
-      throw new CommandError('NO_DEV_CLIENT_SCHEME', 'No scheme specified for development client');
+      return null;
     }
 
     const manifestUrl = this.constructUrl({ ...opts, scheme: 'http' });

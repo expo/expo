@@ -1,21 +1,21 @@
 import { createSymbolicateMiddleware } from '@expo/dev-server/build/webpack/symbolicateMiddleware';
 import chalk from 'chalk';
+import fs from 'fs';
 import getenv from 'getenv';
 import http from 'http';
 import * as path from 'path';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
-import * as Log from '../../log';
-import { fileExistsAsync } from '../../utils/dir';
-import { WEB_HOST, WEB_PORT } from '../../utils/env';
-import { CommandError } from '../../utils/errors';
-import { getIpAddress } from '../../utils/ip';
-import { choosePortAsync } from '../../utils/port';
-import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
-import { UrlCreator } from './UrlCreator';
-import { ensureEnvironmentSupportsSSLAsync } from './webpack/ssl';
-import { clearWebProjectCacheAsync } from './webpack/WebProjectCache';
+import * as Log from '../../../log';
+import { fileExistsAsync } from '../../../utils/dir';
+import { WEB_HOST, WEB_PORT } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
+import { getIpAddress } from '../../../utils/ip';
+import { choosePortAsync } from '../../../utils/port';
+import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { UrlCreator } from '../UrlCreator';
+import { ensureEnvironmentSupportsSSLAsync } from './ssl';
 
 export type WebpackConfiguration = webpack.Configuration;
 
@@ -110,7 +110,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       return null;
     }
 
-    const { createDevServerMiddleware } = await import('./middleware/createDevServerMiddleware');
+    const { createDevServerMiddleware } = await import('../middleware/createDevServerMiddleware');
 
     const nativeMiddleware = createDevServerMiddleware({
       port,
@@ -380,4 +380,20 @@ async function loadConfigAsync(
 // - Include file path info comments in the bundle
 function isDebugModeEnabled(): boolean {
   return getenv.boolish('EXPO_WEB_DEBUG', false);
+}
+
+function getWebProjectCachePath(projectRoot: string, mode: string = 'development'): string {
+  return path.join(projectRoot, '.expo', 'web', 'cache', mode);
+}
+
+async function clearWebProjectCacheAsync(
+  projectRoot: string,
+  mode: string = 'development'
+): Promise<void> {
+  const cacheFolder = getWebProjectCachePath(projectRoot, mode);
+  try {
+    await fs.promises.rm(cacheFolder, { recursive: true, force: true });
+  } catch (e) {
+    Log.error(`Could not clear ${mode} web cache directory: ${e.message}`);
+  }
 }

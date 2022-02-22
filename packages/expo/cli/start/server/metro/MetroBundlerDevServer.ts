@@ -3,16 +3,13 @@ import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { getFreePortAsync } from '../../utils/port';
-import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from './BundlerDevServer';
-import { MetroTerminalReporter } from './metro/MetroTerminalReporter';
-import {
-  importExpoMetroConfigFromProject,
-  importMetroFromProject,
-} from './metro/resolveFromProject';
-import { createDevServerMiddleware } from './middleware/createDevServerMiddleware';
-import * as LoadingPageHandler from './middleware/LoadingPageHandler';
-import { UrlCreator } from './UrlCreator';
+import { getFreePortAsync } from '../../../utils/port';
+import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import * as LoadingPageHandler from '../middleware/LoadingPageHandler';
+import { UrlCreator } from '../UrlCreator';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -104,12 +101,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 }
 
-// From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
-/** The most generic possible setup for Metro bundler. */
+/**
+ * The most generic possible setup for Metro bundler.
+ * Partially copied out of `@expo/dev-server` but with the ability to use a custom logger.
+ */
 async function runMetroDevServerAsync(
   projectRoot: string,
   options: Omit<MetroDevServerOptions, 'logger'>

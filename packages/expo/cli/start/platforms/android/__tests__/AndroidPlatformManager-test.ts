@@ -1,23 +1,20 @@
 import * as Log from '../../../../log';
-import { AppleDeviceManager } from '../AppleDeviceManager';
-import { ApplePlatformManager } from '../ApplePlatformManager';
-import { assertSystemRequirementsAsync } from '../assertSystemRequirements';
-import * as SimControl from '../simctl';
+import { AndroidDeviceManager } from '../AndroidDeviceManager';
+import { AndroidPlatformManager } from '../AndroidPlatformManager';
 
 jest.mock('fs');
 jest.mock(`../../../../log`);
-jest.mock('../simctl');
-jest.mock(`../assertSystemRequirements`);
+jest.mock('../adb');
 jest.mock('../../ExpoGoInstaller');
-jest.mock('../ensureSimulatorAppRunning');
+// jest.mock('../ensureSimulatorAppRunning');
 
 const asMock = (fn: any): jest.Mock => fn;
 
 afterAll(() => {
-  AppleDeviceManager.resolveAsync = originalResolveDevice;
+  AndroidDeviceManager.resolveAsync = originalResolveDevice;
 });
 
-const originalResolveDevice = AppleDeviceManager.resolveAsync;
+const originalResolveDevice = AndroidDeviceManager.resolveAsync;
 
 jest.mock('@expo/config', () => ({
   getConfig: jest.fn(() => ({
@@ -32,18 +29,19 @@ jest.mock('@expo/config', () => ({
 
 describe('openAsync', () => {
   beforeEach(() => {
-    asMock(assertSystemRequirementsAsync).mockReset();
     asMock(Log.log).mockReset();
     asMock(Log.warn).mockReset();
     asMock(Log.error).mockReset();
-    AppleDeviceManager.resolveAsync = jest.fn(
-      async () => new AppleDeviceManager({ udid: '123', name: 'iPhone 13' } as any)
-    );
+    AndroidDeviceManager.resolveAsync = jest.fn(async () => {
+      const manager = new AndroidDeviceManager({ udid: '123', name: 'Pixel 5' } as any);
+      manager.isAppInstalledAsync = jest.fn(() => Promise.resolve(true));
+      return manager;
+    });
   });
 
   it(`opens a project in Expo Go`, async () => {
     const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new AndroidPlatformManager('/', 19000, {
       getCustomRuntimeUrl: jest.fn(),
       getDevServerUrl: jest.fn(),
       getExpoGoUrl,
@@ -53,19 +51,18 @@ describe('openAsync', () => {
       url: 'exp://localhost:19000/',
     });
 
-    expect(AppleDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
-    expect(assertSystemRequirementsAsync).toHaveBeenCalledTimes(1);
+    expect(AndroidDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
     expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
 
     // Logging
-    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
+    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*Pixel 5/));
     expect(Log.warn).toHaveBeenCalledTimes(0);
     expect(Log.error).toHaveBeenCalledTimes(0);
   });
 
   it(`opens a project in a web browser`, async () => {
     const getDevServerUrl = jest.fn(() => 'http://localhost:19000/');
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new AndroidPlatformManager('/', 19000, {
       getCustomRuntimeUrl: jest.fn(),
       getDevServerUrl,
       getExpoGoUrl: jest.fn(),
@@ -75,18 +72,17 @@ describe('openAsync', () => {
       url: 'http://localhost:19000/',
     });
 
-    expect(AppleDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
-    expect(assertSystemRequirementsAsync).toHaveBeenCalledTimes(1);
+    expect(AndroidDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
     expect(getDevServerUrl).toHaveBeenCalledTimes(1);
 
     // Logging
-    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
+    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*Pixel 5/));
     expect(Log.warn).toHaveBeenCalledTimes(0);
     expect(Log.error).toHaveBeenCalledTimes(0);
   });
   it(`opens a project in a custom development client`, async () => {
     const getCustomRuntimeUrl = jest.fn(() => 'custom://path');
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new AndroidPlatformManager('/', 19000, {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
@@ -100,19 +96,18 @@ describe('openAsync', () => {
     });
 
     // Internals
-    expect(AppleDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
+    expect(AndroidDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
     expect(getCustomRuntimeUrl).toHaveBeenCalledTimes(1);
-    expect(assertSystemRequirementsAsync).toHaveBeenCalledTimes(1);
 
     // Logging
-    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
+    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*Pixel 5/));
     expect(Log.warn).toHaveBeenCalledTimes(0);
     expect(Log.error).toHaveBeenCalledTimes(0);
   });
 
   it(`opens a project in a custom development client using app identifier`, async () => {
     const getCustomRuntimeUrl = jest.fn(() => null);
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new AndroidPlatformManager('/', 19000, {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
@@ -120,26 +115,49 @@ describe('openAsync', () => {
     manager._getAppIdResolver = jest.fn(() => ({
       getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
     }));
-    SimControl.openAppIdAsync = jest.fn(async () => ({ status: 0 }));
 
     expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
-      url: 'dev.bacon.app',
+      url: 'dev.bacon.app/.MainActivity',
     });
 
     // Internals
-    expect(AppleDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
+    expect(AndroidDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
     expect(getCustomRuntimeUrl).toHaveBeenCalledTimes(1);
-    expect(assertSystemRequirementsAsync).toHaveBeenCalledTimes(1);
 
     // Logging
-    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
+    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*Pixel 5/));
     expect(Log.warn).toHaveBeenCalledTimes(0);
     expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+  it(`asserts the dev client is not installed when attempting to open`, async () => {
+    const getCustomRuntimeUrl = jest.fn(() => null);
+    AndroidDeviceManager.resolveAsync = jest.fn(async () => {
+      const manager = new AndroidDeviceManager({ udid: '123', name: 'Pixel 5' } as any);
+      manager.isAppInstalledAsync = jest.fn(() => Promise.resolve(false));
+      return manager;
+    });
 
-    // Native invocation
-    expect(SimControl.openAppIdAsync).toBeCalledWith(
-      { name: 'iPhone 13', udid: '123' },
-      { appId: 'dev.bacon.app' }
+    const manager = new AndroidPlatformManager('/', 19000, {
+      getCustomRuntimeUrl,
+      getDevServerUrl: jest.fn(),
+      getExpoGoUrl: jest.fn(),
+    });
+
+    manager._getAppIdResolver = jest.fn(() => ({
+      getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
+    }));
+
+    await expect(manager.openAsync({ runtime: 'custom' })).rejects.toThrowError(
+      /The development client/
     );
+
+    // Internals
+    expect(AndroidDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
+    expect(getCustomRuntimeUrl).toHaveBeenCalledTimes(1);
+
+    // Logging
+    expect(Log.log).toHaveBeenCalledTimes(0);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(Log.error).toHaveBeenCalledTimes(0);
   });
 });

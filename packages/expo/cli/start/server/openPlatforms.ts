@@ -6,6 +6,7 @@ import {
   getWebDevServer,
 } from './startDevServers';
 
+/** Launch the app on various platforms in parallel. */
 export async function openPlatformsAsync(
   projectRoot: string,
   options: Pick<Options, 'ios' | 'android' | 'web'>

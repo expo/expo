@@ -1,10 +1,9 @@
-import { CreateURLOptions } from '../../server/UrlCreator';
 import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
-import { Device } from './adb';
-import * as AndroidDeviceBridge from './adb';
 import { AndroidAppIdResolver } from './AndroidAppIdResolver';
 import { AndroidDeviceManager } from './AndroidDeviceManager';
+import { Device } from './adb';
+import * as AndroidDeviceBridge from './adb';
 
 interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   launchActivity?: string;
@@ -14,15 +13,18 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
   constructor(
     protected projectRoot: string,
     protected port: number,
-    getDevServerUrl: () => string | null,
-    getLoadingUrl: (opts: CreateURLOptions, platform: string) => string | null,
-    getManifestUrl: (props: { scheme?: string }) => string | null
+    options: {
+      /** Get the base URL for the dev server hosting this platform manager. */
+      getDevServerUrl: () => string | null;
+      /** Expo Go URL. */
+      getExpoGoUrl: () => string | null;
+      /** Dev Client URL. */
+      getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
+    }
   ) {
     super(projectRoot, {
       platform: 'android',
-      getDevServerUrl,
-      getLoadingUrl: () => getLoadingUrl({}, 'android'),
-      getNativeDevServerUrl: getManifestUrl,
+      ...options,
       resolveDeviceAsync: AndroidDeviceManager.resolveAsync,
     });
   }
@@ -37,7 +39,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     return super.openAsync(options, resolveSettings);
   }
 
-  protected getAppIdResolver(): AppIdResolver {
+  public _getAppIdResolver(): AppIdResolver {
     return new AndroidAppIdResolver(this.projectRoot);
   }
 

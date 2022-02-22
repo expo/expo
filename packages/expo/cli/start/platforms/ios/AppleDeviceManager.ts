@@ -25,7 +25,7 @@ const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
  * This is where any timeout related error handling should live.
  */
 async function ensureSimulatorOpenAsync(
-  { udid, osType }: { udid?: string; osType?: string } = {},
+  { udid, osType }: Partial<Pick<SimControl.Device, 'udid' | 'osType'>> = {},
   tryAgain: boolean = true
 ): Promise<SimControl.Device> {
   // Use a default simulator if none was specified
@@ -62,15 +62,16 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
 
   static async resolveAsync({
     device,
-    osType,
     shouldPrompt,
-  }: BaseResolveDeviceProps<Pick<SimControl.Device, 'udid'>> = {}): Promise<AppleDeviceManager> {
+  }: BaseResolveDeviceProps<
+    Pick<SimControl.Device, 'udid' | 'osType'>
+  > = {}): Promise<AppleDeviceManager> {
     if (shouldPrompt) {
-      const devices = await getSelectableSimulatorsAsync({ osType });
-      device = await promptAppleDeviceAsync(devices, osType);
+      const devices = await getSelectableSimulatorsAsync(device);
+      device = await promptAppleDeviceAsync(devices, device?.osType);
     }
 
-    const booted = await ensureSimulatorOpenAsync({ udid: device?.udid, osType });
+    const booted = await ensureSimulatorOpenAsync(device);
     return new AppleDeviceManager(booted);
   }
 

@@ -2,19 +2,20 @@ import { ExpoConfig } from '@expo/config-types';
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
+import resolveFrom from 'resolve-from';
 
 import * as Log from '../../log';
-import { UnimplementedError } from '../../utils/errors';
 import { FileNotifier } from '../../utils/FileNotifier';
+import { UnimplementedError } from '../../utils/errors';
+import { ProcessSettings } from '../ProcessSettings';
+import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
 import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
-import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
-import { ProcessSettings } from '../ProcessSettings';
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
+import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { ClassicManifestMiddleware } from './middleware/ClassicManifestMiddleware';
 import { ExpoGoManifestHandlerMiddleware } from './middleware/ExpoUpdatesManifestMiddleware';
-import { CreateURLOptions, UrlCreator } from './UrlCreator';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void);
@@ -221,10 +222,10 @@ export class BundlerDevServer {
     });
   }
 
-  public getNativeRuntimeUrl() {
+  public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
-      ? this.urlCreator.constructDevClientUrl()
-      : this.urlCreator.constructUrl({ scheme: 'exp' });
+      ? this.urlCreator.constructDevClientUrl(opts) ?? this.getDevServerUrl()
+      : this.urlCreator.constructUrl({ ...opts, scheme: 'exp' });
   }
 
   /** Get the URL for the running instance of the dev server. */
@@ -260,15 +261,39 @@ export class BundlerDevServer {
     return manager.openAsync({ runtime }, resolver);
   }
 
+  /** Should use the interstitial page for selecting which runtime to use. Exposed for testing. */
+  private shouldUseInterstitialPage(): boolean {
+    return (
+      process.env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
+      // TODO: >:0
+      // Checks if dev client is installed.
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
+    );
+  }
+
+  private getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS) {
+    if (this.shouldUseInterstitialPage()) {
+      const loadingUrl =
+        platform === 'emulator'
+          ? this.urlCreator.constructLoadingUrl({}, 'android')
+          : this.urlCreator.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
+      return loadingUrl;
+    }
+
+    return this.urlCreator.constructUrl({ scheme: 'exp' });
+  }
+
   private getPlatformManager(platform: keyof typeof PLATFORM_MANAGERS) {
     if (!this.platformManagers[platform]) {
       const Manager = PLATFORM_MANAGERS[platform];
       this.platformManagers[platform] = new Manager(
         this.projectRoot,
         this.getInstance()?.location?.port,
-        this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
-        this.urlCreator.constructLoadingUrl.bind(this.urlCreator),
-        this.urlCreator.constructUrl.bind(this.urlCreator)
+        {
+          getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
+          getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
+          getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
+        }
       );
     }
     return this.platformManagers[platform];
