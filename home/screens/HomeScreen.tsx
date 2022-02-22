@@ -16,7 +16,7 @@ import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import ThemedStatusBar from '../components/ThemedStatusBar';
-import { AllStackRoutes, HomeStackRoutes } from '../navigation/Navigation.types';
+import { HomeStackRoutes } from '../navigation/Navigation.types';
 import HistoryActions from '../redux/HistoryActions';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
