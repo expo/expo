@@ -2,10 +2,11 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Button from 'src/components/Button';
-import Configurator, { ConfiguratorChoiceType } from 'src/components/Configurator';
-import HeadingText from 'src/components/HeadingText';
-import MonoText from 'src/components/MonoText';
+
+import Button from '../../components/Button';
+import Configurator, { ConfiguratorChoiceType } from '../../components/Configurator';
+import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
 
 const openAuthSessionConfigurationChoices: ConfiguratorChoiceType[] = [
   {
