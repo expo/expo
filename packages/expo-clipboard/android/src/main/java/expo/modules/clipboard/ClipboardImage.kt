@@ -44,7 +44,7 @@ data class ImageResult(val base64Image: String, val width: Int, val height: Int)
  * @throws IOException
  * @throws SecurityException when app has no permission to access the content uri
  */
-internal suspend fun imageFromContentUriAsync(
+internal suspend fun imageFromContentUri(
   context: Context,
   imageUri: Uri,
   options: GetImageOptions
@@ -84,7 +84,7 @@ internal suspend fun imageFromContentUriAsync(
  * the [ClipboardFileProvider]
  * @return clip data ready to be shared by the [android.content.ClipboardManager]
  */
-internal suspend fun base64ImageToClipDataAsync(
+internal suspend fun clipDataFromBase64Image(
   context: Context,
   base64Image: String,
   clipboardCacheDir: File,
@@ -93,15 +93,13 @@ internal suspend fun base64ImageToClipDataAsync(
   val data = maybeStripBase64Prefix(base64Image)
   val bitmap = bitmapFromBase64String(data)
 
-  // 2. Create file in cache
-  val file = runInterruptible {
-    File(clipboardCacheDir, "${UUID.randomUUID()}.jpeg").also {
-      it.createNewFile()
-    }
+  // 2. Create file in cache dir, it will be overwritten if already exists
+  val file = File(clipboardCacheDir, "copied_image.jpeg").also {
+    it.ensureExists()
   }
 
   // 3. Write bitmap to the file
-  val fileStream = runInterruptible { FileOutputStream(file) }
+  val fileStream = runInterruptible { FileOutputStream(file, false) }
   BufferedOutputStream(fileStream).use { outputStream ->
     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
     runInterruptible { outputStream.flush() }
@@ -162,4 +160,12 @@ private fun maybeStripBase64Prefix(base64String: String): String =
   } else {
     base64String
   }
+
+/**
+ * Creates the file and all its parent directories if they don't exist already.
+ */
+private suspend fun File.ensureExists() {
+  parentFile?.mkdirs()
+  runInterruptible(Dispatchers.IO) { createNewFile() }
+}
 // endregion
