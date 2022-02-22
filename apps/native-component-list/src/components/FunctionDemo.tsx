@@ -14,6 +14,8 @@ import HeadingText from './HeadingText';
 import MonoText from './MonoText';
 import MonoTextWithCountdown from './MonoTextWithCountdown';
 
+const STRING_TRIM_THRESHOLD = 300;
+
 function isPlatformSupported(platforms: string[] = []): boolean {
   return platforms.length === 0 || platforms.includes(Platform.OS);
 }
@@ -223,13 +225,40 @@ export default function FunctionDemo({
       {result && (
         <>
           <MonoTextWithCountdown onCountdownEnded={() => setResult(undefined)}>
-            {typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)}
+            {renderResult(result)}
           </MonoTextWithCountdown>
           {renderAdditionalResult?.(result)}
         </>
       )}
     </>
   );
+}
+
+function renderResult(result: unknown) {
+  if (result === null) {
+    return 'null';
+  }
+
+  if (result === 'undefined') {
+    return 'undefined';
+  }
+
+  if (typeof result === 'object') {
+    const trimmedResult = Object.fromEntries(
+      Object.entries(result).map(([key, value]) => [
+        key,
+        typeof value === 'string' && value.length > STRING_TRIM_THRESHOLD
+          ? `${value.substring(0, STRING_TRIM_THRESHOLD)}...`
+          : value,
+      ])
+    );
+
+    return JSON.stringify(trimmedResult, null, 2);
+  }
+
+  return String(result).length > STRING_TRIM_THRESHOLD
+    ? `${String(result).substring(0, STRING_TRIM_THRESHOLD)}...`
+    : String(result);
 }
 
 function ActionButton({
