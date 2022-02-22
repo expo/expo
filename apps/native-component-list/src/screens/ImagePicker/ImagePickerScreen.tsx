@@ -165,31 +165,31 @@ const FUNCTIONS_DESCRIPTIONS: FunctionDescription[] = [
   {
     name: 'requestMediaLibraryPermissionsAsync',
     parameters: [{ name: 'writeOnly', type: 'boolean', initial: false }],
-    action: (writeOnly: boolean) => ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly),
+    actions: (writeOnly: boolean) => ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly),
   },
   {
     name: 'getMediaLibraryPermissionsAsync',
     parameters: [{ name: 'writeOnly', type: 'boolean', initial: false }],
-    action: (writeOnly: boolean) => ImagePicker.getMediaLibraryPermissionsAsync(writeOnly),
+    actions: (writeOnly: boolean) => ImagePicker.getMediaLibraryPermissionsAsync(writeOnly),
   },
   {
     name: 'requestCameraPermissionsAsync',
-    action: () => ImagePicker.requestCameraPermissionsAsync(),
+    actions: () => ImagePicker.requestCameraPermissionsAsync(),
   },
   {
     name: 'getCameraPermissionsAsync',
-    action: () => ImagePicker.getCameraPermissionsAsync(),
+    actions: () => ImagePicker.getCameraPermissionsAsync(),
   },
   {
     name: 'launchImageLibraryAsync',
     parameters: LAUNCH_PICKER_PARAMETERS,
-    action: (options: ImagePicker.ImagePickerOptions) =>
+    actions: (options: ImagePicker.ImagePickerOptions) =>
       ImagePicker.launchImageLibraryAsync(options),
   },
   {
     name: 'launchCameraAsync',
     parameters: LAUNCH_PICKER_PARAMETERS,
-    action: (options: ImagePicker.ImagePickerOptions) => ImagePicker.launchCameraAsync(options),
+    actions: (options: ImagePicker.ImagePickerOptions) => ImagePicker.launchCameraAsync(options),
   },
 ];
 
