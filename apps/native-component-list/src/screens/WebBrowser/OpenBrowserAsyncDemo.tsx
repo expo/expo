@@ -2,6 +2,7 @@ import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 
 import FunctionDemo from '../../components/FunctionDemo';
+import Colors from '../../constants/Colors';
 
 const URL = 'https://blog.expo.dev/expo-sdk-44-4c4b8306584a';
 
@@ -20,25 +21,46 @@ export default function OpenBrowserAsyncDemo() {
           type: 'object',
           name: 'options',
           properties: [
-            // {
-            //   name: 'toolbarColor',
-            //   title: `Use toolbarColor (${Colors.tintColor})`,
-            //   initial: false,
-            //   resolve: (checked) => (checked ? Colors.tintColor : undefined),
-            // },
-            // {
-            //   name: 'secondaryToolbarColor',
-            //   title: `Use secondaryToolbarColor (${Colors.highlightColor})`,
-            //   platforms: ['android'],
-            //   initial: false,
-            //   resolve: (checked) => (checked ? Colors.highlightColor : undefined),
-            // },
-            // {
-            //   name: 'controlsColor',
-            //   title: `Use controlsColor (${Colors.headerTitle})`,
-            //   initial: false,
-            //   resolve: (checked) => (checked ? Colors.headerTitle : undefined),
-            // },
+            {
+              name: 'toolbarColor',
+              type: 'enum',
+              values: [
+                {
+                  name: 'undefined',
+                  value: undefined,
+                },
+                {
+                  name: `"${Colors.tintColor}"`,
+                  value: Colors.tintColor,
+                },
+              ],
+            },
+            {
+              name: 'secondaryToolbarColor',
+              platforms: ['android'],
+              type: 'enum',
+              values: [
+                {
+                  name: 'undefined',
+                  value: undefined,
+                },
+                {
+                  name: `"${Colors.highlightColor}"`,
+                  value: Colors.highlightColor,
+                },
+              ],
+            },
+            {
+              name: 'controlsColor',
+              type: 'enum',
+              values: [
+                {
+                  name: 'undefined',
+                  value: undefined,
+                },
+                { name: `"${Colors.headerTitle}"`, value: Colors.headerTitle },
+              ],
+            },
             {
               type: 'boolean',
               name: 'showTitle',

@@ -40,10 +40,10 @@ function FunctionSignature({
         switch (parameter.type) {
           case 'object':
             // eslint-disable-next-line no-case-declarations
-            const entries = Object.entries(args[idx])
+            const entries = Object.entries(args[idx] ?? {})
               .map(([key, value]) => {
                 const property = parameter.properties.find((property) => property.name === key);
-                if (!isPlatformSupported(property?.platforms)) {
+                if (!isPlatformSupported(property?.platforms) || value === undefined) {
                   return;
                 }
                 if (property?.type === 'enum') {

@@ -24,7 +24,7 @@ export type EnumParameter = Parameter & {
   type: 'enum';
   values: {
     name: string;
-    value: string | number | Tuple;
+    value: undefined | string | number | Tuple;
   }[];
 };
 
@@ -46,6 +46,6 @@ export type ConstantParameter = Parameter & {
 
 export type FunctionParameter = PrimitiveParameter | ObjectParameter | ConstantParameter;
 
-export type PrimitiveArgument = boolean | number | string | Tuple;
+export type PrimitiveArgument = boolean | number | string | Tuple | undefined;
 
 export type FunctionArgument = PrimitiveArgument | Record<string, PrimitiveArgument>;
