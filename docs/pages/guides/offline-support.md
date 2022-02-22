@@ -41,4 +41,4 @@ Images with paths matching the given patterns will be bundled into your native b
 
 ## Listen for changes in network availability
 
-React Native exposes the [NetInfo](https://reactnative.dev/docs/netinfo.html) API, which informs you if your device's reachability changes. You may want to change your UI (e.g. show a banner, or disable some functions) if you notice that there's no connection available.
+The React Native community created the [NetInfo](@react-native-community/netinfo) API, which informs you if your device's reachability changes. You may want to change your UI (e.g. show a banner, or disable some functions) if you notice that there's no connection available.
