@@ -29,6 +29,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
           { name: '[1, 1]', value: [1, 1] },
           { name: '[1, 2]', value: [1, 2] },
         ],
+        platforms: ['android'],
       },
       { name: 'quality', type: 'number', values: [0, 0.2, 0.7, 1.0] },
       { name: 'exif', type: 'boolean', initial: false },
@@ -36,6 +37,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
       {
         name: 'videoExportPreset',
         type: 'enum',
+        platforms: ['ios'],
         values: [
           {
             name: 'VideoExportPreset.Passthrough',
@@ -86,6 +88,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
       {
         name: 'videoQuality',
         type: 'enum',
+        platforms: ['ios'],
         values: [
           {
             name: 'UIImagePickerControllerQualityType.High',
@@ -113,11 +116,12 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
           },
         ],
       },
-      { name: 'allowsMultipleSelection', type: 'boolean', initial: false },
+      { name: 'allowsMultipleSelection', type: 'boolean', initial: false, platforms: ['web'] },
       { name: 'videoMaxDuration', type: 'number', values: [0, 10, 60] },
       {
         name: 'presentationStyle',
         type: 'enum',
+        platforms: ['ios'],
         values: [
           {
             name: 'UIImagePickerPresentationStyle.FullScreen',

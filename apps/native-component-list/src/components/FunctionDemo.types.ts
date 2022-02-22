@@ -2,6 +2,7 @@ export type Tuple = [number, number];
 
 export type Parameter = {
   name: string;
+  platforms?: ('android' | 'ios' | 'web')[];
 };
 
 export type BooleanParameter = Parameter & {

@@ -6,18 +6,6 @@ import FunctionDemo from '../../components/FunctionDemo';
 const URL = 'https://blog.expo.dev/expo-sdk-44-4c4b8306584a';
 
 export default function OpenBrowserAsyncDemo() {
-  const openBrowser = async (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) =>
-    WebBrowser.openBrowserAsync(url, openOptions);
-  const dismissBrowser = async () => WebBrowser.dismissBrowser();
-  const openAndDismiss = async (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
-    await WebBrowser.openBrowserAsync(url, openOptions);
-    return WebBrowser.dismissBrowser();
-  };
-  const openTwice = async (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
-    WebBrowser.openBrowserAsync(url, openOptions);
-    return WebBrowser.openBrowserAsync(url, openOptions);
-  };
-
   return (
     <FunctionDemo
       namespace="WebBrowser"
@@ -84,10 +72,22 @@ export default function OpenBrowserAsyncDemo() {
         },
       ]}
       actions={[
-        { name: 'Open', action: openBrowser },
-        { name: 'Open and dismiss', action: openAndDismiss },
-        { name: 'Open twice', action: openTwice },
-        { name: 'Dismiss (no-op)', action: dismissBrowser },
+        { name: 'Open', action: WebBrowser.openBrowserAsync },
+        {
+          name: 'Open and dismiss',
+          action: async (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
+            await WebBrowser.openBrowserAsync(url, openOptions);
+            return WebBrowser.dismissBrowser();
+          },
+        },
+        {
+          name: 'Open twice',
+          action: (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
+            WebBrowser.openBrowserAsync(url, openOptions);
+            return WebBrowser.openBrowserAsync(url, openOptions);
+          },
+        },
+        { name: 'Dismiss (no-op)', action: async () => WebBrowser.dismissBrowser() },
       ]}
     />
   );

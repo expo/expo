@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Platform } from 'react-native';
 
 import { Colors } from '../constants';
 import FunctionConfigurator from './FunctionConfigurator';
 import {
+  ConstantParameter,
   FunctionArgument,
   FunctionParameter,
   PrimitiveArgument,
@@ -12,6 +13,10 @@ import {
 import HeadingText from './HeadingText';
 import MonoText from './MonoText';
 import MonoTextWithCountdown from './MonoTextWithCountdown';
+
+function isPlatformSupported(platforms: string[] = []): boolean {
+  return platforms.length === 0 || platforms.includes(Platform.OS);
+}
 
 function FunctionSignature({
   namespace,
@@ -27,17 +32,24 @@ function FunctionSignature({
   const renderArguments = () => {
     return parameters
       .map((parameter, idx) => {
+        if (!isPlatformSupported(parameter.platforms)) {
+          return;
+        }
         switch (parameter.type) {
           case 'object':
             // eslint-disable-next-line no-case-declarations
             const entries = Object.entries(args[idx])
               .map(([key, value]) => {
                 const property = parameter.properties.find((property) => property.name === key);
+                if (!isPlatformSupported(property?.platforms)) {
+                  return;
+                }
                 if (property?.type === 'enum') {
                   return `${key}: ${property.values.find((v) => v.value === value)?.name}`;
                 }
                 return `${key}: ${property?.type === 'string' ? `"${value}"` : value}`;
               })
+              .filter((entry) => !!entry)
               .join(',\n  ');
 
             return `{\n  ${entries}\n}`;
@@ -49,6 +61,7 @@ function FunctionSignature({
             return String(args[idx]);
         }
       })
+      .filter((arg) => !!arg)
       .join(', ');
   };
 
@@ -59,7 +72,10 @@ function FunctionSignature({
   );
 }
 
-function initialArgumentFromParameter(parameter: PrimitiveParameter) {
+function initialArgumentFromParameter(parameter: PrimitiveParameter | ConstantParameter) {
+  if (!isPlatformSupported(parameter.platforms)) {
+    return;
+  }
   switch (parameter.type) {
     case 'boolean':
       return parameter.initial;
@@ -68,6 +84,8 @@ function initialArgumentFromParameter(parameter: PrimitiveParameter) {
       return parameter.values[0];
     case 'enum':
       return parameter.values[0].value;
+    case 'constant':
+      return parameter.value;
   }
 }
 
@@ -80,8 +98,6 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
             return [property.name, initialArgumentFromParameter(property)];
           })
         );
-      case 'constant':
-        return parameter.value;
       default:
         return initialArgumentFromParameter(parameter);
     }
@@ -90,7 +106,7 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
 
 /**
  * Hook that handles function arguments' values.
- * Initial value is constructed based on the description of each
+ * Initial value is constructed based on the description of each parameter.
  */
 function useArguments(
   parameters: FunctionParameter[]

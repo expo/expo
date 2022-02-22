@@ -1,6 +1,6 @@
 import Checkbox from 'expo-checkbox';
 import React, { useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 
 import Colors from '../constants/Colors';
 import {
@@ -8,6 +8,7 @@ import {
   FunctionArgument,
   FunctionParameter,
   NumberParameter,
+  Parameter,
   PrimitiveArgument,
   PrimitiveParameter,
   StringParameter,
@@ -59,9 +60,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
+    position: 'relative',
   },
   choiceLabel: {
     fontSize: 12,
+  },
+  choiceLabelDisabled: {
+    textDecorationLine: 'line-through',
   },
   checkbox: {
     marginLeft: 5,
@@ -79,17 +84,63 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'white',
   },
+  enumButtonDisabled: {
+    backgroundColor: '#CCD6DD',
+  },
+
+  platformsContainer: {
+    position: 'absolute',
+    top: -2,
+    left: 0,
+    flexDirection: 'row',
+  },
+  platform: {
+    borderRadius: 10,
+    paddingHorizontal: 3,
+    marginRight: 2,
+  },
+  platformandroid: {
+    backgroundColor: '#79bf2d',
+  },
+  platformios: {
+    backgroundColor: '#909090',
+  },
+  platformweb: {
+    backgroundColor: '#4b4bff',
+  },
+  platformText: {
+    fontSize: 6,
+    color: 'white',
+  },
 });
 
 type ConfiguratorChoiceProps = {
   name: string | [string, string];
+  platforms?: Parameter['platforms'];
   type: PrimitiveParameter['type'];
   values?: (StringParameter | NumberParameter | EnumParameter)['values'];
   value: PrimitiveArgument;
   onChange: (name: string | [string, string], value: PrimitiveArgument) => void;
 };
 
-function ConfiguratorChoice({ name, value, onChange, type, values }: ConfiguratorChoiceProps) {
+function PlatformIndicator({ platform }: { platform: 'android' | 'ios' | 'web' }) {
+  return (
+    <View style={[styles.platform, styles[`platform${platform}`]]}>
+      <Text style={styles.platformText}>{platform}</Text>
+    </View>
+  );
+}
+
+function ConfiguratorChoice({
+  name,
+  value,
+  onChange,
+  type,
+  values,
+  platforms = [],
+}: ConfiguratorChoiceProps) {
+  const platformNotSupported =
+    platforms.length > 0 && !(platforms as string[]).includes(Platform.OS);
   const onChangeCallback = useCallback(
     (newValue: PrimitiveArgument) => onChange(name, newValue),
     [name, onChange]
@@ -97,15 +148,24 @@ function ConfiguratorChoice({ name, value, onChange, type, values }: Configurato
 
   return (
     <View style={styles.choice}>
-      <Text style={styles.choiceLabel}>{Array.isArray(name) ? name.join('.') : name}</Text>
+      <View style={styles.platformsContainer}>
+        {platforms.map((platform) => (
+          <PlatformIndicator key={platform} platform={platform} />
+        ))}
+      </View>
+      <Text style={[styles.choiceLabel, platformNotSupported && styles.choiceLabelDisabled]}>
+        {Array.isArray(name) ? name.join('.') : name}
+      </Text>
       {type === 'boolean' ? (
         <Checkbox
+          disabled={platformNotSupported}
           style={styles.checkbox}
           onValueChange={onChangeCallback}
           value={value as boolean}
         />
       ) : (
         <EnumButton
+          disabled={platformNotSupported}
           type={type}
           value={value as PrimitiveArgument}
           onChange={onChangeCallback}
@@ -121,11 +181,13 @@ function EnumButton({
   onChange,
   values,
   type,
+  disabled,
 }: {
   value: PrimitiveArgument;
   onChange: (value: PrimitiveArgument) => void;
   values: StringParameter['values'] | NumberParameter['values'] | EnumParameter['values'];
   type: PrimitiveParameter['type'];
+  disabled?: boolean;
 }) {
   const handleOnPress = useCallback(() => {
     const newValue =
@@ -137,8 +199,8 @@ function EnumButton({
   }, [onChange, value, values]);
 
   return (
-    <View style={styles.enumButton}>
-      <TouchableOpacity onPress={handleOnPress}>
+    <View style={[styles.enumButton, disabled && styles.enumButtonDisabled]}>
+      <TouchableOpacity disabled={disabled} onPress={handleOnPress}>
         <Text style={styles.enumButtonText}>
           {type === 'enum'
             ? (values as EnumParameter['values']).find((element) => element.value === value)?.name
