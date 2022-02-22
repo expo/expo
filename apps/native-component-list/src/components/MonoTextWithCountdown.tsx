@@ -6,17 +6,17 @@ import Colors from '../constants/Colors';
 
 type Props = PropsWithChildren<{
   /**
-   * Time after this component would disappear.
+   * Countdown timeout.
    */
   timeout?: number;
 
   /**
-   * Called when the component disappears.
+   * Called when the countdown ended or close button is pressed.
    */
-  onDisappear: () => void;
+  onCountdownEnded: () => void;
 }>;
 
-function DisappearingMonoText({ children, timeout = 8000, onDisappear }: Props) {
+function MonoTextWithCountdown({ children, timeout = 8000, onCountdownEnded }: Props) {
   const animatedValue = useRef(new Animated.Value(1)).current;
   const [countdownInterrupted, setCountdownInterrupted] = useState(false);
   const [valueUponPause, setValueUponPause] = useState(1);
@@ -33,15 +33,15 @@ function DisappearingMonoText({ children, timeout = 8000, onDisappear }: Props) 
         useNativeDriver: false,
       }).start(({ finished }) => {
         if (finished) {
-          onDisappear();
+          onCountdownEnded();
         }
       });
     }
-  }, [countdownInterrupted, valueUponPause, onDisappear]);
+  }, [countdownInterrupted, valueUponPause, onCountdownEnded]);
 
-  const triggerDisappear = useCallback(() => {
-    onDisappear();
-  }, [onDisappear]);
+  const triggerCountdownEnd = useCallback(() => {
+    onCountdownEnded();
+  }, [onCountdownEnded]);
   const toggleCountdown = useCallback(() => {
     setCountdownInterrupted((previousValue) => !previousValue);
   }, [countdownInterrupted]);
@@ -51,7 +51,7 @@ function DisappearingMonoText({ children, timeout = 8000, onDisappear }: Props) 
       <Code style={styles.monoText}>{children}</Code>
       <View style={styles.buttonsContainer}>
         <IconButton icon={countdownInterrupted ? '▶️' : '⏸'} onPress={toggleCountdown} />
-        {countdownInterrupted && <IconButton icon="❌" onPress={triggerDisappear} />}
+        <IconButton icon="❌" onPress={triggerCountdownEnd} />
       </View>
       <CountdownBar width={animatedValue} />
     </View>
@@ -124,4 +124,4 @@ function CountdownBar({ width }: CountdownBarProps) {
   );
 }
 
-export default DisappearingMonoText;
+export default MonoTextWithCountdown;
