@@ -75,9 +75,6 @@ function FunctionSignature({
 }
 
 function initialArgumentFromParameter(parameter: PrimitiveParameter | ConstantParameter) {
-  if (!isPlatformSupported(parameter.platforms)) {
-    return;
-  }
   switch (parameter.type) {
     case 'boolean':
       return parameter.initial;
