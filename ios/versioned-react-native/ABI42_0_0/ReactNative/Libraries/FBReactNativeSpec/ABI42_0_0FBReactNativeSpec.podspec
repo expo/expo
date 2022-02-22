@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/Libraries/ABI42_0_0FBReactNativeSpec\" \"$(PODS_ROOT)/Folly\""
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/Libraries/ABI42_0_0FBReactNativeSpec\" \"$(PODS_ROOT\)\/RCT-Folly\""
                              }
 
   s.dependency "RCT-Folly", folly_version
