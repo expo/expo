@@ -1,4 +1,4 @@
-import { HomeFilledIcon, HomeIcon, SettingsFilledIcon } from '@expo/styleguide-native';
+import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import {
