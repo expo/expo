@@ -22,7 +22,11 @@ target 'ExpoKitApp' do
       'expo-in-app-purchases',
       'expo-payments-stripe',
       'expo-module-template',
-      'expo-image'
+      'expo-image',
+      'expo-dev-menu',
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+      'expo-dev-client'
     ],
   )
 
