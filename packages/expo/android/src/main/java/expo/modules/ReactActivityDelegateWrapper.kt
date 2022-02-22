@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.ViewGroup
 import androidx.collection.ArrayMap
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -49,9 +50,20 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    return reactActivityHandlers.asSequence()
+    val rootViewContainer = reactActivityHandlers.asSequence()
+      .mapNotNull { it.createReactRootViewContainer(activity) }
+      .firstOrNull()
+
+    val rootView = reactActivityHandlers.asSequence()
       .mapNotNull { it.createReactRootView(activity) }
       .firstOrNull() ?: invokeDelegateMethod("createRootView")
+
+    if (rootViewContainer != null) {
+      rootViewContainer.addView(rootView, ViewGroup.LayoutParams.MATCH_PARENT)
+      return rootViewContainer
+    }
+
+    return rootView
   }
 
   override fun getReactNativeHost(): ReactNativeHost {

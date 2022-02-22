@@ -26,8 +26,8 @@ object DevMenuPackageDelegate {
   fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
     listOf(
       object : ReactActivityHandler {
-        override fun createReactRootView(activity: Activity): ReactRootView? {
-          return DevMenuEnabledReactRootView(activity as Context)
+        override fun createReactRootViewContainer(activity: Activity): ReactRootView {
+          return DevMenuReactRootViewContainer(activity as Context)
         }
 
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

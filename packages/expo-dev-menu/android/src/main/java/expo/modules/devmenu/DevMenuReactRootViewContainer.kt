@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.MotionEvent
 import com.facebook.react.ReactRootView
 
-class DevMenuEnabledReactRootView(context: Context): ReactRootView(context) {
+class DevMenuReactRootViewContainer(context: Context): ReactRootView(context) {
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
     DevMenuManager.onTouchEvent(ev)
     return super.onTouchEvent(ev)
