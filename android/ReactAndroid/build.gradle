@@ -333,6 +333,7 @@ def reactNativeInspectorProxyPort() {
 }
 
 def reactNativeArchitectures() {
+    if (System.getenv('NDK_ABI_FILTERS')) { return System.getenv('NDK_ABI_FILTERS'); }
     def isDebug = gradle.startParameter.taskRequests.any {
         it.args.any { it.endsWith("Debug") }
     }

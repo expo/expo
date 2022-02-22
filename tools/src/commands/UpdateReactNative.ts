@@ -49,14 +49,14 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
 
   logger.info(
     '📇 Transforming',
-    chalk.magenta('Application.mk'),
+    chalk.magenta('ReactAndroid/build.gradle'),
     'to make use of',
     chalk.yellow('NDK_ABI_FILTERS')
   );
-  await transformFileAsync(REACT_APPLICATION_MK_PATH, [
+  await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
     {
-      find: /^APP_ABI := (.*)$/m,
-      replaceWith: 'APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$($1))',
+      find: /^(def reactNativeArchitectures\(\) {)/m,
+      replaceWith: `$1\n    if (System.getenv('NDK_ABI_FILTERS')) { return System.getenv('NDK_ABI_FILTERS'); }`,
     },
   ]);
   await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
