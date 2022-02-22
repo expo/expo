@@ -47,6 +47,81 @@ export function setString(text) {
     }
 }
 /**
+ * Gets the url from the user's clipboard.
+ *
+ * @returns A promise that fulfills to the url in the clipboard.
+ * @platform iOS
+ */
+export async function getUrlAsync() {
+    if (!ExpoClipboard.getUrlAsync) {
+        throw new UnavailabilityError('Clipboard', 'getUrlAsync');
+    }
+    return await ExpoClipboard.getUrlAsync();
+}
+/**
+ * Sets a url in the user's clipboard.
+ *
+ * @param url The url to save to the clipboard.
+ * @platform iOS
+ */
+export async function setUrlAsync(url) {
+    if (!ExpoClipboard.setUrlAsync) {
+        throw new UnavailabilityError('Clipboard', 'setUrlAsync');
+    }
+    return ExpoClipboard.setUrlAsync(url);
+}
+/**
+ * Returns whether the clipboard has a URL content.
+ *
+ * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
+ * @platform iOS
+ */
+export async function hasUrlAsync() {
+    if (!ExpoClipboard.hasUrlAsync) {
+        throw new UnavailabilityError('Clipboard', 'hasUrlAsync');
+    }
+    return await ExpoClipboard.hasUrlAsync();
+}
+/**
+ * Gets the image from the user's clipboard and returns it in the specified format.
+ *
+ * @param options A `GetImageOptions` object to specify the desired format of the image.
+ * @returns If there was an image in the clipboard, the promise resolves to
+ * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
+ * Otherwise, it resolves to `null`.
+ * @platform iOS
+ */
+export async function getImageAsync(options) {
+    if (!ExpoClipboard.getImageAsync) {
+        throw new UnavailabilityError('Clipboard', 'getImageAsync');
+    }
+    return await ExpoClipboard.getImageAsync(options);
+}
+/**
+ * Sets an image in the user's clipboard.
+ *
+ * @param base64Image Image encoded as a base64 string, without mime type.
+ * @platform iOS
+ */
+export async function setImageAsync(base64Image) {
+    if (!ExpoClipboard.setImageAsync) {
+        throw new UnavailabilityError('Clipboard', 'setImageAsync');
+    }
+    return ExpoClipboard.setImageAsync(base64Image);
+}
+/**
+ * Returns whether the clipboard has a image content.
+ *
+ * @returns A promise that fulfills to `true` if clipboard has image content, resolves to `false` otherwise.
+ * @platform iOS
+ */
+export async function hasImageAsync() {
+    if (!ExpoClipboard.hasImageAsync) {
+        throw new UnavailabilityError('Clipboard', 'hasImageAsync');
+    }
+    return ExpoClipboard.hasImageAsync();
+}
+/**
  * Adds a listener that will fire whenever the content of the user's clipboard changes. This method
  * is a no-op on Web.
  *

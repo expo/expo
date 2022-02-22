@@ -1,4 +1,5 @@
 import { EventEmitter, Subscription } from 'expo-modules-core';
+import { ClipboardImage, GetImageOptions } from './Clipboard.types';
 declare type ClipboardEvent = {
     /**
      * The new content of the user's clipboard.
@@ -30,6 +31,51 @@ export declare function setStringAsync(text: string): Promise<boolean>;
  * the user's clipboard. On iOS and Android, nothing is returned.
  */
 export declare function setString(text: string): void;
+/**
+ * Gets the url from the user's clipboard.
+ *
+ * @returns A promise that fulfills to the url in the clipboard.
+ * @platform iOS
+ */
+export declare function getUrlAsync(): Promise<string | null>;
+/**
+ * Sets a url in the user's clipboard.
+ *
+ * @param url The url to save to the clipboard.
+ * @platform iOS
+ */
+export declare function setUrlAsync(url: string): Promise<void>;
+/**
+ * Returns whether the clipboard has a URL content.
+ *
+ * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
+ * @platform iOS
+ */
+export declare function hasUrlAsync(): Promise<boolean>;
+/**
+ * Gets the image from the user's clipboard and returns it in the specified format.
+ *
+ * @param options A `GetImageOptions` object to specify the desired format of the image.
+ * @returns If there was an image in the clipboard, the promise resolves to
+ * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
+ * Otherwise, it resolves to `null`.
+ * @platform iOS
+ */
+export declare function getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null>;
+/**
+ * Sets an image in the user's clipboard.
+ *
+ * @param base64Image Image encoded as a base64 string, without mime type.
+ * @platform iOS
+ */
+export declare function setImageAsync(base64Image: string): Promise<void>;
+/**
+ * Returns whether the clipboard has a image content.
+ *
+ * @returns A promise that fulfills to `true` if clipboard has image content, resolves to `false` otherwise.
+ * @platform iOS
+ */
+export declare function hasImageAsync(): Promise<boolean>;
 /**
  * Adds a listener that will fire whenever the content of the user's clipboard changes. This method
  * is a no-op on Web.
