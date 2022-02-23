@@ -50,7 +50,7 @@ export declare const Button: {
         size?: "small" | "medium" | "large" | undefined;
         leading?: "large" | undefined;
         type?: "mono" | undefined;
-        weight?: "bold" | "normal" | "light" | "medium" | "thin" | "extralight" | "semibold" | "extrabold" | "black" | undefined;
+        weight?: "light" | "bold" | "normal" | "medium" | "thin" | "extralight" | "semibold" | "extrabold" | "black" | undefined;
     } & React.RefAttributes<import("react-native").TextProps>>;
 };
 declare type ScalingPressableProps = {

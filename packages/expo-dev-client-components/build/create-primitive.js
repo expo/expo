@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Appearance, AccessibilityInfo, StyleSheet, Dimensions, } from 'react-native';
+import { ThemePreferences } from './ThemeProvider';
 const selectorStore = createSelectorStore();
 export function create(component, config) {
     const styleFn = getStylesFn(config);
@@ -43,7 +44,11 @@ function createSelectorStore() {
     const activeSelectorMap = {};
     const dimensionMap = {};
     let listeners = [];
-    const currentColorScheme = Appearance.getColorScheme();
+    const currentPreference = ThemePreferences.getPreference();
+    let currentColorScheme = Appearance.getColorScheme();
+    if (currentPreference !== 'no-preference') {
+        currentColorScheme = currentPreference;
+    }
     if (currentColorScheme != null) {
         if (currentColorScheme === 'light') {
             activeSelectorMap['light'] = true;
@@ -56,19 +61,50 @@ function createSelectorStore() {
         notify(['light', 'dark']);
     }
     Appearance.addChangeListener(({ colorScheme }) => {
-        if (colorScheme === 'light') {
+        const currentPreference = ThemePreferences.getPreference();
+        if (currentPreference === 'no-preference') {
+            if (colorScheme === 'light') {
+                activeSelectorMap['light'] = true;
+                activeSelectorMap['dark'] = false;
+            }
+            else if (colorScheme === 'dark') {
+                activeSelectorMap['light'] = false;
+                activeSelectorMap['dark'] = true;
+            }
+            else {
+                delete activeSelectorMap['light'];
+                delete activeSelectorMap['dark'];
+            }
+            notify(['light', 'dark']);
+        }
+    });
+    ThemePreferences.addChangeListener((currentPreference) => {
+        if (currentPreference === 'light') {
             activeSelectorMap['light'] = true;
             activeSelectorMap['dark'] = false;
         }
-        else if (colorScheme === 'dark') {
+        else if (currentPreference === 'dark') {
             activeSelectorMap['light'] = false;
             activeSelectorMap['dark'] = true;
         }
         else {
-            delete activeSelectorMap['light'];
-            delete activeSelectorMap['dark'];
+            const currentColorScheme = Appearance.getColorScheme();
+            if (currentColorScheme != null) {
+                if (currentColorScheme === 'light') {
+                    activeSelectorMap['light'] = true;
+                    activeSelectorMap['dark'] = false;
+                }
+                else if (currentColorScheme === 'dark') {
+                    activeSelectorMap['light'] = false;
+                    activeSelectorMap['dark'] = true;
+                }
+                else {
+                    delete activeSelectorMap['light'];
+                    delete activeSelectorMap['dark'];
+                }
+            }
+            notify(['light', 'dark']);
         }
-        notify(['light', 'dark']);
     });
     const a11yTraits = [
         'boldTextChanged',
