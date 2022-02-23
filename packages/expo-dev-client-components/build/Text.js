@@ -1,6 +1,6 @@
 import { lightTheme } from '@expo/styleguide-native';
 import { Text as RNText, TextInput as RNTextInput } from 'react-native';
-import { create } from 'react-native-primitives';
+import { create } from './create-primitive';
 import { text, textDark } from './theme';
 export const Heading = create(RNText, {
     base: {
