@@ -68,12 +68,14 @@ repositories {
 
 dependencies {
   implementation project(':expo-modules-core')
-  api 'androidx.test:core:1.2.0'
-  api 'junit:junit:4.12'
-  api 'io.mockk:mockk:1.10.6'
+  api 'androidx.test:core:1.4.0'
+  api 'junit:junit:4.13.1'
+  api 'io.mockk:mockk:1.12.0'
+  api "org.robolectric:robolectric:4.5.1"
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
 }
