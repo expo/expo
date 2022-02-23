@@ -2,7 +2,6 @@ import * as React from 'react';
 const ThemeContext = React.createContext('no-preference');
 export function ThemePreferenceProvider({ children, theme }) {
     React.useEffect(() => {
-        console.log({ theme });
         ThemePreferences.notify(theme);
     }, [theme]);
     return React.createElement(ThemeContext.Provider, { value: theme }, children);
