@@ -10,6 +10,7 @@
 
 - Fixed failing download on Android when using `createDownloadResumable()`, because of an invalid Range header. ([#15934](https://github.com/expo/expo/pull/15934) by [@johanpoirier](https://github.com/johanpoirier))
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Fix URL scheme differences between iOS and Android. ([#16352](https://github.com/expo/expo/pull/16352) by [@hbiede](https://github.com/hbiede))
 
 ### 💡 Others
 
