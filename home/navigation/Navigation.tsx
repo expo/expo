@@ -108,12 +108,7 @@ function HomeStackScreen() {
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'Home',
-          ...Platform.select({
-            ios: {
-              headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
-            },
-          }),
+          headerShown: false,
         }}
       />
     </HomeStack.Navigator>

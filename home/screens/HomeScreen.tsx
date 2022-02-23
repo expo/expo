@@ -1,7 +1,10 @@
 import { StackScreenProps } from '@react-navigation/stack';
+import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
+import { CurrentUserDataFragment, useHome_CurrentUserQuery } from 'graphql/types';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Linking, Platform, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Config from '../api/Config';
@@ -24,6 +27,7 @@ import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
+import { spacing } from '@expo/styleguide-native';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -33,6 +37,7 @@ type Props = NavigationProps & {
   recentHistory: HistoryList;
   allHistory: HistoryList;
   isAuthenticated: boolean;
+  currentUser?: CurrentUserDataFragment;
 };
 
 type State = {
@@ -71,15 +76,21 @@ export default function HomeScreen(props: NavigationProps) {
       };
     }, [])
   );
+
+  const { data: currentUserData } = useHome_CurrentUserQuery();
+
   return (
-    <ProjectsView
-      {...props}
-      isFocused={isFocused}
-      dispatch={dispatch}
-      recentHistory={recentHistory}
-      allHistory={allHistory}
-      isAuthenticated={isAuthenticated}
-    />
+    <SafeAreaView style={{ flex: 1 }}>
+      <ProjectsView
+        {...props}
+        isFocused={isFocused}
+        dispatch={dispatch}
+        recentHistory={recentHistory}
+        allHistory={allHistory}
+        isAuthenticated={isAuthenticated}
+        currentUser={currentUserData?.viewer ?? undefined}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -123,6 +134,7 @@ class ProjectsView extends React.Component<Props, State> {
 
     return (
       <View style={styles.container}>
+        <HomeScreenHeader currentUser={this.props.currentUser} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
@@ -402,7 +414,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingTop: 5,
+    padding: spacing[4],
   },
   projectImageStyle: {
     borderWidth: 1,
