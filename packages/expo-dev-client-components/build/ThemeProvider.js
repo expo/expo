@@ -7,10 +7,13 @@ export function ThemePreferenceProvider({ children, theme }) {
     return React.createElement(ThemeContext.Provider, { value: theme }, children);
 }
 function createThemePreferenceStore() {
-    const listeners = [];
+    let listeners = [];
     let currentPreference = 'no-preference';
     function addChangeListener(listener) {
         listeners.push(listener);
+    }
+    function removeChangeListener(listener) {
+        listeners = listeners.filter((l) => l !== listener);
     }
     function notify(newPreference) {
         currentPreference = newPreference;
@@ -22,8 +25,22 @@ function createThemePreferenceStore() {
     return {
         getPreference,
         addChangeListener,
+        removeChangeListener,
         notify,
     };
+}
+export function useThemePreference() {
+    const [themePreference, setThemePreference] = React.useState(ThemePreferences.getPreference());
+    React.useEffect(() => {
+        function onPreferenceChange(preference) {
+            setThemePreference(preference);
+        }
+        ThemePreferences.addChangeListener(onPreferenceChange);
+        return () => {
+            ThemePreferences.removeChangeListener(onPreferenceChange);
+        };
+    }, []);
+    return themePreference;
 }
 export const ThemePreferences = createThemePreferenceStore();
 //# sourceMappingURL=ThemeProvider.js.map

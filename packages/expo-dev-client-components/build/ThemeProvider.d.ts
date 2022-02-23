@@ -6,9 +6,11 @@ declare type ThemeProviderProps = {
 };
 export declare function ThemePreferenceProvider({ children, theme }: ThemeProviderProps): JSX.Element;
 declare type ThemePreferenceChangeListener = (preference: ThemePreference) => void;
+export declare function useThemePreference(): ThemePreference;
 export declare const ThemePreferences: {
     getPreference: () => ThemePreference;
     addChangeListener: (listener: ThemePreferenceChangeListener) => void;
+    removeChangeListener: (listener: ThemePreferenceChangeListener) => void;
     notify: (newPreference: ThemePreference) => void;
 };
 export {};
