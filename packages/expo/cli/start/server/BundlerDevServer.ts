@@ -1,4 +1,3 @@
-import { ExpoConfig } from '@expo/config-types';
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
@@ -15,7 +14,7 @@ import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { ClassicManifestMiddleware } from './middleware/ClassicManifestMiddleware';
-import { ExpoGoManifestHandlerMiddleware } from './middleware/ExpoUpdatesManifestMiddleware';
+import { ExpoGoManifestHandlerMiddleware } from './middleware/ExpoGoManifestHandlerMiddleware';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void);
@@ -80,9 +79,9 @@ export class BundlerDevServer {
   }
 
   /** Ngrok instance for managing tunnel connections. */
-  private ngrok: AsyncNgrok | null = null;
+  protected ngrok: AsyncNgrok | null = null;
   /** Interfaces with the Expo 'Development Session' API. */
-  private devSession: DevelopmentSession | null = null;
+  protected devSession: DevelopmentSession | null = null;
   /** Http server and related info. */
   protected instance: DevServerInstance | null = null;
   /** Native platform interfaces for opening projects.  */
@@ -93,8 +92,6 @@ export class BundlerDevServer {
   constructor(
     /** Project root folder. */
     public projectRoot: string,
-    /** Single instance of the Expo config to pass around. */
-    protected exp: ExpoConfig,
     // TODO: Replace with custom scheme maybe...
     public isDevClient?: boolean
   ) {}
@@ -103,13 +100,17 @@ export class BundlerDevServer {
     this.instance = instance;
   }
 
-  protected getManifestMiddleware(
-    options: Pick<BundlerStartOptions, 'location' | 'minify' | 'mode' | 'forceManifestType'>
+  /** Get the manifest middleware function. Exposed for testing. */
+  public _getManifestMiddleware(
+    options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'forceManifestType'> = {}
   ) {
-    const Middleware = MIDDLEWARES[options.forceManifestType || 'classic'];
-    assert(Middleware, `Manifest middleware for type '${options.forceManifestType}' not found`);
+    const manifestType = options.forceManifestType || 'classic';
+    const Middleware = MIDDLEWARES[manifestType];
+    assert(Middleware, `Manifest middleware for type '${manifestType}' not found`);
+
+    const urlCreator = this.getUrlCreator();
     const middleware = new Middleware(this.projectRoot, {
-      constructUrl: this.urlCreator.constructUrl.bind(this.urlCreator),
+      constructUrl: urlCreator.constructUrl.bind(urlCreator),
       mode: options.mode,
       minify: options.minify,
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
@@ -124,7 +125,7 @@ export class BundlerDevServer {
 
   protected async postStartAsync(options: BundlerStartOptions) {
     if (options.location.hostType === 'tunnel' && !ProcessSettings.isOffline) {
-      await this.startTunnelAsync();
+      await this._startTunnelAsync();
     }
     await this.startDevSessionAsync();
 
@@ -140,12 +141,14 @@ export class BundlerDevServer {
     notifier.startObserving();
   }
 
-  protected async startTunnelAsync() {
+  /** Create ngrok instance and start the tunnel server. Exposed for testing. */
+  public async _startTunnelAsync(): Promise<AsyncNgrok | null> {
     const port = this.getInstance()?.location?.port;
-    if (!port) return;
+    if (!port) return null;
     Log.debug('[tunnel] connect to port: ' + port);
     this.ngrok = new AsyncNgrok(this.projectRoot, port);
     await this.ngrok.startAsync();
+    return this.ngrok;
   }
 
   protected async startDevSessionAsync() {
@@ -187,7 +190,7 @@ export class BundlerDevServer {
     method: 'reload' | 'devMenu' | 'sendDevCommand',
     params?: Record<string, any>
   ) {
-    this.instance?.messageSocket?.broadcast?.(method, params);
+    this.getInstance()?.messageSocket?.broadcast?.(method, params);
   }
 
   /** Get the running dev server instance. */
@@ -222,18 +225,23 @@ export class BundlerDevServer {
     });
   }
 
+  private getUrlCreator() {
+    assert(this.urlCreator, 'Dev server is not running.');
+    return this.urlCreator;
+  }
+
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
-      ? this.urlCreator.constructDevClientUrl(opts) ?? this.getDevServerUrl()
-      : this.urlCreator.constructUrl({ ...opts, scheme: 'exp' });
+      ? this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl()
+      : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
   }
 
   /** Get the URL for the running instance of the dev server. */
   public getDevServerUrl(options: { hostType?: 'localhost' } = {}): string | null {
-    if (!this.instance?.location) {
+    if (!this.getInstance()?.location) {
       return null;
     }
-    const { location } = this.instance;
+    const { location } = this.getInstance();
     if (options.hostType === 'localhost') {
       return `${location.protocol}://localhost:${location.port}`;
     }
@@ -261,17 +269,18 @@ export class BundlerDevServer {
     return manager.openAsync({ runtime }, resolver);
   }
 
-  /** Should use the interstitial page for selecting which runtime to use. Exposed for testing. */
-  private shouldUseInterstitialPage(): boolean {
+  /** Should use the interstitial page for selecting which runtime to use. */
+  protected shouldUseInterstitialPage(): boolean {
     return (
       process.env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
       // TODO: >:0
       // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher/package.json')
     );
   }
 
-  private getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS) {
+  /** Get the URL for opening in Expo Go. Exposed for testing. */
+  protected _getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS) {
     if (this.shouldUseInterstitialPage()) {
       const loadingUrl =
         platform === 'emulator'
@@ -283,7 +292,8 @@ export class BundlerDevServer {
     return this.urlCreator.constructUrl({ scheme: 'exp' });
   }
 
-  private getPlatformManager(platform: keyof typeof PLATFORM_MANAGERS) {
+  /** Exposed for testing. */
+  protected getPlatformManager(platform: keyof typeof PLATFORM_MANAGERS) {
     if (!this.platformManagers[platform]) {
       const Manager = PLATFORM_MANAGERS[platform];
       this.platformManagers[platform] = new Manager(
@@ -291,7 +301,7 @@ export class BundlerDevServer {
         this.getInstance()?.location?.port,
         {
           getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
-          getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
+          getExpoGoUrl: this._getExpoGoUrl.bind(this, platform),
           getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
         }
       );

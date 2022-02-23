@@ -5,7 +5,7 @@ import * as Log from '../../log';
 import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
 import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
-import { DeviceManager } from './DeviceManager';
+import type { DeviceManager } from './DeviceManager';
 
 /** Given a platform, appId, and sdkVersion, this module will ensure that Expo Go is up-to-date on the provided device. */
 export class ExpoGoInstaller<IDevice> {
@@ -15,29 +15,33 @@ export class ExpoGoInstaller<IDevice> {
 
   constructor(
     private platform: 'ios' | 'android',
+    // Ultimately this should be inlined since we know the platform.
     private appId: string,
     private sdkVersion?: string
   ) {}
 
+  /** Returns true if the installed app matching the previously provided `appId` is outdated. */
   async isClientOutdatedAsync(device: DeviceManager<IDevice>): Promise<boolean> {
     const installedVersion = await device.getAppVersionAsync(this.appId);
     if (!installedVersion) {
       return true;
     }
-    const version = await this.getExpectedClientVersionAsync();
+    const version = await this._getExpectedClientVersionAsync();
     return semver.lt(installedVersion, version);
   }
 
-  /** Returns the expected version of Expo Go given the project SDK Version. */
-  private async getExpectedClientVersionAsync(): Promise<string | null> {
+  /** Returns the expected version of Expo Go given the project SDK Version. Exposed for testing. */
+  public async _getExpectedClientVersionAsync(): Promise<string | null> {
     const versions = await getVersionsAsync();
-    const specificVersion = versions?.[this.sdkVersion]?.[`${this.platform}ClientVersion`];
+    // Like `sdkVersions['44.0.0']['androidClientVersion'] = '1.0.0'`
+    const specificVersion =
+      versions?.sdkVersions?.[this.sdkVersion]?.[`${this.platform}ClientVersion`];
     const latestVersion = versions[`${this.platform}Version`];
     return specificVersion ?? latestVersion ?? null;
   }
 
-  /** Returns a boolean indicating if Expo Go should be installed. */
-  async uninstallExpoGoIfOutdatedAsync(deviceManager: DeviceManager<IDevice>) {
+  /** Returns a boolean indicating if Expo Go should be installed. Returns `true` if the app was uninstalled. */
+  async uninstallExpoGoIfOutdatedAsync(deviceManager: DeviceManager<IDevice>): Promise<boolean> {
     const cacheId = `${this.platform}-${deviceManager.identifier}`;
 
     if (ExpoGoInstaller.cache[cacheId]) {

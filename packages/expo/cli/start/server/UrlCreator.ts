@@ -28,9 +28,15 @@ export class UrlCreator {
     return url.toString();
   }
 
+  /** Create a URI for launching in a native dev client. Returns `null` when no `scheme` can be resolved. */
   public constructDevClientUrl(opts?: CreateURLOptions): null | string {
     const protocol: string = opts?.scheme || this.defaults.scheme;
-    if (!protocol) {
+
+    if (
+      !protocol ||
+      // Prohibit the use of http(s) in dev client URIs since they'll never be valid.
+      ['http', 'https'].includes(protocol.toLowerCase())
+    ) {
       return null;
     }
 
@@ -38,6 +44,7 @@ export class UrlCreator {
     return `${protocol}://expo-development-client/?url=${encodeURIComponent(manifestUrl)}`;
   }
 
+  /** Create a generic URL. */
   public constructUrl(opts?: Partial<CreateURLOptions> | null): string {
     const urlComponents = this.getUrlComponents({
       ...this.defaults,
@@ -46,6 +53,7 @@ export class UrlCreator {
     return joinUrlComponents(urlComponents);
   }
 
+  /** Get the URL components from the Ngrok server URL. */
   private getTunnelUrlComponents(opts: Pick<CreateURLOptions, 'scheme'>) {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl();
     if (!tunnelUrl) {
@@ -135,7 +143,7 @@ function joinUrlComponents({
   // This is because Android React Native WebSocket implementation is not spec compliant and fails without a port:
   // `E unknown:ReactNative: java.lang.IllegalArgumentException: Invalid URL port: "-1"`
   // Invoked first in `metro-runtime/src/modules/HMRClient.js`
-  const validPort = port ?? '80';
+  const validPort = port || '80';
   const validProtocol = protocol ? `${protocol}://` : '';
 
   return `${validProtocol}${hostname}:${validPort}`;

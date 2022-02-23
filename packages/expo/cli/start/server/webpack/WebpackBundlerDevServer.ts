@@ -5,19 +5,35 @@ import getenv from 'getenv';
 import http from 'http';
 import * as path from 'path';
 import webpack from 'webpack';
-import WebpackDevServer from 'webpack-dev-server';
+import WebpackDevServer, {
+  Configuration as WebpackDevServerConfiguration,
+} from 'webpack-dev-server';
 
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
-import { WEB_HOST, WEB_PORT } from '../../../utils/env';
+import { WEB_HOST } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getIpAddress } from '../../../utils/ip';
 import { choosePortAsync } from '../../../utils/port';
+import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { ensureEnvironmentSupportsSSLAsync } from './ssl';
 
-export type WebpackConfiguration = webpack.Configuration;
+type AnyCompiler = webpack.Compiler | webpack.MultiCompiler;
+
+export type WebpackConfiguration = webpack.Configuration & {
+  devServer?: WebpackDevServerConfiguration;
+};
+
+function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer {
+  if (!(value instanceof WebpackDevServer)) {
+    throw new CommandError(
+      'WEBPACK',
+      value ? 'Expected Webpack dev server, found: ' + value : 'Webpack dev server not started yet.'
+    );
+  }
+}
 
 export class WebpackBundlerDevServer extends BundlerDevServer {
   get name(): string {
@@ -33,9 +49,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     method: string | 'reload' | 'devMenu' | 'sendDevCommand',
     params?: Record<string, any>
   ): void {
-    if (!this.instance?.server || !(this.instance?.server instanceof WebpackDevServer)) {
+    if (!this.instance) {
       return;
     }
+
+    assertIsWebpackDevServer(this.instance?.server);
 
     // Allow any message on native
     if (this.customMessageSocketBroadcaster) {
@@ -103,7 +121,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     options,
   }: {
     port: number;
-    compiler: webpack.Compiler;
+    compiler: AnyCompiler;
     options: BundlerStartOptions;
   }) {
     if (!this.isTargetingNative()) {
@@ -119,12 +137,13 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // Add manifest middleware to the other middleware.
     // TODO: Move this in to expo/dev-server.
 
-    const middleware = this.getManifestMiddleware(options);
+    const middleware = this._getManifestMiddleware(options);
 
     nativeMiddleware.middleware.use(middleware).use(
       '/symbolicate',
       createSymbolicateMiddleware({
         projectRoot: this.projectRoot,
+        // @ts-expect-error: Not sure why webpack.Compiler type is invalid.
         compiler,
         logger: nativeMiddleware.logger,
       })
@@ -134,7 +153,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
   private async getAvailablePortAsync(options: { defaultPort?: number }): Promise<number> {
     try {
-      const defaultPort = options?.defaultPort ?? WEB_PORT;
+      const defaultPort = options?.defaultPort;
       const port = await choosePortAsync(this.projectRoot, {
         defaultPort,
         host: WEB_HOST,
@@ -171,13 +190,14 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     Log.debug('Starting webpack on port: ' + port);
 
     if (resetDevServer) {
-      Log.log(chalk.dim(`Clearing ${mode} cache directory...`));
       await clearWebProjectCacheAsync(this.projectRoot, mode);
     }
 
     if (https) {
       Log.debug('Configuring SSL to enable HTTPS support');
-      await ensureEnvironmentSupportsSSLAsync(this.projectRoot);
+      await ensureEnvironmentSupportsSSLAsync(this.projectRoot).catch((error) => {
+        Log.error(`Error creating SSL certificates: ${error}`);
+      });
     }
 
     const config = await loadConfigAsync(this.projectRoot, options);
@@ -208,7 +228,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     }
     const { attachNativeDevServerMiddlewareToDevServer } = this;
 
-    const server = new WebpackDevServer(compiler, config.devServer);
+    const server = new WebpackDevServer(
+      // @ts-expect-error: Not sure why this doesn't work.
+      compiler,
+      config.devServer
+    );
     // Launch WebpackDevServer.
     server.listen(port, WEB_HOST, function (this: http.Server, error) {
       if (nativeMiddleware) {
@@ -320,38 +344,7 @@ async function loadConfigAsync(
     pwa: !!options.isImageEditingEnabled,
     // TODO: Use a new loader in Webpack config...
     logger: {
-      info(input, jsonString) {
-        // const {
-        //   tag,
-        // id,
-        // shouldHide,
-        // type,
-        // ...props
-        // } = JSON.parse(jsonString)
-        // if (type === 'bundling_error') {
-        //   Log.error(props.error)
-        // } else if (type === 'bundling_warning') {
-        //   Log.warn(props.error)
-        // } else if (type === 'bundle_build_started') {
-        //   bar = new ProgressBar(`${chalk.bold(props?.bundleDetails?.platform)} Bundling JavaScript [:bar] :percent`, {
-        //     width: 64,
-        //     total: 100,
-        //     clear: true,
-        //     complete: '=',
-        //     incomplete: ' ',
-        //   });
-        // } else if (type === 'bundle_transform_progressed') {
-        //   const percentProgress = props.percentage * 100;
-        //   // const roundedPercentProgress = Math.floor(100 * percentProgress) / 100;
-        //   if (this.bar && !this.bar.complete) {
-        //     const ticks = percentProgress - this.bar.curr;
-        //     if (ticks > 0) {
-        //       this.bar.tick(ticks);
-        //     }
-        //   }
-        // } else if (type === 'bundle_build_done') {
-        // }
-      },
+      info(input, jsonString) {},
     },
     mode: options.mode,
     https: options.https,
@@ -382,15 +375,14 @@ function isDebugModeEnabled(): boolean {
   return getenv.boolish('EXPO_WEB_DEBUG', false);
 }
 
-function getWebProjectCachePath(projectRoot: string, mode: string = 'development'): string {
-  return path.join(projectRoot, '.expo', 'web', 'cache', mode);
-}
-
 async function clearWebProjectCacheAsync(
   projectRoot: string,
   mode: string = 'development'
 ): Promise<void> {
-  const cacheFolder = getWebProjectCachePath(projectRoot, mode);
+  Log.log(chalk.dim(`Clearing Webpack ${mode} cache directory...`));
+
+  const dir = await ensureDotExpoProjectDirectoryInitialized(projectRoot);
+  const cacheFolder = path.join(dir, 'web', 'cache', mode);
   try {
     await fs.promises.rm(cacheFolder, { recursive: true, force: true });
   } catch (e) {

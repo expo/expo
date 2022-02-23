@@ -43,7 +43,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     return new AndroidAppIdResolver(this.projectRoot);
   }
 
-  protected resolveAlternativeLaunchUrl(
+  _resolveAlternativeLaunchUrl(
     applicationId: string,
     props?: Partial<AndroidOpenInCustomProps>
   ): string {

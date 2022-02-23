@@ -1,16 +1,18 @@
-import { ExpoGoConfig, ProjectConfig, ExpoConfig, getConfig } from '@expo/config';
-import express from 'express';
-import http from 'http';
-import { resolve, parse } from 'url';
+import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import chalk from 'chalk';
+import { parse, resolve } from 'url';
 
 import * as Log from '../../../log';
-import { CommandError, UnimplementedError } from '../../../utils/errors';
+import { EXPO_DEBUG } from '../../../utils/env';
+import { UnimplementedError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/ProjectDevices';
 import { BundlerStartOptions } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
+import { RuntimePlatform } from './resolvePlatform';
+import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -27,7 +29,7 @@ export interface ParsedHeaders {
   /** Should return the signed manifest. */
   acceptSignature: boolean;
   /** Platform to serve. */
-  platform: 'android' | 'ios';
+  platform: RuntimePlatform;
   /** Requested host name. */
   hostname?: string;
 }
@@ -40,49 +42,10 @@ export type ResponseProjectSettings = {
   exp: ExpoConfig;
 };
 
-/** Headers */
-export type ServerHeaders = Map<string, number | string | readonly string[]>;
-/** Request */
-export type ServerRequest = express.Request | http.IncomingMessage;
-/** Response */
-export type ServerResponse = express.Response | http.ServerResponse;
-/** Next function */
-export type ServerNext = (err?: Error) => void;
-/** Supported platforms */
-export type RuntimePlatform = 'ios' | 'android';
-
 export const DEVELOPER_TOOL = 'expo-cli';
 
-/** Extract the runtime platform from the server request.  */
-export function parsePlatformHeader(req: ServerRequest): string {
-  const url = req.url ? parse(req.url, /* parseQueryString */ true) : null;
-  const platform =
-    url?.query.platform || req.headers['expo-platform'] || req.headers['exponent-platform'];
-  return Array.isArray(platform) ? platform[0] : platform;
-}
-
-/** Assert if the runtime platform is not included. */
-export function assertMissingRuntimePlatform(platform?: any): asserts platform {
-  if (!platform) {
-    throw new CommandError(
-      'PLATFORM_HEADER',
-      "Must specify 'expo-platform' header or 'platform' query parameter"
-    );
-  }
-}
-
-/** Assert if the runtime platform is not correct. */
-export function assertRuntimePlatform(platform: string): asserts platform is RuntimePlatform {
-  const stringifiedPlatform = String(platform);
-  if (!['android', 'ios'].includes(stringifiedPlatform)) {
-    throw new CommandError(
-      'PLATFORM_HEADER',
-      `platform must be "android" or "ios". Received: "${platform}"`
-    );
-  }
-}
-
-export class ManifestHandlerMiddleware {
+/** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
+export class ManifestMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: Pick<BundlerStartOptions, 'mode' | 'minify'> & {
@@ -95,7 +58,8 @@ export class ManifestHandlerMiddleware {
     return new Map<string, any>();
   }
 
-  protected async resolveProjectSettingsAsync({
+  /** Exposed for testing. */
+  public async _resolveProjectSettingsAsync({
     platform,
     hostname,
   }: Pick<ParsedHeaders, 'hostname' | 'platform'>): Promise<ResponseProjectSettings> {
@@ -113,7 +77,7 @@ export class ManifestHandlerMiddleware {
 
     const hostUri = this.options.constructUrl({ scheme: '', hostname });
 
-    const bundleUrl = this.getBundleUrl({
+    const bundleUrl = this._getBundleUrl({
       platform,
       mainModuleName,
       hostname,
@@ -130,18 +94,23 @@ export class ManifestHandlerMiddleware {
     };
   }
 
-  /** Only support `/`, `/manifest`, `/index.exp` for the manifest middleware. */
-  private shouldContinue(req: ServerRequest): boolean {
+  /**
+   * Only support `/`, `/manifest`, `/index.exp` for the manifest middleware.
+   * Returns true when the manifest middleware should handle the incoming server request.
+   * Exposed for testing.
+   */
+  _shouldContinue(req: ServerRequest): boolean {
     return (
-      !req.url ||
-      !['/', '/manifest', '/index.exp'].includes(
+      !!req.url &&
+      ['/', '/manifest', '/index.exp'].includes(
         // Strip the query params
         parse(req.url).pathname || req.url
       )
     );
   }
 
-  private resolveMainModuleName(projectConfig: ProjectConfig, platform: string) {
+  /** Get the main entry module ID (file) relative to the project root. */
+  private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
     let entryPoint = resolveEntryPoint(this.projectRoot, platform, projectConfig);
     // NOTE(Bacon): Webpack is currently hardcoded to index.bundle on native
     // in the future (TODO) we should move this logic into a Webpack plugin and use
@@ -163,7 +132,7 @@ export class ManifestHandlerMiddleware {
 
   /** Store device IDs that were sent in the request headers. */
   private async saveDevicesAsync(req: ServerRequest) {
-    const deviceIds = req.headers['expo-dev-client-id'];
+    const deviceIds = req.headers?.['expo-dev-client-id'];
     if (deviceIds) {
       await ProjectDevices.saveDevicesAsync(this.projectRoot, deviceIds).catch((e) =>
         Log.error(e.stack)
@@ -171,8 +140,8 @@ export class ManifestHandlerMiddleware {
     }
   }
 
-  /** Create the bundle URL (points to the single JS entry file). */
-  private getBundleUrl({
+  /** Create the bundle URL (points to the single JS entry file). Exposed for testing. */
+  public _getBundleUrl({
     platform,
     mainModuleName,
     hostname,
@@ -183,7 +152,8 @@ export class ManifestHandlerMiddleware {
   }): string {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
-      dev: String(this.options.mode === 'development'),
+      dev: String(this.options.mode !== 'production'),
+      // TODO: Is this still needed?
       hot: String(false),
     });
 
@@ -207,8 +177,8 @@ export class ManifestHandlerMiddleware {
     throw new UnimplementedError();
   }
 
-  /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. */
-  protected async getManifestResponseAsync(req: ServerRequest): Promise<{
+  /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
+  public async _getManifestResponseAsync(options: ParsedHeaders): Promise<{
     body: string;
     version: string;
     headers: ServerHeaders;
@@ -236,7 +206,7 @@ export class ManifestHandlerMiddleware {
       },
       packagerOpts: {
         // Required for dev client.
-        dev: this.options.mode === 'development',
+        dev: this.options.mode !== 'production',
       },
       // Indicates the name of the main bundle.
       mainModuleName,
@@ -272,14 +242,16 @@ export class ManifestHandlerMiddleware {
     next: ServerNext
   ) => Promise<void> {
     return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (this.shouldContinue(req)) {
+      if (!this._shouldContinue(req)) {
         return next();
       }
 
       await this.saveDevicesAsync(req);
 
       try {
-        const { body, version, headers } = await this.getManifestResponseAsync(req);
+        // Read from headers
+        const options = this.getParsedHeaders(req);
+        const { body, version, headers } = await this._getManifestResponseAsync(options);
         for (const [headerName, headerValue] of headers) {
           res.setHeader(headerName, headerValue);
         }
@@ -288,7 +260,7 @@ export class ManifestHandlerMiddleware {
         // Log analytics
         this.trackManifest(version ?? null);
       } catch (e) {
-        Log.error(e.stack);
+        Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
         // 5xx = Server Error HTTP code
         res.statusCode = 520;
         res.end(

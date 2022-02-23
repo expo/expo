@@ -50,14 +50,16 @@ export class PlatformManager<
   protected async openProjectInExpoGoAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
-    // TODO: We shouldn't have so much extra stuff to support dc here.
     const url = this.props.getExpoGoUrl();
     // This should never happen, but just in case...
     assert(url, 'Could not get dev server URL');
 
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
     deviceManager.logOpeningUrl(url);
-    const installedExpo = await this.ensureDeviceHasValidExpoGoAsync(deviceManager);
+
+    // TODO: Expensive, we should only do this once.
+    const { exp } = getConfig(this.projectRoot);
+    const installedExpo = await deviceManager.ensureExpoGoAsync(exp.sdkVersion);
 
     await deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url);
@@ -81,7 +83,6 @@ export class PlatformManager<
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
 
     if (!(await deviceManager.isAppInstalledAsync(applicationId))) {
-      // TODO: Ensure links are up to date -- collapse redirects.
       throw new CommandError(
         `The development client (${applicationId}) for this project is not installed. ` +
           `Please build and install the client on the device first.\n${learnMore(
@@ -97,7 +98,7 @@ export class PlatformManager<
     });
 
     if (!url) {
-      url = this.resolveAlternativeLaunchUrl(applicationId, props);
+      url = this._resolveAlternativeLaunchUrl(applicationId, props);
     }
 
     deviceManager.logOpeningUrl(url);
@@ -133,7 +134,7 @@ export class PlatformManager<
   }
 
   /** Open the current web project (Webpack) in a device . */
-  protected async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
+  private async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
     url: string;
   }> {
     const url = this.props.getDevServerUrl();
@@ -147,19 +148,11 @@ export class PlatformManager<
     return { url };
   }
 
-  /** If the launch URL cannot be determined (`custom` runtimes) then an alternative string can be provided to open the device. Often a device ID or activity to launch. */
-  protected resolveAlternativeLaunchUrl(
+  /** If the launch URL cannot be determined (`custom` runtimes) then an alternative string can be provided to open the device. Often a device ID or activity to launch. Exposed for testing. */
+  _resolveAlternativeLaunchUrl(
     applicationId: string,
     props: Partial<IOpenInCustomProps> = {}
   ): string {
     throw new UnimplementedError();
-  }
-
-  /** Returns true if the project has a valid version of Expo Go installed. */
-  protected async ensureDeviceHasValidExpoGoAsync(
-    deviceManager: DeviceManager<IDevice>
-  ): Promise<boolean> {
-    const { exp } = getConfig(this.projectRoot);
-    return deviceManager.ensureExpoGoAsync(exp.sdkVersion);
   }
 }

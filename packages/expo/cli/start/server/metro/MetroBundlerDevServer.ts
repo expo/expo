@@ -54,7 +54,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       parsedOptions
     );
 
-    const manifestMiddleware = this.getManifestMiddleware(options);
+    const manifestMiddleware = this._getManifestMiddleware(options);
 
     // We need the manifest handler to be the first middleware to run so our
     // routes take precedence over static files. For example, the manifest is
@@ -101,14 +101,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 }
 
+// From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
-/**
- * The most generic possible setup for Metro bundler.
- * Partially copied out of `@expo/dev-server` but with the ability to use a custom logger.
- */
+/** The most generic possible setup for Metro bundler. */
 async function runMetroDevServerAsync(
   projectRoot: string,
   options: Omit<MetroDevServerOptions, 'logger'>

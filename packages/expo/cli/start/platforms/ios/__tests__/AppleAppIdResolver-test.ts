@@ -12,13 +12,12 @@ jest.mock('@expo/config-plugins', () => ({
       getBundleIdentifierFromPbxproj: jest.fn(),
     },
     Paths: {
-      getAppDelegateFilePath: jest.fn(),
+      getAppDelegateFilePath: jest.fn(() => '/path/to/file'),
     },
   },
 }));
 
 jest.mock('@expo/config', () => ({
-  getProjectConfigDescriptionWithPaths: jest.fn(() => 'app.json'),
   getConfig: jest.fn(() => ({
     pkg: {},
     exp: {
@@ -29,14 +28,12 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
+// Most cases are tested in the superclass.
+
 describe('getAppIdAsync', () => {
-  beforeEach(() => {
-    asMock(getConfig).mockReset();
-  });
   it('resolves the app id from native files', async () => {
-    const projectRoot = '/';
-    const resolver = new AppleAppIdResolver(projectRoot);
-    resolver.hasNativeProjectAsync = jest.fn(async () => true);
+    const resolver = new AppleAppIdResolver('/');
+    resolver.hasNativeProjectAsync = jest.fn(resolver.hasNativeProjectAsync);
     resolver.getAppIdFromNativeAsync = jest.fn(resolver.getAppIdFromNativeAsync);
     asMock(IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj).mockReturnValueOnce(
       'dev.bacon.myapp'
@@ -45,24 +42,11 @@ describe('getAppIdAsync', () => {
     expect(resolver.getAppIdFromNativeAsync).toBeCalledTimes(1);
     expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
   });
-  it('throws when the app id is missing in native files', async () => {
-    const projectRoot = '/';
-    const resolver = new AppleAppIdResolver(projectRoot);
-    resolver.hasNativeProjectAsync = jest.fn(async () => true);
-    resolver.getAppIdFromNativeAsync = jest.fn(resolver.getAppIdFromNativeAsync);
-    asMock(IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj).mockReturnValueOnce(null);
-    await expect(resolver.getAppIdAsync()).rejects.toThrowError(
-      /Failed to locate the ios application identifier/
-    );
-    expect(resolver.getAppIdFromNativeAsync).toBeCalledTimes(1);
-    expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
-  });
+
   it('resolves the app id from project config', async () => {
-    const projectRoot = '/';
-    const resolver = new AppleAppIdResolver(projectRoot);
+    const resolver = new AppleAppIdResolver('/');
     resolver.hasNativeProjectAsync = jest.fn(async () => false);
     resolver.getAppIdFromConfigAsync = jest.fn(resolver.getAppIdFromConfigAsync);
-
     asMock(getConfig).mockReturnValueOnce({
       exp: {
         ios: {
@@ -71,18 +55,6 @@ describe('getAppIdAsync', () => {
       },
     } as any);
     expect(await resolver.getAppIdAsync()).toBe('dev.bacon.myapp');
-    expect(resolver.getAppIdFromConfigAsync).toBeCalledTimes(1);
-    expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
-  });
-  it('throws when the app id is missing in the project config and there are no native files', async () => {
-    const projectRoot = '/';
-    const resolver = new AppleAppIdResolver(projectRoot);
-    resolver.hasNativeProjectAsync = jest.fn(async () => false);
-    resolver.getAppIdFromConfigAsync = jest.fn(resolver.getAppIdFromConfigAsync);
-    asMock(getConfig).mockReturnValueOnce({
-      exp: {},
-    } as any);
-    await expect(resolver.getAppIdAsync()).rejects.toThrowError(/ios\.bundleIdentifier/);
     expect(resolver.getAppIdFromConfigAsync).toBeCalledTimes(1);
     expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
   });

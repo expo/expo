@@ -47,3 +47,11 @@ describe('activateWindowAsync', () => {
     await createDeviceManager().activateWindowAsync();
   });
 });
+
+// TODO: Test
+// openUrlAsync
+// installAppAsync
+// launchApplicationIdAsync
+// getAppVersionAsync
+// resolveAsync
+// ensureSimulatorOpenAsync

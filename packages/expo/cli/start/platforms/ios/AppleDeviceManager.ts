@@ -24,7 +24,7 @@ const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
  * Ensure a simulator is booted and the Simulator app is opened.
  * This is where any timeout related error handling should live.
  */
-async function ensureSimulatorOpenAsync(
+export async function ensureSimulatorOpenAsync(
   { udid, osType }: Partial<Pick<SimControl.Device, 'udid' | 'osType'>> = {},
   tryAgain: boolean = true
 ): Promise<SimControl.Device> {

@@ -9,7 +9,7 @@
  * But with Node LTS support.
  */
 
-import webpack from 'webpack';
+import type { Stats } from 'webpack';
 
 const friendlySyntaxErrorLabel = 'Syntax error:';
 
@@ -111,7 +111,7 @@ function formatMessage(message: string | { message: string } | { message: string
   return message.trim();
 }
 
-export function formatWebpackMessages(json?: webpack.Stats.ToJsonOutput) {
+export function formatWebpackMessages(json?: Stats.ToJsonOutput) {
   const formattedErrors = json?.errors?.map(formatMessage);
   const formattedWarnings = json?.warnings?.map(formatMessage);
   const result = { errors: formattedErrors, warnings: formattedWarnings };

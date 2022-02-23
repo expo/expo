@@ -4,11 +4,16 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import * as Log from '../log';
+import { memoize } from './fn';
 
+/** Observes and reports file changes. */
 export class FileNotifier {
-  constructor(private projectRoot: string, private moduleIds: string[]) {}
-  // List of files that are being observed.
-  private watchingFiles: string[] = [];
+  constructor(
+    /** Project root to resolve the module IDs relative to. */
+    private projectRoot: string,
+    /** List of module IDs sorted by priority. Only the first file that exists will be observed. */
+    private moduleIds: string[]
+  ) {}
 
   /** Get the file in the project. */
   private resolveFilePath(): string | undefined {
@@ -18,7 +23,7 @@ export class FileNotifier {
         return filePath;
       }
     }
-    return undefined;
+    return null;
   }
 
   public startObserving() {
@@ -30,12 +35,9 @@ export class FileNotifier {
   }
 
   /** Watch the file and warn to reload the CLI if it changes. */
-  watchFile(filePath: string): void {
-    if (this.watchingFiles.includes(filePath)) {
-      return;
-    }
+  public watchFile = memoize(this._watchFile.bind(this));
 
-    this.watchingFiles.push(filePath);
+  public _watchFile(filePath: string): string {
     const configName = path.relative(this.projectRoot, filePath);
     watchFile(filePath, (cur: any, prev: any) => {
       if (prev.size || cur.size) {
@@ -46,5 +48,6 @@ export class FileNotifier {
         );
       }
     });
+    return filePath;
   }
 }

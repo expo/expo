@@ -3,45 +3,38 @@ import chalk from 'chalk';
 import os from 'os';
 
 import { signClassicExpoGoManifestAsync } from '../../../api/signManifest';
-import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import UserSettings from '../../../api/user/UserSettings';
+import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import * as Log from '../../../log';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
 import { ProcessSettings } from '../../ProcessSettings';
-import {
-  assertRuntimePlatform,
-  DEVELOPER_TOOL,
-  HostInfo,
-  ManifestHandlerMiddleware,
-  ParsedHeaders,
-  parsePlatformHeader,
-  ServerHeaders,
-  ServerRequest,
-} from './ManifestMiddleware';
+import { DEVELOPER_TOOL, HostInfo, ManifestMiddleware, ParsedHeaders } from './ManifestMiddleware';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { ServerHeaders, ServerRequest } from './server.types';
 
-export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
+export class ClassicManifestMiddleware extends ManifestMiddleware {
   public getParsedHeaders(req: ServerRequest): ParsedHeaders {
     const platform = parsePlatformHeader(req) || 'ios';
     assertRuntimePlatform(platform);
     return {
       platform,
-      acceptSignature: Boolean(req.headers['exponent-accept-signature']),
-      hostname: stripPort(req.headers['host']),
+      acceptSignature: Boolean(req.headers?.['exponent-accept-signature']),
+      hostname: stripPort(req.headers?.['host']),
     };
   }
 
-  protected async getManifestResponseAsync(req: ServerRequest): Promise<{
+  public async _getManifestResponseAsync({
+    acceptSignature,
+    ...requestOptions
+  }: ParsedHeaders): Promise<{
     body: string;
     version: string;
     headers: ServerHeaders;
   }> {
-    // Read from headers
-    const { acceptSignature, ...requestOptions } = this.getParsedHeaders(req);
-
-    const { exp, hostUri, expoGoConfig, bundleUrl } = await this.resolveProjectSettingsAsync(
+    const { exp, hostUri, expoGoConfig, bundleUrl } = await this._resolveProjectSettingsAsync(
       requestOptions
     );
 
@@ -59,7 +52,7 @@ export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
     headers.set('Exponent-Server', hostInfo);
 
     // Create the final string
-    const body = await this.fetchComputedManifestStringAsync({
+    const body = await this._fetchComputedManifestStringAsync({
       manifest,
       hostId: hostInfo.host,
       acceptSignature,
@@ -79,49 +72,43 @@ export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
     });
   }
 
-  private async getManifestStringAsync(
-    manifest: ExpoAppManifest,
-    hostUUID: string,
-    acceptSignature?: boolean
-  ): Promise<string> {
+  /** Exposed for testing. */
+  async _getManifestStringAsync({
+    manifest,
+    hostId,
+    acceptSignature,
+  }: SignManifestProps): Promise<string> {
     const currentSession = await getUserAsync();
     if (!currentSession || ProcessSettings.isOffline) {
-      manifest.id = `@${ANONYMOUS_USERNAME}/${manifest.slug}-${hostUUID}`;
+      manifest.id = `@${ANONYMOUS_USERNAME}/${manifest.slug}-${hostId}`;
     }
     if (!acceptSignature) {
       return JSON.stringify(manifest);
     } else if (!currentSession || ProcessSettings.isOffline) {
       return getUnsignedManifestString(manifest);
     } else {
-      return await this.getSignedManifestStringAsync(manifest);
+      return this.getSignedManifestStringAsync(manifest);
     }
   }
 
   private getSignedManifestStringAsync = memoize(signClassicExpoGoManifestAsync);
 
-  private async fetchComputedManifestStringAsync({
-    manifest,
-    hostId,
-    acceptSignature,
-  }: {
-    manifest: ExpoAppManifest;
-    hostId: string;
-    acceptSignature: boolean;
-  }): Promise<string> {
+  /** Exposed for testing. */
+  async _fetchComputedManifestStringAsync(props: SignManifestProps): Promise<string> {
     try {
-      return await this.getManifestStringAsync(manifest, hostId, acceptSignature);
+      return await this._getManifestStringAsync(props);
     } catch (error) {
-      if (error.code === 'UNAUTHORIZED_ERROR' && manifest.owner) {
+      if (error.code === 'UNAUTHORIZED_ERROR' && props.manifest.owner) {
         // Don't have permissions for siging, warn and enable offline mode.
         this.addSigningDisabledWarning(
           `This project belongs to ${chalk.bold(
-            `@${manifest.owner}`
+            `@${props.manifest.owner}`
           )} and you have not been granted the appropriate permissions.\n` +
-            `Please request access from an admin of @${manifest.owner} or change the "owner" field to an account you belong to.\n` +
+            `Please request access from an admin of @${props.manifest.owner} or change the "owner" field to an account you belong to.\n` +
             learnMore('https://docs.expo.dev/versions/latest/config/app/#owner')
         );
         ProcessSettings.isOffline = true;
-        return await this.getManifestStringAsync(manifest, hostId, acceptSignature);
+        return await this._getManifestStringAsync(props);
       } else if (error.code === 'ENOTFOUND') {
         // Got a DNS error, i.e. can't access exp.host, warn and enable offline mode.
         this.addSigningDisabledWarning(
@@ -130,17 +117,25 @@ export class ClassicManifestMiddleware extends ManifestHandlerMiddleware {
           }.`
         );
         ProcessSettings.isOffline = true;
-        return await this.getManifestStringAsync(manifest, hostId, acceptSignature);
+        return await this._getManifestStringAsync(props);
       } else {
         throw error;
       }
     }
   }
 
-  private addSigningDisabledWarning = memoize((reason: string) =>
-    Log.warn(`${reason}\nFalling back to offline mode.`, 'signing-disabled')
-  );
+  private addSigningDisabledWarning = memoize((reason: string) => {
+    Log.warn(`${reason}\nFalling back to offline mode.`);
+    // For the memo
+    return reason;
+  });
 }
+
+type SignManifestProps = {
+  manifest: ExpoAppManifest;
+  hostId: string;
+  acceptSignature: boolean;
+};
 
 // Passed to Expo Go and registered as telemetry.
 // TODO: it's unclear why we don't just send it from the CLI.
@@ -155,7 +150,7 @@ async function createHostInfoAsync(): Promise<HostInfo> {
   };
 }
 
-export function getUnsignedManifestString(manifest: ExpoConfig) {
+function getUnsignedManifestString(manifest: ExpoConfig) {
   const unsignedManifest = {
     manifestString: JSON.stringify(manifest),
     signature: 'UNSIGNED',

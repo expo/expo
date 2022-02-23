@@ -9,19 +9,18 @@ import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import UserSettings from '../../../api/user/UserSettings';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
+import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
 import { ProcessSettings } from '../../ProcessSettings';
+import { ManifestMiddleware, ParsedHeaders } from './ManifestMiddleware';
 import {
+  parsePlatformHeader,
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
-  ManifestHandlerMiddleware,
-  ParsedHeaders,
-  parsePlatformHeader,
-  ServerHeaders,
-  ServerRequest,
-} from './ManifestMiddleware';
+} from './resolvePlatform';
+import { ServerRequest, ServerHeaders } from './server.types';
 
-export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
+export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
   public getParsedHeaders(req: express.Request | http.IncomingMessage): ParsedHeaders {
     const platform = parsePlatformHeader(req);
     assertMissingRuntimePlatform(platform);
@@ -44,19 +43,14 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
     return headers;
   }
 
-  protected async getManifestResponseAsync(req: ServerRequest): Promise<{
+  public async _getManifestResponseAsync(requestOptions: ParsedHeaders): Promise<{
     body: string;
     version: string;
     headers: ServerHeaders;
   }> {
-    // Read from headers
-    const requestOptions = this.getParsedHeaders(req);
-
-    const { exp, hostUri, expoGoConfig, bundleUrl } = await this.resolveProjectSettingsAsync(
+    const { exp, hostUri, expoGoConfig, bundleUrl } = await this._resolveProjectSettingsAsync(
       requestOptions
     );
-
-    // Custom...
 
     const runtimeVersion = Updates.getRuntimeVersion(
       { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
@@ -71,7 +65,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
     }
     const scopeKey = shouldUseAnonymousManifest
       ? `@${ANONYMOUS_USERNAME}/${exp.slug}-${userAnonymousIdentifier}`
-      : await getScopeKeyForProjectIdAsync(easProjectId);
+      : await this.getScopeKeyForProjectIdAsync(easProjectId);
 
     const expoUpdatesManifest = {
       id: uuidv4(),
@@ -99,6 +93,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
 
     const headers = this.getDefaultResponseHeaders();
     if (requestOptions.acceptSignature && !shouldUseAnonymousManifest) {
+      // TODO: Should this also be memoized?
       const manifestSignature = await signExpoGoManifestAsync(expoUpdatesManifest);
       headers.set('expo-manifest-signature', manifestSignature);
     }
@@ -115,6 +110,8 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestHandlerMiddleware {
       runtimeVersion: version,
     });
   }
+
+  private getScopeKeyForProjectIdAsync = memoize(getScopeKeyForProjectIdAsync);
 }
 
 /**

@@ -92,7 +92,7 @@ export async function startDevServersAsync(
   // Start all dev servers...
   for (const { type, options } of startOptions) {
     const BundlerDevServerClass = BUNDLERS[type];
-    const server = new BundlerDevServerClass(projectRoot, exp, !!options?.devClient);
+    const server = new BundlerDevServerClass(projectRoot, !!options?.devClient);
     await server.startAsync(options ?? persistedOptions);
     devServers.push(server);
   }

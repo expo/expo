@@ -1,6 +1,5 @@
 import assert from 'assert';
 
-import { WEB_PORT } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 import { ProcessSettings } from './ProcessSettings';
@@ -158,7 +157,8 @@ export async function resolvePortsAsync(
   if (settings.webOnly) {
     const webpackPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
-      fallbackPort: WEB_PORT,
+      // Default web port
+      fallbackPort: 19006,
     });
     if (!webpackPort) {
       throw new AbortCommandError();

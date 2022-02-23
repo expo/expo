@@ -19,17 +19,6 @@ afterAll(() => {
 
 const originalResolveDevice = AppleDeviceManager.resolveAsync;
 
-jest.mock('@expo/config', () => ({
-  getConfig: jest.fn(() => ({
-    pkg: {},
-    exp: {
-      sdkVersion: '45.0.0',
-      name: 'my-app',
-      slug: 'my-app',
-    },
-  })),
-}));
-
 describe('openAsync', () => {
   beforeEach(() => {
     asMock(assertSystemRequirementsAsync).mockReset();
@@ -41,49 +30,6 @@ describe('openAsync', () => {
     );
   });
 
-  it(`opens a project in Expo Go`, async () => {
-    const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');
-    const manager = new ApplePlatformManager('/', 19000, {
-      getCustomRuntimeUrl: jest.fn(),
-      getDevServerUrl: jest.fn(),
-      getExpoGoUrl,
-    });
-
-    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
-      url: 'exp://localhost:19000/',
-    });
-
-    expect(AppleDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
-    expect(assertSystemRequirementsAsync).toHaveBeenCalledTimes(1);
-    expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
-
-    // Logging
-    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
-    expect(Log.warn).toHaveBeenCalledTimes(0);
-    expect(Log.error).toHaveBeenCalledTimes(0);
-  });
-
-  it(`opens a project in a web browser`, async () => {
-    const getDevServerUrl = jest.fn(() => 'http://localhost:19000/');
-    const manager = new ApplePlatformManager('/', 19000, {
-      getCustomRuntimeUrl: jest.fn(),
-      getDevServerUrl,
-      getExpoGoUrl: jest.fn(),
-    });
-
-    expect(await manager.openAsync({ runtime: 'web' })).toStrictEqual({
-      url: 'http://localhost:19000/',
-    });
-
-    expect(AppleDeviceManager.resolveAsync).toHaveBeenCalledTimes(1);
-    expect(assertSystemRequirementsAsync).toHaveBeenCalledTimes(1);
-    expect(getDevServerUrl).toHaveBeenCalledTimes(1);
-
-    // Logging
-    expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
-    expect(Log.warn).toHaveBeenCalledTimes(0);
-    expect(Log.error).toHaveBeenCalledTimes(0);
-  });
   it(`opens a project in a custom development client`, async () => {
     const getCustomRuntimeUrl = jest.fn(() => 'custom://path');
     const manager = new ApplePlatformManager('/', 19000, {
@@ -106,8 +52,6 @@ describe('openAsync', () => {
 
     // Logging
     expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
-    expect(Log.warn).toHaveBeenCalledTimes(0);
-    expect(Log.error).toHaveBeenCalledTimes(0);
   });
 
   it(`opens a project in a custom development client using app identifier`, async () => {
@@ -133,8 +77,6 @@ describe('openAsync', () => {
 
     // Logging
     expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
-    expect(Log.warn).toHaveBeenCalledTimes(0);
-    expect(Log.error).toHaveBeenCalledTimes(0);
 
     // Native invocation
     expect(SimControl.openAppIdAsync).toBeCalledWith(

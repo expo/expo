@@ -1,4 +1,4 @@
-import { stripAnsi } from '../../../utils/ansi';
+import { stripAnsi } from '../../../../utils/ansi';
 import { stripMetroInfo, formatUsingNodeStandardLibraryError } from '../MetroTerminalReporter';
 
 describe(stripMetroInfo, () => {
@@ -44,3 +44,5 @@ describe(formatUsingNodeStandardLibraryError, () => {
     `);
   });
 });
+
+// TODO: Test more

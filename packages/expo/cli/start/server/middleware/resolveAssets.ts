@@ -20,21 +20,41 @@ type ManifestResolutionError = Error & {
 };
 
 /** Inline the contents of each platform's `googleServicesFile` so runtimes can access them. */
-export async function resolveGoogleServicesFile(projectRoot: string, manifest: ExpoConfig) {
+export async function resolveGoogleServicesFile(
+  projectRoot: string,
+  manifest: Pick<ExpoConfig, 'android' | 'ios'>
+) {
   if (manifest.android?.googleServicesFile) {
-    const contents = await fs.readFile(
-      path.resolve(projectRoot, manifest.android.googleServicesFile),
-      'utf8'
-    );
-    manifest.android.googleServicesFile = contents;
+    try {
+      const contents = await fs.readFile(
+        path.resolve(projectRoot, manifest.android.googleServicesFile),
+        'utf8'
+      );
+      manifest.android.googleServicesFile = contents;
+    } catch (error) {
+      Log.warn(
+        `Could not parse Expo config: android.googleServicesFile: "${manifest.android.googleServicesFile}"`
+      );
+      // Delete the field so Expo Go doesn't attempt to read it.
+      delete manifest.android.googleServicesFile;
+    }
   }
   if (manifest.ios?.googleServicesFile) {
-    const contents = await fs.readFile(
-      path.resolve(projectRoot, manifest.ios.googleServicesFile),
-      'base64'
-    );
-    manifest.ios.googleServicesFile = contents;
+    try {
+      const contents = await fs.readFile(
+        path.resolve(projectRoot, manifest.ios.googleServicesFile),
+        'base64'
+      );
+      manifest.ios.googleServicesFile = contents;
+    } catch (error) {
+      Log.warn(
+        `Could not parse Expo config: ios.googleServicesFile: "${manifest.ios.googleServicesFile}"`
+      );
+      // Delete the field so Expo Go doesn't attempt to read it.
+      delete manifest.ios.googleServicesFile;
+    }
   }
+  return manifest;
 }
 
 /**
