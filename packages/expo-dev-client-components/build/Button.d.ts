@@ -16,10 +16,10 @@ declare const Container: React.ForwardRefExoticComponent<Pick<Animated.AnimatedP
     rounded?: "small" | "none" | "medium" | "large" | "full" | undefined;
     roundedTop?: "small" | "none" | "medium" | "large" | "full" | undefined;
     roundedBottom?: "small" | "none" | "medium" | "large" | "full" | undefined;
-    bg?: "transparent" | "default" | "secondary" | "primary" | "tertiary" | "ghost" | "disabled" | undefined;
+    bg?: "transparent" | "primary" | "secondary" | "tertiary" | "ghost" | "default" | "disabled" | undefined;
     border?: "ghost" | undefined;
     shadow?: "button" | undefined;
-}, "key" | "bg" | "border" | "shadow" | "padding" | "margin" | "mx" | "my" | "mb" | "mt" | "px" | "py" | "pb" | "pt" | "rounded" | "roundedTop" | "roundedBottom" | keyof import("react-native").PressableProps> & React.RefAttributes<Animated.AnimatedProps<import("react-native").PressableProps & React.RefAttributes<import("react-native").View>>>>;
+}, "padding" | "margin" | keyof import("react-native").PressableProps | "key" | "bg" | "border" | "shadow" | "mx" | "my" | "mb" | "mt" | "px" | "py" | "pb" | "pt" | "rounded" | "roundedTop" | "roundedBottom"> & React.RefAttributes<Animated.AnimatedProps<import("react-native").PressableProps & React.RefAttributes<import("react-native").View>>>>;
 export declare const Button: {
     Container: React.ForwardRefExoticComponent<Pick<Animated.AnimatedProps<import("react-native").PressableProps & React.RefAttributes<import("react-native").View>> & {
         children?: React.ReactNode;
@@ -37,15 +37,15 @@ export declare const Button: {
         rounded?: "small" | "none" | "medium" | "large" | "full" | undefined;
         roundedTop?: "small" | "none" | "medium" | "large" | "full" | undefined;
         roundedBottom?: "small" | "none" | "medium" | "large" | "full" | undefined;
-        bg?: "transparent" | "default" | "secondary" | "primary" | "tertiary" | "ghost" | "disabled" | undefined;
+        bg?: "transparent" | "primary" | "secondary" | "tertiary" | "ghost" | "default" | "disabled" | undefined;
         border?: "ghost" | undefined;
         shadow?: "button" | undefined;
-    }, "key" | "bg" | "border" | "shadow" | "padding" | "margin" | "mx" | "my" | "mb" | "mt" | "px" | "py" | "pb" | "pt" | "rounded" | "roundedTop" | "roundedBottom" | keyof import("react-native").PressableProps> & React.RefAttributes<Animated.AnimatedProps<import("react-native").PressableProps & React.RefAttributes<import("react-native").View>>>>;
+    }, "padding" | "margin" | keyof import("react-native").PressableProps | "key" | "bg" | "border" | "shadow" | "mx" | "my" | "mb" | "mt" | "px" | "py" | "pb" | "pt" | "rounded" | "roundedTop" | "roundedBottom"> & React.RefAttributes<Animated.AnimatedProps<import("react-native").PressableProps & React.RefAttributes<import("react-native").View>>>>;
     ScaleOnPressContainer: typeof ScaleOnPressContainer;
     Text: React.ForwardRefExoticComponent<import("react-native").TextProps & {
         children?: React.ReactNode;
     } & {
-        color?: "transparent" | "default" | "secondary" | "primary" | "tertiary" | "ghost" | undefined;
+        color?: "transparent" | "primary" | "secondary" | "tertiary" | "ghost" | "default" | undefined;
         align?: "center" | undefined;
         size?: "small" | "medium" | "large" | undefined;
         leading?: "large" | undefined;

@@ -147,8 +147,6 @@ function createSelectorStore() {
   });
 
   ThemePreferences.addChangeListener((currentPreference: ThemePreference) => {
-    console.log({ currentPreference });
-
     if (currentPreference === 'light') {
       activeSelectorMap['light'] = true;
       activeSelectorMap['dark'] = false;
