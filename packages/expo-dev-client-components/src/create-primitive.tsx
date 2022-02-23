@@ -278,9 +278,10 @@ function useSelectors(selectors: any, props: any) {
         if (selectorValue !== false) {
           if (selectorKey === 'width' || selectorKey === 'height') {
             const queries = selectors[selectorKey];
-            for (let mediaQuery in queries) {
+            for (const mediaQuery in queries) {
               const expression = `${selectorValue} ${mediaQuery}`;
               try {
+                // eslint-disable-next-line
                 if (eval(expression)) {
                   mergeDeep(variants, queries[mediaQuery]);
                 }

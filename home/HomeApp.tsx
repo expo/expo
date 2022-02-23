@@ -2,6 +2,8 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
+import { ThemePreferenceProvider } from 'expo-dev-client-components';
+import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
@@ -18,8 +20,6 @@ import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
 import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
-import { ThemePreferenceProvider } from 'expo-dev-client-components';
-import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
