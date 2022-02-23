@@ -40,14 +40,10 @@ import java.io.IOException
  */
 @RequiresApi(Build.VERSION_CODES.KITKAT)
 class ClipboardFileProvider : ContentProvider() {
-  private val COLUMNS = arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE)
+  private val defaultProjectionColumns = arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE)
 
   private lateinit var strategy: PathStrategy
 
-  /**
-   * The default [ClipboardFileProvider] implementation does not need to be initialized. If you want to
-   * override this method, you must provide your own subclass of PublicFileProvider.
-   */
   override fun onCreate() = true
 
   /**
@@ -69,10 +65,10 @@ class ClipboardFileProvider : ContentProvider() {
 
   /**
    * Returns the MIME type of a content URI returned by
-   * [getUriForFile()][.getUriForFile].
+   * [getUriForFile()][getUriForFile].
    *
    * @param uri A content URI returned by
-   * [getUriForFile()][.getUriForFile].
+   * [getUriForFile()][getUriForFile].
    * @return If the associated file has an extension, the MIME type associated with that
    * extension; otherwise `application/octet-stream`.
    */
@@ -89,7 +85,7 @@ class ClipboardFileProvider : ContentProvider() {
   }
 
   override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
-    val projection = projection ?: COLUMNS
+    val projection = projection ?: defaultProjectionColumns
     val file: File = strategy.getFileForUri(uri)
     var columns = arrayOfNulls<String>(projection.size)
     var values = arrayOfNulls<Any>(projection.size)
@@ -130,17 +126,18 @@ class ClipboardFileProvider : ContentProvider() {
   }
 
   companion object {
-    private val META_DATA_FILE_PROVIDER_PATHS = "expo.modules.clipboard.CLIPBOARD_FILE_PROVIDER_PATHS"
+    private const val META_DATA_FILE_PROVIDER_PATHS =
+      "expo.modules.clipboard.CLIPBOARD_FILE_PROVIDER_PATHS"
 
-    private val TAG_ROOT_PATH = "root-path"
-    private val TAG_FILES_PATH = "files-path"
-    private val TAG_CACHE_PATH = "cache-path"
-    private val TAG_EXTERNAL = "external-path"
-    private val TAG_EXTERNAL_FILES = "external-files-path"
-    private val TAG_EXTERNAL_CACHE = "external-cache-path"
+    private const val TAG_ROOT_PATH = "root-path"
+    private const val TAG_FILES_PATH = "files-path"
+    private const val TAG_CACHE_PATH = "cache-path"
+    private const val TAG_EXTERNAL = "external-path"
+    private const val TAG_EXTERNAL_FILES = "external-files-path"
+    private const val TAG_EXTERNAL_CACHE = "external-cache-path"
 
-    private val ATTR_NAME = "name"
-    private val ATTR_PATH = "path"
+    private const val ATTR_NAME = "name"
+    private const val ATTR_PATH = "path"
 
     private val DEVICE_ROOT = File("/")
 
@@ -193,7 +190,7 @@ class ClipboardFileProvider : ContentProvider() {
 
     /**
      * Parse and return [PathStrategy] for given authority as defined in
-     * [.META_DATA_FILE_PROVIDER_PATHS] `<meta-data>`.
+     * [META_DATA_FILE_PROVIDER_PATHS] `<meta-data>`.
      *
      * @see .getPathStrategy
      */

@@ -80,7 +80,7 @@ internal suspend fun imageFromContentUri(
  *
  * @param context
  * @param base64Image base64-encoded JPEG image data. Should not be prefixed
- * @param clipboardCacheDir Directory, when the copied image is stored, must be accessible by
+ * @param clipboardCacheDir directory where the copied image is stored, must be accessible by
  * the [ClipboardFileProvider]
  * @return clip data ready to be shared by the [android.content.ClipboardManager]
  */
