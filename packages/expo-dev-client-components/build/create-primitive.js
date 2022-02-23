@@ -79,6 +79,7 @@ function createSelectorStore() {
         }
     });
     ThemePreferences.addChangeListener((currentPreference) => {
+        console.log({ currentPreference });
         if (currentPreference === 'light') {
             activeSelectorMap['light'] = true;
             activeSelectorMap['dark'] = false;
@@ -103,8 +104,8 @@ function createSelectorStore() {
                     delete activeSelectorMap['dark'];
                 }
             }
-            notify(['light', 'dark']);
         }
+        notify(['light', 'dark']);
     });
     const a11yTraits = [
         'boldTextChanged',

@@ -18,6 +18,8 @@ import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
 import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
+import { ThemePreferenceProvider } from 'expo-dev-client-components';
+import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
@@ -109,11 +111,13 @@ export default function HomeApp() {
   const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <ActionSheetProvider>
-        <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
-      </ActionSheetProvider>
-    </View>
+    <ThemePreferenceProvider theme={preferredAppearance as ThemePreference}>
+      <View style={[styles.container, { backgroundColor }]}>
+        <ActionSheetProvider>
+          <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
+        </ActionSheetProvider>
+      </View>
+    </ThemePreferenceProvider>
   );
 }
 

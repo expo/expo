@@ -11,6 +11,7 @@ type ThemeProviderProps = {
 
 export function ThemePreferenceProvider({ children, theme }: ThemeProviderProps) {
   React.useEffect(() => {
+    console.log({ theme });
     ThemePreferences.notify(theme);
   }, [theme]);
 
@@ -30,7 +31,7 @@ function createThemePreferenceStore() {
 
   function notify(newPreference: ThemePreference) {
     currentPreference = newPreference;
-    listeners.forEach((l) => l(currentPreference));
+    listeners.forEach((l) => l(newPreference));
   }
 
   function getPreference() {

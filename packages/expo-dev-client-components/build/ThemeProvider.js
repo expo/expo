@@ -2,6 +2,7 @@ import * as React from 'react';
 const ThemeContext = React.createContext('no-preference');
 export function ThemePreferenceProvider({ children, theme }) {
     React.useEffect(() => {
+        console.log({ theme });
         ThemePreferences.notify(theme);
     }, [theme]);
     return React.createElement(ThemeContext.Provider, { value: theme }, children);
@@ -14,7 +15,7 @@ function createThemePreferenceStore() {
     }
     function notify(newPreference) {
         currentPreference = newPreference;
-        listeners.forEach((l) => l(currentPreference));
+        listeners.forEach((l) => l(newPreference));
     }
     function getPreference() {
         return currentPreference;
