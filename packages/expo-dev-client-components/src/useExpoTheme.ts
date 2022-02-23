@@ -15,7 +15,7 @@ export function useExpoTheme(): ExpoTheme {
     theme = colorScheme;
   }
 
-  if (colorScheme === 'dark') {
+  if (theme === 'dark') {
     return darkTheme;
   }
 

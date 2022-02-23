@@ -8,7 +8,7 @@ export function useExpoTheme() {
     if (theme === 'no-preference' && colorScheme != null) {
         theme = colorScheme;
     }
-    if (colorScheme === 'dark') {
+    if (theme === 'dark') {
         return darkTheme;
     }
     return lightTheme;
