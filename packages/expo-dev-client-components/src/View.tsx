@@ -1,7 +1,7 @@
 import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
 import { View as RNView } from 'react-native';
-import { create } from 'react-native-primitives';
 
+import { create } from './create-primitive';
 import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
 
 export const View = create(RNView, {
