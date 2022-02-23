@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Update require logic to find transitive deps that would not be hoisted at the top of the monorepo
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
