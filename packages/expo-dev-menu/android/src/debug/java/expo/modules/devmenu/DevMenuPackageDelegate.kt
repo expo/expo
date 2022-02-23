@@ -8,10 +8,20 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactRootView
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.devmenu.react.DevMenuAwareReactActivity
 
 object DevMenuPackageDelegate {
-  fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> =
-    listOf(
+  // Backwards compatibility -- if the MainActivity is already an instance of
+  // DevMenuAwareReactActivity, we just skip auto-setup in this case.
+  fun shouldEnableAutoSetup(activityContext: Context?): Boolean =
+    !(activityContext != null && activityContext is DevMenuAwareReactActivity)
+
+  fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
+    if (!shouldEnableAutoSetup(activityContext)) {
+      return emptyList()
+    }
+
+    return listOf(
       object : ReactActivityLifecycleListener {
         override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
           if (!DevMenuManager.isInitialized()) {
@@ -22,9 +32,14 @@ object DevMenuPackageDelegate {
         }
       }
     )
+  }
 
-  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> =
-    listOf(
+  fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
+    if (!shouldEnableAutoSetup(activityContext)) {
+      return emptyList()
+    }
+
+    return listOf(
       object : ReactActivityHandler {
         override fun createReactRootViewContainer(activity: Activity): ReactRootView {
           return DevMenuReactRootViewContainer(activity as Context)
@@ -35,4 +50,5 @@ object DevMenuPackageDelegate {
         }
       }
     )
+  }
 }

@@ -18,6 +18,12 @@ import expo.modules.devlauncher.modules.DevLauncherModule
 import expo.modules.devlauncher.modules.DevLauncherAuth
 
 object DevLauncherPackageDelegate {
+  val shouldEnableAutoSetup: Boolean by lazy {
+    // Backwards compatibility -- if the MainApplication has already set up expo-dev-launcher,
+    // we just skip auto-setup in this case.
+    !DevLauncherController.wasInitialized()
+  }
+
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
     listOf(
       DevLauncherModule(reactContext),
@@ -30,7 +36,7 @@ object DevLauncherPackageDelegate {
     listOf(
       object : ApplicationLifecycleListener {
         override fun onCreate(application: Application?) {
-          if (application != null && application is ReactApplication) {
+          if (shouldEnableAutoSetup && application != null && application is ReactApplication) {
             DevLauncherController.initialize(application, application.reactNativeHost)
             // TODO: optional updates
           }
@@ -42,11 +48,13 @@ object DevLauncherPackageDelegate {
     listOf(
       object : ReactActivityLifecycleListener {
         override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
-          DevLauncherController.maybeRedirect(activity)
+          if (shouldEnableAutoSetup) {
+            DevLauncherController.maybeRedirect(activity)
+          }
         }
 
         override fun onNewIntent(intent: Intent?, activity: ReactActivity): Boolean {
-          return intent != null && DevLauncherController.tryToHandleIntent(activity, intent)
+          return shouldEnableAutoSetup && intent != null && DevLauncherController.tryToHandleIntent(activity, intent)
         }
       }
     )
@@ -55,11 +63,13 @@ object DevLauncherPackageDelegate {
     listOf(
       object : ReactActivityHandler {
         override fun onWillCreateReactActivityDelegate(activity: ReactActivity) {
-          DevLauncherController.onWillCreateReactActivityDelegate(activity)
+          if (shouldEnableAutoSetup) {
+            DevLauncherController.onWillCreateReactActivityDelegate(activity)
+          }
         }
 
         override fun shouldNoop(): Boolean {
-          return DevLauncherController.wasInitialized() && DevLauncherController.instance.mode == DevLauncherController.Mode.LAUNCHER
+          return shouldEnableAutoSetup && DevLauncherController.wasInitialized() && DevLauncherController.instance.mode == DevLauncherController.Mode.LAUNCHER
         }
       }
     )
