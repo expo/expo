@@ -1,2 +1,2 @@
-import fs from 'fs-extra';
-module.exports = fs;
+import { fs } from 'memfs';
+module.exports = fs.promises;
