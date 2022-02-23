@@ -11,7 +11,6 @@ type ThemeProviderProps = {
 
 export function ThemePreferenceProvider({ children, theme }: ThemeProviderProps) {
   React.useEffect(() => {
-    console.log({ theme });
     ThemePreferences.notify(theme);
   }, [theme]);
 
