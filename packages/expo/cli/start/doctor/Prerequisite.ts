@@ -1,6 +1,7 @@
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 
+/** An error that is memoized and asserted whenever a Prerequisite.assertAsync is subsequently called. */
 export class PrerequisiteCommandError extends CommandError {
   constructor(code: string, message: string = '') {
     super(message ? 'VALIDATE_' + code : code, message);
@@ -12,7 +13,7 @@ export class Prerequisite {
   private _assertAsync: () => Promise<void>;
 
   constructor() {
-    this._assertAsync = memoize(this.assertImplementation);
+    this._assertAsync = memoize(this.assertImplementation.bind(this));
   }
 
   /** An optional warning to call before running the memoized assertion.  */
@@ -21,7 +22,7 @@ export class Prerequisite {
   /** Reset the assertion memo and warning message. */
   public resetAssertion() {
     this.cachedError = undefined;
-    this._assertAsync = memoize(this.assertImplementation);
+    this._assertAsync = memoize(this.assertImplementation.bind(this));
   }
 
   async assertAsync(): Promise<void> {

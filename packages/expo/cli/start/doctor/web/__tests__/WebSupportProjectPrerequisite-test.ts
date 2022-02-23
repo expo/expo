@@ -52,12 +52,24 @@ describe(isWebPlatformExcluded, () => {
   });
 });
 
-describe('_shouldSetupWebSupportAsync', () => {
-  const projectRoot = '/test-project';
-
+describe('assertAsync', () => {
   beforeEach(() => {
     delete process.env.EXPO_NO_WEB_SETUP;
   });
+  afterAll(() => {
+    delete process.env.EXPO_NO_WEB_SETUP;
+  });
+  it('skips setup due to environment variable', async () => {
+    process.env.EXPO_NO_WEB_SETUP = '1';
+    const prerequisite = new WebSupportProjectPrerequisite('/');
+    await expect(prerequisite.assertAsync()).rejects.toThrowError(
+      /Skipping web setup: EXPO_NO_WEB_SETUP is enabled\./
+    );
+  });
+});
+
+describe('_shouldSetupWebSupportAsync', () => {
+  const projectRoot = '/test-project';
 
   it('skips setup due to platform exclusion', async () => {
     asMock(getProjectConfigDescriptionWithPaths).mockReturnValueOnce('app.json');
@@ -72,18 +84,11 @@ describe('_shouldSetupWebSupportAsync', () => {
 
     const prerequisite = new WebSupportProjectPrerequisite(projectRoot);
     await expectThrowsErrorStrippedMessageMatching(
-      prerequisite._shouldSetupWebSupportAsync,
+      prerequisite._shouldSetupWebSupportAsync.bind(prerequisite),
       /Skipping web setup: "web" is not included in the project app\.json "platforms" array\./
     );
   });
-  it('skips setup due to environment variable', async () => {
-    process.env.EXPO_NO_WEB_SETUP = '1';
-    const prerequisite = new WebSupportProjectPrerequisite(projectRoot);
-    await expectThrowsErrorStrippedMessageMatching(
-      prerequisite._shouldSetupWebSupportAsync,
-      /Skipping web setup: EXPO_NO_WEB_SETUP is enabled\./
-    );
-  });
+
   it('should setup web support', async () => {
     asMock(getProjectConfigDescriptionWithPaths).mockReturnValueOnce('app.json');
     asMock(getConfig).mockReturnValueOnce({
