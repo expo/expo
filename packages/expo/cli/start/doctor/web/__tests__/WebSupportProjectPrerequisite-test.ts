@@ -1,7 +1,10 @@
 import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 
 import { stripAnsi } from '../../../../utils/ansi';
-import { isWebPlatformExcluded, shouldSetupWebSupportAsync } from '../ensureWebSetup';
+import {
+  isWebPlatformExcluded,
+  WebSupportProjectPrerequisite,
+} from '../WebSupportProjectPrerequisite';
 
 const asMock = (fn: any): jest.Mock => fn;
 
@@ -16,6 +19,19 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
+
+async function expectThrowsErrorStrippedMessageMatching(fn: Function, test: RegExp) {
+  let error;
+  try {
+    await fn();
+  } catch (e) {
+    error = e;
+  }
+  if (error === undefined) {
+    throw new Error('did not throw');
+  }
+  expect(stripAnsi(error.message)).toMatch(test);
+}
 
 describe(isWebPlatformExcluded, () => {
   it('should return true if the platform is excluded', () => {
@@ -36,7 +52,7 @@ describe(isWebPlatformExcluded, () => {
   });
 });
 
-describe(shouldSetupWebSupportAsync, () => {
+describe('_shouldSetupWebSupportAsync', () => {
   const projectRoot = '/test-project';
 
   beforeEach(() => {
@@ -54,17 +70,18 @@ describe(shouldSetupWebSupportAsync, () => {
       },
     });
 
-    // @ts-expect-error
-    expect(stripAnsi((await shouldSetupWebSupportAsync(projectRoot)).failureReason)).toBe(
-      '› Skipping web setup: "web" is not included in the project app.json "platforms" array.'
+    const prerequisite = new WebSupportProjectPrerequisite(projectRoot);
+    await expectThrowsErrorStrippedMessageMatching(
+      prerequisite._shouldSetupWebSupportAsync,
+      /Skipping web setup: "web" is not included in the project app\.json "platforms" array\./
     );
   });
   it('skips setup due to environment variable', async () => {
     process.env.EXPO_NO_WEB_SETUP = '1';
-
-    // @ts-expect-error
-    expect(stripAnsi((await shouldSetupWebSupportAsync(projectRoot)).failureReason)).toBe(
-      '› Skipping web setup: EXPO_NO_WEB_SETUP is enabled.'
+    const prerequisite = new WebSupportProjectPrerequisite(projectRoot);
+    await expectThrowsErrorStrippedMessageMatching(
+      prerequisite._shouldSetupWebSupportAsync,
+      /Skipping web setup: EXPO_NO_WEB_SETUP is enabled\./
     );
   });
   it('should setup web support', async () => {
@@ -75,10 +92,7 @@ describe(shouldSetupWebSupportAsync, () => {
         expo: {},
       },
     });
-
-    expect(
-      // @ts-expect-error
-      stripAnsi((await shouldSetupWebSupportAsync(projectRoot)).failureReason)
-    ).toBeUndefined();
+    const prerequisite = new WebSupportProjectPrerequisite(projectRoot);
+    await expect(prerequisite._shouldSetupWebSupportAsync()).resolves.toEqual(expect.anything());
   });
 });
