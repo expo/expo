@@ -59,6 +59,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
           // the package and attempts to resolve the module in the same process.
           { file: 'react-native-web/package.json', pkg: 'react-native-web' },
           { file: 'react-dom/package.json', pkg: 'react-dom' },
+          { file: '@expo/webpack-config/package.json', pkg: '@expo/webpack-config' },
         ],
       });
     } catch (error) {
