@@ -1,0 +1,11 @@
+fragment CurrentUserData on User {
+  id
+  username
+  firstName
+  lastName
+  profilePhoto
+  accounts {
+    id
+    name
+  }
+}
