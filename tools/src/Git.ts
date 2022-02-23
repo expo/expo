@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import parseDiff from 'parse-diff';
-import { join } from 'path';
+import { join, relative } from 'path';
 
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 import { EXPO_DIR } from './Constants';
@@ -406,6 +406,14 @@ export class GitDirectory {
           path: columns.slice(4).join('').trim(),
         };
       });
+  }
+
+  /**
+   * Read a file content from a given ref.
+   */
+  async readFileAsync(ref: string, path): Promise<string> {
+    const { stdout } = await this.runAsync(['show', `${ref}:${relative(EXPO_DIR, path)}`]);
+    return stdout;
   }
 
   /**
