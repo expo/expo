@@ -7,7 +7,7 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest .",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -30,10 +30,17 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
   "dependencies": {
     "@expo/styleguide-native": "^0.4.0",
-    "expo-module-scripts": "^2.0.0",
-    "react-native-primitives": "^0.1.3"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-native": "^4.0.4",
+    "@testing-library/react-native": "^8.0.0"
   },
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "@testing-library/react-native",
+    "setupFilesAfterEnv": [
+      "./setupTests",
+      "@testing-library/jest-native/extend-expect"
+    ]
   }
 }

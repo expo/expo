@@ -2,6 +2,8 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
+import { ThemePreferenceProvider } from 'expo-dev-client-components';
+import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
@@ -109,11 +111,13 @@ export default function HomeApp() {
   const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <ActionSheetProvider>
-        <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
-      </ActionSheetProvider>
-    </View>
+    <ThemePreferenceProvider theme={preferredAppearance as ThemePreference}>
+      <View style={[styles.container, { backgroundColor }]}>
+        <ActionSheetProvider>
+          <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
+        </ActionSheetProvider>
+      </View>
+    </ThemePreferenceProvider>
   );
 }
 
