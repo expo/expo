@@ -48,6 +48,7 @@ import java.net.CookieHandler
 import java.net.URLConnection
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 import kotlin.math.pow
 
@@ -81,6 +82,17 @@ private const val EXUploadProgressEventName = "expo-file-system.uploadProgress"
 private const val MIN_EVENT_DT_MS: Long = 100
 private const val HEADER_KEY = "headers"
 private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
+
+private fun slashifyFilePath(path: String?): String? {
+  return if (path == null) {
+    null
+  } else if (path.startsWith("file:///")) {
+    path
+  } else {
+    // Ensure leading schema with a triple slash
+    Pattern.compile("^file:/*").matcher(path).replaceAll("file:///")
+  }
+}
 
 // The class needs to be 'open', because it's inherited in expoview
 open class FileSystemModule(
@@ -206,12 +218,12 @@ open class FileSystemModule(
 
   @ExpoMethod
   fun getInfoAsync(_uriStr: String, options: Map<String?, Any?>, promise: Promise) {
-    var uriStr = _uriStr
+    var uriStr = slashifyFilePath(_uriStr)
     try {
       val uri = Uri.parse(uriStr)
       var absoluteUri = uri
       if (uri.scheme == "file") {
-        uriStr = parseFileUri(uriStr)
+        uriStr = parseFileUri(uriStr as String)
         absoluteUri = Uri.parse(uriStr)
       }
       ensurePermission(absoluteUri, Permission.READ)
@@ -277,7 +289,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun readAsStringAsync(uriStr: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.READ)
 
       // TODO:Bacon: Add more encoding types to match iOS
@@ -316,7 +328,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun writeAsStringAsync(uriStr: String?, string: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       val encoding = getEncodingFromOptions(options)
       getOutputStream(uri).use { out ->
@@ -337,7 +349,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun deleteAsync(uriStr: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       val appendedUri = Uri.withAppendedPath(uri, "..")
       ensurePermission(appendedUri, Permission.WRITE, "Location '$uri' isn't deletable.")
       if (uri.scheme == "file") {
@@ -391,13 +403,13 @@ open class FileSystemModule(
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.")
         return
       }
-      val fromUri = Uri.parse(options["from"] as String?)
+      val fromUri = Uri.parse(slashifyFilePath(options["from"] as String?))
       ensurePermission(Uri.withAppendedPath(fromUri, ".."), Permission.WRITE, "Location '$fromUri' isn't movable.")
       if (!options.containsKey("to")) {
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.")
         return
       }
-      val toUri = Uri.parse(options["to"] as String?)
+      val toUri = Uri.parse(slashifyFilePath(options["to"] as String?))
       ensurePermission(toUri, Permission.WRITE)
       if (fromUri.scheme == "file") {
         val from = fromUri.toFile()
@@ -435,13 +447,13 @@ open class FileSystemModule(
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.")
         return
       }
-      val fromUri = Uri.parse(options["from"] as String?)
+      val fromUri = Uri.parse(slashifyFilePath(options["from"] as String?))
       ensurePermission(fromUri, Permission.READ)
       if (!options.containsKey("to")) {
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.")
         return
       }
-      val toUri = Uri.parse(options["to"] as String?)
+      val toUri = Uri.parse(slashifyFilePath(options["to"] as String?))
       ensurePermission(toUri, Permission.WRITE)
       when {
         fromUri.scheme == "file" -> {
@@ -524,7 +536,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun makeDirectoryAsync(uriStr: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       if (uri.scheme == "file") {
         val file = uri.toFile()
@@ -551,7 +563,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun readDirectoryAsync(uriStr: String?, options: Map<String?, Any?>?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.READ)
       if (uri.scheme == "file") {
         val file = uri.toFile()
@@ -614,7 +626,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun getContentUriAsync(uri: String, promise: Promise) {
     try {
-      val fileUri = Uri.parse(uri)
+      val fileUri = Uri.parse(slashifyFilePath(uri))
       ensurePermission(fileUri, Permission.WRITE)
       ensurePermission(fileUri, Permission.READ)
       fileUri.checkIfFileDirExists()
@@ -639,7 +651,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun readSAFDirectoryAsync(uriStr: String?, options: Map<String?, Any?>?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.READ)
       if (uri.isSAFUri) {
         val file = DocumentFile.fromTreeUri(context, uri)
@@ -665,7 +677,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun makeSAFDirectoryAsync(uriStr: String?, dirName: String?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       if (!uri.isSAFUri) {
         throw IOException("The URI '$uri' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.")
@@ -691,7 +703,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun createSAFFileAsync(uriStr: String?, fileName: String?, mimeType: String?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       if (uri.isSAFUri) {
         val dir = getNearestSAFFile(uri)
@@ -727,7 +739,7 @@ open class FileSystemModule(
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         initialFileUrl
-          ?.let { Uri.parse(it) }
+          ?.let { Uri.parse(slashifyFilePath(it)) }
           ?.let { intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, it) }
       }
       val activityProvider: ActivityProvider by moduleRegistry()
@@ -747,7 +759,7 @@ open class FileSystemModule(
 
   private fun createUploadRequest(url: String, fileUriString: String, options: Map<String, Any>, promise: Promise, decorator: RequestBodyDecorator): Request? {
     try {
-      val fileUri = Uri.parse(fileUriString)
+      val fileUri = Uri.parse(slashifyFilePath(fileUriString))
       ensurePermission(fileUri, Permission.READ)
       fileUri.checkIfFileExists()
       if (!options.containsKey("httpMethod")) {
@@ -891,7 +903,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun downloadAsync(url: String, uriStr: String?, options: Map<String?, Any?>?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       uri.checkIfFileDirExists()
       when {
@@ -970,7 +982,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun downloadResumableStartAsync(url: String, fileUriStr: String, uuid: String, options: Map<String?, Any?>, resumeData: String?, promise: Promise) {
     try {
-      val fileUri = Uri.parse(fileUriStr)
+      val fileUri = Uri.parse(slashifyFilePath(fileUriStr))
       fileUri.checkIfFileDirExists()
       if (fileUri.scheme != "file") {
         throw IOException("Unsupported scheme for location '$fileUri'.")
