@@ -2,7 +2,7 @@ import { execAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
 import * as Log from '../../../log';
-import { Prerequisite, PrerequisiteCommandError } from './Prerequisite';
+import { Prerequisite, PrerequisiteCommandError } from '../Prerequisite';
 
 async function getSimulatorAppIdAsync(): Promise<string | null> {
   try {

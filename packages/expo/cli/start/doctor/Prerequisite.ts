@@ -1,5 +1,5 @@
-import { CommandError, UnimplementedError } from '../../../utils/errors';
-import { memoize } from '../../../utils/fn';
+import { CommandError, UnimplementedError } from '../../utils/errors';
+import { memoize } from '../../utils/fn';
 
 export class PrerequisiteCommandError extends CommandError {
   constructor(code: string, message: string = '') {
@@ -19,7 +19,7 @@ export class Prerequisite {
   protected cachedError?: PrerequisiteCommandError;
 
   /** Reset the assertion memo and warning message. */
-  protected resetAssertion() {
+  public resetAssertion() {
     this.cachedError = undefined;
     this._assertAsync = memoize(this.assertImplementation);
   }
@@ -44,6 +44,7 @@ export class Prerequisite {
   }
 }
 
+/** A prerequisite that is project specific. */
 export class ProjectPrerequisite extends Prerequisite {
   constructor(protected projectRoot: string) {
     super();

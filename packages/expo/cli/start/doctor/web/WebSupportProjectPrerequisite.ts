@@ -9,7 +9,7 @@ import chalk from 'chalk';
 
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
-import { PrerequisiteCommandError, ProjectPrerequisite } from '../apple/Prerequisite';
+import { PrerequisiteCommandError, ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 
 /** Ensure the project has the required web support settings. */

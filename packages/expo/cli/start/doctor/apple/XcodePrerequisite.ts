@@ -5,7 +5,7 @@ import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
-import { Prerequisite } from './Prerequisite';
+import { Prerequisite } from '../Prerequisite';
 
 // Based on the RN docs (Aug 2020).
 const MIN_XCODE_VERSION = 9.4;
