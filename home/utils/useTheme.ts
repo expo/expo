@@ -1,19 +1,24 @@
-import { lightTheme, darkTheme } from '@expo/styleguide-native';
+import { useExpoTheme } from 'expo-dev-client-components';
+import { useThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
 import { useColorScheme } from 'react-native';
 
-import { useSelector } from '../redux/Hooks';
-
-type ExpoTheme = typeof lightTheme;
-
-export function useStyleguideTheme(): { theme: ExpoTheme; themeType: 'light' | 'dark' } {
-  const preferredAppearance = useSelector((data) => data.settings.preferredAppearance);
+export function useTheme(): {
+  theme: ReturnType<typeof useExpoTheme>;
+  themeType: 'light' | 'dark';
+} {
+  const preference = useThemePreference();
   const colorScheme = useColorScheme();
+  const theme = useExpoTheme();
 
-  const theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+  let themeType = preference;
 
-  if (theme === 'dark') {
-    return { theme: darkTheme, themeType: 'dark' };
+  if (themeType === 'no-preference' && colorScheme != null) {
+    themeType = colorScheme;
   }
 
-  return { theme: lightTheme, themeType: 'light' };
+  if (themeType === 'dark') {
+    return { theme, themeType: 'dark' };
+  }
+
+  return { theme, themeType: 'light' };
 }

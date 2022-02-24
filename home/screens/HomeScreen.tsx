@@ -27,7 +27,6 @@ import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
-import { spacing } from '@expo/styleguide-native';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -414,7 +413,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: spacing[4],
+    // TODO: padding: spacing[4],
   },
   projectImageStyle: {
     borderWidth: 1,
