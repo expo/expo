@@ -20,7 +20,7 @@ You can install expo-sharing in the same way as you installed expo-image-picker:
 <!-- prettier-ignore -->
 ```js
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 /* @info As always, we must import it to use it */ import * as Sharing from 'expo-sharing'; /* @end */
 
