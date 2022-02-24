@@ -8,10 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Fix inverted values of `FaceDetectorLandmarks` and `FaceDetectorClassifications` enums. ([#16114](https://github.com/expo/expo/pull/16114) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
+
+## 11.1.3 - 2022-02-04
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.2 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 11.1.1 — 2021-12-08
 
