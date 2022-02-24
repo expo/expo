@@ -114,13 +114,17 @@ function PackagersList() {
         <Spacer.Vertical size="medium" />
         {devSessions.length > 0 && (
           <>
-            {devSessions.map((devSession) => {
+            {devSessions.map((devSession, index, arr) => {
+              const isLast = index === arr.length - 1;
+
               return (
-                <PackagerRow
-                  key={devSession.url}
-                  label={devSession.description}
-                  onPress={() => onPackagerPress(devSession)}
-                />
+                <View key={devSession.url}>
+                  <PackagerRow
+                    label={devSession.description}
+                    onPress={() => onPackagerPress(devSession)}
+                  />
+                  {!isLast && <Divider />}
+                </View>
               );
             })}
           </>
@@ -128,9 +132,14 @@ function PackagersList() {
 
         {recentlyOpenedApps.length > 0 && (
           <>
-            {recentlyOpenedApps.map((app) => {
+            <Divider />
+            {recentlyOpenedApps.map((app, index, arr) => {
+              const isLast = index === arr.length - 1;
               return (
-                <PackagerRow key={app.url} label={app.name} onPress={() => onPackagerPress(app)} />
+                <View key={app.url}>
+                  <PackagerRow label={app.name} onPress={() => onPackagerPress(app)} />
+                  {!isLast && <Divider />}
+                </View>
               );
             })}
           </>
@@ -157,7 +166,6 @@ function PackagerRow({ onPress, label }: PackagerRowProps) {
           <ChevronRightIcon />
         </Row>
       </Button.ScaleOnPressContainer>
-      <Divider />
     </View>
   );
 }
