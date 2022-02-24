@@ -133,7 +133,7 @@ export function HomeScreen({
                 rounded="full"
                 minScale={0.85}
                 onPress={onDevServerQuestionPress}>
-                <View rounded="full" padding="tiny">
+                <View rounded="full" padding="small">
                   <InfoIcon />
                 </View>
               </Button.ScaleOnPressContainer>
@@ -197,11 +197,11 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
 
   return (
     <Button.ScaleOnPressContainer onPress={onRefetchPress} disabled={isFetching} bg="default">
-      <Row align="center" padding="medium" bg="default">
+      <Row align="center" padding="medium">
         <PulseIndicator isActive={isFetching} color={backgroundColor} />
         <Spacer.Horizontal size="small" />
         <Button.Text color="default">
-          {isFetching ? 'Searching for development servers...' : 'Fetch development servers'}
+          {isFetching ? 'Searching for development servers...' : 'Refetch development servers'}
         </Button.Text>
         <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
@@ -230,7 +230,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
               roundedTop="large"
               roundedBottom="none"
               bg="default">
-              <Row align="center" padding="medium" bg="default">
+              <Row align="center" padding="medium">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
                 <View flex="1">
@@ -276,7 +276,7 @@ function RecentlyOpenedApps({ onAppPress }) {
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
                 bg="default">
-                <Row align="center" padding="medium" bg="default">
+                <Row align="center" padding="medium">
                   <StatusIndicator size="small" status="success" />
                   <Spacer.Horizontal size="small" />
                   <View flex="1">
