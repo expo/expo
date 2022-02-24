@@ -7,7 +7,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Deprecated `react-native-appearance`.
+- Deprecated `react-native-appearance`. ([#16436](https://github.com/expo/expo/pull/16436) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
