@@ -161,7 +161,7 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   const applyRNVersionPatches = async () => {
-    const rnVersion = '0.64.3';
+    const rnVersion = '0.67.2';
     const patchVersion = rnVersion.split('.')[1];
     const patchSourceDir = path.join(clonedProjectPath, 'android', 'rnVersionPatch', patchVersion);
     const javaFiles = await glob('**/*.java', {

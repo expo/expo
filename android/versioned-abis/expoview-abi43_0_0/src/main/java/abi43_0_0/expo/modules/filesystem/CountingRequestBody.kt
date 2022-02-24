@@ -1,11 +1,7 @@
 package abi43_0_0.expo.modules.filesystem
 
 import okhttp3.RequestBody
-import okio.Buffer
-import okio.BufferedSink
-import okio.ForwardingSink
-import okio.Okio
-import okio.Sink
+import okio.*
 import java.io.IOException
 
 @FunctionalInterface
@@ -44,7 +40,7 @@ class CountingRequestBody(
 
   override fun writeTo(sink: BufferedSink) {
     val countingSink = CountingSink(sink, this, progressListener)
-    val bufferedSink = Okio.buffer(countingSink)
+    val bufferedSink = countingSink.buffer()
     requestBody.writeTo(bufferedSink)
     bufferedSink.flush()
   }

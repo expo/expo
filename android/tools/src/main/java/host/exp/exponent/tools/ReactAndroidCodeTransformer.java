@@ -196,6 +196,8 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
+    FILES_TO_MODIFY.put("devsupport/BridgeDevSupportManager.java", null);
+
     FILES_TO_MODIFY.put("modules/core/ExceptionsManagerModule.java", new MethodVisitor() {
 
       @Override
@@ -309,17 +311,17 @@ public class ReactAndroidCodeTransformer {
     FileUtils.copyDirectory(new File(projectRoot + REACT_COMMON_SOURCE_ROOT), reactCommonDestRoot);
     FileUtils.copyDirectory(new File(projectRoot + REACT_ANDROID_SOURCE_ROOT), reactAndroidDestRoot);
 
-    // Update release.gradle
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
-        "'https://oss.sonatype.org/service/local/staging/deploy/maven2/'",
-        "\"file:${System.env.HOME}/.m2/repository/\"");
+    // Update maven publish information
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
+        "def AAR_OUTPUT_URL = \"file://${projectDir}/../android\"",
+        "def AAR_OUTPUT_URL = \"file:${System.env.HOME}/.m2/repository\"");
 
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
         "group = GROUP",
         "group = 'com.facebook.react'");
 
     // This version also gets updated in android-tasks.js
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/release.gradle"),
+    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
         "version = VERSION_NAME",
         "version = '" + sdkVersion + "'");
 
@@ -400,6 +402,8 @@ public class ReactAndroidCodeTransformer {
       switch (name) {
         case "NetworkingModule":
           return networkingModuleConstructor(n);
+        case "BridgeDevSupportManager":
+          return bridgeDevSupportManagerConstructor(n);
       }
 
       return n;
@@ -623,6 +627,25 @@ public class ReactAndroidCodeTransformer {
         }
 
         return new EmptyStmt();
+      }
+    });
+  }
+
+  // Remove some custom dev options. unlike `showDevOptionsDialog`, this happens in constructor.
+  private static Node bridgeDevSupportManagerConstructor(final ConstructorDeclaration n) {
+    return mapBlockStatement(n, new StatementMapper() {
+      @Override
+      public Statement map(Statement statement) {
+        if (statement instanceof LabeledStmt) {
+          LabeledStmt labeledStmt = (LabeledStmt) statement;
+          if ("expo_transformer_remove".equals(labeledStmt.getLabel().getIdentifier())) {
+            Statement emptyStatement = new EmptyStmt();
+            emptyStatement.setLineComment(" code removed by ReactAndroidCodeTransformer");
+            return emptyStatement;
+          }
+        }
+
+        return statement;
       }
     });
   }

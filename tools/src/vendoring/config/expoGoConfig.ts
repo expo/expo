@@ -59,7 +59,7 @@ const config: VendoringTargetConfig = {
       ios: {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
           let content = await fs.readFile(podspecPath, 'utf-8');
-          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.64.3'");
+          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.67.2'");
           content = content.replace(/(puts "\[RNReanimated\].*$)/gm, '# $1');
           await fs.writeFile(podspecPath, content);
           return podspecPath;

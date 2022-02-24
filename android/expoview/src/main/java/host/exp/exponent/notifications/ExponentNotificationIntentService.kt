@@ -12,8 +12,8 @@ import host.exp.exponent.network.ExpoResponse
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -85,7 +85,7 @@ abstract class ExponentNotificationIntentService(name: String?) : IntentService(
           put("type", getServerType())
         }
 
-        val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString())
+        val body = params.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/updateDeviceToken")
           .header("Content-Type", "application/json")
           .post(body)

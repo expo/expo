@@ -251,7 +251,7 @@ class Exponent private constructor(val context: Context, val application: Applic
       exponentNetwork.longTimeoutClient.apply {
         when {
           shouldForceCache -> tryForcedCachedResponse(
-            request.url().toString(),
+            request.url.toString(),
             request,
             callback,
             null,
@@ -309,7 +309,7 @@ class Exponent private constructor(val context: Context, val application: Applic
 
       @Throws(IOException::class)
       override fun onResponse(call: Call, response: Response) {
-        val responseString = response.body()!!.string()
+        val responseString = response.body!!.string()
         if (responseString.contains(PACKAGER_RUNNING)) {
           runOnUiThread { callback.onSuccess() }
         } else {

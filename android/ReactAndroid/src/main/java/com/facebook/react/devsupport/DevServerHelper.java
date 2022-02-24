@@ -12,9 +12,10 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.R;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
@@ -41,7 +42,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okio.Okio;
 import okio.Sink;
 import org.json.JSONArray;
@@ -63,8 +63,6 @@ import org.json.JSONObject;
 public class DevServerHelper {
 
     public static String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
-
-    public static String PACKAGER_OK_STATUS = "packager-status:running";
 
     public static int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
@@ -121,6 +119,8 @@ public class DevServerHelper {
 
     public final BundleDownloader mBundleDownloader;
 
+    public final PackagerStatusCheck mPackagerStatusCheck;
+
     public final String mPackageName;
 
     public boolean mPackagerConnectionLock = false;
@@ -138,6 +138,7 @@ public class DevServerHelper {
         mBundlerStatusProvider = bundleStatusProvider;
         mClient = new OkHttpClient.Builder().connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS).writeTimeout(0, TimeUnit.MILLISECONDS).build();
         mBundleDownloader = new BundleDownloader(mClient);
+        mPackagerStatusCheck = new PackagerStatusCheck(mClient);
         mPackageName = packageName;
     }
 
@@ -436,44 +437,13 @@ public class DevServerHelper {
     }
 
     public void isPackagerRunning(final PackagerStatusCallback callback) {
-        String statusURL = createPackagerStatusURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
-        Request request = new Request.Builder().url(statusURL).build();
-        mClient.newCall(request).enqueue(new Callback() {
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                FLog.w(ReactConstants.TAG, "The packager does not seem to be running as we got an IOException requesting " + "its status: " + e.getMessage());
-                callback.onPackagerStatusFetched(false);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    FLog.e(ReactConstants.TAG, "Got non-success http code from packager when requesting status: " + response.code());
-                    callback.onPackagerStatusFetched(false);
-                    return;
-                }
-                ResponseBody body = response.body();
-                if (body == null) {
-                    FLog.e(ReactConstants.TAG, "Got null body response from packager when requesting status");
-                    callback.onPackagerStatusFetched(false);
-                    return;
-                }
-                String bodyString = // cannot call body.string() twice, stored it into variable.
-                body.string();
-                // https://github.com/square/okhttp/issues/1240#issuecomment-68142603
-                if (!PACKAGER_OK_STATUS.equals(bodyString)) {
-                    FLog.e(ReactConstants.TAG, "Got unexpected response from packager when requesting status: " + bodyString);
-                    callback.onPackagerStatusFetched(false);
-                    return;
-                }
-                callback.onPackagerStatusFetched(true);
-            }
-        });
-    }
-
-    private static String createPackagerStatusURL(String host) {
-        return String.format(Locale.US, "http://%s/status", host);
+        String host = mSettings.getPackagerConnectionSettings().getDebugServerHost();
+        if (host == null) {
+            FLog.w(ReactConstants.TAG, "No packager host configured.");
+            callback.onPackagerStatusFetched(false);
+        } else {
+            mPackagerStatusCheck.run(host, callback);
+        }
     }
 
     private String createLaunchJSDevtoolsCommandUrl() {

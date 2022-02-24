@@ -34,9 +34,7 @@ END UNCOMMENT WHEN DISTRIBUTING */
 
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-include ':packages:react-native-codegen:android'
-project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
-includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
+includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plugin/')
 
 include ':expoview'
 include ':tools'

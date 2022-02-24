@@ -57,27 +57,27 @@ jobs:
         name: Restore NDK cache
         id: cache-android-ndk
         with:
-          path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
-          key: ${{ runner.os }}-ndk-19.2.5345600
+          path: /usr/local/lib/android/sdk/ndk/21.4.7075529/
+          key: ${{ runner.os }}-ndk-21.4.7075529
           restore-keys: |
             ${{ runner.os }}-ndk-
       - name: Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;21.4.7075529"
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: Patch react-native to support single abi
         run: sed -i 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
         working-directory: react-native-lab/react-native
       - name: Run Spotless lint check
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
         working-directory: android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
       - name: Run native Android unit tests
         timeout-minutes: 30
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
         run: expotools native-unit-tests --platform android
       - name: Save test results
         if: always()

@@ -80,13 +80,6 @@ android {
       }
     }
   }
-
-  unitTestVariants.all {
-    it.mergedFlavor.manifestPlaceholders = [
-      // Fix expo-app-auth manifest merger issue for unit test
-      appAuthRedirectScheme: "test"
-    ]
-  }
 }
 
 dependencies { dependencyHandler ->

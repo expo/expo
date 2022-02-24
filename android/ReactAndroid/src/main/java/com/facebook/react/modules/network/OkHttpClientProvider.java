@@ -9,8 +9,6 @@ package com.facebook.react.modules.network;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import java.io.File;
-import java.security.Provider;
-import java.security.Security;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -61,13 +59,7 @@ public class OkHttpClientProvider {
     public static OkHttpClient.Builder createClientBuilder() {
         // No timeouts by default
         OkHttpClient.Builder client = new OkHttpClient.Builder().connectTimeout(0, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS).writeTimeout(0, TimeUnit.MILLISECONDS).cookieJar(new ReactCookieJarContainer());
-        try {
-            Class ConscryptProvider = Class.forName("org.conscrypt.OpenSSLProvider");
-            Security.insertProviderAt((Provider) ConscryptProvider.newInstance(), 1);
-            return client;
-        } catch (Exception e) {
-            return enableTls12OnPreLollipop(client);
-        }
+        return client;
     }
 
     public static OkHttpClient.Builder createClientBuilder(Context context) {
@@ -84,14 +76,5 @@ public class OkHttpClientProvider {
         File cacheDirectory = new File(context.getCacheDir(), "http-cache");
         Cache cache = new Cache(cacheDirectory, cacheSize);
         return client.cache(cache);
-    }
-
-    /*
-   On Android 4.1-4.4 (API level 16 to 19) TLS 1.1 and 1.2 are
-   available but not enabled by default. The following method
-   enables it.
-  */
-    public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
-        return client;
     }
 }
