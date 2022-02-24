@@ -1,10 +1,12 @@
-import { ResizeMode, Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
-import { FunctionParameter } from '../../components/FunctionDemo.types';
+import FunctionDemo, {
+  FunctionDescription,
+  FunctionParameter,
+} from '../../components/FunctionDemo';
+import ImageOrVideoPreview from './ImageOrVideoPreview';
 
 const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
   {
@@ -197,39 +199,6 @@ const FUNCTIONS_DESCRIPTIONS: FunctionDescription[] = [
   },
 ];
 
-function isAnObjectWithUriAndType(obj: unknown): obj is { uri: string; type: string } {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    typeof (obj as any).uri === 'string' &&
-    typeof (obj as any).type === 'string'
-  );
-}
-
-function ImageOrVideo(result: unknown) {
-  console.log(result);
-
-  if (!isAnObjectWithUriAndType(result)) {
-    return;
-  }
-
-  return (
-    <View style={styles.previewContainer}>
-      {result.type === 'video' ? (
-        <Video
-          source={{ uri: result.uri }}
-          style={styles.video}
-          resizeMode={ResizeMode.CONTAIN}
-          shouldPlay
-          isLooping
-        />
-      ) : (
-        <Image source={{ uri: result.uri }} style={styles.image} />
-      )}
-    </View>
-  );
-}
-
 function ImagePickerScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -238,7 +207,7 @@ function ImagePickerScreen() {
           key={idx}
           namespace="ImagePicker"
           {...props}
-          renderAdditionalResult={ImageOrVideo}
+          renderAdditionalResult={ImageOrVideoPreview}
         />
       ))}
     </ScrollView>
@@ -253,19 +222,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
     justifyContent: 'center',
-  },
-  previewContainer: {
-    alignItems: 'center',
-    backgroundColor: '#000000',
-  },
-  image: {
-    width: 300,
-    height: 200,
-    resizeMode: 'contain',
-  },
-  video: {
-    width: 300,
-    height: 200,
   },
 });
 
