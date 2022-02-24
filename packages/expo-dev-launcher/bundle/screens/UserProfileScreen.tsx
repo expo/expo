@@ -146,10 +146,10 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
         rounded="medium"
         onPress={onSignupPress}
         disabled={isLoading}
-        accessibilityLabel="Sign up">
+        accessibilityLabel="Sign Up">
         <View py="small">
           <Button.Text color="secondary" weight="semibold" align="center">
-            Sign up
+            Sign Up
           </Button.Text>
         </View>
       </Button.ScaleOnPressContainer>
