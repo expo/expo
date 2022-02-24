@@ -17,20 +17,20 @@ export function BaseModal({ children, title }: BaseModalProps) {
 
   return (
     <View bg="default" rounded="large" shadow="medium" mx="small">
-      <View padding="medium">
+      <View padding="small">
         <Row align="center" bg="default">
           <View>
             <Heading>{title}</Heading>
           </View>
           <Spacer.Horizontal />
 
-          <View style={{ transform: [{ translateX: 6 }, { translateY: -3 }] }}>
+          <View style={{ transform: [{ translateX: 4 }, { translateY: -3 }] }}>
             <Button.ScaleOnPressContainer
               bg="default"
               rounded="full"
               onPress={onClosePress}
               minScale={0.85}>
-              <View padding="tiny" rounded="full" bg="default">
+              <View padding="tiny" rounded="full">
                 <XIcon />
               </View>
             </Button.ScaleOnPressContainer>
@@ -40,7 +40,7 @@ export function BaseModal({ children, title }: BaseModalProps) {
 
       <Divider />
 
-      <View padding="medium">{children}</View>
+      <View padding="small">{children}</View>
     </View>
   );
 }

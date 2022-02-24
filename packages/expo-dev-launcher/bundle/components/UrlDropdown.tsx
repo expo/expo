@@ -64,7 +64,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
         roundedTop="none"
         roundedBottom={open ? 'none' : 'large'}
         testID="DevLauncherURLToggle">
-        <Row align="center" padding="medium" bg="default">
+        <Row align="center" padding="medium">
           <ChevronRightIcon style={arrowStyle} />
           <Spacer.Horizontal size="tiny" />
           <Text size="large">Enter URL manually</Text>
