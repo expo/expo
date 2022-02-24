@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Deprecated `react-native-appearance`.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
