@@ -47,8 +47,11 @@ object DevLauncherPackageDelegate {
   fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> =
     listOf(
       object : ReactActivityLifecycleListener {
-        override fun onNewIntent(intent: Intent?, activity: ReactActivity): Boolean {
-          return shouldEnableAutoSetup && intent != null && DevLauncherController.tryToHandleIntent(activity, intent)
+        override fun onNewIntent(intent: Intent?): Boolean {
+          if (!shouldEnableAutoSetup || intent == null || activityContext == null || activityContext !is ReactActivity) {
+            return false
+          }
+          return DevLauncherController.tryToHandleIntent(activityContext, intent)
         }
       }
     )

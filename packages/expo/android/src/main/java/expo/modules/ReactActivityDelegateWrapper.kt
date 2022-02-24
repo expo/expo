@@ -15,7 +15,6 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
-import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -159,7 +158,7 @@ class ReactActivityDelegateWrapper(
 
   override fun onNewIntent(intent: Intent?): Boolean {
     val listenerResult = reactActivityLifecycleListeners
-      .map { it.onNewIntent(intent, activity) }
+      .map { it.onNewIntent(intent) }
       .fold(false) { accu, current -> accu || current }
     val delegateResult = delegate.onNewIntent(intent)
     return listenerResult || delegateResult
