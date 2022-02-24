@@ -48,21 +48,21 @@ jobs:
       - uses: actions/cache@v2
         id: cache-android-ndk
         with:
-          path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
-          key: ${{ runner.os }}-ndk-19.2.5345600
+          path: /usr/local/lib/android/sdk/ndk/21.4.7075529/
+          key: ${{ runner.os }}-ndk-21.4.7075529
           restore-keys: |
             ${{ runner.os }}-ndk-
       - name: Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;21.4.7075529"
       - name: Build Android packages
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
         run: expotools android-build-packages --packages all
       - name: Clean Android build artifacts that would needlessly bloat the shell app
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
         run: ./gradlew clean
         working-directory: android
       - name: Build shell app tarball
