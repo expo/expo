@@ -6,8 +6,8 @@ export declare const Heading: import("react").ForwardRefExoticComponent<import("
     align?: "center" | undefined;
     leading?: "large" | undefined;
     type?: "mono" | undefined;
-    weight?: "light" | "bold" | "normal" | "medium" | "thin" | "extralight" | "semibold" | "extrabold" | "black" | undefined;
-    color?: "primary" | "secondary" | "default" | "error" | "warning" | "success" | undefined;
+    weight?: "medium" | "normal" | "bold" | "thin" | "extralight" | "light" | "semibold" | "extrabold" | "black" | undefined;
+    color?: "default" | "secondary" | "success" | "warning" | "error" | "primary" | undefined;
 } & import("react").RefAttributes<import("react-native").TextProps>>;
 export declare const Text: import("react").ForwardRefExoticComponent<import("react-native").TextProps & {
     children?: import("react").ReactNode;
@@ -16,8 +16,8 @@ export declare const Text: import("react").ForwardRefExoticComponent<import("rea
     size?: "small" | "medium" | "large" | undefined;
     leading?: "large" | undefined;
     type?: "mono" | undefined;
-    weight?: "light" | "bold" | "normal" | "medium" | "thin" | "extralight" | "semibold" | "extrabold" | "black" | undefined;
-    color?: "primary" | "secondary" | "default" | "error" | "warning" | "success" | undefined;
+    weight?: "medium" | "normal" | "bold" | "thin" | "extralight" | "light" | "semibold" | "extrabold" | "black" | undefined;
+    color?: "default" | "secondary" | "success" | "warning" | "error" | "primary" | undefined;
 } & import("react").RefAttributes<import("react-native").TextProps>>;
 export declare const TextInput: import("react").ForwardRefExoticComponent<import("react-native").TextInputProps & {
     children?: import("react").ReactNode;
@@ -26,7 +26,7 @@ export declare const TextInput: import("react").ForwardRefExoticComponent<import
     size?: "small" | "medium" | "large" | undefined;
     leading?: "large" | undefined;
     type?: "mono" | undefined;
-    weight?: "light" | "bold" | "normal" | "medium" | "thin" | "extralight" | "semibold" | "extrabold" | "black" | undefined;
-    color?: "primary" | "secondary" | "default" | "error" | "warning" | "success" | undefined;
+    weight?: "medium" | "normal" | "bold" | "thin" | "extralight" | "light" | "semibold" | "extrabold" | "black" | undefined;
+    color?: "default" | "secondary" | "success" | "warning" | "error" | "primary" | undefined;
 } & import("react").RefAttributes<import("react-native").TextInputProps>>;
 //# sourceMappingURL=Text.d.ts.map

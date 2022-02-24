@@ -105,7 +105,7 @@ export function SettingsScreen() {
             roundedBottom="none"
             onPress={() => setMotionGestureEnabled(!motionGestureEnabled)}
             accessibilityState={{ checked: motionGestureEnabled }}>
-            <Row px="medium" py="small" align="center">
+            <Row px="medium" py="small" align="center" bg="default">
               <ShakeDeviceIcon />
               <Spacer.Horizontal size="small" />
               <Text size="large" color="secondary">
@@ -124,7 +124,7 @@ export function SettingsScreen() {
             roundedTop="none"
             onPress={() => setTouchGestureEnabled(!touchGestureEnabled)}
             accessibilityState={{ checked: touchGestureEnabled }}>
-            <Row px="medium" py="small">
+            <Row px="medium" py="small" bg="default">
               <ThreeFingerPressIcon />
               <Spacer.Horizontal size="small" />
               <Text size="large" color="secondary">
@@ -182,7 +182,7 @@ export function SettingsScreen() {
             bg="default"
             roundedTop="none"
             roundedBottom="large">
-            <Row px="medium" py="small" align="center">
+            <Row px="medium" py="small" align="center" bg="default">
               <Text color="primary" size="large">
                 {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
