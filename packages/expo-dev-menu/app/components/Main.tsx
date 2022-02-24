@@ -207,7 +207,7 @@ export function Main() {
             roundedTop="none"
             roundedBottom="large"
             disabled={hasCopiedAppInfoContent}>
-            <Row px="medium" py="small" align="center">
+            <Row px="medium" py="small" align="center" bg="default">
               <Text color="primary" size="large">
                 {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
@@ -229,7 +229,7 @@ function ActionButton({ icon, label, onPress }: ActionButtonProps) {
   return (
     <GestureHandlerTouchableWrapper onPress={onPress}>
       <Button.ScaleOnPressContainer minScale={0.9} bg="default" onPress={onPress}>
-        <View padding="small" rounded="large">
+        <View padding="small" rounded="large" bg="default">
           <View align="centered">{icon}</View>
 
           <Spacer.Vertical size="tiny" />
@@ -254,7 +254,7 @@ function SettingsRowButton({ label, icon, description = '', onPress }: SettingsR
   return (
     <GestureHandlerTouchableWrapper onPress={onPress}>
       <Button.ScaleOnPressContainer onPress={onPress} bg="default">
-        <Row padding="small" align="center">
+        <Row padding="small" align="center" bg="default">
           <View width="large" height="large">
             {icon}
           </View>
