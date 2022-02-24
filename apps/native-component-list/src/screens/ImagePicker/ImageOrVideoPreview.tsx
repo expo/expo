@@ -3,8 +3,6 @@ import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 
 export default function ImageOrVideo(result: unknown) {
-  console.log(result);
-
   if (!isAnObjectWithUriAndType(result)) {
     return;
   }
