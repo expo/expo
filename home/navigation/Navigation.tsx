@@ -203,11 +203,10 @@ function DiagnosticsStackScreen() {
 const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
+  const projectsOrHomeScreen = NAVIGATION_REDESIGN_ENABLED ? 'HomeStack' : 'ProjectsStack';
   const initialRouteName = Environment.IsIOSRestrictedBuild
     ? 'ProfileStackScreen'
-    : NAVIGATION_REDESIGN_ENABLED
-    ? 'HomeStack'
-    : 'ProjectsStack';
+    : projectsOrHomeScreen;
 
   return (
     <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
