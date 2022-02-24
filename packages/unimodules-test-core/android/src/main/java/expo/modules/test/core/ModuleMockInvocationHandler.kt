@@ -11,7 +11,7 @@ import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
 /**
- * The promise rejection will be transformed into this exception..
+ * The promise rejection will be converted into this exception.
  */
 class TestCodedException(
   code: String,
@@ -69,18 +69,18 @@ class ModuleMockInvocationHandler<T : Any>(
     when (mockedPromise.state) {
       PromiseState.RESOLVED -> {
         val moduleClassMethod = moduleTestInterface.members.firstOrNull { it.name == methodName }
-          ?: throw IllegalStateException("Module class method not found.")
+          ?: throw IllegalStateException("Module class method '$methodName' not found")
 
         if (mockedPromise.resolveValue == null) {
           if (moduleClassMethod.returnType.isMarkedNullable) {
             return null
           }
 
-          throw IllegalStateException("Method returns `null` but the non-nullable type was expected.")
+          throw IllegalStateException("Method returns 'null' but the non-nullable type was expected")
         }
 
         if (!(moduleClassMethod.returnType.classifier as KClass<*>).isInstance(mockedPromise.resolveValue)) {
-          throw IllegalStateException("Illegal type.")
+          throw IllegalStateException("Illegal return type ${mockedPromise.resolveValue?.javaClass}, expected ${moduleClassMethod.returnType.classifier}.")
         }
 
         return mockedPromise.resolveValue
@@ -92,7 +92,7 @@ class ModuleMockInvocationHandler<T : Any>(
           mockedPromise.rejectThrowable
         )
       PromiseState.NONE, PromiseState.ILLEGAL ->
-        throw IllegalStateException("Illegal promise state: ${mockedPromise.state}.")
+        throw IllegalStateException("Illegal promise state '${mockedPromise.state}'")
     }
   }
 

@@ -14,7 +14,6 @@ import java.lang.ref.WeakReference
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
 
-
 class ModuleMock {
   companion object {
     fun <T : Any> createMock(
