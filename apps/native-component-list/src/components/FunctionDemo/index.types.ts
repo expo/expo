@@ -1,8 +1,14 @@
+/**
+ * You can add another Tuple signature if needed.
+ * This type aggregates all known tuple-like types that are available across all APIs.
+ */
 export type Tuple = [number, number];
+
+export type Platform = 'android' | 'ios' | 'web';
 
 export type Parameter = {
   name: string;
-  platforms?: ('android' | 'ios' | 'web')[];
+  platforms?: Platform[];
 };
 
 export type BooleanParameter = Parameter & {
@@ -12,12 +18,12 @@ export type BooleanParameter = Parameter & {
 
 export type StringParameter = Parameter & {
   type: 'string';
-  values: string[];
+  values: (undefined | string)[];
 };
 
 export type NumberParameter = Parameter & {
   type: 'number';
-  values: number[];
+  values: (undefined | number)[];
 };
 
 export type EnumParameter = Parameter & {
@@ -49,3 +55,8 @@ export type FunctionParameter = PrimitiveParameter | ObjectParameter | ConstantP
 export type PrimitiveArgument = boolean | number | string | Tuple | undefined;
 
 export type FunctionArgument = PrimitiveArgument | Record<string, PrimitiveArgument>;
+
+/**
+ * Generic and intentionally not very well typed function signature to describe any action that can be called from the FunctionDemo.
+ */
+export type ActionFunction = (...args: any[]) => Promise<unknown>;
