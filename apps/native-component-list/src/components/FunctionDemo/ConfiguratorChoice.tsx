@@ -5,8 +5,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import EnumButton from './EnumButton';
 import Platforms from './Platforms';
 import {
+  ArgumentName,
   EnumParameter,
   NumberParameter,
+  OnArgumentChangeCallback,
   Platform,
   PrimitiveArgument,
   PrimitiveParameter,
@@ -14,16 +16,13 @@ import {
 } from './index.types';
 import { isCurrentPlatformSupported } from './utils';
 
-type Name = string | [objectName: string, propertyName: string];
-export type OnChangeCallback = (name: Name, value: PrimitiveArgument) => void;
-
 type Props = {
-  name: Name;
+  name: ArgumentName;
   platforms?: Platform[];
   type: PrimitiveParameter['type'];
   values?: (StringParameter | NumberParameter | EnumParameter)['values'];
   value: PrimitiveArgument;
-  onChange: OnChangeCallback;
+  onChange: OnArgumentChangeCallback;
 };
 
 export default function ConfiguratorChoice({

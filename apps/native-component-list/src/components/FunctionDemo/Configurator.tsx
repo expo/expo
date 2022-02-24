@@ -1,13 +1,18 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import ConfiguratorChoice, { OnChangeCallback } from './ConfiguratorChoice';
-import { FunctionArgument, FunctionParameter, PrimitiveArgument } from './index.types';
+import ConfiguratorChoice from './ConfiguratorChoice';
+import {
+  FunctionArgument,
+  FunctionParameter,
+  OnArgumentChangeCallback,
+  PrimitiveArgument,
+} from './index.types';
 
 type Props = {
   parameters: FunctionParameter[];
   value: FunctionArgument[];
-  onChange: OnChangeCallback;
+  onChange: OnArgumentChangeCallback;
 };
 
 export default function Configurator({ parameters, value, onChange }: Props) {

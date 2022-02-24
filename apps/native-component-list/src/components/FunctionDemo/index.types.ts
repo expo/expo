@@ -60,3 +60,7 @@ export type FunctionArgument = PrimitiveArgument | Record<string, PrimitiveArgum
  * Generic and intentionally not very well typed function signature to describe any action that can be called from the FunctionDemo.
  */
 export type ActionFunction = (...args: any[]) => Promise<unknown>;
+
+export type ArgumentName = string | [objectName: string, propertyName: string];
+
+export type OnArgumentChangeCallback = (name: ArgumentName, value: PrimitiveArgument) => void;

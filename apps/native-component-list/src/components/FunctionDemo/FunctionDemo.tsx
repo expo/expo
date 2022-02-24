@@ -9,9 +9,11 @@ import Divider from './Divider';
 import FunctionSignature from './FunctionSignature';
 import {
   ActionFunction,
+  ArgumentName,
   ConstantParameter,
   FunctionArgument,
   FunctionParameter,
+  OnArgumentChangeCallback,
   PrimitiveArgument,
   PrimitiveParameter,
 } from './index.types';
@@ -181,10 +183,10 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
  */
 function useArguments(
   parameters: FunctionParameter[]
-): [FunctionArgument[], (name: string | [string, string], newValue: PrimitiveArgument) => void] {
+): [FunctionArgument[], OnArgumentChangeCallback] {
   const [args, setArgs] = useState(initialArgumentsFromParameters(parameters));
   const updateArgument = useCallback(
-    (name: string | [string, string], newValue: PrimitiveArgument) => {
+    (name: ArgumentName, newValue: PrimitiveArgument) => {
       const parameterIsObject = typeof name === 'object';
       const argumentName = parameterIsObject ? name[0] : name;
       const argumentIdx = parameters.findIndex((parameter) => parameter.name === argumentName);
