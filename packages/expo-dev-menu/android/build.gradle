@@ -205,6 +205,13 @@ android {
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
+
+        def expoPackageVersion = getExpoPackageVersion()
+        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
+          srcDirs += "src/expo-45"
+        } else {
+          srcDirs += "src/expo-44"
+        }
       }
     }
 
@@ -271,4 +278,26 @@ dependencies {
   testImplementation "org.robolectric:robolectric:4.3.1"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
   testImplementation 'androidx.test:core:1.3.0'
+}
+
+def versionToNumber(major, minor, patch) {
+  return patch * 100 + minor * 10000 + major * 1000000
+}
+
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
+
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}
+
+def getExpoPackageVersion() {
+  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
 }
