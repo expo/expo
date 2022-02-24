@@ -202,7 +202,7 @@ function UserAccountSelector({
                 bg="default"
                 roundedBottom={isLast ? 'large' : 'none'}
                 roundedTop={isFirst ? 'large' : 'none'}>
-                <Row align="center" py="small" px="medium">
+                <Row align="center" py="small" px="medium" bg="default">
                   <Image size="large" rounded="full" source={{ uri: account.owner.profilePhoto }} />
                   <Spacer.Horizontal size="small" />
 
