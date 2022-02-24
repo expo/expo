@@ -412,9 +412,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  contentContainer: {
-    // TODO: padding: spacing[4],
-  },
+  contentContainer: {},
   projectImageStyle: {
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 32, 0.1)',
