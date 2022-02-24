@@ -140,13 +140,7 @@ function Header({
           bg="default"
           rounded="full">
           <View rounded="full" padding="medium">
-            <UserIcon
-              style={
-                {
-                  // tintColor: theme.icon.default,
-                }
-              }
-            />
+            <UserIcon />
           </View>
         </Button.ScaleOnPressContainer>
       </Row>

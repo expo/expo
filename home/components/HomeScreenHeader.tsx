@@ -1,5 +1,5 @@
 import { spacing } from '@expo/styleguide-native';
-import { Button, View, Row, Image, UserIcon, scale, Text } from 'expo-dev-client-components';
+import { Button, View, Row, Image, UserIcon, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
 import { CurrentUserDataFragment } from 'graphql/types';
 import * as React from 'react';
@@ -14,28 +14,32 @@ type Props = {
 export function HomeScreenHeader({ currentUser }: Props) {
   const { theme, themeType } = useTheme();
 
+  async function onAccountButtonPress() {
+    try {
+      if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } catch (e) {
+      console.error(e);
+    }
+    console.log('Show Account Modal');
+  }
+
   return (
-    <Row
-      padding="medium"
-      align="center"
-      bg="default"
-      style={{
-        justifyContent: 'space-between',
-      }}>
+    <Row padding="medium" align="center" bg="default" justify="between">
       <Row align="center">
         <View
           align="centered"
           rounded="medium"
           shadow="button"
+          height="xl"
+          width="xl"
           style={{
-            backgroundColor: theme.background.default,
-            height: scale.xl,
-            width: scale.xl,
             marginRight: spacing[2],
-            ...(themeType === 'dark' && {
-              borderColor: theme.border.default,
-              backgroundColor: theme.background.overlay,
-            }),
+            ...(themeType === 'dark'
+              ? {
+                  borderColor: theme.border.default,
+                  backgroundColor: theme.background.overlay,
+                }
+              : { backgroundColor: theme.background.default }),
             elevation: themeType === 'light' ? 1 : 0,
           }}>
           <Image
@@ -53,15 +57,7 @@ export function HomeScreenHeader({ currentUser }: Props) {
           Expo Go
         </Text>
       </Row>
-      <Button.Container
-        onPress={async () => {
-          try {
-            if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          } catch (e) {
-            console.error(e);
-          }
-          console.log('Show Account Modal');
-        }}>
+      <Button.Container onPress={onAccountButtonPress}>
         {currentUser?.profilePhoto ? (
           <Image size="xl" rounded="full" source={{ uri: currentUser.profilePhoto }} />
         ) : (
