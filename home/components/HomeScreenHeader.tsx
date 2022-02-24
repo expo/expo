@@ -1,31 +1,32 @@
 import { spacing } from '@expo/styleguide-native';
-import { Button, View, Row, Image, UserIcon, scale } from 'expo-dev-client-components';
+import { Button, View, Row, Image, UserIcon, scale, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
 import { CurrentUserDataFragment } from 'graphql/types';
 import * as React from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform } from 'react-native';
 
-import { useStyleguideTheme } from '../utils/useTheme';
+import { useTheme } from '../utils/useTheme';
 
 type Props = {
   currentUser?: CurrentUserDataFragment;
 };
 
 export function HomeScreenHeader({ currentUser }: Props) {
-  const { theme, themeType } = useStyleguideTheme();
+  const { theme, themeType } = useTheme();
 
   return (
     <Row
       padding="medium"
       align="center"
+      bg="default"
       style={{
         justifyContent: 'space-between',
-        backgroundColor: theme.background.default,
       }}>
       <Row align="center">
         <View
           align="centered"
           rounded="medium"
+          shadow="button"
           style={{
             backgroundColor: theme.background.default,
             height: scale.xl,
@@ -35,8 +36,8 @@ export function HomeScreenHeader({ currentUser }: Props) {
               borderColor: theme.border.default,
               backgroundColor: theme.background.overlay,
             }),
-          }}
-          shadow="button">
+            elevation: themeType === 'light' ? 1 : 0,
+          }}>
           <Image
             size="xl"
             source={require('../assets/client-logo.png')}
@@ -48,9 +49,7 @@ export function HomeScreenHeader({ currentUser }: Props) {
             }}
           />
         </View>
-        {/* TODO: Dev Client Text component doesn't change color */}
-        <Text
-          style={{ color: theme.text.default, fontWeight: Platform.OS === 'ios' ? '600' : 'bold' }}>
+        <Text color="default" weight="bold">
           Expo Go
         </Text>
       </Row>
@@ -64,14 +63,9 @@ export function HomeScreenHeader({ currentUser }: Props) {
           console.log('Show Account Modal');
         }}>
         {currentUser?.profilePhoto ? (
-          <Image size="xl" rounded="full" source={{ uri: currentUser?.profilePhoto }} />
+          <Image size="xl" rounded="full" source={{ uri: currentUser.profilePhoto }} />
         ) : (
-          <View
-            rounded="full"
-            height="xl"
-            width="xl"
-            style={{ backgroundColor: theme.background.secondary }}
-            align="centered">
+          <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
             <UserIcon
               style={{
                 tintColor: theme.icon.default,
