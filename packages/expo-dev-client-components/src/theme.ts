@@ -138,6 +138,7 @@ export const text = {
     success: { color: lightTheme.text.success },
     secondary: { color: lightTheme.text.secondary },
     primary: { color: lightTheme.button.primary.background },
+    link: { color: lightTheme.link.default },
   },
 };
 
@@ -153,6 +154,7 @@ export const textDark = {
     success: { color: darkTheme.text.success },
     secondary: { color: darkTheme.text.secondary },
     primary: { color: darkTheme.button.primary.background },
+    link: { color: darkTheme.link.default },
   },
 };
 
@@ -200,7 +202,7 @@ export const lightNavigationTheme: NavigationTheme = {
 export const darkNavigationTheme: NavigationTheme = {
   dark: true,
   colors: {
-    primary: darkTheme.button.primary.background,
+    primary: darkTheme.link.default,
     background: darkTheme.background.default,
     card: darkTheme.background.secondary,
     text: darkTheme.text.default,
