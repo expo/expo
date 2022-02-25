@@ -1,3 +1,5 @@
+const path = require('path');
+
 function tryResolveModule(module) {
   try {
     return require.resolve(module);
@@ -30,6 +32,17 @@ module.exports = function (api) {
   if (safeAreaContext) {
     alias['react-native-safe-area-context'] = safeAreaContext;
   }
+
+  // manually resolve react-navigation packages -- remove when we have updated react-navigation to ~6
+  alias['@react-navigation/bottom-tabs'] = tryResolveModule(
+    path.resolve(__dirname, './node_modules/@react-navigation/bottom-tabs')
+  );
+  alias['@react-navigation/native'] = tryResolveModule(
+    path.resolve(__dirname, './node_modules/@react-navigation/native')
+  );
+  alias['@react-navigation/stack'] = tryResolveModule(
+    path.resolve(__dirname, './node_modules/@react-navigation/stack')
+  );
 
   const moduleResolverConfig = {
     alias,
