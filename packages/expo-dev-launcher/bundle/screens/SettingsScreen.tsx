@@ -108,8 +108,8 @@ export function SettingsScreen() {
             <Row px="medium" py="small" align="center" bg="default">
               <ShakeDeviceIcon />
               <Spacer.Horizontal size="small" />
-              <Text size="large" color="secondary">
-                Shake Device
+              <Text size="large" color="default">
+                Shake device
               </Text>
               <Spacer.Horizontal />
               {motionGestureEnabled && <CheckIcon />}
@@ -127,7 +127,7 @@ export function SettingsScreen() {
             <Row px="medium" py="small" bg="default">
               <ThreeFingerPressIcon />
               <Spacer.Horizontal size="small" />
-              <Text size="large" color="secondary">
+              <Text size="large" color="default">
                 Three-finger long-press
               </Text>
               <Spacer.Horizontal />
@@ -139,7 +139,7 @@ export function SettingsScreen() {
         <View padding="small">
           <Text color="secondary" size="small" leading="large">
             Selected gestures will toggle the developer menu while inside a preview. The menu allows
-            you to reload or return to home, and exposes developer tools.
+            you to reload or return to home and exposes developer tools.
           </Text>
         </View>
 
@@ -183,7 +183,7 @@ export function SettingsScreen() {
             roundedTop="none"
             roundedBottom="large">
             <Row px="medium" py="small" align="center" bg="default">
-              <Text color="primary" size="large">
+              <Text color="link" size="medium">
                 {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
             </Row>

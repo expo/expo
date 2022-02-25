@@ -160,6 +160,9 @@ export declare const text: {
         primary: {
             color: string;
         };
+        link: {
+            color: string;
+        };
     };
 };
 export declare const textDark: {
@@ -183,6 +186,9 @@ export declare const textDark: {
             color: string;
         };
         primary: {
+            color: string;
+        };
+        link: {
             color: string;
         };
     };
