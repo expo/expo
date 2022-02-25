@@ -122,7 +122,7 @@ internal suspend fun clipDataFromBase64Image(
  * @throws SecurityException when app has no permission to access the content uri
  * @throws IOException
  */
-private suspend fun bitmapFromContentUriAsync(context: Context, imageUri: Uri): Bitmap =
+internal suspend fun bitmapFromContentUriAsync(context: Context, imageUri: Uri): Bitmap =
   runInterruptible(Dispatchers.IO) {
     val contentResolver = context.contentResolver
     when {
@@ -137,7 +137,7 @@ private suspend fun bitmapFromContentUriAsync(context: Context, imageUri: Uri): 
     }
   }
 
-private fun bitmapFromBase64String(base64Image: String): Bitmap = try {
+internal fun bitmapFromBase64String(base64Image: String): Bitmap = try {
   val byteArray = Base64.decode(base64Image, Base64.DEFAULT)
   BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     ?: throw RuntimeException("Failed to convert base64 into Bitmap")

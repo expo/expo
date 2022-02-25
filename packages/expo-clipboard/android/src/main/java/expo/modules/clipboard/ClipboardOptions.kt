@@ -6,10 +6,10 @@ import expo.modules.kotlin.records.Record
 
 class GetImageOptions : Record {
   @Field(key = "format")
-  lateinit var imageFormat: ImageFormat
+  var imageFormat: ImageFormat = ImageFormat.JPG
 
   @Field
-  val jpegQuality: Double = 1.0
+  var jpegQuality: Double = 1.0
 }
 
 enum class ImageFormat(val jsName: String) {
