@@ -101,9 +101,12 @@ function ProjectsStackScreen() {
 }
 
 function HomeStackScreen() {
-  const theme = useThemeName();
+  const themeName = useThemeName();
+
   return (
-    <HomeStack.Navigator initialRouteName="Home" screenOptions={defaultNavigationOptions(theme)}>
+    <HomeStack.Navigator
+      initialRouteName="Home"
+      screenOptions={defaultNavigationOptions(themeName)}>
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}

@@ -19,6 +19,10 @@ export const Heading = create(RNText, {
                 fontSize: 22,
                 lineHeight: 28,
             },
+            small: {
+                fontSize: 13,
+                lineHeight: 20,
+            },
         },
     },
     selectors: {
