@@ -427,7 +427,7 @@ async function copyExpoModulesAsync(version: string) {
     ) {
       await spawnAsync(
         './android-copy-expo-module.sh',
-        [version, path.join(pkg.path, pkg.androidSubdirectory)],
+        [pkg.packageName, version, path.join(pkg.path, pkg.androidSubdirectory)],
         {
           shell: true,
           cwd: SCRIPT_DIR,
