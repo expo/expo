@@ -26,7 +26,6 @@ buildscript {
     }
   }
 
-
   repositories {
     mavenCentral()
   }
@@ -84,7 +83,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
   implementation "com.github.CanHub:Android-Image-Cropper:1.1.1"
