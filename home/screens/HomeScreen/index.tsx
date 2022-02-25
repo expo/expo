@@ -1,4 +1,4 @@
-import { spacing, darkTheme, lightTheme } from '@expo/styleguide-native';
+import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
@@ -11,7 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
-import NoProjectsOpen from '../../components/NoProjectsOpen';
 import RefreshControl from '../../components/RefreshControl';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -22,6 +21,7 @@ import getSnackId from '../../utils/getSnackId';
 import isUserAuthenticated from '../../utils/isUserAuthenticated';
 import { DevelopmentServerListItem } from './DevelopmentServerListItem';
 import { DevelopmentServersHeader } from './DevelopmentServersHeader';
+import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -130,7 +130,7 @@ class ProjectsView extends React.Component<Props, State> {
   }
 
   render() {
-    const { projects, isNetworkAvailable, isRefreshing } = this.state;
+    const { projects, isRefreshing } = this.state;
 
     return (
       <View style={styles.container}>
@@ -141,20 +141,8 @@ class ProjectsView extends React.Component<Props, State> {
           }
           key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
           style={styles.container}
-          contentContainerStyle={[
-            styles.contentContainer,
-            {
-              backgroundColor:
-                this.props.theme === 'dark'
-                  ? darkTheme.background.screen
-                  : lightTheme.background.screen,
-            },
-          ]}>
-          <DevelopmentServersHeader
-            projects={projects}
-            isNetworkAvailable={isNetworkAvailable}
-            onHelpPress={this._handlePressHelpProjects}
-          />
+          contentContainerStyle={[styles.contentContainer]}>
+          <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
           {projects?.length ? (
             <View bg="default" rounded="large">
               {projects.map((project, i) => (
@@ -176,7 +164,7 @@ class ProjectsView extends React.Component<Props, State> {
               ))}
             </View>
           ) : (
-            <NoProjectsOpen isAuthenticated={this.props.isAuthenticated} />
+            <DevelopmentServersPlaceholder />
           )}
         </ScrollView>
         <ThemedStatusBar />

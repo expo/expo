@@ -3,34 +3,23 @@ import { Button, Heading, Row, TerminalIcon, View, Text } from 'expo-dev-client-
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-import DevIndicator from '../../components/DevIndicator';
-import { DevSession } from '../../types';
-
 type DevelopmentServersHeaderProps = {
-  isNetworkAvailable: boolean;
-  projects: DevSession[];
   onHelpPress: () => void;
 };
 
-export function DevelopmentServersHeader({
-  isNetworkAvailable,
-  projects,
-  onHelpPress,
-}: DevelopmentServersHeaderProps) {
+export function DevelopmentServersHeader({ onHelpPress }: DevelopmentServersHeaderProps) {
   return (
     <Row px="small" py="small" align="center" justify="between">
       <Row align="center">
         <View style={{ marginRight: spacing[2] }}>
           <TerminalIcon />
         </View>
-        <Heading color="secondary" size="small" style={{ marginRight: spacing[2] }}>
+        <Heading
+          color="secondary"
+          size="small"
+          style={{ marginRight: spacing[2], fontWeight: Platform.OS === 'ios' ? '600' : 'bold' }}>
           Development servers
         </Heading>
-        <DevIndicator
-          style={{ marginRight: spacing[2] }}
-          isActive={projects && !!projects.length}
-          isNetworkAvailable={isNetworkAvailable}
-        />
       </Row>
       <Button.Container onPress={onHelpPress}>
         <Text

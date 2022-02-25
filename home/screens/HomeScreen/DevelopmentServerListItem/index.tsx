@@ -1,15 +1,13 @@
 import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { Text, useExpoTheme } from 'expo-dev-client-components';
+import { useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { View as RNView, StyleSheet, ViewStyle, Pressable, Share, Linking } from 'react-native';
 
-import Badge from '../../../components/Badge';
 import { Ionicons } from '../../../components/Icons';
 import PlatformIcon from '../../../components/PlatformIcon';
 import { ProfileStackRoutes } from '../../../navigation/Navigation.types';
 import * as UrlUtils from '../../../utils/UrlUtils';
-import { useSDKExpired } from '../../../utils/useSDKExpired';
 import { DevelopmentServerImage } from './DevelopmentServerImage';
 import { DevelopmentServerSubtitle } from './DevelopmentServerSubtitle';
 import { DevelopmentServerTitle } from './DevelopmentServerTitle';
@@ -33,9 +31,7 @@ type Props = {
   rightContent?: React.ReactNode;
   platform?: PlatformIconProps['platform'];
   url: string;
-  releaseChannel?: string;
   username?: string;
-  sdkVersion?: string;
   experienceInfo?: {
     id: string;
     username: string;
@@ -51,8 +47,6 @@ export function DevelopmentServerListItem({
   subtitle,
   title,
   url,
-  releaseChannel,
-  sdkVersion,
   icon,
   iconStyle,
   image,
@@ -64,7 +58,6 @@ export function DevelopmentServerListItem({
 }: Props) {
   const theme = useExpoTheme();
   const navigation = useNavigation<NavigationProp<ProfileStackRoutes>>();
-  const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
   const handlePress = () => {
     if (experienceInfo) {
@@ -107,17 +100,6 @@ export function DevelopmentServerListItem({
             image={image}
             onPressSubtitle={onPressSubtitle}
           />
-          {sdkVersionNumber ? (
-            <Text color="secondary" size="small" style={styles.infoText}>
-              SDK {sdkVersionNumber}
-              {isExpired ? ': Not supported' : ''}
-            </Text>
-          ) : null}
-          {releaseChannel ? (
-            <RNView style={styles.releaseChannel}>
-              <Badge text={releaseChannel} />
-            </RNView>
-          ) : null}
         </RNView>
         <RNView style={styles.chevronRightContainer}>
           <ChevronDownIcon
@@ -146,7 +128,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   pressed: {
-    opacity: 0.5,
+    opacity: 0.8,
   },
   contentContainer: {
     backgroundColor: 'transparent',
