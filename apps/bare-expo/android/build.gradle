@@ -16,6 +16,7 @@ buildscript {
         // for expo-dev-client
         // TODO: remove once bare-expo has been upgraded to SDK 45 on main
         expoPackageVersion = "45.0.0"
+        expoUpdatesVersion = null
     }
     repositories {
         google()
