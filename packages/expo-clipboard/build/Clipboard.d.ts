@@ -67,6 +67,7 @@ export declare function hasUrlAsync(): Promise<boolean>;
  * @returns If there was an image in the clipboard, the promise resolves to
  * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
  * Otherwise, it resolves to `null`.
+ * @platform Android
  * @platform iOS
  */
 export declare function getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null>;
@@ -74,6 +75,7 @@ export declare function getImageAsync(options: GetImageOptions): Promise<Clipboa
  * Sets an image in the user's clipboard.
  *
  * @param base64Image Image encoded as a base64 string, without mime type.
+ * @platform Android
  * @platform iOS
  */
 export declare function setImageAsync(base64Image: string): Promise<void>;
@@ -81,6 +83,7 @@ export declare function setImageAsync(base64Image: string): Promise<void>;
  * Returns whether the clipboard has a image content.
  *
  * @returns A promise that fulfills to `true` if clipboard has image content, resolves to `false` otherwise.
+ * @platform Android
  * @platform iOS
  */
 export declare function hasImageAsync(): Promise<boolean>;
