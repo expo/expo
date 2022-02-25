@@ -219,16 +219,15 @@ function TabNavigator(props: { theme: string }) {
             tabBarLabel: 'Home',
           }}
         />
-      ) : (
-        <BottomTab.Screen
-          name="ProjectsStack"
-          component={ProjectsStackScreen}
-          options={{
-            tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
-            tabBarLabel: 'Projects',
-          }}
-        />
-      )}
+      ) : null}
+      <BottomTab.Screen
+        name="ProjectsStack"
+        component={ProjectsStackScreen}
+        options={{
+          tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+          tabBarLabel: 'Projects',
+        }}
+      />
       {Platform.OS === 'ios' && (
         <BottomTab.Screen
           name="DiagnosticsStack"
