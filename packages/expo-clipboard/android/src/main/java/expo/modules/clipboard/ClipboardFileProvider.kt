@@ -50,8 +50,8 @@ class ClipboardFileProvider : ContentProvider() {
    * After the [ClipboardFileProvider] is instantiated, this method is called to provide the system with
    * information about the provider.
    *
-   * @param context A {@link Context} for the current component.
-   * @param info A {@link ProviderInfo} for the new provider.
+   * @param context A [Context] for the current component.
+   * @param info A [ProviderInfo] for the new provider.
    */
   override fun attachInfo(context: Context, info: ProviderInfo) {
     super.attachInfo(context, info)

@@ -20,6 +20,8 @@ import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowContextImpl
 
+private val clipboardUnavailableErrorCode = ClipboardUnavailableException().code
+
 private interface ClipboardModuleTestInterface {
   @Throws(CodedException::class)
   fun getStringAsync(): String
@@ -95,7 +97,7 @@ class ClipboardModuleTest {
     val exception = runCatching { module.getStringAsync() }.exceptionOrNull()
     assertNotNull(exception)
     assertTrue(exception is CodedException)
-    assertEquals(ERR_CLIPBOARD_UNAVAILABLE, (exception as CodedException).code)
+    assertEquals(clipboardUnavailableErrorCode, (exception as CodedException).code)
   }
 
   private val clipboardManager: ClipboardManager
