@@ -102,9 +102,9 @@ dependencies {
   // https://issuetracker.google.com/issues/174695268
   kapt "org.xerial:sqlite-jdbc:3.36.0"
 
-  implementation("com.squareup.okhttp3:okhttp:3.12.1")
-  implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
-  implementation("com.squareup.okio:okio:1.15.0")
+  implementation("com.squareup.okhttp3:okhttp:4.9.2")
+  implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
+  implementation("com.squareup.okio:okio:2.9.0")
   implementation("commons-codec:commons-codec:1.10")
   implementation("commons-io:commons-io:2.6")
   implementation("commons-fileupload:commons-fileupload:1.4")
@@ -126,23 +126,3 @@ dependencies {
 repositories {
   mavenCentral()
 }
-
-// [BEGIN] Workaround okhttp/okio compatibility issue
-// Remove when we drop support for SDK 44
-def okhttpPinnedArtifacts = []
-configurations.implementation.getDependencies().removeIf { it ->
-  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
-    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
-    return true
-  }
-  return false
-}
-okhttpPinnedArtifacts.each { artifact ->
-  dependencies.add('compileOnly', artifact)
-  dependencies.add('testImplementation', artifact)
-  dependencies.add('androidTestImplementation', artifact)
-  configurations.all {
-    resolutionStrategy.force(artifact)
-  }
-}
-// [END] Workaround okhttp/okio compatibility issue
