@@ -2,7 +2,7 @@ import { Text } from 'expo-dev-client-components';
 import * as React from 'react';
 import { View as RNView, StyleSheet, Platform } from 'react-native';
 
-import PlatformIcon from '../PlatformIcon';
+import PlatformIcon from '../../../components/PlatformIcon';
 
 type PlatformIconProps = React.ComponentProps<typeof PlatformIcon>;
 

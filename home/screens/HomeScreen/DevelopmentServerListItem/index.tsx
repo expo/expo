@@ -4,12 +4,12 @@ import { Text, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { View as RNView, StyleSheet, ViewStyle, Pressable, Share, Linking } from 'react-native';
 
-import { ProfileStackRoutes } from '../../navigation/Navigation.types';
-import * as UrlUtils from '../../utils/UrlUtils';
-import { useSDKExpired } from '../../utils/useSDKExpired';
-import Badge from '../Badge';
-import { Ionicons } from '../Icons';
-import PlatformIcon from '../PlatformIcon';
+import Badge from '../../../components/Badge';
+import { Ionicons } from '../../../components/Icons';
+import PlatformIcon from '../../../components/PlatformIcon';
+import { ProfileStackRoutes } from '../../../navigation/Navigation.types';
+import * as UrlUtils from '../../../utils/UrlUtils';
+import { useSDKExpired } from '../../../utils/useSDKExpired';
 import { DevelopmentServerImage } from './DevelopmentServerImage';
 import { DevelopmentServerSubtitle } from './DevelopmentServerSubtitle';
 import { DevelopmentServerTitle } from './DevelopmentServerTitle';

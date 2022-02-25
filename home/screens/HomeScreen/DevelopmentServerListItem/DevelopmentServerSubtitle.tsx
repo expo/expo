@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text as RNText } from 'react-native';
 
-import Colors from '../../constants/Colors';
-import { Ionicons } from '../Icons';
+import { Ionicons } from '../../../components/Icons';
+import Colors from '../../../constants/Colors';
 
 type IconProps = React.ComponentProps<typeof Ionicons>;
 

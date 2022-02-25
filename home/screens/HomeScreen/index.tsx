@@ -2,16 +2,7 @@ import { spacing, darkTheme, lightTheme } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
-import {
-  Button,
-  Heading,
-  Row,
-  TerminalIcon,
-  View,
-  Text,
-  Divider,
-  ThemeContext,
-} from 'expo-dev-client-components';
+import { View, Divider, ThemeContext } from 'expo-dev-client-components';
 import { CurrentUserDataFragment, useHome_CurrentUserQuery } from 'graphql/types';
 import * as React from 'react';
 import { Alert, AppState, Platform, StyleSheet } from 'react-native';
@@ -19,8 +10,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import Connectivity from '../../api/Connectivity';
-import DevIndicator from '../../components/DevIndicator';
-import { DevelopmentServerListItem } from '../../components/DevelopmentServerListItem';
 import ScrollView from '../../components/NavigationScrollView';
 import NoProjectsOpen from '../../components/NoProjectsOpen';
 import RefreshControl from '../../components/RefreshControl';
@@ -31,6 +20,8 @@ import { DevSession, HistoryList } from '../../types';
 import addListenerWithNativeCallback from '../../utils/addListenerWithNativeCallback';
 import getSnackId from '../../utils/getSnackId';
 import isUserAuthenticated from '../../utils/isUserAuthenticated';
+import { DevelopmentServerListItem } from './DevelopmentServerListItem';
+import { DevelopmentServersHeader } from './DevelopmentServersHeader';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -51,51 +42,6 @@ type State = {
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
-
-type DevelopmentServersHeaderProps = {
-  isNetworkAvailable: boolean;
-  projects: DevSession[];
-  onHelpPress: () => void;
-};
-
-function DevelopmentServersHeader({
-  isNetworkAvailable,
-  projects,
-  onHelpPress,
-}: DevelopmentServersHeaderProps) {
-  return (
-    <Row px="small" py="small" align="center" justify="between">
-      <Row align="center">
-        <View style={{ marginRight: spacing[2] }}>
-          <TerminalIcon />
-        </View>
-        <Heading color="secondary" size="small" style={{ marginRight: spacing[2] }}>
-          Development servers
-        </Heading>
-        <DevIndicator
-          style={styles.devIndicator}
-          isActive={projects && !!projects.length}
-          isNetworkAvailable={isNetworkAvailable}
-        />
-      </Row>
-      <Button.Container onPress={onHelpPress}>
-        <Text
-          color="secondary"
-          style={{
-            fontSize: 11,
-            letterSpacing: 0.92,
-            ...Platform.select({
-              ios: {
-                fontWeight: '500',
-              },
-            }),
-          }}>
-          HELP
-        </Text>
-      </Button.Container>
-    </Row>
-  );
-}
 
 export default function HomeScreen(props: NavigationProps) {
   const [isFocused, setFocused] = React.useState(true);
@@ -339,8 +285,5 @@ const styles = StyleSheet.create({
   projectImageStyle: {
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 32, 0.1)',
-  },
-  devIndicator: {
-    marginRight: 7,
   },
 });

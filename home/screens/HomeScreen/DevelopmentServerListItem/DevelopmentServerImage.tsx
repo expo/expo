@@ -4,8 +4,8 @@ import * as React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
-import Colors from '../../constants/Colors';
-import { Ionicons } from '../Icons';
+import { Ionicons } from '../../../components/Icons';
+import Colors from '../../../constants/Colors';
 
 type IconProps = React.ComponentProps<typeof Ionicons>;
 
