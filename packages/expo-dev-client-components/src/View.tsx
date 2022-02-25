@@ -138,6 +138,7 @@ export const Spacer = {
 export const Divider = create(RNView, {
   base: {
     borderWidth: 0.5,
+    backgroundColor: lightTheme.border.default,
     borderColor: lightTheme.border.default,
   },
 
@@ -153,6 +154,7 @@ export const Divider = create(RNView, {
 
   selectors: {
     dark: {
+      backgroundColor: darkTheme.border.default,
       borderColor: darkTheme.border.default,
     },
   },

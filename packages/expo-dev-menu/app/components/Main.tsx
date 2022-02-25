@@ -208,7 +208,7 @@ export function Main() {
             roundedBottom="large"
             disabled={hasCopiedAppInfoContent}>
             <Row px="medium" py="small" align="center" bg="default">
-              <Text color="primary" size="large">
+              <Text color="link" size="medium">
                 {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
             </Row>

@@ -7,6 +7,7 @@ import {
   View,
   useExpoTheme,
   ChevronRightIcon,
+  useCurrentTheme,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { TextInput as NativeTextInput, Platform } from 'react-native';
@@ -19,10 +20,25 @@ type UrlDropdownProps = {
 
 export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
   const theme = useExpoTheme();
+  const currentTheme = useCurrentTheme();
+
+  // dark theme has the default / secondary values reversed
+  const buttonColorThemeMap = {
+    dark: {
+      active: theme.background.default,
+      inactive: theme.background.secondary,
+    },
+    light: {
+      active: theme.background.secondary,
+      inactive: theme.background.default,
+    },
+  };
+
   const ref = React.useRef<NativeTextInput>();
   const [open, setOpen] = React.useState(false);
   const [isValidUrl, setIsValidUrl] = React.useState(true);
   const [inputValue, setInputValue] = React.useState('');
+  const [isPressing, setIsPressing] = React.useState(false);
 
   const rotate = open ? '90deg' : '0deg';
   // slight visual adjustment for centering icon
@@ -56,23 +72,27 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
     setIsValidUrl(validateUrl(inputValue));
   };
 
+  const buttonColors = buttonColorThemeMap[currentTheme];
+  const backgroundColor = isPressing ? buttonColors.active : buttonColors.inactive;
+
   return (
     <View rounded="large">
-      <Button.ScaleOnPressContainer
+      <Button.Container
+        onPressIn={() => setIsPressing(true)}
+        onPressOut={() => setIsPressing(false)}
         onPress={onTogglePress}
-        bg="default"
         roundedTop="none"
         roundedBottom={open ? 'none' : 'large'}
         testID="DevLauncherURLToggle">
-        <Row align="center" padding="medium" bg="default">
+        <Row align="center" padding="medium" style={{ backgroundColor }}>
           <ChevronRightIcon style={arrowStyle} />
           <Spacer.Horizontal size="tiny" />
           <Text size="large">Enter URL manually</Text>
         </Row>
-      </Button.ScaleOnPressContainer>
+      </Button.Container>
 
       {open && (
-        <View px="medium" py="medium" bg="default" roundedBottom="large">
+        <View px="medium" py="medium" roundedBottom="large" bg="default">
           <View
             border="default"
             rounded="medium"

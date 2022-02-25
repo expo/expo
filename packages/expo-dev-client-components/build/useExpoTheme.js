@@ -1,13 +1,20 @@
 import { lightTheme, darkTheme } from '@expo/styleguide-native';
 import { useColorScheme } from 'react-native';
 import { useThemePreference } from './ThemeProvider';
-export function useExpoTheme() {
+export function useCurrentTheme() {
     const colorScheme = useColorScheme();
     const preference = useThemePreference();
-    let theme = preference;
-    if (theme === 'no-preference' && colorScheme != null) {
+    let theme = 'light';
+    if (preference !== 'no-preference') {
+        theme = preference;
+    }
+    if (preference === 'no-preference' && colorScheme != null) {
         theme = colorScheme;
     }
+    return theme;
+}
+export function useExpoTheme() {
+    const theme = useCurrentTheme();
     if (theme === 'dark') {
         return darkTheme;
     }

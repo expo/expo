@@ -101,7 +101,7 @@ export function HomeScreen({
         <AppHeader
           title={appName}
           appImageUri={appIcon}
-          subtitle="Development App"
+          subtitle="Development Build"
           onUserProfilePress={onUserProfilePress}
         />
       </View>
@@ -151,7 +151,9 @@ export function HomeScreen({
                     <Spacer.Vertical size="small" />
 
                     <View bg="secondary" border="default" rounded="medium" padding="medium">
-                      <Text type="mono">expo start --dev-client</Text>
+                      <Text type="mono" size="small">
+                        expo start --dev-client
+                      </Text>
                     </View>
 
                     <Spacer.Vertical size="small" />
@@ -196,7 +198,11 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button.ScaleOnPressContainer onPress={onRefetchPress} disabled={isFetching} bg="default">
+    <Button.ScaleOnPressContainer
+      onPress={onRefetchPress}
+      disabled={isFetching}
+      bg="default"
+      rounded="none">
       <Row align="center" padding="medium" bg="default">
         <PulseIndicator isActive={isFetching} color={backgroundColor} />
         <Spacer.Horizontal size="small" />
