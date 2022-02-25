@@ -1,0 +1,154 @@
+import spawnAsync from '@expo/spawn-async';
+import * as Log from '../../../../log';
+import { AbortCommandError } from '../../../../utils/errors';
+import { installExitHooks } from '../../../../utils/exit';
+import { ADBServer } from '../ADBServer';
+import { execFileSync } from 'child_process';
+
+jest.mock('child_process');
+jest.mock('../../../../log');
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
+jest.mock('@expo/spawn-async');
+
+jest.mock('../../../../utils/exit', () => ({
+  installExitHooks: jest.fn(),
+}));
+
+const env = process.env;
+beforeEach(() => {
+  delete process.env.ANDROID_HOME;
+});
+afterAll(() => {
+  process.env = env;
+});
+
+describe('getAdbExecutablePath', () => {
+  it(`returns the default adb path`, () => {
+    const adbPath = new ADBServer().getAdbExecutablePath();
+    expect(adbPath).toEqual('adb');
+  });
+  it(`returns the user defined adb path`, () => {
+    process.env.ANDROID_HOME = '/Users/user/android';
+    const adbPath = new ADBServer().getAdbExecutablePath();
+    expect(adbPath).toEqual('/Users/user/android/platform-tools/adb');
+  });
+});
+
+describe('resolveAdbPromise', () => {
+  it(`passes`, async () => {
+    const server = new ADBServer();
+    await expect(server.resolveAdbPromise(Promise.resolve('foobar'))).resolves.toBe('foobar');
+  });
+  it(`asserts abort error`, async () => {
+    const server = new ADBServer();
+    const rejects = (async () => {
+      // eslint-disable-next-line no-throw-literal
+      throw { signal: 'SIGINT' };
+    })();
+    await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(AbortCommandError);
+  });
+  it(`formats error message`, async () => {
+    const server = new ADBServer();
+    const rejects = (async () => {
+      throw new Error('error: foobar');
+    })();
+    await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(/^foobar$/);
+  });
+});
+
+describe('startAsync', () => {
+  it(`starts the ADB server`, async () => {
+    asMock(installExitHooks).mockClear();
+    asMock(spawnAsync)
+      .mockClear()
+      .mockResolvedValueOnce({
+        stderr: '* daemon started successfully',
+      } as any);
+    const server = new ADBServer();
+    await expect(server.startAsync()).resolves.toBe(true);
+    expect(server.isRunning).toBe(true);
+    expect(installExitHooks).toBeCalledTimes(1);
+    expect(spawnAsync).toBeCalledTimes(1);
+  });
+  it(`does not start if the server is already running`, async () => {
+    asMock(installExitHooks).mockClear();
+    asMock(spawnAsync).mockClear();
+    const server = new ADBServer();
+    server.isRunning = true;
+    await expect(server.startAsync()).resolves.toBe(false);
+    expect(server.isRunning).toBe(true);
+    expect(installExitHooks).toBeCalledTimes(0);
+    expect(spawnAsync).toBeCalledTimes(0);
+  });
+});
+describe('runAsync', () => {
+  it(`runs an ADB command`, async () => {
+    asMock(spawnAsync)
+      .mockClear()
+      .mockResolvedValueOnce({
+        output: ['did thing'],
+        stderr: 'did thing',
+      } as any);
+    const server = new ADBServer();
+    server.startAsync = jest.fn();
+    server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
+    server.getAdbExecutablePath = jest.fn(() => 'adb');
+    await expect(server.runAsync(['foo', 'bar'])).resolves.toBe('did thing');
+    expect(server.getAdbExecutablePath).toBeCalledTimes(1);
+    expect(server.startAsync).toBeCalledTimes(1);
+    expect(server.resolveAdbPromise).toBeCalledTimes(1);
+    expect(spawnAsync).toBeCalledTimes(1);
+    expect(spawnAsync).toBeCalledWith('adb', ['foo', 'bar']);
+  });
+});
+describe('getFileOutputAsync', () => {
+  it(`returns file output from ADB`, async () => {
+    asMock(execFileSync).mockClear().mockReturnValueOnce('foobar');
+    const server = new ADBServer();
+    server.startAsync = jest.fn();
+    server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
+    server.getAdbExecutablePath = jest.fn(() => 'adb');
+    await expect(server.getFileOutputAsync(['foo', 'bar'])).resolves.toBe('foobar');
+    expect(server.getAdbExecutablePath).toBeCalledTimes(1);
+    expect(server.startAsync).toBeCalledTimes(1);
+    expect(server.resolveAdbPromise).toBeCalledTimes(1);
+    expect(spawnAsync).toBeCalledTimes(1);
+    expect(spawnAsync).toBeCalledWith('adb', ['foo', 'bar']);
+  });
+});
+describe('stopAsync', () => {
+  it(`stops the ADB server when running`, async () => {
+    asMock(spawnAsync)
+      .mockClear()
+      .mockResolvedValueOnce({ output: [''] } as any);
+    const server = new ADBServer();
+    server.isRunning = true;
+    await expect(server.stopAsync()).resolves.toBe(true);
+    expect(server.isRunning).toBe(false);
+    expect(spawnAsync).toBeCalledTimes(1);
+  });
+  it(`stops the ADB server when not running`, async () => {
+    asMock(spawnAsync)
+      .mockClear()
+      .mockResolvedValueOnce({ output: [''] } as any);
+    const server = new ADBServer();
+    server.isRunning = false;
+    await expect(server.stopAsync()).resolves.toBe(false);
+    expect(spawnAsync).toBeCalledTimes(0);
+  });
+
+  it(`considers the ADB server stopped if the process fails`, async () => {
+    asMock(Log.error).mockClear();
+    const server = new ADBServer();
+    server.isRunning = true;
+    server.runAsync = jest.fn(() => {
+      throw new Error('foobar');
+    });
+    await expect(server.stopAsync()).resolves.toBe(false);
+    expect(server.isRunning).toBe(false);
+    expect(Log.error).toBeCalled();
+  });
+});

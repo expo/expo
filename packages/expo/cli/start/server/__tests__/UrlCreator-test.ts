@@ -5,7 +5,6 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 jest.mock('../../../log');
-jest.mock('../../../utils/ip');
 jest.mock('fs');
 jest.mock('resolve-from');
 

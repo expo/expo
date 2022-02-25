@@ -49,6 +49,7 @@ describe(startDeviceAsync, () => {
   it(`times out waiting for an emulator to start`, async () => {
     asMock(ADB.getAttachedDevicesAsync).mockClear().mockResolvedValue([]);
 
+    // @ts-expect-error
     asMock(spawn).mockClear().mockReturnValueOnce({
       unref: jest.fn(),
       on: jest.fn(),
@@ -63,12 +64,14 @@ describe(startDeviceAsync, () => {
       .mockClear()
       .mockResolvedValueOnce([])
       .mockResolvedValue([
+        // @ts-expect-error
         {
           name: 'foo',
         },
       ]);
     asMock(ADB.isBootAnimationCompleteAsync).mockClear().mockResolvedValueOnce(true);
 
+    // @ts-expect-error
     asMock(spawn).mockClear().mockReturnValueOnce({
       unref: jest.fn(),
       on: jest.fn(),

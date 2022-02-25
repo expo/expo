@@ -1,15 +1,10 @@
-import { MetroDevServerOptions, prependMiddleware } from '@expo/dev-server';
-import http from 'http';
-import Metro from 'metro';
-import { Terminal } from 'metro-core';
+import { prependMiddleware } from '@expo/dev-server';
 
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
-import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
-import * as LoadingPageHandler from '../middleware/LoadingPageHandler';
 import { UrlCreator } from '../UrlCreator';
+import * as LoadingPageHandler from '../middleware/LoadingPageHandler';
+import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -49,7 +44,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       unversioned: false,
     };
 
-    const { server, middleware, messageSocket } = await runMetroDevServerAsync(
+    const { server, middleware, messageSocket } = await instantiateMetroAsync(
       this.projectRoot,
       parsedOptions
     );
@@ -99,62 +94,4 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
-}
-
-// From expo/dev-server but with ability to use custom logger.
-type MessageSocket = {
-  broadcast: (method: string, params?: Record<string, any> | undefined) => void;
-};
-
-/** The most generic possible setup for Metro bundler. */
-async function runMetroDevServerAsync(
-  projectRoot: string,
-  options: Omit<MetroDevServerOptions, 'logger'>
-): Promise<{
-  server: http.Server;
-  middleware: any;
-  messageSocket: MessageSocket;
-}> {
-  let reportEvent: ((event: any) => void) | undefined;
-
-  const Metro = importMetroFromProject(projectRoot);
-  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
-
-  const terminal = new Terminal(process.stdout);
-  const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
-  const reporter = {
-    update(event: any) {
-      terminalReporter.update(event);
-      if (reportEvent) {
-        reportEvent(event);
-      }
-    },
-  };
-
-  const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
-
-  const { middleware, attachToServer } = createDevServerMiddleware({
-    port: metroConfig.server.port,
-    watchFolders: metroConfig.watchFolders,
-  });
-
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-  // @ts-ignore can't mutate readonly config
-  metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
-    if (customEnhanceMiddleware) {
-      metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
-    }
-    return middleware.use(metroMiddleware);
-  };
-
-  const server = await Metro.runServer(metroConfig, { hmrEnabled: true });
-
-  const { messageSocket, eventsSocket } = attachToServer(server);
-  reportEvent = eventsSocket.reportEvent;
-
-  return {
-    server,
-    middleware,
-    messageSocket,
-  };
 }

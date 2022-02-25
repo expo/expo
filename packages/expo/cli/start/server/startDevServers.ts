@@ -3,7 +3,7 @@ import assert from 'assert';
 
 import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import * as AndroidDeviceBridge from '../platforms/android/adb';
+import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { MetroBundlerDevServer } from './metro/MetroBundlerDevServer';
 import { WebpackBundlerDevServer } from './webpack/WebpackBundlerDevServer';
@@ -107,7 +107,7 @@ export async function stopAsync(): Promise<void> {
       // Stop all dev servers
       ...devServers.map((server) => server.stopAsync()),
       // Stop ADB
-      AndroidDeviceBridge.server.stopAsync(),
+      AndroidDebugBridge.getServer().stopAsync(),
     ]),
     new Promise((resolve) => setTimeout(resolve, 2000, 'stopFailed')),
   ]);

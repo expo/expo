@@ -9,7 +9,7 @@ import { delayAsync } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
 import { installExitHooks } from '../../utils/exit';
 import { NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
-import { startAdbReverseAsync } from '../platforms/android/adb';
+import { startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/ProjectSettings';
 
 const NGROK_CONFIG = {

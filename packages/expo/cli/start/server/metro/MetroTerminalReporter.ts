@@ -3,14 +3,8 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { learnMore } from '../../../utils/link';
-import {
-  BuildPhase,
-  BundleDetails,
-  BundleProgress,
-  logWarning,
-  SnippetError,
-  TerminalReporter,
-} from './TerminalReporter';
+import { logWarning, TerminalReporter } from './TerminalReporter';
+import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -62,11 +56,11 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
-    // Noop -- don't print a giant logo
+    // Don't print a giant logo...
     this.terminal.log('Starting Metro Bundler');
   }
 
-  protected shouldFilterClientLog(event: {
+  shouldFilterClientLog(event: {
     type: 'client_log';
     level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
     data: unknown[];
@@ -74,7 +68,7 @@ export class MetroTerminalReporter extends TerminalReporter {
     return isAppRegistryStartupMessage(event.data);
   }
 
-  protected transformCacheReset(): void {
+  transformCacheReset(): void {
     logWarning(
       this.terminal,
       chalk`Bundler cache is empty, rebuilding {dim (this may take a minute)}`
@@ -82,7 +76,7 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   /** One of the first logs that will be printed */
-  protected dependencyGraphLoading(hasReducedPerformance: boolean): void {
+  dependencyGraphLoading(hasReducedPerformance: boolean): void {
     // this.terminal.log('Dependency graph is loading...');
     if (hasReducedPerformance) {
       this.terminal.log(

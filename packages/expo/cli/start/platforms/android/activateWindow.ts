@@ -1,21 +1,23 @@
 import * as osascript from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
-import * as AndroidDeviceBridge from './adb';
+import * as Log from '../../../log';
+import { Device } from './adb';
 
-function getUnixPID(port: number | string) {
-  return execFileSync('lsof', [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'], {
+function getUnixPID(port: number | string): string {
+  // Runs like `lsof -i:8081 -P -t -sTCP:LISTEN`
+  const args = [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'];
+  Log.debug('lsof ' + args.join(' '));
+  return execFileSync('lsof', args, {
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'ignore'],
   })
     .split('\n')[0]
-    .trim();
+    ?.trim?.();
 }
 
 /** Activate the Emulator window on OSX. */
-export async function activateWindowAsync(
-  device: Pick<AndroidDeviceBridge.Device, 'type' | 'pid'>
-) {
+export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>) {
   if (
     // only mac is supported for now.
     process.platform !== 'darwin' ||
@@ -33,6 +35,9 @@ export async function activateWindowAsync(
   // Unix PID
   const pid = getUnixPID(androidPid);
 
+  if (!pid) {
+    return;
+  }
   try {
     await osascript.execAsync(`
     tell application "System Events"

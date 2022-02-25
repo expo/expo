@@ -6,8 +6,6 @@ import { UrlCreator } from '../UrlCreator';
 
 jest.mock('../AsyncNgrok');
 jest.mock('../DevelopmentSession');
-jest.mock('../../../utils/ip');
-
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
   class ApplePlatformManager {
     openAsync = jest.fn(async () => ({ url: 'mock-apple-url' }));

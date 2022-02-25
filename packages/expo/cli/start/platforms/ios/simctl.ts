@@ -1,6 +1,7 @@
 import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 
 import * as Log from '../../../log';
+import { CommandError } from '../../../utils/errors';
 import { xcrunAsync } from './xcrun';
 
 type DeviceState = 'Shutdown' | 'Booted';
@@ -112,7 +113,26 @@ export async function openAppIdAsync(
     appId: string;
   }
 ): Promise<SpawnResult> {
-  return simctlAsync(['launch', resolveId(device), options.appId]);
+  const results = await openAppIdInternalAsync(device, options);
+  if (results.status === 4) {
+    throw new CommandError('APP_NOT_INSTALLED', results.stderr);
+  }
+  return results;
+}
+async function openAppIdInternalAsync(
+  device: Partial<DeviceContext>,
+  options: {
+    appId: string;
+  }
+): Promise<SpawnResult> {
+  try {
+    return await simctlAsync(['launch', resolveId(device), options.appId]);
+  } catch (error) {
+    if ('status' in error) {
+      return error;
+    }
+    throw error;
+  }
 }
 
 // This will only boot in headless mode if the Simulator app is not running.

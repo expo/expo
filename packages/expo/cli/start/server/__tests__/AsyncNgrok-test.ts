@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import { delayAsync } from '../../../utils/delay';
 import { NgrokInstance } from '../../doctor/ngrok/NgrokResolver';
-import { startAdbReverseAsync } from '../../platforms/android/adb';
+import { startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
@@ -27,7 +27,7 @@ jest.mock('../../doctor/ngrok/NgrokResolver', () => {
   };
 });
 
-jest.mock('../../platforms/android/adb', () => ({
+jest.mock('../../platforms/android/adbReverse', () => ({
   startAdbReverseAsync: jest.fn(async () => true),
 }));
 

@@ -114,24 +114,27 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async launchApplicationIdAsync(appId: string) {
-    const result = await SimControl.openAppIdAsync(this.device, {
-      appId,
-    }).catch((error) => {
-      if ('status' in error) {
-        return error;
+    try {
+      const result = await SimControl.openAppIdAsync(this.device, {
+        appId,
+      });
+      if (result.status === 0) {
+        await this.activateWindowAsync();
+      } else {
+        throw new CommandError(result.stderr);
       }
-      throw error;
-    });
-    if (result.status === 0) {
-      await this.activateWindowAsync();
-    } else {
+    } catch (error) {
       let errorMessage = `Couldn't open iOS app with ID "${appId}" on device "${this.name}".`;
-      if (result.status === 4) {
+      if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
         errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
           `expo run:ios -d ${this.device.udid}`
         )}`;
       }
-      errorMessage += chalk.gray(`\n${result.stderr}`);
+      if (error.stderr) {
+        errorMessage += chalk.gray(`\n${error.stderr}`);
+      } else if (error.message) {
+        errorMessage += chalk.gray(`\n${error.message}`);
+      }
       throw new CommandError(errorMessage);
     }
   }
@@ -185,7 +188,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
         //
         // This can be thrown when no app conforms to the URI scheme that we attempted to open.
         throw new CommandError(
-          'SIMULATOR_CONFORMANCE',
+          'APP_NOT_INSTALLED',
           `Device ${this.device.name} (${this.device.udid}) has no app to handle the URI: ${url}`
         );
       }

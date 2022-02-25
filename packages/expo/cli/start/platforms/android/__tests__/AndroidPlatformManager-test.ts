@@ -1,13 +1,16 @@
 import * as Log from '../../../../log';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import { AndroidPlatformManager } from '../AndroidPlatformManager';
-import { startAdbReverseAsync } from '../adb';
+import { startAdbReverseAsync } from '../adbReverse';
 
 jest.mock('fs');
 jest.mock(`../../../../log`);
 jest.mock('../adb');
 jest.mock('../../ExpoGoInstaller');
 
+jest.mock('../adbReverse', () => ({
+  startAdbReverseAsync: jest.fn(),
+}));
 const asMock = (fn: any): jest.Mock => fn;
 const originalResolveDevice = AndroidDeviceManager.resolveAsync;
 
@@ -35,6 +38,7 @@ describe('openAsync', () => {
       getExpoGoUrl: () => null,
     });
 
+    // @ts-expect-error
     manager._getAppIdResolver = jest.fn(() => ({
       getAppIdAsync: () => 'dev.bacon.app',
     }));
@@ -53,6 +57,7 @@ describe('openAsync', () => {
       getDevServerUrl: () => null,
       getExpoGoUrl: () => null,
     });
+    // @ts-expect-error
     manager._getAppIdResolver = jest.fn(() => ({
       getAppIdAsync: () => 'dev.bacon.app',
     }));

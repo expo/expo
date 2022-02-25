@@ -4,6 +4,7 @@ import fs from 'fs';
 import getenv from 'getenv';
 import http from 'http';
 import * as path from 'path';
+import resolveFrom from 'resolve-from';
 import webpack from 'webpack';
 import WebpackDevServer, {
   Configuration as WebpackDevServerConfiguration,
@@ -27,7 +28,7 @@ export type WebpackConfiguration = webpack.Configuration & {
 };
 
 function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer {
-  if (!(value instanceof WebpackDevServer)) {
+  if (!value?.sockWrite) {
     throw new CommandError(
       'WEBPACK',
       value ? 'Expected Webpack dev server, found: ' + value : 'Webpack dev server not started yet.'
@@ -200,7 +201,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       });
     }
 
-    const config = await loadConfigAsync(this.projectRoot, options);
+    const config = await this.loadConfigAsync(options);
 
     Log.log(chalk`Starting Webpack on port ${port} in {underline ${mode}} mode.`);
 
@@ -281,6 +282,51 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return this.instance;
   }
 
+  /** Load the Webpack config. Exposed for testing. */
+  getProjectConfigFilePath(): string | null {
+    // Check if the project has a webpack.config.js in the root.
+    return (
+      this.getConfigModuleIds().reduce(
+        (prev, moduleId) => prev || resolveFrom.silent(this.projectRoot, moduleId),
+        null
+      ) ?? null
+    );
+  }
+  async loadConfigAsync(
+    options: BundlerStartOptions,
+    argv?: string[]
+  ): Promise<WebpackConfiguration> {
+    // let bar: ProgressBar | null = null;
+
+    const env = {
+      projectRoot: this.projectRoot,
+      pwa: !!options.isImageEditingEnabled,
+      // TODO: Use a new loader in Webpack config...
+      logger: {
+        info(input, jsonString) {},
+      },
+      mode: options.mode,
+      https: options.https,
+    };
+    setMode(env.mode);
+    // Check if the project has a webpack.config.js in the root.
+    const projectWebpackConfig = this.getProjectConfigFilePath();
+    let config: WebpackConfiguration;
+    if (projectWebpackConfig) {
+      const webpackConfig = require(projectWebpackConfig);
+      if (typeof webpackConfig === 'function') {
+        config = await webpackConfig(env, argv);
+      } else {
+        config = webpackConfig;
+      }
+    } else {
+      // Fallback to the default expo webpack config.
+      const loadDefaultConfigAsync = require('@expo/webpack-config');
+      config = await loadDefaultConfigAsync(env, argv);
+    }
+    return config;
+  }
+
   protected getConfigModuleIds(): string[] {
     return ['./webpack.config.js'];
   }
@@ -291,88 +337,8 @@ function setMode(mode: 'development' | 'production' | 'test' | 'none'): void {
   process.env.NODE_ENV = mode;
 }
 
-function applyEnvironmentVariables(config: WebpackConfiguration): WebpackConfiguration {
-  // Use EXPO_DEBUG_WEB=true to enable debugging features for cases where the prod build
-  // has errors that aren't caught in development mode.
-  // Related: https://github.com/expo/expo-cli/issues/614
-  if (isDebugModeEnabled() && config.mode === 'production') {
-    Log.log(chalk.bgYellow.black('Bundling the project in debug mode.'));
-
-    const output = config.output || {};
-    const optimization = config.optimization || {};
-
-    // Enable line to line mapped mode for all/specified modules.
-    // Line to line mapped mode uses a simple SourceMap where each line of the generated source is mapped to the same line of the original source.
-    // It’s a performance optimization. Only use it if your performance need to be better and you are sure that input lines match which generated lines.
-    // true enables it for all modules (not recommended)
-    output.devtoolLineToLine = true;
-
-    // Add comments that describe the file import/exports.
-    // This will make it easier to debug.
-    output.pathinfo = true;
-    // Instead of numeric ids, give modules readable names for better debugging.
-    optimization.namedModules = true;
-    // Instead of numeric ids, give chunks readable names for better debugging.
-    optimization.namedChunks = true;
-    // Readable ids for better debugging.
-    // @ts-ignore Property 'moduleIds' does not exist.
-    optimization.moduleIds = 'named';
-    // if optimization.namedChunks is enabled optimization.chunkIds is set to 'named'.
-    // This will manually enable it just to be safe.
-    // @ts-ignore Property 'chunkIds' does not exist.
-    optimization.chunkIds = 'named';
-
-    if (optimization.splitChunks) {
-      optimization.splitChunks.name = true;
-    }
-
-    Object.assign(config, { output, optimization });
-  }
-
-  return config;
-}
-
-async function loadConfigAsync(
-  projectRoot: string,
-  options: BundlerStartOptions,
-  argv?: string[]
-): Promise<WebpackConfiguration> {
-  // let bar: ProgressBar | null = null;
-
-  const env = {
-    projectRoot,
-    pwa: !!options.isImageEditingEnabled,
-    // TODO: Use a new loader in Webpack config...
-    logger: {
-      info(input, jsonString) {},
-    },
-    mode: options.mode,
-    https: options.https,
-  };
-  setMode(env.mode);
-  // Check if the project has a webpack.config.js in the root.
-  const projectWebpackConfig = path.resolve(env.projectRoot, 'webpack.config.js');
-  let config: WebpackConfiguration;
-  if (await fileExistsAsync(projectWebpackConfig)) {
-    const webpackConfig = require(projectWebpackConfig);
-    if (typeof webpackConfig === 'function') {
-      config = await webpackConfig(env, argv);
-    } else {
-      config = webpackConfig;
-    }
-  } else {
-    // Fallback to the default expo webpack config.
-    const loadDefaultConfigAsync = require('@expo/webpack-config');
-    config = await loadDefaultConfigAsync(env, argv);
-  }
-  return applyEnvironmentVariables(config);
-}
-
-// When you have errors in the production build that aren't present in the development build you can use `EXPO_WEB_DEBUG=true expo start --no-dev` to debug those errors.
-// - Prevent the production build from being minified
-// - Include file path info comments in the bundle
-function isDebugModeEnabled(): boolean {
-  return getenv.boolish('EXPO_WEB_DEBUG', false);
+export function getProjectWebpackConfigFilePath(projectRoot: string) {
+  return resolveFrom.silent(projectRoot, './webpack.config.js');
 }
 
 async function clearWebProjectCacheAsync(
@@ -382,7 +348,7 @@ async function clearWebProjectCacheAsync(
   Log.log(chalk.dim(`Clearing Webpack ${mode} cache directory...`));
 
   const dir = await ensureDotExpoProjectDirectoryInitialized(projectRoot);
-  const cacheFolder = path.join(dir, 'web', 'cache', mode);
+  const cacheFolder = path.join(dir, 'web/cache', mode);
   try {
     await fs.promises.rm(cacheFolder, { recursive: true, force: true });
   } catch (e) {

@@ -5,3 +5,4 @@ jest.mock('ora');
 jest.mock('os');
 jest.mock('resolve-from');
 jest.mock('tempy');
+jest.mock('internal-ip');

@@ -8,20 +8,20 @@ import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import { BaseResolveDeviceProps } from '../PlatformManager';
 import { activateWindowAsync } from './activateWindow';
-import * as AndroidDeviceBridge from './adb';
+import * as AndroidDebugBridge from './adb';
 import { startDeviceAsync } from './emulator';
 import { getDevicesAsync } from './getDevices';
 import { promptForDeviceAsync } from './promptAndroidDevice';
 
 const EXPO_GO_PACKAGE = 'host.exp.exponent';
 
-export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Device> {
+export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Device> {
   static async resolveAsync({
     device,
     shouldPrompt,
-  }: BaseResolveDeviceProps<AndroidDeviceBridge.Device> = {}): Promise<AndroidDeviceManager> {
+  }: BaseResolveDeviceProps<AndroidDebugBridge.Device> = {}): Promise<AndroidDeviceManager> {
     if (device) {
-      // await AndroidDeviceBridge.startAdbReverseAsync();
+      // await startAdbReverseAsync();
       const manager = new AndroidDeviceManager(device);
       if (!(await manager.attemptToStartAsync())) {
         throw new AbortCommandError();
@@ -44,7 +44,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Devi
   }
 
   async getAppVersionAsync(applicationId: string): Promise<string | null> {
-    const info = await AndroidDeviceBridge.getPackageInfoAsync(this.device, {
+    const info = await AndroidDebugBridge.getPackageInfoAsync(this.device, {
       appId: applicationId,
     });
 
@@ -57,28 +57,28 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Devi
     return regexMatch[1] ?? null;
   }
 
-  protected async attemptToStartAsync(): Promise<AndroidDeviceBridge.Device | null> {
+  protected async attemptToStartAsync(): Promise<AndroidDebugBridge.Device | null> {
     // TODO: Add a light-weight method for checking since a device could disconnect.
-    if (!(await AndroidDeviceBridge.isDeviceBootedAsync(this.device))) {
+    if (!(await AndroidDebugBridge.isDeviceBootedAsync(this.device))) {
       this.device = await startDeviceAsync(this.device);
     }
 
     if (!this.device.isAuthorized) {
-      AndroidDeviceBridge.logUnauthorized(this.device);
+      AndroidDebugBridge.logUnauthorized(this.device);
       return null;
     }
 
     return this.device;
   }
 
-  async startAsync(): Promise<AndroidDeviceBridge.Device> {
+  async startAsync(): Promise<AndroidDebugBridge.Device> {
     const device = await this.attemptToStartAsync();
     assert(device, `Failed to boot emulator.`);
     return this.device;
   }
 
   async installAppAsync(binaryPath: string) {
-    await AndroidDeviceBridge.installAsync(this.device, {
+    await AndroidDebugBridge.installAsync(this.device, {
       filePath: binaryPath,
     });
   }
@@ -91,7 +91,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Devi
     }
 
     try {
-      await AndroidDeviceBridge.uninstallAsync(this.device, {
+      await AndroidDebugBridge.uninstallAsync(this.device, {
         appId,
       });
     } catch (e) {
@@ -107,14 +107,14 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Devi
    */
   async launchActivityAsync(launchActivity: string) {
     try {
-      return await AndroidDeviceBridge.launchActivityAsync(this.device, {
+      return await AndroidDebugBridge.launchActivityAsync(this.device, {
         launchActivity,
       });
     } catch (error) {
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${this.name}".`;
       if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
         errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
-          `expo run:android -d ${this.name}`
+          `npx expo run:android -d ${this.name}`
         )}`;
       }
       errorMessage += chalk.gray(`\n${error.message}`);
@@ -124,7 +124,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Devi
   }
 
   async isAppInstalledAsync(applicationId: string) {
-    return await AndroidDeviceBridge.isPackageInstalledAsync(this.device, applicationId);
+    return await AndroidDebugBridge.isPackageInstalledAsync(this.device, applicationId);
   }
 
   async openUrlAsync(url: string) {
@@ -134,27 +134,21 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDeviceBridge.Devi
       return;
     }
 
-    try {
-      const parsed = new URL(url);
+    const parsed = new URL(url);
 
-      if (parsed.protocol === 'exp:') {
-        // NOTE(brentvatne): temporary workaround! launch Expo Go first, then
-        // launch the project!
-        // https://github.com/expo/expo/issues/7772
-        // adb shell monkey -p host.exp.exponent -c android.intent.category.LAUNCHER 1
-        // Note: this is not needed in Expo Development Client, it only applies to Expo Go
-        await AndroidDeviceBridge.openAppIdAsync(
-          { pid: this.device.pid },
-          { applicationId: EXPO_GO_PACKAGE }
-        );
-      }
-
-      await AndroidDeviceBridge.openUrlAsync({ pid: this.device.pid }, { url });
-    } catch (e) {
-      // TODO: Maybe drop
-      e.message = `Error running app. ${e.message}`;
-      throw e;
+    if (parsed.protocol === 'exp:') {
+      // NOTE(brentvatne): temporary workaround! launch Expo Go first, then
+      // launch the project!
+      // https://github.com/expo/expo/issues/7772
+      // adb shell monkey -p host.exp.exponent -c android.intent.category.LAUNCHER 1
+      // Note: this is not needed in Expo Development Client, it only applies to Expo Go
+      await AndroidDebugBridge.openAppIdAsync(
+        { pid: this.device.pid },
+        { applicationId: EXPO_GO_PACKAGE }
+      );
     }
+
+    await AndroidDebugBridge.openUrlAsync({ pid: this.device.pid }, { url });
   }
 
   async activateWindowAsync() {

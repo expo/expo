@@ -1,9 +1,10 @@
 import { CommandError } from '../../../utils/errors';
-import * as AndroidDeviceBridge from './adb';
+import { Device, getAttachedDevicesAsync } from './adb';
 import { listAvdsAsync } from './emulator';
 
-export async function getDevicesAsync(): Promise<AndroidDeviceBridge.Device[]> {
-  const bootedDevices = await AndroidDeviceBridge.getAttachedDevicesAsync();
+/** Get a list of all devices including offline emulators. Asserts if no devices are available. */
+export async function getDevicesAsync(): Promise<Device[]> {
+  const bootedDevices = await getAttachedDevicesAsync();
 
   const data = await listAvdsAsync();
   const connectedNames = bootedDevices.map(({ name }) => name);

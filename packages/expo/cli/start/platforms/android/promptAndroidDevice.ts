@@ -2,9 +2,9 @@ import chalk from 'chalk';
 
 import { AbortCommandError } from '../../../utils/errors';
 import { promptAsync } from '../../../utils/prompts';
-import * as AndroidDeviceBridge from './adb';
+import { Device, logUnauthorized } from './adb';
 
-function nameStyleForDevice(device: AndroidDeviceBridge.Device) {
+function nameStyleForDevice(device: Device) {
   const isActive = device.isBooted;
   if (!isActive) {
     // Use no style changes for a disconnected device that is available to be opened.
@@ -18,9 +18,7 @@ function nameStyleForDevice(device: AndroidDeviceBridge.Device) {
   return (text: string) => chalk.bold(chalk.gray(text));
 }
 
-export async function promptForDeviceAsync(
-  devices: AndroidDeviceBridge.Device[]
-): Promise<AndroidDeviceBridge.Device | null> {
+export async function promptForDeviceAsync(devices: Device[]): Promise<Device | null> {
   // TODO: provide an option to add or download more simulators
 
   const { value } = await promptAsync({
@@ -45,7 +43,7 @@ export async function promptForDeviceAsync(
   const device = value ? devices.find(({ name }) => name === value)! : null;
 
   if (device?.isAuthorized === false) {
-    AndroidDeviceBridge.logUnauthorized(device);
+    logUnauthorized(device);
     throw new AbortCommandError();
   }
 

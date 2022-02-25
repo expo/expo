@@ -4,7 +4,7 @@ import { spawn } from 'child_process';
 import os from 'os';
 
 import * as Log from '../../../log';
-import * as AndroidDeviceBridge from './adb';
+import { Device, getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
 
 export const EMULATOR_MAX_WAIT_TIMEOUT = 60 * 1000 * 3;
 
@@ -16,7 +16,7 @@ export function whichEmulator(): string {
 }
 
 /** Returns a list of emulator names. */
-export async function listAvdsAsync(): Promise<AndroidDeviceBridge.Device[]> {
+export async function listAvdsAsync(): Promise<Device[]> {
   try {
     const { stdout } = await spawnAsync(whichEmulator(), ['-list-avds']);
     return stdout
@@ -36,7 +36,7 @@ export async function listAvdsAsync(): Promise<AndroidDeviceBridge.Device[]> {
 
 /** Start an Android device and wait until it is booted. */
 export async function startDeviceAsync(
-  device: Pick<AndroidDeviceBridge.Device, 'name'>,
+  device: Pick<Device, 'name'>,
   {
     timeout = EMULATOR_MAX_WAIT_TIMEOUT,
     interval = 1000,
@@ -45,7 +45,7 @@ export async function startDeviceAsync(
     timeout?: number;
     interval?: number;
   } = {}
-): Promise<AndroidDeviceBridge.Device> {
+): Promise<Device> {
   Log.log(`\u203A Opening emulator ${chalk.bold(device.name)}`);
 
   // Start a process to open an emulator
@@ -64,13 +64,13 @@ export async function startDeviceAsync(
 
   emulatorProcess.unref();
 
-  return new Promise<AndroidDeviceBridge.Device>((resolve, reject) => {
+  return new Promise<Device>((resolve, reject) => {
     const waitTimer = setInterval(async () => {
       try {
-        const bootedDevices = await AndroidDeviceBridge.getAttachedDevicesAsync();
+        const bootedDevices = await getAttachedDevicesAsync();
         const connected = bootedDevices.find(({ name }) => name === device.name);
         if (connected) {
-          const isBooted = await AndroidDeviceBridge.isBootAnimationCompleteAsync(connected.pid);
+          const isBooted = await isBootAnimationCompleteAsync(connected.pid);
           if (isBooted) {
             stopWaiting();
             resolve(connected);

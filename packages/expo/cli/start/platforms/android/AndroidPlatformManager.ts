@@ -1,9 +1,9 @@
 import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
+import { Device } from './adb';
+import { startAdbReverseAsync } from './adbReverse';
 import { AndroidAppIdResolver } from './AndroidAppIdResolver';
 import { AndroidDeviceManager } from './AndroidDeviceManager';
-import { Device } from './adb';
-import * as AndroidDeviceBridge from './adb';
 
 interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   launchActivity?: string;
@@ -35,7 +35,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
       | { runtime: 'custom'; props?: Partial<AndroidOpenInCustomProps> },
     resolveSettings?: Partial<BaseResolveDeviceProps<Device>>
   ): Promise<{ url: string }> {
-    await AndroidDeviceBridge.startAdbReverseAsync([this.port]);
+    await startAdbReverseAsync([this.port]);
     return super.openAsync(options, resolveSettings);
   }
 
