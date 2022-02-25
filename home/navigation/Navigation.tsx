@@ -8,8 +8,8 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import FeatureFlags from 'FeatureFlags';
 import DiagnosticsIcon from 'components/Icons';
-import { NAVIGATION_REDESIGN_ENABLED } from 'constants/Flags';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
@@ -201,14 +201,16 @@ function DiagnosticsStackScreen() {
 const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
-  const projectsOrHomeScreen = NAVIGATION_REDESIGN_ENABLED ? 'HomeStack' : 'ProjectsStack';
+  const projectsOrHomeScreen = FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+    ? 'HomeStack'
+    : 'ProjectsStack';
   const initialRouteName = Environment.IsIOSRestrictedBuild
     ? 'ProfileStackScreen'
     : projectsOrHomeScreen;
 
   return (
     <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
-      {NAVIGATION_REDESIGN_ENABLED ? (
+      {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
         <BottomTab.Screen
           name="HomeStack"
           component={HomeStackScreen}
@@ -238,7 +240,7 @@ function TabNavigator(props: { theme: string }) {
           }}
         />
       )}
-      {NAVIGATION_REDESIGN_ENABLED ? (
+      {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
         <BottomTab.Screen
           name="SettingsScreen"
           component={UserSettingsScreen}

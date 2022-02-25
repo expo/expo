@@ -1,1 +1,0 @@
-export const NAVIGATION_REDESIGN_ENABLED = __DEV__;
