@@ -38,9 +38,9 @@ import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.util.Util;
 
@@ -90,8 +90,8 @@ class SimpleExoPlayerData extends PlayerData
     // Create a default TrackSelector
     final Handler mainHandler = new Handler();
     // Measures bandwidth during playback. Can be null if not required.
-    final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-    final TrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory();
+    final BandwidthMeter bandwidthMeter = new CustomBandwidthMeter();
+    final TrackSelection.Factory trackSelectionFactory = new CustomAdaptiveTrackSelection.Factory();
     final TrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
 
     // Create the player
