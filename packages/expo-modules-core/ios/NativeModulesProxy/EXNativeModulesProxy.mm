@@ -10,7 +10,6 @@
 
 #import <jsi/jsi.h>
 
-#import <ExpoModulesCore/EXComponentDataCompatibleWrapper.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
@@ -362,7 +361,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   NSString *className = NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-    RCTComponentData *componentData = [[EXComponentDataCompatibleWrapper alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
+    RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
 }

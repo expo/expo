@@ -9,6 +9,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import io.mockk.every
 import io.mockk.mockk
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -140,7 +141,7 @@ class FileDownloaderTest {
             mockk(),
             mockk {
               every { isSuccessful } returns true
-              every { body() } returns ResponseBody.create(MediaType.parse("text/plain; charset=utf-8"), "hello")
+              every { body } returns ResponseBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
             }
           )
         }
