@@ -7,6 +7,7 @@
 #import <EXUpdates/EXUpdatesMultipartStreamReader.h>
 #import <EXUpdates/EXUpdatesParameterParser.h>
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
+#import <EXUpdates/EXUpdatesAppController.h>
 
 #if __has_include(<EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>)
 #import <EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>

@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/JavaScriptObject.h>
+#import <ExpoModulesCore/EXJavaScriptObject.h>
 
 #ifdef __cplusplus
 #import <ReactCommon/CallInvoker.h>
@@ -9,7 +9,8 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 #endif // __cplusplus
 
-@interface JavaScriptRuntime : NSObject
+NS_SWIFT_NAME(JavaScriptRuntime)
+@interface EXJavaScriptRuntime : NSObject
 
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments);
@@ -28,9 +29,9 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
 - (std::shared_ptr<react::CallInvoker>)callInvoker;
 
 /**
- Wraps given host object to `JavaScriptObject`.
+ Wraps given host object to `EXJavaScriptObject`.
  */
-- (nonnull JavaScriptObject *)createHostObject:(std::shared_ptr<jsi::HostObject>)jsiHostObjectPtr;
+- (nonnull EXJavaScriptObject *)createHostObject:(std::shared_ptr<jsi::HostObject>)jsiHostObjectPtr;
 
 - (jsi::Function)createSyncFunction:(nonnull NSString *)name
                           argsCount:(NSInteger)argsCount
@@ -44,11 +45,11 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
 /**
  Returns the runtime global object for use in Swift.
  */
-- (nonnull JavaScriptObject *)global;
+- (nonnull EXJavaScriptObject *)global;
 
 /**
  Creates a new object for use in Swift.
  */
-- (nonnull JavaScriptObject *)createObject;
+- (nonnull EXJavaScriptObject *)createObject;
 
 @end

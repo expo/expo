@@ -1,6 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdatesInterface/EXUpdatesExternalInterface.h>
+#import <EXUpdatesInterface/EXUpdatesInterface-umbrella.h>
 
 #import <Foundation/Foundation.h>
 

@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/JSIInstaller.h>
+#import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/ExpoModulesProxySpec.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/Swift.h>
@@ -21,12 +21,12 @@ void installRuntimeObjects(jsi::Runtime &runtime, std::shared_ptr<CallInvoker> c
 
 } // namespace expo
 
-@implementation JavaScriptRuntimeManager
+@implementation EXJavaScriptRuntimeManager
 
-+ (void)installExpoModulesToRuntime:(nonnull JavaScriptRuntime *)runtime withSwiftInterop:(nonnull SwiftInteropBridge *)swiftInterop
++ (void)installExpoModulesToRuntime:(nonnull EXJavaScriptRuntime *)runtime withSwiftInterop:(nonnull SwiftInteropBridge *)swiftInterop
 {
   std::shared_ptr<expo::ExpoModulesHostObject> hostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(swiftInterop);
-  JavaScriptObject *global = [runtime global];
+  EXJavaScriptObject *global = [runtime global];
 
   global[@"ExpoModules"] = [runtime createHostObject:hostObjectPtr];
 }

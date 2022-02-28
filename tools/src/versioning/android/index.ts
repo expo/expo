@@ -8,6 +8,7 @@ import semver from 'semver';
 
 import * as Directories from '../../Directories';
 import { getListOfPackagesAsync } from '../../Packages';
+import { transformFileAsync as transformFileMultiReplacerAsync } from '../../Transforms';
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
 import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
 
@@ -276,16 +277,25 @@ async function processCMake(filePath: string, abiVersion: string) {
 
   libNameToReplace.delete('fb');
   libNameToReplace.delete('fbjni'); // we use the prebuilt binary which is part of the `com.facebook.fbjni:fbjni`
+  libNameToReplace.delete('jsi'); // jsi is a special case which only replace libName but not header include name
 
-  for (const libName of libNameToReplace) {
-    await spawnAsync(
-      `sed -ri '' 's/${libName}([^\/]*$)/${libName}_abi${abiVersion}\\1/g' ${filePath}`,
-      [],
-      {
-        shell: true,
-      }
-    );
-  }
+  const transforms = Array.from(libNameToReplace).map(libName => (
+    {
+      find: new RegExp(`${libName}([^/]*$)`, 'mg'),
+      replaceWith: `${libName}_abi${abiVersion}$1`,
+    }
+  ));
+
+  // to only replace jsi libName
+  transforms.push({
+    find: new RegExp(`(\
+\\s+find_library\\(
+\\s+JSI_LIB
+\\s+)jsi$`, 'mg'),
+    replaceWith: `$1jsi_abi${abiVersion}`,
+  });
+
+  await transformFileMultiReplacerAsync(filePath, transforms);
 }
 
 async function processJavaCodeAsync(libName: string, abiVersion: string) {
@@ -417,7 +427,7 @@ async function copyExpoModulesAsync(version: string) {
     ) {
       await spawnAsync(
         './android-copy-expo-module.sh',
-        [version, path.join(pkg.path, pkg.androidSubdirectory)],
+        [pkg.packageName, version, path.join(pkg.path, pkg.androidSubdirectory)],
         {
           shell: true,
           cwd: SCRIPT_DIR,

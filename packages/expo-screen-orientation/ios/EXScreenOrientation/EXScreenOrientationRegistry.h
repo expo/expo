@@ -3,6 +3,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

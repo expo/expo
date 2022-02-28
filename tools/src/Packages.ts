@@ -161,7 +161,8 @@ export class Package {
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (this.expoModuleConfig) {
+    if (this.expoModuleConfig && !fs.existsSync(path.join(this.path, 'react-native.config.js'))) {
+      // check platform support from expo autolinking but not rn-cli linking which is not platform aware
       return this.expoModuleConfig.platforms?.includes(platform) ?? false;
     } else if (platform === 'android') {
       return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));

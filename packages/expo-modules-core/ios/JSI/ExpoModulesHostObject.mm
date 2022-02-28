@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace expo {
@@ -13,7 +14,7 @@ ExpoModulesHostObject::~ExpoModulesHostObject() {
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   NSString *moduleName = [NSString stringWithUTF8String:name.utf8(runtime).c_str()];
-  JavaScriptObject *nativeObject = [swiftInterop getNativeModuleObject:moduleName];
+  EXJavaScriptObject *nativeObject = [swiftInterop getNativeModuleObject:moduleName];
 
   return nativeObject ? jsi::Value(runtime, *[nativeObject get]) : jsi::Value::undefined();
 }

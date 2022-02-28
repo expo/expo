@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ReactCommon/TurboModuleUtils.h>
-#import <ExpoModulesCore/JSIConversions.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 
 namespace expo {
 

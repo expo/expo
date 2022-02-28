@@ -1,27 +1,27 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/JSIConversions.h>
-#import <ExpoModulesCore/JavaScriptObject.h>
-#import <ExpoModulesCore/JavaScriptRuntime.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesProxySpec.h>
 
-@implementation JavaScriptObject {
+@implementation EXJavaScriptObject {
   /**
-   Pointer to the `JavaScriptRuntime` wrapper.
+   Pointer to the `EXJavaScriptRuntime` wrapper.
 
    \note It must be weak because only then the original runtime can be safely deallocated
    when the JS engine wants to without unsetting it on each created object.
    */
-  __weak JavaScriptRuntime *_runtime;
+  __weak EXJavaScriptRuntime *_runtime;
 
   /**
-   Shared pointer to the original JSI object that is being wrapped by `JavaScriptObject` class.
+   Shared pointer to the original JSI object that is being wrapped by `EXJavaScriptObject` class.
    */
   std::shared_ptr<jsi::Object> _jsObjectPtr;
 }
 
 - (nonnull instancetype)initWith:(std::shared_ptr<jsi::Object>)jsObjectPtr
-                         runtime:(nonnull JavaScriptRuntime *)runtime
+                         runtime:(nonnull EXJavaScriptRuntime *)runtime
 {
   if (self = [super init]) {
     _runtime = runtime;
@@ -54,10 +54,10 @@
   auto runtime = [_runtime get];
 
   if (!runtime) {
-    NSLog(@"Cannot set '%@' property when the JavaScript runtime is no longer available.", key);
+    NSLog(@"Cannot set '%@' property when the EXJavaScript runtime is no longer available.", key);
     return;
   }
-  if ([obj isKindOfClass:[JavaScriptObject class]]) {
+  if ([obj isKindOfClass:[EXJavaScriptObject class]]) {
     _jsObjectPtr->setProperty(*runtime, [key UTF8String], *[obj get]);
   } else {
     _jsObjectPtr->setProperty(*runtime, [key UTF8String], expo::convertObjCObjectToJSIValue(*runtime, obj));
@@ -71,7 +71,7 @@
                    block:(nonnull JSAsyncFunctionBlock)block
 {
   if (!_runtime) {
-    NSLog(@"Cannot set '%@' async function when the JavaScript runtime is no longer available.", name);
+    NSLog(@"Cannot set '%@' async function when the EXJavaScript runtime is no longer available.", name);
     return;
   }
   jsi::Function function = [_runtime createAsyncFunction:name argsCount:argsCount block:block];
@@ -83,7 +83,7 @@
                   block:(nonnull JSSyncFunctionBlock)block
 {
   if (!_runtime) {
-    NSLog(@"Cannot set '%@' sync function when the JavaScript runtime is no longer available.", name);
+    NSLog(@"Cannot set '%@' sync function when the EXJavaScript runtime is no longer available.", name);
     return;
   }
   jsi::Function function = [_runtime createSyncFunction:name argsCount:argsCount block:block];

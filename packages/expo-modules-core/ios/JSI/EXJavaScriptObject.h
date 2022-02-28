@@ -13,14 +13,15 @@ namespace jsi = facebook::jsi;
 typedef void (^JSAsyncFunctionBlock)(NSArray * _Nonnull, RCTPromiseResolveBlock _Nonnull, RCTPromiseRejectBlock _Nonnull);
 typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
 
-@class JavaScriptRuntime;
+@class EXJavaScriptRuntime;
 
-@interface JavaScriptObject : NSObject
+NS_SWIFT_NAME(JavaScriptObject)
+@interface EXJavaScriptObject : NSObject
 
 // Some parts of the interface must be hidden for Swift – it can't import any C++ code.
 #ifdef __cplusplus
 - (nonnull instancetype)initWith:(std::shared_ptr<jsi::Object>)jsObjectPtr
-                         runtime:(nonnull JavaScriptRuntime *)runtime;
+                         runtime:(nonnull EXJavaScriptRuntime *)runtime;
 
 /**
  Returns the pointer to the underlying object.
@@ -36,7 +37,7 @@ typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
 - (nullable id)objectForKeyedSubscript:(nonnull NSString *)key;
 
 /**
- Subscript setter. Only `JavaScriptObject` and Foundation object convertible to JSI values can be used as a value,
+ Subscript setter. Only `EXJavaScriptObject` and Foundation object convertible to JSI values can be used as a value,
  otherwise the property is set to `undefined`.
  */
 - (void)setObject:(nullable id)obj forKeyedSubscript:(nonnull NSString *)key;
