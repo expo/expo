@@ -1,39 +1,30 @@
 import nock from 'nock';
 
 import { getExpoApiBaseUrl } from '../../../api/endpoint';
-import { constructDeepLink } from '../../serverUrl';
-import * as ProjectDevices from '../ProjectDevices';
-import { startDevSessionAsync, stopDevSession } from '../startDevSession';
+import * as ProjectDevices from '../../project/ProjectDevices';
+import { DevelopmentSession } from '../DevelopmentSession';
 
 const asMock = (fn: any): jest.Mock => fn as jest.Mock;
-jest.mock('../ProcessSettings', () => {
-  return {
+
+jest.mock('../../ProcessSettings', () => ({
+  ProcessSettings: {
     isOffline: false,
-  };
-});
+  },
+}));
 
-jest.mock('../ProjectDevices', () => {
-  return {
-    getDevicesInfoAsync: jest.fn(),
-  };
-});
-jest.mock('../../serverUrl', () => {
-  return {
-    constructDeepLink: jest.fn(),
-  };
-});
-jest.mock('../../../api/user/user', () => {
-  return {
-    getUserAsync: jest.fn(() => Promise.resolve({})),
-  };
-});
+jest.mock('../../project/ProjectDevices', () => ({
+  getDevicesInfoAsync: jest.fn(),
+}));
 
-describe(startDevSessionAsync, () => {
+jest.mock('../../../api/user/user');
+
+describe(`startAsync`, () => {
   it(`starts a dev session`, async () => {
+    const session = new DevelopmentSession('/', 'http://localhost:19001/');
+
     asMock(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
       devices: [{ installationId: '123' }, { installationId: '456' }],
     });
-    asMock(constructDeepLink).mockResolvedValue('http://localhost:19001/');
 
     const exp = {
       name: 'my-app',
@@ -46,14 +37,12 @@ describe(startDevSessionAsync, () => {
       .post('/v2/development-sessions/notify-alive?deviceId=123&deviceId=456')
       .reply(200, '');
 
-    await startDevSessionAsync('/test-project', {
+    await session.startAsync({
       exp,
       runtime,
     });
-    stopDevSession();
+    session.stop();
     expect(ProjectDevices.getDevicesInfoAsync).toHaveBeenCalledTimes(1);
     expect(scope.isDone()).toBe(true);
   });
-
-  // TODO: Test bailing out, web session, polling.
 });

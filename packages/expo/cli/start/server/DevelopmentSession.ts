@@ -14,7 +14,12 @@ async function isAuthenticatedAsync() {
 export class DevelopmentSession {
   private timeout: ReturnType<typeof setTimeout>;
 
-  constructor(public projectRoot: string, public url: string) {}
+  constructor(
+    /** Project root directory. */
+    private projectRoot: string,
+    /** Development Server URL. */
+    public url: string
+  ) {}
 
   /**
    * Notify the Expo servers that a project is running, this enables the Expo Go app
@@ -27,7 +32,7 @@ export class DevelopmentSession {
    * @param props.runtime which runtime the app should be opened in. `native` for dev clients, `web` for web browsers.
    * @returns
    */
-  public async startDevSessionAsync({
+  public async startAsync({
     exp = getConfig(this.projectRoot).exp,
     runtime,
   }: {
@@ -35,14 +40,14 @@ export class DevelopmentSession {
     runtime: 'native' | 'web';
   }): Promise<void> {
     if (ProcessSettings.isOffline) {
-      this.stopSession();
+      this.stop();
       return;
     }
 
     const deviceIds = await this.getDeviceInstallationIdsAsync();
 
     if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
-      this.stopSession();
+      this.stop();
       return;
     }
 
@@ -53,9 +58,9 @@ export class DevelopmentSession {
       deviceIds,
     });
 
-    this.stopSession();
+    this.stop();
 
-    this.timeout = setTimeout(() => this.startDevSessionAsync({ exp, runtime }), UPDATE_FREQUENCY);
+    this.timeout = setTimeout(() => this.startAsync({ exp, runtime }), UPDATE_FREQUENCY);
   }
 
   /** Get all recent devices for the project. */
@@ -65,7 +70,7 @@ export class DevelopmentSession {
   }
 
   /** Stop notifying the Expo servers that the development session is running. */
-  public stopSession() {
+  public stop() {
     clearTimeout(this.timeout);
   }
 }

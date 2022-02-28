@@ -156,7 +156,7 @@ export class BundlerDevServer {
     // Must come after ngrok (`startTunnelAsync`) setup.
 
     if (this.devSession) {
-      this.devSession.stopSession();
+      this.devSession.stop();
     }
 
     this.devSession = new DevelopmentSession(
@@ -165,7 +165,7 @@ export class BundlerDevServer {
       this.getDevServerUrl({ hostType: 'localhost' })
     );
 
-    await this.devSession.startDevSessionAsync({
+    await this.devSession.startAsync({
       runtime: this.isTargetingNative() ? 'native' : 'web',
     });
   }
@@ -201,7 +201,7 @@ export class BundlerDevServer {
   /** Stop the running dev server instance. */
   async stopAsync() {
     // Stop the dev session timer.
-    this.devSession?.stopSession?.();
+    this.devSession?.stop?.();
 
     // Stop ngrok if running.
     await this.ngrok?.stopAsync?.().catch((e) => {
