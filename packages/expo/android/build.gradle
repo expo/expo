@@ -1,5 +1,3 @@
-import groovy.json.JsonSlurper
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
@@ -12,21 +10,17 @@ static def versionToNumber(major, minor, patch) {
 }
 
 def getRNVersion() {
-  def reactNativePackageJsonPath = [
+  def nodeModulesVersion = [
       "node",
       "-e",
-      "console.log(require.resolve('react-native/package.json'));"
+      "console.log(require.resolve('react-native/package.json').version);"
   ]
       .execute([], projectDir)
       .text
       .trim()
 
-  def packageJsonFile = new File(reactNativePackageJsonPath)
-  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-  def version = safeExtGet("reactNativeVersion", packageJson.version)
-
+  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
   def coreVersion = version.split("-")[0]
-
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
   return versionToNumber(
