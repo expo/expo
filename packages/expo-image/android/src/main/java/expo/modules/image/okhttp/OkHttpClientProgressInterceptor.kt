@@ -20,10 +20,10 @@ object OkHttpClientProgressInterceptor : Interceptor {
   @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain): Response {
     val weakThis = WeakReference(this)
-    val requestUrl = chain.call().request().url().toString()
+    val requestUrl = chain.call().request().url.toString()
     val originalResponse = chain.proceed(chain.request())
     return originalResponse.newBuilder()
-      .body(ProgressResponseBody(originalResponse.body()) { bytesWritten, contentLength, done ->
+      .body(ProgressResponseBody(originalResponse.body) { bytesWritten, contentLength, done ->
         val strongThis = weakThis.get() ?: return@ProgressResponseBody
         val urlListeners = strongThis.mProgressListeners[requestUrl]
         urlListeners?.forEach { it.get()?.onProgress(bytesWritten, contentLength, done) }

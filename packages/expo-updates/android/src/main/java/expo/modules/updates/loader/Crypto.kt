@@ -67,7 +67,7 @@ object Crypto {
         @Throws(IOException::class)
         override fun onResponse(call: Call, response: Response) {
           val exception: Exception = try {
-            val isValid = verifyPublicRSASignature(response.body()!!.string(), plainText, cipherText)
+            val isValid = verifyPublicRSASignature(response.body!!.string(), plainText, cipherText)
             listener.onCompleted(isValid)
             return
           } catch (e: Exception) {

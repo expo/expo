@@ -57,18 +57,15 @@ import okhttp3.Callback
 import okhttp3.Headers
 import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
-
-import okio.Buffer
-import okio.BufferedSource
-import okio.ForwardingSource
-import okio.Okio
-import okio.Source
+import okio.*
 
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.codec.digest.DigestUtils
@@ -778,7 +775,7 @@ open class FileSystemModule(
       }
 
       val body = createRequestBody(options, decorator, fileUri.toFile())
-      return requestBuilder.method(method, body).build()
+      return method?.let { requestBuilder.method(method, body).build() }
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
@@ -803,7 +800,7 @@ open class FileSystemModule(
         } ?: URLConnection.guessContentTypeFromName(file.name)
 
         val fieldName = options["fieldName"]?.let { it as String } ?: file.name
-        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(MediaType.parse(mimeType), file)))
+        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(file.asRequestBody(mimeType.toMediaTypeOrNull())))
         bodyBuilder.build()
       }
       else -> {
@@ -828,9 +825,9 @@ open class FileSystemModule(
 
         override fun onResponse(call: Call, response: Response) {
           val result = Bundle().apply {
-            putString("body", response.body()?.string())
-            putInt("status", response.code())
-            putBundle("headers", translateHeaders(response.headers()))
+            putString("body", response.body?.string())
+            putInt("status", response.code)
+            putBundle("headers", translateHeaders(response.headers))
           }
           response.close()
           promise.resolve(result)
@@ -878,7 +875,7 @@ open class FileSystemModule(
     taskHandlers[uuid] = TaskHandler(call)
     call.enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
-        if (call.isCanceled) {
+        if (call.isCanceled()) {
           promise.resolve(null)
           return
         }
@@ -888,11 +885,11 @@ open class FileSystemModule(
 
       override fun onResponse(call: Call, response: Response) {
         val result = Bundle()
-        val body = response.body()
+        val body = response.body
         result.apply {
           putString("body", body?.string())
-          putInt("status", response.code())
-          putBundle("headers", translateHeaders(response.headers()))
+          putInt("status", response.code)
+          putBundle("headers", translateHeaders(response.headers))
         }
         response.close()
         promise.resolve(result)
@@ -912,10 +909,10 @@ open class FileSystemModule(
           val resources = context.resources
           val packageName = context.packageName
           val resourceId = resources.getIdentifier(url, "raw", packageName)
-          val bufferedSource = Okio.buffer(Okio.source(context.resources.openRawResource(resourceId)))
+          val bufferedSource = context.resources.openRawResource(resourceId).source().buffer()
           val file = uri.toFile()
           file.delete()
-          val sink = Okio.buffer(Okio.sink(file))
+          val sink = file.sink().buffer()
           sink.writeAll(bufferedSource)
           sink.close()
           val result = Bundle()
@@ -946,13 +943,13 @@ open class FileSystemModule(
             override fun onResponse(call: Call, response: Response) {
               val file = uri.toFile()
               file.delete()
-              val sink = Okio.buffer(Okio.sink(file))
-              sink.writeAll(response.body()!!.source())
+              val sink = file.sink().buffer()
+              sink.writeAll(response.body!!.source())
               sink.close()
               val result = Bundle().apply {
                 putString("uri", Uri.fromFile(file).toString())
-                putInt("status", response.code())
-                putBundle("headers", translateHeaders(response.headers()))
+                putInt("status", response.code)
+                putBundle("headers", translateHeaders(response.headers))
                 if (options?.get("md5") == true) {
                   putString("md5", md5(file))
                 }
@@ -1015,7 +1012,7 @@ open class FileSystemModule(
         ?.addNetworkInterceptor { chain ->
           val originalResponse = chain.proceed(chain.request())
           originalResponse.newBuilder()
-            .body(ProgressResponseBody(originalResponse.body(), progressListener))
+            .body(ProgressResponseBody(originalResponse.body, progressListener))
             .build()
         }
         ?.build()
@@ -1110,7 +1107,7 @@ open class FileSystemModule(
       val options = params[0]?.options
       return try {
         val response = call!!.execute()
-        val responseBody = response.body()
+        val responseBody = response.body
         val input = BufferedInputStream(responseBody!!.byteStream())
         val output = FileOutputStream(file, isResume == true)
         val data = ByteArray(1024)
@@ -1120,15 +1117,15 @@ open class FileSystemModule(
         }
         val result = Bundle().apply {
           putString("uri", Uri.fromFile(file).toString())
-          putInt("status", response.code())
-          putBundle("headers", translateHeaders(response.headers()))
+          putInt("status", response.code)
+          putBundle("headers", translateHeaders(response.headers))
           options?.get("md5").takeIf { it == true }?.let { putString("md5", file?.let { md5(it) }) }
         }
         response.close()
         promise?.resolve(result)
         null
       } catch (e: Exception) {
-        if (call?.isCanceled == true) {
+        if (call?.isCanceled() == true) {
           promise?.resolve(null)
           return null
         }
@@ -1151,7 +1148,7 @@ open class FileSystemModule(
     override fun contentLength(): Long = responseBody?.contentLength() ?: -1
 
     override fun source(): BufferedSource =
-      bufferedSource ?: Okio.buffer(source(responseBody!!.source()))
+      bufferedSource ?: source(responseBody!!.source()).buffer()
 
     private fun source(source: Source): Source {
       return object : ForwardingSource(source) {
@@ -1316,7 +1313,7 @@ open class FileSystemModule(
   // Copied out of React Native's `NetworkingModule.java`
   private fun translateHeaders(headers: Headers): Bundle {
     val responseHeaders = Bundle()
-    for (i in 0 until headers.size()) {
+    for (i in 0 until headers.size) {
       val headerName = headers.name(i)
       // multiple values for the same header
       if (responseHeaders[headerName] != null) {
