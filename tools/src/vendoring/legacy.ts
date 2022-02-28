@@ -339,21 +339,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-appearance': {
-    repoUrl: 'https://github.com/expo/react-native-appearance.git',
-    installableInManagedApps: true,
-    semverPrefix: '~',
-    steps: [
-      {
-        sourceIosPath: 'ios/Appearance',
-        targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
-        targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'io.expo.appearance',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
-      },
-    ],
-  },
   'amazon-cognito-identity-js': {
     repoUrl: 'https://github.com/aws-amplify/amplify-js.git',
     installableInManagedApps: false,
