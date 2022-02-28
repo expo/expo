@@ -136,3 +136,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 ### Standalone apps created with `expo build` are not supported
 
 The classic build system [isn't flexible enough](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb) to support using Hermes for some apps and not for others. You will need to use the new build system, [EAS Build](/build/introduction), to use Hermes in your standalone apps.
+
+### Expo Go for iOS is not supported
+
+Hermes is not supported in Expo Go for iOS.
