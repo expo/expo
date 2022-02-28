@@ -81,7 +81,7 @@ open class ReactNativeHostWrapperBase(
     return invokeDelegateMethod("getPackages")
   }
 
-//endregion
+  //endregion
 
   //region Internals
 
