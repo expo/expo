@@ -11,9 +11,6 @@ Development builds of your app are Debug builds of your project that include the
 
 `expo-dev-client` is designed to support any workflow, release process, or set of dependencies in the Expo / React Native ecosystem. Whatever the needs of your project, either now or in the future, you'll be able to create development builds for it and get the productivity and quality of life improvements of JavaScript-driven development.
 
-Of course, there are always tradeoffs, and that flexibility means there's not just one way to get started. To help you choose the options that are right for you, these icons indicate:
-
-
 ## Installing `expo-dev-client` in your project
 
 If you have used Expo before, especially with the Managed workflow, [config plugins](/guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
