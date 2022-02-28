@@ -18,7 +18,6 @@ type ActionOptions = {
 const REACT_NATIVE_SUBMODULE_PATH = getReactNativeSubmoduleDir();
 const REACT_ANDROID_PATH = path.join(ANDROID_DIR, 'ReactAndroid');
 const REACT_COMMON_PATH = path.join(ANDROID_DIR, 'ReactCommon');
-const REACT_APPLICATION_MK_PATH = path.join(REACT_ANDROID_PATH, 'src/main/jni/Application.mk');
 const REACT_ANDROID_GRADLE_PATH = path.join(REACT_ANDROID_PATH, 'build.gradle');
 
 async function checkoutReactNativeSubmoduleAsync(checkoutRef: string): Promise<void> {
