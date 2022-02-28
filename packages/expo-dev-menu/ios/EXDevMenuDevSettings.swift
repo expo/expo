@@ -35,8 +35,8 @@ class EXDevMenuDevSettings: NSObject {
       devSettings["isHotLoadingAvailable"] = bridgeSettings.isHotLoadingAvailable
       devSettings["isPerfMonitorAvailable"] = isPerfMonitorAvailable
        
-      // is this right?
-      devSettings["isElementInspectorAvailable"] = bridge.isInspectable
+      // what to do?
+      // devSettings["isElementInspectorAvailable"] = ??
     }
     
     return devSettings
