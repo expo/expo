@@ -13,15 +13,30 @@ class EXDevMenuDevSettings: NSObject {
     devSettings["isHotLoadingEnabled"] = false;
     devSettings["isPerfMonitorShown"] = false;
     
+    devSettings["isRemoteDebuggingAvailable"] = false;
+    devSettings["isElementInspectorAvailable"] = false;
+    devSettings["isHotLoadingAvailable"] = false;
+    devSettings["isPerfMonitorAvailable"] = false;
+    
     let manager = DevMenuManager.shared
     
     if let bridge = manager.currentBridge,
         let bridgeSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
       
+      
+      let perfMonitor = bridge.module(forName: "PerfMonitor")
+      let isPerfMonitorAvailable = perfMonitor != nil
+      
       devSettings["isDebuggingRemotely"] = bridgeSettings.isDebuggingRemotely;
       devSettings["isElementInspectorShown"] = bridgeSettings.isElementInspectorShown;
       devSettings["isHotLoadingEnabled"] = bridgeSettings.isHotLoadingEnabled;
       devSettings["isPerfMonitorShown"] = bridgeSettings.isPerfMonitorShown;
+      devSettings["isRemoteDebuggingAvailable"] = bridgeSettings.isRemoteDebuggingAvailable
+      devSettings["isHotLoadingAvailable"] = bridgeSettings.isHotLoadingAvailable
+      devSettings["isPerfMonitorAvailable"] = isPerfMonitorAvailable
+       
+      // is this right?
+      devSettings["isElementInspectorAvailable"] = bridge.isInspectable
     }
     
     return devSettings
