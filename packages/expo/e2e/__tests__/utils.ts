@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import execa from 'execa';
 import fs from 'fs';
 import os from 'os';
@@ -30,6 +30,10 @@ export async function abortingSpawnAsync(
   args: string[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
+  const spawnAsync = jest.requireActual(
+    '@expo/spawn-async'
+  ) as typeof import('@expo/spawn-async').default;
+
   const promise = spawnAsync(cmd, args, options);
   promise.child.stdout.pipe(process.stdout);
   promise.child.stderr.pipe(process.stderr);

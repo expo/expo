@@ -1,4 +1,10 @@
-export default jest.fn(() => ({
-  tick: jest.fn(),
-  terminate: jest.fn(),
-}));
+class Progress {
+  tick: Function;
+  terminate: Function;
+  constructor() {
+    this.tick = jest.fn();
+    this.terminate = jest.fn();
+  }
+}
+
+export default Progress;
