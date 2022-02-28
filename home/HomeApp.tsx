@@ -7,8 +7,7 @@ import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider'
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { Linking, Platform, StyleSheet, View } from 'react-native';
-import { useColorScheme } from 'react-native-appearance';
+import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-native';
 import url from 'url';
 
 import { ColorTheme } from './constants/Colors';
@@ -103,8 +102,8 @@ export default function HomeApp() {
     return null;
   }
 
-  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
-  if (theme === 'no-preference') {
+  let theme = preferredAppearance === undefined ? colorScheme : preferredAppearance;
+  if (theme === undefined) {
     theme = 'light';
   }
 

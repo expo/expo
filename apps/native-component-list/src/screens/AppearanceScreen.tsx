@@ -1,7 +1,8 @@
-import { EventSubscription } from 'fbemitter';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Appearance, ColorSchemeName } from 'react-native-appearance';
+import { Appearance, StyleSheet, Text, View } from 'react-native';
+import type { NativeEventSubscription } from 'react-native';
+
+type ColorSchemeName = Appearance.AppearancePreferences['colorScheme'];
 
 interface State {
   colorScheme: ColorSchemeName;
@@ -14,7 +15,7 @@ export default class AppearanceScreen extends React.Component<{}, State> {
     title: 'Appearance',
   };
 
-  subscription?: EventSubscription;
+  subscription?: NativeEventSubscription;
 
   state: State = {
     colorScheme: Appearance.getColorScheme(),

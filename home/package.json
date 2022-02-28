@@ -52,7 +52,6 @@
     "querystring": "^0.2.0",
     "react": "17.0.2",
     "react-native": "0.67.2",
-    "react-native-appearance": "~0.3.4",
     "react-native-fade-in-image": "^1.6.1",
     "react-native-gesture-handler": "~2.1.0",
     "react-native-infinite-scroll-view": "^0.4.5",

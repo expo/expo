@@ -1,8 +1,10 @@
-import { ColorSchemeName } from 'react-native-appearance';
+import { Appearance } from 'react-native';
 
 import * as DevMenu from '../menu/DevMenuModule';
 import LocalStorage from '../storage/LocalStorage';
 import { AppDispatch, AppThunk } from './Store.types';
+
+type ColorSchemeName = Appearance.AppearancePreferences['colorScheme'];
 
 export default {
   loadSettings(): AppThunk {
@@ -16,7 +18,7 @@ export default {
         type: 'loadSettings',
         payload: {
           ...localStorageSettings,
-          preferredAppearance: localStorageSettings.preferredAppearance ?? 'no-preference',
+          preferredAppearance: localStorageSettings.preferredAppearance ?? undefined,
           devMenuSettings,
         },
       });

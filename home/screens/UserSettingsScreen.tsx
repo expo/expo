@@ -2,8 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as Tracking from 'expo-tracking-transparency';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { Platform, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
-import { ColorSchemeName } from 'react-native-appearance';
+import { Appearance, Platform, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
 import ListItem from '../components/ListItem';
 import ScrollView from '../components/NavigationScrollView';
@@ -14,6 +13,8 @@ import SharedStyles from '../constants/SharedStyles';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 import SettingsActions from '../redux/SettingsActions';
+
+type ColorSchemeName = Appearance.AppearancePreferences['colorScheme'];
 
 export default function UserSettingsScreen() {
   return (
@@ -45,8 +46,8 @@ function AppearanceItem() {
       <SectionHeader title="Theme" />
       <ListItem
         title="Automatic"
-        checked={preferredAppearance === 'no-preference'}
-        onPress={() => onSelectAppearance('no-preference')}
+        checked={preferredAppearance === undefined}
+        onPress={() => onSelectAppearance(undefined)}
       />
       <ListItem
         title="Light"

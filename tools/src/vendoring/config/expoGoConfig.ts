@@ -97,10 +97,6 @@ const config: VendoringTargetConfig = {
       semverPrefix: '~',
       ios: {},
     },
-    'react-native-appearance': {
-      source: 'https://github.com/expo/react-native-appearance.git',
-      semverPrefix: '~',
-    },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
     },
