@@ -13,7 +13,7 @@ def getRNVersion() {
   def nodeModulesVersion = [
       "node",
       "-e",
-      "console.log(require.resolve('react-native/package.json').version);"
+      "console.log(require('react-native/package.json').version);"
   ]
       .execute([], projectDir)
       .text
