@@ -17,6 +17,18 @@ class CopyFailureException extends CodedError {
   }
 }
 
+class PasteFailureException extends CodedError {
+  constructor(cause: string) {
+    super('ERR_COPY_FAILURE', `Failed to paste from clipboard: ${cause}`);
+  }
+}
+
+class NoPermissionException extends CodedError {
+  constructor() {
+    super('ERR_NO_PERMISSION', 'User denied permission to access clipboard');
+  }
+}
+
 /**
  * Converts base64-encoded data to a `Blob` object.
  * @see https://stackoverflow.com/a/20151856
@@ -72,11 +84,18 @@ async function findImageInClipboardAsync(items: ClipboardItems): Promise<Blob | 
     }
 
     // alternatively, an image might be a jpeg
+    // NOTE: Currently, this is not supported by browsers yet. They only support PNG now
     if (clipboardItem.types.some((type) => type === 'image/jpeg')) {
       return await clipboardItem.getType('image/jpeg');
     }
   }
   return null;
+}
+
+async function isClipboardPermissionDeniedAsync(): Promise<boolean> {
+  const queryOpts = { name: 'clipboard-read' as PermissionName };
+  const permissionStatus = await navigator.permissions.query(queryOpts);
+  return permissionStatus.state === 'denied';
 }
 
 export default {
@@ -87,7 +106,12 @@ export default {
     let text = '';
     try {
       text = await navigator.clipboard.readText();
-    } catch {
+    } catch (e) {
+      // it might fail, because user denied permission
+      if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+        throw new NoPermissionException();
+      }
+
       try {
         // Internet Explorer
         // @ts-ignore
@@ -117,26 +141,34 @@ export default {
   async hasStringAsync(): Promise<boolean> {
     return this.getStringAsync({}).then((text) => text.length > 0);
   },
-  async getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null> {
+  async getImageAsync(_options: GetImageOptions): Promise<ClipboardImage | null> {
     if (!navigator.clipboard) {
       throw new ClipboardUnavailableException();
     }
 
-    const clipboardItems = await navigator.clipboard.read();
-    const blob = await findImageInClipboardAsync(clipboardItems);
-    if (!blob) {
-      return null;
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      const blob = await findImageInClipboardAsync(clipboardItems);
+      if (!blob) {
+        return null;
+      }
+
+      const [data, [width, height]] = await Promise.all([
+        blobToBase64Async(blob),
+        getImageSizeFromBlobAsync(blob),
+      ]);
+
+      return {
+        data,
+        size: { width, height },
+      };
+    } catch (e) {
+      // it might fail, because user denied permission
+      if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+        throw new NoPermissionException();
+      }
+      throw new PasteFailureException(e.message);
     }
-
-    const [data, [width, height]] = await Promise.all([
-      blobToBase64Async(blob),
-      getImageSizeFromBlobAsync(blob),
-    ]);
-
-    return {
-      data,
-      size: { width, height },
-    };
   },
   async setImageAsync(base64image: string): Promise<void> {
     if (!navigator.clipboard) {
@@ -161,10 +193,18 @@ export default {
       throw new ClipboardUnavailableException();
     }
 
-    const clipboardItems = await navigator.clipboard.read();
-    return clipboardItems
-      .flatMap((item) => item.types)
-      .some((type) => type === 'image/png' || type === 'image/jpeg');
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      return clipboardItems
+        .flatMap((item) => item.types)
+        .some((type) => type === 'image/png' || type === 'image/jpeg');
+    } catch (e) {
+      // it might fail, because user denied permission
+      if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+        throw new NoPermissionException();
+      }
+      throw e;
+    }
   },
   addClipboardListener(): void {},
   removeClipboardListener(): void {},

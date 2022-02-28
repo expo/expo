@@ -9,6 +9,16 @@ class CopyFailureException extends CodedError {
         super('ERR_COPY_FAILURE', `Failed to copy to clipboard: ${cause}`);
     }
 }
+class PasteFailureException extends CodedError {
+    constructor(cause) {
+        super('ERR_COPY_FAILURE', `Failed to paste from clipboard: ${cause}`);
+    }
+}
+class NoPermissionException extends CodedError {
+    constructor() {
+        super('ERR_NO_PERMISSION', 'User denied permission to access clipboard');
+    }
+}
 /**
  * Converts base64-encoded data to a `Blob` object.
  * @see https://stackoverflow.com/a/20151856
@@ -58,11 +68,17 @@ async function findImageInClipboardAsync(items) {
             return await clipboardItem.getType('image/png');
         }
         // alternatively, an image might be a jpeg
+        // NOTE: Currently, this is not supported by browsers yet. They only support PNG now
         if (clipboardItem.types.some((type) => type === 'image/jpeg')) {
             return await clipboardItem.getType('image/jpeg');
         }
     }
     return null;
+}
+async function isClipboardPermissionDeniedAsync() {
+    const queryOpts = { name: 'clipboard-read' };
+    const permissionStatus = await navigator.permissions.query(queryOpts);
+    return permissionStatus.state === 'denied';
 }
 export default {
     get name() {
@@ -73,7 +89,11 @@ export default {
         try {
             text = await navigator.clipboard.readText();
         }
-        catch {
+        catch (e) {
+            // it might fail, because user denied permission
+            if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+                throw new NoPermissionException();
+            }
             try {
                 // Internet Explorer
                 // @ts-ignore
@@ -102,23 +122,35 @@ export default {
     async setStringAsync(text, _options) {
         return this.setString(text);
     },
-    async getImageAsync(options) {
+    async hasStringAsync() {
+        return this.getStringAsync().then((text) => text.length > 0);
+    },
+    async getImageAsync(_options) {
         if (!navigator.clipboard) {
             throw new ClipboardUnavailableException();
         }
-        const clipboardItems = await navigator.clipboard.read();
-        const blob = await findImageInClipboardAsync(clipboardItems);
-        if (!blob) {
-            return null;
+        try {
+            const clipboardItems = await navigator.clipboard.read();
+            const blob = await findImageInClipboardAsync(clipboardItems);
+            if (!blob) {
+                return null;
+            }
+            const [data, [width, height]] = await Promise.all([
+                blobToBase64Async(blob),
+                getImageSizeFromBlobAsync(blob),
+            ]);
+            return {
+                data,
+                size: { width, height },
+            };
         }
-        const [data, [width, height]] = await Promise.all([
-            blobToBase64Async(blob),
-            getImageSizeFromBlobAsync(blob),
-        ]);
-        return {
-            data,
-            size: { width, height },
-        };
+        catch (e) {
+            // it might fail, because user denied permission
+            if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+                throw new NoPermissionException();
+            }
+            throw new PasteFailureException(e.message);
+        }
     },
     async setImageAsync(base64image) {
         if (!navigator.clipboard) {
@@ -142,10 +174,19 @@ export default {
         if (!navigator.clipboard) {
             throw new ClipboardUnavailableException();
         }
-        const clipboardItems = await navigator.clipboard.read();
-        return clipboardItems
-            .flatMap((item) => item.types)
-            .some((type) => type === 'image/png' || type === 'image/jpeg');
+        try {
+            const clipboardItems = await navigator.clipboard.read();
+            return clipboardItems
+                .flatMap((item) => item.types)
+                .some((type) => type === 'image/png' || type === 'image/jpeg');
+        }
+        catch (e) {
+            // it might fail, because user denied permission
+            if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+                throw new NoPermissionException();
+            }
+            throw e;
+        }
     },
     addClipboardListener() { },
     removeClipboardListener() { },
