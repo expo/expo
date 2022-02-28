@@ -2,7 +2,7 @@
 
 #import <React/RCTUtils.h>
 
-#import <ExpoModulesCore/JSIConversions.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/ExpoModulesProxySpec.h>
 
 namespace expo {

@@ -2,17 +2,20 @@
 
 #import <jsi/jsi.h>
 
-#import <ExpoModulesCore/JavaScriptRuntime.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/ExpoModulesProxySpec.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/Swift.h>
 
 using namespace facebook;
 
-@implementation JavaScriptRuntime {
+@implementation EXJavaScriptRuntime {
   jsi::Runtime *_runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
 
-  JavaScriptObject *_global;
+  EXJavaScriptObject *_global;
 }
 
 - (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
@@ -22,7 +25,7 @@ using namespace facebook;
     _jsCallInvoker = callInvoker;
 
     auto jsGlobalPtr = std::make_shared<jsi::Object>(_runtime->global());
-    _global = [[JavaScriptObject alloc] initWith:jsGlobalPtr runtime:self];
+    _global = [[EXJavaScriptObject alloc] initWith:jsGlobalPtr runtime:self];
   }
   return self;
 }
@@ -37,19 +40,19 @@ using namespace facebook;
   return _jsCallInvoker;
 }
 
-- (nonnull JavaScriptObject *)createObject
+- (nonnull EXJavaScriptObject *)createObject
 {
   auto jsObjectPtr = std::make_shared<jsi::Object>(*_runtime);
-  return [[JavaScriptObject alloc] initWith:jsObjectPtr runtime:self];
+  return [[EXJavaScriptObject alloc] initWith:jsObjectPtr runtime:self];
 }
 
-- (nonnull JavaScriptObject *)createHostObject:(std::shared_ptr<jsi::HostObject>)jsiHostObjectPtr
+- (nonnull EXJavaScriptObject *)createHostObject:(std::shared_ptr<jsi::HostObject>)jsiHostObjectPtr
 {
   auto jsObjectPtr = std::make_shared<jsi::Object>(jsi::Object::createFromHostObject(*_runtime, jsiHostObjectPtr));
-  return [[JavaScriptObject alloc] initWith:jsObjectPtr runtime:self];
+  return [[EXJavaScriptObject alloc] initWith:jsObjectPtr runtime:self];
 }
 
-- (nonnull JavaScriptObject *)global
+- (nonnull EXJavaScriptObject *)global
 {
   return _global;
 }
@@ -68,7 +71,7 @@ using namespace facebook;
                                block:(nonnull JSAsyncFunctionBlock)block
 {
   return [self createHostFunction:name argsCount:argsCount block:^jsi::Value(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray *arguments) {
-    // The function that is invoked as a setup of the JavaScript `Promise`.
+    // The function that is invoked as a setup of the EXJavaScript `Promise`.
     auto promiseSetup = [callInvoker, block, arguments](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
       expo::callPromiseSetupWithBlock(runtime, callInvoker, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
         block(arguments, resolver, rejecter);
