@@ -2,10 +2,10 @@ package expo.modules.core.interfaces;
 
 import android.app.Activity;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactDelegate;
 import com.facebook.react.ReactRootView;
 
 import androidx.annotation.Nullable;
@@ -25,12 +25,12 @@ public interface ReactActivityHandler {
   }
 
   /**
-   * Gives modules a chance to create a ViewGroup that is used as a container for the "real"
-   * ReactRootView, which is added as a child to the container if non-null.
-   * @return a ReactRootView instance to be used as a container, or null if no container is needed
+   * Gives modules a chance to create a ViewGroup that is used as a container for the ReactRootView,
+   * which is added as a child to the container if non-null.
+   * @return a ViewGroup to be used as a container, or null if no container is needed
    */
   @Nullable
-  default ReactRootView createReactRootViewContainer(Activity activity) {
+  default ViewGroup createReactRootViewContainer(Activity activity) {
     return null;
   }
 

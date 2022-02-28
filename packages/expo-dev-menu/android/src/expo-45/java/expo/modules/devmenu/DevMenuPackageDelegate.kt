@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.ViewGroup
 import com.facebook.react.ReactApplication
-import com.facebook.react.ReactRootView
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.react.DevMenuAwareReactActivity
@@ -41,7 +41,7 @@ object DevMenuPackageDelegate {
 
     return listOf(
       object : ReactActivityHandler {
-        override fun createReactRootViewContainer(activity: Activity): ReactRootView {
+        override fun createReactRootViewContainer(activity: Activity): ViewGroup {
           return DevMenuReactRootViewContainer(activity as Context)
         }
 

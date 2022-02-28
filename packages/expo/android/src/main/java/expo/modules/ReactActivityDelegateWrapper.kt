@@ -36,20 +36,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    val rootViewContainer = reactActivityHandlers.asSequence()
-      .mapNotNull { it.createReactRootViewContainer(activity) }
-      .firstOrNull()
-
-    val rootView = reactActivityHandlers.asSequence()
+    return reactActivityHandlers.asSequence()
       .mapNotNull { it.createReactRootView(activity) }
       .firstOrNull() ?: invokeDelegateMethod("createRootView")
-
-    if (rootViewContainer != null) {
-      rootViewContainer.addView(rootView, ViewGroup.LayoutParams.MATCH_PARENT)
-      return rootViewContainer
-    }
-
-    return rootView
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -65,7 +54,23 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun loadApp(appKey: String?) {
-    return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+    // Give modules a chance to wrap the ReactRootView in a container ViewGroup. If some module
+    // wants to do this, we override the functionality of `loadApp` and call `setContentView` with
+    // the new container view instead.
+    val rootViewContainer = reactActivityHandlers.asSequence()
+      .mapNotNull { it.createReactRootViewContainer(activity) }
+      .firstOrNull()
+    if (rootViewContainer != null) {
+      val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
+      mReactDelegate.isAccessible = true
+      val reactDelegate = mReactDelegate[delegate] as ReactDelegate
+
+      reactDelegate.loadApp(appKey)
+      rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
+      activity.setContentView(rootViewContainer)
+    } else {
+      return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+    }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
