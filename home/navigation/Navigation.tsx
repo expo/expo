@@ -14,6 +14,7 @@ import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
 import HomeScreen from 'screens/HomeScreen';
+import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
 
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
@@ -176,8 +177,15 @@ function DiagnosticsStackScreen() {
       screenOptions={defaultNavigationOptions(theme)}>
       <DiagnosticsStack.Screen
         name="Diagnostics"
-        component={DiagnosticsScreen}
-        options={{ title: 'Diagnostics' }}
+        component={
+          FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN
+            ? RedesignedDiagnosticsScreen
+            : DiagnosticsScreen
+        }
+        options={{
+          title: 'Diagnostics',
+          headerShown: !FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN,
+        }}
       />
       <DiagnosticsStack.Screen
         name="Audio"

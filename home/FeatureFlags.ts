@@ -11,4 +11,5 @@ export default {
 
   // Flags for the 2022 Expo Go redesign
   ENABLE_2022_NAVIGATION_REDESIGN: __DEV__,
+  ENABLE_2022_DIAGNOSTICS_REDESIGN: __DEV__,
 };

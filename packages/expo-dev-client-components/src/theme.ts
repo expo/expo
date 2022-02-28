@@ -1,5 +1,5 @@
 import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
-import { TextStyle } from 'react-native';
+import { TextStyle, Platform } from 'react-native';
 
 type SpacingKey = `${keyof typeof spacing}`;
 type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' | 'xl';
@@ -115,7 +115,7 @@ export const text = {
 
   type: {
     mono: {
-      fontFamily: 'Menlo',
+      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     },
   },
 
