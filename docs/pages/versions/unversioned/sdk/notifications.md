@@ -174,7 +174,7 @@ Check out the Snack below to see Notifications in action, but be sure to use a p
 <SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions', 'expo-notifications']}>
 
 ```js
-import Device from 'expo-constants';
+import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';

@@ -1,6 +1,5 @@
 import G, { Glob } from 'glob';
 
-/** Finds all matching files. */
 export function everyMatchAsync(pattern: string, options: G.IOptions) {
   return new Promise<string[]>((resolve, reject) => {
     const g = new Glob(pattern, options);
@@ -16,7 +15,6 @@ export function everyMatchAsync(pattern: string, options: G.IOptions) {
   });
 }
 
-/** Bails out early after finding the first matching file. */
 export function anyMatchAsync(pattern: string, options: G.IOptions) {
   return new Promise<string[]>((resolve, reject) => {
     const g = new Glob(pattern, options);
@@ -39,15 +37,13 @@ export function anyMatchAsync(pattern: string, options: G.IOptions) {
   });
 }
 
-/**
- * Wait some time, then escape...
- * Adding this because glob can sometimes freeze and fail to resolve if any other glob uses `.abort()`.
- */
 export function wrapGlobWithTimeout(
   query: () => Promise<string[]>,
   duration: number
 ): Promise<string[] | false> {
   return new Promise(async (resolve, reject) => {
+    // Wait some time, then escape...
+    // Adding this because glob can sometimes freeze and fail to resolve if any other glob uses `.abort()`.
     const timeout = setTimeout(() => {
       resolve(false);
     }, duration);

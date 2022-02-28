@@ -138,6 +138,7 @@ export const text = {
     success: { color: lightTheme.text.success },
     secondary: { color: lightTheme.text.secondary },
     primary: { color: lightTheme.button.primary.background },
+    link: { color: lightTheme.link.default },
   },
 };
 
@@ -153,6 +154,7 @@ export const textDark = {
     success: { color: darkTheme.text.success },
     secondary: { color: darkTheme.text.secondary },
     primary: { color: darkTheme.button.primary.background },
+    link: { color: darkTheme.link.default },
   },
 };
 
@@ -166,8 +168,8 @@ export const bg = {
 };
 
 export const bgDark = {
-  default: { backgroundColor: darkTheme.background.default },
-  secondary: { backgroundColor: darkTheme.background.secondary },
+  default: { backgroundColor: darkTheme.background.secondary },
+  secondary: { backgroundColor: darkTheme.background.default },
   success: { backgroundColor: darkTheme.background.success },
   warning: { backgroundColor: darkTheme.background.warning },
   error: { backgroundColor: darkTheme.background.error },
@@ -200,9 +202,9 @@ export const lightNavigationTheme: NavigationTheme = {
 export const darkNavigationTheme: NavigationTheme = {
   dark: true,
   colors: {
-    primary: darkTheme.button.primary.background,
-    background: darkTheme.background.secondary,
-    card: darkTheme.background.default,
+    primary: darkTheme.link.default,
+    background: darkTheme.background.default,
+    card: darkTheme.background.secondary,
     text: darkTheme.text.default,
     border: darkTheme.border.default,
     notification: darkTheme.highlight.accent,

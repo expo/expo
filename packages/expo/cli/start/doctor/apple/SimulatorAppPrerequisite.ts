@@ -2,8 +2,7 @@ import { execAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
 import * as Log from '../../../log';
-import { CommandError } from '../../../utils/errors';
-import { Prerequisite } from './Prerequisite';
+import { Prerequisite, PrerequisiteCommandError } from '../Prerequisite';
 
 async function getSimulatorAppIdAsync(): Promise<string | null> {
   try {
@@ -21,8 +20,8 @@ export class SimulatorAppPrerequisite extends Prerequisite {
     const result = await getSimulatorAppIdAsync();
     if (!result) {
       // This error may occur in CI where the users intends to install just the simulators but no Xcode.
-      throw new CommandError(
-        'VALIDATE_SIMULATOR_APP',
+      throw new PrerequisiteCommandError(
+        'SIMULATOR_APP',
         "Can't determine id of Simulator app; the Simulator is most likely not installed on this machine. Run `sudo xcode-select -s /Applications/Xcode.app`"
       );
     }
@@ -30,8 +29,8 @@ export class SimulatorAppPrerequisite extends Prerequisite {
       result !== 'com.apple.iphonesimulator' &&
       result !== 'com.apple.CoreSimulator.SimulatorTrampoline'
     ) {
-      throw new CommandError(
-        'VALIDATE_SIMULATOR_APP',
+      throw new PrerequisiteCommandError(
+        'SIMULATOR_APP',
         "Simulator is installed but is identified as '" + result + "'; don't know what that is."
       );
     }
@@ -41,8 +40,8 @@ export class SimulatorAppPrerequisite extends Prerequisite {
       await spawnAsync('xcrun', ['simctl', 'help']);
     } catch (e) {
       Log.warn(`Unable to run simctl:\n${e.toString()}`);
-      throw new CommandError(
-        'VALIDATE_SIMCTL',
+      throw new PrerequisiteCommandError(
+        'SIMCTL',
         'xcrun is not configured correctly. Ensure `sudo xcode-select --reset` works before running this command again.'
       );
     }

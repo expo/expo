@@ -5,7 +5,7 @@ import { execSync } from 'child_process';
 import { delayAsync } from '../../../utils/delay';
 import { AbortCommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
-import { Prerequisite } from './Prerequisite';
+import { Prerequisite } from '../Prerequisite';
 
 async function isXcrunInstalledAsync() {
   try {

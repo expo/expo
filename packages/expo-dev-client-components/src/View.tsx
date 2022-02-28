@@ -1,7 +1,7 @@
 import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
 import { View as RNView } from 'react-native';
-import { create } from 'react-native-primitives';
 
+import { create } from './create-primitive';
 import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
 
 export const View = create(RNView, {
@@ -138,6 +138,7 @@ export const Spacer = {
 export const Divider = create(RNView, {
   base: {
     borderWidth: 0.5,
+    backgroundColor: lightTheme.border.default,
     borderColor: lightTheme.border.default,
   },
 
@@ -153,6 +154,7 @@ export const Divider = create(RNView, {
 
   selectors: {
     dark: {
+      backgroundColor: darkTheme.border.default,
       borderColor: darkTheme.border.default,
     },
   },

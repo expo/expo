@@ -25,6 +25,7 @@ import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import okhttp3.Headers.Companion.toHeaders
 
 open class FileDownloader(private val client: OkHttpClient) {
   constructor(context: Context) : this(OkHttpClient.Builder().cache(getCache(context)).build())
@@ -57,14 +58,14 @@ open class FileDownloader(private val client: OkHttpClient) {
           if (!response.isSuccessful) {
             callback.onFailure(
               Exception(
-                "Network request failed: " + response.body()!!
+                "Network request failed: " + response.body!!
                   .string()
               )
             )
             return
           }
           try {
-            response.body()!!.byteStream().use { inputStream ->
+            response.body!!.byteStream().use { inputStream ->
               val hash = UpdatesUtils.sha256AndWriteToFile(inputStream, destination)
               callback.onSuccess(destination, hash)
             }
@@ -92,7 +93,7 @@ open class FileDownloader(private val client: OkHttpClient) {
 
       parseMultipartManifestResponse(response, boundaryParameter, configuration, callback)
     } else {
-      val responseHeaders = response.headers()
+      val responseHeaders = response.headers
       val manifestHeaderData = ManifestHeaderData(
         protocolVersion = responseHeaders["expo-protocol-version"],
         manifestFilters = responseHeaders["expo-manifest-filters"],
@@ -101,7 +102,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         signature = responseHeaders["expo-signature"]
       )
 
-      parseManifest(response.body()!!.string(), manifestHeaderData, null, configuration, callback)
+      parseManifest(response.body!!.string(), manifestHeaderData, null, configuration, callback)
     }
   }
 
@@ -117,14 +118,14 @@ open class FileDownloader(private val client: OkHttpClient) {
       val value = line.substring(indexOfSeparator + 1).trim()
       headers[key] = value
     }
-    return Headers.of(headers)
+    return headers.toHeaders()
   }
 
   private fun parseMultipartManifestResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
 
-    val multipartStream = MultipartStream(response.body()!!.byteStream(), boundary.toByteArray())
+    val multipartStream = MultipartStream(response.body!!.byteStream(), boundary.toByteArray())
 
     try {
       var nextPart = multipartStream.skipPreamble()
@@ -171,7 +172,7 @@ open class FileDownloader(private val client: OkHttpClient) {
       return
     }
 
-    val responseHeaders = response.headers()
+    val responseHeaders = response.headers
     val manifestHeaderData = ManifestHeaderData(
       protocolVersion = responseHeaders["expo-protocol-version"],
       manifestFilters = responseHeaders["expo-manifest-filters"],
@@ -272,7 +273,7 @@ open class FileDownloader(private val client: OkHttpClient) {
               callback.onFailure(
                 "Failed to download manifest from URL: " + configuration.updateUrl,
                 Exception(
-                  response.body()!!.string()
+                  response.body!!.string()
                 )
               )
               return
@@ -485,7 +486,7 @@ open class FileDownloader(private val client: OkHttpClient) {
           val sdkVersion = configuration.sdkVersion
           if (runtimeVersion != null && runtimeVersion.isNotEmpty()) {
             header("Expo-Runtime-Version", runtimeVersion)
-          } else {
+          } else if (sdkVersion != null && sdkVersion.isNotEmpty()) {
             header("Expo-SDK-Version", sdkVersion)
           }
         }

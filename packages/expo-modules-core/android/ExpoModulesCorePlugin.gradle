@@ -1,0 +1,15 @@
+class KotlinExpoModulesCorePlugin implements Plugin<Project> {
+  void apply(Project project) {
+    project.buildscript {
+      project.ext.kotlinVersion = {
+        project.rootProject.ext.has("kotlinVersion")
+            ? project.rootProject.ext.get("kotlinVersion")
+            : "1.6.10"
+      }
+    }
+  }
+}
+
+ext.applyKotlinExpoModulesCorePlugin = {
+  apply plugin: KotlinExpoModulesCorePlugin
+}

@@ -2,11 +2,12 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
+import { ThemePreferenceProvider } from 'expo-dev-client-components';
+import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { Linking, Platform, StyleSheet, View } from 'react-native';
-import { useColorScheme } from 'react-native-appearance';
+import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-native';
 import url from 'url';
 
 import { ColorTheme } from './constants/Colors';
@@ -101,19 +102,21 @@ export default function HomeApp() {
     return null;
   }
 
-  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
-  if (theme === 'no-preference') {
+  let theme = preferredAppearance === undefined ? colorScheme : preferredAppearance;
+  if (theme === undefined) {
     theme = 'light';
   }
 
   const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <ActionSheetProvider>
-        <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
-      </ActionSheetProvider>
-    </View>
+    <ThemePreferenceProvider theme={preferredAppearance as ThemePreference}>
+      <View style={[styles.container, { backgroundColor }]}>
+        <ActionSheetProvider>
+          <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
+        </ActionSheetProvider>
+      </View>
+    </ThemePreferenceProvider>
   );
 }
 

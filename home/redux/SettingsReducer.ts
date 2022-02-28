@@ -1,5 +1,7 @@
 import { Record } from 'immutable';
-import { ColorSchemeName } from 'react-native-appearance';
+import { Appearance } from 'react-native';
+
+type ColorSchemeName = Appearance.AppearancePreferences['colorScheme'];
 
 export type SettingsObject = {
   preferredAppearance: null | ColorSchemeName;
@@ -20,7 +22,7 @@ type SettingsActions =
   | { type: 'setDevMenuSettings'; payload: SettingsObject['devMenuSettings'] };
 
 const SettingsState = Record<SettingsObject>({
-  preferredAppearance: 'no-preference',
+  preferredAppearance: undefined,
   devMenuSettings: null,
 });
 

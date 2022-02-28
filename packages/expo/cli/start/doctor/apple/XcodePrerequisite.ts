@@ -5,7 +5,7 @@ import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
-import { Prerequisite } from './Prerequisite';
+import { Prerequisite } from '../Prerequisite';
 
 // Based on the RN docs (Aug 2020).
 const MIN_XCODE_VERSION = 9.4;
@@ -17,7 +17,7 @@ const promptToOpenAppStoreAsync = async (message: string) => {
   // This prompt serves no purpose accept informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
   const confirm = await confirmAsync({ initial: true, message });
   if (confirm) {
-    Log.log(`Going to the App Store, re-run Expo when Xcode is finished installing.`);
+    Log.log(`Going to the App Store, re-run Expo when Xcode has finished installing.`);
     openAppStore(APP_STORE_ID);
   }
 };
@@ -72,7 +72,7 @@ export class XcodePrerequisite extends Prerequisite {
   static instance = new XcodePrerequisite();
 
   /**
-   * Ensure Xcode is installed an recent enough to be used with Expo.
+   * Ensure Xcode is installed and recent enough to be used with Expo.
    */
   async assertImplementation(): Promise<void> {
     const version = profile(getXcodeVersionAsync)();

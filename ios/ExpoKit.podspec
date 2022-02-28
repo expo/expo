@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {
     'CLANG_CXX_LANGUAGE_STANDARD' => 'gnu++14',
-    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
     'OTHER_CPLUSPLUSFLAGS' => [
       "$(OTHER_CFLAGS)",
       "-DFOLLY_NO_CONFIG",

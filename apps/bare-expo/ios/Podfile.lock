@@ -122,6 +122,7 @@ PODS:
     - expo-dev-launcher/Main (= 0.10.1)
     - expo-dev-menu
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
   - expo-dev-launcher/Main (0.10.1):
@@ -129,12 +130,14 @@ PODS:
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
   - expo-dev-launcher/Tests (0.10.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - hermes-engine
     - Nimble
@@ -147,6 +150,7 @@ PODS:
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
   - expo-dev-menu (0.9.1):
@@ -1322,7 +1326,7 @@ SPEC CHECKSUMS:
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
-  expo-dev-launcher: 859ff87239fde76a2014c0a1d21d7d8bcbc6c840
+  expo-dev-launcher: 293c5980a4c5591208fd9f91ff1e9bddd0ef83b0
   expo-dev-menu: d13fce788ed2cd1d0ca6aabed72cb73caa74c37b
   expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe

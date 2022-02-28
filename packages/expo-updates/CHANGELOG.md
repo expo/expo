@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove okhttp and okio backward compatible workaround and drop react-native 0.64 support. ([#16446](https://github.com/expo/expo/pull/16446) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 - Add iOS support for code signing. ([#15682](https://github.com/expo/expo/pull/15682) by [@wschurman](https://github.com/wschurman))
@@ -12,8 +14,6 @@
 
 ### 🐛 Bug fixes
 
-- Fix iOS launch crash when app.json `expo.updates.enabled` is false. ([#15997](https://github.com/expo/expo/pull/15997) by [@kudo](https://github.com/kudo))
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Update `fbemitter` to v3. ([#16245](https://github.com/expo/expo/pull/16245) by [@SimenB](https://github.com/SimenB))
 - Fix iOS issue where splash screen wouldn't show when using expo-updates and expo-splash-screen ([#16163](https://github.com/expo/expo/pull/16163)) by [@hannojg](https://github.com/hannojg)
 
@@ -21,6 +21,13 @@
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14`, `@expo/config` from `^6.0.6` to `^6.0.14` and `@expo/metro-config` from `~0.2.6` to `~0.3.7` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 - Swap out Cloudfront CDN for `classic-assets.eascdn.net`. ([#15781](https://github.com/expo/expo/pull/15781)) by [@quinlanj](https://github.com/quinlanj)
+
+## 0.11.6 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix iOS launch crash when app.json `expo.updates.enabled` is false. ([#15997](https://github.com/expo/expo/pull/15997) by [@kudo](https://github.com/kudo))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 0.11.5 — 2022-01-20
 
