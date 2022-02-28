@@ -65,3 +65,11 @@ export function logCmdError(error: Error): never {
 
   exit(chalk.red(error.toString()) + '\n' + chalk.gray(error.stack));
 }
+
+/** This should never be thrown in production. */
+export class UnimplementedError extends Error {
+  constructor() {
+    super('Unimplemented');
+    this.name = 'UnimplementedError';
+  }
+}

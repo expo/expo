@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 
+import { stripAnsi } from '../ansi';
 import { isUrlAvailableAsync } from '../url';
 import {
   getBundleIdWarningAsync,
@@ -7,7 +8,6 @@ import {
   validateBundleId,
   validatePackage,
 } from '../validateApplicationId';
-import { stripAnsi } from './utils';
 
 jest.mock('../url');
 jest.mock('node-fetch');
