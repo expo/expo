@@ -41,7 +41,7 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "path-browserify": "^1.0.0",
-    "url-parse": "^1.5.6"
+    "url-parse": "^1.5.8"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
