@@ -1,10 +1,12 @@
-import { GetStringOptions, SetStringOptions } from './Clipboard.types';
+import { ClipboardImage, GetImageOptions } from './Clipboard.types';
 declare const _default: {
     readonly name: string;
     getStringAsync(_options: GetStringOptions): Promise<string>;
     setString(text: string): boolean;
-    setStringAsync(text: string, _options: SetStringOptions): Promise<boolean>;
-    hasStringAsync(): Promise<boolean>;
+    setStringAsync(text: string): Promise<boolean>;
+    getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null>;
+    setImageAsync(base64image: string): Promise<void>;
+    hasImageAsync(): Promise<boolean>;
     addClipboardListener(): void;
     removeClipboardListener(): void;
 };
