@@ -39,7 +39,7 @@ open class CodedException(
       return "ERR_" + name
         .replace("(Exception)$".toRegex(), "")
         .replace("(.)([A-Z])".toRegex(), "$1_$2")
-        .toUpperCase(Locale.ROOT)
+        .uppercase(Locale.ROOT)
     }
   }
 }
