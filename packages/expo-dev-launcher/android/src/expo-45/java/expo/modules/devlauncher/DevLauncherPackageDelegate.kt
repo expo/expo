@@ -38,7 +38,7 @@ object DevLauncherPackageDelegate {
         override fun onCreate(application: Application?) {
           if (shouldEnableAutoSetup && application != null && application is ReactApplication) {
             DevLauncherController.initialize(application, application.reactNativeHost)
-            // TODO: optional updates
+            DevLauncherUpdatesInterfaceDelegate.initializeUpdatesInterface(application)
           }
         }
       }

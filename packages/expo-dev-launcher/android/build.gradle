@@ -80,6 +80,12 @@ android {
         } else {
           srcDirs += 'src/react-native-64'
         }
+
+        if (projectIncludesExpoUpdates()) {
+          srcDirs += 'src/with-updates'
+        } else {
+          srcDirs += 'src/without-updates'
+        }
       }
     }
     debug {
@@ -123,6 +129,10 @@ dependencies {
   implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")
   implementation project(":expo-dev-menu")
+
+  if (projectIncludesExpoUpdates()) {
+    implementation project(":expo-updates")
+  }
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
@@ -189,6 +199,15 @@ def getRNVersion() {
 
 def getExpoPackageVersion() {
   return getNodeModulesPackageVersion("expo", "expoPackageVersion")
+}
+
+def projectIncludesExpoUpdates() {
+  try {
+    def version = getNodeModulesPackageVersion("expo-updates", "expoUpdatesVersion")
+    return version != null
+  } catch (Exception e) {
+    return false
+  }
 }
 
 // [BEGIN] Workaround okhttp/okio compatibility issue
