@@ -13,6 +13,7 @@
 - Add the crash report screen. ([#16341](https://github.com/expo/expo/pull/16341) by [@lukmccall](https://github.com/lukmccall))
 - Add expo-modules automatic setup on Android. ([#16441](https://github.com/expo/expo/pull/16441) by [@esamelson](https://github.com/esamelson))
 - Add support for auto-setup with updates integration on Android. ([#16442](https://github.com/expo/expo/pull/16442) by [@esamelson](https://github.com/esamelson))
+- Remove regex-based config plugin mods in SDK 45+ projects.
 
 ### 🐛 Bug fixes
 
