@@ -1,5 +1,6 @@
 import { parse } from 'url';
 
+import * as Log from '../../../log';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
@@ -28,7 +29,9 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
     assertRuntimePlatform(platform);
     const runtime = isDevClient ? 'custom' : 'expo';
 
-    res.setHeader('Location', this.options.getLocation({ runtime }));
+    const redirect = this.options.getLocation({ runtime });
+    Log.debug('Redirect ->', redirect);
+    res.setHeader('Location', redirect);
 
     this.options.onDeepLink({ runtime, platform });
 

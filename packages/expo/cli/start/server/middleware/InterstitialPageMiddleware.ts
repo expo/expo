@@ -30,9 +30,12 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     appName: string;
     runtimeVersion: string | null;
   }) {
-    let content = (
-      await readFile(resolveFrom(this.projectRoot, 'expo/static/loading-page/index.html'))
-    ).toString('utf-8');
+    const templatePath =
+      // Production: This will resolve when installed in the project.
+      resolveFrom.silent(this.projectRoot, 'expo/static/loading-page/index.html') ??
+      // Development: This will resolve when testing locally.
+      require.resolve('../../../../../static/loading-page/index.html');
+    let content = (await readFile(templatePath)).toString('utf-8');
 
     content = content.replace(/{{\s*AppName\s*}}/, appName ?? 'App');
     content = content.replace(/{{\s*RuntimeVersion\s*}}/, runtimeVersion);

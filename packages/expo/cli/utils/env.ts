@@ -56,6 +56,10 @@ class Env {
   get EXPO_NO_CACHE() {
     return boolish('EXPO_NO_CACHE', false);
   }
+  /** Enable the experimental interstitial app select page. */
+  get EXPO_ENABLE_INTERSTITIAL_PAGE() {
+    return boolish('EXPO_ENABLE_INTERSTITIAL_PAGE', false);
+  }
 }
 
 export const env = new Env();

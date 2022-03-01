@@ -6,6 +6,7 @@ import resolveFrom from 'resolve-from';
 import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
+import { env } from '../../utils/env';
 import { UnimplementedError } from '../../utils/errors';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
@@ -274,7 +275,7 @@ export class BundlerDevServer {
   /** Should use the interstitial page for selecting which runtime to use. */
   protected shouldUseInterstitialPage(): boolean {
     return (
-      process.env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
+      env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
       // TODO: >:0
       // Checks if dev client is installed.
       !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher/package.json')

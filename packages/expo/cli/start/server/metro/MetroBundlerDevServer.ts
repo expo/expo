@@ -67,7 +67,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         if (runtime === 'expo') return;
         // TODO: Some heavy analytics...
       },
-      getLocation({ runtime }) {
+      getLocation: ({ runtime }) => {
         if (runtime === 'custom') {
           return this.urlCreator.constructDevClientUrl({
             hostType: 'localhost',
