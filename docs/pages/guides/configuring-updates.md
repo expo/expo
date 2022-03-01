@@ -39,6 +39,8 @@ try {
 }
 ```
 
+Checking for an update uses a device's bandwidth and battery life like any network call. Additionally, updates served by Expo may be rate limited. A good rule of thumb to check for updates judiciously is to use check when the user launches or foregrounds the app. Avoid polling for updates in a frequent loop.
+
 Note that `checkAutomatically: "ON_ERROR_RECOVERY"` will be ignored in Expo Go, although the imperative Updates methods will still function normally.
 
 ## Disabling Updates
