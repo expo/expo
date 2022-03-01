@@ -5,15 +5,55 @@ apply plugin: 'maven-publish'
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
 
+static def versionToNumber(major, minor, patch) {
+  return patch * 100 + minor * 10000 + major * 1000000
+}
+
+def getRNVersion() {
+  def nodeModulesVersion = [
+      "node",
+      "-e",
+      "console.log(require('react-native/package.json').version);"
+  ]
+      .execute([], projectDir)
+      .text
+      .trim()
+
+  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}
+
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
 version = '44.0.0-beta.1'
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.6.10")
+    }
   }
 
   repositories {
@@ -21,7 +61,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
@@ -77,15 +117,15 @@ android {
     main {
       java {
         srcDirs += new File(project.buildDir, generatedFilesSrcDir)
+
+        def rnVersion = getRNVersion()
+        if (rnVersion >= versionToNumber(0, 67, 0)) {
+          srcDirs += "src/reactNativeHostWrapper"
+        } else {
+          srcDirs += "src/legacyReactNativeHostWrapper"
+        }
       }
     }
-  }
-
-  unitTestVariants.all {
-    it.mergedFlavor.manifestPlaceholders = [
-      // Fix expo-app-auth manifest merger issue for unit test
-      appAuthRedirectScheme: "test"
-    ]
   }
 }
 

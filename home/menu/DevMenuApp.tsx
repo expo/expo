@@ -1,7 +1,6 @@
 import { ThemeProvider } from '@react-navigation/native';
 import React from 'react';
-import { AppRegistry } from 'react-native';
-import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import { AppRegistry, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ColorTheme } from '../constants/Colors';
@@ -27,10 +26,10 @@ function useUserSettings(renderId: string): { preferredAppearance?: string } {
 
 function useAppColorScheme(uuid: string): ColorTheme {
   const colorScheme = useColorScheme();
-  const { preferredAppearance = 'no-preference' } = useUserSettings(uuid);
+  const { preferredAppearance = undefined } = useUserSettings(uuid);
 
-  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
-  if (theme === 'no-preference') {
+  let theme = preferredAppearance === undefined ? colorScheme : preferredAppearance;
+  if (theme === undefined) {
     theme = 'light';
   }
   return theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK;
@@ -46,13 +45,11 @@ function DevMenuApp(props: { task: { [key: string]: any }; uuid: string }) {
   const theme = useAppColorScheme(props.uuid);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppearanceProvider>
-        <DevMenuBottomSheet uuid={props.uuid}>
-          <ThemeProvider value={Themes[theme]}>
-            <DevMenuView {...props} />
-          </ThemeProvider>
-        </DevMenuBottomSheet>
-      </AppearanceProvider>
+      <DevMenuBottomSheet uuid={props.uuid}>
+        <ThemeProvider value={Themes[theme]}>
+          <DevMenuView {...props} />
+        </ThemeProvider>
+      </DevMenuBottomSheet>
     </GestureHandlerRootView>
   );
 }

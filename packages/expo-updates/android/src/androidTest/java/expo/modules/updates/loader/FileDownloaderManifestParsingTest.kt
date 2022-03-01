@@ -8,6 +8,8 @@ import expo.modules.updates.manifest.UpdateManifest
 import io.mockk.every
 import io.mockk.mockk
 import okhttp3.*
+import okhttp3.Headers.Companion.toHeaders
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.Buffer
 import org.json.JSONException
 import org.junit.Assert
@@ -29,8 +31,8 @@ class FileDownloaderManifestParsingTest {
     val contentType = "application/json"
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers() } returns Headers.of(mapOf("content-type" to contentType))
-      every { body() } returns ResponseBody.create(MediaType.parse("application/json; charset=utf-8"), classicJSON)
+      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), classicJSON)
     }
 
     val configuration = UpdatesConfiguration(
@@ -72,16 +74,16 @@ class FileDownloaderManifestParsingTest {
     val multipartBody = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
-        Headers.of(mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"")),
-        RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), "hello")
+        mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
+        RequestBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
       )
       .addPart(
-        Headers.of(mapOf("Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"")),
-        RequestBody.create(MediaType.parse("application/json; charset=utf-8"), classicJSON)
+        mapOf("Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"").toHeaders(),
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), classicJSON)
       )
       .addPart(
-        Headers.of(mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"")),
-        RequestBody.create(MediaType.parse("application/json; charset=utf-8"), extensions)
+        mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), extensions)
       )
       .build()
 
@@ -89,8 +91,8 @@ class FileDownloaderManifestParsingTest {
 
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
-      every { headers() } returns Headers.of(mapOf("content-type" to contentType))
-      every { body() } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
+      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
     val configuration = UpdatesConfiguration(
@@ -137,8 +139,8 @@ class FileDownloaderManifestParsingTest {
       headersMap.forEach {
         every { header(it.key) } returns it.value
       }
-      every { headers() } returns Headers.of(headersMap)
-      every { body() } returns ResponseBody.create(MediaType.parse("application/json; charset=utf-8"), newJSON)
+      every { headers } returns headersMap.toHeaders()
+      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), newJSON)
     }
 
     val configuration = UpdatesConfiguration(
@@ -188,21 +190,20 @@ class FileDownloaderManifestParsingTest {
     val multipartBody = MultipartBody.Builder(boundary)
       .setType(MultipartBody.MIXED)
       .addPart(
-        Headers.of(mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"")),
-        RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), "hello")
+        mapOf("Content-Disposition" to "form-data; name=\"extraneous\"; filename=\"hello1\"").toHeaders(),
+        RequestBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
       )
       .addPart(
-        Headers.of(
-          mapOf(
-            "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
-            "expo-signature" to newJSONSignature
-          )
-        ),
-        RequestBody.create(MediaType.parse("application/json; charset=utf-8"), newJSON)
+        mapOf(
+          "Content-Disposition" to "form-data; name=\"manifest\"; filename=\"hello2\"",
+          "expo-signature" to newJSONSignature
+        )
+          .toHeaders(),
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), newJSON)
       )
       .addPart(
-        Headers.of(mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"")),
-        RequestBody.create(MediaType.parse("application/json; charset=utf-8"), extensions)
+        mapOf("Content-Disposition" to "form-data; name=\"extensions\"; filename=\"hello3\"").toHeaders(),
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), extensions)
       )
       .build()
 
@@ -212,8 +213,8 @@ class FileDownloaderManifestParsingTest {
       headersMap.forEach {
         every { header(it.key) } returns it.value
       }
-      every { headers() } returns Headers.of(headersMap)
-      every { body() } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
+      every { headers } returns headersMap.toHeaders()
+      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
     val configuration = UpdatesConfiguration(
@@ -260,8 +261,8 @@ class FileDownloaderManifestParsingTest {
       headersMap.forEach {
         every { header(it.key) } returns it.value
       }
-      every { headers() } returns Headers.of(headersMap)
-      every { body() } returns ResponseBody.create(MediaType.parse("application/json; charset=utf-8"), newJSON)
+      every { headers } returns headersMap.toHeaders()
+      every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), newJSON)
     }
 
     val configuration = UpdatesConfiguration(

@@ -32,7 +32,7 @@ export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: 
     <View>
       <View style={{ height: insets.top }} />
 
-      <Row align="center">
+      <Row align="center" pb="small">
         <Row px="medium">
           {Boolean(appImageUri) && (
             <>
@@ -55,15 +55,19 @@ export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: 
           onPress={onUserProfilePress}
           minScale={0.85}
           accessibilityLabel="Navigate to User Profile"
-          bg="default"
+          bg="ghost"
           rounded="full">
-          <View rounded="full" padding="medium">
+          <View>
             {isAuthenticated ? (
-              <View bg="secondary" rounded="full">
+              <View rounded="full" padding="small">
                 <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
               </View>
             ) : (
-              <UserIcon />
+              <View mx="small">
+                <View bg="default" rounded="full" padding="tiny">
+                  <UserIcon />
+                </View>
+              </View>
             )}
           </View>
         </Button.ScaleOnPressContainer>

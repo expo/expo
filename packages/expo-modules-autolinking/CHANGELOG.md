@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Update require logic to find transitive deps that would not be hoisted at the top of the monorepo ([#16419](https://github.com/expo/expo/pull/16419) by [@Titozzz](https://github.com/Titozzz))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
