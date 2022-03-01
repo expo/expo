@@ -8,7 +8,6 @@ buildscript {
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '30.0.2'
-    supportLibVersion = '29.0.0'
     kotlinVersion = '1.6.10'
     gradlePluginVersion = '4.2.2'
     gradleDownloadTaskVersion = '3.4.3'
