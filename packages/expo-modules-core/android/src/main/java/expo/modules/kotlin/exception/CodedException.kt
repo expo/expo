@@ -36,6 +36,7 @@ open class CodedException(
     internal fun inferCode(clazz: Class<*>): String {
       val name = requireNotNull(clazz.simpleName) { "Cannot infer code name from class name. We don't support anonymous classes." }
 
+      @Suppress("Deprecation")
       return "ERR_" + name
         .replace("(Exception)$".toRegex(), "")
         .replace("(.)([A-Z])".toRegex(), "$1_$2")
