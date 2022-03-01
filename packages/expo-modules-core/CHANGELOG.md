@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for automatic setup of `expo-dev-client` on Android. ([#16441](https://github.com/expo/expo/pull/16441) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
