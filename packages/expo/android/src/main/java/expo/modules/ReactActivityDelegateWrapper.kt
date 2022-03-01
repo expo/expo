@@ -139,6 +139,8 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
     return reactActivityHandlers
       .map { it.onKeyUp(keyCode, event) }
       .fold(false) { accu, current -> accu || current } || delegate.onKeyUp(keyCode, event)

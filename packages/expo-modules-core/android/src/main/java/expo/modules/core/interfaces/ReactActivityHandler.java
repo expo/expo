@@ -34,6 +34,14 @@ public interface ReactActivityHandler {
     return null;
   }
 
+  /**
+   * Gives modules a chance to respond to `onKeyUp` events. Every listener will receive this
+   * callback, but the delegate will not receive the event unless if any of the listeners consume it
+   * (i.e. return `true` from this method).
+   * `ReactActivityDelegateWrapper.onKeyUp` will return `true` if any module returns `true`.
+   *
+   * @return true if this module wants to return `true` from `ReactActivityDelegateWrapper.onKeyUp`
+   */
   default boolean onKeyUp(int keyCode, KeyEvent event) {
     return false;
   }
