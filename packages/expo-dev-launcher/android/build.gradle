@@ -71,7 +71,6 @@ android {
     main {
       java {
         def rnVersion = getRNVersion()
-
         if (rnVersion >= versionToNumber(0, 67, 0)) {
           srcDirs += "src/react-native-67"
         } else if (rnVersion >= versionToNumber(0, 66, 0)) {
@@ -80,6 +79,16 @@ android {
           srcDirs += "src/react-native-65"
         } else {
           srcDirs += 'src/react-native-64'
+        }
+      }
+    }
+    debug {
+      java {
+        def expoPackageVersion = getExpoPackageVersion()
+        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
+          srcDirs += "src/expo-45"
+        } else {
+          srcDirs += "src/expo-44"
         }
       }
     }
@@ -160,14 +169,11 @@ def versionToNumber(major, minor, patch) {
   return patch * 100 + minor * 10000 + major * 1000000
 }
 
-def getRNVersion() {
-  def reactNativePackageJsonPath = ["node", "-e", "console.log(require.resolve('react-native/package.json'));"].execute([], projectDir).text.trim()
-  def packageJsonFile = new File(reactNativePackageJsonPath)
-  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-  def version = safeExtGet("reactNativeVersion", packageJson.version)
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
-
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
   return versionToNumber(
@@ -175,6 +181,14 @@ def getRNVersion() {
       minor,
       patch
   )
+}
+
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+}
+
+def getExpoPackageVersion() {
+  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
 }
 
 // [BEGIN] Workaround okhttp/okio compatibility issue
