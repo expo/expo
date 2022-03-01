@@ -57,23 +57,30 @@ it('runs `npx expo start --help`', async () => {
       Defaults to the current working directory.
 
       Options
-        -c, --clear                            Clear the Metro bundler cache
-        --max-workers <num>                    Maximum number of tasks to allow Metro to spawn.
-        --no-dev                               Turn development mode off
-        --minify                               Minify code
-        --https                                To start webpack with https protocol
-        --force-manifest-type <manifest-type>  Override auto detection of manifest type
-        -p, --port <port>                      Port to start the native Metro bundler on (does not apply to web or tunnel). Default: 19000
-        --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
-        --scheme <scheme>                      Custom URI protocol to use with a development build
         -a, --android                          Opens your app in Expo Go on a connected Android device
         -i, --ios                              Opens your app in Expo Go in a currently running iOS simulator on your computer
         -w, --web                              Opens your app in a web browser
-        -m, --host <mode>                      lan (default), tunnel, localhost. Type of host to use. \\"tunnel\\" allows you to view your link on other networks
+
+        -c, --clear                            Clear the bundler cache
+        --max-workers <num>                    Maximum number of tasks to allow Metro to spawn
+        --no-dev                               Bundle in production mode
+        --minify                               Minify JavaScript    
+
+        -m, --host <mode>                      lan, tunnel, localhost. Dev server hosting type. Default: lan.
+                                               - lan: Use the local network
+                                               - tunnel: Use any network by tunnel through ngrok
+                                               - localhost: Connect to the dev server over localhost
         --tunnel                               Same as --host tunnel
         --lan                                  Same as --host lan
         --localhost                            Same as --host localhost
-        --offline                              Allows this command to run while offline
+
+        --offline                              Skip network requests and use anonymous manifest signatures
+        --https                                Start the dev server with https protocol
+        --scheme <scheme>                      Custom URI protocol to use when launching an app
+        -p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). Default: 19000
+
+        --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
+        --force-manifest-type <manifest-type>  Override auto detection of manifest type
         -h, --help                             output usage information
     "
   `);
