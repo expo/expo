@@ -1,7 +1,10 @@
-# For ReactNativeDelegateWrapper
+# For ReactActivityDelegateWrapper
 -keepclassmembers public class com.facebook.react.ReactActivityDelegate {
   protected *;
   private ReactDelegate mReactDelegate;
+}
+-keepclassmembers public class com.facebook.react.ReactActivity {
+  private final ReactActivityDelegate mDelegate;
 }
 
 # For ReactNativeHostWrapper
