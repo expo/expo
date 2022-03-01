@@ -11,7 +11,7 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 jest.mock('../../../utils/delay', () => ({
   delayAsync: jest.fn(async () => {}),
 }));
-
+jest.mock('../../../api/settings');
 jest.mock('../../doctor/ngrok/NgrokResolver', () => {
   const instance: NgrokInstance = {
     getActiveProcess: jest.fn(),
