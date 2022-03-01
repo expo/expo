@@ -1,4 +1,4 @@
-import { boolish, string, int } from 'getenv';
+import { boolish, string } from 'getenv';
 
 /** Skip warning users about a dirty git status */
 export const EXPO_NO_GIT_STATUS = boolish('EXPO_NO_GIT_STATUS', false);
@@ -38,13 +38,6 @@ export const EXPO_UNIVERSE_DIR = string('EXPO_UNIVERSE_DIR', '');
 
 /** @deprecated Default Webpack host string */
 export const WEB_HOST = string('WEB_HOST', '0.0.0.0');
-
-// @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
-
-// TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
-
-/** Expo automated authentication token for use in CI environments */
-export const EXPO_TOKEN = process.env.EXPO_TOKEN ?? null;
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 

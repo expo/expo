@@ -1,23 +1,19 @@
 import { AbortCommandError } from '../../utils/errors';
 import { Options } from '../resolveOptions';
-import {
-  ensureWebDevServerRunningAsync,
-  getDefaultDevServer,
-  getWebDevServer,
-} from './startDevServers';
+import { DevServerManager } from './DevServerManager';
 
 /** Launch the app on various platforms in parallel. */
 export async function openPlatformsAsync(
-  projectRoot: string,
+  devServerManager: DevServerManager,
   options: Pick<Options, 'ios' | 'android' | 'web'>
 ) {
   const results = await Promise.allSettled([
-    options.android ? getDefaultDevServer().openPlatformAsync('emulator') : null,
-    options.ios ? getDefaultDevServer().openPlatformAsync('simulator') : null,
+    options.android ? devServerManager.getDefaultDevServer().openPlatformAsync('emulator') : null,
+    options.ios ? devServerManager.getDefaultDevServer().openPlatformAsync('simulator') : null,
     options.web
-      ? ensureWebDevServerRunningAsync(projectRoot).then(() =>
-          getWebDevServer().openPlatformAsync('desktop')
-        )
+      ? devServerManager
+          .ensureWebDevServerRunningAsync()
+          .then(() => devServerManager.getWebDevServer().openPlatformAsync('desktop'))
       : null,
   ]);
 

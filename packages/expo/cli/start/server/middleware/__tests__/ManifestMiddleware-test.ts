@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 
 import * as Log from '../../../../log';
-import * as ProjectDevices from '../../../project/ProjectDevices';
+import * as ProjectDevices from '../../../project/devices';
 import { ManifestMiddleware } from '../ManifestMiddleware';
 import { ServerRequest } from '../server.types';
 
@@ -33,7 +33,7 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
-jest.mock('../../../project/ProjectDevices', () => ({
+jest.mock('../../../project/devices', () => ({
   saveDevicesAsync: jest.fn(async () => ({})),
 }));
 

@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
-import { ProcessSettings } from './ProcessSettings';
 
 export type Options = {
   forceManifestType: 'classic' | 'expo-updates';
@@ -21,25 +20,6 @@ export type Options = {
   scheme: string;
   host: 'localhost' | 'lan' | 'tunnel';
 };
-
-export async function persistOptionsAsync(options: Options) {
-  ProcessSettings.isOffline = options.offline;
-
-  const { setPersistedOptions } = await import('./server/startDevServers');
-  setPersistedOptions({
-    devClient: options.devClient,
-    forceManifestType: options.forceManifestType,
-    https: options.https,
-    maxWorkers: options.maxWorkers,
-    mode: options.dev ? 'development' : 'production',
-    resetDevServer: options.clear,
-    minify: options.minify,
-    location: {
-      hostType: options.host,
-      scheme: options.scheme,
-    },
-  });
-}
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
   const forceManifestType = args['--force-manifest-type'];

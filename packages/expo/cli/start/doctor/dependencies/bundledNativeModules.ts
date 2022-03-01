@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
 import { getNativeModuleVersionsAsync } from '../../../api/getNativeModuleVersions';
+import { APISettings } from '../../../api/settings';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 
@@ -19,7 +20,7 @@ export async function getBundledNativeModulesAsync(
   projectRoot: string,
   sdkVersion: string
 ): Promise<BundledNativeModules> {
-  if (sdkVersion === 'UNVERSIONED') {
+  if (sdkVersion === 'UNVERSIONED' || APISettings.isOffline) {
     return await getBundledNativeModulesFromExpoPackageAsync(projectRoot);
   } else {
     try {

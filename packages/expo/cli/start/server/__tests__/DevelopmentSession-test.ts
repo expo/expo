@@ -1,18 +1,18 @@
 import nock from 'nock';
 
 import { getExpoApiBaseUrl } from '../../../api/endpoint';
-import * as ProjectDevices from '../../project/ProjectDevices';
+import * as ProjectDevices from '../../project/devices';
 import { DevelopmentSession } from '../DevelopmentSession';
 
 const asMock = (fn: any): jest.Mock => fn as jest.Mock;
 
-jest.mock('../../ProcessSettings', () => ({
-  ProcessSettings: {
+jest.mock('../../../api/settings', () => ({
+  APISettings: {
     isOffline: false,
   },
 }));
 
-jest.mock('../../project/ProjectDevices', () => ({
+jest.mock('../../project/devices', () => ({
   getDevicesInfoAsync: jest.fn(),
 }));
 

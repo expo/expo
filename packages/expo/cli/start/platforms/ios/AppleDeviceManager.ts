@@ -84,29 +84,10 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async getAppVersionAsync(appId: string): Promise<string | null> {
-    assert(
-      appId === EXPO_GO_BUNDLE_IDENTIFIER,
-      'Only the Expo Go app is supported for version fetching'
-    );
-    const localPath = await SimControl.getContainerPathAsync(this.device, {
+    return await SimControl.getInfoPlistValueAsync(this.device, {
       appId,
+      key: 'CFBundleShortVersionString',
     });
-    if (!localPath) {
-      return null;
-    }
-
-    const regex = /Exponent-([0-9.]+).*\.app$/;
-    const regexMatch = regex.exec(localPath);
-    if (!regexMatch) {
-      return null;
-    }
-
-    let matched = regexMatch[1];
-    // If the value is matched like 1.0.0. then remove the trailing dot.
-    if (matched.endsWith('.')) {
-      matched = matched.substr(0, matched.length - 1);
-    }
-    return matched;
   }
 
   async startAsync(): Promise<SimControl.Device> {

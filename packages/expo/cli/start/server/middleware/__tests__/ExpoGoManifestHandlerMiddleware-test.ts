@@ -1,7 +1,7 @@
 import { getProjectAsync } from '../../../../api/getProject';
+import { APISettings } from '../../../../api/settings';
 import { signExpoGoManifestAsync } from '../../../../api/signManifest';
 import { getUserAsync } from '../../../../api/user/user';
-import { ProcessSettings } from '../../../ProcessSettings';
 import { ExpoGoManifestHandlerMiddleware } from '../ExpoGoManifestHandlerMiddleware';
 import { ServerRequest } from '../server.types';
 
@@ -29,8 +29,8 @@ jest.mock('../resolveAssets', () => ({
   resolveGoogleServicesFile: jest.fn(),
 }));
 
-jest.mock('../../../ProcessSettings', () => ({
-  ProcessSettings: {
+jest.mock('../../../../api/settings', () => ({
+  APISettings: {
     isOffline: false,
   },
 }));
@@ -57,7 +57,7 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 beforeEach(() => {
-  ProcessSettings.isOffline = false;
+  APISettings.isOffline = false;
 });
 
 describe('getParsedHeaders', () => {
@@ -103,7 +103,7 @@ describe('getParsedHeaders', () => {
 
 describe('_getManifestResponseAsync', () => {
   beforeEach(() => {
-    ProcessSettings.isOffline = false;
+    APISettings.isOffline = false;
     asMock(signExpoGoManifestAsync).mockClear();
     asMock(getUserAsync)
       .mockClear()
@@ -135,7 +135,7 @@ describe('_getManifestResponseAsync', () => {
   // Sanity
   it('returns an anon manifest', async () => {
     const middleware = createMiddleware();
-    ProcessSettings.isOffline = true;
+    APISettings.isOffline = true;
     const results = await middleware._getManifestResponseAsync({
       platform: 'android',
       acceptSignature: true,

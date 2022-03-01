@@ -1,62 +1,57 @@
 import { AbortCommandError } from '../../../utils/errors';
+import { DevServerManager } from '../DevServerManager';
 import { openPlatformsAsync } from '../openPlatforms';
-import {
-  ensureWebDevServerRunningAsync,
-  getDefaultDevServer,
-  getWebDevServer,
-} from '../startDevServers';
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('../startDevServers', () => ({
-  getDefaultDevServer: jest.fn(() => ({
-    openPlatformAsync: jest.fn(),
-  })),
-  getWebDevServer: jest.fn(() => ({
-    openPlatformAsync: jest.fn(),
-  })),
-  ensureWebDevServerRunningAsync: jest.fn(() => Promise.resolve()),
-}));
-
-beforeEach(() => {
-  asMock(getDefaultDevServer).mockClear();
-  asMock(getWebDevServer).mockClear();
-  asMock(ensureWebDevServerRunningAsync).mockClear();
-});
+function createDevServerManager() {
+  return {
+    getDefaultDevServer: jest.fn(() => ({
+      openPlatformAsync: jest.fn(),
+    })),
+    getWebDevServer: jest.fn(() => ({
+      openPlatformAsync: jest.fn(),
+    })),
+    ensureWebDevServerRunningAsync: jest.fn(() => Promise.resolve()),
+  } as unknown as DevServerManager;
+}
 
 it(`opens all platforms`, async () => {
-  const projectRoot = '/';
   const options = {
     android: true,
     ios: true,
     web: true,
   };
-  const openedNative = await openPlatformsAsync(projectRoot, options);
+
+  const manager = createDevServerManager();
+  const openedNative = await openPlatformsAsync(manager, options);
   expect(openedNative).toBe(true);
 
-  expect(getDefaultDevServer).toHaveBeenCalledTimes(2);
-  expect(getWebDevServer).toHaveBeenCalledTimes(1);
-  expect(ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(1);
+  expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(2);
+  expect(manager.getWebDevServer).toHaveBeenCalledTimes(1);
+  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(1);
 });
 
 it(`opens web only`, async () => {
-  const projectRoot = '/';
   const options = {
     android: false,
     ios: false,
     web: true,
   };
-  const openedNative = await openPlatformsAsync(projectRoot, options);
+  const manager = createDevServerManager();
+
+  const openedNative = await openPlatformsAsync(manager, options);
   expect(openedNative).toBe(false);
 
-  expect(getDefaultDevServer).toHaveBeenCalledTimes(0);
-  expect(getWebDevServer).toHaveBeenCalledTimes(1);
-  expect(ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(1);
+  expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(0);
+  expect(manager.getWebDevServer).toHaveBeenCalledTimes(1);
+  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(1);
 });
 
 it(`rethrows assertions`, async () => {
-  asMock(getDefaultDevServer).mockImplementationOnce(
+  const manager = createDevServerManager();
+  asMock(manager.getDefaultDevServer).mockImplementationOnce(
     () =>
       ({
         openPlatformAsync() {
@@ -64,21 +59,21 @@ it(`rethrows assertions`, async () => {
         },
       } as any)
   );
-  const projectRoot = '/';
   const options = {
     android: true,
     ios: true,
     web: true,
   };
-  await expect(openPlatformsAsync(projectRoot, options)).rejects.toThrow(/Failed/);
+  await expect(openPlatformsAsync(manager, options)).rejects.toThrow(/Failed/);
 
-  expect(getDefaultDevServer).toHaveBeenCalledTimes(1);
-  expect(getWebDevServer).toHaveBeenCalledTimes(0);
-  expect(ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(0);
+  expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(1);
+  expect(manager.getWebDevServer).toHaveBeenCalledTimes(0);
+  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(0);
 });
 
 it(`surfaces aborting`, async () => {
-  asMock(getDefaultDevServer)
+  const manager = createDevServerManager();
+  asMock(manager.getDefaultDevServer)
     .mockReturnValueOnce({
       openPlatformAsync() {},
     } as any)
@@ -90,15 +85,14 @@ it(`surfaces aborting`, async () => {
           },
         } as any)
     );
-  const projectRoot = '/';
   const options = {
     android: true,
     ios: true,
     web: true,
   };
-  await expect(openPlatformsAsync(projectRoot, options)).rejects.toThrow(AbortCommandError);
+  await expect(openPlatformsAsync(manager, options)).rejects.toThrow(AbortCommandError);
 
-  expect(getDefaultDevServer).toHaveBeenCalledTimes(2);
-  expect(getWebDevServer).toHaveBeenCalledTimes(0);
-  expect(ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(0);
+  expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(2);
+  expect(manager.getWebDevServer).toHaveBeenCalledTimes(0);
+  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(0);
 });

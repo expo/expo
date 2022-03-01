@@ -6,28 +6,23 @@ import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEvent } from '../utils/analytics/rudderstackClient';
 import { CI } from '../utils/env';
 import { installExitHooks } from '../utils/exit';
-import { FileNotifier } from '../utils/FileNotifier';
-import { getAllSpinners, ora } from '../utils/ora';
 import { profile } from '../utils/profile';
-import { getProgressBar, setProgressBar } from '../utils/progress';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
-import { ensureTypeScriptSetupAsync } from './doctor/typescript/ensureTypeScriptSetup';
-import { ensureWebSupportSetupAsync } from './doctor/web/ensureWebSetup';
-import { startInterfaceAsync } from './interface/TerminalUI';
+import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
+import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
+import { startInterfaceAsync } from './interface/startInterface';
 import { Options, resolvePortsAsync } from './resolveOptions';
 import { BundlerStartOptions } from './server/BundlerDevServer';
+import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
-import * as Project from './server/startDevServers';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
   { forceManifestType, ...options }: Options,
   settings: { webOnly?: boolean }
-): Promise<Project.MultiBundlerStartOptions> {
-  const multiBundlerStartOptions: Project.MultiBundlerStartOptions = [];
-  const mode = options.dev ? 'development' : 'production';
+): Promise<[BundlerStartOptions, MultiBundlerStartOptions]> {
   const commonOptions: BundlerStartOptions = {
-    mode,
+    mode: options.dev ? 'development' : 'production',
     devClient: options.devClient,
     forceManifestType,
     https: options.https,
@@ -40,6 +35,8 @@ async function getMultiBundlerStartOptions(
     },
   };
   const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, settings);
+
+  const multiBundlerStartOptions: MultiBundlerStartOptions = [];
 
   if (options.web || settings.webOnly) {
     multiBundlerStartOptions.push({
@@ -61,7 +58,7 @@ async function getMultiBundlerStartOptions(
     });
   }
 
-  return multiBundlerStartOptions;
+  return [commonOptions, multiBundlerStartOptions];
 }
 
 export async function startAsync(
@@ -73,7 +70,6 @@ export async function startAsync(
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
-  // TODO: Move into resolveOptions
   if (!options.forceManifestType) {
     const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
     const updatesUrl = exp.updates?.url;
@@ -81,15 +77,21 @@ export async function startAsync(
     options.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
   }
 
-  const startOptions = await getMultiBundlerStartOptions(projectRoot, options, settings);
+  const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
+    projectRoot,
+    options,
+    settings
+  );
+
+  const devServerManager = new DevServerManager(projectRoot, defaultOptions);
 
   // Validations
 
   if (options.web || settings.webOnly) {
-    await ensureWebSupportSetupAsync(projectRoot);
+    await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
   }
 
-  await profile(ensureTypeScriptSetupAsync)(projectRoot);
+  await devServerManager.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite);
 
   if (!settings.webOnly && !options.devClient) {
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
@@ -101,44 +103,19 @@ export async function startAsync(
     track(projectRoot, exp);
   }
 
-  await profile(Project.startDevServersAsync)(projectRoot, startOptions);
+  await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
 
   // Open project on devices.
-  await profile(openPlatformsAsync)(projectRoot, options);
-
-  watchBabelConfig(projectRoot);
+  await profile(openPlatformsAsync)(devServerManager, options);
 
   // Present the Terminal UI.
   if (!CI) {
-    await profile(startInterfaceAsync)(projectRoot, {
+    await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
-      devClient: options.devClient,
-      isWebSocketsEnabled: Project.getDefaultDevServer()?.isTargetingNative(),
-      async stopAsync() {
-        const spinners = getAllSpinners();
-        spinners.forEach((spinner) => {
-          spinner.fail();
-        });
-
-        const currentProgress = getProgressBar();
-        if (currentProgress) {
-          currentProgress.terminate();
-          setProgressBar(null);
-        }
-        const spinner = ora({ text: 'Stopping server', color: 'white' }).start();
-        try {
-          await Project.stopAsync();
-          spinner.stopAndPersist({ text: 'Stopped server', symbol: `\u203A` });
-          process.exit();
-        } catch (error) {
-          spinner.fail('Failed to stop server');
-          Log.exit(error);
-        }
-      },
     });
   } else {
     // Display the server location in CI...
-    const url = Project.getDefaultDevServer()?.getDevServerUrl();
+    const url = devServerManager.getDefaultDevServer()?.getDevServerUrl();
     if (url) {
       Log.log(chalk`Waiting on {underline ${url}}`);
     }
@@ -165,16 +142,4 @@ function track(projectRoot: string, exp: ExpoConfig) {
     });
     // UnifiedAnalytics.flush();
   });
-}
-
-function watchBabelConfig(projectRoot: string) {
-  const notifier = new FileNotifier(projectRoot, [
-    './babel.config.js',
-    './.babelrc',
-    './.babelrc.js',
-  ]);
-
-  notifier.startObserving();
-
-  return notifier;
 }

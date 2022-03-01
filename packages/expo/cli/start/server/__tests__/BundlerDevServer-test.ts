@@ -94,8 +94,8 @@ class FakeBundlerDevServer extends BundlerDevServer {
     return ['./fake.config.js'];
   }
 
-  public _getExpoGoUrl(platform: 'simulator' | 'emulator') {
-    return super._getExpoGoUrl(platform);
+  public getExpoGoUrl(platform: 'simulator' | 'emulator') {
+    return super.getExpoGoUrl(platform);
   }
 }
 
@@ -171,7 +171,7 @@ describe('stopAsync', () => {
   });
 });
 
-describe('_getExpoGoUrl', () => {
+describe('getExpoGoUrl', () => {
   it(`gets the interstitial page URL`, async () => {
     process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
     vol.fromJSON(
@@ -189,10 +189,10 @@ describe('_getExpoGoUrl', () => {
     const urlCreator = server.getPublicUrlCreator();
     urlCreator.constructLoadingUrl = jest.fn(urlCreator.constructLoadingUrl);
 
-    expect(server._getExpoGoUrl('emulator')).toBe(
+    expect(server.getExpoGoUrl('emulator')).toBe(
       'http://100.100.1.100:3000/_expo/loading?platform=android'
     );
-    expect(server._getExpoGoUrl('simulator')).toBe(
+    expect(server.getExpoGoUrl('simulator')).toBe(
       'http://127.0.0.1:3000/_expo/loading?platform=ios'
     );
     expect(urlCreator.constructLoadingUrl).toBeCalledTimes(2);
@@ -203,8 +203,8 @@ describe('_getExpoGoUrl', () => {
       location: {},
     });
 
-    expect(server._getExpoGoUrl('emulator')).toBe('exp://100.100.1.100:3000');
-    expect(server._getExpoGoUrl('simulator')).toBe('exp://100.100.1.100:3000');
+    expect(server.getExpoGoUrl('emulator')).toBe('exp://100.100.1.100:3000');
+    expect(server.getExpoGoUrl('simulator')).toBe('exp://100.100.1.100:3000');
   });
 });
 

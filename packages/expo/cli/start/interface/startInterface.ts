@@ -3,22 +3,15 @@ import chalk from 'chalk';
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
 import { EXPO_DEBUG } from '../../utils/env';
-import { AbortCommandError, logCmdError } from '../../utils/errors';
-import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
-import { ensureWebSupportSetupAsync } from '../doctor/web/ensureWebSetup';
-import {
-  ensureWebDevServerRunningAsync,
-  getDefaultDevServer,
-  getWebDevServer,
-} from '../server/startDevServers';
+import { AbortCommandError } from '../../utils/errors';
+import { getAllSpinners, ora } from '../../utils/ora';
+import { getProgressBar, setProgressBar } from '../../utils/progress';
+import { pauseInteractions } from '../../utils/prompts';
+import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
+import { DevServerManager } from '../server/DevServerManager';
+import { KeyPressHandler } from './KeyPressHandler';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
-import {
-  openJsInspectorAsync,
-  openMoreToolsAsync,
-  printDevServerInfo,
-  reloadApp,
-  toggleDevMenu,
-} from './interactiveActions';
+import { DevServerManagerActions } from './interactiveActions';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -41,70 +34,73 @@ const PLATFORM_SETTINGS: Record<
 };
 
 export async function startInterfaceAsync(
-  projectRoot: string,
-  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'> & {
-    stopAsync: () => Promise<void>;
-  }
+  devServerManager: DevServerManager,
+  options: Pick<StartOptions, 'platforms'>
 ) {
-  const { stdin } = process;
+  const actions = new DevServerManagerActions(devServerManager);
 
-  const startWaitingForCommand = () => {
-    if (!stdin.setRawMode) {
-      Log.warn('Non-interactive terminal, keyboard commands are disabled.');
-      return;
-    }
-    stdin.setRawMode(true);
-    stdin.resume();
-    stdin.setEncoding('utf8');
-    stdin.on('data', handleKeypress);
+  const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
+
+  const usageOptions = {
+    isWebSocketsEnabled,
+    devClient: devServerManager.options.devClient,
+    ...options,
   };
 
-  const stopWaitingForCommand = () => {
-    stdin.removeListener('data', handleKeypress);
-    if (!stdin.setRawMode) {
-      Log.warn('Non-interactive terminal, keyboard commands are disabled.');
-      return;
-    }
-    stdin.setRawMode(false);
-    stdin.resume();
-  };
+  actions.printDevServerInfo(usageOptions);
 
-  const handleKeypress = async (key: string) => {
-    try {
-      await handleKeypressAsync(key);
-    } catch (err) {
-      await logCmdError(err);
-    }
-  };
-
-  const handleKeypressAsync = async (key: string) => {
+  const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
     switch (key) {
       case CTRL_C:
-      case CTRL_D:
-        await options.stopAsync();
-
-        // @ts-ignore: Argument of type '"SIGINT"' is not assignable to parameter of type '"disconnect"'.
-        process.emit('SIGINT');
+      case CTRL_D: {
         // Prevent terminal UI from accepting commands while the process is closing.
         // Without this, fast typers will close the server then start typing their
         // next command and have a bunch of unrelated things pop up.
-        return pauseInteractions();
+        pauseInteractions();
+
+        const spinners = getAllSpinners();
+        spinners.forEach((spinner) => {
+          spinner.fail();
+        });
+
+        const currentProgress = getProgressBar();
+        if (currentProgress) {
+          currentProgress.terminate();
+          setProgressBar(null);
+        }
+        const spinner = ora({ text: 'Stopping server', color: 'white' }).start();
+        try {
+          await devServerManager.stopAsync();
+          spinner.stopAndPersist({ text: 'Stopped server', symbol: `\u203A` });
+          // @ts-ignore: Argument of type '"SIGINT"' is not assignable to parameter of type '"disconnect"'.
+          process.emit('SIGINT');
+
+          // TODO: Is this the right place to do this?
+          process.exit();
+        } catch (error) {
+          spinner.fail('Failed to stop server');
+          Log.exit(error);
+        }
+        break;
+      }
       case CTRL_L:
         return Log.clear();
       case '?':
-        return await printUsage(options, { verbose: true });
+        return await printUsage(usageOptions, { verbose: true });
     }
 
     // Optionally enabled
-    if (options.isWebSocketsEnabled) {
+
+    if (isWebSocketsEnabled) {
       switch (key) {
         case 'm':
-          return toggleDevMenu();
+          return actions.toggleDevMenu();
         case 'M':
-          return await openMoreToolsAsync();
+          return actions.openMoreToolsAsync();
       }
     }
+
     const { platforms = ['ios', 'android', 'web'] } = options;
 
     if (['i', 'a'].includes(key.toLowerCase())) {
@@ -115,7 +111,7 @@ export async function startInterfaceAsync(
         Log.clear();
       }
 
-      const server = getDefaultDevServer();
+      const server = devServerManager.getDefaultDevServer();
       const settings = PLATFORM_SETTINGS[platform];
 
       Log.log(`${BLT} Opening on ${settings.name}...`);
@@ -141,11 +137,10 @@ export async function startInterfaceAsync(
     switch (key) {
       case 'w': {
         try {
-          if (await ensureWebSupportSetupAsync(projectRoot)) {
-            if (!platforms.includes('web')) {
-              platforms.push('web');
-              options.platforms?.push('web');
-            }
+          await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
+          if (!platforms.includes('web')) {
+            platforms.push('web');
+            options.platforms?.push('web');
           }
         } catch (e: any) {
           Log.warn(e.message);
@@ -160,16 +155,16 @@ export async function startInterfaceAsync(
         }
 
         // Ensure the Webpack dev server is running first
-        if (!getWebDevServer()) {
+        if (!devServerManager.getWebDevServer()) {
           Log.debug('Starting up webpack dev server');
-          await ensureWebDevServerRunningAsync(projectRoot);
+          await devServerManager.ensureWebDevServerRunningAsync();
           // When this is the first time webpack is started, reprint the connection info.
-          printDevServerInfo(options);
+          actions.printDevServerInfo(usageOptions);
         }
 
         Log.log(`${BLT} Open in the web browser...`);
         try {
-          await getWebDevServer().openPlatformAsync('desktop');
+          await devServerManager.getWebDevServer().openPlatformAsync('desktop');
           printHelp();
         } catch (e) {
           if (!(e instanceof AbortCommandError)) {
@@ -180,28 +175,19 @@ export async function startInterfaceAsync(
       }
       case 'c':
         Log.clear();
-        return printDevServerInfo(options);
+        return actions.printDevServerInfo(usageOptions);
       case 'j':
-        return await openJsInspectorAsync();
+        return actions.openJsInspectorAsync();
       case 'r':
-        return reloadApp();
+        return actions.reloadApp();
       case 'o':
         Log.log(`${BLT} Opening the editor...`);
-        return await openInEditorAsync(projectRoot, process.env.EXPO_EDITOR);
+        return openInEditorAsync(devServerManager.projectRoot, process.env.EXPO_EDITOR);
     }
   };
 
-  // Start...
+  const keyPressHandler = new KeyPressHandler(onPressAsync);
 
-  printDevServerInfo(options);
-
-  addInteractionListener(({ pause }) => {
-    if (pause) {
-      stopWaitingForCommand();
-    } else {
-      startWaitingForCommand();
-    }
-  });
-
-  startWaitingForCommand();
+  // Start observing...
+  keyPressHandler.startInterceptingKeyStrokes();
 }

@@ -5,13 +5,13 @@ import http from 'http';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getProjectAsync } from '../../../api/getProject';
+import { APISettings } from '../../../api/settings';
 import { signExpoGoManifestAsync } from '../../../api/signManifest';
-import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import UserSettings from '../../../api/user/UserSettings';
+import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
-import { ProcessSettings } from '../../ProcessSettings';
 import { ManifestMiddleware, ParsedHeaders } from './ManifestMiddleware';
 import {
   parsePlatformHeader,
@@ -123,7 +123,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
 async function shouldUseAnonymousManifestAsync(
   easProjectId: string | undefined | null
 ): Promise<boolean> {
-  if (!easProjectId || ProcessSettings.isOffline) {
+  if (!easProjectId || APISettings.isOffline) {
     return true;
   }
 

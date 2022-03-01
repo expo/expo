@@ -1,4 +1,5 @@
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import { execSync } from 'child_process';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
@@ -80,6 +81,31 @@ export async function getContainerPathAsync(
     }
     throw error;
   }
+}
+
+/** Return a value from an installed app's Info.plist. */
+export async function getInfoPlistValueAsync(
+  device: Partial<DeviceContext>,
+  {
+    appId,
+    key,
+  }: {
+    appId: string;
+    key: string;
+  }
+): Promise<string | null> {
+  const containerPath = await getContainerPathAsync(device, { appId });
+  if (containerPath) {
+    try {
+      const defaultDeviceUDID = execSync(`defaults read ${containerPath}/Info ${key}`, {
+        stdio: 'pipe',
+      }).toString();
+      return defaultDeviceUDID.trim();
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 /** Open a URL on a device. The url can have any protocol. */

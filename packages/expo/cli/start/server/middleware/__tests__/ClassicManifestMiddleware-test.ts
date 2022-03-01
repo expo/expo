@@ -1,8 +1,8 @@
+import { APISettings } from '../../../../api/settings';
 import { signClassicExpoGoManifestAsync } from '../../../../api/signManifest';
 import { getUserAsync } from '../../../../api/user/user';
 import * as Log from '../../../../log';
 import { CommandError } from '../../../../utils/errors';
-import { ProcessSettings } from '../../../ProcessSettings';
 import { ClassicManifestMiddleware } from '../ClassicManifestMiddleware';
 import { ServerRequest } from '../server.types';
 
@@ -16,8 +16,8 @@ jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-jest.mock('../../../ProcessSettings', () => ({
-  ProcessSettings: {
+jest.mock('../../../../api/settings', () => ({
+  APISettings: {
     isOffline: false,
   },
 }));
@@ -44,7 +44,7 @@ jest.mock('@expo/config', () => ({
 }));
 
 beforeEach(() => {
-  ProcessSettings.isOffline = false;
+  APISettings.isOffline = false;
 });
 
 describe('getParsedHeaders', () => {
@@ -113,7 +113,7 @@ describe('_fetchComputedManifestStringAsync', () => {
       )
     );
     expect(Log.warn).toBeCalledWith(expect.stringMatching(/Falling back to offline mode/));
-    expect(ProcessSettings.isOffline).toBe(true);
+    expect(APISettings.isOffline).toBe(true);
   });
 
   it('handles a DNS error', async () => {
@@ -142,7 +142,7 @@ describe('_fetchComputedManifestStringAsync', () => {
       )
     );
     expect(Log.warn).toBeCalledWith(expect.stringMatching(/Falling back to offline mode/));
-    expect(ProcessSettings.isOffline).toBe(true);
+    expect(APISettings.isOffline).toBe(true);
   });
 
   it('throws unhandled error', async () => {
@@ -163,7 +163,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     expect(middleware._getManifestStringAsync).toBeCalledTimes(1);
 
     expect(Log.warn).not.toBeCalled();
-    expect(ProcessSettings.isOffline).toBe(false);
+    expect(APISettings.isOffline).toBe(false);
   });
 
   it('memoizes warnings', async () => {
@@ -182,7 +182,7 @@ describe('_fetchComputedManifestStringAsync', () => {
           hostId: 'foobar',
         })
       ).rejects.toThrow();
-      ProcessSettings.isOffline = false;
+      APISettings.isOffline = false;
     };
 
     // Call twice...
@@ -222,7 +222,7 @@ describe(`_getManifestStringAsync`, () => {
       .mockImplementationOnce(async () => ({} as any));
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
-    ProcessSettings.isOffline = true;
+    APISettings.isOffline = true;
 
     expect(
       JSON.parse(
@@ -240,7 +240,7 @@ describe(`_getManifestStringAsync`, () => {
       .mockImplementationOnce(async () => undefined);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
-    ProcessSettings.isOffline = false;
+    APISettings.isOffline = false;
 
     expect(
       JSON.parse(
@@ -259,7 +259,7 @@ describe(`_getManifestStringAsync`, () => {
       .mockImplementationOnce(async () => undefined);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
-    ProcessSettings.isOffline = false;
+    APISettings.isOffline = false;
 
     expect(
       JSON.parse(
@@ -279,7 +279,7 @@ describe(`_getManifestStringAsync`, () => {
       .mockImplementation(async () => ({} as any));
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
-    ProcessSettings.isOffline = false;
+    APISettings.isOffline = false;
 
     const invokeAsync = async (owner = 'bacon') => {
       await middleware._getManifestStringAsync({

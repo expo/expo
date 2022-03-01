@@ -1,7 +1,11 @@
 import { vol } from 'memfs';
 
+import * as Log from '../../../../log';
 import { TypeScriptProjectPrerequisite } from '../TypeScriptProjectPrerequisite';
 
+const asMock = (fn: any): jest.Mock => fn;
+
+jest.mock('../../../../log');
 jest.mock('resolve-from');
 
 describe('assertAsync', () => {
@@ -13,9 +17,12 @@ describe('assertAsync', () => {
   });
   it('skips setup due to environment variable', async () => {
     process.env.EXPO_NO_TYPESCRIPT_SETUP = '1';
+    asMock(Log.warn).mockClear();
     const prerequisite = new TypeScriptProjectPrerequisite('/');
-    await expect(prerequisite.assertAsync()).rejects.toThrowError(
-      /Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled\./
+
+    await prerequisite.assertAsync();
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringMatching(/Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled\./)
     );
   });
 });

@@ -62,14 +62,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       return;
     }
 
-    if (method !== 'reload') {
-      // TODO:
-      // Webpack currently only supports reloading the client (browser),
-      // remove this when we have custom sockets, and native support.
-      return;
-    }
-
-    // TODO:
+    // TODO(EvanBacon): Custom Webpack overlay.
     // Default webpack-dev-server sockets use "content-changed" instead of "reload" (what we use on native).
     // For now, just manually convert the value so our CLI interface can be unified.
     const hackyConvertedMessage = method === 'reload' ? 'content-changed' : method;
@@ -154,7 +147,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
   private async getAvailablePortAsync(options: { defaultPort?: number }): Promise<number> {
     try {
-      const defaultPort = options?.defaultPort;
+      const defaultPort = options?.defaultPort ?? 19006;
       const port = await choosePortAsync(this.projectRoot, {
         defaultPort,
         host: WEB_HOST,

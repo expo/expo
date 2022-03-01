@@ -1,12 +1,10 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
-import chalk from 'chalk';
-import { parse, resolve } from 'url';
+import { resolve } from 'url';
 
 import * as Log from '../../../log';
-import { EXPO_DEBUG } from '../../../utils/env';
 import { UnimplementedError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
-import * as ProjectDevices from '../../project/ProjectDevices';
+import * as ProjectDevices from '../../project/devices';
 import { BundlerStartOptions } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { ExpoMiddleware } from './ExpoMiddleware';

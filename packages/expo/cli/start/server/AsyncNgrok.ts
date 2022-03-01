@@ -10,7 +10,7 @@ import { CommandError } from '../../utils/errors';
 import { installExitHooks } from '../../utils/exit';
 import { NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../platforms/android/adbReverse';
-import { ProjectSettings } from '../project/ProjectSettings';
+import { ProjectSettings } from '../project/settings';
 
 const NGROK_CONFIG = {
   authToken: '5W1bR67GNbWcXqmxZzBG1_56GezNeaX6sSRvn8npeQ8',

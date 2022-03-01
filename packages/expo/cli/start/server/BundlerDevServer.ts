@@ -3,10 +3,10 @@ import assert from 'assert';
 import openBrowserAsync from 'better-opn';
 import resolveFrom from 'resolve-from';
 
+import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { UnimplementedError } from '../../utils/errors';
-import { ProcessSettings } from '../ProcessSettings';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
 import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
@@ -124,7 +124,7 @@ export class BundlerDevServer {
   }
 
   protected async postStartAsync(options: BundlerStartOptions) {
-    if (options.location.hostType === 'tunnel' && !ProcessSettings.isOffline) {
+    if (options.location.hostType === 'tunnel' && !APISettings.isOffline) {
       await this._startTunnelAsync();
     }
     await this.startDevSessionAsync();
@@ -145,7 +145,7 @@ export class BundlerDevServer {
   public async _startTunnelAsync(): Promise<AsyncNgrok | null> {
     const port = this.getInstance()?.location?.port;
     if (!port) return null;
-    Log.debug('[tunnel] connect to port: ' + port);
+    Log.debug('[ngrok] connect to port: ' + port);
     this.ngrok = new AsyncNgrok(this.projectRoot, port);
     await this.ngrok.startAsync();
     return this.ngrok;
@@ -281,8 +281,8 @@ export class BundlerDevServer {
     );
   }
 
-  /** Get the URL for opening in Expo Go. Exposed for testing. */
-  protected _getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS) {
+  /** Get the URL for opening in Expo Go. */
+  protected getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS) {
     if (this.shouldUseInterstitialPage()) {
       const loadingUrl =
         platform === 'emulator'
@@ -294,7 +294,6 @@ export class BundlerDevServer {
     return this.urlCreator.constructUrl({ scheme: 'exp' });
   }
 
-  /** Exposed for testing. */
   protected getPlatformManager(platform: keyof typeof PLATFORM_MANAGERS) {
     if (!this.platformManagers[platform]) {
       const Manager = PLATFORM_MANAGERS[platform];
@@ -303,7 +302,7 @@ export class BundlerDevServer {
         this.getInstance()?.location?.port,
         {
           getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
-          getExpoGoUrl: this._getExpoGoUrl.bind(this, platform),
+          getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
           getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
         }
       );

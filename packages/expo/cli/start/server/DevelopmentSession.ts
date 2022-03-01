@@ -1,9 +1,9 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 
+import { APISettings } from '../../api/settings';
 import { updateDevelopmentSessionAsync } from '../../api/updateDevelopmentSession';
 import { getUserAsync } from '../../api/user/user';
-import { ProcessSettings } from '../ProcessSettings';
-import * as ProjectDevices from '../project/ProjectDevices';
+import * as ProjectDevices from '../project/devices';
 
 const UPDATE_FREQUENCY = 20 * 1000; // 20 seconds
 
@@ -39,7 +39,7 @@ export class DevelopmentSession {
     exp?: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
     runtime: 'native' | 'web';
   }): Promise<void> {
-    if (ProcessSettings.isOffline) {
+    if (APISettings.isOffline) {
       this.stop();
       return;
     }

@@ -2,6 +2,7 @@ import { ExpoAppManifest, ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import os from 'os';
 
+import { APISettings } from '../../../api/settings';
 import { signClassicExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
@@ -10,7 +11,6 @@ import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
-import { ProcessSettings } from '../../ProcessSettings';
 import { DEVELOPER_TOOL, HostInfo, ManifestMiddleware, ParsedHeaders } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
@@ -79,12 +79,12 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
     acceptSignature,
   }: SignManifestProps): Promise<string> {
     const currentSession = await getUserAsync();
-    if (!currentSession || ProcessSettings.isOffline) {
+    if (!currentSession || APISettings.isOffline) {
       manifest.id = `@${ANONYMOUS_USERNAME}/${manifest.slug}-${hostId}`;
     }
     if (!acceptSignature) {
       return JSON.stringify(manifest);
-    } else if (!currentSession || ProcessSettings.isOffline) {
+    } else if (!currentSession || APISettings.isOffline) {
       return getUnsignedManifestString(manifest);
     } else {
       return this.getSignedManifestStringAsync(manifest);
@@ -107,7 +107,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
             `Please request access from an admin of @${props.manifest.owner} or change the "owner" field to an account you belong to.\n` +
             learnMore('https://docs.expo.dev/versions/latest/config/app/#owner')
         );
-        ProcessSettings.isOffline = true;
+        APISettings.isOffline = true;
         return await this._getManifestStringAsync(props);
       } else if (error.code === 'ENOTFOUND') {
         // Got a DNS error, i.e. can't access exp.host, warn and enable offline mode.
@@ -116,7 +116,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
             error.hostname || 'exp.host'
           }.`
         );
-        ProcessSettings.isOffline = true;
+        APISettings.isOffline = true;
         return await this._getManifestStringAsync(props);
       } else {
         throw error;

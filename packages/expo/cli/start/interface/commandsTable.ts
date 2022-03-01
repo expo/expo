@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 import chalk from 'chalk';
-import wrapAnsi from 'wrap-ansi';
 import qrcode from 'qrcode-terminal';
+import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../log';
 

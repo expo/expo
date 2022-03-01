@@ -1,7 +1,6 @@
 import { CommandError } from '../../../../utils/errors';
-import { Device, getContainerPathAsync, openAppIdAsync, openUrlAsync } from '../simctl';
 import { AppleDeviceManager } from '../AppleDeviceManager';
-
+import { Device, getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
@@ -10,10 +9,7 @@ jest.mock('@expo/spawn-async');
 jest.mock('../simctl', () => ({
   openAppIdAsync: jest.fn(),
   openUrlAsync: jest.fn(),
-  getContainerPathAsync: jest.fn(
-    () =>
-      '/Users/evanbacon/Library/Developer/CoreSimulator/Devices/EFEEA6EF-E3F5-4EDE-9B72-29EAFA7514AE/data/Containers/Bundle/Application/FA43A0C6-C2AD-442D-B8B1-EAF3E88CF3BF/Exponent-2.23.2.tar.app'
-  ),
+  getInfoPlistValueAsync: jest.fn(),
 }));
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
@@ -25,20 +21,16 @@ function createDevice() {
 describe('getAppVersionAsync', () => {
   it(`gets the version from an installed app`, async () => {
     const device = createDevice();
-    asMock(getContainerPathAsync).mockClear();
+    asMock(getInfoPlistValueAsync).mockClear().mockResolvedValueOnce('2.23.2');
     await expect(device.getAppVersionAsync('host.exp.Exponent')).resolves.toBe('2.23.2');
-    expect(getContainerPathAsync).toHaveBeenCalledWith(
-      { name: 'iPhone 13', udid: '123' },
-      { appId: 'host.exp.Exponent' }
-    );
-  });
-  it(`asserts that only Expo Go is supported`, async () => {
-    const device = createDevice();
-    await expect(device.getAppVersionAsync('foobar')).rejects.toThrow(/Expo Go/);
+    expect(getInfoPlistValueAsync).toHaveBeenCalledWith(expect.anything(), {
+      appId: 'host.exp.Exponent',
+      key: 'CFBundleShortVersionString',
+    });
   });
   it(`returns null when the app is not installed`, async () => {
     const device = createDevice();
-    asMock(getContainerPathAsync).mockClear().mockResolvedValueOnce(null);
+    asMock(getInfoPlistValueAsync).mockClear().mockResolvedValueOnce(null);
     await expect(device.getAppVersionAsync('host.exp.Exponent')).resolves.toBe(null);
   });
 });
