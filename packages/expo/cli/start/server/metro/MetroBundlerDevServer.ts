@@ -3,7 +3,8 @@ import { prependMiddleware } from '@expo/dev-server';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
-import * as LoadingPageHandler from '../middleware/LoadingPageHandler';
+import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
@@ -59,7 +60,27 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware);
 
-    middleware.use(LoadingPageHandler.getLoadingPageHandler(this.projectRoot, this.urlCreator));
+    middleware.use(new InterstitialPageMiddleware(this.projectRoot).getHandler());
+
+    const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
+      onDeepLink: ({ runtime }) => {
+        if (runtime === 'expo') return;
+        // TODO: Some heavy analytics...
+      },
+      getLocation({ runtime }) {
+        if (runtime === 'custom') {
+          return this.urlCreator.constructDevClientUrl({
+            hostType: 'localhost',
+          });
+        } else {
+          return this.urlCreator.constructUrl({
+            scheme: 'exp',
+            hostname: 'localhost',
+          });
+        }
+      },
+    });
+    middleware.use(deepLinkMiddleware.getHandler());
 
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);

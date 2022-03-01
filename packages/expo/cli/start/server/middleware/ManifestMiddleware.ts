@@ -9,6 +9,7 @@ import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/ProjectDevices';
 import { BundlerStartOptions } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
+import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
 import { RuntimePlatform } from './resolvePlatform';
@@ -45,14 +46,24 @@ export type ResponseProjectSettings = {
 export const DEVELOPER_TOOL = 'expo-cli';
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
-export class ManifestMiddleware {
+export class ManifestMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: Pick<BundlerStartOptions, 'mode' | 'minify'> & {
       constructUrl: UrlCreator['constructUrl'];
       isNativeWebpack?: boolean;
     }
-  ) {}
+  ) {
+    super(
+      projectRoot,
+      /**
+       * Only support `/`, `/manifest`, `/index.exp` for the manifest middleware.
+       * Returns true when the manifest middleware should handle the incoming server request.
+       * Exposed for testing.
+       */
+      ['/', '/manifest', '/index.exp']
+    );
+  }
 
   protected getDefaultResponseHeaders(): Map<string, any> {
     return new Map<string, any>();
@@ -92,21 +103,6 @@ export class ManifestMiddleware {
       bundleUrl,
       exp: projectConfig.exp,
     };
-  }
-
-  /**
-   * Only support `/`, `/manifest`, `/index.exp` for the manifest middleware.
-   * Returns true when the manifest middleware should handle the incoming server request.
-   * Exposed for testing.
-   */
-  _shouldContinue(req: ServerRequest): boolean {
-    return (
-      !!req.url &&
-      ['/', '/manifest', '/index.exp'].includes(
-        // Strip the query params
-        parse(req.url).pathname || req.url
-      )
-    );
   }
 
   /** Get the main entry module ID (file) relative to the project root. */
@@ -235,40 +231,23 @@ export class ManifestMiddleware {
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }
 
-  /** Create a server middleware handler. */
-  public getHandler(): (
+  async handleRequestAsync(
     req: ServerRequest,
     res: ServerResponse,
     next: ServerNext
-  ) => Promise<void> {
-    return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (!this._shouldContinue(req)) {
-        return next();
-      }
+  ): Promise<void> {
+    // Save device IDs for dev client.
+    await this.saveDevicesAsync(req);
 
-      await this.saveDevicesAsync(req);
+    // Read from headers
+    const options = this.getParsedHeaders(req);
+    const { body, version, headers } = await this._getManifestResponseAsync(options);
+    for (const [headerName, headerValue] of headers) {
+      res.setHeader(headerName, headerValue);
+    }
+    res.end(body);
 
-      try {
-        // Read from headers
-        const options = this.getParsedHeaders(req);
-        const { body, version, headers } = await this._getManifestResponseAsync(options);
-        for (const [headerName, headerValue] of headers) {
-          res.setHeader(headerName, headerValue);
-        }
-        res.end(body);
-
-        // Log analytics
-        this.trackManifest(version ?? null);
-      } catch (e) {
-        Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
-        // 5xx = Server Error HTTP code
-        res.statusCode = 520;
-        res.end(
-          JSON.stringify({
-            error: e.toString(),
-          })
-        );
-      }
-    };
+    // Log analytics
+    this.trackManifest(version ?? null);
   }
 }

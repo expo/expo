@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEvent } from '../utils/analytics/rudderstackClient';
-import StatusEventEmitter from '../utils/analytics/StatusEventEmitter';
 import { CI } from '../utils/env';
 import { installExitHooks } from '../utils/exit';
 import { FileNotifier } from '../utils/FileNotifier';
@@ -17,7 +16,6 @@ import { ensureWebSupportSetupAsync } from './doctor/web/ensureWebSetup';
 import { startInterfaceAsync } from './interface/TerminalUI';
 import { Options, resolvePortsAsync } from './resolveOptions';
 import { BundlerStartOptions } from './server/BundlerDevServer';
-import * as LoadingPageHandler from './server/middleware/LoadingPageHandler';
 import { openPlatformsAsync } from './server/openPlatforms';
 import * as Project from './server/startDevServers';
 
@@ -102,32 +100,6 @@ export async function startAsync(
   if (options.devClient) {
     track(projectRoot, exp);
   }
-
-  // More Dev Client
-
-  LoadingPageHandler.setOnDeepLink(
-    async (projectRoot: string, isDevClient: boolean, platform: string | null) => {
-      if (!isDevClient) {
-        return;
-      }
-
-      const { exp } = getConfig(projectRoot);
-      StatusEventEmitter.once('deviceLogReceive', () => {
-        // Send the 'ready' event once the app is running in a device.
-        logEvent('dev client start command', {
-          status: 'ready',
-          platform,
-          ...getDevClientProperties(projectRoot, exp),
-        });
-      });
-
-      logEvent('dev client start command', {
-        status: 'started',
-        platform,
-        ...getDevClientProperties(projectRoot, exp),
-      });
-    }
-  );
 
   await profile(Project.startDevServersAsync)(projectRoot, startOptions);
 

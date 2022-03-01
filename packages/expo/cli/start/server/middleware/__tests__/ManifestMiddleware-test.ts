@@ -5,6 +5,11 @@ import * as ProjectDevices from '../../../project/ProjectDevices';
 import { ManifestMiddleware } from '../ManifestMiddleware';
 import { ServerRequest } from '../server.types';
 
+const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
 jest.mock('../../../../log');
 
 jest.mock('../resolveAssets', () => ({
@@ -15,11 +20,6 @@ jest.mock('../resolveAssets', () => ({
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
-
-const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),
@@ -33,27 +33,9 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
-describe('_shouldContinue', () => {
-  const middleware = new ManifestMiddleware('/', {} as any);
-  it('returns true when the request url is not defined', () => {
-    expect(middleware._shouldContinue(asReq({}))).toBe(false);
-  });
-
-  it('returns true when the request url is not `/`, `/manifest`, or `/index.exp`', () => {
-    expect(middleware._shouldContinue(asReq({ url: '/foo' }))).toBe(false);
-  });
-
-  it('returns false when the request url is `/`, `/manifest`, or `/index.exp`', () => {
-    expect(middleware._shouldContinue(asReq({ url: '/' }))).toBe(true);
-    expect(middleware._shouldContinue(asReq({ url: '/manifest' }))).toBe(true);
-    expect(middleware._shouldContinue(asReq({ url: '/index.exp' }))).toBe(true);
-  });
-});
-
-beforeEach(() => {
-  //   asMock(getConfig).mockClear();
-  //   asMock(resolveEntryPoint).mockClear();
-});
+jest.mock('../../../project/ProjectDevices', () => ({
+  saveDevicesAsync: jest.fn(async () => ({})),
+}));
 
 describe('_getBundleUrl', () => {
   const createConstructUrl = () =>
@@ -152,10 +134,6 @@ describe('_resolveProjectSettingsAsync', () => {
     expect(getConfig).toHaveBeenCalledTimes(1);
   });
 });
-
-jest.mock('../../../project/ProjectDevices', () => ({
-  saveDevicesAsync: jest.fn(async () => ({})),
-}));
 
 describe('getHandler', () => {
   it(`resolves successfully`, async () => {
@@ -261,35 +239,5 @@ describe('getHandler', () => {
     expect(res.end).toBeCalledWith(JSON.stringify({ error: 'Error: demo' }));
     // Ensure the user sees the error in the terminal.
     expect(Log.error).toBeCalled();
-  });
-
-  it(`continues`, async () => {
-    asMock(ProjectDevices.saveDevicesAsync).mockClear();
-    const middleware = new ManifestMiddleware('/', {
-      constructUrl: jest.fn(() => 'http://fake.mock'),
-    });
-
-    const handleAsync = middleware.getHandler();
-
-    const next = jest.fn();
-
-    const res = {
-      setHeader: jest.fn(),
-      end: jest.fn(),
-      statusCode: 200,
-    };
-
-    await handleAsync(
-      asReq({ url: '/foobar', headers: {} }),
-      // @ts-expect-error
-      res,
-      next
-    );
-
-    // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
-    expect(res.statusCode).toEqual(200);
-    expect(next).toBeCalled();
-    expect(res.end).not.toBeCalled();
-    expect(res.setHeader).not.toBeCalledWith('header', 'value');
   });
 });
