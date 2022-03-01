@@ -1,5 +1,6 @@
 import { certificateFor } from '@expo/devcert';
 import { vol } from 'memfs';
+
 import * as Log from '../../../../log';
 import { ensureEnvironmentSupportsSSLAsync, getSSLCertAsync } from '../ssl';
 

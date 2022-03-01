@@ -162,7 +162,9 @@ export class BundlerDevServer {
     this.devSession = new DevelopmentSession(
       this.projectRoot,
       // This URL will be used on external devices so the computer IP won't be relevant.
-      this.getDevServerUrl({ hostType: 'localhost' })
+      this.isTargetingNative()
+        ? this.getNativeRuntimeUrl()
+        : this.getDevServerUrl({ hostType: 'localhost' })
     );
 
     await this.devSession.startAsync({
