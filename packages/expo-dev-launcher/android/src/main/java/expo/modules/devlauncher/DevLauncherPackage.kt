@@ -9,6 +9,8 @@ import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.core.interfaces.ReactNativeHostHandler
+import expo.modules.devlauncher.rncompatibility.DevLauncherReactNativeHostHandler
 
 class DevLauncherPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> = DevLauncherPackageDelegate.createNativeModules(reactContext);
@@ -20,4 +22,8 @@ class DevLauncherPackage : Package, ReactPackage {
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> = DevLauncherPackageDelegate.createReactActivityLifecycleListeners(activityContext);
 
   override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = DevLauncherPackageDelegate.createReactActivityHandlers(activityContext);
+ 
+  override fun createReactNativeHostHandlers(context: Context?): List<ReactNativeHostHandler> {
+    return listOf(DevLauncherReactNativeHostHandler())
+  }
 }
