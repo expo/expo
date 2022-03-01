@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0",
-    "expo-test-runner": "0.0.7"
+    "expo-test-runner": "0.0.8"
   },
   "peerDependencies": {
     "expo": "*"
