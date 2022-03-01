@@ -11,6 +11,7 @@
 - Add iOS support for code signing. ([#15682](https://github.com/expo/expo/pull/15682) by [@wschurman](https://github.com/wschurman))
 - Add CLI. ([#16216](https://github.com/expo/expo/pull/16216) by [@wschurman](https://github.com/wschurman))
 - Add support for dev client auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
+- Fix codesigning header name. ([#16480](https://github.com/expo/expo/pull/16480) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
