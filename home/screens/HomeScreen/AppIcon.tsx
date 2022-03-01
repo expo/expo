@@ -4,19 +4,12 @@ import * as React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
-import { Ionicons } from '../../../components/Icons';
-import Colors from '../../../constants/Colors';
-
-type IconProps = React.ComponentProps<typeof Ionicons>;
-
-type DevelopmentServerImageProps = {
-  icon?: IconProps['name'];
-  iconStyle?: IconProps['style'];
+type Props = {
   image?: number | string | null;
 };
 
-export function DevelopmentServerImage(props: DevelopmentServerImageProps) {
-  const { icon, iconStyle, image } = props;
+export function AppIcon(props: Props) {
+  const { image } = props;
 
   if (image !== undefined) {
     if (image === null) {
@@ -31,17 +24,6 @@ export function DevelopmentServerImage(props: DevelopmentServerImageProps) {
         </View>
       );
     }
-  } else if (icon) {
-    return (
-      <View height="8" width="8" style={[styles.iconContainer]}>
-        <Ionicons
-          style={[styles.icon, iconStyle]}
-          name={icon}
-          lightColor={Colors.light.text}
-          darkColor="#fff"
-        />
-      </View>
-    );
   } else {
     return null;
   }

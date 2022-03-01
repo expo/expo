@@ -1,15 +1,11 @@
 import * as React from 'react';
 import { StyleSheet, Text as RNText } from 'react-native';
 
-import { Ionicons } from '../../../components/Icons';
 import Colors from '../../../constants/Colors';
-
-type IconProps = React.ComponentProps<typeof Ionicons>;
 
 type DevelopmentServerSubtitleProps = {
   title?: string;
   subtitle?: string;
-  icon?: IconProps['name'];
   onPressSubtitle?: () => any;
   image?: number | string | null;
 };
@@ -17,11 +13,11 @@ type DevelopmentServerSubtitleProps = {
 export function DevelopmentServerSubtitle({
   title,
   subtitle,
-  icon,
+
   image,
   onPressSubtitle,
 }: DevelopmentServerSubtitleProps) {
-  const isCentered = !title && !icon && !image;
+  const isCentered = !title && !image;
 
   return subtitle ? (
     <RNText
