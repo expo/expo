@@ -5,6 +5,31 @@ apply plugin: 'maven-publish'
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
 
+static def versionToNumber(major, minor, patch) {
+  return patch * 100 + minor * 10000 + major * 1000000
+}
+
+def getRNVersion() {
+  def nodeModulesVersion = [
+      "node",
+      "-e",
+      "console.log(require('react-native/package.json').version);"
+  ]
+      .execute([], projectDir)
+      .text
+      .trim()
+
+  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}
+
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
@@ -92,6 +117,13 @@ android {
     main {
       java {
         srcDirs += new File(project.buildDir, generatedFilesSrcDir)
+
+        def rnVersion = getRNVersion()
+        if (rnVersion >= versionToNumber(0, 67, 0)) {
+          srcDirs += "src/reactNativeHostWrapper"
+        } else {
+          srcDirs += "src/legacyReactNativeHostWrapper"
+        }
       }
     }
   }

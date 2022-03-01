@@ -3,6 +3,7 @@ package expo.modules.core.interfaces;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 
 import androidx.annotation.Nullable;
 
@@ -41,6 +42,18 @@ public interface ReactNativeHostHandler {
   default String getBundleAssetName(boolean useDeveloperSupport) {
     return null;
   }
+
+  /**
+   * Given chance for modules to override react dev support manager factory.
+   * e.g. for expo-dev-client
+   *
+   * Note: we can't specify the type here, because the `DevSupportManagerFactory`
+   * doesn't exist in the React Native 0.66 or below.
+   *
+   * @return custom DevSupportManagerFactory, or null if not to override
+   */
+  @Nullable
+  default Object getDevSupportManagerFactory() { return null; }
 
   //region event listeners
 

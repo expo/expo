@@ -14,11 +14,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.devsupport.RedBoxHandler
 import java.lang.reflect.Method
 
-class ReactNativeHostWrapper(
+open class ReactNativeHostWrapperBase(
   application: Application,
   private val host: ReactNativeHost
 ) : ReactNativeHost(application) {
-  private val reactNativeHostHandlers = ExpoModulesPackage.packageList
+  internal val reactNativeHostHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
@@ -100,7 +100,7 @@ class ReactNativeHostWrapper(
   }
 
   @Suppress("UNCHECKED_CAST")
-  private fun <T> invokeDelegateMethod(name: String): T {
+  internal fun <T> invokeDelegateMethod(name: String): T {
     var method = methodMap[name]
     if (method == null) {
       method = ReactNativeHost::class.java.getDeclaredMethod(name)
