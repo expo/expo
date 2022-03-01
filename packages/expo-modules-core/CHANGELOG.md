@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add `getDevSupportManagerFactory` support to `ReactNativeHostHandler`. ([#16434](https://github.com/expo/expo/pull/16434) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
