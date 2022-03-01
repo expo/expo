@@ -70,6 +70,12 @@ open class DevMenuManager: NSObject {
   lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
 
   var currentScreen: String?
+
+  /**
+   For backwards compatibility in projects that call this method from AppDelegate
+   */
+  @objc
+  public static func configure(withBridge bridge: AnyObject) { }
   
   @objc
   public var currentBridge: RCTBridge? {
