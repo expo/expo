@@ -1,5 +1,4 @@
 import * as osascript from '@expo/osascript';
-import assert from 'assert';
 import chalk from 'chalk';
 
 import { delayAsync, waitForActionAsync } from '../../../utils/delay';

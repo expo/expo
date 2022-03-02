@@ -3,8 +3,8 @@ import { fs, vol } from 'memfs';
 import nock from 'nock';
 
 import { getExpoApiBaseUrl } from '../../endpoint';
-import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
 import UserSettings from '../UserSettings';
+import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
 
 jest.unmock('../UserSettings');
 jest.mock('../../graphql/client', () => ({

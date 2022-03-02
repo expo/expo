@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
-import * as Log from '../../../../log';
 
+import * as Log from '../../../../log';
 import { getAssetFieldPathsForManifestAsync, resolveGoogleServicesFile } from '../resolveAssets';
 
 jest.mock(`../../../../log`);

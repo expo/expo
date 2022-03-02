@@ -2,8 +2,8 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 
 import * as Log from '../../log';
-import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { FileNotifier } from '../../utils/FileNotifier';
+import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';

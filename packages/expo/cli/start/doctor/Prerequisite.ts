@@ -1,4 +1,3 @@
-import * as Log from '../../log';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 

@@ -1,7 +1,6 @@
 import { createSymbolicateMiddleware } from '@expo/dev-server/build/webpack/symbolicateMiddleware';
 import chalk from 'chalk';
 import fs from 'fs';
-import getenv from 'getenv';
 import http from 'http';
 import * as path from 'path';
 import resolveFrom from 'resolve-from';
@@ -11,7 +10,6 @@ import WebpackDevServer, {
 } from 'webpack-dev-server';
 
 import * as Log from '../../../log';
-import { fileExistsAsync } from '../../../utils/dir';
 import { WEB_HOST } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getIpAddress } from '../../../utils/ip';

@@ -64,6 +64,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
       onDeepLink: ({ runtime }) => {
+        // eslint-disable-next-line no-useless-return
         if (runtime === 'expo') return;
         // TODO: Some heavy analytics...
       },

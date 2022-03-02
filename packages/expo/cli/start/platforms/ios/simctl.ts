@@ -1,4 +1,4 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import { execSync } from 'child_process';
 
 import * as Log from '../../../log';

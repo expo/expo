@@ -18,7 +18,7 @@ import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
 } from './resolvePlatform';
-import { ServerRequest, ServerHeaders } from './server.types';
+import { ServerHeaders } from './server.types';
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
   public getParsedHeaders(req: express.Request | http.IncomingMessage): ParsedHeaders {
