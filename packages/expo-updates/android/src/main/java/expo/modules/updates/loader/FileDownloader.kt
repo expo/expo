@@ -510,7 +510,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         }
         .apply {
           configuration.codeSigningConfiguration?.let {
-            header("expo-expects-signature", Crypto.createAcceptSignatureHeader(it))
+            header("expo-expect-signature", Crypto.createAcceptSignatureHeader(it))
           }
         }
         .build()
