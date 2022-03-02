@@ -1,4 +1,11 @@
-import { formatArrayOfReactDelegateHandler, getSwiftModuleNames } from '../ios';
+import glob from 'fast-glob';
+import path from 'path';
+
+import { ExpoModuleConfig } from '../../ExpoModuleConfig';
+import { registerGlobMock } from '../../__tests__/mockHelpers';
+import { formatArrayOfReactDelegateHandler, getSwiftModuleNames, resolveModuleAsync } from '../ios';
+
+jest.mock('fast-glob');
 
 describe(formatArrayOfReactDelegateHandler, () => {
   it('should output empty array when no one specify `reactDelegateHandlers`', () => {
@@ -74,5 +81,82 @@ describe(getSwiftModuleNames, () => {
   it('should replace non-alphanumeric values with _', () => {
     const pods = [{ podName: 'expo-test.2', podspecDir: '/path/to/pod' }];
     expect(getSwiftModuleNames(pods, undefined)).toEqual(['expo_test_2']);
+  });
+});
+
+describe(resolveModuleAsync, () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  const expoRoot = path.join(__dirname, '..', '..', '..', '..', '..');
+
+  it('should resolve podspec in ios/ folder', async () => {
+    const name = 'react-native-third-party';
+    const podName = 'RNThirdParty';
+    const pkgDir = path.join('node_modules', name);
+
+    registerGlobMock(glob, [`ios/${podName}.podspec`]);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['ios'] }),
+      },
+      { searchPaths: [expoRoot], platform: 'ios' }
+    );
+    expect(result).toEqual({
+      packageName: 'react-native-third-party',
+      pods: [
+        {
+          podName: 'RNThirdParty',
+          podspecDir: 'node_modules/react-native-third-party/ios',
+        },
+      ],
+      swiftModuleNames: ['RNThirdParty'],
+      flags: undefined,
+      modules: [],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+    });
+  });
+
+  it('should resolve multiple podspecs', async () => {
+    const name = 'react-native-third-party';
+    const podName = 'RNThirdParty';
+    const podName2 = 'RNThirdParty2';
+    const pkgDir = path.join('node_modules', name);
+
+    registerGlobMock(glob, [`ios/${podName}.podspec`, `pod2/${podName2}.podspec`]);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['ios'] }),
+      },
+      { searchPaths: [expoRoot], platform: 'ios' }
+    );
+    expect(result).toEqual({
+      packageName: 'react-native-third-party',
+      pods: [
+        {
+          podName: 'RNThirdParty',
+          podspecDir: 'node_modules/react-native-third-party/ios',
+        },
+        {
+          podName: 'RNThirdParty2',
+          podspecDir: 'node_modules/react-native-third-party/pod2',
+        },
+      ],
+      swiftModuleNames: ['RNThirdParty', 'RNThirdParty2'],
+      flags: undefined,
+      modules: [],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+    });
   });
 });
