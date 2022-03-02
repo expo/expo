@@ -32,10 +32,18 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
     const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
 
     for (const packageConfigPath of packageConfigPaths) {
-      const packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
-      const expoModuleConfig = requireAndResolveExpoModuleConfig(
-        path.join(packagePath, path.basename(packageConfigPath))
-      );
+      const packageDirParts = path.dirname(packageConfigPath).split(path.sep);
+      const isExpoAdapter =
+        packageDirParts[packageDirParts.length - 1] === 'expo' &&
+        (packageDirParts.length === 2 || // `*/expo/expo-module.config.json`
+          packageDirParts.length === 3); // `@*/*/expo/expo-module.config.json`
+      let packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
+      let expoModuleConfigPath = path.join(packagePath, path.basename(packageConfigPath));
+      if (isExpoAdapter) {
+        packagePath = path.dirname(packagePath);
+        expoModuleConfigPath = path.join(packagePath, 'expo', path.basename(packageConfigPath));
+      }
+      const expoModuleConfig = requireAndResolveExpoModuleConfig(expoModuleConfigPath);
 
       const { name, version } = resolvePackageNameAndVersion(packagePath, {
         fallbackToDirName: isNativeModulesDir,
@@ -55,6 +63,9 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
         version,
         config: expoModuleConfig,
       };
+      if (isExpoAdapter) {
+        currentRevision.isExpoAdapter = true;
+      }
       addRevisionToResults(results, name, currentRevision);
 
       // if the module is a native module, we need to add it to the nativeModuleNames set
@@ -128,9 +139,20 @@ function addRevisionToResults(
  */
 async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[]> {
   const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-  const paths = await glob([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
-    cwd: searchPath,
-  });
+  const paths = await glob(
+    [
+      `*/${bracedFilenames}`,
+      `@*/*/${bracedFilenames}`,
+
+      // Search config inside additional `expo` directory.
+      // This is for expo adapter in third party modules.
+      `*/expo/${bracedFilenames}`,
+      `@*/*/expo/${bracedFilenames}`,
+    ],
+    {
+      cwd: searchPath,
+    }
+  );
 
   // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
   // then we want to give `expo-module.config.json` the priority.

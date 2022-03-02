@@ -96,7 +96,7 @@ describe(resolveModuleAsync, () => {
     const podName = 'RNThirdParty';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`]);
+    registerGlobMock(glob, [`ios/${podName}.podspec`], pkgDir);
 
     const result = await resolveModuleAsync(
       name,
@@ -129,7 +129,7 @@ describe(resolveModuleAsync, () => {
     const podName2 = 'RNThirdParty2';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`, `pod2/${podName2}.podspec`]);
+    registerGlobMock(glob, [`ios/${podName}.podspec`, `pod2/${podName2}.podspec`], pkgDir);
 
     const result = await resolveModuleAsync(
       name,
@@ -153,6 +153,48 @@ describe(resolveModuleAsync, () => {
         },
       ],
       swiftModuleNames: ['RNThirdParty', 'RNThirdParty2'],
+      flags: undefined,
+      modules: [],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+    });
+  });
+
+  it('should resolve podspec in expo adapter folder', async () => {
+    const name = 'react-native-third-party';
+    const podName = 'RNThirdPartyExpoAdapter';
+    const pkgDir = path.join('node_modules', name);
+
+    registerGlobMock(
+      glob,
+      [
+        // This RNThirdParty.podspec should be linked by rn-cli autolinking, so we should not resolve this podspec.
+        `ios/RNThirdParty.podspec`,
+
+        `expo/ios/${podName}.podspec`,
+      ],
+      pkgDir
+    );
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['ios'] }),
+        isExpoAdapter: true,
+      },
+      { searchPaths: [expoRoot], platform: 'ios' }
+    );
+    expect(result).toEqual({
+      packageName: 'react-native-third-party',
+      pods: [
+        {
+          podName: 'RNThirdPartyExpoAdapter',
+          podspecDir: 'node_modules/react-native-third-party/expo/ios',
+        },
+      ],
+      swiftModuleNames: ['RNThirdPartyExpoAdapter'],
       flags: undefined,
       modules: [],
       appDelegateSubscribers: [],

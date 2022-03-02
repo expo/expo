@@ -35,6 +35,10 @@ export type PackageRevision = {
   version: string;
   config?: ExpoModuleConfig;
   duplicates?: PackageRevision[];
+
+  // Indicate this module is an expo adapter for third party libraries.
+  // In this case, only podspec/gradle projects inside `expo/` directory will be linked.
+  isExpoAdapter?: boolean;
 };
 
 export type SearchResults = {

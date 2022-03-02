@@ -26,6 +26,7 @@ export declare type PackageRevision = {
     version: string;
     config?: ExpoModuleConfig;
     duplicates?: PackageRevision[];
+    isExpoAdapter?: boolean;
 };
 export declare type SearchResults = {
     [moduleName: string]: PackageRevision;
