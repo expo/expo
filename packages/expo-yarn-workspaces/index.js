@@ -66,8 +66,12 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
       // Use Node-style module resolution instead of Haste everywhere
       providesModuleNodeModules: [],
 
-      // Ignore JS files in the native Android and Xcode projects
-      blockList: [/.*\/android\/React(Android|Common)\/.*/, /.*\/versioned-react-native\/.*/],
+      // Ignore test files and JS files in the native Android and Xcode projects
+      blockList: [
+        /\/__tests__\/.*/,
+        /.*\/android\/React(Android|Common)\/.*/,
+        /.*\/versioned-react-native\/.*/,
+      ],
     },
 
     transformer: {
