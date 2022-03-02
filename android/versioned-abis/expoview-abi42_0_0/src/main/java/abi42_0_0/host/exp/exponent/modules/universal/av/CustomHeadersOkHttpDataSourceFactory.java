@@ -45,6 +45,6 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   }
 
   protected OkHttpDataSource createDataSourceInternal(HttpDataSource.RequestProperties defaultRequestProperties) {
-    return new OkHttpDataSource(mCallFactory, mUserAgent, null, mCacheControl, defaultRequestProperties);
+    return new OkHttpDataSource(mCallFactory, mUserAgent, mCacheControl, defaultRequestProperties);
   }
 }

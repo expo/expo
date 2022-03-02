@@ -21,7 +21,6 @@ buildscript {
     maven { url "https://www.jitpack.io" }
     mavenCentral()
     google()
-    jcenter()
   }
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
@@ -158,7 +157,7 @@ dependencies {
 
   // expo-av
   // See explanation in expo-av/build.gradle
-  api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
+  api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
 
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'

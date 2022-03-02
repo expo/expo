@@ -3,11 +3,10 @@ package expo.modules.av.video;
 import android.content.Context;
 import androidx.annotation.Nullable;
 
-import com.yqritc.scalablevideoview.ScalableType;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import expo.modules.av.video.scalablevideoview.ScalableType;
 import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;

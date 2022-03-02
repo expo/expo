@@ -87,18 +87,11 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
-  // Newer version introduces dependency versions conflict
-  // on 'com.android.support:support-annotations'
-  api 'com.google.android.exoplayer:exoplayer:2.9.2'
-
-  api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
-
-  api 'com.yqritc:android-scalablevideoview:1.0.1'
+  api 'com.google.android.exoplayer:exoplayer:2.13.3'
+  api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
 
   api "com.squareup.okhttp3:okhttp:3.14.9"
   api "com.squareup.okhttp3:okhttp-urlconnection:3.14.9"
-
-  api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "29.0.0")}"
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
