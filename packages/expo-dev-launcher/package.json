@@ -35,7 +35,7 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "@react-navigation/bottom-tabs": "5.11.15",
+    "@react-navigation/bottom-tabs": "^6.0.9",
     "@react-navigation/core": "5.15.1",
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
