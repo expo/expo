@@ -9,6 +9,6 @@ export function registerErrorHandlers() {
   );
 }
 
-export function isRunningInsideDevelopmentBuild(): boolean {
+export function isDevelopmentBuild(): boolean {
   return !!NativeModules.EXDevLauncher;
 }

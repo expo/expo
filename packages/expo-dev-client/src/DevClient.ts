@@ -4,4 +4,4 @@ import * as DevMenu from 'expo-dev-menu';
 export { DevMenu, DevLauncher };
 
 export const registerErrorHandlers = DevLauncher.registerErrorHandlers;
-export const isRunningInsideDevelopmentBuild = DevLauncher.isRunningInsideDevelopmentBuild;
+export const isDevelopmentBuild = DevLauncher.isDevelopmentBuild;
