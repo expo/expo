@@ -5,13 +5,13 @@ import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.util.Pair;
+import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 
-import com.yqritc.scalablevideoview.ScalableType;
-import com.yqritc.scalablevideoview.ScaleManager;
-import com.yqritc.scalablevideoview.Size;
+import expo.modules.av.video.scalablevideoview.ScalableType;
+import expo.modules.av.video.scalablevideoview.ScaleManager;
 
 @SuppressLint("ViewConstructor")
 public class VideoTextureView extends TextureView implements TextureView.SurfaceTextureListener {

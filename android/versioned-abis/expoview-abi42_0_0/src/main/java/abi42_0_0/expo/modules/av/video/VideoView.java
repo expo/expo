@@ -9,8 +9,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.widget.FrameLayout;
 
-import com.yqritc.scalablevideoview.ScalableType;
-
+import abi42_0_0.expo.modules.av.video.scalablevideoview.ScalableType;
 import abi42_0_0.org.unimodules.core.ModuleRegistry;
 import abi42_0_0.org.unimodules.core.Promise;
 import abi42_0_0.org.unimodules.core.arguments.ReadableArguments;

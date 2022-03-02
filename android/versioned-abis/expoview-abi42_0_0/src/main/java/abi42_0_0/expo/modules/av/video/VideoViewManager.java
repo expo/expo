@@ -2,11 +2,10 @@ package abi42_0_0.expo.modules.av.video;
 
 import android.content.Context;
 
-import com.yqritc.scalablevideoview.ScalableType;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import abi42_0_0.expo.modules.av.video.scalablevideoview.ScalableType;
 import abi42_0_0.org.unimodules.core.ModuleRegistry;
 import abi42_0_0.org.unimodules.core.ViewManager;
 import abi42_0_0.org.unimodules.core.arguments.ReadableArguments;
