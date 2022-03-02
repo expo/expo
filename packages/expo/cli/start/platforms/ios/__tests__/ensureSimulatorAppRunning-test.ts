@@ -46,6 +46,6 @@ it('should throw a timeout warning when Simulator.app takes too long to start', 
   ).rejects.toThrow(/Simulator app did not open fast enough/);
 
   // initial call (1) + interval / timeout (2)
-  expect(execAsync).toBeCalledTimes(3);
+  expect(asMock(execAsync).mock.calls.length).toBeGreaterThanOrEqual(3);
   expect(spawnAsync).toBeCalledTimes(1);
 }, 1000);
