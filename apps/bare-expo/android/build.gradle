@@ -13,6 +13,10 @@ buildscript {
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
         kotlinVersion = '1.6.10'
+        // for expo-dev-client
+        // TODO: remove once bare-expo has been upgraded to SDK 45 on main
+        expoPackageVersion = "45.0.0"
+        expoUpdatesVersion = null
     }
     repositories {
         google()

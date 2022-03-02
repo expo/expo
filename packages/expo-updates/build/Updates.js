@@ -99,6 +99,11 @@ export async function reloadAsync() {
  * actually download the update. This method cannot be used in development mode, and the returned
  * promise will be rejected if you try to do so.
  *
+ * Checking for an update uses a device's bandwidth and battery life like any network call.
+ * Additionally, updates served by Expo may be rate limited. A good rule of thumb to check for
+ * updates judiciously is to check when the user launches or foregrounds the app. Avoid polling for
+ * updates in a frequent loop.
+ *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *
  * The promise rejects if the app is in development mode, or if there is an unexpected error or
