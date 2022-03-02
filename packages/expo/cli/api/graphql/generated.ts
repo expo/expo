@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /**
  * This file was generated using GraphQL Codegen
  * Command: yarn generate-graphql-code
