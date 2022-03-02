@@ -12,6 +12,7 @@ import android.util.Base64
 import androidx.core.os.bundleOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.yield
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -21,7 +22,11 @@ import java.lang.StringBuilder
 import java.util.*
 
 // region Structs and interfaces
-data class ImageResult(val base64Image: String, val width: Int, val height: Int) {
+data class ImageResult(
+  val base64Image: String,
+  val width: Int,
+  val height: Int
+) {
   fun toBundle() = bundleOf(
     "data" to base64Image,
     "size" to bundleOf(
@@ -58,6 +63,7 @@ internal suspend fun imageFromContentUri(
   val outputStream = ByteArrayOutputStream().also {
     bitmap.compress(format.compressFormat, quality, it)
   }
+  yield()
 
   // 3. Convert to base64
   val byteArray = outputStream.toByteArray()
@@ -90,8 +96,7 @@ internal suspend fun clipDataFromBase64Image(
   clipboardCacheDir: File,
 ): ClipData {
   // 1. Get bitmap from base64 string
-  val data = maybeStripBase64Prefix(base64Image)
-  val bitmap = bitmapFromBase64String(data)
+  val bitmap = bitmapFromBase64String(base64Image)
 
   // 2. Create file in cache dir, it will be overwritten if already exists
   val file = File(clipboardCacheDir, "copied_image.jpeg").also {
@@ -149,23 +154,10 @@ internal fun bitmapFromBase64String(base64Image: String): Bitmap = try {
 }
 
 /**
- * Strips the `data:image/...;base64.` prefix from the base64 string
- * leaving the pure base64 data string.
- * Does nothing if there's no such prefix.
- */
-private fun maybeStripBase64Prefix(base64String: String): String =
-  if (base64String.startsWith("data:")) {
-    val lastPrefixCharPos = base64String.indexOf(',')
-    base64String.substring(lastPrefixCharPos + 1)
-  } else {
-    base64String
-  }
-
-/**
  * Creates the file and all its parent directories if they don't exist already.
  */
-private suspend fun File.ensureExists() {
+private suspend fun File.ensureExists() = runInterruptible(Dispatchers.IO) {
   parentFile?.mkdirs()
-  runInterruptible(Dispatchers.IO) { createNewFile() }
+  createNewFile()
 }
 // endregion

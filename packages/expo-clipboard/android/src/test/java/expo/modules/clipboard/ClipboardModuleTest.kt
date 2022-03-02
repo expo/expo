@@ -69,7 +69,7 @@ class ClipboardModuleTest {
     assertTrue(result)
     verify {
       eventEmitter.emit(
-        clipboardChangedEventName,
+        CLIPBOARD_CHANGED_EVENT_NAME,
         match {
           it.getString("content") == "severus snape"
         }
@@ -87,7 +87,7 @@ class ClipboardModuleTest {
     module.setStringAsync("ronald weasley")
 
     // assert that emit() was NOT called
-    verify(inverse = true) { eventEmitter.emit(clipboardChangedEventName, any()) }
+    verify(inverse = true) { module.eventEmitter.emit(CLIPBOARD_CHANGED_EVENT_NAME, any()) }
     confirmVerified(eventEmitter)
   }
 
