@@ -9,7 +9,9 @@ const asMock = (fn: any): jest.Mock => fn;
 jest.mock(`../../../../log`);
 
 beforeEach(() => {
-  jest.mock(`../../../../log`).resetAllMocks();
+  asMock(Log.log).mockClear();
+  asMock(spawnAsync).mockClear();
+  asMock(execAsync).mockClear();
 });
 
 it('should do nothing when the Simulator.app is running', async () => {
