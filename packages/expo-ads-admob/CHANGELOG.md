@@ -7,7 +7,8 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- Set `GADIsAdManagerApp` in `Info.plist` to `true`. ([#16438](https://github.com/expo/expo/pull/16438) by [@giautm](https://github.com/giautm))
+
+- Fix a crash on startup by setting `GADIsAdManagerApp` in `Info.plist` to `true`. ([#16438](https://github.com/expo/expo/pull/16438) by [@giautm](https://github.com/giautm))
 
 ### 💡 Others
 
