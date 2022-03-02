@@ -45,7 +45,16 @@ export type SearchResults = {
   [moduleName: string]: PackageRevision;
 };
 
-export type ModuleDescriptorAndroid = Record<string, any>;
+export interface ModuleAndroidProjectInfo {
+  name: string;
+  sourceDir: string;
+}
+
+export interface ModuleDescriptorAndroid {
+  packageName: string;
+  projects: ModuleAndroidProjectInfo[];
+  modules: string[];
+}
 
 export interface ModuleIosPodspecInfo {
   podName: string;
