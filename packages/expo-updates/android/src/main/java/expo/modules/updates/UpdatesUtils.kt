@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import org.apache.commons.io.FileUtils
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
 import java.lang.ClassCastException
@@ -47,6 +48,12 @@ object UpdatesUtils {
       }
     }
     return newMap
+  }
+
+  @Throws(Exception::class)
+  fun getStringListFromJSONString(stringifiedJSON: String): List<String> {
+    val jsonArray = JSONArray(stringifiedJSON)
+    return List(jsonArray.length()) { index -> jsonArray.getString(index) }
   }
 
   @Throws(Exception::class)

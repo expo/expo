@@ -19,6 +19,9 @@ import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.manifests.core.Manifest
+import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
+import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
+import expo.modules.updates.codesigning.CodeSigningAlgorithm
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
@@ -139,6 +142,16 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST] = true
+    if (!Constants.isStandaloneApp()) {
+      // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates from the multipart manifest response part
+      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE] = context.assets.open("expo-root.pem").readBytes().decodeToString()
+      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA] = mapOf(
+        CODE_SIGNING_METADATA_KEY_ID_KEY to "expo-root",
+        CODE_SIGNING_METADATA_ALGORITHM_KEY to CodeSigningAlgorithm.RSA_SHA256.algorithmName,
+      )
+      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN] = true
+    }
+
     val configuration = UpdatesConfiguration(null, configMap)
     val sdkVersionsList = mutableListOf<String>().apply {
       (Constants.SDK_VERSIONS_LIST + listOf(RNObject.UNVERSIONED)).forEach {
