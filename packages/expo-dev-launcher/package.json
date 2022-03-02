@@ -35,9 +35,10 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "@react-navigation/bottom-tabs": "^6.2.0",
-    "@react-navigation/native": "^6.0.8",
-    "@react-navigation/stack": "^6.1.1",
+    "@react-navigation/bottom-tabs": "^6.0.9",
+    "@react-navigation/core": "5.15.1",
+    "@react-navigation/native": "5.9.2",
+    "@react-navigation/stack": "5.14.2",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
     "babel-plugin-module-resolver": "^4.1.0",
