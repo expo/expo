@@ -8688,10 +8688,10 @@ expo-pwa@0.0.110:
     commander "2.20.0"
     update-check "1.5.3"
 
-expo-test-runner@0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/expo-test-runner/-/expo-test-runner-0.0.7.tgz#929d102c009f5d8d766d022cacf3b17cf54282df"
-  integrity sha512-6gUhNNNmephqKOwUE/RG2Y93Toy4YPHc1osH1sSo+ags0v05/j1t9Usb1xytkG3rWjhGYh+DI8UZ/Gkamo6U4Q==
+expo-test-runner@0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/expo-test-runner/-/expo-test-runner-0.0.8.tgz#f4dbed5c72a86236fe10d0f2519d3497f7abba27"
+  integrity sha512-ff5HsoelDmutNmTTApbjrYrKNGpPx8bPQ+oLLu4+RRxBuCjsHf577TjFQa8Suz/grc9f7VK7Nh4doIgukolZHg==
   dependencies:
     "@babel/runtime" "7.9.0"
     "@expo/spawn-async" "^1.5.0"
