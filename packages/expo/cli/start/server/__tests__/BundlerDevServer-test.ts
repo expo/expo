@@ -28,6 +28,7 @@ const originalCwd = process.cwd();
 beforeAll(() => {
   process.chdir('/');
 });
+
 beforeEach(() => {
   vol.reset();
   delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
@@ -37,11 +38,6 @@ afterAll(() => {
   process.chdir(originalCwd);
   delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
 });
-
-jest.mock('better-opn', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
 
 class FakeBundlerDevServer extends BundlerDevServer {
   public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {

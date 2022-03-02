@@ -1,16 +1,15 @@
 import { CommandError } from '../../../../utils/errors';
 import { AppleDeviceManager } from '../AppleDeviceManager';
 import { Device, getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
-jest.mock('@expo/spawn-async');
 
 jest.mock('../simctl', () => ({
   openAppIdAsync: jest.fn(),
   openUrlAsync: jest.fn(),
   getInfoPlistValueAsync: jest.fn(),
 }));
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 

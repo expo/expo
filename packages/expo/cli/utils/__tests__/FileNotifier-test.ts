@@ -7,15 +7,11 @@ jest.mock('../../log');
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
+const originalCwd = process.cwd();
 
 beforeEach(() => {
   vol.reset();
 });
-
-jest.mock('fs');
-jest.mock('resolve-from');
-
-const originalCwd = process.cwd();
 
 beforeAll(() => {
   process.chdir('/');

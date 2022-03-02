@@ -3,7 +3,6 @@ import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import { AndroidPlatformManager } from '../AndroidPlatformManager';
 import { startAdbReverseAsync } from '../adbReverse';
 
-jest.mock('fs');
 jest.mock(`../../../../log`);
 jest.mock('../adb');
 jest.mock('../../ExpoGoInstaller');

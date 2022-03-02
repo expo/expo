@@ -13,15 +13,6 @@ jest.mock('../../../../utils/delay', () => ({
   delayAsync: jest.fn(async () => {}),
 }));
 
-jest.mock('@expo/package-manager', () => ({
-  createForProject: jest.fn(() => ({
-    addDevAsync: jest.fn(),
-  })),
-  NpmPackageManager: jest.fn(() => ({
-    addGlobalAsync: jest.fn(),
-  })),
-}));
-
 beforeEach(() => {
   asMock(confirmAsync).mockClear();
   asMock(delayAsync).mockClear();

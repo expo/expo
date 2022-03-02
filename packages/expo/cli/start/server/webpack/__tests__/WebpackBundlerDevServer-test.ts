@@ -8,19 +8,6 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 jest.mock('../../../../log');
-jest.mock('webpack', () => ({
-  default: jest.fn(),
-  __esModule: true,
-}));
-jest.mock('@expo/webpack-config', () => jest.fn(async () => ({})));
-jest.mock('webpack-dev-server', () => ({
-  default: jest.fn(() => ({
-    listen: jest.fn(),
-    sockWrite: jest.fn(),
-    close: jest.fn(),
-  })),
-  __esModule: true,
-}));
 
 const originalCwd = process.cwd();
 

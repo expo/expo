@@ -9,13 +9,6 @@ jest.mock('../../../../log');
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('@expo/devcert', () => ({
-  certificateFor: jest.fn(async () => ({
-    key: 'key',
-    cert: 'cert',
-  })),
-}));
-
 const originalEnv = process.env;
 
 beforeEach(() => {

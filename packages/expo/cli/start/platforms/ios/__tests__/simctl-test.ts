@@ -7,8 +7,6 @@ import { getContainerPathAsync, getDevicesAsync, getInfoPlistValueAsync } from '
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('@expo/spawn-async');
-jest.mock('child_process');
 jest.mock(`../../../../log`);
 
 beforeEach(() => {

@@ -4,7 +4,6 @@ import { ApplePlatformManager } from '../ApplePlatformManager';
 import { assertSystemRequirementsAsync } from '../assertSystemRequirements';
 import * as SimControl from '../simctl';
 
-jest.mock('fs');
 jest.mock(`../../../../log`);
 jest.mock('../simctl');
 jest.mock(`../assertSystemRequirements`);
@@ -37,9 +36,12 @@ describe('openAsync', () => {
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
     });
-    manager._getAppIdResolver = jest.fn(() => ({
-      getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
-    }));
+    manager._getAppIdResolver = jest.fn(
+      () =>
+        ({
+          getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
+        } as any)
+    );
 
     expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
       url: 'custom://path',
@@ -61,10 +63,17 @@ describe('openAsync', () => {
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
     });
-    manager._getAppIdResolver = jest.fn(() => ({
-      getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
-    }));
-    SimControl.openAppIdAsync = jest.fn(async () => ({ status: 0 }));
+
+    manager._getAppIdResolver = jest.fn(
+      () =>
+        ({
+          getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
+        } as any)
+    );
+
+    Object.defineProperty(SimControl, 'openAppIdAsync', {
+      value: jest.fn(async () => ({ status: 0 })),
+    });
 
     expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
       url: 'dev.bacon.app',

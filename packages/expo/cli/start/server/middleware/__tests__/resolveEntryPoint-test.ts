@@ -2,8 +2,6 @@ import { vol } from 'memfs';
 
 import { resolveEntryPoint } from '../resolveEntryPoint';
 
-jest.mock('fs');
-
 describe(resolveEntryPoint, () => {
   beforeEach(() => {
     const packageJson = JSON.stringify(

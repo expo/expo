@@ -1,17 +1,15 @@
 import spawnAsync from '@expo/spawn-async';
+import { execFileSync } from 'child_process';
+
 import * as Log from '../../../../log';
 import { AbortCommandError } from '../../../../utils/errors';
 import { installExitHooks } from '../../../../utils/exit';
 import { ADBServer } from '../ADBServer';
-import { execFileSync } from 'child_process';
 
-jest.mock('child_process');
 jest.mock('../../../../log');
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
-
-jest.mock('@expo/spawn-async');
 
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),

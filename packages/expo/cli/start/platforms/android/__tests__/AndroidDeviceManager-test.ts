@@ -1,4 +1,5 @@
 import { CommandError } from '../../../../utils/errors';
+import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import {
   Device,
   getPackageInfoAsync,
@@ -6,13 +7,11 @@ import {
   openAppIdAsync,
   openUrlAsync,
 } from '../adb';
-import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import { shellDumpsysPackage } from './fixtures/adb-output';
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('@expo/spawn-async');
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
 }));

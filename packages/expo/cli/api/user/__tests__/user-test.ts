@@ -7,7 +7,6 @@ import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } fro
 import UserSettings from '../UserSettings';
 
 jest.unmock('../UserSettings');
-jest.mock('fs');
 jest.mock('../../graphql/client', () => ({
   graphqlClient: {
     query: () => {

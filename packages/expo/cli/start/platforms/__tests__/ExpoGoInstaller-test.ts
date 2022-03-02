@@ -6,6 +6,7 @@ import { ExpoGoInstaller } from '../ExpoGoInstaller';
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
+jest.mock('../../../log');
 jest.mock('../../../utils/prompts');
 jest.mock('../../../utils/downloadExpoGoAsync');
 jest.mock('../../../api/getVersions', () => ({

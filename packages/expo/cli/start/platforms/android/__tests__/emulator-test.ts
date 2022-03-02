@@ -4,21 +4,17 @@ import { spawn } from 'child_process';
 import * as ADB from '../adb';
 import { listAvdsAsync, startDeviceAsync } from '../emulator';
 
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
+jest.mock('../../../../log');
+
 jest.mock('../adb', () => ({
   getAttachedDevicesAsync: jest.fn(),
   isBootAnimationCompleteAsync: jest.fn(),
 
   listDevicesAsync: jest.fn(() => Promise.resolve([])),
   startDeviceAsync: jest.fn(() => Promise.resolve()),
-}));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
-jest.mock('@expo/spawn-async');
-
-jest.mock('child_process', () => ({
-  spawn: jest.fn(),
 }));
 
 describe(listAvdsAsync, () => {

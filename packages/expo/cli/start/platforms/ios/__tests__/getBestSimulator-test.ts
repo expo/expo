@@ -3,12 +3,6 @@ import { execSync } from 'child_process';
 
 import { getBestUnbootedSimulatorAsync } from '../getBestSimulator';
 
-jest.mock('@expo/spawn-async');
-
-jest.mock('child_process', () => ({
-  execSync: jest.fn(),
-}));
-
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 

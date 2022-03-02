@@ -4,11 +4,6 @@ import { getDirectoryOfProcessById, getPID } from '../getRunningProcess';
 
 const asMock = (fn: any): jest.Mock => fn;
 
-jest.mock('child_process', () => ({
-  execFileSync: jest.fn(),
-  execSync: jest.fn(),
-}));
-
 describe(getPID, () => {
   it(`should return the pid value for a running port`, () => {
     asMock(execFileSync).mockImplementationOnce(() => '63828');

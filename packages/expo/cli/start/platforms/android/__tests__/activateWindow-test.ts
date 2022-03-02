@@ -4,8 +4,6 @@ import { execFileSync } from 'child_process';
 
 import { activateWindowAsync } from '../activateWindow';
 
-jest.mock('child_process');
-jest.mock('@expo/osascript');
 const platform = process.platform;
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>

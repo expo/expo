@@ -1,12 +1,9 @@
 import { vol } from 'memfs';
 
 import { BundlerStartOptions } from '../../BundlerDevServer';
-import { instantiateMetroAsync } from '../instantiateMetro';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
+import { instantiateMetroAsync } from '../instantiateMetro';
 
-jest.mock('@expo/dev-server', () => ({
-  prependMiddleware: jest.fn(async () => ({ use: jest.fn() })),
-}));
 jest.mock('../instantiateMetro', () => ({
   instantiateMetroAsync: jest.fn(async () => ({
     middleware: { use: jest.fn() },

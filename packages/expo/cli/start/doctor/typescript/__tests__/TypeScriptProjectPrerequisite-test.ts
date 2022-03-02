@@ -6,7 +6,6 @@ import { TypeScriptProjectPrerequisite } from '../TypeScriptProjectPrerequisite'
 const asMock = (fn: any): jest.Mock => fn;
 
 jest.mock('../../../../log');
-jest.mock('resolve-from');
 
 describe('assertAsync', () => {
   beforeEach(() => {
