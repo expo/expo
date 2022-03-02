@@ -6,7 +6,7 @@ import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
-import { PrerequisiteCommandError, ProjectPrerequisite } from '../Prerequisite';
+import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 import { updateTSConfigAsync } from './updateTSConfig';
 
@@ -15,10 +15,8 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
   async assertImplementation(): Promise<void> {
     if (env.EXPO_NO_TYPESCRIPT_SETUP) {
-      throw new PrerequisiteCommandError(
-        'TYPESCRIPT_SETUP',
-        `Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.`
-      );
+      Log.warn(`Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.`);
+      return;
     }
     Log.debug('Ensuring TypeScript support is setup');
 

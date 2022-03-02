@@ -1,5 +1,6 @@
 import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 
+import * as Log from '../../../../log';
 import { stripAnsi } from '../../../../utils/ansi';
 import {
   isWebPlatformExcluded,
@@ -8,6 +9,7 @@ import {
 
 const asMock = (fn: any): jest.Mock => fn;
 
+jest.mock('../../../../log');
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),
   getConfig: jest.fn(() => ({
@@ -61,9 +63,11 @@ describe('assertAsync', () => {
   });
   it('skips setup due to environment variable', async () => {
     process.env.EXPO_NO_WEB_SETUP = '1';
+    asMock(Log.warn).mockClear();
     const prerequisite = new WebSupportProjectPrerequisite('/');
-    await expect(prerequisite.assertAsync()).rejects.toThrowError(
-      /Skipping web setup: EXPO_NO_WEB_SETUP is enabled\./
+    await prerequisite.assertAsync();
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringMatching(/Skipping web setup: EXPO_NO_WEB_SETUP is enabled\./)
     );
   });
 });
