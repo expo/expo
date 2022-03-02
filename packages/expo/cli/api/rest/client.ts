@@ -10,6 +10,7 @@ import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import { FetchLike } from './client.types';
 import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
+import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
@@ -86,7 +87,9 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
   };
 }
 
-const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchInstance, getExpoApiBaseUrl() + '/v2/');
+const fetchWithOffline = wrapFetchWithOffline(fetchInstance);
+
+const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 
 const fetchWithCredentials = wrapFetchWithCredentials(fetchWithBaseUrl);
 
