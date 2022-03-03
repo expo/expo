@@ -53,7 +53,6 @@ async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<stri
     Log.warn(
       '\nDevelopment build: Unable to get the default URI scheme for the project. Please make sure the expo-dev-client package is installed.'
     );
-    // throw new CommandError(error);
     return null;
   }
 }
