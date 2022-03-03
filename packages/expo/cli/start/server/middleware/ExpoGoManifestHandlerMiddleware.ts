@@ -1,7 +1,5 @@
 import { Updates } from '@expo/config-plugins';
 import assert from 'assert';
-import express from 'express';
-import http from 'http';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getProjectAsync } from '../../../api/getProject';
@@ -18,10 +16,10 @@ import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
 } from './resolvePlatform';
-import { ServerHeaders } from './server.types';
+import { ServerHeaders, ServerRequest } from './server.types';
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
-  public getParsedHeaders(req: express.Request | http.IncomingMessage): ParsedHeaders {
+  public getParsedHeaders(req: ServerRequest): ParsedHeaders {
     const platform = parsePlatformHeader(req);
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
