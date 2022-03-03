@@ -7,17 +7,6 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 jest.mock('../../log');
-jest.mock('@expo/spawn-async', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-jest.mock('env-editor', () => ({
-  __esModule: true,
-  default: {
-    defaultEditor: jest.fn(),
-    getEditor: jest.fn(),
-  },
-}));
 
 describe(guessEditor, () => {
   it(`defaults to vscode if the default editor cannot be guessed`, () => {
