@@ -13,7 +13,7 @@ import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.rncompatibility.DevLauncherReactNativeHostHandler
 
 class DevLauncherPackage : Package, ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> = DevLauncherPackageDelegate.createNativeModules(reactContext);
+  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> = DevLauncherPackageDelegate.createNativeModules(reactContext)
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> = emptyList()
 
@@ -23,7 +23,5 @@ class DevLauncherPackage : Package, ReactPackage {
 
   override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = DevLauncherPackageDelegate.createReactActivityHandlers(activityContext);
  
-  override fun createReactNativeHostHandlers(context: Context?): List<ReactNativeHostHandler> {
-    return listOf(DevLauncherReactNativeHostHandler())
-  }
+  override fun createReactNativeHostHandlers(context: Context?): List<ReactNativeHostHandler> = DevLauncherPackageDelegate.createReactNativeHostHandlers()
 }

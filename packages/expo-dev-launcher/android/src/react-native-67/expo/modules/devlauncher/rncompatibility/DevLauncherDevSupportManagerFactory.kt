@@ -29,7 +29,8 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
         applicationContext,
         reactInstanceManagerHelper,
         packagerPathForJSBundleName,
-        enableOnCreate, redBoxHandler,
+        enableOnCreate, 
+        redBoxHandler,
         devBundleDownloadListener,
         minNumShakes,
         customPackagerCommandHandlers?.toMutableMap()
