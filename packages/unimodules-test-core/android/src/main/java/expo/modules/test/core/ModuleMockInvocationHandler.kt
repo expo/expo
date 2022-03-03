@@ -96,7 +96,6 @@ class ModuleMockInvocationHandler<T : Any>(
     }
   }
 
-
   private fun promiseMappingCall(methodName: String, args: List<Any>, promise: Promise) {
     holder.call(methodName, convertArgs(args), promise)
   }
