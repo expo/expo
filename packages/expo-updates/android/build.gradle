@@ -95,7 +95,9 @@ android {
     unitTests.includeAndroidResources = true
   }
   sourceSets {
+    main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
+    androidTest.assets.srcDirs += files("$projectDir/src/androidTest/certificates".toString())
   }
 }
 

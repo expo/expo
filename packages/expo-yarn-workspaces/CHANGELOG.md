@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated metro config `blacklistRE` and drop `react-native@<0.64.0` support. ([#16479](https://github.com/expo/expo/pull/16479) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 - Support looking up .cjs (still the bundler's job to be able to handle these files; EYW just allows them to be found) ([#15836](https://github.com/expo/expo/pull/15836) by [@ide](https://github.com/ide))
