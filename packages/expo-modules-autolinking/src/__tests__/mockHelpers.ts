@@ -4,7 +4,7 @@ export function registerGlobMock(globFunction: Function, files: string[], cwd: s
   (globFunction as jest.MockedFunction<any>).mockImplementation((patterns, inputOptions) => {
     const inputCwd: string = inputOptions?.cwd ?? process.cwd();
 
-    // Easy implementation of cwd matching.
+    // Simple implementation of cwd matching.
     // E.g. inputCwd='/path/to/expo' and cwd='/path/to',
     // -> `prefix`: 'expo/'
     // -> glob pattern would like something like `expo/*/*`

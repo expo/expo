@@ -12,7 +12,7 @@ jest.mock('fast-glob');
 jest.mock('find-up');
 jest.mock('fs-extra');
 
-// mock findUp.sync once to fix `mergeLinkingOptions` current package.json resolution when requiring `findModules`.
+// mock findUp.sync to fix `mergeLinkingOptions` package.json resolution when requiring `findModules`.
 (findUp.sync as jest.MockedFunction<any>).mockReturnValueOnce(path.join(expoRoot, 'package.json'));
 const {
   findModulesAsync,
