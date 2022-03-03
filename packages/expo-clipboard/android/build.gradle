@@ -89,5 +89,4 @@ dependencies {
   if (project.findProject(':unimodules-test-core')) {
     testImplementation project(':unimodules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.3.1"
 }
