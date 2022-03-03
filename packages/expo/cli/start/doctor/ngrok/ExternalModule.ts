@@ -166,7 +166,7 @@ export class ExternalModule<TModule> {
 
   /** Resolve the module and verify the version. Exposed for testing. */
   _resolveModule(isLocal: boolean): TModule | null {
-    const resolver = isLocal ? this._resolveLocal : this._resolveGlobal;
+    const resolver = isLocal ? this._resolveLocal.bind(this) : this._resolveGlobal.bind(this);
     try {
       const packageJsonPath = resolver(`${this.pkg.name}/package.json`);
       const packageJson = this._require(packageJsonPath);
@@ -190,8 +190,9 @@ export class ExternalModule<TModule> {
     } catch (e) {
       if (e instanceof CommandError) {
         throw e;
+      } else if (e.code !== 'MODULE_NOT_FOUND') {
+        Log.debug('[External Module] Failed to resolve module', e.message);
       }
-      Log.debug('[External Module] Failed to resolve module', e);
       return null;
     }
   }

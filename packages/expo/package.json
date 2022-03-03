@@ -34,6 +34,7 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "lint:cli": "yarn eslint cli",
     "test": "expo-module test",
     "test:cli": "jest --config e2e/jest-cli.config.js",
     "test:cli:e2e": "jest --config e2e/jest-e2e.config.js",

@@ -6,7 +6,9 @@ import { Blockquote } from './Blockquote';
 
 import { DETAILS, SUMMARY } from '~/ui/components/Collapsible';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { A, H1, H2, H4, H5, CODE, P, BOLD, UL, OL, LI } from '~/ui/components/Text';
+import { A, CODE, P, BOLD, UL, OL, LI, createTextComponent } from '~/ui/components/Text';
+import { TextElement } from '~/ui/components/Text/types';
+import { withAnchor } from '~/ui/components/Text/withAnchor';
 
 type Config = ConfigStyles & {
   Component: ComponentType<ComponentProps> | string;
@@ -25,6 +27,25 @@ type ComponentProps = PropsWithChildren<{
 const headerMarginBottom = '0.5ch';
 const paragraphMarginBottom = '1ch';
 const headerPaddingTop = '1.5ch';
+
+export const H1 = withAnchor(
+  createTextComponent(TextElement.H1, css(typography.headers.default.h1))
+);
+export const H2 = withAnchor(
+  createTextComponent(TextElement.H2, css(typography.headers.default.h2))
+);
+export const H3 = withAnchor(
+  createTextComponent(TextElement.H4, css(typography.headers.default.h3))
+);
+export const H4 = withAnchor(
+  createTextComponent(TextElement.H4, css(typography.headers.default.h4))
+);
+export const H5 = withAnchor(
+  createTextComponent(TextElement.H5, css(typography.headers.default.h5))
+);
+export const H6 = withAnchor(
+  createTextComponent(TextElement.H6, css(typography.headers.default.h6))
+);
 
 const markdownStyles: Record<string, Config | null> = {
   // When using inline markdown, we need to remove the document layout wrapper.

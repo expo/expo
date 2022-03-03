@@ -625,7 +625,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   
   EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
   if (codeSigningConfiguration) {
-    [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expects-signature"];
+    [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expect-signature"];
   }
 }
 
