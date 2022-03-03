@@ -10,11 +10,14 @@ import { wrapFetchWithProgress } from '../wrapFetchWithProgress';
 const fs = jest.requireActual('fs') as typeof import('fs');
 const pipeline = promisify(Stream.pipeline);
 
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
 jest.mock(`../../../log`);
 
 describe(wrapFetchWithProgress, () => {
   beforeEach(() => {
-    jest.mock('../../../log').resetAllMocks();
+    asMock(Log.warn).mockClear();
   });
   it('should call the progress callback', async () => {
     const url = 'https://example.com';

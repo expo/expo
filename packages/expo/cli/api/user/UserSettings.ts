@@ -56,7 +56,6 @@ function getSession(): SessionData | null {
 }
 
 function getAccessToken(): string | null {
-  // TODO: Move to env
   return process.env.EXPO_TOKEN ?? null;
 }
 
