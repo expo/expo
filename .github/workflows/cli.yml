@@ -49,6 +49,9 @@ jobs:
       - name: Build CLI
         run: yarn prepare:cli
         working-directory: packages/expo
+      - name: Lint CLI
+        run: yarn lint:cli --max-warnings 0
+        working-directory: packages/expo
       - name: Unit Test CLI
         run: yarn test:cli
         working-directory: packages/expo
