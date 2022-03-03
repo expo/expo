@@ -40,7 +40,7 @@ export async function updateVersionedReactNativeAsync(
     },
     // Disable codegen plugin
     {
-      find: /(\bid\("com\.facebook\.react\.codegen"\)$)/m,
+      find: /(\bid\("com\.facebook\.react"\)$)/m,
       replaceWith: '// $1',
     },
     {
@@ -82,7 +82,7 @@ async function runReactNativeCodegenAndroidAsync(
     'android',
     schemaOutputPath,
     codegenOutputRoot,
-    'ReactAndroidSpec',
+    'rncore',
     'com.facebook.fbreact.specs',
   ]);
 }

@@ -1,4 +1,4 @@
-import { boolish } from 'getenv';
+import { boolish, string } from 'getenv';
 
 /** Skip warning users about a dirty git status */
 export const EXPO_NO_GIT_STATUS = boolish('EXPO_NO_GIT_STATUS', false);
@@ -24,12 +24,29 @@ export const CI = boolish('CI', false);
 /** Disable telemetry (analytics) */
 export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
 
+/** Local directory to the universe repo for testing Expo schemas locally */
+export const EXPO_UNIVERSE_DIR = string('EXPO_UNIVERSE_DIR', '');
+
 /** Expo automated authentication token for use in CI environments */
 export const EXPO_TOKEN = process.env.EXPO_TOKEN ?? null;
-
-/** Disable all API caches. Does not disable bundler caches. */
-export const EXPO_NO_CACHE = () => boolish('EXPO_NO_CACHE', false);
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 
 // TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
+
+class Env {
+  /** Disable auto web setup */
+  get EXPO_NO_WEB_SETUP() {
+    return boolish('EXPO_NO_WEB_SETUP', false);
+  }
+  /** Disable auto TypeScript setup */
+  get EXPO_NO_TYPESCRIPT_SETUP() {
+    return boolish('EXPO_NO_TYPESCRIPT_SETUP', false);
+  }
+  /** Disable all API caches. Does not disable bundler caches. */
+  get EXPO_NO_CACHE() {
+    return boolish('EXPO_NO_CACHE', false);
+  }
+}
+
+export const env = new Env();

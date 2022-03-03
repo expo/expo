@@ -101,15 +101,15 @@ export function HomeScreen({
         <AppHeader
           title={appName}
           appImageUri={appIcon}
-          subtitle="Development App"
+          subtitle="Development Build"
           onUserProfilePress={onUserProfilePress}
         />
       </View>
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         {crashReport && (
-          <View px="medium" py="small">
-            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default">
-              <Row align="center" padding="medium">
+          <View px="medium" py="small" mt="small">
+            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default" rounded="large">
+              <Row align="center" padding="medium" bg="default">
                 <Button.Text color="default">
                   The last time you tried to open an app the development build crashed. Tap to get
                   more information.
@@ -133,7 +133,7 @@ export function HomeScreen({
                 rounded="full"
                 minScale={0.85}
                 onPress={onDevServerQuestionPress}>
-                <View rounded="full" padding="small">
+                <View rounded="full" padding="tiny">
                   <InfoIcon />
                 </View>
               </Button.ScaleOnPressContainer>
@@ -151,7 +151,9 @@ export function HomeScreen({
                     <Spacer.Vertical size="small" />
 
                     <View bg="secondary" border="default" rounded="medium" padding="medium">
-                      <Text type="mono">expo start --dev-client</Text>
+                      <Text type="mono" size="small">
+                        expo start --dev-client
+                      </Text>
                     </View>
 
                     <Spacer.Vertical size="small" />
@@ -196,12 +198,16 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button.ScaleOnPressContainer onPress={onRefetchPress} disabled={isFetching} bg="default">
-      <Row align="center" padding="medium">
+    <Button.ScaleOnPressContainer
+      onPress={onRefetchPress}
+      disabled={isFetching}
+      bg="default"
+      rounded="none">
+      <Row align="center" padding="medium" bg="default">
         <PulseIndicator isActive={isFetching} color={backgroundColor} />
         <Spacer.Horizontal size="small" />
         <Button.Text color="default">
-          {isFetching ? 'Searching for development servers...' : 'Refetch development servers'}
+          {isFetching ? 'Searching for development servers...' : 'Fetch development servers'}
         </Button.Text>
         <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
@@ -230,7 +236,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
               roundedTop="large"
               roundedBottom="none"
               bg="default">
-              <Row align="center" padding="medium">
+              <Row align="center" padding="medium" bg="default">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
                 <View flex="1">
@@ -276,7 +282,7 @@ function RecentlyOpenedApps({ onAppPress }) {
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
                 bg="default">
-                <Row align="center" padding="medium">
+                <Row align="center" padding="medium" bg="default">
                   <StatusIndicator size="small" status="success" />
                   <Spacer.Horizontal size="small" />
                   <View flex="1">

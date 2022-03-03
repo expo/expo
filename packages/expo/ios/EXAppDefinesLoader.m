@@ -3,6 +3,7 @@
 #import <Expo/EXAppDefinesLoader.h>
 
 #import <ExpoModulesCore/ExpoModulesCore.h>
+#import <ExpoModulesCore/EXAppDefines.h>
 #import <React/RCTDefines.h>
 
 @implementation EXAppDefinesLoader

@@ -1,7 +1,7 @@
 import { lightTheme, darkTheme, borderRadius, shadows, palette } from '@expo/styleguide-native';
 import * as React from 'react';
 import { Text as RNText, Animated, useColorScheme, Pressable as RNPressable } from 'react-native';
-import { create } from 'react-native-primitives';
+import { create } from './create-primitive';
 import { rounded, margin, padding, text } from './theme';
 const AnimatedPressable = Animated.createAnimatedComponent(RNPressable);
 const Text = create(RNText, {

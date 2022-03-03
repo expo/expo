@@ -6,7 +6,7 @@ import { graphqlClient } from '../graphql/client';
 import { CurrentUserQuery } from '../graphql/generated';
 import { UserQuery } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
-import { getAccessToken, getSessionSecret, setSessionAsync } from './sessionStorage';
+import UserSettings from './UserSettings';
 
 export type Actor = NonNullable<CurrentUserQuery['meActor']>;
 
@@ -31,7 +31,7 @@ export function getActorDisplayName(user?: Actor): string {
 }
 
 export async function getUserAsync(): Promise<Actor | undefined> {
-  if (!currentUser && (getAccessToken() || getSessionSecret())) {
+  if (!currentUser && (UserSettings.getAccessToken() || UserSettings.getSession()?.sessionSecret)) {
     const user = await UserQuery.currentUserAsync();
     currentUser = user ?? undefined;
     if (user) {
@@ -81,7 +81,7 @@ export async function loginAsync(json: {
   const {
     data: { viewer },
   } = result;
-  await setSessionAsync({
+  await UserSettings.setSessionAsync({
     sessionSecret,
     userId: viewer.id,
     username: viewer.username,
@@ -91,6 +91,6 @@ export async function loginAsync(json: {
 
 export async function logoutAsync(): Promise<void> {
   currentUser = undefined;
-  await setSessionAsync(undefined);
+  await UserSettings.setSessionAsync(undefined);
   Log.log('Logged out');
 }

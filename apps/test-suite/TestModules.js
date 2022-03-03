@@ -81,6 +81,13 @@ export function getTestModules() {
     modules.push(require('./tests/Hermes'));
   }
 
+  /**
+   * TODO: provide support for other platforms too
+   */
+  if (Platform.OS === 'ios') {
+    modules.push(require('./tests/Clipboard'));
+  }
+
   if (global.DETOX) {
     modules.push(
       require('./tests/Contacts'),

@@ -8,16 +8,14 @@ buildscript {
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '30.0.2'
-    supportLibVersion = '29.0.0'
     kotlinVersion = '1.6.10'
-    gradlePluginVersion = '4.1.2'
+    gradlePluginVersion = '4.2.2'
     gradleDownloadTaskVersion = '3.4.3'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }
   repositories {
     google()
     mavenCentral()
-    jcenter()
   }
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
@@ -54,7 +52,13 @@ allprojects {
       url "$rootDir/versioned-abis/maven"
     }
     google()
-    mavenCentral()
+    mavenCentral {
+      // We don't want to fetch react-native from Maven Central as there are
+      // older versions over there.
+      content {
+        excludeGroup "com.facebook.react"
+      }
+    }
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
@@ -75,6 +79,13 @@ allprojects {
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()
+  }
+
+  // used to override ndk path/version from env variables on CI
+  ext["ANDROID_NDK_PATH"] = null
+  if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+    setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
+    ext["ANDROID_NDK_PATH"] =  System.getenv("ANDROID_NDK")
   }
 
   configurations.all {

@@ -14,11 +14,6 @@ const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 /**
- * Custom `require` that resolves from the current working dir instead of this script path.
- * **Requires Node v12.2.0**
- */
-const projectRequire = (0, module_1.createRequire)(mergeLinkingOptions_1.projectPackageJsonPath);
-/**
  * Searches for modules to link based on given config.
  */
 async function findModulesAsync(providedOptions) {
@@ -183,6 +178,11 @@ function filterToProjectDependencies(results, options = {}) {
                 }
                 else {
                     try {
+                        /**
+                         * Custom `require` that resolves from the current working dir instead of this script path.
+                         * **Requires Node v12.2.0**
+                         */
+                        const projectRequire = (0, module_1.createRequire)(packageJsonPath);
                         dependencyPackageJsonPath = projectRequire.resolve(`${dependencyName}/package.json`);
                     }
                     catch (error) {

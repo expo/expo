@@ -9,9 +9,24 @@ version = '0.11.2'
 apply from: "../scripts/create-manifest-android.gradle"
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.6.10")
+    }
   }
 
   repositories {
@@ -19,7 +34,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
@@ -80,7 +95,9 @@ android {
     unitTests.includeAndroidResources = true
   }
   sourceSets {
+    main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
+    androidTest.assets.srcDirs += files("$projectDir/src/androidTest/certificates".toString())
   }
 }
 
@@ -102,9 +119,9 @@ dependencies {
   // https://issuetracker.google.com/issues/174695268
   kapt "org.xerial:sqlite-jdbc:3.36.0"
 
-  implementation("com.squareup.okhttp3:okhttp:3.12.1")
-  implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
-  implementation("com.squareup.okio:okio:1.15.0")
+  implementation("com.squareup.okhttp3:okhttp:4.9.2")
+  implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
+  implementation("com.squareup.okio:okio:2.9.0")
   implementation("commons-codec:commons-codec:1.10")
   implementation("commons-io:commons-io:2.6")
   implementation("commons-fileupload:commons-fileupload:1.4")
@@ -120,29 +137,9 @@ dependencies {
   androidTestImplementation 'io.mockk:mockk-android:1.12.0'
   androidTestImplementation "androidx.room:room-testing:$room_version"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
 }
 repositories {
   mavenCentral()
 }
-
-// [BEGIN] Workaround okhttp/okio compatibility issue
-// Remove when we drop support for SDK 44
-def okhttpPinnedArtifacts = []
-configurations.implementation.getDependencies().removeIf { it ->
-  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
-    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
-    return true
-  }
-  return false
-}
-okhttpPinnedArtifacts.each { artifact ->
-  dependencies.add('compileOnly', artifact)
-  dependencies.add('testImplementation', artifact)
-  dependencies.add('androidTestImplementation', artifact)
-  configurations.all {
-    resolutionStrategy.force(artifact)
-  }
-}
-// [END] Workaround okhttp/okio compatibility issue

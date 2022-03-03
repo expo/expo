@@ -59,7 +59,7 @@ const config: VendoringTargetConfig = {
       ios: {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
           let content = await fs.readFile(podspecPath, 'utf-8');
-          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.64.3'");
+          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.67.2'");
           content = content.replace(/(puts "\[RNReanimated\].*$)/gm, '# $1');
           await fs.writeFile(podspecPath, content);
           return podspecPath;
@@ -96,10 +96,6 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-screens.git',
       semverPrefix: '~',
       ios: {},
-    },
-    'react-native-appearance': {
-      source: 'https://github.com/expo/react-native-appearance.git',
-      semverPrefix: '~',
     },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
