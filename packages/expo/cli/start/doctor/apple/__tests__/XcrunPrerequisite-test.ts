@@ -9,10 +9,6 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
-jest.mock('@expo/spawn-async');
-jest.mock('child_process', () => ({
-  execSync: jest.fn(),
-}));
 
 it(`detects that xcrun is installed and is valid`, async () => {
   // Mock xcrun installed for CI
