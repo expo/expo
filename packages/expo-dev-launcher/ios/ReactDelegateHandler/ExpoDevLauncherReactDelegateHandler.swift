@@ -5,13 +5,20 @@ import EXDevMenu
 import EXUpdatesInterface
 
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
+  public static var enableAutoSetup: Bool?
+
   private weak var reactDelegate: ExpoReactDelegate?
   private var bridgeDelegate: RCTBridgeDelegate?
   private var launchOptions: [AnyHashable : Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable : Any]?
-  public static var shouldEnableAutoSetup: Bool = {
+  static var shouldEnableAutoSetup: Bool = {
+    // if someone else has set this explicitly, use that value
+    if enableAutoSetup != nil {
+      return enableAutoSetup!
+    }
+
     if !EXAppDefines.APP_DEBUG {
       return false
     }
@@ -28,7 +35,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   required init() {
     super.init()
     // DevLauncherController will handle dev menu configuration, so dev menu auto-setup is not needed
-    ExpoDevMenuReactDelegateHandler.shouldEnableAutoSetup = false
+    ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
   }
 
   public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
