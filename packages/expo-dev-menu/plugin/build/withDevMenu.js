@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const semver_1 = __importDefault(require("semver"));
 const constants_1 = require("./constants");
 const withDevMenuAppDelegate_1 = require("./withDevMenuAppDelegate");
 const pkg = require('expo-dev-menu/package.json');
@@ -88,9 +89,13 @@ const withDevMenuPodfile = (config) => {
     ]);
 };
 const withDevMenu = (config) => {
-    config = withDevMenuActivity(config);
-    config = withDevMenuPodfile(config);
-    config = (0, withDevMenuAppDelegate_1.withDevMenuAppDelegate)(config);
+    // projects using SDKs before 45 need the old regex-based integration
+    // TODO: remove this config plugin once we drop support for SDK 44
+    if (config.sdkVersion && semver_1.default.lt(config.sdkVersion, '45.0.0')) {
+        config = withDevMenuActivity(config);
+        config = withDevMenuPodfile(config);
+        config = (0, withDevMenuAppDelegate_1.withDevMenuAppDelegate)(config);
+    }
     return config;
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevMenu, pkg.name, pkg.version);
