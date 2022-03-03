@@ -3,8 +3,7 @@ import { vol } from 'memfs';
 
 import { updateTSConfigAsync } from '../updateTSConfig';
 
-jest.mock('fs');
-jest.mock('resolve-from');
+jest.mock('../../../../log');
 
 describe(updateTSConfigAsync, () => {
   afterEach(() => {

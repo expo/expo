@@ -4,6 +4,8 @@ import nock from 'nock';
 import { getExpoApiBaseUrl } from '../../../../api/endpoint';
 import { getBundledNativeModulesAsync } from '../bundledNativeModules';
 
+jest.mock('../../../../log');
+
 describe(getBundledNativeModulesAsync, () => {
   const projectRoot = '/test-project';
 

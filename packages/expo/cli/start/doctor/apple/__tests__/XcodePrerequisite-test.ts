@@ -9,9 +9,6 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
-jest.mock('child_process', () => ({
-  execSync: jest.fn(),
-}));
 
 function mockXcodeInstalled() {
   return asMock(execSync).mockReturnValue(`Xcode 13.1

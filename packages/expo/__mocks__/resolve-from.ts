@@ -23,6 +23,10 @@ const silent = (fromDirectory, request) => {
   if (fs.existsSync(outputPath)) {
     return outputPath;
   }
+  outputPath = path.join(fromDirectory, request);
+  if (fs.existsSync(outputPath)) {
+    return outputPath;
+  }
 };
 
 module.exports = jest.fn((fromDirectory, request) => {

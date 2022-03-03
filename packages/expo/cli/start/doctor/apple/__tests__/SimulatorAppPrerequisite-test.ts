@@ -7,8 +7,6 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 jest.mock(`../../../../log`);
-jest.mock(`@expo/osascript`);
-jest.mock('@expo/spawn-async');
 
 it(`detects that Simulator.app is installed`, async () => {
   // Mock Simulator.app installed for CI

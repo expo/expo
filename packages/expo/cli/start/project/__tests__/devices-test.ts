@@ -1,7 +1,7 @@
 import { fs } from 'memfs';
 import path from 'path';
 
-import * as ProjectDevices from '../ProjectDevices';
+import * as ProjectDevices from '../devices';
 
 describe('devices info', () => {
   let projectRoot: string;
