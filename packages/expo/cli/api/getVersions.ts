@@ -24,7 +24,7 @@ export type SDKVersion = {
 
 export type SDKVersions = Record<string, SDKVersion>;
 
-type Versions = {
+export type Versions = {
   androidUrl: string;
   androidVersion: string;
   iosUrl: string;
