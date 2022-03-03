@@ -21,7 +21,7 @@ describe(guessEditor, () => {
 });
 
 describe(openInEditorAsync, () => {
-  it(`failed to open in given editor that doesn't exist`, async () => {
+  it(`fails to open in a given editor that does not exist`, async () => {
     asMock(editors.defaultEditor)
       .mockClear()
       .mockReturnValueOnce({
