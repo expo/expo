@@ -344,7 +344,7 @@ export class Changelog {
   }
 
   /**
-   * Insert an `VERSION_EMPTY_PARAGRAPH_TEXT` version section before first published version.
+   * Inserts an `VERSION_EMPTY_PARAGRAPH_TEXT` version section before first published version.
    */
   async insertEmptyPublishedVersionAsync(
     version: string,
@@ -376,7 +376,7 @@ export class Changelog {
   }
 
   /**
-   * Remove an entry under specific version and change type.
+   * Removes an entry under specific version and change type.
    */
   async removeEntryAsync(
     version: string,
@@ -426,7 +426,7 @@ export class Changelog {
   }
 
   /**
-   * Move an entry from a version section to another. If no `newVersion` section exists, will create one.
+   * Moves an entry from a version section to another. If no `newVersion` section exists, will create one.
    */
   async moveEntryBetweenVersionsAsync(
     entry: ChangelogEntry | string,

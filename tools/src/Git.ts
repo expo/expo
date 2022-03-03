@@ -409,7 +409,7 @@ export class GitDirectory {
   }
 
   /**
-   * Read a file content from a given ref.
+   * Reads a file content from a given ref.
    */
   async readFileAsync(ref: string, path): Promise<string> {
     const { stdout } = await this.runAsync(['show', `${ref}:${relative(EXPO_DIR, path)}`]);

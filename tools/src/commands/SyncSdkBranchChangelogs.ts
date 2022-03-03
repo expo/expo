@@ -27,7 +27,7 @@ export default (program: Command) => {
       await Git.fetchAsync();
       console.log('');
 
-      const packages = await getPackagesAsync();
+      const packages = await getPackagesWithChangelogAsync();
 
       for (const pkg of packages) {
         let changed = false;
@@ -45,15 +45,15 @@ export default (program: Command) => {
 };
 
 /**
- * Get packages where have changelog
+ * Gets packages with a changelog file.
  */
-async function getPackagesAsync(): Promise<Package[]> {
+async function getPackagesWithChangelogAsync(): Promise<Package[]> {
   const packages = await getListOfPackagesAsync();
   return filterAsync(packages, (pkg) => pkg.hasChangelogAsync());
 }
 
 /**
- * Sync changelog of a package from `sourceBranch` to current branch
+ * Syncs changelog of a package from `sourceBranch` to current branch
  */
 async function syncChangelogAsync(pkg: Package, sourceBranch: string) {
   const sourceChangelog = new MemChangelog(
