@@ -15,6 +15,7 @@
 
 - Fix compatibility with react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
 - Fix Android crash when using Hermes on react-native 0.67. ([#16099](https://github.com/expo/expo/pull/16099) by [@kudo](https://github.com/kudo))
+- Fix backwards compatibility with AppDelegate in existing projects. ([#16497](https://github.com/expo/expo/pull/16497) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
