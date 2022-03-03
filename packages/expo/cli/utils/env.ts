@@ -30,9 +30,6 @@ export const EXPO_NO_TYPESCRIPT_SETUP = () => boolish('EXPO_NO_TYPESCRIPT_SETUP'
 /** Disable telemetry (analytics) */
 export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
 
-/** Is running in non-interactive CI mode */
-export const LOCAL_XDL_SCHEMA = boolish('LOCAL_XDL_SCHEMA', false);
-
 /** local directory to the universe repo for testing locally */
 export const EXPO_UNIVERSE_DIR = string('EXPO_UNIVERSE_DIR', '');
 
