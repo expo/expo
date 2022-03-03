@@ -39,14 +39,14 @@ class ExpoModuleConfig {
         return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.reactDelegateHandlers) !== null && _b !== void 0 ? _b : [];
     }
     /**
-     * Returns a podspec path defined by the module author.
+     * Returns podspec paths defined by the module author.
      */
     iosPodspecPath() {
         var _a;
         return (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath;
     }
     /**
-     * Returns the product module name, if defined by the module author.
+     * Returns the product module names, if defined by the module author.
      */
     iosSwiftModuleName() {
         var _a;

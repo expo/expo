@@ -22,11 +22,11 @@ export declare class ExpoModuleConfig {
      */
     iosReactDelegateHandlers(): string[];
     /**
-     * Returns a podspec path defined by the module author.
+     * Returns podspec paths defined by the module author.
      */
     iosPodspecPath(): string | string[] | undefined;
     /**
-     * Returns the product module name, if defined by the module author.
+     * Returns the product module names, if defined by the module author.
      */
     iosSwiftModuleName(): string | string[] | undefined;
     /**
