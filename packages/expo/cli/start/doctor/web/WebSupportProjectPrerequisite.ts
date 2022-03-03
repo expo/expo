@@ -17,7 +17,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
   async assertImplementation(): Promise<void> {
     if (env.EXPO_NO_WEB_SETUP) {
-      Log.warn(`Skipping web setup: EXPO_NO_WEB_SETUP is enabled.`);
+      Log.warn('Skipping web setup: EXPO_NO_WEB_SETUP is enabled.');
       return;
     }
     Log.debug('Ensuring web support is setup');

@@ -107,9 +107,9 @@ export function HomeScreen({
       </View>
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         {crashReport && (
-          <View px="medium" py="small">
-            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default">
-              <Row align="center" padding="medium">
+          <View px="medium" py="small" mt="small">
+            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default" rounded="large">
+              <Row align="center" padding="medium" bg="default">
                 <Button.Text color="default">
                   The last time you tried to open an app the development build crashed. Tap to get
                   more information.

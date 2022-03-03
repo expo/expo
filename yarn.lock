@@ -9189,21 +9189,10 @@ expo-pwa@0.0.110:
     commander "2.20.0"
     update-check "1.5.3"
 
-expo-pwa@0.0.111:
-  version "0.0.111"
-  resolved "https://registry.yarnpkg.com/expo-pwa/-/expo-pwa-0.0.111.tgz#9c2b7e98f033f539304c64a0b06687806337f837"
-  integrity sha512-rFf+XjTz27RliCr7P0Ec28zLgAeNfIi9Q+tsa3UfA5S5N+9QAmyQ7NFH4ahIcxkbFjbEr5NsCDMGuj8RtfsLQw==
-  dependencies:
-    "@expo/config" "6.0.16"
-    "@expo/image-utils" "0.3.18"
-    chalk "^4.0.0"
-    commander "2.20.0"
-    update-check "1.5.3"
-
-expo-test-runner@0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/expo-test-runner/-/expo-test-runner-0.0.7.tgz#929d102c009f5d8d766d022cacf3b17cf54282df"
-  integrity sha512-6gUhNNNmephqKOwUE/RG2Y93Toy4YPHc1osH1sSo+ags0v05/j1t9Usb1xytkG3rWjhGYh+DI8UZ/Gkamo6U4Q==
+expo-test-runner@0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/expo-test-runner/-/expo-test-runner-0.0.8.tgz#f4dbed5c72a86236fe10d0f2519d3497f7abba27"
+  integrity sha512-ff5HsoelDmutNmTTApbjrYrKNGpPx8bPQ+oLLu4+RRxBuCjsHf577TjFQa8Suz/grc9f7VK7Nh4doIgukolZHg==
   dependencies:
     "@babel/runtime" "7.9.0"
     "@expo/spawn-async" "^1.5.0"
@@ -19933,10 +19922,10 @@ url-parse-lax@^3.0.0:
   dependencies:
     prepend-http "^2.0.0"
 
-url-parse@^1.4.3, url-parse@^1.4.7, url-parse@^1.5.6:
-  version "1.5.7"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.7.tgz#00780f60dbdae90181f51ed85fb24109422c932a"
-  integrity sha512-HxWkieX+STA38EDk7CE9MEryFeHCKzgagxlGvsdS7WBImq9Mk+PGwiT56w82WI3aicwJA8REp42Cxo98c8FZMA==
+url-parse@^1.4.3, url-parse@^1.4.7, url-parse@^1.5.9:
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
+  integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==
   dependencies:
     querystringify "^2.1.1"
     requires-port "^1.0.0"

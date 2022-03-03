@@ -15,7 +15,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
   async assertImplementation(): Promise<void> {
     if (env.EXPO_NO_TYPESCRIPT_SETUP) {
-      Log.warn(`Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.`);
+      Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
       return;
     }
     Log.debug('Ensuring TypeScript support is setup');

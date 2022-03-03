@@ -4,18 +4,27 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.0.0 — 2022-03-03
+
+### 🛠 Breaking changes
+
 - Remove `Video` component's static constants `FULLSCREEN_UPDATE_PLAYER_WILL_RESENT`, `FULLSCREEN_UPDATE_PLAYER_DID_RESENT`, `FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`, `FULLSCREEN_UPDATE_PLAYER_DID_DISMISS` and replace them with new `VideoFullscreenUpdate` enum. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
 - Remove `Video` component's static constants `RESIZE_MODE_CONTAIN`, `RESIZE_MODE_COVER`, `RESIZE_MODE_STRETCH`. Use `ResizeMode` enum values instead. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
 - Remove deprecated `presentIOSFullscreenPlayer` and `dismissIOSFullscreenPlayer` method from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
 - Remove deprecated `onIOSFullscreenUpdate` prop from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
 - Remove unused `presentFullscreenPlayerAsync` method from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
 - Remove `INTERRUPTION_MODE_*` constants in favor of `InterruptionModeAndroid` and `InterruptionModeIOS` enums. ([#16145](https://github.com/expo/expo/pull/16145) by [@Simek](https://github.com/Simek))
+- On Android upgrade `com.google.android.exoplayer:*:2.9.2` (available from `jcenter()`) to `com.google.android.exoplayer:*:2.13.3` (available from `google()`). ([#16123](https://github.com/expo/expo/pull/16123) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🎉 New features
 
 - Add methods to get and set audio recording inputs. ([#15806](https://github.com/expo/expo/pull/15806) by [@computerjazz](https://github.com/computerjazz))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 
