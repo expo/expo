@@ -47,3 +47,14 @@ jobs:
         with:
           name: expo-dev-client-latest-e2e-artifacts
           path: packages/expo-dev-client/artifacts
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_dev_client }}
+        with:
+          channel: '#dev-clients'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Dev Client e2e
