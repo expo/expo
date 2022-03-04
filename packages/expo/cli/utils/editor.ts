@@ -13,8 +13,8 @@ export function guessEditor(): editors.Editor {
 }
 
 /** Open a file path in a given editor. */
-export async function openInEditorAsync(path: string, inputEditor?: string): Promise<boolean> {
-  const editor = inputEditor ? editors.getEditor(inputEditor) : guessEditor();
+export async function openInEditorAsync(path: string): Promise<boolean> {
+  const editor = guessEditor();
 
   Log.debug(`Opening ${path} in ${editor?.name} (bin: ${editor?.binary}, id: ${editor?.id})`);
   if (editor) {
@@ -23,22 +23,14 @@ export async function openInEditorAsync(path: string, inputEditor?: string): Pro
       return true;
     } catch (error) {
       Log.debug(
-        `Failed to auto open path in editor (path: ${path}, binary: ${editor.binary}, preferred: ${inputEditor}):`,
+        `Failed to auto open path in editor (path: ${path}, binary: ${editor.binary}):`,
         error
       );
     }
   }
 
-  if (inputEditor) {
-    Log.error(
-      // TODO: Is this still in use?
-      `Could not resolve editor from environment variable $EXPO_EDITOR="${inputEditor}". Trying again with system default.`
-    );
-    return openInEditorAsync(path);
-  }
-
   Log.error(
-    'Could not open editor, you can set it by defining the $EDITOR environment variable with the binary of your editor. (e.g. "code" or "atom")'
+    'Could not open editor, you can set it by defining the $EDITOR environment variable with the binary of your editor. (e.g. "vscode" or "atom")'
   );
   return false;
 }

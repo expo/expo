@@ -35,7 +35,7 @@ describe(openInEditorAsync, () => {
         throw new Error('failed');
       });
 
-    await expect(openInEditorAsync('/foo/bar', 'my-editor')).resolves.toBe(false);
+    await expect(openInEditorAsync('/foo/bar')).resolves.toBe(false);
 
     expect(spawnAsync).toBeCalledWith('my-editor-binary', ['/foo/bar']);
     expect(spawnAsync).toBeCalledTimes(1);
