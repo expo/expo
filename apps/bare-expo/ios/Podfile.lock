@@ -19,7 +19,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (4.0.1):
     - ExpoModulesCore
-  - EXAV (10.2.0):
+  - EXAV (11.0.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.1.0):
@@ -1291,7 +1291,7 @@ SPEC CHECKSUMS:
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
   EXAppAuth: 628fbc475121581364241f9f12fc082f23d0b567
   EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
-  EXAV: e501565d5aff495b7b5e9249d489f5ef94db03b2
+  EXAV: 01aa046d1e2cda5b7af402793348674ab8b2e354
   EXBackgroundFetch: 12e8a8c522a2d2c5be07168d74af76567841f023
   EXBarCodeScanner: 0c10fb2bda9e188450b58cc89f7c6177b73f5c25
   EXBattery: 097a76ebb674c57d3df6e1ebcd6e243d569161b5
@@ -1328,7 +1328,7 @@ SPEC CHECKSUMS:
   Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
   expo-dev-launcher: 293c5980a4c5591208fd9f91ff1e9bddd0ef83b0
-  expo-dev-menu: b869cae058cda719a792ff99e2c753ad7da9ff30
+  expo-dev-menu: 0a69e8f4c84bca87c9e9f5bf137eb0ef59d24fcb
   expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoClipboard: 49ded0e61313aea57df8c970a488323488dcd3a1
@@ -1370,7 +1370,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
@@ -1392,7 +1392,7 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 3724efa50cb2846d7ccebc8691c574e85fd74471
   Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
-  RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
+  RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
   RCTRequired: cd47794163052d2b8318c891a7a14fcfaccc75ab
   RCTTypeSafety: 393bb40b3e357b224cde53d3fec26813c52428b1
   React: dec6476bc27155b250eeadfc11ea779265f53ebf
