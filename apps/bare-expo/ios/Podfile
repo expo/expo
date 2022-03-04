@@ -1,6 +1,7 @@
 install! 'cocoapods',
-         generate_multiple_pod_projects: true,
-         incremental_installation: true
+         :generate_multiple_pod_projects => true,
+         :incremental_installation => true,
+         :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
 platform :ios, '12.0'
 inhibit_all_warnings!
@@ -23,11 +24,17 @@ abstract_target 'BareExpoMain' do
     ],
   )
 
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
   config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
+    :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
+    :fabric_enabled => flags[:fabric_enabled],
+    # An abosolute path to your application root.
+    :app_path => "#{Dir.pwd}/.."
   )
 
   # Fix Google Sign-in and Flipper
