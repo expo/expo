@@ -8,7 +8,7 @@
 
 - Native module on Android is now written in Kotlin using the new API. ([#16269](https://github.com/expo/expo/pull/16269) by [@barthap](https://github.com/barthap))
 - On iOS added support for setting and getting URLs and images (`setUrlAsync`, `hasUrlAsync`, `getUrlAsync`, `setImageAsync`, `hasImageAsync`, `getImageAsync`). ([#16391](https://github.com/expo/expo/pull/16391) by [@graszka22](https://github.com/graszka22), [@barthap](https://github.com/barthap))
-- Added new method `hasStringAsync` that checks whether clipboard has text content.
+- Added new method `hasStringAsync` that checks whether clipboard has text content. ([#16524](https://github.com/expo/expo/pull/16524) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
