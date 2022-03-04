@@ -1,10 +1,11 @@
 import chalk from 'chalk';
 import freeportAsync from 'freeport-async';
-import getenv from 'getenv';
 
 import * as Log from '../log';
+import { env } from './env';
 import { CommandError } from './errors';
 
+/** Get a free port or assert a CLI command error. */
 export async function getFreePortAsync(rangeStart: number): Promise<number> {
   const port = await freeportAsync(rangeStart, { hostnames: [null, 'localhost'] });
   if (!port) {
@@ -14,6 +15,7 @@ export async function getFreePortAsync(rangeStart: number): Promise<number> {
   return port;
 }
 
+// TODO(Bacon): Revisit after all start and run code is merged.
 export async function choosePortAsync(
   projectRoot: string,
   {
@@ -77,6 +79,7 @@ export async function choosePortAsync(
   }
 }
 
+// TODO(Bacon): Revisit after all start and run code is merged.
 export async function resolvePortAsync(
   projectRoot: string,
   {
@@ -98,7 +101,7 @@ export async function resolvePortAsync(
   } else if (typeof defaultPort === 'number') {
     port = defaultPort;
   } else {
-    port = getenv.int('RCT_METRO_PORT', fallbackPort || 8081);
+    port = env.RCT_METRO_PORT || fallbackPort || 8081;
   }
 
   // Only check the port when the bundler is running.

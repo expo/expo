@@ -35,9 +35,9 @@ export class FileNotifier {
   }
 
   /** Watch the file and warn to reload the CLI if it changes. */
-  public watchFile = memoize(this._watchFile.bind(this));
+  public watchFile = memoize(this.startWatchingFile.bind(this));
 
-  public _watchFile(filePath: string): string {
+  private startWatchingFile(filePath: string): string {
     const configName = path.relative(this.projectRoot, filePath);
     watchFile(filePath, (cur: any, prev: any) => {
       if (prev.size || cur.size) {

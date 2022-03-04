@@ -17,6 +17,7 @@ function sortLongest(obj: string[]): string[] {
   return obj.sort((a, b) => b.length - a.length);
 }
 
+// TODO: Revisit and test after run code is merged.
 export async function getSchemesForIosAsync(projectRoot: string) {
   try {
     const configPath = IOSConfig.Paths.getInfoPlistPath(projectRoot);
@@ -29,6 +30,7 @@ export async function getSchemesForIosAsync(projectRoot: string) {
   }
 }
 
+// TODO: Revisit and test after run code is merged.
 export async function getSchemesForAndroidAsync(projectRoot: string) {
   try {
     const configPath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
@@ -40,6 +42,7 @@ export async function getSchemesForAndroidAsync(projectRoot: string) {
   }
 }
 
+// TODO: Revisit and test after run code is merged.
 async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<string | null> {
   const { exp } = getConfig(projectRoot);
   try {
@@ -50,11 +53,11 @@ async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<stri
     Log.warn(
       '\nDevelopment build: Unable to get the default URI scheme for the project. Please make sure the expo-dev-client package is installed.'
     );
-    // throw new CommandError(error);
     return null;
   }
 }
 
+// TODO: Revisit and test after run code is merged.
 export async function getOptionalDevClientSchemeAsync(projectRoot: string): Promise<string | null> {
   const [hasIos, hasAndroid] = await Promise.all([
     hasRequiredIOSFilesAsync(projectRoot),
