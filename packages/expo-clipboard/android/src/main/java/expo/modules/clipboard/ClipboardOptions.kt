@@ -27,3 +27,17 @@ enum class ImageFormat(val jsName: String) {
       PNG -> "image/png"
     }
 }
+
+internal enum class StringContentType(val jsValue: String) {
+  PLAIN("plainText"), HTML("html");
+}
+
+internal class GetStringOptions : Record {
+  @Field
+  var preferredType: StringContentType = StringContentType.PLAIN
+}
+
+internal class SetStringOptions : Record {
+  @Field
+  var inputType: StringContentType = StringContentType.PLAIN
+}

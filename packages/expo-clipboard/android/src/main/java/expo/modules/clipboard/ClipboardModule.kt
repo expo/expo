@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
+import android.os.Build
+import android.text.Html
+import android.text.Html.FROM_HTML_MODE_LEGACY
+import android.text.Spanned
+import android.text.TextUtils
 import android.util.Log
 import androidx.core.os.bundleOf
 import expo.modules.core.errors.ModuleDestroyedException
@@ -33,12 +38,24 @@ class ClipboardModule : Module() {
     name(moduleName)
 
     // region Strings
-    function("getStringAsync") {
-      clipboardManager.firstItem?.text ?: ""
+    function("getStringAsync") { options: GetStringOptions ->
+      val clip = clipboardManager.primaryClip?.takeIf { it.itemCount >= 1 }
+      val firstItem = clip?.getItemAt(0)
+      when (options.preferredType) {
+        StringContentType.PLAIN -> firstItem?.coerceToText(context)
+        StringContentType.HTML -> firstItem?.coerceToHtmlText(context)
+      } ?: ""
     }
 
-    function("setStringAsync") { content: String ->
-      val clip = ClipData.newPlainText(null, content)
+    function("setStringAsync") { content: String, options: SetStringOptions ->
+      val clip = when (options.inputType) {
+        StringContentType.PLAIN -> ClipData.newPlainText(null, content)
+        StringContentType.HTML -> {
+          // HTML clip requires complementary plain text content
+          val plainText = plainTextFromHtml(content)
+          ClipData.newHtmlText(null, plainText, content)
+        }
+      }
       clipboardManager.setPrimaryClip(clip)
       return@function true
     }
@@ -46,7 +63,10 @@ class ClipboardModule : Module() {
     function("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
-        ?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+        ?.let {
+          it.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
+            it.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
+        }
         ?: false
     }
     // endregion
@@ -195,4 +215,16 @@ class ClipboardModule : Module() {
     get() = primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)
 
   // endregion
+}
+
+private fun plainTextFromHtml(htmlContent: String): String {
+  val styledText: Spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    Html.fromHtml(htmlContent, FROM_HTML_MODE_LEGACY)
+  } else {
+    @Suppress("DEPRECATION")
+    Html.fromHtml(htmlContent)
+  }
+  val chars = CharArray(styledText.length)
+  TextUtils.getChars(styledText, 0, styledText.length, chars, 0)
+  return String(chars)
 }

@@ -23,3 +23,4 @@ internal enum ImageFormat: String, EnumArgument {
     }
   }
 }
+
