@@ -55,13 +55,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AppAuthScreen'));
-    },
-    name: 'AppAuth',
-    options: { title: 'App Auth' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));
     },
     name: 'Appearance',
@@ -176,12 +169,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/FontScreen'));
     },
     name: 'Font',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/GoogleScreen'));
-    },
-    name: 'Google',
   },
   {
     getComponent() {
