@@ -10,9 +10,9 @@ import {
 } from '../types';
 
 async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
-  const configPodspecPath = revision.config?.iosPodspecPath();
-  if (configPodspecPath) {
-    return Array.isArray(configPodspecPath) ? configPodspecPath : [configPodspecPath];
+  const configPodspecPaths = revision.config?.iosPodspecPaths();
+  if (configPodspecPaths && configPodspecPaths.length) {
+    return configPodspecPaths;
   }
 
   const searchPath = revision.isExpoAdapter ? path.join(revision.path, 'expo') : revision.path;
@@ -26,10 +26,10 @@ async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
 
 export function getSwiftModuleNames(
   pods: ModuleIosPodspecInfo[],
-  swiftModuleName: string | string[] | undefined
+  swiftModuleNames: string[] | undefined
 ): string[] {
-  if (swiftModuleName) {
-    return Array.isArray(swiftModuleName) ? swiftModuleName : [swiftModuleName];
+  if (swiftModuleNames && swiftModuleNames.length) {
+    return swiftModuleNames;
   }
   // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
   return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
@@ -54,7 +54,7 @@ export async function resolveModuleAsync(
     podspecDir: path.dirname(path.join(searchPath, podspecFile)),
   }));
 
-  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleName());
+  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleNames());
 
   return {
     packageName,

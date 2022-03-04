@@ -40,15 +40,15 @@ export class ExpoModuleConfig {
   /**
    * Returns podspec paths defined by the module author.
    */
-  iosPodspecPath(): string | string[] | undefined {
-    return this.rawConfig.ios?.podspecPath;
+  iosPodspecPaths(): string[] {
+    return Array.from(this.rawConfig.ios?.podspecPath ?? []);
   }
 
   /**
    * Returns the product module names, if defined by the module author.
    */
-  iosSwiftModuleName(): string | string[] | undefined {
-    return this.rawConfig.ios?.swiftModuleName;
+  iosSwiftModuleNames(): string[] {
+    return Array.from(this.rawConfig.ios?.swiftModuleName ?? []);
   }
 
   /**

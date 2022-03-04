@@ -9,9 +9,9 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 async function findPodspecFiles(revision) {
     var _a;
-    const configPodspecPath = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPath();
-    if (configPodspecPath) {
-        return Array.isArray(configPodspecPath) ? configPodspecPath : [configPodspecPath];
+    const configPodspecPaths = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPaths();
+    if (configPodspecPaths && configPodspecPaths.length) {
+        return configPodspecPaths;
     }
     const searchPath = revision.isExpoAdapter ? path_1.default.join(revision.path, 'expo') : revision.path;
     const podspecFiles = await (0, fast_glob_1.default)('*/*.podspec', {
@@ -20,9 +20,9 @@ async function findPodspecFiles(revision) {
     });
     return podspecFiles;
 }
-function getSwiftModuleNames(pods, swiftModuleName) {
-    if (swiftModuleName) {
-        return Array.isArray(swiftModuleName) ? swiftModuleName : [swiftModuleName];
+function getSwiftModuleNames(pods, swiftModuleNames) {
+    if (swiftModuleNames && swiftModuleNames.length) {
+        return swiftModuleNames;
     }
     // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
     return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
@@ -42,7 +42,7 @@ async function resolveModuleAsync(packageName, revision, options) {
         podName: path_1.default.basename(podspecFile, path_1.default.extname(podspecFile)),
         podspecDir: path_1.default.dirname(path_1.default.join(searchPath, podspecFile)),
     }));
-    const swiftModuleNames = getSwiftModuleNames(pods, (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosSwiftModuleName());
+    const swiftModuleNames = getSwiftModuleNames(pods, (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosSwiftModuleNames());
     return {
         packageName,
         pods,

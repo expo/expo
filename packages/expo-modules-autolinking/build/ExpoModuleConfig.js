@@ -41,16 +41,16 @@ class ExpoModuleConfig {
     /**
      * Returns podspec paths defined by the module author.
      */
-    iosPodspecPath() {
-        var _a;
-        return (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath;
+    iosPodspecPaths() {
+        var _a, _b;
+        return Array.from((_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath) !== null && _b !== void 0 ? _b : []);
     }
     /**
      * Returns the product module names, if defined by the module author.
      */
-    iosSwiftModuleName() {
-        var _a;
-        return (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName;
+    iosSwiftModuleNames() {
+        var _a, _b;
+        return Array.from((_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName) !== null && _b !== void 0 ? _b : []);
     }
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.

@@ -85,12 +85,14 @@ export interface RawExpoModuleConfig {
         reactDelegateHandlers?: string[];
         /**
          * Podspec relative path.
+         * To have multiple podspecs, string array type is also supported.
          */
-        podspecPath?: string;
+        podspecPath?: string | string[];
         /**
          * Swift product module name. If empty, the pod name is used for Swift imports.
+         * To have multiple modules, string array is also supported.
          */
-        swiftModuleName?: string;
+        swiftModuleName?: string | string[];
     };
     /**
      * Android-specific config.

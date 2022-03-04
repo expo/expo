@@ -1,5 +1,5 @@
 import { ModuleDescriptorIos, ModuleIosPodspecInfo, PackageRevision, SearchOptions } from '../types';
-export declare function getSwiftModuleNames(pods: ModuleIosPodspecInfo[], swiftModuleName: string | string[] | undefined): string[];
+export declare function getSwiftModuleNames(pods: ModuleIosPodspecInfo[], swiftModuleNames: string[] | undefined): string[];
 /**
  * Resolves module search result with additional details required for iOS platform.
  */

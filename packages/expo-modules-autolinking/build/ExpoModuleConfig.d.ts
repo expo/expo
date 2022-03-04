@@ -24,11 +24,11 @@ export declare class ExpoModuleConfig {
     /**
      * Returns podspec paths defined by the module author.
      */
-    iosPodspecPath(): string | string[] | undefined;
+    iosPodspecPaths(): string[];
     /**
      * Returns the product module names, if defined by the module author.
      */
-    iosSwiftModuleName(): string | string[] | undefined;
+    iosSwiftModuleNames(): string[];
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */

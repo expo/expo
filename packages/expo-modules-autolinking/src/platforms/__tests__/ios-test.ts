@@ -74,7 +74,7 @@ describe(formatArrayOfReactDelegateHandler, () => {
 describe(getSwiftModuleNames, () => {
   it('should use value from module config when it exists', () => {
     const pods = [{ podName: 'expotest', podspecDir: '/path/to/pod' }];
-    expect(getSwiftModuleNames(pods, 'EXTest')).toEqual(['EXTest']);
+    expect(getSwiftModuleNames(pods, ['EXTest'])).toEqual(['EXTest']);
     expect(getSwiftModuleNames(pods, undefined)).toEqual(['expotest']);
   });
 
