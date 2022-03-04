@@ -182,7 +182,7 @@ export async function startInterfaceAsync(
         return actions.reloadApp();
       case 'o':
         Log.log(`${BLT} Opening the editor...`);
-        return openInEditorAsync(devServerManager.projectRoot, process.env.EXPO_EDITOR);
+        return openInEditorAsync(devServerManager.projectRoot);
     }
   };
 
