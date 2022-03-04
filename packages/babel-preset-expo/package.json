@@ -50,7 +50,7 @@
     "@babel/preset-env": "^7.12.9",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-react-native-web": "~0.17.1",
-    "metro-react-native-babel-preset": "~0.66.2"
+    "metro-react-native-babel-preset": "~0.67.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
