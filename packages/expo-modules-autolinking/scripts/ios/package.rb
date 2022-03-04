@@ -24,7 +24,7 @@ module Expo
     # Version of the npm package
     attr_reader :version
 
-    # Pod of the package
+    # An array of pods found in the package
     attr_reader :pods
 
     # Flags to pass to the pod definition
