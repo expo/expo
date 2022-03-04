@@ -6,6 +6,8 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import expo.modules.kotlin.types.convert
 import org.junit.Test
+import kotlin.reflect.KFunction
+import kotlin.reflect.typeOf
 
 class RecordTypeConverterTest {
   @Test
@@ -98,6 +100,46 @@ class RecordTypeConverterTest {
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.int2).isEqualTo(20)
     Truth.assertThat(myRecord.string).isEqualTo("expo")
+  }
+
+  @Test
+  fun `should respect required annotation`() {
+    class MyRecord : Record {
+      @Field
+      @Required
+      val int: Int = 0
+    }
+
+    val map = DynamicFromObject(JavaOnlyMap())
+
+    val exception = runCatching { convert<MyRecord>(map) }.exceptionOrNull()
+    Truth.assertThat(exception).isNotNull()
+  }
+
+  @Test
+  fun `should respect validators`() {
+    class MyRecord : Record {
+      @Field
+      @IntRange(from = 0, to = 10)
+      val int: Int = 0
+    }
+
+    val invalidMap = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("int", 11)
+      }
+    )
+
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("int", 6)
+      }
+    )
+
+    val record = convert<MyRecord>(map)
+    Truth.assertThat(record.int).isEqualTo(6)
+    val exception = runCatching { convert<MyRecord>(invalidMap) }.exceptionOrNull()
+    Truth.assertThat(exception).isNotNull()
   }
 
   @Test
