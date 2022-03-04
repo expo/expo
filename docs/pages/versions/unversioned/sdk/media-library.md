@@ -47,7 +47,7 @@ Learn how to configure the native projects in the [installation instructions in 
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true
+          "isAccessMediaLocationEnabled": false
         }
       ]
     ]
@@ -60,7 +60,7 @@ Learn how to configure the native projects in the [installation instructions in 
 <ConfigPluginProperties properties={[
 { name: 'photosPermission', platform: 'ios', description: 'Sets the iOS `NSPhotoLibraryUsageDescription` permission message in Info.plist.', default: '"Allow $(PRODUCT_NAME) to access your photos."' },
 { name: 'savePhotosPermission', platform: 'ios', description: 'Sets the iOS `NSPhotoLibraryAddUsageDescription` permission message in Info.plist.', default: '"Allow $(PRODUCT_NAME) to save photos."' },
-{ name: 'isAccessMediaLocationEnabled', platform: 'android', description: 'Sets whether or not to request the `ACCESS_MEDIA_LOCATION` permission on Android.', default: 'false' },
+{ name: 'isAccessMediaLocationEnabled', platform: 'android', description: 'Sets whether or not to request the `ACCESS_MEDIA_LOCATION` permission on Android.', default: 'true' },
 ]} />
 
 ## API
