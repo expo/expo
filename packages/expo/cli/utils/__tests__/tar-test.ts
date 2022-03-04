@@ -6,15 +6,6 @@ import { extractAsync } from '../tar';
 
 const asMock = (fn: any): jest.Mock => fn;
 
-jest.mock(`@expo/spawn-async`, () => ({
-  __esModule: true,
-  default: jest.fn(() => Promise.resolve({})),
-}));
-
-jest.mock(`tar`, () => ({
-  extract: jest.fn(),
-}));
-
 jest.mock(`../../log`);
 
 function mockPlatform(value: typeof process.platform) {
@@ -27,9 +18,9 @@ describe(extractAsync, () => {
   const originalPlatform = process.platform;
 
   beforeEach(() => {
-    jest.mock('@expo/spawn-async').resetAllMocks();
-    jest.mock('tar').resetAllMocks();
-    jest.mock('../../log').resetAllMocks();
+    asMock(spawnAsync).mockClear();
+    asMock(tar.extract).mockClear();
+    asMock(Log.warn).mockClear();
   });
 
   afterAll(() => {
