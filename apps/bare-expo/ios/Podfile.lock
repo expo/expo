@@ -19,7 +19,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (4.0.1):
     - ExpoModulesCore
-  - EXAV (10.2.0):
+  - EXAV (11.0.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.1.0):
@@ -163,6 +163,7 @@ PODS:
   - expo-dev-menu/Main (0.9.1):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
+    - ExpoModulesCore
     - React-Core
   - expo-dev-menu/Reanimated (0.9.1):
     - DoubleConversion
@@ -1290,7 +1291,7 @@ SPEC CHECKSUMS:
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
   EXAppAuth: 628fbc475121581364241f9f12fc082f23d0b567
   EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
-  EXAV: e501565d5aff495b7b5e9249d489f5ef94db03b2
+  EXAV: 01aa046d1e2cda5b7af402793348674ab8b2e354
   EXBackgroundFetch: 12e8a8c522a2d2c5be07168d74af76567841f023
   EXBarCodeScanner: 0c10fb2bda9e188450b58cc89f7c6177b73f5c25
   EXBattery: 097a76ebb674c57d3df6e1ebcd6e243d569161b5
@@ -1327,7 +1328,7 @@ SPEC CHECKSUMS:
   Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
   expo-dev-launcher: 293c5980a4c5591208fd9f91ff1e9bddd0ef83b0
-  expo-dev-menu: d13fce788ed2cd1d0ca6aabed72cb73caa74c37b
+  expo-dev-menu: 0a69e8f4c84bca87c9e9f5bf137eb0ef59d24fcb
   expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoClipboard: 49ded0e61313aea57df8c970a488323488dcd3a1

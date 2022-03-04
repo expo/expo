@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import EXDevMenu
 import EXUpdatesInterface
 
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
@@ -23,6 +24,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
 
     return true
   }()
+
+  required init() {
+    super.init()
+    // DevLauncherController will handle dev menu configuration, so dev menu auto-setup is not needed
+    ExpoDevMenuReactDelegateHandler.shouldEnableAutoSetup = false
+  }
 
   public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
     if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {

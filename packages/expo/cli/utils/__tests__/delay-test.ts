@@ -4,7 +4,7 @@ describe(delayAsync, () => {
   it(`await for a given duration of milliseconds`, async () => {
     const start = Date.now();
     await delayAsync(100);
-    expect(Date.now() - start).toBeGreaterThanOrEqual(100);
+    expect(Date.now() - start).toBeGreaterThanOrEqual(99);
   }, 1000);
 });
 
