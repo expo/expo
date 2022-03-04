@@ -48,3 +48,27 @@ export function validateUrl(
     return false;
   }
 }
+
+/** Remove the port from a given `host` URL string. */
+export function stripPort(host?: string): string | null {
+  return coerceUrl(host)?.hostname ?? null;
+}
+
+function coerceUrl(urlString?: string): URL | null {
+  if (!urlString) {
+    return null;
+  }
+  try {
+    return new URL('/', urlString);
+  } catch (error) {
+    if (error.code !== 'ERR_INVALID_URL') {
+      throw error;
+    }
+    return new URL('/', `http://${urlString}`);
+  }
+}
+
+/** Strip a given extension from a URL string. */
+export function stripExtension(url: string, extension: string): string {
+  return url.replace(new RegExp(`.${extension}$`), '');
+}

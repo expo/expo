@@ -1,6 +1,6 @@
 import nock from 'nock';
 
-import { isUrlOk, validateUrl } from '../url';
+import { isUrlOk, validateUrl, stripPort, stripExtension } from '../url';
 
 describe(validateUrl, () => {
   it(`guards against protocols`, () => {
@@ -27,5 +27,26 @@ describe(isUrlOk, () => {
     const scope = nock('http://example.com').get('/').reply(200, '');
     expect(await isUrlOk('http://example.com')).toBe(true);
     expect(scope.isDone()).toBe(true);
+  });
+});
+
+describe(stripPort, () => {
+  // Used in the manifest handler when the Expo Go app requests the given hostname to use.
+  it(`removes the port from a host string`, async () => {
+    expect(stripPort('localhost:8081')).toBe('localhost');
+  });
+  it(`removes the port from a URL string`, async () => {
+    expect(stripPort('http://localhost:8081/path/to.js')).toBe('localhost');
+  });
+});
+
+describe(stripExtension, () => {
+  it(`removes the extension from a file path`, async () => {
+    expect(stripExtension('/path/to/index.txt', 'txt')).toBe('/path/to/index');
+  });
+  it(`removes the extension from a URL string`, async () => {
+    expect(stripExtension('http://localhost:8081/index.js', 'js')).toBe(
+      'http://localhost:8081/index'
+    );
   });
 });

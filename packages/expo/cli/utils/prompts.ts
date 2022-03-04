@@ -103,11 +103,7 @@ export async function selectAsync<T>(
 
 export const promptAsync = prompt;
 
-/**
- * Used to pause/resume interaction observers while prompting (made for TerminalUI).
- *
- * @param callback
- */
+/** Used to pause/resume interaction observers while prompting (made for TerminalUI). */
 export function addInteractionListener(callback: InteractionCallback) {
   listeners.push(callback);
 }

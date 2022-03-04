@@ -13,6 +13,12 @@ const warnReal = console.warn;
 // eslint-disable-next-line no-console
 const errorReal = console.error;
 
+const runningSpinners: oraReal.Ora[] = [];
+
+export function getAllSpinners() {
+  return runningSpinners;
+}
+
 /**
  * A custom ora spinner that sends the stream to stdout in CI, non-TTY, or expo's non-interactive flag instead of stderr (the default).
  *
@@ -49,6 +55,8 @@ export function ora(options?: oraReal.Options | string): oraReal.Ora {
     console.warn = (...args: any) => logWrap(warnReal, args);
     // eslint-disable-next-line no-console
     console.error = (...args: any) => logWrap(errorReal, args);
+
+    runningSpinners.push(spinner);
   };
 
   const resetNativeLogs = (): void => {
@@ -60,6 +68,11 @@ export function ora(options?: oraReal.Options | string): oraReal.Ora {
     console.warn = warnReal;
     // eslint-disable-next-line no-console
     console.error = errorReal;
+
+    const index = runningSpinners.indexOf(spinner);
+    if (index >= 0) {
+      runningSpinners.splice(index, 1);
+    }
   };
 
   spinner.start = (text): Ora => {

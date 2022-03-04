@@ -8,13 +8,7 @@ import { extractAsync } from '../tar';
 
 const asMock = (fn: any): jest.Mock => fn;
 
-jest.mock('fs');
-
-jest.mock('progress');
-
-jest.mock('tempy', () => ({
-  file: jest.fn(({ name }) => '/tmp/' + name),
-}));
+jest.mock('../../log');
 
 jest.mock(`../downloadAppAsync`, () => ({
   downloadAppAsync: jest.fn(),
