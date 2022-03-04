@@ -3,7 +3,6 @@
 /packages/expo-ads-facebook                     @tsapeta
 /packages/expo-analytics-amplitude              @tsapeta
 /packages/expo-analytics-segment                @tsapeta
-/packages/expo-app-auth                         @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-app-loading                      @bbarthec
 /packages/expo-apple-authentication             @esamelson @tsapeta
@@ -40,7 +39,6 @@
 /packages/expo-font                             @tsapeta
 /packages/expo-gl-cpp                           @tsapeta @bbarthec
 /packages/expo-gl                               @tsapeta @bbarthec
-/packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
 /packages/expo-haptics                          @bbarthec
 /packages/expo-image                            @bbarthec @barthap
