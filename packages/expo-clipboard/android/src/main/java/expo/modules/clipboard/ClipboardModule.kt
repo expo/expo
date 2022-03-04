@@ -2,6 +2,7 @@ package expo.modules.clipboard
 
 import android.content.Context
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.util.Log
 import androidx.core.os.bundleOf
@@ -33,6 +34,13 @@ class ClipboardModule : Module() {
       val clip = ClipData.newPlainText(null, content)
       clipboardManager.setPrimaryClip(clip)
       return@function true
+    }
+
+    function("hasStringAsync") {
+      clipboardManager
+        .primaryClipDescription
+        ?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+        ?: false
     }
 
     events(clipboardChangedEventName)
