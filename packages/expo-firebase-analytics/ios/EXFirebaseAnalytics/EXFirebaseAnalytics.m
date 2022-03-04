@@ -68,7 +68,7 @@ EX_EXPORT_METHOD_AS(logEvent,
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
-    [FIRAnalytics logEventWithName:name parameters:parameters];
+    [FIRAnalytics logEventWithName:name parameters:[self cleanJavascriptParams:parameters]];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
     [self reject:reject withException:exception];
@@ -88,23 +88,6 @@ EX_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
     [self reject:reject withException:exception];
     return;
   }
-}
-
-EX_EXPORT_METHOD_AS(setCurrentScreen,
-                    setCurrentScreen:(NSString *)screenName
-                    screenClass:(NSString *)screenClassOverview
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self getAppOrReject:reject] == nil) return;
-  [EXUtilities performSynchronouslyOnMainThread:^{
-    @try {
-      [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
-      resolve([NSNull null]);
-    } @catch (NSException *exception) {
-      [self reject:reject withException:exception];
-      return;
-    }
-  }];
 }
 
 EX_EXPORT_METHOD_AS(setSessionTimeoutDuration,
@@ -137,9 +120,9 @@ EX_EXPORT_METHOD_AS(setUserId,
   }
 }
 
-EX_EXPORT_METHOD_AS(setUserProperties, 
-                    setUserProperties:(NSDictionary *)properties 
-                    resolver:(EXPromiseResolveBlock)resolve 
+EX_EXPORT_METHOD_AS(setUserProperties,
+                    setUserProperties:(NSDictionary *)properties
+                    resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
@@ -164,6 +147,30 @@ EX_EXPORT_METHOD_AS(resetAnalyticsData,
     [self reject:reject withException:exception];
     return;
   }
+}
+
+#pragma mark -
+#pragma mark Private methods
+
+- (NSDictionary *)cleanJavascriptParams:(NSDictionary *)params {
+  NSMutableDictionary *newParams = [params mutableCopy];
+  if (newParams[kFIRParameterItems]) {
+    NSMutableArray *newItems = [NSMutableArray array];
+    [(NSArray *)newParams[kFIRParameterItems]
+        enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
+          NSMutableDictionary *item = [obj mutableCopy];
+          if (item[kFIRParameterQuantity]) {
+            item[kFIRParameterQuantity] = @([item[kFIRParameterQuantity] integerValue]);
+          }
+          [newItems addObject:[item copy]];
+        }];
+    newParams[kFIRParameterItems] = [newItems copy];
+  }
+  NSNumber *extendSession = [newParams valueForKey:kFIRParameterExtendSession];
+  if ([extendSession isEqualToNumber:@1]) {
+    newParams[kFIRParameterExtendSession] = @YES;
+  }
+  return [newParams copy];
 }
 
 @end

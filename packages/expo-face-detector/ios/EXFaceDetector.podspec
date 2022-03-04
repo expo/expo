@@ -19,10 +19,10 @@ Pod::Spec.new do |s|
   # even though `GoogleMLKit/FaceDetection` depends on all `MLKit*` references below
   # framework generation code (prebuilds) cannot locate them properly, so these are defined explicitly
   # TODO: research why xcodegen fails to detect dependencies of dependencies (resulted .xcodeproj is missing them)
-  s.dependency 'GoogleMLKit/FaceDetection', '2.1.0'
-  s.dependency 'MLKitFaceDetection', '1.2.0'
-  s.dependency 'MLKitCommon', '2.1.0'
-  s.dependency 'MLKitVision', '1.2.0'
+  s.dependency 'GoogleMLKit/FaceDetection', '2.2.0'
+  s.dependency 'MLKitFaceDetection', '1.3.0'
+  s.dependency 'MLKitCommon', '3.0.0'
+  s.dependency 'MLKitVision', '1.3.0'
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"

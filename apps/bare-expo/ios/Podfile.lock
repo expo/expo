@@ -56,19 +56,19 @@ PODS:
     - FacebookSDK/LoginKit (= 9.2.0)
   - EXFaceDetector (11.1.1):
     - ExpoModulesCore
-    - GoogleMLKit/FaceDetection (= 2.1.0)
-    - MLKitCommon (= 2.1.0)
-    - MLKitFaceDetection (= 1.2.0)
-    - MLKitVision (= 1.2.0)
+    - GoogleMLKit/FaceDetection (= 2.2.0)
+    - MLKitCommon (= 3.0.0)
+    - MLKitFaceDetection (= 1.3.0)
+    - MLKitVision (= 1.3.0)
   - EXFileSystem (13.2.0):
     - ExpoModulesCore
   - EXFirebaseAnalytics (6.0.0):
     - EXFirebaseCore
     - ExpoModulesCore
-    - Firebase/Core (= 7.7.0)
+    - Firebase/Core (= 8.12.1)
   - EXFirebaseCore (4.1.0):
     - ExpoModulesCore
-    - Firebase/Core (= 7.7.0)
+    - Firebase/Core (= 8.12.1)
   - EXFont (10.0.4):
     - ExpoModulesCore
   - EXGL (11.1.1):
@@ -292,51 +292,74 @@ PODS:
   - FBSDKCoreKit/Basics (9.2.0)
   - FBSDKCoreKit/Core (9.2.0):
     - FBSDKCoreKit/Basics
-  - Firebase/Core (7.7.0):
+  - Firebase/Core (8.12.1):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 7.7.0)
-  - Firebase/CoreOnly (7.7.0):
-    - FirebaseCore (= 7.7.0)
-  - FirebaseAnalytics (7.7.0):
-    - FirebaseCore (~> 7.0)
-    - FirebaseInstallations (~> 7.0)
-    - GoogleAppMeasurement (= 7.7.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
-    - GoogleUtilities/MethodSwizzler (~> 7.0)
-    - GoogleUtilities/Network (~> 7.0)
-    - "GoogleUtilities/NSData+zlib (~> 7.0)"
-    - nanopb (~> 2.30907.0)
-  - FirebaseCore (7.7.0):
-    - FirebaseCoreDiagnostics (~> 7.4)
-    - GoogleUtilities/Environment (~> 7.0)
-    - GoogleUtilities/Logger (~> 7.0)
-  - FirebaseCoreDiagnostics (7.9.0):
-    - GoogleDataTransport (~> 8.0)
-    - GoogleUtilities/Environment (~> 7.0)
-    - GoogleUtilities/Logger (~> 7.0)
-    - nanopb (~> 2.30907.0)
-  - FirebaseInstallations (7.11.0):
-    - FirebaseCore (~> 7.0)
-    - GoogleUtilities/Environment (~> 7.0)
-    - GoogleUtilities/UserDefaults (~> 7.0)
-    - PromisesObjC (~> 1.2)
+    - FirebaseAnalytics (~> 8.12.0)
+  - Firebase/CoreOnly (8.12.1):
+    - FirebaseCore (= 8.12.1)
+  - FirebaseAnalytics (8.12.0):
+    - FirebaseAnalytics/AdIdSupport (= 8.12.0)
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - FirebaseAnalytics/AdIdSupport (8.12.0):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleAppMeasurement (= 8.12.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - FirebaseCore (8.12.1):
+    - FirebaseCoreDiagnostics (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.7)
+    - GoogleUtilities/Logger (~> 7.7)
+  - FirebaseCoreDiagnostics (8.12.0):
+    - GoogleDataTransport (~> 9.1)
+    - GoogleUtilities/Environment (~> 7.7)
+    - GoogleUtilities/Logger (~> 7.7)
+    - nanopb (~> 2.30908.0)
+  - FirebaseInstallations (8.12.0):
+    - FirebaseCore (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.7)
+    - GoogleUtilities/UserDefaults (~> 7.7)
+    - PromisesObjC (< 3.0, >= 1.2)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - GoogleAppMeasurement (7.7.0):
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
-    - GoogleUtilities/MethodSwizzler (~> 7.0)
-    - GoogleUtilities/Network (~> 7.0)
-    - "GoogleUtilities/NSData+zlib (~> 7.0)"
-    - nanopb (~> 2.30907.0)
-  - GoogleDataTransport (8.3.1):
+  - GoogleAppMeasurement (8.12.0):
+    - GoogleAppMeasurement/AdIdSupport (= 8.12.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - GoogleAppMeasurement/AdIdSupport (8.12.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 8.12.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - GoogleAppMeasurement/WithoutAdIdSupport (8.12.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - GoogleDataTransport (9.1.2):
     - GoogleUtilities/Environment (~> 7.2)
-    - nanopb (~> 2.30907.0)
-    - PromisesObjC (~> 1.2)
-  - GoogleMLKit/FaceDetection (2.1.0):
+    - nanopb (~> 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleMLKit/FaceDetection (2.2.0):
     - GoogleMLKit/MLKitCore
-    - MLKitFaceDetection (~> 1.2.0)
-  - GoogleMLKit/MLKitCore (2.1.0):
-    - MLKitCommon (~> 2.1.0)
+    - MLKitFaceDetection (~> 1.3.0)
+  - GoogleMLKit/MLKitCore (2.2.0):
+    - MLKitCommon (~> 3.0.0)
   - GoogleSignIn (5.0.2):
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
@@ -389,8 +412,9 @@ PODS:
   - libwebp/mux (1.2.1):
     - libwebp/demux
   - libwebp/webp (1.2.1)
-  - MLKitCommon (2.1.0):
-    - GoogleDataTransport (~> 8.0)
+  - MLImage (1.0.0-beta1)
+  - MLKitCommon (3.0.0):
+    - GoogleDataTransport (~> 9.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
@@ -398,20 +422,21 @@ PODS:
     - GoogleUtilitiesComponents (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
     - Protobuf (~> 3.12)
-  - MLKitFaceDetection (1.2.0):
-    - MLKitCommon (~> 2.1)
-    - MLKitVision (~> 1.2)
-  - MLKitVision (1.2.0):
+  - MLKitFaceDetection (1.3.0):
+    - MLKitCommon (~> 3.0)
+    - MLKitVision (~> 1.3)
+  - MLKitVision (1.3.0):
     - GoogleToolboxForMac/Logger (~> 2.1)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
-    - MLKitCommon (~> 2.1)
+    - MLImage (= 1.0.0-beta1)
+    - MLKitCommon (~> 3.0)
     - Protobuf (~> 3.12)
-  - nanopb (2.30907.0):
-    - nanopb/decode (= 2.30907.0)
-    - nanopb/encode (= 2.30907.0)
-  - nanopb/decode (2.30907.0)
-  - nanopb/encode (2.30907.0)
+  - nanopb (2.30908.0):
+    - nanopb/decode (= 2.30908.0)
+    - nanopb/encode (= 2.30908.0)
+  - nanopb/decode (2.30908.0)
+  - nanopb/encode (2.30908.0)
   - Nimble (9.2.0)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
@@ -426,8 +451,8 @@ PODS:
   - OHHTTPStubs/NSURLSession (9.1.0):
     - OHHTTPStubs/Core
   - OHHTTPStubs/OHPathHelpers (9.1.0)
-  - PromisesObjC (1.2.12)
-  - Protobuf (3.19.1)
+  - PromisesObjC (2.0.0)
+  - Protobuf (3.19.4)
   - Quick (4.0.0)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
@@ -768,9 +793,9 @@ PODS:
     - React-Core
   - RNSVG (12.1.1):
     - React
-  - SDWebImage (5.12.2):
-    - SDWebImage/Core (= 5.12.2)
-  - SDWebImage/Core (5.12.2)
+  - SDWebImage (5.12.3):
+    - SDWebImage/Core (= 5.12.3)
+  - SDWebImage/Core (5.12.3)
   - SDWebImageSVGKitPlugin (1.3.0):
     - SDWebImage/Core (~> 5.10)
     - SVGKit (>= 2.1)
@@ -948,6 +973,7 @@ SPEC REPOS:
     - hermes-engine
     - libevent
     - libwebp
+    - MLImage
     - MLKitCommon
     - MLKitFaceDetection
     - MLKitVision
@@ -1305,10 +1331,10 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 2989eda5975604203c86c66405a2c242053dcdc7
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFacebook: ab91b0eefa108009cbeebb9b947d2d29a10e123d
-  EXFaceDetector: 0307e979c5876f5c45e07edb2742268f7f35e007
+  EXFaceDetector: 5bcf7ebe2eddd3b4780ba1bf12afe71e362cb30b
   EXFileSystem: 7ad4953f09f06710b547ed01fa570fc978c2daa7
-  EXFirebaseAnalytics: 27dbc5cb83c244d8404b2927676299f3e172470e
-  EXFirebaseCore: 16f39b0ea94ce985a8f2e16cc796bf79bdcfa297
+  EXFirebaseAnalytics: 97d7df01b24f799fe07ade00066894abd0e7e9f7
+  EXFirebaseCore: f86654ecb317c32e228e87ca6290d6343a2435ca
   EXFont: 1fb13af43dc517c01c0ff21a6e32f9f9bf2ea602
   EXGL: 95631064ed19b9fc8dfbedcc71c205961ae3c954
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
@@ -1364,16 +1390,16 @@ SPEC CHECKSUMS:
   FBLazyVector: 244195e30d63d7f564c55da4410b9a24e8fbceaa
   FBReactNativeSpec: c94002c1d93da3658f4d5119c6994d19961e3d52
   FBSDKCoreKit: dace5abafc2fd9272733e6d027bcf18102712117
-  Firebase: cd2ab85eec8170dc260186159f21072ecb679ad5
-  FirebaseAnalytics: f3f8f75de34fe04141a69bb1c4bd7e24a80178e1
-  FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
-  FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
-  FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
+  Firebase: 580d09e8edafc3073ebf09c03fd42e4d80d35fe9
+  FirebaseAnalytics: bd10d7706ba8d6e01ea2816f8fe9e9b881cb0918
+  FirebaseCore: 8138de860a90ca7eec5e324da5788fb0ebf1d93c
+  FirebaseCoreDiagnostics: 3b40dfadef5b90433a60ae01f01e90fe87aa76aa
+  FirebaseInstallations: 25764cf322e77f99449395870a65b2bef88e1545
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
-  GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
-  GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
-  GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
+  glog: 72375443141746dc43c25a6ecab4e2e566db69a2
+  GoogleAppMeasurement: ae033c3aad67e68294369373056b4d74cc8ae0d6
+  GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
+  GoogleMLKit: 85ffdc9641d05311c76dbba5bbf93059087be12f
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
@@ -1383,14 +1409,15 @@ SPEC CHECKSUMS:
   hermes-engine: bf7577d12ac6ccf53ab8b5af3c6ccf0dd8458c5c
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
-  MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
-  MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
-  MLKitVision: 51385878c9100024478971856510f9271ff555b5
-  nanopb: 59221d7f958fb711001e6a449489542d92ae113e
+  MLImage: 647f3d580c10b3c9a3f6154f5d7baead60c42a0c
+  MLKitCommon: 6d6be0a2e9a6340aad1c1f2b9449c11dee8af70f
+  MLKitFaceDetection: 897f007aa4eb426ef1bac7c66e5451d02ffc2e83
+  MLKitVision: 26da299aef93291f24f5200e8372919f73abf3b5
+  nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   Nimble: 9ca39ec3cb156bbb8c27f4943fd4643d28729616
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
-  PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: 3724efa50cb2846d7ccebc8691c574e85fd74471
+  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  Protobuf: 235750e4696ff59fb07d949a9dbbc92b3c0700fe
   Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
   RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
   RCTRequired: cd47794163052d2b8318c891a7a14fcfaccc75ab
@@ -1433,7 +1460,7 @@ SPEC CHECKSUMS:
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
-  SDWebImage: 240e5c12b592fb1268c1d03b8c90d90e8c2ffe82
+  SDWebImage: 53179a2dba77246efa8a9b85f5c5b21f8f43e38f
   SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
