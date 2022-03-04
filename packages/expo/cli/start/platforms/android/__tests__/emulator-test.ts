@@ -13,8 +13,8 @@ jest.mock('../adb', () => ({
   getAttachedDevicesAsync: jest.fn(),
   isBootAnimationCompleteAsync: jest.fn(),
 
-  listDevicesAsync: jest.fn(() => Promise.resolve([])),
-  startDeviceAsync: jest.fn(() => Promise.resolve()),
+  listDevicesAsync: jest.fn(async () => []),
+  startDeviceAsync: jest.fn(async () => {}),
 }));
 
 describe(listAvdsAsync, () => {
