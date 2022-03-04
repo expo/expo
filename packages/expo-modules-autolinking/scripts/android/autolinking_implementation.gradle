@@ -3,14 +3,14 @@ import java.nio.file.Paths
 
 
 // Object representing a gradle project.
-class GradleProject {
+class ExpoModuleGradleProject {
   // Name of the Android project
   String name
 
   // Path to the folder with Android project
   String sourceDir
 
-  GradleProject(Object data) {
+  ExpoModuleGradleProject(Object data) {
     this.name = data.name
     this.sourceDir = data.sourceDir
   }
@@ -25,12 +25,12 @@ class ExpoModule {
   String version
 
   // Gradle projects
-  GradleProject[] projects
+  ExpoModuleGradleProject[] projects
 
   ExpoModule(Object data) {
     this.name = data.packageName
     this.version = data.packageVersion
-    this.projects = data.projects.collect { new GradleProject(it) }
+    this.projects = data.projects.collect { new ExpoModuleGradleProject(it) }
   }
 }
 
