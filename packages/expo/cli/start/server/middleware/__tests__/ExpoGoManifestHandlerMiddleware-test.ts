@@ -74,7 +74,7 @@ describe('getParsedHeaders', () => {
     expect(middleware.getParsedHeaders(asReq({ headers: { 'expo-platform': 'android' } }))).toEqual(
       {
         acceptSignature: false,
-        hostname: undefined,
+        hostname: null,
         platform: 'android',
       }
     );

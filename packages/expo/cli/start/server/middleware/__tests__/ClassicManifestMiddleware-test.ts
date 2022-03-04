@@ -52,7 +52,7 @@ describe('getParsedHeaders', () => {
   it('returns empty object when the request headers are not defined', () => {
     expect(middleware.getParsedHeaders(asReq({}))).toEqual({
       acceptSignature: false,
-      hostname: undefined,
+      hostname: null,
       platform: 'ios',
     });
   });
