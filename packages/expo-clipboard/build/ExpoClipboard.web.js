@@ -36,6 +36,9 @@ export default {
     async setStringAsync(text) {
         return this.setString(text);
     },
+    async hasStringAsync() {
+        return this.getStringAsync().then((text) => text.length > 0);
+    },
     addClipboardListener() { },
     removeClipboardListener() { },
 };

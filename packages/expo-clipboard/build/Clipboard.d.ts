@@ -32,6 +32,14 @@ export declare function setStringAsync(text: string): Promise<boolean>;
  */
 export declare function setString(text: string): void;
 /**
+ * Returns whether the clipboard has text content.
+ *
+ * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
+ *
+ * @returns A promise that fulfills to `true` if clipboard has plain text content, resolves to `false` otherwise.
+ */
+export declare function hasStringAsync(): Promise<boolean>;
+/**
  * Gets the url from the user's clipboard.
  *
  * @returns A promise that fulfills to the url in the clipboard.

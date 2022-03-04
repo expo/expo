@@ -3,6 +3,7 @@ declare const _default: {
     getStringAsync(): Promise<string>;
     setString(text: string): boolean;
     setStringAsync(text: string): Promise<boolean>;
+    hasStringAsync(): Promise<boolean>;
     addClipboardListener(): void;
     removeClipboardListener(): void;
 };

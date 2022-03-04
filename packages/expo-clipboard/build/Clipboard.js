@@ -47,6 +47,19 @@ export function setString(text) {
     }
 }
 /**
+ * Returns whether the clipboard has text content.
+ *
+ * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
+ *
+ * @returns A promise that fulfills to `true` if clipboard has plain text content, resolves to `false` otherwise.
+ */
+export function hasStringAsync() {
+    if (!ExpoClipboard.hasStringAsync) {
+        throw new UnavailabilityError('Clipboard', 'hasStringAsync');
+    }
+    return ExpoClipboard.hasStringAsync();
+}
+/**
  * Gets the url from the user's clipboard.
  *
  * @returns A promise that fulfills to the url in the clipboard.
