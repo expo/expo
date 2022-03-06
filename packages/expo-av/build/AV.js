@@ -108,6 +108,10 @@ export async function getNativeSourceAndFullInitialStatusForLoadAsync(source, in
     if (nativeSource === null) {
         throw new Error(`Cannot load an AV asset from a null playback source`);
     }
+    // If asset has been downloaded use the localUri
+    if (asset && asset.localUri) {
+        nativeSource.uri = asset.localUri;
+    }
     return { nativeSource, fullInitialStatus };
 }
 export function getUnloadedStatus(error = null) {

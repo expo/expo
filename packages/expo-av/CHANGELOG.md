@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix local asset localUri not being used in development
+
 ### 💡 Others
 
 ## 11.0.0 — 2022-03-03
