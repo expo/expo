@@ -3,6 +3,7 @@
 ## Unpublished
 
 - Update require logic to find transitive deps that would not be hoisted at the top of the monorepo ([#16419](https://github.com/expo/expo/pull/16419) by [@Titozzz](https://github.com/Titozzz))
+- Fix `cannot cast object 'ExpoAutolinkingManager@' with class 'ExpoAutolinkingManager' to class 'ExpoAutolinkingManager'` on Android when a project is using `buildSrc`.
 
 ### 🛠 Breaking changes
 
