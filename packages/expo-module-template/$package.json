@@ -5,8 +5,13 @@
   "main": "build/<%- project.name %>.js",
   "types": "build/<%- project.name %>.d.ts",
   "scripts": {
-    "build": "tsc",
-    "lint": "eslint ."
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "keywords": ["react-native", "expo", "<%- project.slug %>", "<%- project.name %>"],
   "repository": "<%- repo %>",
@@ -18,7 +23,8 @@
   "homepage": "<%- repo %>#readme",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^2.0.0",
+    "expo-modules-core": "^0.6.5"
   },
   "peerDependencies": {
     "expo": "*"
