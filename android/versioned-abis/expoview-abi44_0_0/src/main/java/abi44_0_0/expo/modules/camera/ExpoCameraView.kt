@@ -212,7 +212,7 @@ class ExpoCameraView(
           start()
           val faceDetectorProvider: FaceDetectorProviderInterface by moduleRegistry()
           faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context)
-          pendingFaceDetectorSettings.let {
+          pendingFaceDetectorSettings?.let {
             faceDetector?.setSettings(it)
             pendingFaceDetectorSettings = null
           }
