@@ -11,7 +11,6 @@ import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
 import expo.modules.devlauncher.modules.DevLauncherAuth
 import expo.modules.core.interfaces.ReactNativeHostHandler
-import expo.modules.devlauncher.rncompatibility.DevLauncherReactNativeHostHandler
 
 object DevLauncherPackageDelegate {
   @JvmField
@@ -28,5 +27,5 @@ object DevLauncherPackageDelegate {
   fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> = emptyList()
   fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> = emptyList()
   fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> = emptyList()
-  fun createReactNativeHostHandlers(): List<ReactNativeHostHandler> = listOf(DevLauncherReactNativeHostHandler())
+  fun createReactNativeHostHandlers(): List<ReactNativeHostHandler> = emptyList()
 }

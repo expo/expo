@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.core.interfaces.ReactActivityHandler
+import expo.modules.core.interfaces.ReactNativeHostHandler
 
 object DevLauncherPackageDelegate {
   @JvmField
