@@ -1,10 +1,10 @@
 import { getBestSimulatorAsync } from '../getBestSimulator';
 import { sortDefaultDeviceToBeginningAsync } from '../promptAppleDevice';
 
+jest.mock('../getBestSimulator');
+
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
-
-jest.mock('../getBestSimulator');
 
 describe(sortDefaultDeviceToBeginningAsync, () => {
   it(`sorts default to the beginning`, async () => {

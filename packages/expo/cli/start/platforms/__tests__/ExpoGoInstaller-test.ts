@@ -3,15 +3,15 @@ import { downloadExpoGoAsync } from '../../../utils/downloadExpoGoAsync';
 import { confirmAsync } from '../../../utils/prompts';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../log');
 jest.mock('../../../utils/prompts');
 jest.mock('../../../utils/downloadExpoGoAsync');
 jest.mock('../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),
 }));
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 beforeEach(() => {
   // Reset global memo...

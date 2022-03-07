@@ -4,6 +4,7 @@ import { AppleAppIdResolver } from './AppleAppIdResolver';
 import { AppleDeviceManager } from './AppleDeviceManager';
 import { Device } from './simctl';
 
+/** Manages launching apps on Apple simulators. */
 export class ApplePlatformManager extends PlatformManager<Device> {
   constructor(
     protected projectRoot: string,

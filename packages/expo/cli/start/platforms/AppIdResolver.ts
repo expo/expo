@@ -3,6 +3,7 @@ import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { get } from '../../utils/obj';
 
+/** Resolves a native app identifier (bundle identifier, package name) from the project files. */
 export class AppIdResolver {
   constructor(
     protected projectRoot: string,

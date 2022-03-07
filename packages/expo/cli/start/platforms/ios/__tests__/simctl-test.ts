@@ -4,10 +4,10 @@ import { execSync } from 'child_process';
 import * as Log from '../../../../log';
 import { getContainerPathAsync, getDevicesAsync, getInfoPlistValueAsync } from '../simctl';
 
+jest.mock(`../../../../log`);
+
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
-
-jest.mock(`../../../../log`);
 
 beforeEach(() => {
   asMock(spawnAsync).mockClear();

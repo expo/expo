@@ -7,18 +7,19 @@ import { installExitHooks } from '../../../../utils/exit';
 import { ADBServer } from '../ADBServer';
 
 jest.mock('../../../../log');
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),
 }));
 
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
 const env = process.env;
+
 beforeEach(() => {
   delete process.env.ANDROID_HOME;
 });
+
 afterAll(() => {
   process.env = env;
 });

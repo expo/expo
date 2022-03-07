@@ -4,9 +4,9 @@ import spawnAsync from '@expo/spawn-async';
 import * as Log from '../../../../log';
 import { ensureSimulatorAppRunningAsync } from '../ensureSimulatorAppRunning';
 
-const asMock = (fn: any): jest.Mock => fn;
-
 jest.mock(`../../../../log`);
+
+const asMock = (fn: any): jest.Mock => fn;
 
 beforeEach(() => {
   asMock(Log.log).mockClear();

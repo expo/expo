@@ -6,10 +6,10 @@ import { startAdbReverseAsync } from '../adbReverse';
 jest.mock(`../../../../log`);
 jest.mock('../adb');
 jest.mock('../../ExpoGoInstaller');
-
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
 }));
+
 const asMock = (fn: any): jest.Mock => fn;
 const originalResolveDevice = AndroidDeviceManager.resolveAsync;
 

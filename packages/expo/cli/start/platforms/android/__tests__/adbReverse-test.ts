@@ -3,10 +3,6 @@ import { getAttachedDevicesAsync, getServer } from '../adb';
 import { startAdbReverseAsync, stopAdbReverseAsync } from '../adbReverse';
 
 jest.mock('../../../../log');
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../adb', () => {
   const actual = jest.requireActual('../adb');
   const server = {
@@ -18,10 +14,12 @@ jest.mock('../adb', () => {
     getServer: jest.fn(() => server),
   };
 });
-
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),
 }));
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 describe(startAdbReverseAsync, () => {
   it(`reverses devices`, async () => {

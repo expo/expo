@@ -9,9 +9,6 @@ import {
 } from '../adb';
 import { shellDumpsysPackage } from './fixtures/adb-output';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
 }));
@@ -21,6 +18,9 @@ jest.mock('../adb', () => ({
   openAppIdAsync: jest.fn(),
   openUrlAsync: jest.fn(),
 }));
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
