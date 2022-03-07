@@ -42,7 +42,7 @@ class ClipboardModule : Module() {
       val clip = clipboardManager.primaryClip?.takeIf { it.itemCount >= 1 }
       val firstItem = clip?.getItemAt(0)
       when (options.preferredType) {
-        StringContentType.PLAIN -> firstItem?.coerceToText(context)
+        StringContentType.PLAIN -> firstItem?.coerceToPlainText(context)
         StringContentType.HTML -> firstItem?.coerceToHtmlText(context)
       } ?: ""
     }
@@ -228,3 +228,24 @@ private fun plainTextFromHtml(htmlContent: String): String {
   TextUtils.getChars(styledText, 0, styledText.length, chars, 0)
   return String(chars)
 }
+
+/**
+ * Turn this item into text, regardless of the type of data it
+ * actually contains. It is the same as [ClipData.Item.coerceToText]
+ * but this also supports HTML.
+ *
+ * The algorithm for deciding what text to return is:
+ * - If [ClipData.Item.getHtmlText]  is non-null, strip HTML tags and return that.
+ * See [plainTextFromHtml] for implementation details
+ * - Otherwise, return the result of [ClipData.Item.coerceToText]
+ *
+ * @param context The caller's Context, from which its ContentResolver
+ * and other things can be retrieved.
+ * @return Returns the item's textual representation.
+ */
+private fun ClipData.Item.coerceToPlainText(context: Context): String =
+  if (this.text == null && this.htmlText != null) {
+    plainTextFromHtml(this.htmlText)
+  } else {
+    this.coerceToText(context).toString()
+  }
