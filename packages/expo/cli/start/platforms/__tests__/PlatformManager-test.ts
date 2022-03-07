@@ -20,12 +20,6 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 describe('openAsync', () => {
-  beforeEach(() => {
-    asMock(Log.log).mockReset();
-    asMock(Log.warn).mockReset();
-    asMock(Log.error).mockReset();
-  });
-
   // Mock haven
   function createManager({ customUrl = 'custom://path', isAppInstalled = true } = {}) {
     const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');

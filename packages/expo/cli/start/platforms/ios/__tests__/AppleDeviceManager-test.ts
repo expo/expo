@@ -20,7 +20,7 @@ function createDevice() {
 describe('getAppVersionAsync', () => {
   it(`gets the version from an installed app`, async () => {
     const device = createDevice();
-    asMock(getInfoPlistValueAsync).mockClear().mockResolvedValueOnce('2.23.2');
+    asMock(getInfoPlistValueAsync).mockResolvedValueOnce('2.23.2');
     await expect(device.getAppVersionAsync('host.exp.Exponent')).resolves.toBe('2.23.2');
     expect(getInfoPlistValueAsync).toHaveBeenCalledWith(expect.anything(), {
       appId: 'host.exp.Exponent',
@@ -29,7 +29,7 @@ describe('getAppVersionAsync', () => {
   });
   it(`returns null when the app is not installed`, async () => {
     const device = createDevice();
-    asMock(getInfoPlistValueAsync).mockClear().mockResolvedValueOnce(null);
+    asMock(getInfoPlistValueAsync).mockResolvedValueOnce(null);
     await expect(device.getAppVersionAsync('host.exp.Exponent')).resolves.toBe(null);
   });
 });
@@ -67,7 +67,6 @@ describe('launchApplicationIdAsync', () => {
 
 describe('openUrlAsync', () => {
   it('launches into Expo Go', async () => {
-    asMock(openUrlAsync).mockClear();
     const device = createDevice();
     await device.openUrlAsync('exp://foobar');
     expect(openUrlAsync).toBeCalledWith(
@@ -76,8 +75,6 @@ describe('openUrlAsync', () => {
     );
   });
   it('opens a URL on a device', async () => {
-    asMock(openUrlAsync).mockClear();
-    asMock(openAppIdAsync).mockClear();
     const device = createDevice();
     await device.openUrlAsync('http://foobar');
     expect(openAppIdAsync).not.toBeCalled();

@@ -16,15 +16,15 @@ function getUnixPID(port: number | string): string {
     ?.trim?.();
 }
 
-/** Activate the Emulator window on OSX. */
-export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>) {
+/** Activate the Emulator window on macOS. */
+export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>): Promise<boolean> {
   if (
     // only mac is supported for now.
     process.platform !== 'darwin' ||
     // can only focus emulators
     device.type !== 'emulator'
   ) {
-    return;
+    return false;
   }
 
   // Google Emulator ID: `emulator-5554` -> `5554`
@@ -36,14 +36,16 @@ export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>) 
   const pid = getUnixPID(androidPid);
 
   if (!pid) {
-    return;
+    return false;
   }
   try {
     await osascript.execAsync(`
     tell application "System Events"
       set frontmost of the first process whose unix id is ${pid} to true
     end tell`);
+    return true;
   } catch {
     // noop -- this feature is very specific and subject to failure.
+    return false;
   }
 }

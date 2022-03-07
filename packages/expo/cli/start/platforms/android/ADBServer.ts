@@ -13,9 +13,12 @@ const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 
 export class ADBServer {
   isRunning: boolean = false;
+  removeExitHook: () => void = () => {};
 
   /** Returns the command line reference to ADB. */
   getAdbExecutablePath(): string {
+    // https://developer.android.com/studio/command-line/variables
+    // TODO: Add ANDROID_SDK_ROOT support as well https://github.com/expo/expo/pull/16516#discussion_r820037917
     if (process.env.ANDROID_HOME) {
       return `${process.env.ANDROID_HOME}/platform-tools/adb`;
     }
@@ -28,7 +31,7 @@ export class ADBServer {
       return false;
     }
     // clean up
-    installExitHooks(() => {
+    this.removeExitHook = installExitHooks(() => {
       if (this.isRunning) {
         this.stopAsync();
       }
@@ -46,6 +49,7 @@ export class ADBServer {
     if (!this.isRunning) {
       return false;
     }
+    this.removeExitHook();
     try {
       await this.runAsync(['kill-server']);
       return true;
@@ -59,7 +63,7 @@ export class ADBServer {
 
   /** Execute an ADB command with given args. */
   async runAsync(args: string[]): Promise<string> {
-    // await Binaries.addToPathAsync('adb');
+    // TODO: Add a global package that installs adb to the path.
     const adb = this.getAdbExecutablePath();
 
     await this.startAsync();
@@ -71,7 +75,7 @@ export class ADBServer {
 
   /** Get ADB file output. Useful for reading device state/settings. */
   async getFileOutputAsync(args: string[]): Promise<string> {
-    // await Binaries.addToPathAsync('adb');
+    // TODO: Add a global package that installs adb to the path.
     const adb = this.getAdbExecutablePath();
 
     await this.startAsync();

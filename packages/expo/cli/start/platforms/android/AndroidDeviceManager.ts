@@ -13,7 +13,7 @@ import { startDeviceAsync } from './emulator';
 import { getDevicesAsync } from './getDevices';
 import { promptForDeviceAsync } from './promptAndroidDevice';
 
-const EXPO_GO_PACKAGE = 'host.exp.exponent';
+const EXPO_GO_APPLICATION_IDENTIFIER = 'host.exp.exponent';
 
 export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Device> {
   static async resolveAsync({
@@ -21,7 +21,6 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     shouldPrompt,
   }: BaseResolveDeviceProps<AndroidDebugBridge.Device> = {}): Promise<AndroidDeviceManager> {
     if (device) {
-      // await startAdbReverseAsync();
       const manager = new AndroidDeviceManager(device);
       if (!(await manager.attemptToStartAsync())) {
         throw new AbortCommandError();
@@ -49,12 +48,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     });
 
     const regex = /versionName=([0-9.]+)/;
-    const regexMatch = regex.exec(info);
-    if (!regexMatch || regexMatch.length < 2) {
-      return null;
-    }
-
-    return regexMatch[1] ?? null;
+    return regex.exec(info)?.[1] ?? null;
   }
 
   protected async attemptToStartAsync(): Promise<AndroidDebugBridge.Device | null> {
@@ -84,7 +78,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   }
 
   async uninstallAppAsync(appId: string) {
-    // we need to check if its installed, else we might bump into "Failure [DELETE_FAILED_INTERNAL_ERROR]"
+    // we need to check if the app is installed, else we might bump into "Failure [DELETE_FAILED_INTERNAL_ERROR]"
     const isInstalled = await this.isAppInstalledAsync(appId);
     if (!isInstalled) {
       return;
@@ -96,7 +90,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
       });
     } catch (e) {
       Log.error(
-        `Could not uninstall app '${appId}' from your device, please uninstall it manually and try again.`
+        `Could not uninstall app "${appId}" from your device, please uninstall it manually and try again.`
       );
       throw e;
     }
@@ -105,7 +99,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   /**
    * @param launchActivity Activity to launch `[application identifier]/.[main activity name]`, ex: `com.bacon.app/.MainActivity`
    */
-  async launchActivityAsync(launchActivity: string) {
+  async launchActivityAsync(launchActivity: string): Promise<string> {
     try {
       return await AndroidDebugBridge.launchActivityAsync(this.device, {
         launchActivity,
@@ -144,7 +138,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
       // Note: this is not needed in Expo Development Client, it only applies to Expo Go
       await AndroidDebugBridge.openAppIdAsync(
         { pid: this.device.pid },
-        { applicationId: EXPO_GO_PACKAGE }
+        { applicationId: EXPO_GO_APPLICATION_IDENTIFIER }
       );
     }
 
@@ -157,7 +151,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   }
 
   async ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
-    const installer = new ExpoGoInstaller('android', EXPO_GO_PACKAGE, sdkVersion);
+    const installer = new ExpoGoInstaller('android', EXPO_GO_APPLICATION_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }
 }

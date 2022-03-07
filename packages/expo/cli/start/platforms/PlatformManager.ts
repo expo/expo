@@ -43,7 +43,7 @@ export class PlatformManager<
   ) {}
 
   /** Returns the project application identifier or asserts that one is not defined. Exposed for testing. */
-  public _getAppIdResolver(): AppIdResolver {
+  _getAppIdResolver(): AppIdResolver {
     throw new UnimplementedError();
   }
 
@@ -111,7 +111,7 @@ export class PlatformManager<
   }
 
   /** Launch the project on a device given the input runtime. */
-  public async openAsync(
+  async openAsync(
     options:
       | {
           runtime: 'expo' | 'web';

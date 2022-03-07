@@ -22,9 +22,6 @@ function createAppIdResolver() {
 }
 
 describe('getAppIdAsync', () => {
-  beforeEach(() => {
-    asMock(getConfig).mockReset();
-  });
   it('resolves the app id from native files', async () => {
     const resolver = createAppIdResolver();
     resolver.hasNativeProjectAsync = jest.fn(async () => true);

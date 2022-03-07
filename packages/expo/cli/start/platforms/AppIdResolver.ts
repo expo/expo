@@ -56,7 +56,7 @@ export class AppIdResolver {
     if (!appId) {
       throw new CommandError(
         'NO_APP_ID',
-        `Failed to locate the ${this.platform} application identifier in the '${this.platform}/' folder. This is required to open the app.`
+        `Failed to locate the ${this.platform} application identifier in the "${this.platform}/" folder. This is required to open the app.`
       );
     }
     return appId;

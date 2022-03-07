@@ -9,17 +9,11 @@ jest.mock(`../../../../log`);
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-beforeEach(() => {
-  asMock(spawnAsync).mockClear();
-});
-
 describe(getDevicesAsync, () => {
   it(`returns a list of malformed devices`, async () => {
-    asMock(spawnAsync)
-      .mockClear()
-      .mockResolvedValueOnce({
-        stdout: 'foobar',
-      } as any);
+    asMock(spawnAsync).mockResolvedValueOnce({
+      stdout: 'foobar',
+    } as any);
 
     await expect(getDevicesAsync()).rejects.toThrowError();
     // Blame for the error.
@@ -27,11 +21,9 @@ describe(getDevicesAsync, () => {
   });
 
   it(`returns a list of devices`, async () => {
-    asMock(spawnAsync)
-      .mockClear()
-      .mockResolvedValueOnce({
-        stdout: JSON.stringify(require('./fixtures/xcrun-simctl-list-devices.json')),
-      } as any);
+    asMock(spawnAsync).mockResolvedValueOnce({
+      stdout: JSON.stringify(require('./fixtures/xcrun-simctl-list-devices.json')),
+    } as any);
 
     const devices = await getDevicesAsync();
     expect(devices.length).toBe(12);
@@ -47,13 +39,11 @@ describe(getDevicesAsync, () => {
 describe(getInfoPlistValueAsync, () => {
   it(`fetches a value from the Info.plist of an app`, async () => {
     asMock(spawnAsync)
-      .mockClear()
       .mockResolvedValueOnce({
         // Like: '/Users/evanbacon/Library/Developer/CoreSimulator/Devices/EFEEA6EF-E3F5-4EDE-9B72-29EAFA7514AE/data/Containers/Bundle/Application/FA43A0C6-C2AD-442D-B8B1-EAF3E88CF3BF/Exponent-2.23.2.tar.app'
         stdout: '  /path/to/my-app.app ',
-      } as any);
-
-    asMock(execSync).mockClear().mockReturnValueOnce('2.23.2 ');
+      } as any)
+      .mockReturnValueOnce({ output: ['2.23.2 '] } as any);
 
     await expect(
       getInfoPlistValueAsync(
@@ -61,8 +51,10 @@ describe(getInfoPlistValueAsync, () => {
         { appId: 'com.my-app', key: 'CFBundleShortVersionString' }
       )
     ).resolves.toEqual('2.23.2');
-    expect(execSync).toBeCalledWith(
-      'defaults read /path/to/my-app.app/Info CFBundleShortVersionString',
+    expect(spawnAsync).toHaveBeenNthCalledWith(
+      2,
+      'defaults',
+      ['read', '/path/to/my-app.app/Info', 'CFBundleShortVersionString'],
       expect.anything()
     );
   });
@@ -70,11 +62,9 @@ describe(getInfoPlistValueAsync, () => {
 
 describe(getContainerPathAsync, () => {
   it(`returns container path`, async () => {
-    asMock(spawnAsync)
-      .mockClear()
-      .mockResolvedValueOnce({
-        stdout: '  /path/to/my-app.app ',
-      } as any);
+    asMock(spawnAsync).mockResolvedValueOnce({
+      stdout: '  /path/to/my-app.app ',
+    } as any);
 
     await expect(getContainerPathAsync({ udid: undefined }, { appId: 'foobar' })).resolves.toBe(
       '/path/to/my-app.app'
@@ -87,11 +77,9 @@ describe(getContainerPathAsync, () => {
     );
   });
   it(`returns null when the requested app isn't installed`, async () => {
-    asMock(spawnAsync)
-      .mockClear()
-      .mockRejectedValueOnce({
-        stderr: 'No such file or directory',
-      } as any);
+    asMock(spawnAsync).mockRejectedValueOnce({
+      stderr: 'No such file or directory',
+    } as any);
 
     await expect(getContainerPathAsync({ udid: undefined }, { appId: 'foobar' })).resolves.toBe(
       null

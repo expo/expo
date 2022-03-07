@@ -1,5 +1,4 @@
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import { execSync } from 'child_process';
+import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
@@ -11,41 +10,26 @@ type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
 
 export type Device = {
   availabilityError?: 'runtime profile not found';
-  /**
-   * '/Users/name/Library/Developer/CoreSimulator/Devices/00E55DC0-0364-49DF-9EC6-77BE587137D4/data'
-   */
+  /** '/Users/name/Library/Developer/CoreSimulator/Devices/00E55DC0-0364-49DF-9EC6-77BE587137D4/data' */
   dataPath: string;
-  /**
-   * '/Users/name/Library/Logs/CoreSimulator/00E55DC0-0364-49DF-9EC6-77BE587137D4'
-   */
+  /** '/Users/name/Library/Logs/CoreSimulator/00E55DC0-0364-49DF-9EC6-77BE587137D4' */
   logPath: string;
-  /**
-   * '00E55DC0-0364-49DF-9EC6-77BE587137D4'
-   */
+  /** '00E55DC0-0364-49DF-9EC6-77BE587137D4' */
   udid: string;
-  /**
-   * 'com.apple.CoreSimulator.SimRuntime.tvOS-13-4'
-   */
+  /** 'com.apple.CoreSimulator.SimRuntime.iOS-15-1' */
   runtime: string;
+  /** If the device is "available" which generally means that the OS files haven't been deleted (this can happen when Xcode updates).  */
   isAvailable: boolean;
-  /**
-   * 'com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p'
-   */
+  /** 'com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro' */
   deviceTypeIdentifier: string;
   state: DeviceState;
-  /**
-   * 'Apple TV'
-   */
+  /** 'iPhone 13 Pro' */
   name: string;
-
+  /** Type of OS the device uses. */
   osType: OSType;
-  /**
-   * '13.4'
-   */
+  /** '15.1' */
   osVersion: string;
-  /**
-   * 'iPhone 11 (13.6)'
-   */
+  /** 'iPhone 13 Pro (15.1)' */
   windowName: string;
 };
 
@@ -97,10 +81,10 @@ export async function getInfoPlistValueAsync(
   const containerPath = await getContainerPathAsync(device, { appId });
   if (containerPath) {
     try {
-      const defaultDeviceUDID = execSync(`defaults read ${containerPath}/Info ${key}`, {
+      const { output } = await spawnAsync('defaults', ['read', `${containerPath}/Info`, key], {
         stdio: 'pipe',
-      }).toString();
-      return defaultDeviceUDID.trim();
+      });
+      return output.join('\n').trim();
     } catch {
       return null;
     }
@@ -140,6 +124,7 @@ export async function openAppIdAsync(
   }
 ): Promise<SpawnResult> {
   const results = await openAppIdInternalAsync(device, options);
+  // Similar to 194, this is a conformance issue which indicates that the given device has no app that can handle our launch request.
   if (results.status === 4) {
     throw new CommandError('APP_NOT_INSTALLED', results.stderr);
   }
@@ -167,12 +152,12 @@ export async function bootAsync(device: DeviceContext): Promise<Device | null> {
   return isDeviceBootedAsync(device);
 }
 
-/** Returns a list of devices which current state is 'Booted' as an array. */
+/** Returns a list of devices whose current state is 'Booted' as an array. */
 export async function getBootedSimulatorsAsync(): Promise<Device[]> {
   const simulatorDeviceInfo = await getRuntimesAsync('devices');
-  return Object.values(simulatorDeviceInfo.devices).reduce((prev, runtime) => {
-    return prev.concat(runtime.filter((device) => device.state === 'Booted'));
-  }, []);
+  return Object.values(simulatorDeviceInfo.devices).flatMap((runtime) =>
+    runtime.filter((device) => device.state === 'Booted')
+  );
 }
 
 /** Returns the current device if its state is 'Booted'. */
@@ -226,7 +211,7 @@ function parseSimControlJSONResults(input: string): any {
   } catch (error: any) {
     // Nov 15, 2020: Observed this can happen when opening the simulator and the simulator prompts the user to update the xcode command line tools.
     // Unexpected token I in JSON at position 0
-    if (error.message.match('Unexpected token')) {
+    if (error.message.includes('Unexpected token')) {
       Log.error(`Apple's simctl returned malformed JSON:\n${input}`);
     }
     throw error;
@@ -262,10 +247,7 @@ async function getRuntimesAsync(
 /** Return a list of iOS simulators. */
 export async function getDevicesAsync(): Promise<Device[]> {
   const simulatorDeviceInfo = await getRuntimesAsync('devices');
-  return Object.values(simulatorDeviceInfo.devices).reduce(
-    (prev, runtime) => prev.concat(runtime),
-    []
-  );
+  return Object.values(simulatorDeviceInfo.devices).flat();
 }
 
 /** Run a `simctl` command. */

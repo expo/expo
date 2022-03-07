@@ -38,7 +38,7 @@ describe(launchActivityAsync, () => {
     ).rejects.toThrow(CommandError);
   });
   it(`runs`, async () => {
-    asMock(getServer().runAsync).mockClear().mockResolvedValueOnce('...');
+    asMock(getServer().runAsync).mockResolvedValueOnce('...');
     await launchActivityAsync(device, {
       launchActivity: 'dev.bacon.app/.MainActivity',
     });
@@ -60,15 +60,13 @@ describe(launchActivityAsync, () => {
 
 describe(isPackageInstalledAsync, () => {
   it(`returns true when a package is installed`, async () => {
-    asMock(getServer().runAsync)
-      .mockClear()
-      .mockResolvedValueOnce(
-        [
-          'package:com.google.android.networkstack.tethering',
-          'package:com.android.cts.priv.ctsshim',
-          'package:com.google.android.youtube',
-        ].join('\n')
-      );
+    asMock(getServer().runAsync).mockResolvedValueOnce(
+      [
+        'package:com.google.android.networkstack.tethering',
+        'package:com.android.cts.priv.ctsshim',
+        'package:com.google.android.youtube',
+      ].join('\n')
+    );
     expect(await isPackageInstalledAsync(device, 'com.google.android.youtube')).toBe(true);
     expect(getServer().runAsync).toBeCalledWith([
       '-s',
@@ -81,7 +79,7 @@ describe(isPackageInstalledAsync, () => {
     ]);
   });
   it(`returns false when a package is not isntalled`, async () => {
-    asMock(getServer().runAsync).mockClear().mockResolvedValueOnce('');
+    asMock(getServer().runAsync).mockResolvedValueOnce('');
     expect(await isPackageInstalledAsync(device, 'com.google.android.youtube')).toBe(false);
   });
 });

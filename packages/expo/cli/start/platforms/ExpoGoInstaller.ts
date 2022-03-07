@@ -31,7 +31,7 @@ export class ExpoGoInstaller<IDevice> {
   }
 
   /** Returns the expected version of Expo Go given the project SDK Version. Exposed for testing. */
-  public async _getExpectedClientVersionAsync(): Promise<string | null> {
+  async _getExpectedClientVersionAsync(): Promise<string | null> {
     const versions = await getVersionsAsync();
     // Like `sdkVersions['44.0.0']['androidClientVersion'] = '1.0.0'`
     const specificVersion =
@@ -79,8 +79,11 @@ export class ExpoGoInstaller<IDevice> {
       const binaryPath = await downloadExpoGoAsync(this.platform);
       // Install the app on the device.
       const ora = logNewSection(`Installing Expo Go on ${deviceManager.name}`);
-      await deviceManager.installAppAsync(binaryPath);
-      ora.stop();
+      try {
+        await deviceManager.installAppAsync(binaryPath);
+      } finally {
+        ora.stop();
+      }
       return true;
     }
     return false;

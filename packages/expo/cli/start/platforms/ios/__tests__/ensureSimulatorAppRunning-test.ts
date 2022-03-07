@@ -8,12 +8,6 @@ jest.mock(`../../../../log`);
 
 const asMock = (fn: any): jest.Mock => fn;
 
-beforeEach(() => {
-  asMock(Log.log).mockClear();
-  asMock(spawnAsync).mockClear();
-  asMock(execAsync).mockClear();
-});
-
 it('should do nothing when the Simulator.app is running', async () => {
   asMock(execAsync).mockResolvedValueOnce('1');
 
@@ -36,7 +30,7 @@ it('should activate the window when Simulator.app is not running', async () => {
     '-CurrentDeviceUDID',
     '123',
   ]);
-}, 1000);
+});
 
 it('should throw a timeout warning when Simulator.app takes too long to start', async () => {
   asMock(execAsync).mockRejectedValue(new Error('Application isn’t running'));
@@ -48,4 +42,4 @@ it('should throw a timeout warning when Simulator.app takes too long to start', 
   // initial call (1) + interval / timeout (2)
   expect(asMock(execAsync).mock.calls.length).toBeGreaterThanOrEqual(3);
   expect(spawnAsync).toBeCalledTimes(1);
-}, 1000);
+});

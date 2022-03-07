@@ -15,7 +15,6 @@ export async function ensureSimulatorAppRunningAsync(
     maxWaitTime?: number;
   } = {}
 ): Promise<void> {
-  // Yes, simulators can be booted even if the app isn't running, obviously we'd never want this.
   if (await isSimulatorAppRunningAsync()) {
     return;
   }

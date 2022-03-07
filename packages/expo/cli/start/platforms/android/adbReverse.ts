@@ -12,7 +12,7 @@ export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   for (const device of devices) {
     for (const port of ports) {
       if (!(await adbReverseAsync(device, port))) {
-        Log.debug(`[ADB] Failed to start reverse port '${port}' on device '${device.name}'`);
+        Log.debug(`[ADB] Failed to start reverse port ${port} on device "${device.name}"`);
         return false;
       }
     }
@@ -39,7 +39,7 @@ async function adbReverseAsync(device: Device, port: number): Promise<boolean> {
     await getServer().runAsync(adbArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`));
     return true;
   } catch (e) {
-    Log.warn(`[ADB] Couldn't reverse port '${port}': ${e.message}`);
+    Log.warn(`[ADB] Couldn't reverse port ${port}: ${e.message}`);
     return false;
   }
 }
@@ -54,7 +54,7 @@ async function adbReverseRemoveAsync(device: Device, port: number): Promise<bool
     return true;
   } catch (e) {
     // Don't send this to warn because we call this preemptively sometimes
-    Log.debug(`[ADB] Couldn't reverse remove port '${port}': ${e.message}`);
+    Log.debug(`[ADB] Couldn't reverse remove port ${port}: ${e.message}`);
     return false;
   }
 }
