@@ -8,4 +8,6 @@ export default {
   ENABLE_QR_CODE_BUTTON: Constants.isDevice && !Environment.IsIOSRestrictedBuild,
   // Disable the clipboard button in the App Store client.
   ENABLE_CLIPBOARD_BUTTON: !Environment.IsIOSRestrictedBuild,
+
+  NAVIGATION_REDESIGN_ENABLED: __DEV__,
 };

@@ -1,3 +1,4 @@
+import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import {
@@ -7,10 +8,13 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
+import HomeScreen from 'screens/HomeScreen';
 
+import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
@@ -39,6 +43,7 @@ import {
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import {
   DiagnosticsStackRoutes,
+  HomeStackRoutes,
   ProfileStackRoutes,
   ProjectsStackRoutes,
 } from './Navigation.types';
@@ -46,6 +51,7 @@ import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
+const HomeStack = createStackNavigator<HomeStackRoutes>();
 
 function useThemeName() {
   const theme = useTheme();
@@ -90,6 +96,26 @@ function ProjectsStackScreen() {
         }}
       />
     </ProjectsStack.Navigator>
+  );
+}
+
+function HomeStackScreen() {
+  const theme = useThemeName();
+  return (
+    <HomeStack.Navigator initialRouteName="Home" screenOptions={defaultNavigationOptions(theme)}>
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          title: 'Home',
+          ...Platform.select({
+            ios: {
+              headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
+            },
+          }),
+        }}
+      />
+    </HomeStack.Navigator>
   );
 }
 
@@ -176,32 +202,57 @@ function DiagnosticsStackScreen() {
 const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
+  const projectsOrHomeScreen = FeatureFlags.NAVIGATION_REDESIGN_ENABLED
+    ? 'HomeStack'
+    : 'ProjectsStack';
   const initialRouteName = Environment.IsIOSRestrictedBuild
     ? 'ProfileStackScreen'
-    : 'ProjectsStack';
+    : projectsOrHomeScreen;
 
   return (
     <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
-      <BottomTab.Screen
-        name="ProjectsStack"
-        component={ProjectsStackScreen}
-        options={{
-          tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
-          tabBarLabel: 'Projects',
-        }}
-      />
+      {FeatureFlags.NAVIGATION_REDESIGN_ENABLED ? (
+        <BottomTab.Screen
+          name="HomeStack"
+          component={HomeStackScreen}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <HomeFilledIcon style={styles.icon} color={color} size={24} />
+            ),
+            tabBarLabel: 'Home',
+          }}
+        />
+      ) : (
+        <BottomTab.Screen
+          name="ProjectsStack"
+          component={ProjectsStackScreen}
+          options={{
+            tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+            tabBarLabel: 'Projects',
+          }}
+        />
+      )}
       {Platform.OS === 'ios' && (
         <BottomTab.Screen
           name="DiagnosticsStack"
           component={DiagnosticsStackScreen}
           options={{
-            tabBarIcon: (props) => (
-              <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
-            ),
+            tabBarIcon: (props) => <DiagnosticsIcon {...props} style={styles.icon} size={24} />,
             tabBarLabel: 'Diagnostics',
           }}
         />
       )}
+      {FeatureFlags.NAVIGATION_REDESIGN_ENABLED ? (
+        <BottomTab.Screen
+          name="SettingsScreen"
+          component={UserSettingsScreen}
+          options={{
+            title: 'Settings',
+            tabBarIcon: (props) => <SettingsFilledIcon {...props} style={styles.icon} size={24} />,
+            tabBarLabel: 'Settings',
+          }}
+        />
+      ) : null}
       <BottomTab.Screen
         name="ProfileStack"
         component={ProfileStackScreen}
