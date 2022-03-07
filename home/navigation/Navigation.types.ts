@@ -6,6 +6,11 @@ export type ProjectsStackRoutes = {
   Projects: object;
 };
 
+export type HomeStackRoutes = {
+  Home: object;
+  Account: { accountName: string };
+};
+
 export type ProfileStackRoutes = {
   Profile: object;
   ProfileAllProjects: object;
