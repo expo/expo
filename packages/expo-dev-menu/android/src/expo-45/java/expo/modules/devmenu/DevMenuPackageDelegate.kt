@@ -11,10 +11,21 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.react.DevMenuAwareReactActivity
 
 object DevMenuPackageDelegate {
-  // Backwards compatibility -- if the MainActivity is already an instance of
-  // DevMenuAwareReactActivity, we just skip auto-setup in this case.
-  fun shouldEnableAutoSetup(activityContext: Context?): Boolean =
-    !(activityContext != null && activityContext is DevMenuAwareReactActivity)
+  @JvmField
+  var enableAutoSetup: Boolean? = null
+
+  fun shouldEnableAutoSetup(activityContext: Context?): Boolean {
+    if (enableAutoSetup != null) {
+      // if someone else has set this explicitly, use that value
+      return enableAutoSetup!!
+    }
+    if (activityContext != null && activityContext is DevMenuAwareReactActivity) {
+      // Backwards compatibility -- if the MainActivity is already an instance of
+      // DevMenuAwareReactActivity, we skip auto-setup.
+      return false
+    }
+    return true
+  }
 
   fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
     if (!shouldEnableAutoSetup(activityContext)) {

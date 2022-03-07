@@ -12,6 +12,9 @@ import expo.modules.devlauncher.modules.DevLauncherModule
 import expo.modules.devlauncher.modules.DevLauncherAuth
 
 object DevLauncherPackageDelegate {
+  @JvmField
+  var enableAutoSetup: Boolean? = null
+
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
     listOf(
       DevLauncherModule(reactContext),
