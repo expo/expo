@@ -10,28 +10,28 @@ interface ValidationBinder {
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class BindUsing(val binder: KClass<*>)
 
-internal class IntRangeBinder: ValidationBinder {
+internal class IntRangeBinder : ValidationBinder {
   override fun bind(annotation: Annotation): FieldValidator<*> {
     val rangeAnnotation = annotation as IntRange
     return NumericRangeValidator(rangeAnnotation.from, rangeAnnotation.to)
   }
 }
 
-internal class LongRangeBinder: ValidationBinder {
+internal class LongRangeBinder : ValidationBinder {
   override fun bind(annotation: Annotation): FieldValidator<*> {
     val rangeAnnotation = annotation as LongRange
     return NumericRangeValidator(rangeAnnotation.from, rangeAnnotation.to)
   }
 }
 
-internal class FloatRangeBinder: ValidationBinder {
+internal class FloatRangeBinder : ValidationBinder {
   override fun bind(annotation: Annotation): FieldValidator<*> {
     val rangeAnnotation = annotation as FloatRange
     return NumericRangeValidator(rangeAnnotation.from, rangeAnnotation.to)
   }
 }
 
-internal class DoubleRangeBinder: ValidationBinder {
+internal class DoubleRangeBinder : ValidationBinder {
   override fun bind(annotation: Annotation): FieldValidator<*> {
     val rangeAnnotation = annotation as DoubleRange
     return NumericRangeValidator(rangeAnnotation.from, rangeAnnotation.to)

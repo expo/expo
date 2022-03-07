@@ -6,8 +6,6 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import expo.modules.kotlin.types.convert
 import org.junit.Test
-import kotlin.reflect.KFunction
-import kotlin.reflect.typeOf
 
 class RecordTypeConverterTest {
   @Test
