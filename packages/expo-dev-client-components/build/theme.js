@@ -136,13 +136,15 @@ export const bg = {
     none: { backgroundColor: 'transparent' },
     default: { backgroundColor: lightTheme.background.default },
     secondary: { backgroundColor: lightTheme.background.secondary },
+    overlay: { backgroundColor: lightTheme.background.overlay },
     success: { backgroundColor: lightTheme.background.success },
     warning: { backgroundColor: lightTheme.background.warning },
     error: { backgroundColor: lightTheme.background.error },
 };
 export const bgDark = {
-    default: { backgroundColor: darkTheme.background.secondary },
-    secondary: { backgroundColor: darkTheme.background.default },
+    default: { backgroundColor: darkTheme.background.default },
+    secondary: { backgroundColor: darkTheme.background.secondary },
+    overlay: { backgroundColor: darkTheme.background.overlay },
     success: { backgroundColor: darkTheme.background.success },
     warning: { backgroundColor: darkTheme.background.warning },
     error: { backgroundColor: darkTheme.background.error },
