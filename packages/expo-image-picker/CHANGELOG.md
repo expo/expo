@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Updated `requestMediaLibraryPermissionsAsync` to ask `ACCESS_MEDIA_LOCATION` permission so that a user can access to image asset info on Android. ([#16541](https://github.com/expo/expo/pull/16541) by [@jparksecurity](https://github.com/jparksecurity))
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
