@@ -203,6 +203,9 @@ export declare const bg: {
     secondary: {
         backgroundColor: string;
     };
+    overlay: {
+        backgroundColor: string;
+    };
     success: {
         backgroundColor: string;
     };
@@ -218,6 +221,9 @@ export declare const bgDark: {
         backgroundColor: string;
     };
     secondary: {
+        backgroundColor: string;
+    };
+    overlay: {
         backgroundColor: string;
     };
     success: {

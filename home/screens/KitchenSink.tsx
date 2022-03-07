@@ -109,13 +109,17 @@ function ButtonList({ items = [] }: { items: string[] }) {
   );
 }
 
-function Header({ title = '', subtitle = '', uri = '' }) {
+function Header({
+  title = '',
+  subtitle = '',
+  uri = 'https://static.jojowiki.com/images/1/11/latest/20200101165909/PucciAv.png',
+}) {
   return (
     <View bg="default" rounded="large" py="medium">
       <Row align="center">
-        <Row px="medium">
+        <Row px="medium" align="center">
           <View bg="secondary">
-            <Image size="xl" rounded="medium" source={{ uri }} />
+            <Image size="xl" rounded="medium" source={{ uri }} resizeMode="cover" />
           </View>
 
           <Spacer.Horizontal size="small" />
