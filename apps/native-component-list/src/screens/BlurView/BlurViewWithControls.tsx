@@ -2,8 +2,9 @@ import { BlurTint, BlurView } from 'expo-blur';
 import React, { useState, useCallback, useRef, memo } from 'react';
 import { View, StyleSheet, Text, Image, Animated } from 'react-native';
 
+import useResettingState from '../../utilities/useResettingState';
 import Slider from './Slider';
-import { useLoopingAnimatedValue, useResettingState } from './utils';
+import useLoopingAnimatedValue from './useLoopingAnimatedValue';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
