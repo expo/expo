@@ -2,13 +2,13 @@ import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-import { View as RNView, StyleSheet, ViewStyle, Pressable, Share, Linking } from 'react-native';
+import { View as RNView, StyleSheet, ViewStyle, Share, Linking } from 'react-native';
 
-import { Ionicons } from '../../../components/Icons';
 import PlatformIcon from '../../../components/PlatformIcon';
+import { PressableOpacity } from '../../../components/PressableOpacity';
 import { ProfileStackRoutes } from '../../../navigation/Navigation.types';
 import * as UrlUtils from '../../../utils/UrlUtils';
-import { DevelopmentServerImage } from './DevelopmentServerImage';
+import { AppIcon } from '../AppIcon';
 import { DevelopmentServerSubtitle } from './DevelopmentServerSubtitle';
 import { DevelopmentServerTitle } from './DevelopmentServerTitle';
 
@@ -23,8 +23,6 @@ type Props = {
   onPressSubtitle?: () => any;
   renderExtraText?: () => any;
   margins?: boolean;
-  icon?: IconProps['name'];
-  iconStyle?: IconProps['style'];
   image?: number | string | null;
   imageStyle?: ViewStyle;
   arrowForward?: boolean;
@@ -39,7 +37,6 @@ type Props = {
   };
 };
 
-type IconProps = React.ComponentProps<typeof Ionicons>;
 type PlatformIconProps = React.ComponentProps<typeof PlatformIcon>;
 
 export function DevelopmentServerListItem({
@@ -47,8 +44,6 @@ export function DevelopmentServerListItem({
   subtitle,
   title,
   url,
-  icon,
-  iconStyle,
   image,
   experienceInfo,
   disabled,
@@ -77,24 +72,18 @@ export function DevelopmentServerListItem({
   };
 
   return (
-    <Pressable
+    <PressableOpacity
       accessibilityRole="button"
       android_disableSound
       onPress={handlePress}
       onLongPress={handleLongPress}
-      style={({ pressed }) => [
-        styles.container,
-        style,
-        disabled && styles.disabled,
-        pressed && styles.pressed,
-      ]}
+      style={[styles.container, style, disabled && styles.disabled]}
       disabled={disabled}>
-      <DevelopmentServerImage icon={icon} image={image} iconStyle={iconStyle} />
+      <AppIcon image={image} />
       <RNView style={[styles.contentContainer]}>
         <RNView style={[styles.textContainer]}>
           <DevelopmentServerTitle title={title} platform={platform} />
           <DevelopmentServerSubtitle
-            icon={icon}
             title={title}
             subtitle={username ?? subtitle}
             image={image}
@@ -108,7 +97,7 @@ export function DevelopmentServerListItem({
           />
         </RNView>
       </RNView>
-    </Pressable>
+    </PressableOpacity>
   );
 }
 

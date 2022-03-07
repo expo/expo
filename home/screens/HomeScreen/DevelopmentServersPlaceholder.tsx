@@ -13,8 +13,9 @@ import {
   View,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, Platform, Pressable, Linking } from 'react-native';
+import { Animated, Platform, Linking } from 'react-native';
 
+import { PressableOpacity } from '../../components/PressableOpacity';
 import { ModalStackRoutes } from '../../navigation/Navigation.types';
 import {
   alertWithCameraPermissionInstructions,
@@ -86,13 +87,7 @@ export function DevelopmentServersPlaceholder() {
         <>
           <Divider />
           <View padding="medium">
-            <Pressable
-              style={({ pressed }) => [
-                {
-                  opacity: pressed ? 0.8 : 1,
-                },
-              ]}
-              onPress={() => setShowInput((prevState) => !prevState)}>
+            <PressableOpacity onPress={() => setShowInput((prevState) => !prevState)}>
               <Row align="center">
                 <Animated.View
                   style={{ transform: [{ rotate: interpolateRotating }], marginRight: spacing[2] }}>
@@ -100,7 +95,7 @@ export function DevelopmentServersPlaceholder() {
                 </Animated.View>
                 <Text>Enter URL manually</Text>
               </Row>
-            </Pressable>
+            </PressableOpacity>
             {showInput ? <Spacer.Vertical size="medium" /> : null}
             {showInput ? (
               <View>
@@ -121,23 +116,22 @@ export function DevelopmentServersPlaceholder() {
                   placeholderTextColor={theme.text.secondary}
                 />
                 <Spacer.Vertical size="small" />
-                <Pressable
+                <PressableOpacity
                   onPress={openURL}
                   disabled={!url}
-                  style={({ pressed }) => [
+                  style={[
                     {
                       backgroundColor: theme.button.tertiary.background,
                       padding: spacing[2],
                       borderRadius: borderRadius.medium,
                       justifyContent: 'center',
                       alignItems: 'center',
-                      opacity: pressed ? 0.8 : !url ? 0.5 : 1,
                     },
                   ]}>
                   <Button.Text color="tertiary" weight="semibold">
                     Connect
                   </Button.Text>
-                </Pressable>
+                </PressableOpacity>
               </View>
             ) : null}
           </View>
@@ -146,13 +140,7 @@ export function DevelopmentServersPlaceholder() {
       {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
         <>
           <Divider />
-          <Pressable
-            style={({ pressed }) => [
-              {
-                opacity: pressed ? 0.8 : 1,
-              },
-            ]}
-            onPress={handleQRPressAsync}>
+          <PressableOpacity onPress={handleQRPressAsync}>
             <Row padding="medium" align="center">
               <QrCodeIcon
                 size={iconSize.small}
@@ -161,7 +149,7 @@ export function DevelopmentServersPlaceholder() {
               />
               <Text>Scan QR code</Text>
             </Row>
-          </Pressable>
+          </PressableOpacity>
         </>
       ) : null}
     </View>
