@@ -77,8 +77,6 @@
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-
-    EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   }
   return self;
 }
@@ -173,6 +171,7 @@
 {
   _delegate = delegate;
   _launchOptions = launchOptions;
+  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
 }
 
 - (void)autoSetupStart:(UIWindow *)window

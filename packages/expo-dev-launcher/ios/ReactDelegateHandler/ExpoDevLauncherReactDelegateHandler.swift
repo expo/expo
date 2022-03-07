@@ -32,16 +32,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     return true
   }()
 
-  required init() {
-    super.init()
-    // DevLauncherController will handle dev menu configuration, so dev menu auto-setup is not needed
-    ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
-  }
-
   public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
     if !ExpoDevLauncherReactDelegateHandler.shouldEnableAutoSetup {
       return nil
     }
+
+    // DevLauncherController will handle dev menu configuration, so dev menu auto-setup is not needed
+    ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
 
     self.reactDelegate = reactDelegate
     self.bridgeDelegate = EXRCTBridgeDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
