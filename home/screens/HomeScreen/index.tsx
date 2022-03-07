@@ -14,6 +14,7 @@ import ScrollView from '../../components/NavigationScrollView';
 import RefreshControl from '../../components/RefreshControl';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
+import HistoryActions from '../../redux/HistoryActions';
 import { useDispatch, useSelector } from '../../redux/Hooks';
 import { DevSession, HistoryList } from '../../types';
 import addListenerWithNativeCallback from '../../utils/addListenerWithNativeCallback';
@@ -22,6 +23,8 @@ import isUserAuthenticated from '../../utils/isUserAuthenticated';
 import { DevelopmentServerListItem } from './DevelopmentServerListItem';
 import { DevelopmentServersHeader } from './DevelopmentServersHeader';
 import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
+import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
+import { RecentlyOpenedSection } from './RecentlyOpenedSection';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -166,6 +169,12 @@ class ProjectsView extends React.Component<Props, State> {
           ) : (
             <DevelopmentServersPlaceholder />
           )}
+          {this.props.recentHistory.count() ? (
+            <>
+              <RecentlyOpenedHeader onClearPress={this._handlePressClearHistory} />
+              <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
+            </>
+          ) : null}
         </ScrollView>
         <ThemedStatusBar />
       </View>
@@ -199,6 +208,10 @@ class ProjectsView extends React.Component<Props, State> {
     } else {
       this._stopPollingForProjects();
     }
+  };
+
+  private _handlePressClearHistory = () => {
+    this.props.dispatch(HistoryActions.clearHistory());
   };
 
   private _startPollingForProjects = async () => {

@@ -1,24 +1,26 @@
 import { useExpoTheme, View } from 'expo-dev-client-components';
-import React, { PropsWithChildren } from 'react';
-import { PressableProps, Pressable, Platform, ViewStyle } from 'react-native';
+import React, { PropsWithChildren, ComponentProps } from 'react';
+import { PressableProps, Pressable, Platform } from 'react-native';
+
+type DCCViewProps = ComponentProps<typeof View>;
 
 type Props = PressableProps & {
   activeOpacity?: number;
   borderRadius?: number;
-  containerStyle?: ViewStyle;
+  containerProps?: DCCViewProps;
 };
 
 export function PressableOpacity({
   activeOpacity,
   borderRadius,
   style,
-  containerStyle,
+  containerProps,
   ...rest
 }: Props) {
   const theme = useExpoTheme();
 
   return (
-    <BorderRadiusContainer borderRadius={borderRadius} style={containerStyle}>
+    <BorderRadiusContainer borderRadius={borderRadius} {...containerProps}>
       <Pressable
         style={({ pressed }) => {
           const pressedStyles = typeof style === 'function' ? style({ pressed }) : style;
@@ -45,7 +47,7 @@ export function PressableOpacity({
 type BorderRadiusContainerProps = PropsWithChildren<
   {
     borderRadius?: number;
-  } & React.ComponentProps<typeof View>
+  } & DCCViewProps
 >;
 
 function BorderRadiusContainer({
@@ -54,10 +56,10 @@ function BorderRadiusContainer({
   children,
   ...props
 }: BorderRadiusContainerProps) {
-  if (!borderRadius) return <>{children}</>;
-
   return (
-    <View style={[{ borderRadius, overflow: 'hidden' }, style]} {...props}>
+    <View
+      style={[borderRadius ? { borderRadius, overflow: 'hidden' } : undefined, style]}
+      {...props}>
       {children}
     </View>
   );
