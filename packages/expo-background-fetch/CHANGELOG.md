@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
-- Fixed example documentation
+- Fixed example documentation ([#16549](https://github.com/expo/expo/pull/16549) by [@hbiede](https://github.com/hbiede))
 
 ## 10.1.1 - 2022-02-01
 
