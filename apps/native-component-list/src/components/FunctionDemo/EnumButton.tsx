@@ -15,14 +15,18 @@ type Props = {
   disabled?: boolean;
 };
 
-function valuesAreEnumValues(values: Value[] | EnumValue[]): values is EnumValue[] {
-  return !values.some(
-    (value) => typeof value !== 'object' || !('name' in value) || !('value' in value)
-  );
+function valuesAreEnumValues(values: (Value | EnumValue)[]): values is EnumValue[] {
+  return values.every((value) => typeof value === 'object' && 'name' in value && 'value' in value);
 }
 
 function useEnumValues(values: Value[] | EnumValue[]): values is EnumValue[] {
   return useMemo(() => valuesAreEnumValues(values), [values]);
+}
+
+function getSuccessorCyclically(values: Value[], value: Value) {
+  const valueIdx = values.findIndex((v) => v === value);
+  const successorIdx = (valueIdx + 1) % values.length;
+  return values[successorIdx];
 }
 
 /**
@@ -32,9 +36,8 @@ export default function EnumButton({ value, onChange, values, disabled }: Props)
   const valuesAreEnums = useEnumValues(values);
 
   const handleOnPress = useCallback(() => {
-    const newValue = valuesAreEnums
-      ? values[(values.findIndex((v) => v.value === value) + 1) % values.length].value
-      : values[(values.findIndex((v) => v === value) + 1) % values.length];
+    const plainValues = valuesAreEnums ? values.map((v) => v.value) : values;
+    const newValue = getSuccessorCyclically(plainValues, value);
     return onChange(newValue);
   }, [valuesAreEnums, onChange, value, values]);
 
