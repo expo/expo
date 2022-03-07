@@ -1,4 +1,5 @@
 import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
+import { Platform } from 'react-native';
 export const scale = {
     micro: spacing[0.5],
     tiny: spacing[1],
@@ -94,7 +95,7 @@ export const text = {
     },
     type: {
         mono: {
-            fontFamily: 'Menlo',
+            fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
         },
     },
     weight: {

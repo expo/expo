@@ -13,6 +13,7 @@ import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
 import HomeScreen from 'screens/HomeScreen';
+import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
 
 import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
@@ -175,8 +176,15 @@ function DiagnosticsStackScreen() {
       screenOptions={defaultNavigationOptions(theme)}>
       <DiagnosticsStack.Screen
         name="Diagnostics"
-        component={DiagnosticsScreen}
-        options={{ title: 'Diagnostics' }}
+        component={
+          FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN
+            ? RedesignedDiagnosticsScreen
+            : DiagnosticsScreen
+        }
+        options={{
+          title: 'Diagnostics',
+          headerShown: !FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN,
+        }}
       />
       <DiagnosticsStack.Screen
         name="Audio"
@@ -200,7 +208,7 @@ function DiagnosticsStackScreen() {
 const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
-  const projectsOrHomeScreen = FeatureFlags.NAVIGATION_REDESIGN_ENABLED
+  const projectsOrHomeScreen = FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
     ? 'HomeStack'
     : 'ProjectsStack';
   const initialRouteName = Environment.IsIOSRestrictedBuild
@@ -209,7 +217,7 @@ function TabNavigator(props: { theme: string }) {
 
   return (
     <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
-      {FeatureFlags.NAVIGATION_REDESIGN_ENABLED ? (
+      {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
         <BottomTab.Screen
           name="HomeStack"
           component={HomeStackScreen}
@@ -239,7 +247,7 @@ function TabNavigator(props: { theme: string }) {
           }}
         />
       )}
-      {FeatureFlags.NAVIGATION_REDESIGN_ENABLED ? (
+      {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
         <BottomTab.Screen
           name="SettingsScreen"
           component={UserSettingsScreen}
