@@ -9,5 +9,7 @@ export default {
   // Disable the clipboard button in the App Store client.
   ENABLE_CLIPBOARD_BUTTON: !Environment.IsIOSRestrictedBuild,
 
-  NAVIGATION_REDESIGN_ENABLED: __DEV__,
+  // Flags for the 2022 Expo Go redesign
+  ENABLE_2022_NAVIGATION_REDESIGN: __DEV__,
+  ENABLE_2022_DIAGNOSTICS_REDESIGN: __DEV__,
 };
