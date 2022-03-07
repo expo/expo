@@ -1,5 +1,5 @@
 import { Spacer } from 'expo-dev-client-components';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Linking } from 'react-native';
 
 import { HistoryList } from '../../types';
@@ -16,9 +16,8 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
         if (!project) return null;
 
         return (
-          <>
+          <Fragment key={project.manifestUrl}>
             <RecentlyOpenedListItem
-              key={project.manifestUrl}
               url={project.manifestUrl}
               image={
                 // TODO(wschurman): audit for new manifests
@@ -36,7 +35,7 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
               }}
             />
             {i < recentHistory.count() - 1 && <Spacer.Vertical size="small" />}
-          </>
+          </Fragment>
         );
       })}
     </>
