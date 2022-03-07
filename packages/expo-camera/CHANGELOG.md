@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash on Android when app is restored from background by check for null value of `pendingFaceDetectorSettings`. ([#16543](https://github.com/expo/expo/pull/16543) by [@giautm](https://github.com/giautm))
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
