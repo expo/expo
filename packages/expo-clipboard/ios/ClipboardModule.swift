@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 import UIKit
+import MobileCoreServices
 
 let onClipboardChanged = "onClipboardChanged"
 
@@ -11,17 +12,28 @@ public class ClipboardModule: Module {
 
     // MARK: Strings
 
-    function("getStringAsync") { () -> String in
-      return UIPasteboard.general.string ?? ""
+    function("getStringAsync") { (options: GetStringOptions) -> String in
+      switch options.preferredType {
+      case .plainText:
+        return UIPasteboard.general.string ?? ""
+      case .html:
+        return UIPasteboard.general.html ?? ""
+      }
     }
 
-    function("setStringAsync") { (content: String?) -> Bool in
-      UIPasteboard.general.string = content ?? ""
+    function("setStringAsync") { (content: String?, options: SetStringOptions) -> Bool in
+      switch options.inputType {
+      case .plainText:
+        UIPasteboard.general.string = content
+      case .html:
+        UIPasteboard.general.html = content
+      }
+
       return true
     }
 
     function("hasStringAsync") { () -> Bool in
-      return UIPasteboard.general.hasStrings
+      return UIPasteboard.general.hasStrings || UIPasteboard.general.contains(pasteboardTypes: [kUTTypeHTML as String])
     }
 
     // MARK: URLs
