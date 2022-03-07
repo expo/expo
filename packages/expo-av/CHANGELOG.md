@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix local asset localUri not being used in development
+- Fix local asset localUri not being used in development ([#16544](https://github.com/expo/expo/pull/16544) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
 
