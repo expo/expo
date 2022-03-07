@@ -5,5 +5,5 @@ export * from './Text';
 export * from './theme';
 export * from './View';
 export * from './useExpoTheme';
-export { ThemePreferenceProvider } from './ThemeProvider';
+export { ThemePreferenceProvider, ThemeContext } from './ThemeProvider';
 //# sourceMappingURL=index.d.ts.map

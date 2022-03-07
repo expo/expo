@@ -1,5 +1,5 @@
 export type ModalStackRoutes = {
-  QRCode: object;
+  QRCode: undefined;
 };
 
 export type ProjectsStackRoutes = {

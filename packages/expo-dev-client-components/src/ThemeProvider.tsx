@@ -2,7 +2,7 @@ import * as React from 'react';
 
 export type ThemePreference = 'no-preference' | 'light' | 'dark';
 
-const ThemeContext = React.createContext('no-preference');
+export const ThemeContext = React.createContext('no-preference');
 
 type ThemeProviderProps = {
   children: React.ReactNode;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-const ThemeContext = React.createContext('no-preference');
+export const ThemeContext = React.createContext('no-preference');
 export function ThemePreferenceProvider({ children, theme }) {
     React.useEffect(() => {
         ThemePreferences.notify(theme);

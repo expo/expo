@@ -1,5 +1,6 @@
 import * as React from 'react';
 export declare type ThemePreference = 'no-preference' | 'light' | 'dark';
+export declare const ThemeContext: React.Context<string>;
 declare type ThemeProviderProps = {
     children: React.ReactNode;
     theme: ThemePreference;

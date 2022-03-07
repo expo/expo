@@ -189,6 +189,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 3,
     marginEnd: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
     backgroundColor: '#fff',
