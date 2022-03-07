@@ -24,13 +24,10 @@ export default function FunctionSignature({
         switch (parameter.type) {
           case 'object':
             return convertObjectArgumentToString(args[idx], parameter);
-
           case 'enum':
             return convertEnumArgumentToString(args[idx], parameter);
-
           case 'constant':
             return parameter.name;
-
           default:
             return String(args[idx]);
         }
