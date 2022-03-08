@@ -129,6 +129,16 @@ class Colors {
   static final String RESET = "\u001B[0m"
 }
 
+// We can't cast a manager that is created in `settings.gradle` to the `ExpoAutolinkingManager` 
+// because if someone is using `buildSrc`, the `ExpoAutolinkingManager` class 
+// will be loaded by two different class loader - `settings.gradle` will use a diffrent loader. 
+// In the JVM, classes are equal only if were loaded by the same loader.
+// There is nothing that we can do in that case, but to make our code safer, we check if the class name is the same.
+def validateExpoAutolinkingManager(manager) {
+  assert ExpoAutolinkingManager.name == manager.getClass().name
+  return manager
+}
+
 // Here we split the implementation, depending on Gradle context.
 // `rootProject` is a `ProjectDescriptor` if this file is imported in `settings.gradle` context,
 // otherwise we can assume it is imported in `build.gradle`.
@@ -159,7 +169,7 @@ if (rootProject instanceof ProjectDescriptor) {
   }
 
   def addDependencies = { DependencyHandler handler, Project project ->
-    ExpoAutolinkingManager manager = gradle.ext.expoAutolinkingManager
+    def manager = validateExpoAutolinkingManager(gradle.ext.expoAutolinkingManager)
     def modules = manager.getModules()
 
     if (!modules.length) {
@@ -196,7 +206,7 @@ if (rootProject instanceof ProjectDescriptor) {
       return
     }
 
-    ExpoAutolinkingManager manager = gradle.ext.expoAutolinkingManager
+    def manager = validateExpoAutolinkingManager(gradle.ext.expoAutolinkingManager)
 
     if (rootProject.findProject(':expo-modules-core')) {
       // `expo` requires `expo-modules-core` as a dependency, even if autolinking is turned off.
