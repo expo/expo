@@ -101,6 +101,46 @@ class RecordTypeConverterTest {
   }
 
   @Test
+  fun `should respect required annotation`() {
+    class MyRecord : Record {
+      @Field
+      @Required
+      val int: Int = 0
+    }
+
+    val map = DynamicFromObject(JavaOnlyMap())
+
+    val exception = runCatching { convert<MyRecord>(map) }.exceptionOrNull()
+    Truth.assertThat(exception).isNotNull()
+  }
+
+  @Test
+  fun `should respect validators`() {
+    class MyRecord : Record {
+      @Field
+      @IntRange(from = 0, to = 10)
+      val int: Int = 0
+    }
+
+    val invalidMap = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("int", 11)
+      }
+    )
+
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("int", 6)
+      }
+    )
+
+    val record = convert<MyRecord>(map)
+    Truth.assertThat(record.int).isEqualTo(6)
+    val exception = runCatching { convert<MyRecord>(invalidMap) }.exceptionOrNull()
+    Truth.assertThat(exception).isNotNull()
+  }
+
+  @Test
   fun `should respect custom js key`() {
     class MyRecord : Record {
       @Field(key = "point1")

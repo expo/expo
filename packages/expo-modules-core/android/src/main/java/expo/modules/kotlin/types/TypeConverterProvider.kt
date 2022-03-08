@@ -68,6 +68,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
+    // TODO(@lukmccall): cache record type converters
     if (kClass.isSubclassOf(Record::class)) {
       return RecordTypeConverter<Record>(this, type)
     }
