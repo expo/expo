@@ -2,9 +2,11 @@ import * as Log from '../../../log';
 import { installExitHooks } from '../../../utils/exit';
 import { adbArgs, Device, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
 
+let removeExitHook: () => void | null = null;
+
 export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   // Install cleanup automatically...
-  installExitHooks(() => {
+  removeExitHook = installExitHooks(() => {
     stopAdbReverseAsync(ports);
   });
 
@@ -21,6 +23,8 @@ export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
 }
 
 export async function stopAdbReverseAsync(ports: number[]): Promise<void> {
+  removeExitHook?.();
+
   const devices = await getAttachedDevicesAsync();
   for (const device of devices) {
     for (const port of ports) {

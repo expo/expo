@@ -5,8 +5,13 @@ export function installExitHooks(listener: NodeJS.SignalsListener): () => void {
     process.on(signal, listener);
   }
   return () => {
+    if (!listener) {
+      return;
+    }
     for (const signal of killSignals) {
       process.off(signal, listener);
     }
+    // Allow the listener to be GC'd
+    listener = null;
   };
 }
