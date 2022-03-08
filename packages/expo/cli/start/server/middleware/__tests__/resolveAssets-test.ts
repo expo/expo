@@ -4,7 +4,6 @@ import * as Log from '../../../../log';
 import { getAssetFieldPathsForManifestAsync, resolveGoogleServicesFile } from '../resolveAssets';
 
 jest.mock(`../../../../log`);
-
 jest.mock('../../../../api/getExpoSchema', () => ({
   getAssetSchemasAsync() {
     return [

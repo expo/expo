@@ -95,9 +95,6 @@ class FakeBundlerDevServer extends BundlerDevServer {
   }
 }
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 async function getRunningServer() {
   const devServer = new FakeBundlerDevServer('/');
   await devServer.startAsync({ location: {} });
@@ -114,7 +111,6 @@ describe('broadcastMessage', () => {
 
 describe('openPlatformAsync', () => {
   it(`opens a project in the browser`, async () => {
-    asMock(openBrowserAsync).mockClear();
     const devServer = await getRunningServer();
     const { url } = await devServer.openPlatformAsync('desktop');
     expect(url).toBe('http://localhost:3000');

@@ -5,11 +5,6 @@ import { vol } from 'memfs';
 import { InterstitialPageMiddleware } from '../InterstitialPageMiddleware';
 import { ServerRequest, ServerResponse } from '../server.types';
 
-const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),
   getConfig: jest.fn(() => ({
@@ -22,16 +17,21 @@ jest.mock('@expo/config', () => ({
   })),
   getNameFromConfig: jest.fn(() => 'my-app'),
 }));
-
 jest.mock('@expo/config-plugins/build/utils/Updates', () => ({
   getRuntimeVersionNullable: jest.fn(),
 }));
+
+const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 const originalCwd = process.cwd();
 
 beforeAll(() => {
   process.chdir('/');
 });
+
 beforeEach(() => {
   vol.reset();
 });
@@ -60,9 +60,8 @@ describe('_shouldContinue', () => {
 
 describe('_getProjectOptions', () => {
   it('returns the project settings from the config', async () => {
-    asMock(getNameFromConfig).mockClear().mockReturnValueOnce({ appName: 'my-app' });
-    asMock(getConfig).mockClear();
-    asMock(getRuntimeVersionNullable).mockClear().mockReturnValueOnce('123');
+    asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
+    asMock(getRuntimeVersionNullable).mockReturnValueOnce('123');
 
     const middleware = new InterstitialPageMiddleware('/');
 

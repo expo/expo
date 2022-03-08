@@ -16,6 +16,14 @@ function createMiddleware() {
   return { middleware, getLocation, onDeepLink };
 }
 
+function createMockResponse() {
+  return {
+    setHeader: jest.fn(),
+    end: jest.fn(),
+    statusCode: 200,
+  } as unknown as ServerResponse;
+}
+
 describe('_shouldContinue', () => {
   const { middleware } = createMiddleware();
   it(`returns false when the middleware should not handle`, () => {
@@ -33,14 +41,6 @@ describe('_shouldContinue', () => {
     }
   });
 });
-
-function createMockResponse() {
-  return {
-    setHeader: jest.fn(),
-    end: jest.fn(),
-    statusCode: 200,
-  } as unknown as ServerResponse;
-}
 
 describe('handleRequestAsync', () => {
   it('redirects to Expo Go', async () => {

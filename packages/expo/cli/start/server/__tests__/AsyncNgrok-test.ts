@@ -47,8 +47,6 @@ function createNgrokInstance() {
 }
 
 beforeEach(() => {
-  asMock(delayAsync).mockClear();
-  asMock(startAdbReverseAsync).mockClear();
   vol.reset();
 });
 

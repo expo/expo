@@ -13,7 +13,6 @@ const originalEnv = process.env;
 
 beforeEach(() => {
   vol.reset();
-  asMock(certificateFor).mockClear();
   delete process.env.SSL_CRT_FILE;
   delete process.env.SSL_KEY_FILE;
 });

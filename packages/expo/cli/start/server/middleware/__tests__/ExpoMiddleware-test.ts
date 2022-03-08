@@ -60,7 +60,6 @@ describe('getHandler', () => {
   });
 
   it(`returns error info in the response`, async () => {
-    asMock(Log.error).mockClear();
     const middleware = new ExpoMiddleware('/', ['/']);
     middleware.handleRequestAsync = jest.fn(async () => {
       throw new Error('demo');

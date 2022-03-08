@@ -11,7 +11,6 @@ jest.mock('../../../../api/signManifest', () => ({
 }));
 jest.mock('../../../../api/user/user');
 jest.mock('../../../../log');
-
 jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
@@ -21,16 +20,6 @@ jest.mock('../../../../api/settings', () => ({
     isOffline: false,
   },
 }));
-
-jest.mock('../resolveEntryPoint', () => ({
-  resolveEntryPoint: jest.fn(() => './index.js'),
-}));
-
-const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),
   getConfig: jest.fn(() => ({
@@ -42,6 +31,14 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
+jest.mock('../resolveEntryPoint', () => ({
+  resolveEntryPoint: jest.fn(() => './index.js'),
+}));
+
+const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 beforeEach(() => {
   APISettings.isOffline = false;
@@ -52,7 +49,7 @@ describe('getParsedHeaders', () => {
   it('returns empty object when the request headers are not defined', () => {
     expect(middleware.getParsedHeaders(asReq({}))).toEqual({
       acceptSignature: false,
-      hostname: undefined,
+      hostname: null,
       platform: 'ios',
     });
   });
@@ -88,7 +85,6 @@ describe('_fetchComputedManifestStringAsync', () => {
 
   // Error handling
   it('handles an unauthorized error', async () => {
-    asMock(Log.warn).mockClear();
     const middleware = new ClassicManifestMiddleware('/', {} as any);
     middleware._getManifestStringAsync = jest
       .fn()
@@ -117,7 +113,6 @@ describe('_fetchComputedManifestStringAsync', () => {
   });
 
   it('handles a DNS error', async () => {
-    asMock(Log.warn).mockClear();
     const middleware = new ClassicManifestMiddleware('/', {} as any);
     middleware._getManifestStringAsync = jest
       .fn()
@@ -146,7 +141,6 @@ describe('_fetchComputedManifestStringAsync', () => {
   });
 
   it('throws unhandled error', async () => {
-    asMock(Log.warn).mockClear();
     const middleware = new ClassicManifestMiddleware('/', {} as any);
     middleware._getManifestStringAsync = jest.fn().mockImplementationOnce(() => {
       throw new Error('demo');
@@ -167,7 +161,6 @@ describe('_fetchComputedManifestStringAsync', () => {
   });
 
   it('memoizes warnings', async () => {
-    asMock(Log.warn).mockClear();
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     middleware._getManifestStringAsync = jest.fn(() => {
@@ -217,9 +210,7 @@ describe('_fetchComputedManifestStringAsync', () => {
 
 describe(`_getManifestStringAsync`, () => {
   it(`uses anon ID for offline mode`, async () => {
-    asMock(getUserAsync)
-      .mockClear()
-      .mockImplementationOnce(async () => ({} as any));
+    asMock(getUserAsync).mockImplementationOnce(async () => ({} as any));
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     APISettings.isOffline = true;
@@ -235,9 +226,7 @@ describe(`_getManifestStringAsync`, () => {
     ).toEqual('@anonymous/slug-host-id');
   });
   it(`uses anon ID for unauthenticated users`, async () => {
-    asMock(getUserAsync)
-      .mockClear()
-      .mockImplementationOnce(async () => undefined);
+    asMock(getUserAsync).mockImplementationOnce(async () => undefined);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     APISettings.isOffline = false;
@@ -254,9 +243,7 @@ describe(`_getManifestStringAsync`, () => {
   });
 
   it(`uses anon ID with unsigned signature for unauthenticated users`, async () => {
-    asMock(getUserAsync)
-      .mockClear()
-      .mockImplementationOnce(async () => undefined);
+    asMock(getUserAsync).mockImplementationOnce(async () => undefined);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     APISettings.isOffline = false;
@@ -273,10 +260,7 @@ describe(`_getManifestStringAsync`, () => {
   });
 
   it(`memoizes signature signing`, async () => {
-    asMock(signClassicExpoGoManifestAsync).mockClear();
-    asMock(getUserAsync)
-      .mockClear()
-      .mockImplementation(async () => ({} as any));
+    asMock(getUserAsync).mockImplementation(async () => ({} as any));
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     APISettings.isOffline = false;

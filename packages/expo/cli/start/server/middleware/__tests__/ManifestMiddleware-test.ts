@@ -5,22 +5,14 @@ import * as ProjectDevices from '../../../project/devices';
 import { ManifestMiddleware } from '../ManifestMiddleware';
 import { ServerRequest } from '../server.types';
 
-const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../../log');
-
 jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
-
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),
   getConfig: jest.fn(() => ({
@@ -32,10 +24,14 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
-
 jest.mock('../../../project/devices', () => ({
   saveDevicesAsync: jest.fn(async () => ({})),
 }));
+
+const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 describe('_getBundleUrl', () => {
   const createConstructUrl = () =>
@@ -75,7 +71,6 @@ describe('_getBundleUrl', () => {
 
 describe('_resolveProjectSettingsAsync', () => {
   it(`returns the project settings for Metro dev servers`, async () => {
-    asMock(getConfig).mockClear();
     const middleware = new ManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
       mode: 'development',
@@ -104,7 +99,6 @@ describe('_resolveProjectSettingsAsync', () => {
     expect(getConfig).toHaveBeenCalledTimes(1);
   });
   it(`returns the project settings for Webpack dev servers`, async () => {
-    asMock(getConfig).mockClear();
     const middleware = new ManifestMiddleware('/', {
       isNativeWebpack: true,
       constructUrl: jest.fn(() => 'http://fake.mock'),
@@ -137,7 +131,6 @@ describe('_resolveProjectSettingsAsync', () => {
 
 describe('getHandler', () => {
   it(`resolves successfully`, async () => {
-    asMock(ProjectDevices.saveDevicesAsync).mockClear();
     const middleware = new ManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });
@@ -188,8 +181,6 @@ describe('getHandler', () => {
   });
 
   it(`returns error info in the response`, async () => {
-    asMock(ProjectDevices.saveDevicesAsync).mockClear();
-    asMock(Log.error).mockClear();
     const middleware = new ManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });

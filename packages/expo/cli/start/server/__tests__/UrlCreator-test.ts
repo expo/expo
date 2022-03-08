@@ -1,15 +1,15 @@
 import * as Log from '../../../log';
 import { UrlCreator } from '../UrlCreator';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../log');
 
 beforeEach(() => {
   delete process.env.EXPO_PACKAGER_PROXY_URL;
   delete process.env.EXPO_MANIFEST_PROXY_URL;
 });
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 function createDefaultCreator() {
   return new UrlCreator({}, { port: 8081, getTunnelUrl: () => `http://tunnel.dev/` });

@@ -82,13 +82,16 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
   /** One of the first logs that will be printed. */
   dependencyGraphLoading(hasReducedPerformance: boolean): void {}
 
-  bundleBuildEnded(event, duration: number) {}
+  /** Custom log event representing the end of the bundling. */
+  bundleBuildEnded(event: TerminalReportableEvent, duration: number) {}
 
   /**
    * This function is exclusively concerned with updating the internal state.
    * No logging or status updates should be done at this point.
    */
-  _updateState(event) {
+  _updateState(
+    event: TerminalReportableEvent & { bundleDetails?: BundleDetails; buildID?: string }
+  ) {
     // Append the buildID to the bundleDetails.
     if (event.bundleDetails) {
       event.bundleDetails.buildID = event.buildID;

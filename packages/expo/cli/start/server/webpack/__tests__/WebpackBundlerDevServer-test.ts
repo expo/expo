@@ -4,9 +4,6 @@ import webpack from 'webpack';
 import { BundlerStartOptions } from '../../BundlerDevServer';
 import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../../log');
 
 const originalCwd = process.cwd();
@@ -30,8 +27,6 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
 
 describe('startAsync', () => {
   it(`starts webpack`, async () => {
-    asMock(webpack).mockClear();
-
     const devServer = await getStartedDevServer();
 
     expect(devServer['getAvailablePortAsync']).toHaveBeenCalled();
@@ -58,8 +53,6 @@ describe('startAsync', () => {
     expect(webpack).toHaveBeenCalled();
   });
   it(`clears the webpack cache`, async () => {
-    asMock(webpack).mockClear();
-
     vol.fromJSON({ '.expo/web/cache/development/file': '...' }, '/');
 
     await getStartedDevServer({

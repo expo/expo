@@ -155,7 +155,5 @@ function getProxyUrl(): string | undefined {
 }
 
 // TODO: Drop the undocumented env variables:
-// EXPO_PACKAGER_HOSTNAME
 // REACT_NATIVE_PACKAGER_HOSTNAME
 // EXPO_PACKAGER_PROXY_URL
-// EXPO_MANIFEST_PROXY_URL

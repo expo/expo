@@ -10,6 +10,11 @@ import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { MetroBundlerDevServer } from './metro/MetroBundlerDevServer';
 import { WebpackBundlerDevServer } from './webpack/WebpackBundlerDevServer';
 
+export type MultiBundlerStartOptions = {
+  type: keyof typeof BUNDLERS;
+  options?: BundlerStartOptions;
+}[];
+
 const devServers: BundlerDevServer[] = [];
 
 const BUNDLERS = {
@@ -132,8 +137,3 @@ export class DevServerManager {
     ]);
   }
 }
-
-export type MultiBundlerStartOptions = {
-  type: keyof typeof BUNDLERS;
-  options?: BundlerStartOptions;
-}[];

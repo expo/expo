@@ -1,44 +1,36 @@
 import { getProjectAsync } from '../../../../api/getProject';
 import { APISettings } from '../../../../api/settings';
-import { signExpoGoManifestAsync } from '../../../../api/signManifest';
 import { getUserAsync } from '../../../../api/user/user';
 import { ExpoGoManifestHandlerMiddleware } from '../ExpoGoManifestHandlerMiddleware';
 import { ServerRequest } from '../server.types';
 
+jest.mock('../../../../api/user/user');
+jest.mock('../../../../log');
 jest.mock('../../../../api/getProject', () => ({
   getProjectAsync: jest.fn(() => ({
     scopeKey: 'scope-key',
   })),
 }));
-
 jest.mock('@expo/config-plugins', () => ({
   Updates: {
     getRuntimeVersion: jest.fn(() => '45.0.0'),
   },
 }));
-
 jest.mock('../../../../api/signManifest', () => ({
   signExpoGoManifestAsync: jest.fn((manifest) => JSON.stringify(manifest)),
 }));
-jest.mock('../../../../api/user/user');
-
-jest.mock('../../../../log');
-
 jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-
 jest.mock('../../../../api/settings', () => ({
   APISettings: {
     isOffline: false,
   },
 }));
-
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
-
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),
   getConfig: jest.fn(() => ({
@@ -56,10 +48,6 @@ const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-beforeEach(() => {
-  APISettings.isOffline = false;
-});
-
 describe('getParsedHeaders', () => {
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
@@ -74,7 +62,7 @@ describe('getParsedHeaders', () => {
     expect(middleware.getParsedHeaders(asReq({ headers: { 'expo-platform': 'android' } }))).toEqual(
       {
         acceptSignature: false,
-        hostname: undefined,
+        hostname: null,
         platform: 'android',
       }
     );
@@ -104,10 +92,7 @@ describe('getParsedHeaders', () => {
 describe('_getManifestResponseAsync', () => {
   beforeEach(() => {
     APISettings.isOffline = false;
-    asMock(signExpoGoManifestAsync).mockClear();
-    asMock(getUserAsync)
-      .mockClear()
-      .mockImplementation(async () => ({} as any));
+    asMock(getUserAsync).mockImplementation(async () => ({} as any));
   });
 
   function createMiddleware() {
@@ -185,7 +170,6 @@ describe('_getManifestResponseAsync', () => {
   });
 
   it('returns a signed manifest', async () => {
-    asMock(getProjectAsync).mockClear();
     const middleware = createMiddleware();
 
     const results = await middleware._getManifestResponseAsync({
