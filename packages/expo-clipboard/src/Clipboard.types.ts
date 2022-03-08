@@ -38,3 +38,32 @@ export interface ClipboardImage {
     height: number;
   };
 }
+
+export enum StringContentType {
+  PLAIN_TEXT = 'plainText',
+  HTML = 'html',
+}
+
+export interface GetStringOptions {
+  /**
+   * The target format of the clipboard string to be converted to, if possible.
+   * Defaults to plain text.
+   *
+   * On web, this option is ignored. The string is always returned without any conversion.
+   *
+   * @default `StringContentType.PLAIN_TEXT`
+   */
+  preferredType?: StringContentType;
+}
+
+export interface SetStringOptions {
+  /**
+   * The input format of the provided string. Setting this helps other apps
+   * to better interpret the copied string contents. Defaults to plain text.
+   *
+   * On web, this option is ignored. The string will be copied directly as-is, without any conversion.
+   *
+   * @default `StringContentType.PLAIN_TEXT`
+   */
+  inputType?: StringContentType;
+}

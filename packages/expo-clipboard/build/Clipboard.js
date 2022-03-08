@@ -7,27 +7,28 @@ export { EventEmitter };
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
  *
+ * @param options Options for the clipboard content to be retrieved.
  * @returns A promise that resolves to the content of the clipboard.
  */
-export async function getStringAsync() {
+export async function getStringAsync(options = {}) {
     if (!ExpoClipboard.getStringAsync) {
         throw new UnavailabilityError('Clipboard', 'getStringAsync');
     }
-    return await ExpoClipboard.getStringAsync();
+    return await ExpoClipboard.getStringAsync(options);
 }
 /**
  * Sets the content of the user's clipboard.
  *
  * @param text The string to save to the clipboard.
- *
+ * @param options Options for the clipboard content to be set.
  * @returns On web, this returns a promise that fulfills to a boolean value indicating whether or not
  * the string was saved to the user's clipboard. On iOS and Android, the promise always resolves to `true`.
  */
-export async function setStringAsync(text) {
+export async function setStringAsync(text, options = {}) {
     if (!ExpoClipboard.setStringAsync) {
         throw new UnavailabilityError('Clipboard', 'setStringAsync');
     }
-    return ExpoClipboard.setStringAsync(text);
+    return ExpoClipboard.setStringAsync(text, options);
 }
 /**
  * Sets the content of the user's clipboard.
