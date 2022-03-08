@@ -52,9 +52,9 @@ jobs:
             ${{ runner.os }}-gradle-
       - run: yarn global add expo-cli
       - run: echo "$(yarn global bin)" >> $GITHUB_PATH
-      - name: Init new expo app from local template
+      - name: Init new expo app
         working-directory: ../
-        run: expo-cli init updates-e2e --template=file:./expo/templates/expo-template-blank
+        run: expo-cli init updates-e2e --yes
       - name: Add local expo-updates and dependencies
         working-directory: ../updates-e2e
         run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface
