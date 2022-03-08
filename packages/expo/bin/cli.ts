@@ -9,6 +9,7 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
+  'run:ios': () => import('../cli/run/ios').then((i) => i.expoRunIos),
   prebuild: () => import('../cli/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../cli/config').then((i) => i.expoConfig),
   // Auth
