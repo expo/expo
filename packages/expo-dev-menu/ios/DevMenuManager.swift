@@ -119,7 +119,7 @@ open class DevMenuManager: NSObject {
     self.window = DevMenuWindow(manager: self)
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
-    DevMenuSettings.setup()
+    DevMenuPreferences.setup()
     self.readAutoLaunchDisabledState()
   }
 
@@ -310,7 +310,7 @@ open class DevMenuManager: NSObject {
    Returns bool value whether the onboarding view should be displayed by the dev menu view.
    */
   func shouldShowOnboarding() -> Bool {
-    return !DevMenuSettings.isOnboardingFinished
+    return !DevMenuPreferences.isOnboardingFinished
   }
 
   func readAutoLaunchDisabledState() {

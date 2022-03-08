@@ -9,11 +9,11 @@ import { StatusBar, useColorScheme } from 'react-native';
 
 import { UserData } from '../functions/getUserProfileAsync';
 import { BuildInfo, CrashReport } from '../native-modules/DevLauncherInternal';
-import { DevMenuSettingsType } from '../native-modules/DevMenuInternal';
+import { DevMenuPreferencesType } from '../native-modules/DevMenuPreferences';
 import { DevSession } from '../types';
 import { BuildInfoProvider } from './BuildInfoProvider';
 import { CrashReportProvider } from './CrashReportProvider';
-import { DevMenuSettingsProvider } from './DevMenuSettingsProvider';
+import { DevMenuPreferencesProvider } from './DevMenuPreferencesProvider';
 import { DevSessionsProvider } from './DevSessionsProvider';
 import { ModalProvider } from './ModalStackProvider';
 import { PendingDeepLinkProvider } from './PendingDeepLinkProvider';
@@ -23,7 +23,7 @@ import { UserContextProvider } from './UserContextProvider';
 export type AppProvidersProps = {
   children?: React.ReactNode;
   initialUserData?: UserData;
-  initialDevMenuSettings?: DevMenuSettingsType;
+  initialDevMenuPreferences?: DevMenuPreferencesType;
   initialDevSessions?: DevSession[];
   initialBuildInfo?: BuildInfo;
   initialPendingDeepLink?: string;
@@ -34,7 +34,7 @@ export type AppProvidersProps = {
 export function AppProviders({
   children,
   initialUserData,
-  initialDevMenuSettings,
+  initialDevMenuPreferences,
   initialDevSessions,
   initialBuildInfo,
   initialPendingDeepLink,
@@ -48,7 +48,7 @@ export function AppProviders({
   return (
     <ThemeProvider themePreference="no-preference">
       <UserContextProvider initialUserData={initialUserData}>
-        <DevMenuSettingsProvider initialSettings={initialDevMenuSettings}>
+        <DevMenuPreferencesProvider initialPreferences={initialDevMenuPreferences}>
           <DevSessionsProvider initialDevSessions={initialDevSessions}>
             <RecentlyOpenedAppsProvider initialApps={initialRecentlyOpenedApps}>
               <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
@@ -66,7 +66,7 @@ export function AppProviders({
               </BuildInfoProvider>
             </RecentlyOpenedAppsProvider>
           </DevSessionsProvider>
-        </DevMenuSettingsProvider>
+        </DevMenuPreferencesProvider>
       </UserContextProvider>
     </ThemeProvider>
   );

@@ -6,11 +6,11 @@ let keyCommandsEnabledKey = "EXDevMenuKeyCommandsEnabled"
 let showsAtLaunchKey = "EXDevMenuShowsAtLaunch"
 let isOnboardingFinishedKey = "EXDevMenuIsOnboardingFinished"
 
-@objc
-public class DevMenuSettings: NSObject {
+@objc(DevMenuPreferences)
+public class DevMenuPreferences: NSObject, RCTBridgeModule {
   /**
-   Initializes dev menu settings by registering user defaults
-   and applying some settings to static classes like interceptors.
+   Initializes dev menu preferences by registering user defaults
+   and applying some preferences to static classes like interceptors.
    */
   static func setup() {
     UserDefaults.standard.register(defaults: [
@@ -26,9 +26,9 @@ public class DevMenuSettings: NSObject {
      So we added `isEnabled` to disable it, but not uninstall.
      */
     DevMenuMotionInterceptor.isInstalled = true
-    DevMenuMotionInterceptor.isEnabled = DevMenuSettings.motionGestureEnabled
-    DevMenuTouchInterceptor.isInstalled = DevMenuSettings.touchGestureEnabled
-    DevMenuKeyCommandsInterceptor.isInstalled = DevMenuSettings.keyCommandsEnabled
+    DevMenuMotionInterceptor.isEnabled = DevMenuPreferences.motionGestureEnabled
+    DevMenuTouchInterceptor.isInstalled = DevMenuPreferences.touchGestureEnabled
+    DevMenuKeyCommandsInterceptor.isInstalled = DevMenuPreferences.keyCommandsEnabled
   }
 
   /**
@@ -99,14 +99,52 @@ public class DevMenuSettings: NSObject {
    */
   static func serialize() -> [String: Any] {
     return [
-      "motionGestureEnabled": DevMenuSettings.motionGestureEnabled,
-      "touchGestureEnabled": DevMenuSettings.touchGestureEnabled,
-      "keyCommandsEnabled": DevMenuSettings.keyCommandsEnabled,
-      "showsAtLaunch": DevMenuSettings.showsAtLaunch,
-      "isOnboardingFinished": DevMenuSettings.isOnboardingFinished
+      "motionGestureEnabled": DevMenuPreferences.motionGestureEnabled,
+      "touchGestureEnabled": DevMenuPreferences.touchGestureEnabled,
+      "keyCommandsEnabled": DevMenuPreferences.keyCommandsEnabled,
+      "showsAtLaunch": DevMenuPreferences.showsAtLaunch,
+      "isOnboardingFinished": DevMenuPreferences.isOnboardingFinished
     ]
   }
+  
+  static func setSettings(_ settings: [String: Any]) {
+    if let motionGestureEnabled = settings["motionGestureEnabled"] as? Bool {
+      DevMenuPreferences.motionGestureEnabled = motionGestureEnabled
+    }
+    if let touchGestureEnabled = settings["touchGestureEnabled"] as? Bool {
+      DevMenuPreferences.touchGestureEnabled = touchGestureEnabled
+    }
+    if let keyCommandsEnabled = settings["keyCommandsEnabled"] as? Bool {
+      DevMenuPreferences.keyCommandsEnabled = keyCommandsEnabled
+    }
+    if let showsAtLaunch = settings["showsAtLaunch"] as? Bool {
+      DevMenuPreferences.showsAtLaunch = showsAtLaunch
+    }
+  }
+  
+  // MARK - RCTBridgeModule
+  
+  public static func moduleName() -> String! {
+    return "DevMenuPreferences"
+  }
+  
+  public static func requiresMainQueueSetup() -> Bool {
+    return true
+  }
+
+  @objc
+  func getPreferencesAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    resolve(DevMenuPreferences.serialize())
+  }
+
+  @objc
+  func setPreferencesAsync(_ settings: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    DevMenuPreferences.setSettings(settings)
+    resolve(nil)
+  }
 }
+
+
 
 private func boolForKey(_ key: String) -> Bool {
   return UserDefaults.standard.bool(forKey: key)
