@@ -1,3 +1,4 @@
+import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import {
@@ -7,10 +8,14 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
+import HomeScreen from 'screens/HomeScreen';
+import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
 
+import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
@@ -39,6 +44,7 @@ import {
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import {
   DiagnosticsStackRoutes,
+  HomeStackRoutes,
   ProfileStackRoutes,
   ProjectsStackRoutes,
 } from './Navigation.types';
@@ -46,6 +52,7 @@ import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
+const HomeStack = createStackNavigator<HomeStackRoutes>();
 
 function useThemeName() {
   const theme = useTheme();
@@ -90,6 +97,24 @@ function ProjectsStackScreen() {
         }}
       />
     </ProjectsStack.Navigator>
+  );
+}
+
+function HomeStackScreen() {
+  const themeName = useThemeName();
+
+  return (
+    <HomeStack.Navigator
+      initialRouteName="Home"
+      screenOptions={defaultNavigationOptions(themeName)}>
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </HomeStack.Navigator>
   );
 }
 
@@ -151,8 +176,15 @@ function DiagnosticsStackScreen() {
       screenOptions={defaultNavigationOptions(theme)}>
       <DiagnosticsStack.Screen
         name="Diagnostics"
-        component={DiagnosticsScreen}
-        options={{ title: 'Diagnostics' }}
+        component={
+          FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN
+            ? RedesignedDiagnosticsScreen
+            : DiagnosticsScreen
+        }
+        options={{
+          title: 'Diagnostics',
+          headerShown: !FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN,
+        }}
       />
       <DiagnosticsStack.Screen
         name="Audio"
@@ -176,12 +208,27 @@ function DiagnosticsStackScreen() {
 const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
+  const projectsOrHomeScreen = FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+    ? 'HomeStack'
+    : 'ProjectsStack';
   const initialRouteName = Environment.IsIOSRestrictedBuild
     ? 'ProfileStackScreen'
-    : 'ProjectsStack';
+    : projectsOrHomeScreen;
 
   return (
     <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
+      {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
+        <BottomTab.Screen
+          name="HomeStack"
+          component={HomeStackScreen}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <HomeFilledIcon style={styles.icon} color={color} size={24} />
+            ),
+            tabBarLabel: 'Home',
+          }}
+        />
+      ) : null}
       <BottomTab.Screen
         name="ProjectsStack"
         component={ProjectsStackScreen}
@@ -195,13 +242,22 @@ function TabNavigator(props: { theme: string }) {
           name="DiagnosticsStack"
           component={DiagnosticsStackScreen}
           options={{
-            tabBarIcon: (props) => (
-              <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
-            ),
+            tabBarIcon: (props) => <DiagnosticsIcon {...props} style={styles.icon} size={24} />,
             tabBarLabel: 'Diagnostics',
           }}
         />
       )}
+      {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
+        <BottomTab.Screen
+          name="SettingsScreen"
+          component={UserSettingsScreen}
+          options={{
+            title: 'Settings',
+            tabBarIcon: (props) => <SettingsFilledIcon {...props} style={styles.icon} size={24} />,
+            tabBarLabel: 'Settings',
+          }}
+        />
+      ) : null}
       <BottomTab.Screen
         name="ProfileStack"
         component={ProfileStackScreen}

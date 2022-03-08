@@ -55,7 +55,10 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
   ensureIdentified();
 }
 
-export function logEvent(event: 'action', properties: Record<string, any> = {}): void {
+export function logEvent(
+  event: 'action' | 'Open Url on Device',
+  properties: Record<string, any> = {}
+): void {
   if (EXPO_NO_TELEMETRY) {
     return;
   }

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.0.1 — 2022-03-07
+
+### 🐛 Bug fixes
+
+- Fix local asset localUri not being used in development ([#16544](https://github.com/expo/expo/pull/16544) by [@mnightingale](https://github.com/mnightingale))
+
 ## 11.0.0 — 2022-03-03
 
 ### 🛠 Breaking changes

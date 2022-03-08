@@ -1,60 +1,38 @@
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 
-import Button from '../../components/Button';
-import Configurator, { ConfiguratorChoiceType } from '../../components/Configurator';
-import HeadingText from '../../components/HeadingText';
-import MonoText from '../../components/MonoText';
+import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 
-const openAuthSessionConfigurationChoices: ConfiguratorChoiceType[] = [
-  {
-    name: 'shouldPrompt',
-    title: 'Should prompt',
-    initial: false,
+const FUNCTION_DESCRIPTION: FunctionDescription = {
+  name: 'openAuthSessionAsync',
+  parameters: [
+    {
+      name: 'url',
+      type: 'constant',
+      value: 'url',
+    },
+    { name: 'redirectUrl', type: 'constant', value: Linking.createURL('redirect') },
+    {
+      name: 'options',
+      type: 'object',
+      properties: [{ name: 'createTask', type: 'boolean', initial: true }],
+    },
+  ],
+  additionalParameters: [{ name: 'shouldPrompt', type: 'boolean', initial: false }],
+  actions: (
+    _: string,
+    redirectUrl: string,
+    options: WebBrowser.WebBrowserOpenOptions,
+    shouldPrompt: boolean
+  ) => {
+    const url = `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
+      redirectUrl
+    )}&prompt=${shouldPrompt ? 'consent' : 'none'}`;
+    return WebBrowser.openAuthSessionAsync(url, redirectUrl, options);
   },
-  {
-    name: 'createTask',
-    title: 'Create task',
-    initial: true,
-  },
-];
+};
 
 export default function OpenAuthSessionAsyncDemo() {
-  const [options, setOptions] = React.useState<{ shouldPrompt?: boolean; createTask?: boolean }>(
-    {}
-  );
-  const [authResult, setAuthResult] = React.useState<WebBrowser.WebBrowserAuthSessionResult | null>(
-    null
-  );
-
-  const openAuthSession = React.useCallback(async () => {
-    const redirectUrl = Linking.makeUrl('redirect');
-    const result = await WebBrowser.openAuthSessionAsync(
-      `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
-        redirectUrl
-      )}&prompt=${options.shouldPrompt ? 'consent' : 'none'}`,
-      redirectUrl,
-      { createTask: options.createTask }
-    );
-
-    setAuthResult(result);
-  }, [options]);
-
-  return (
-    <>
-      <HeadingText>openAuthSessionAsync</HeadingText>
-      <Configurator choices={openAuthSessionConfigurationChoices} onChange={setOptions} />
-      <Button style={styles.button} onPress={openAuthSession} title="Open web auth session" />
-      {authResult && <MonoText>result: {JSON.stringify(authResult, null, 2)}</MonoText>}
-    </>
-  );
+  return <FunctionDemo namespace="WebBrowser" {...FUNCTION_DESCRIPTION} />;
 }
-
-const styles = StyleSheet.create({
-  button: {
-    marginVertical: 10,
-    alignItems: 'flex-start',
-  },
-});

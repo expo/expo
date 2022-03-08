@@ -67,6 +67,13 @@ export const Row = create(RNView, {
             start: { alignItems: 'flex-start' },
             end: { alignItems: 'flex-end' },
         },
+        justify: {
+            center: { justifyContent: 'center' },
+            start: { justifyContent: 'flex-start' },
+            end: { justifyContent: 'flex-end' },
+            between: { justifyContent: 'space-between' },
+            around: { justifyContent: 'space-around' },
+        },
         ...padding,
         ...margin,
     },
