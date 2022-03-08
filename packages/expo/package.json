@@ -61,7 +61,6 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
-    "@expo/bunyan": "4.0.0",
     "@expo/config": "^6.0.15",
     "@expo/config-plugins": "^4.0.15",
     "@expo/json-file": "8.2.34",
