@@ -16,9 +16,6 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 describe('openAsync', () => {
   // Mock haven
   function createManager({ customUrl = 'custom://path', isAppInstalled = true } = {}) {

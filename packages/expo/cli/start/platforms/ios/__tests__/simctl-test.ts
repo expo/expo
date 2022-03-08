@@ -1,5 +1,4 @@
 import spawnAsync from '@expo/spawn-async';
-import { execSync } from 'child_process';
 
 import * as Log from '../../../../log';
 import { getContainerPathAsync, getDevicesAsync, getInfoPlistValueAsync } from '../simctl';
