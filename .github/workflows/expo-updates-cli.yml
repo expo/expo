@@ -7,11 +7,11 @@ on:
       - .github/workflows/expo-updates-cli.yml
       - packages/expo-updates/cli/**
       - yarn.lock
-  pull_request:
-    paths:
-      - .github/workflows/expo-updates-cli.yml
-      - packages/expo-updates/cli/**
-      - yarn.lock
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/expo-updates-cli.yml
+  #     - packages/expo-updates/cli/**
+  #     - yarn.lock
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
