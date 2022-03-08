@@ -39,11 +39,10 @@ class ClipboardModule : Module() {
 
     // region Strings
     function("getStringAsync") { options: GetStringOptions ->
-      val clip = clipboardManager.primaryClip?.takeIf { it.itemCount >= 1 }
-      val firstItem = clip?.getItemAt(0)
+      val item = clipboardManager.firstItem
       when (options.preferredType) {
-        StringContentType.PLAIN -> firstItem?.coerceToPlainText(context)
-        StringContentType.HTML -> firstItem?.coerceToHtmlText(context)
+        StringContentType.PLAIN -> item?.coerceToPlainText(context)
+        StringContentType.HTML -> item?.coerceToHtmlText(context)
       } ?: ""
     }
 
