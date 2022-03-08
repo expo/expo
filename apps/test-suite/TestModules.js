@@ -73,19 +73,13 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDKCompat'),
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
+    require('./tests/Clipboard'),
     optionalRequire(() => require('./tests/SQLite'))
   );
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
     modules.push(require('./tests/Hermes'));
-  }
-
-  /**
-   * TODO: provide support for other platforms too
-   */
-  if (Platform.OS === 'ios') {
-    modules.push(require('./tests/Clipboard'));
   }
 
   if (global.DETOX) {

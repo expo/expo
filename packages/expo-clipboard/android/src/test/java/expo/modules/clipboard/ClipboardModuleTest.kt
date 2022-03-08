@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.errorCodeOf
 import expo.modules.test.core.ModuleMock
 import expo.modules.test.core.ModuleMockHolder
 import io.mockk.confirmVerified
@@ -67,7 +68,7 @@ class ClipboardModuleTest {
     assertTrue(result)
     verify {
       eventEmitter.emit(
-        clipboardChangedEventName,
+        CLIPBOARD_CHANGED_EVENT_NAME,
         match {
           it.getString("content") == "severus snape"
         }
@@ -85,7 +86,7 @@ class ClipboardModuleTest {
     module.setStringAsync("ronald weasley")
 
     // assert that emit() was NOT called
-    verify(inverse = true) { eventEmitter.emit(clipboardChangedEventName, any()) }
+    verify(inverse = true) { eventEmitter.emit(CLIPBOARD_CHANGED_EVENT_NAME, any()) }
     confirmVerified(eventEmitter)
   }
 
@@ -95,7 +96,8 @@ class ClipboardModuleTest {
     val exception = runCatching { module.getStringAsync() }.exceptionOrNull()
     assertNotNull(exception)
     assertTrue(exception is CodedException)
-    assertEquals(ERR_CLIPBOARD_UNAVAILABLE, (exception as CodedException).code)
+    exception as CodedException
+    assertEquals(errorCodeOf<ClipboardUnavailableException>(), exception.code)
   }
 
   private val clipboardManager: ClipboardManager

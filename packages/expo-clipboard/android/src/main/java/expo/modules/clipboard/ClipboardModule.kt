@@ -6,28 +6,35 @@ import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.util.Log
 import androidx.core.os.bundleOf
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import java.io.File
 
 private const val moduleName = "ExpoClipboard"
-const val clipboardChangedEventName = "onClipboardChanged"
 private val TAG = ClipboardModule::class.java.simpleName
 
-const val ERR_CLIPBOARD_UNAVAILABLE = "ERR_CLIPBOARD_UNAVAILABLE"
-
-class ClipboardUnavailableException :
-  CodedException(ERR_CLIPBOARD_UNAVAILABLE, "'CLIPBOARD_SERVICE' is unavailable on this device", null)
+// this must match the one from `res/xml/clipboard_provider_paths.xml`
+const val CLIPBOARD_DIRECTORY_NAME = ".clipboard"
+const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
 
 class ClipboardModule : Module() {
   override fun definition() = ModuleDefinition {
     name(moduleName)
 
+    // region Strings
     function("getStringAsync") {
-      val clip = clipboardManager.primaryClip?.takeIf { it.itemCount >= 1 }
-      clip?.getItemAt(0)?.text ?: ""
+      clipboardManager.firstItem?.text ?: ""
     }
 
     function("setStringAsync") { content: String ->
@@ -42,8 +49,59 @@ class ClipboardModule : Module() {
         ?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
         ?: false
     }
+    // endregion
 
-    events(clipboardChangedEventName)
+    // region Images
+    function("getImageAsync") { options: GetImageOptions, promise: Promise ->
+      val imageUri = clipboardManager
+        .takeIf { clipboardHasItemWithType("image/*") }
+        ?.firstItem
+        ?.uri
+        .ifNull {
+          promise.resolve(null)
+          return@function
+        }
+
+      val exceptionHandler = CoroutineExceptionHandler { _, err ->
+        err.printStackTrace()
+        val rejectionCause = when (err) {
+          is CodedException -> err
+          is SecurityException -> NoPermissionException(err)
+          else -> PasteFailureException(err, kind = "image")
+        }
+        promise.reject(rejectionCause)
+      }
+
+      moduleCoroutineScope.launch(exceptionHandler) {
+        val imageResult = imageFromContentUri(context, imageUri, options)
+        promise.resolve(imageResult.toBundle())
+      }
+    }
+
+    function("setImageAsync") { imageData: String, promise: Promise ->
+      val exceptionHandler = CoroutineExceptionHandler { _, err ->
+        err.printStackTrace()
+        val rejectionCause = when (err) {
+          is CodedException -> err
+          else -> CopyFailureException(err, kind = "image")
+        }
+        promise.reject(rejectionCause)
+      }
+
+      moduleCoroutineScope.launch(exceptionHandler) {
+        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
+        clipboardManager.setPrimaryClip(clip)
+        promise.resolve(null)
+      }
+    }
+
+    function("hasImageAsync") {
+      clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
+    }
+    //endregion
+
+    // region Events
+    events(CLIPBOARD_CHANGED_EVENT_NAME)
 
     onCreate {
       clipboardEventEmitter = ClipboardEventEmitter()
@@ -52,6 +110,11 @@ class ClipboardModule : Module() {
 
     onDestroy {
       clipboardEventEmitter.detachListener()
+      try {
+        moduleCoroutineScope.cancel(ModuleDestroyedException())
+      } catch (e: IllegalStateException) {
+        // Ignore: The coroutine scope has no job in it
+      }
     }
 
     onActivityEntersBackground {
@@ -61,6 +124,7 @@ class ClipboardModule : Module() {
     onActivityEntersForeground {
       clipboardEventEmitter.resumeListening()
     }
+    // endregion
   }
 
   private val context
@@ -72,6 +136,13 @@ class ClipboardModule : Module() {
     get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: throw ClipboardUnavailableException()
 
+  private val moduleCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+  private val clipboardCacheDir: File by lazy {
+    File(context.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
+  }
+
+  // region Clipboard event emitter
   private lateinit var clipboardEventEmitter: ClipboardEventEmitter
 
   private inner class ClipboardEventEmitter {
@@ -91,9 +162,9 @@ class ClipboardModule : Module() {
         ?.takeIf { it.itemCount >= 1 }
         ?.let { clip ->
           this@ClipboardModule.sendEvent(
-            clipboardChangedEventName,
+            CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
-              "content" to clip.getItemAt(0).text.toString()
+              "content" to (clip.getItemAt(0).text?.toString() ?: "")
             )
           )
         }
@@ -101,4 +172,27 @@ class ClipboardModule : Module() {
 
     private val maybeClipboardManager = runCatching { clipboardManager }.getOrNull()
   }
+  // endregion
+
+  // region Utilities
+
+  /**
+   * Check whether the clipboard contains the given MIME type.
+   *
+   * Does NOT trigger the "Pasted from clipboard" toast on Android 12+
+   *
+   * @param mimeType The desired MIME type. May be a pattern, accepts wildcards.
+   * @return Returns `true` if one of items in the clipboard
+   * matches the desired MIME type, otherwise returns `false`.
+   */
+  private fun clipboardHasItemWithType(mimeType: String) =
+    clipboardManager.primaryClipDescription?.hasMimeType(mimeType) ?: false
+
+  /**
+   * Gets first item from the clipboard or null if empty
+   */
+  private val ClipboardManager.firstItem: ClipData.Item?
+    get() = primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)
+
+  // endregion
 }
