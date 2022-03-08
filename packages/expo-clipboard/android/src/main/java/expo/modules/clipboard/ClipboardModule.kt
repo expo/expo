@@ -57,7 +57,10 @@ class ClipboardModule : Module() {
         .takeIf { clipboardHasItemWithType("image/*") }
         ?.firstItem
         ?.uri
-        ?: return@function null
+        .ifNull {
+          promise.resolve(null)
+          return@function
+        }
 
       val exceptionHandler = CoroutineExceptionHandler { _, err ->
         err.printStackTrace()
