@@ -12,3 +12,7 @@ export function registerErrorHandlers() {
 export function isDevelopmentBuild(): boolean {
   return !!NativeModules.EXDevLauncher;
 }
+
+export type DevLauncherExtension = {
+  navigateToLauncherAsync: () => Promise<void>;
+};
