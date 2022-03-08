@@ -25,28 +25,18 @@ export function test({ describe, expect, it, afterEach, ...t }) {
         const result = await Clipboard.getStringAsync();
         expect(result).toEqual('test string');
       });
+
+      it('checks if clipboard has string content', async () => {
+        await Clipboard.setStringAsync('test string');
+        let result = await Clipboard.hasStringAsync();
+        expect(result).toBe(true);
+
+        await Clipboard.setStringAsync('');
+        result = await Clipboard.hasStringAsync();
+        expect(result).toBe(false);
+      });
     });
 
-    it('checks if clipboard has string content', async () => {
-      await Clipboard.setStringAsync('test string');
-      let result = await Clipboard.hasStringAsync();
-      expect(result).toBe(true);
-
-      await Clipboard.setStringAsync('');
-      result = await Clipboard.hasStringAsync();
-      expect(result).toBe(false);
-    });
-
-    it('sets and gets an url', async () => {
-      const exampleUrl = 'https://example.com';
-      let hasUrl = await Clipboard.hasUrlAsync();
-      expect(hasUrl).toEqual(false);
-      await Clipboard.setUrlAsync(exampleUrl);
-      hasUrl = await Clipboard.hasUrlAsync();
-      expect(hasUrl).toEqual(true);
-      const result = await Clipboard.getUrlAsync();
-      expect(result).toEqual(exampleUrl);
-    });
     if (Platform.OS === 'iOS') {
       describe('URLs', () => {
         it('sets and gets an url', async () => {

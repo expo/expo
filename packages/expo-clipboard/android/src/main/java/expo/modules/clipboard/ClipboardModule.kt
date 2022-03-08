@@ -42,7 +42,6 @@ class ClipboardModule : Module() {
       clipboardManager.setPrimaryClip(clip)
       return@function true
     }
-    // endregion
 
     function("hasStringAsync") {
       clipboardManager
@@ -50,6 +49,7 @@ class ClipboardModule : Module() {
         ?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
         ?: false
     }
+    // endregion
 
     // region Images
     function("getImageAsync") { options: GetImageOptions, promise: Promise ->
