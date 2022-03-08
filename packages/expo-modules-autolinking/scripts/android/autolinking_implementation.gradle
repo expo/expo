@@ -131,7 +131,7 @@ class Colors {
 
 // We can't cast a manager that is created in `settings.gradle` to the `ExpoAutolinkingManager` 
 // because if someone is using `buildSrc`, the `ExpoAutolinkingManager` class 
-// will be loaded by two different class loader - `settings.gradle` will used a diffrent loader. 
+// will be loaded by two different class loader - `settings.gradle` will use a diffrent loader. 
 // In the JVM, classes are equal only if were loaded by the same loader.
 // There is nothing that we can do in that case, but to make our code safer, we check if the class name is the same.
 def validateExpoAutolinkingManager(manager) {
