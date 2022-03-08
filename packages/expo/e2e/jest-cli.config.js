@@ -10,4 +10,5 @@ module.exports = {
   displayName: require('../package').name,
   roots,
   setupFiles: ['<rootDir>/setup.ts'],
+  clearMocks: true,
 };
