@@ -98,7 +98,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           contentContainerStyle={[styles.contentContainer]}>
           <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
           {projects?.length ? (
-            <View bg="default" rounded="large">
+            <View bg="default" rounded="large" style={{ overflow: 'hidden' }}>
               {projects.map((project, i) => (
                 <React.Fragment key={project.url}>
                   <DevelopmentServerListItem
