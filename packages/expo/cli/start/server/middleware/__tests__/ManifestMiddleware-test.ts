@@ -30,9 +30,6 @@ jest.mock('../../../project/devices', () => ({
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 describe('_getBundleUrl', () => {
   const createConstructUrl = () =>
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);

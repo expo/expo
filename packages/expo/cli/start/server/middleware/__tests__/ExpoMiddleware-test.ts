@@ -6,9 +6,6 @@ jest.mock('../../../../log');
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 describe('_shouldContinue', () => {
   const middleware = new ExpoMiddleware('/', ['/', '/index.html']);
   it('returns false when the request url is not defined', () => {
