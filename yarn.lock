@@ -1372,6 +1372,26 @@
     serialize-error "6.0.0"
     temp-dir "^2.0.0"
 
+"@expo/dev-server@0.1.103":
+  version "0.1.103"
+  resolved "https://registry.yarnpkg.com/@expo/dev-server/-/dev-server-0.1.103.tgz#311d9bbf60d387334c4f8af44aa10515082be022"
+  integrity sha512-tqx/5/myJfA0lI6SA2Cv/yRXd06gIw5PcsSGKzrX8oBCS/5kRcwCn32IKfArwfuAn5YF+Z3e0A523kS7KOqsjQ==
+  dependencies:
+    "@expo/bunyan" "4.0.0"
+    "@expo/metro-config" "0.3.9"
+    "@expo/osascript" "2.0.31"
+    "@react-native-community/cli-server-api" "^5.0.1"
+    body-parser "1.19.0"
+    chalk "^4.0.0"
+    connect "^3.7.0"
+    fs-extra "9.0.0"
+    node-fetch "^2.6.0"
+    open "^8.3.0"
+    resolve-from "^5.0.0"
+    semver "7.3.2"
+    serialize-error "6.0.0"
+    temp-dir "^2.0.0"
+
 "@expo/devcert@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@expo/devcert/-/devcert-1.0.0.tgz#79df9431e806bc546f6399e35934b9876384f0a9"
@@ -1430,7 +1450,7 @@
     getenv "^1.0.0"
     sucrase "^3.20.0"
 
-"@expo/metro-config@~0.3.7":
+"@expo/metro-config@0.3.9", "@expo/metro-config@~0.3.7":
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.3.9.tgz#41e04b7941fc74809852af16fca05b950741da6e"
   integrity sha512-mtTc+LXdhRAux42OXK25EbPFGCWHn0r4iRJwhGq23nLP1YUWsA8TQJ2QOrYSdTE6FeH2ZyrSBpdJmwQD50GENg==

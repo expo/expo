@@ -71,6 +71,8 @@
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
     "@expo/vector-icons": "^12.0.4",
+    "@expo/dev-server": "0.1.103",
+    "@expo/devcert": "^1.0.0",
     "@urql/core": "2.3.1",
     "@urql/exchange-retry": "0.3.0",
     "arg": "4.1.0",
