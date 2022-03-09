@@ -1,7 +1,6 @@
 package expo.modules.clipboard
 
 import android.content.ClipData
-import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
@@ -12,7 +11,6 @@ import expo.modules.kotlin.exception.errorCodeOf
 import expo.modules.test.core.ModuleMock
 import expo.modules.test.core.ModuleMockHolder
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -74,9 +72,11 @@ class ClipboardModuleTest {
     )
 
     val plainResult = module.getStringAsync(GetStringOptions())
-    val htmlResult = module.getStringAsync(GetStringOptions().apply {
-      preferredType = StringContentType.HTML
-    })
+    val htmlResult = module.getStringAsync(
+      GetStringOptions().apply {
+        preferredType = StringContentType.HTML
+      }
+    )
     assertEquals("hello world", plainResult)
     assertEquals("<p>hello world</p>", htmlResult)
   }
