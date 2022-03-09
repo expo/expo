@@ -26,6 +26,9 @@ export class AsyncNgrok {
   /** Info about the currently running instance of ngrok. */
   private serverUrl: string | null = null;
 
+  /** Unsubscribe from exit listeners. */
+  private offExitHook: (() => void) | null = null;
+
   constructor(private projectRoot: string, private port: number) {
     this.resolver = new NgrokResolver(projectRoot);
   }
@@ -42,6 +45,9 @@ export class AsyncNgrok {
 
   /** Terminate the instance by the pid. */
   private killInstance() {
+    this.offExitHook?.();
+    this.offExitHook = null;
+
     const pid = this.getActivePid();
     if (pid !== null) {
       try {
@@ -54,11 +60,14 @@ export class AsyncNgrok {
 
   /** Exposed for testing. */
   async _getProjectHostnameAsync() {
-    // TODO: Maybe assert no robot users?
-    const username = getActorDisplayName(await getUserAsync());
+    const user = await getUserAsync();
+    if (user?.__typename === 'Robot') {
+      throw new CommandError('NGROK_ROBOT', 'Cannot use ngrok with a robot user.');
+    }
+    const username = getActorDisplayName(user);
 
     return [
-      // TODO: Is this needed?
+      // NOTE: https://github.com/expo/expo/pull/16556#discussion_r822944286
       await this.getProjectRandomnessAsync(),
       slugify(username),
       // Use the port to distinguish between multiple tunnels (webpack, metro).
@@ -69,7 +78,7 @@ export class AsyncNgrok {
 
   async startAsync({ timeout }: { timeout?: number } = {}): Promise<void> {
     // Ensure that force quitting can clean up ngrok.
-    installExitHooks(() => {
+    this.offExitHook = installExitHooks(() => {
       this.killInstance();
     });
 
