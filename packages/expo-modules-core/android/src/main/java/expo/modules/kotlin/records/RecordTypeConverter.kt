@@ -96,7 +96,7 @@ class RecordTypeConverter<T : Record>(
       .filterNotNull()
       .map { (annotation, binderAnnotation) ->
         val binderInstance = binderAnnotation.binder.createInstance() as ValidationBinder
-        binderInstance.bind(annotation)
+        binderInstance.bind(annotation, property.returnType)
       }
   }
 
