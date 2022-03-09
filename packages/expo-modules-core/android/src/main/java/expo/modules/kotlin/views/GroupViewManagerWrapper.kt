@@ -41,4 +41,47 @@ class GroupViewManagerWrapper(
 
     return super.getExportedCustomDirectEventTypeConstants()
   }
+
+  override fun addView(parent: ViewGroup?, child: View?, index: Int) {
+    viewWrapperDelegate.callGroupViewActionOrElse<Unit>(
+      GroupViewAction.Action.ADD_VIEW,
+      GroupViewAction.Payload(parent, child, index)
+    ) {
+      super.addView(parent, child, index)
+    }
+  }
+
+  override fun getChildCount(parent: ViewGroup?): Int =
+    viewWrapperDelegate.callGroupViewActionOrElse<Int>(
+      GroupViewAction.Action.GET_CHILD_COUNT,
+      GroupViewAction.Payload(parentView = parent)
+    ) {
+      super.getChildCount(parent)
+    }
+
+  override fun getChildAt(parent: ViewGroup?, index: Int): View =
+    viewWrapperDelegate.callGroupViewActionOrElse<View>(
+      GroupViewAction.Action.GET_CHILD_AT,
+      GroupViewAction.Payload(parentView = parent, index = index)
+    ) {
+      super.getChildAt(parent, index)
+    }
+
+  override fun removeViewAt(parent: ViewGroup?, index: Int) {
+    viewWrapperDelegate.callGroupViewActionOrElse<Unit>(
+      GroupViewAction.Action.REMOVE_VIEW_AT,
+      GroupViewAction.Payload(parentView = parent, index = index)
+    ) {
+      super.removeViewAt(parent, index)
+    }
+  }
+
+  override fun removeView(parent: ViewGroup?, view: View?) {
+    viewWrapperDelegate.callGroupViewActionOrElse<Unit>(
+      GroupViewAction.Action.REMOVE_VIEW,
+      GroupViewAction.Payload(parentView = parent, childView = view)
+    ) {
+      super.removeView(parent, view)
+    }
+  }
 }
