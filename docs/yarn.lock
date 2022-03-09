@@ -7510,6 +7510,13 @@ react-feather@^2.0.9:
   dependencies:
     prop-types "^15.7.2"
 
+react-grid-system@^7.3.2:
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/react-grid-system/-/react-grid-system-7.3.2.tgz#b3e8cc704d432b097bd03c6ea8c2bbed05974475"
+  integrity sha512-SR5FKJvvN+Sl/OqSpyhLaesfc2cHKxFlP5xL53jUp3m+vF40OYiJbCuW+U43YeNEZQUfR38K3Ec+dVxl9y6MUg==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-is@17.0.2, "react-is@^16.12.0 || ^17.0.0", react-is@^17.0.0, react-is@^17.0.1, react-is@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
