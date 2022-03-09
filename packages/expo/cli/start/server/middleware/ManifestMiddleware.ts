@@ -59,8 +59,6 @@ export class ManifestMiddleware extends ExpoMiddleware {
       projectRoot,
       /**
        * Only support `/`, `/manifest`, `/index.exp` for the manifest middleware.
-       * Returns true when the manifest middleware should handle the incoming server request.
-       * Exposed for testing.
        */
       ['/', '/manifest', '/index.exp']
     );
