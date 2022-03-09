@@ -12,7 +12,7 @@ import { CommandError, SilentError } from '../../utils/errors';
 import { ora } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
 
-export async function isInstalledAsync() {
+async function isInstalledAsync() {
   try {
     await spawnAsync('ios-deploy', ['--version'], { stdio: 'ignore' });
     return true;
@@ -168,7 +168,7 @@ export async function assertInstalledAsync() {
   if (!(await isInstalledAsync())) {
     if (
       await confirmAsync({
-        message: `Required package ${chalk.cyan`ios-deploy`} is not installed, would you like to try installing it with homebrew?`,
+        message: chalk`Required package {cyan ios-deploy} is not installed, would you like to try installing it with homebrew?`,
         initial: true,
       })
     ) {
@@ -176,11 +176,11 @@ export async function assertInstalledAsync() {
         await brewInstallAsync();
         return;
       } catch (error) {
-        Log.error(`Failed to install ${chalk.bold`ios-deploy`} with homebrew: ${error.message}`);
+        Log.error(chalk`Failed to install {bold ios-deploy} with homebrew: ${error.message}`);
       }
     }
     // Controlled error message.
-    const error = `Cannot install iOS apps on devices without ${chalk.bold`ios-deploy`} installed globally. Please install it with ${chalk.bold`brew install ios-deploy`} and try again, or build the app with a simulator.`;
+    const error = chalk`Cannot install iOS apps on devices without {bold ios-deploy} installed globally. Please install it with {bold brew install ios-deploy} and try again, or build the app with a simulator.`;
     Log.warn(wrapAnsi(error, process.stdout.columns || 80));
     throw new SilentError(error);
   }

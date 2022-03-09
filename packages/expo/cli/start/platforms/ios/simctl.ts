@@ -6,7 +6,7 @@ import { xcrunAsync } from './xcrun';
 
 type DeviceState = 'Shutdown' | 'Booted';
 
-type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
+export type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
 
 export type Device = {
   availabilityError?: 'runtime profile not found';

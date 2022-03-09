@@ -1,21 +1,25 @@
 import chalk from 'chalk';
-import { AppleDevice, SimControl, Simulator } from 'xdl';
 
 import * as Log from '../../log';
+import {
+  AppleDeviceManager,
+  ensureSimulatorOpenAsync,
+} from '../../start/platforms/ios/AppleDeviceManager';
+import { assertSystemRequirementsAsync } from '../../start/platforms/ios/assertSystemRequirements';
+import { sortDefaultDeviceToBeginningAsync } from '../../start/platforms/ios/promptAppleDevice';
+import { OSType } from '../../start/platforms/ios/simctl';
+import * as SimControl from '../../start/platforms/ios/simctl';
+import { listDevicesAsync, XCTraceDevice } from '../../start/platforms/ios/xctrace';
 import { CommandError } from '../../utils/errors';
 import { ora } from '../../utils/ora';
 import { profile } from '../../utils/profile';
 import prompt from '../../utils/prompts';
 
-async function getBuildDestinationsAsync({ osType }: { osType?: string } = {}) {
-  const devices = (
-    await profile(SimControl.listDevicesAsync, 'SimControl.listDevicesAsync')()
-  ).filter((device) => {
-    return device.deviceType === 'device';
-  });
+async function getBuildDestinationsAsync({ osType }: { osType?: OSType } = {}) {
+  const devices = await profile(listDevicesAsync)();
 
-  const simulators = await Simulator.sortDefaultDeviceToBeginningAsync(
-    await profile(SimControl.listSimulatorDevicesAsync)(),
+  const simulators = await sortDefaultDeviceToBeginningAsync(
+    await profile(SimControl.getDevicesAsync)(),
     osType
   );
 
@@ -24,29 +28,30 @@ async function getBuildDestinationsAsync({ osType }: { osType?: string } = {}) {
 
 export async function resolveDeviceAsync(
   device?: string | boolean,
-  { osType }: { osType?: string } = {}
-): Promise<SimControl.SimulatorDevice | SimControl.XCTraceDevice> {
-  if (!(await profile(Simulator.ensureXcodeCommandLineToolsInstalledAsync)())) {
-    throw new CommandError('Unable to verify Xcode and Simulator installation.');
-  }
+  { osType }: { osType?: OSType } = {}
+): Promise<SimControl.Device | XCTraceDevice> {
+  await assertSystemRequirementsAsync();
 
   if (!device) {
-    const simulator = await profile(
-      Simulator.ensureSimulatorOpenAsync,
-      'Simulator.ensureSimulatorOpenAsync'
-    )({ osType });
-    Log.debug(`Resolved default (${osType}) device:`, simulator.name, simulator.udid);
-    return simulator;
+    const manager = await AppleDeviceManager.resolveAsync({
+      device: {
+        osType,
+      },
+    });
+
+    Log.debug(`Resolved default (${osType}) device:`, manager.device.name, manager.device.udid);
+    return manager.device;
   }
 
+  // TODO: This is very slow, replace with appium or related JS tooling instead.
   // Only use the spinner with xctrace since it's so slow (~2s), alternative
   // method is very fast (~50ms) and the flicker makes it seem slower.
-  const spinner = AppleDevice.isEnabled()
-    ? null
-    : ora(`🔍 Finding ${device === true ? 'devices' : `device ${chalk.cyan(device)}`}`).start();
-  let devices: (SimControl.SimulatorDevice | SimControl.XCTraceDevice)[] = await profile(
-    getBuildDestinationsAsync
-  )({ osType }).catch(() => []);
+  const spinner = ora(
+    `🔍 Finding ${device === true ? 'devices' : `device ${chalk.cyan(device)}`}`
+  ).start();
+  let devices: (SimControl.Device | XCTraceDevice)[] = await profile(getBuildDestinationsAsync)({
+    osType,
+  }).catch(() => []);
 
   spinner?.stop();
 
@@ -92,7 +97,7 @@ export async function resolveDeviceAsync(
       !('deviceType' in device) ||
       device.deviceType.startsWith('com.apple.CoreSimulator.SimDeviceType.');
     if (isSimulator) {
-      return await Simulator.ensureSimulatorOpenAsync({ udid: device.udid });
+      return await ensureSimulatorOpenAsync({ udid: device.udid });
     }
     return device;
   }
@@ -109,7 +114,7 @@ export async function resolveDeviceAsync(
     !('deviceType' in resolved) ||
     resolved.deviceType.startsWith('com.apple.CoreSimulator.SimDeviceType.');
   if (isSimulator) {
-    return await Simulator.ensureSimulatorOpenAsync({ udid: resolved.udid });
+    return await ensureSimulatorOpenAsync({ udid: resolved.udid });
   }
 
   return resolved;

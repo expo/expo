@@ -1,4 +1,3 @@
-import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
 import chalk from 'chalk';
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
@@ -10,63 +9,32 @@ import { SimControl } from 'xdl';
 import * as Log from '../../log';
 import { ensureDirectory } from '../../utils/dir';
 import { EXPO_DEBUG } from '../../utils/env';
-import { CommandError, AbortCommandError } from '../../utils/errors';
+import { AbortCommandError, CommandError } from '../../utils/errors';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './developmentCodeSigning';
 import { ProjectInfo, XcodeConfiguration } from './resolveOptionsAsync';
 
 export type BuildProps = {
+  /** Root to the iOS native project. */
   projectRoot: string;
+  /** Is the target a simulator. */
   isSimulator: boolean;
   xcodeProject: ProjectInfo;
   device: Pick<SimControl.XCTraceDevice, 'name' | 'udid'>;
   configuration: XcodeConfiguration;
+  /** Disable the initial bundling from the native script. */
   shouldSkipInitialBundling: boolean;
+  /** Skip opening the bundler from the native script. */
   shouldStartBundler: boolean;
   /** Should use derived data for builds. */
   buildCache: boolean;
   terminal?: string;
+  /** Port to start the dev server. */
   port: number;
   scheme: string;
 };
 
-type XcodeSDKName = 'iphoneos' | 'iphonesimulator';
-
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
-}
-
-export async function getProjectBuildSettings(
-  xcodeProject: ProjectInfo,
-  configuration: XcodeConfiguration,
-  sdkName: XcodeSDKName,
-  scheme: string
-) {
-  const args = [
-    xcodeProject.isWorkspace ? '-workspace' : '-project',
-    xcodeProject.name,
-    '-scheme',
-    scheme,
-    '-sdk',
-    sdkName,
-    // getPlatformName(buildOutput),
-    '-configuration',
-    configuration,
-    '-showBuildSettings',
-    '-json',
-  ];
-  Log.debug(`  xcodebuild ${args.join(' ')}`);
-  const { stdout } = await spawnAsync('xcodebuild', args, { stdio: 'pipe' });
-  try {
-    return JSON.parse(stdout);
-  } catch (error) {
-    // This can fail if the xcodebuild command throws a simulator error:
-    // 2021-01-24 14:22:43.802 xcodebuild[73087:14664906]  DVTAssertions: Warning in /Library/Caches/com.apple.xbs/Sources/DVTiOSFrameworks/DVTiOSFrameworks-17705/DTDeviceKitBase/DTDKRemoteDeviceData.m:371
-    Log.warn(error.message);
-    if (error.message.match(/in JSON at position/)) {
-      Log.log(chalk.dim(stdout));
-    }
-    return {};
-  }
 }
 
 /**
@@ -112,25 +80,27 @@ export function getEscapedPath(filePath: string): string {
   if (fs.existsSync(unescapedPath)) {
     return unescapedPath;
   }
-  throw new Error(
+  throw new CommandError(
+    'XCODE_BUILD',
     `Unexpected: Generated app at path "${filePath}" cannot be read, the app cannot be installed. Please report this and build onto a simulator.`
   );
 }
 
-function extractEnvVariableFromBuild(buildOutput: string, variableName: string) {
+export function extractEnvVariableFromBuild(buildOutput: string, variableName: string) {
   // Xcode can sometimes escape `=` with a backslash or put the value in quotes
   const reg = new RegExp(`export ${variableName}\\\\?=(.*)$`, 'mg');
   const matched = [...buildOutput.matchAll(reg)];
 
   if (!matched || !matched.length) {
     throw new CommandError(
+      'XCODE_BUILD',
       `Malformed xcodebuild results: "${variableName}" variable was not generated in build output. Please report this issue and run your project with Xcode instead.`
     );
   }
   return matched.map((value) => value[1]).filter(Boolean) as string[];
 }
 
-function getProcessOptions({
+export function getProcessOptions({
   packager,
   shouldSkipInitialBundling,
   terminal,
@@ -167,31 +137,31 @@ function getProcessOptions({
   };
 }
 
-export async function buildAsync({
-  projectRoot,
-  xcodeProject,
-  device,
-  configuration,
-  isSimulator,
-  scheme,
-  shouldSkipInitialBundling,
-  terminal,
-  port,
-  buildCache,
-}: BuildProps): Promise<string> {
+export async function getXcodeBuildArgsAsync(
+  props: Pick<
+    BuildProps,
+    | 'buildCache'
+    | 'projectRoot'
+    | 'xcodeProject'
+    | 'configuration'
+    | 'scheme'
+    | 'device'
+    | 'isSimulator'
+  >
+): Promise<string[]> {
   const args = [
-    xcodeProject.isWorkspace ? '-workspace' : '-project',
-    xcodeProject.name,
+    props.xcodeProject.isWorkspace ? '-workspace' : '-project',
+    props.xcodeProject.name,
     '-configuration',
-    configuration,
+    props.configuration,
     '-scheme',
-    scheme,
+    props.scheme,
     '-destination',
-    `id=${device.udid}`,
+    `id=${props.device.udid}`,
   ];
 
-  if (!isSimulator) {
-    const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(projectRoot);
+  if (!props.isSimulator) {
+    const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(props.projectRoot);
     if (developmentTeamId) {
       args.push(
         `DEVELOPMENT_TEAM=${developmentTeamId}`,
@@ -202,7 +172,7 @@ export async function buildAsync({
   }
 
   // Add last
-  if (buildCache === false) {
+  if (props.buildCache === false) {
     args.push(
       // Will first clean the derived data folder.
       'clean',
@@ -210,7 +180,78 @@ export async function buildAsync({
       'build'
     );
   }
+  return args;
+}
 
+function spawnXcodeBuild(
+  args: string[],
+  options: SpawnOptionsWithoutStdio,
+  { onData }: { onData: (data: string) => void }
+): Promise<{ code: number | null; results: string; error: string }> {
+  const buildProcess = spawn('xcodebuild', args, options);
+
+  let results = '';
+  let error = '';
+
+  buildProcess.stdout.on('data', (data: Buffer) => {
+    const stringData = data.toString();
+    results += stringData;
+    onData(stringData);
+  });
+
+  buildProcess.stderr.on('data', (data: Buffer) => {
+    const stringData = data instanceof Buffer ? data.toString() : data;
+    error += stringData;
+  });
+
+  return new Promise(async (resolve, reject) => {
+    buildProcess.on('close', (code: number) => {
+      resolve({ code, results, error });
+    });
+  });
+}
+
+async function spawnXcodeBuildWithFlush(
+  args: string[],
+  options: SpawnOptionsWithoutStdio,
+  { onFlush }: { onFlush: (data: string) => void }
+): Promise<{ code: number | null; results: string; error: string }> {
+  let currentBuffer = '';
+
+  // Data can be sent in chunks that would have no relevance to our regex
+  // this can cause massive slowdowns, so we need to ensure the data is complete before attempting to parse it.
+  function flushBuffer() {
+    if (!currentBuffer) {
+      return;
+    }
+
+    const data = currentBuffer;
+    // Reset buffer.
+    currentBuffer = '';
+    // Process data.
+    onFlush(data);
+  }
+
+  const data = await spawnXcodeBuild(args, options, {
+    onData(stringData) {
+      currentBuffer += stringData;
+      // Only flush the data if we have a full line.
+      if (currentBuffer.endsWith(os.EOL)) {
+        flushBuffer();
+      }
+    },
+  });
+
+  // Flush log data at the end just in case we missed something.
+  flushBuffer();
+  return data;
+}
+
+async function spawnXcodeBuildWithFormat(
+  args: string[],
+  options: SpawnOptionsWithoutStdio,
+  { projectRoot, xcodeProject }: { projectRoot: string; xcodeProject: ProjectInfo }
+): Promise<{ code: number | null; results: string; error: string; formatter: ExpoRunFormatter }> {
   Log.debug(`  xcodebuild ${args.join(' ')}`);
 
   logPrettyItem(chalk.bold`Planning build`);
@@ -220,98 +261,73 @@ export async function buildAsync({
     isDebug: EXPO_DEBUG,
   });
 
-  return new Promise(async (resolve, reject) => {
-    const buildProcess = spawn(
-      'xcodebuild',
-      args,
-      getProcessOptions({ packager: false, shouldSkipInitialBundling, terminal, port })
-    );
-    let buildOutput = '';
-    let errorOutput = '';
-
-    let currentBuffer = '';
-
-    // Data can be sent in chunks that would have no relevance to our regex
-    // this can cause massive slowdowns, so we need to ensure the data is complete before attempting to parse it.
-    function flushBuffer() {
-      if (!currentBuffer) {
-        return;
-      }
-
-      const data = currentBuffer;
-      // Reset buffer.
-      currentBuffer = '';
+  const results = await spawnXcodeBuildWithFlush(args, options, {
+    onFlush(data) {
       // Process data.
-      const lines = formatter.pipe(data);
-      for (const line of lines) {
+      for (const line of formatter.pipe(data)) {
         // Log parsed results.
         Log.log(line);
       }
+    },
+  });
+
+  Log.debug(`Exited with code: ${results.code}`);
+
+  if (
+    // User cancelled with ctrl-c
+    results.code === null ||
+    // Build interrupted
+    results.code === 75
+  ) {
+    throw new AbortCommandError();
+  }
+
+  Log.log(formatter.getBuildSummary());
+
+  return { ...results, formatter };
+}
+
+export async function buildAsync(props: BuildProps): Promise<string> {
+  const args = await getXcodeBuildArgsAsync(props);
+
+  const { projectRoot, xcodeProject, shouldSkipInitialBundling, terminal, port } = props;
+
+  const { code, results, formatter, error } = await spawnXcodeBuildWithFormat(
+    args,
+    getProcessOptions({ packager: false, shouldSkipInitialBundling, terminal, port }),
+    {
+      projectRoot,
+      xcodeProject,
+    }
+  );
+
+  const logFilePath = writeBuildLogs(projectRoot, results, error);
+
+  if (code !== 0) {
+    // Determine if the logger found any errors;
+    const wasErrorPresented = !!formatter.errors.length;
+
+    const errorTitle = `Failed to build iOS project. "xcodebuild" exited with error code ${code}.`;
+
+    if (wasErrorPresented) {
+      // This has a flaw, if the user is missing a file, and there is a script error, only the missing file error will be shown.
+      // They will only see the script error if they fix the missing file and rerun.
+      // The flaw can be fixed by catching script errors in the custom logger.
+      throw new CommandError(errorTitle);
     }
 
-    buildProcess.stdout.on('data', (data: Buffer) => {
-      const stringData = data.toString();
-      buildOutput += stringData;
-      currentBuffer += stringData;
-      // Only flush the data if we have a full line.
-      if (currentBuffer.endsWith(os.EOL)) {
-        flushBuffer();
-      }
-    });
+    // Show all the log info because often times the error is coming from a shell script,
+    // that invoked a node script, that started metro, which threw an error.
 
-    buildProcess.stderr.on('data', (data: Buffer) => {
-      const stringData = data instanceof Buffer ? data.toString() : data;
-      errorOutput += stringData;
-    });
-
-    buildProcess.on('close', (code: number) => {
-      // Flush log data at the end just in case we missed something.
-      flushBuffer();
-      Log.debug(`Exited with code: ${code}`);
-
-      if (
-        // User cancelled with ctrl-c
-        code === null ||
-        // Build interrupted
-        code === 75
-      ) {
-        reject(new AbortCommandError());
-        return;
-      }
-
-      Log.log(formatter.getBuildSummary());
-      const logFilePath = writeBuildLogs(projectRoot, buildOutput, errorOutput);
-
-      if (code !== 0) {
-        // Determine if the logger found any errors;
-        const wasErrorPresented = !!formatter.errors.length;
-
-        const errorTitle = `Failed to build iOS project. "xcodebuild" exited with error code ${code}.`;
-
-        if (wasErrorPresented) {
-          // This has a flaw, if the user is missing a file, and there is a script error, only the missing file error will be shown.
-          // They will only see the script error if they fix the missing file and rerun.
-          // The flaw can be fixed by catching script errors in the custom logger.
-          reject(new CommandError(errorTitle));
-          return;
-        }
-
-        // Show all the log info because often times the error is coming from a shell script,
-        // that invoked a node script, that started metro, which threw an error.
-        reject(
-          new CommandError(
-            `${errorTitle}\nTo view more error logs, try building the app with Xcode directly, by opening ${xcodeProject.name}.\n\n` +
-              buildOutput +
-              '\n\n' +
-              errorOutput +
-              `Build logs written to ${chalk.underline(logFilePath)}`
-          )
-        );
-        return;
-      }
-      resolve(buildOutput);
-    });
-  });
+    throw new CommandError(
+      `${errorTitle}\nTo view more error logs, try building the app with Xcode directly, by opening ${xcodeProject.name}.\n\n` +
+        results +
+        '\n\n' +
+        error +
+        `Build logs written to ${chalk.underline(logFilePath)}`
+    );
+  }
+  return results;
 }
 
 function writeBuildLogs(projectRoot: string, buildOutput: string, errorOutput: string) {

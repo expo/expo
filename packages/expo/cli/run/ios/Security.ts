@@ -1,7 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import forge from 'node-forge';
 
-import CommandError from '../../../CommandError';
+import { SecurityBinPrerequisite } from '../../start/doctor/SecurityBinPrerequisite';
+import { CommandError } from '../../utils/errors';
 
 export type CertificateSigningInfo = {
   /**
@@ -22,27 +23,26 @@ export type CertificateSigningInfo = {
   appleTeamId?: string;
 };
 
-export async function assertInstalledAsync() {
-  try {
-    await spawnAsync('which', ['security']);
-  } catch {
-    throw new CommandError(
-      "Cannot code sign project because the CLI `security` is not available on your computer.\nPlease ensure it's installed and try again."
-    );
+export async function getSecurityPemAsync(id: string) {
+  const pem = (await spawnAsync('security', ['find-certificate', '-c', id, '-p'])).stdout?.trim?.();
+  if (!pem) {
+    throw new CommandError(`Failed to get PEM certificate for ID "${id}" using the 'security' bin`);
   }
+  return pem;
 }
 
 export async function getCertificateForSigningIdAsync(id: string): Promise<forge.pki.Certificate> {
-  const pem = (await spawnAsync('security', ['find-certificate', '-c', id, '-p'])).stdout?.trim?.();
-  if (!pem) {
-    throw new CommandError(
-      `Failed to get PEM certificate for ID "${id}" using the \`security\` CLI`
-    );
-  }
+  const pem = await getSecurityPemAsync(id);
   return forge.pki.certificateFromPem(pem);
 }
 
+/**
+ * Get the signing identities from the security bin. Return a list of parsed values with duplicates removed.
+ * @returns A list like ['Apple Development: bacon@expo.io (BB00AABB0A)', 'Apple Developer: Evan Bacon (AA00AABB0A)']
+ */
 export async function findIdentitiesAsync(): Promise<string[]> {
+  await SecurityBinPrerequisite.instance.assertAsync();
+
   const results = (
     await spawnAsync('security', ['find-identity', '-p', 'codesigning', '-v'])
   ).stdout.trim?.();
@@ -55,7 +55,7 @@ export async function findIdentitiesAsync(): Promise<string[]> {
 
   const parsed = results
     .split('\n')
-    .map(line => extractCodeSigningInfo(line))
+    .map((line) => extractCodeSigningInfo(line))
     .filter(Boolean) as string[];
 
   // Remove duplicates
@@ -74,11 +74,12 @@ export async function resolveIdentitiesAsync(
   identities: string[]
 ): Promise<CertificateSigningInfo[]> {
   const values = identities.map(extractSigningId).filter(Boolean) as string[];
-  return await Promise.all(
-    values.map(signingCertificateId => resolveCertificateSigningInfoAsync(signingCertificateId))
-  );
+  return Promise.all(values.map(resolveCertificateSigningInfoAsync));
 }
 
+/**
+ * @param signingCertificateId 'AA00AABB0A'
+ */
 export async function resolveCertificateSigningInfoAsync(
   signingCertificateId: string
 ): Promise<CertificateSigningInfo> {

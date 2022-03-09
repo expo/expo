@@ -10,14 +10,28 @@ import { installCocoaPodsAsync } from '../../utils/cocoapods';
 import { ensureDirectoryAsync } from '../../utils/dir';
 import { AbortCommandError } from '../../utils/errors';
 
-function getTempPrebuildFolder(projectRoot: string) {
-  return path.join(projectRoot, '.expo', 'prebuild');
-}
-
 type PackageChecksums = {
   dependencies: string;
   devDependencies: string;
 };
+
+function getTempPrebuildFolder(projectRoot: string) {
+  return path.join(projectRoot, '.expo', 'prebuild');
+}
+
+function doesProjectUseCocoaPods(projectRoot: string): boolean {
+  return fs.existsSync(path.join(projectRoot, 'ios', 'Podfile'));
+}
+
+function isLockfileCreated(projectRoot: string): boolean {
+  const podfileLockPath = path.join(projectRoot, 'ios', 'Podfile.lock');
+  return fs.existsSync(podfileLockPath);
+}
+
+function isPodFolderCreated(projectRoot: string): boolean {
+  const podFolderPath = path.join(projectRoot, 'ios', 'Pods');
+  return fs.existsSync(podFolderPath);
+}
 
 function hasNewDependenciesSinceLastBuild(projectRoot: string, packageChecksums: PackageChecksums) {
   // TODO: Maybe comparing lock files would be better...
@@ -34,17 +48,13 @@ function hasNewDependenciesSinceLastBuild(projectRoot: string, packageChecksums:
   return hasNewDependencies || hasNewDevDependencies;
 }
 
-function createPackageChecksums(pkg: PackageJSONConfig): PackageChecksums {
-  return {
-    dependencies: hashForDependencyMap(pkg.dependencies || {}),
-    devDependencies: hashForDependencyMap(pkg.devDependencies || {}),
-  };
-}
-
 export async function hasPackageJsonDependencyListChangedAsync(projectRoot: string) {
   const pkg = getPackageJson(projectRoot);
 
-  const packages = createPackageChecksums(pkg);
+  const packages = {
+    dependencies: hashForDependencyMap(pkg.dependencies || {}),
+    devDependencies: hashForDependencyMap(pkg.devDependencies || {}),
+  };
   const hasNewDependencies = hasNewDependenciesSinceLastBuild(projectRoot, packages);
 
   // Cache package.json
@@ -53,20 +63,6 @@ export async function hasPackageJsonDependencyListChangedAsync(projectRoot: stri
   await JsonFile.writeAsync(tempDir, packages);
 
   return hasNewDependencies;
-}
-
-function doesProjectUseCocoaPods(projectRoot: string): boolean {
-  return fs.existsSync(path.join(projectRoot, 'ios', 'Podfile'));
-}
-
-function isLockfileCreated(projectRoot: string): boolean {
-  const podfileLockPath = path.join(projectRoot, 'ios', 'Podfile.lock');
-  return fs.existsSync(podfileLockPath);
-}
-
-function isPodFolderCreated(projectRoot: string): boolean {
-  const podFolderPath = path.join(projectRoot, 'ios', 'Pods');
-  return fs.existsSync(podFolderPath);
 }
 
 // TODO: Same process but with app.config changes + default plugins.

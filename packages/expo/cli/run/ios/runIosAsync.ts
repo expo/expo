@@ -1,18 +1,16 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
 import * as path from 'path';
-import { AppleDevice, SimControl, Simulator, UnifiedAnalytics } from 'xdl';
 
-import getDevClientProperties from '../../../analytics/getDevClientProperties';
-import StatusEventEmitter from '../../../analytics/StatusEventEmitter';
 import * as Log from '../../log';
 import { promptToClearMalformedNativeProjectsAsync } from '../../prebuild/clearNativeFolder';
 import { prebuildAsync } from '../../prebuild/prebuildAsync';
-import { CommandError } from '../../utils/errors';
+import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
+import { ApplePlatformManager } from '../../start/platforms/ios/ApplePlatformManager';
+import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
-import { getSchemesForIosAsync } from '../../utils/scheme';
 import { getAppDeltaDirectory, installOnDeviceAsync } from './installOnDeviceAsync';
 import * as IOSDeploy from './IOSDeploy';
 import maybePromptToSyncPodsAsync from './Podfile';
@@ -28,7 +26,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   await profile(promptToClearMalformedNativeProjectsAsync)(projectRoot, ['ios']);
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  track(projectRoot, exp);
 
   if (!isMac) {
     // TODO: Prompt to use EAS?
@@ -52,16 +49,9 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const props = await resolveOptionsAsync(projectRoot, options);
   if (!props.isSimulator) {
-    if (AppleDevice.isEnabled()) {
-      Log.log(
-        chalk.gray(
-          `\u203A Unstable feature ${chalk.bold`EXPO_USE_APPLE_DEVICE`} is enabled. Device installation may not work as expected.`
-        )
-      );
-    } else {
-      // Assert as early as possible
-      await IOSDeploy.assertInstalledAsync();
-    }
+    // TODO: Replace with JS...
+    // Assert as early as possible
+    await IOSDeploy.assertInstalledAsync();
   }
 
   const buildOutput = await profile(XcodeBuild.buildAsync, 'XcodeBuild.buildAsync')(props);
@@ -80,15 +70,36 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const bundleIdentifier = await profile(getBundleIdentifierForBinaryAsync)(binaryPath);
 
   if (props.isSimulator) {
-    XcodeBuild.logPrettyItem(`${chalk.bold`Installing`} on ${props.device.name}`);
-    await SimControl.installAsync({ udid: props.device.udid, dir: binaryPath });
+    XcodeBuild.logPrettyItem(chalk`{bold Installing} on ${props.device.name}`);
 
-    await openInSimulatorAsync({
-      projectRoot,
-      bundleIdentifier,
-      device: props.device,
-      shouldStartBundler: props.shouldStartBundler,
+    const device = await AppleDeviceManager.resolveAsync({ device: props.device });
+    await device.installAppAsync(binaryPath);
+
+    XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${device.name} {dim (${bundleIdentifier})}`);
+
+    if (props.shouldStartBundler) {
+      await SimulatorLogStreamer.getStreamer(device.device, {
+        appId: bundleIdentifier,
+      }).attachAsync();
+    }
+
+    const platform = new ApplePlatformManager(projectRoot, props.port, {
+      // TODO:...
     });
+
+    await platform.openAsync(
+      {
+        runtime: 'custom',
+        props: {
+          applicationId: bundleIdentifier,
+          scheme: props.scheme,
+        },
+      },
+      {
+        // TODO: Reduce resolving
+        device: device.device,
+      }
+    );
   } else {
     await profile(installOnDeviceAsync)({
       bundleIdentifier,
@@ -104,75 +115,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 }
 
-function track(projectRoot: string, exp: ExpoConfig) {
-  UnifiedAnalytics.logEvent('dev client run command', {
-    status: 'started',
-    platform: 'ios',
-    ...getDevClientProperties(projectRoot, exp),
-  });
-  StatusEventEmitter.once('bundleBuildFinish', () => {
-    // Send the 'bundle ready' event once the JS has been built.
-    UnifiedAnalytics.logEvent('dev client run command', {
-      status: 'bundle ready',
-      platform: 'ios',
-      ...getDevClientProperties(projectRoot, exp),
-    });
-  });
-  StatusEventEmitter.once('deviceLogReceive', () => {
-    // Send the 'ready' event once the app is running in a device.
-    UnifiedAnalytics.logEvent('dev client run command', {
-      status: 'ready',
-      platform: 'ios',
-      ...getDevClientProperties(projectRoot, exp),
-    });
-  });
-  installExitHooks(() => {
-    UnifiedAnalytics.logEvent('dev client run command', {
-      status: 'finished',
-      platform: 'ios',
-      ...getDevClientProperties(projectRoot, exp),
-    });
-    UnifiedAnalytics.flush();
-  });
-}
-
 async function getBundleIdentifierForBinaryAsync(binaryPath: string): Promise<string> {
   const builtInfoPlistPath = path.join(binaryPath, 'Info.plist');
   const { CFBundleIdentifier } = await parsePlistAsync(builtInfoPlistPath);
   return CFBundleIdentifier;
-}
-
-async function openInSimulatorAsync({
-  projectRoot,
-  bundleIdentifier,
-  device,
-  shouldStartBundler,
-}: {
-  projectRoot: string;
-  bundleIdentifier: string;
-  device: XcodeBuild.BuildProps['device'];
-  shouldStartBundler?: boolean;
-}) {
-  XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${device.name} {dim (${bundleIdentifier})}`);
-
-  if (shouldStartBundler) {
-    await Simulator.streamLogsAsync({
-      udid: device.udid,
-      bundleIdentifier,
-    });
-  }
-
-  const schemes = await getSchemesForIosAsync(projectRoot);
-  const result = await Simulator.openProjectAsync({
-    projectRoot,
-    udid: device.udid,
-    devClient: true,
-    scheme: schemes[0],
-    applicationId: bundleIdentifier,
-    // We always setup native logs before launching to ensure we catch any fatal errors.
-    skipNativeLogs: true,
-  });
-  if (!result.success) {
-    throw new CommandError(result.error);
-  }
 }

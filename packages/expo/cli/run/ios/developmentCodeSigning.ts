@@ -19,20 +19,25 @@ async function setLastDeveloperCodeSigningIdAsync(id: string) {
   await UserSettings.setAsync('developmentCodeSigningId', id).catch(() => {});
 }
 
+type CodeSigningInfo = Record<
+  string,
+  {
+    developmentTeams: string[];
+    provisioningProfiles: string[];
+  }
+>;
+
 /**
  * Find the development team and provisioning profile that's currently in use by the Xcode project.
  *
  * @param projectRoot
  * @returns
  */
-export function getCodeSigningInfoForPbxproj(projectRoot: string) {
+export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningInfo {
   const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
   const targets = IOSConfig.Target.findSignableTargets(project);
 
-  const signingInfo: Record<
-    string,
-    { developmentTeams: string[]; provisioningProfiles: string[] }
-  > = {};
+  const signingInfo: CodeSigningInfo = {};
   for (const [nativeTargetId, nativeTarget] of targets) {
     const developmentTeams: string[] = [];
     const provisioningProfiles: string[] = [];
@@ -143,13 +148,11 @@ export async function ensureDeviceIsCodeSignedForDeploymentAsync(
   const allTargetsHaveProfiles = Object.values(signingInfo).reduce((prev, curr) => {
     return prev && !!curr.provisioningProfiles.length;
   }, true);
+
   if (allTargetsHaveProfiles) {
     // this indicates that the user has manual code signing setup (possibly for production).
     return null;
   }
-
-  // Only assert if the project needs to be signed.
-  await Security.assertInstalledAsync();
 
   const ids = await Security.findIdentitiesAsync();
 
@@ -181,19 +184,23 @@ async function sortDefaultIdToBeginningAsync(
   return [identities, lastSelected];
 }
 
+function assertCodeSigningSetup(): never {
+  // TODO: We can probably do this too automatically.
+  Log.log(
+    '\n',
+    `\u203A Your computer requires some additional setup before you can build onto physical iOS devices.\n  ${chalk.bold(
+      learnMore('https://expo.fyi/setup-xcode-signing')
+    )}`,
+    '\n'
+  );
+
+  throw new CommandError('No code signing certificates are available to use.');
+}
+
 async function selectCertificateSigningIdentityAsync(ids: string[]) {
   // The user has no valid code signing identities.
   if (!ids.length) {
-    // TODO: We can probably do this too.
-    Log.log(
-      '\n',
-      `\u203A Your computer requires some additional setup before you can build onto physical iOS devices.\n  ${chalk.bold(
-        learnMore('https://expo.fyi/setup-xcode-signing')
-      )}`,
-      '\n'
-    );
-
-    throw new CommandError('No code signing certificates are available to use.');
+    assertCodeSigningSetup();
   }
 
   //  One ID available 🤝 Program is not interactive
@@ -208,11 +215,24 @@ async function selectCertificateSigningIdentityAsync(ids: string[]) {
     await Security.resolveIdentitiesAsync(ids)
   );
 
+  const selected = await selectDevelopmentTeamAsync(identities, preferred);
+
+  // Store the last used value and suggest it as the first value
+  // next time the user has to select a code signing identity.
+  await setLastDeveloperCodeSigningIdAsync(selected.signingCertificateId);
+
+  return selected;
+}
+
+async function selectDevelopmentTeamAsync(
+  identities: Security.CertificateSigningInfo[],
+  preferredId: string
+) {
   const index = await selectAsync(
     'Development team for signing the app',
     identities.map((value, i) => {
       const format =
-        value.signingCertificateId === preferred ? chalk.bold : (message: string) => message;
+        value.signingCertificateId === preferredId ? chalk.bold : (message: string) => message;
       return {
         // Formatted like: `650 Industries, Inc. (A1BCDEF234) - Apple Development: Evan Bacon (AA00AABB0A)`
         title: format(
@@ -223,11 +243,5 @@ async function selectCertificateSigningIdentityAsync(ids: string[]) {
     })
   );
 
-  const selected = identities[index];
-
-  // Store the last used value and suggest it as the first value
-  // next time the user has to select a code signing identity.
-  await setLastDeveloperCodeSigningIdAsync(selected.signingCertificateId);
-
-  return selected;
+  return identities[index];
 }

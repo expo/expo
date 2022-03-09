@@ -4,10 +4,11 @@ import { sync as globSync } from 'glob';
 import * as path from 'path';
 
 import * as Log from '../../log';
+import { OSType } from '../../start/platforms/ios/simctl';
 import { CommandError } from '../../utils/errors';
+import { resolvePortAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { selectAsync } from '../../utils/prompts';
-import { resolvePortAsync } from '../utils/resolvePortAsync';
 import { resolveDeviceAsync } from './resolveDeviceAsync';
 import * as XcodeBuild from './XcodeBuild';
 
@@ -79,7 +80,7 @@ function getDefaultUserTerminal(): string | undefined {
 async function resolveNativeSchemeAsync(
   projectRoot: string,
   { scheme, configuration }: { scheme?: string | true; configuration?: XcodeConfiguration }
-): Promise<{ name: string; osType?: string } | null> {
+): Promise<{ name: string; osType?: OSType } | null> {
   let resolvedScheme: { name: string; osType?: string } | null = null;
   // @ts-ignore
   if (scheme === true) {
@@ -119,7 +120,7 @@ async function resolveNativeSchemeAsync(
     resolvedScheme = schemes.find(({ name }) => name === scheme) || { name: scheme };
   }
 
-  return resolvedScheme;
+  return resolvedScheme as { name: string; osType?: OSType };
 }
 
 export async function resolveOptionsAsync(
@@ -138,12 +139,12 @@ export async function resolveOptionsAsync(
     port = 8081;
   }
 
-  const resolvedScheme = (await resolveNativeSchemeAsync(projectRoot, options)) ??
+  const resolvedScheme = ((await resolveNativeSchemeAsync(projectRoot, options)) ??
     profile(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj)(projectRoot, {
       configuration: options.configuration,
     })[0] ?? {
       name: path.basename(xcodeProject.name, path.extname(xcodeProject.name)),
-    };
+    }) as { name: string; osType?: OSType };
 
   const device = await resolveDeviceAsync(options.device, { osType: resolvedScheme.osType });
 
