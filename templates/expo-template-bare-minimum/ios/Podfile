@@ -3,6 +3,8 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 
 platform :ios, '12.0'
+install! 'cocoapods',
+  :deterministic_uuids => false
 
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
@@ -11,9 +13,15 @@ target 'HelloWorld' do
   use_expo_modules!
   config = use_native_modules!
 
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
+    :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
+    :fabric_enabled => flags[:fabric_enabled],
+    # An abosolute path to your application root.
+    :app_path => "#{Dir.pwd}/.."
   )
 
   # Uncomment to opt-in to using Flipper
