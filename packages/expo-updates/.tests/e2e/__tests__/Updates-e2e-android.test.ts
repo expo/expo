@@ -1,27 +1,30 @@
 import spawnAsync from '@expo/spawn-async';
+import path from 'path';
 import * as Server from './utils/server';
 
-const APK_PATH =
-  '/Users/eric/Downloads/release/app-release.apk';
-  // TODO next: this apk failed because there was no embedded update, maybe try using SDK 44 template instead of local one
+const SERVER_PORT = parseInt(process.env.UPDATES_PORT);
+const APK_PATH = process.env.TEST_APK_PATH;
+const ADB_PATH = process.env.HOME
+  ? path.join(process.env.HOME, 'Library', 'Android', 'sdk', 'platform-tools', 'adb')
+  : 'adb';
 
 const PACKAGE_NAME = 'dev.expo.updatese2e';
 const ACTIVITY_NAME = `${PACKAGE_NAME}/${PACKAGE_NAME}.MainActivity`;
 
 async function installAndroidApk(apkPath: string) {
-  await spawnAsync('adb', ['install', apkPath]);
+  await spawnAsync(ADB_PATH, ['install', apkPath]);
 }
 
 async function uninstallAndroidApk(packageName: string) {
-  await spawnAsync('adb', ['uninstall', packageName]);
+  await spawnAsync(ADB_PATH, ['uninstall', packageName]);
 }
 
 async function startActivity(activityName: string) {
-  await spawnAsync('adb', ['shell', 'am', 'start', '-n', activityName]);
+  await spawnAsync(ADB_PATH, ['shell', 'am', 'start', '-n', activityName]);
 }
 
 async function stopApplication(packageName: string) {
-  await spawnAsync('adb', ['shell', 'am', 'force-stop', packageName]);
+  await spawnAsync(ADB_PATH, ['shell', 'am', 'force-stop', packageName]);
 }
 
 beforeEach(async () => {});
@@ -31,23 +34,13 @@ afterEach(async () => {
   Server.stop();
 });
 
-xtest('server', async () => {
-  Server.start(4747);
-  try {
-    const response = await Server.waitForResponse(2000);
-    expect(response).toBe('blah');
-  } finally {
-    Server.stop();
-  }
-});
-
-test('installs, kills, starts again', async () => {
+test('starts app, stops, and starts again', async () => {
   jest.setTimeout(60000);
-  Server.start(4747);
+  Server.start(SERVER_PORT);
   await installAndroidApk(APK_PATH);
   await startActivity(ACTIVITY_NAME);
   const response = await Server.waitForResponse(10000);
-  expect(response).toBe('erictest');
+  expect(response).toBe('test');
   await stopApplication(PACKAGE_NAME);
 
   let didError = false;
@@ -60,5 +53,5 @@ test('installs, kills, starts again', async () => {
 
   await startActivity(ACTIVITY_NAME);
   const response2 = await Server.waitForResponse(10000);
-  expect(response2).toBe('erictest');
+  expect(response2).toBe('test');
 });
