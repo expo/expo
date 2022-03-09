@@ -33,7 +33,7 @@ export class AsyncNgrok {
   /** Get the active pid from the running instance of ngrok. */
   // TODO: Use this instead of a stored local value.
   private getActivePid(): number | null {
-    return this.resolver.get()?.getActiveProcess?.()?.pid ?? null;
+    return this.resolver.get()?.getActiveProcess().pid ?? null;
   }
 
   public getActiveUrl(): string | null {
@@ -47,7 +47,7 @@ export class AsyncNgrok {
       try {
         process.kill(pid);
       } catch (e) {
-        Log.error(`Failed to kill ngrok tunnel PID: ${pid}`);
+        Log.error(`Failed to kill ngrok tunnel PID ${pid}: ${e.message}`);
       }
     }
   }
@@ -84,7 +84,7 @@ export class AsyncNgrok {
       // TODO: Better error message.
       throw new CommandError(
         'NGROK_ADB',
-        `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android(s).`
+        `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
       );
     }
 
@@ -97,7 +97,7 @@ export class AsyncNgrok {
   public async stopAsync(): Promise<void> {
     Log.debug('[ngrok] Stopping Tunnel');
 
-    await this.resolver.get()?.kill?.();
+    await this.resolver.get()?.kill();
     this.serverUrl = null;
   }
 
@@ -123,7 +123,7 @@ export class AsyncNgrok {
       // A timeout that correctly surfaces the error to the correct lexical scope.
       new Promise<false>((_, reject) => {
         timer = setTimeout(() => {
-          reject(new CommandError('NGROK_TIMEOUT', 'Ngrok tunnel took too long to connect.'));
+          reject(new CommandError('NGROK_TIMEOUT', 'ngrok tunnel took too long to connect.'));
         }, options.timeout ?? TUNNEL_TIMEOUT);
       }),
     ]);
@@ -158,7 +158,7 @@ export class AsyncNgrok {
           if (status === 'closed') {
             Log.error(
               'We noticed your tunnel is having issues. ' +
-                'This may be due to intermittent problems with Ngrok. ' +
+                'This may be due to intermittent problems with ngrok. ' +
                 'If you have trouble connecting to your app, try to restart the project, ' +
                 'or switch the host to `lan`.'
             );
@@ -168,12 +168,8 @@ export class AsyncNgrok {
         },
         port: this.port,
       });
-      // Clear the timeout since we succeeded.
-
       return url;
     } catch (error: any) {
-      // Clear the timeout since we're no longer attempting to connect to a remote.
-
       // Attempt to connect 3 times
       if (attempts >= 2) {
         throw new CommandError('NGROK_CONNECT', error.toString());
