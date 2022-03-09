@@ -38,7 +38,7 @@ const Description = ({ children }: PropsWithChildren<object>) => (
 );
 
 const Home = () => {
-  const { palette, button } = theme;
+  const { palette, button, background } = theme;
   return (
     <Layout header={null}>
       <H1 style={{ marginBottom: 8, fontFamily: typography.fontStacks.black, fontWeight: '900' }}>
@@ -52,7 +52,7 @@ const Home = () => {
           <GridCell
             md={4}
             style={{
-              backgroundColor: theme.background.secondary,
+              backgroundColor: background.secondary,
               backgroundImage: 'url("/static/images/home/QuickStartPattern.svg")',
               backgroundBlendMode: 'multiply',
               minHeight: 250,
@@ -75,7 +75,7 @@ const Home = () => {
             <div
               css={baseGradientStyle}
               style={{
-                background: `linear-gradient(${theme.background.secondary} 15%, #21262d00 100%)`,
+                background: `linear-gradient(${background.secondary} 15%, #21262d00 100%)`,
               }}
             />
           </GridCell>
