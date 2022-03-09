@@ -55,7 +55,7 @@ The command will perform the following steps:
 
 The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with **eas.json** and environment variables. Mainly, providing the archive source (`--latest`, `--id`, `--path`, or `--url`) is essential. Also, make sure that the Android package name is present in your [app config file](/workflow/configuration.md).
 
-For Android submissions, you must provide the path to your Google Services JSON key using the `serviceAccountKeyPath` key in **eas.json**. You may also find the `track` and `releaseStatus` parameters useful.
+For Android submissions, you can upload your Google Services JSON file in the Credentials section of your project on the Expo dashboard manually or run `eas submit -p android` to interactively specify the Google Services JSON file path locally and upload it to EAS servers. This file should NOT be included in any kind of version control such as Git as it contains secrets that are used to access your Google Play Store listing.  You may also find the `track` and `releaseStatus` parameters useful.
 
 Example usage:
 
