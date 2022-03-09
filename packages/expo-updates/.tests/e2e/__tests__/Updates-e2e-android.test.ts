@@ -12,19 +12,19 @@ const PACKAGE_NAME = 'dev.expo.updatese2e';
 const ACTIVITY_NAME = `${PACKAGE_NAME}/${PACKAGE_NAME}.MainActivity`;
 
 async function installAndroidApk(apkPath: string) {
-  await spawnAsync(ADB_PATH, ['install', apkPath]);
+  await spawnAsync(ADB_PATH, ['install', apkPath], { stdio: 'inherit' });
 }
 
 async function uninstallAndroidApk(packageName: string) {
-  await spawnAsync(ADB_PATH, ['uninstall', packageName]);
+  await spawnAsync(ADB_PATH, ['uninstall', packageName], { stdio: 'inherit' });
 }
 
 async function startActivity(activityName: string) {
-  await spawnAsync(ADB_PATH, ['shell', 'am', 'start', '-n', activityName]);
+  await spawnAsync(ADB_PATH, ['shell', 'am', 'start', '-n', activityName], { stdio: 'inherit' });
 }
 
 async function stopApplication(packageName: string) {
-  await spawnAsync(ADB_PATH, ['shell', 'am', 'force-stop', packageName]);
+  await spawnAsync(ADB_PATH, ['shell', 'am', 'force-stop', packageName], { stdio: 'inherit' });
 }
 
 beforeEach(async () => {});
@@ -36,22 +36,27 @@ afterEach(async () => {
 
 test('starts app, stops, and starts again', async () => {
   jest.setTimeout(60000);
-  Server.start(SERVER_PORT);
-  await installAndroidApk(APK_PATH);
-  await startActivity(ACTIVITY_NAME);
-  const response = await Server.waitForResponse(10000);
-  expect(response).toBe('test');
-  await stopApplication(PACKAGE_NAME);
-
-  let didError = false;
   try {
-    await Server.waitForResponse(5000);
-  } catch (e) {
-    didError = true;
-  }
-  expect(didError).toBe(true);
+    Server.start(SERVER_PORT);
+    await installAndroidApk(APK_PATH);
+    await startActivity(ACTIVITY_NAME);
+    const response = await Server.waitForResponse(10000);
+    expect(response).toBe('test');
+    await stopApplication(PACKAGE_NAME);
 
-  await startActivity(ACTIVITY_NAME);
-  const response2 = await Server.waitForResponse(10000);
-  expect(response2).toBe('test');
+    let didError = false;
+    try {
+      await Server.waitForResponse(5000);
+    } catch (e) {
+      didError = true;
+    }
+    expect(didError).toBe(true);
+
+    await startActivity(ACTIVITY_NAME);
+    const response2 = await Server.waitForResponse(10000);
+    expect(response2).toBe('test');
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
 });
