@@ -98,6 +98,8 @@ export class AsyncNgrok {
 
     let timer: NodeJS.Timeout | null = null;
     try {
+      // TODO(Bacon): Consider dropping the timeout functionality:
+      // https://github.com/expo/expo/pull/16556#discussion_r822307373
       const results = await Promise.race([
         // Returns false to try again.
         this.connectToNgrokInternalAsync(instance, attempts),
