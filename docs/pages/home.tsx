@@ -75,7 +75,7 @@ const Home = () => {
             <div
               css={baseGradientStyle}
               style={{
-                background: `linear-gradient(${theme.background.secondary} 15%, #ffffff00 100%)`,
+                background: `linear-gradient(${theme.background.secondary} 15%, #21262d00 100%)`,
               }}
             />
           </GridCell>
@@ -91,7 +91,7 @@ const Home = () => {
             <div
               css={baseGradientStyle}
               style={{
-                background: `linear-gradient(${palette.primary['100']} 15%, #ffffff00 100%)`,
+                background: `linear-gradient(${palette.primary['100']} 15%, #201d5200 100%)`,
               }}
             />
             <DevicesImage />
