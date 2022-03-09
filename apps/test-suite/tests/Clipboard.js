@@ -1,4 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
+import { StringContentType } from 'expo-clipboard/build/Clipboard.types';
 import { Platform } from 'react-native';
 
 export const name = 'Clipboard';
@@ -35,6 +36,30 @@ export function test({ describe, expect, it, afterEach, ...t }) {
         result = await Clipboard.hasStringAsync();
         expect(result).toBe(false);
       });
+
+      if (Platform.OS !== 'web') {
+        it('gets and sets HTML string', async () => {
+          await Clipboard.setStringAsync('<p>test</p>', { inputType: StringContentType.HTML });
+          const result = await Clipboard.getStringAsync({ preferredType: StringContentType.HTML });
+          expect(result.includes('<p>test</p>')).toBe(true);
+        });
+
+        it('gets plain text from copied HTML', async () => {
+          await Clipboard.setStringAsync('<p>test</p>', { inputType: StringContentType.HTML });
+          const result = await Clipboard.getStringAsync({
+            preferredType: StringContentType.PLAIN_TEXT,
+          });
+          expect(result).toEqual('test');
+        });
+
+        it('falls back to plain text if no HTML is copied', async () => {
+          await Clipboard.setStringAsync('test', { inputType: StringContentType.PLAIN_TEXT });
+          const result = await Clipboard.getStringAsync({
+            preferredType: StringContentType.HTML,
+          });
+          expect(result).toEqual('test');
+        });
+      }
     });
 
     if (Platform.OS === 'iOS') {

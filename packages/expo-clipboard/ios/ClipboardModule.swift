@@ -33,7 +33,7 @@ public class ClipboardModule: Module {
     }
 
     function("hasStringAsync") { () -> Bool in
-      return UIPasteboard.general.hasStrings || UIPasteboard.general.contains(pasteboardTypes: [kUTTypeHTML as String])
+      UIPasteboard.general.hasStrings || UIPasteboard.general.contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String])
     }
 
     // MARK: URLs
