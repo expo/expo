@@ -7,7 +7,6 @@ import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
-import { installExitHooks } from '../../utils/exit';
 import { NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
@@ -26,36 +25,12 @@ export class AsyncNgrok {
   /** Info about the currently running instance of ngrok. */
   private serverUrl: string | null = null;
 
-  /** Unsubscribe from exit listeners. */
-  private offExitHook: (() => void) | null = null;
-
   constructor(private projectRoot: string, private port: number) {
     this.resolver = new NgrokResolver(projectRoot);
   }
 
-  /** Get the active pid from the running instance of ngrok. */
-  // TODO: Use this instead of a stored local value.
-  private getActivePid(): number | null {
-    return this.resolver.get()?.getActiveProcess().pid ?? null;
-  }
-
   public getActiveUrl(): string | null {
     return this.serverUrl;
-  }
-
-  /** Terminate the instance by the pid. */
-  private killInstance() {
-    this.offExitHook?.();
-    this.offExitHook = null;
-
-    const pid = this.getActivePid();
-    if (pid !== null) {
-      try {
-        process.kill(pid);
-      } catch (e) {
-        Log.error(`Failed to kill ngrok tunnel PID ${pid}: ${e.message}`);
-      }
-    }
   }
 
   /** Exposed for testing. */
@@ -76,12 +51,8 @@ export class AsyncNgrok {
     ].join('.');
   }
 
+  /** Start ngrok on the given port for the project. */
   async startAsync({ timeout }: { timeout?: number } = {}): Promise<void> {
-    // Ensure that force quitting can clean up ngrok.
-    this.offExitHook = installExitHooks(() => {
-      this.killInstance();
-    });
-
     // Ensure the instance is loaded first, this can linger so we should run it before the timeout.
     await this.resolver.resolveAsync({
       // For now, prefer global install since the package has native code (harder to install) and doesn't change very often.
@@ -103,6 +74,7 @@ export class AsyncNgrok {
     Log.log('Tunnel ready.');
   }
 
+  /** Stop the ngrok process if it's running. */
   public async stopAsync(): Promise<void> {
     Log.debug('[ngrok] Stopping Tunnel');
 
