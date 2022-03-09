@@ -26,10 +26,10 @@ import org.robolectric.shadows.ShadowContextImpl
 
 private interface ClipboardModuleTestInterface {
   @Throws(CodedException::class)
-  fun getStringAsync(options: GetStringOptions): String
+  fun getStringAsync(options: GetStringOptions = GetStringOptions()): String
 
   @Throws(CodedException::class)
-  fun setStringAsync(content: String, options: SetStringOptions): Boolean
+  fun setStringAsync(content: String, options: SetStringOptions = SetStringOptions()): Boolean
 
   @Throws(CodedException::class)
   fun hasStringAsync(): Boolean
@@ -46,10 +46,10 @@ class ClipboardModuleTest {
   @Test
   fun `should save to and read from clipboard`() = withClipboardMock {
     // write to clipboard
-    val writeResult = module.setStringAsync("album dumbledore", SetStringOptions())
+    val writeResult = module.setStringAsync("album dumbledore")
 
     // read from clipboard
-    val readResult = module.getStringAsync(GetStringOptions())
+    val readResult = module.getStringAsync()
 
     assertTrue(writeResult)
     assertEquals("album dumbledore", readResult)
@@ -60,7 +60,7 @@ class ClipboardModuleTest {
     // This requires API 28
     clipboardManager.clearPrimaryClip()
 
-    val content = module.getStringAsync(GetStringOptions())
+    val content = module.getStringAsync()
 
     assertTrue("Clipboard content should be empty", content.isEmpty())
   }
@@ -71,7 +71,7 @@ class ClipboardModuleTest {
       ClipData.newHtmlText(null, "hello world", "<p>hello world</p>")
     )
 
-    val plainResult = module.getStringAsync(GetStringOptions())
+    val plainResult = module.getStringAsync()
     val htmlResult = module.getStringAsync(
       GetStringOptions().apply {
         preferredType = StringContentType.HTML
@@ -122,7 +122,7 @@ class ClipboardModuleTest {
   @Test
   fun `should emit events when clipboard changes`() = withClipboardMock {
     // update clipboard content
-    val result = module.setStringAsync("severus snape", SetStringOptions())
+    val result = module.setStringAsync("severus snape")
 
     // assert
     assertTrue(result)
@@ -143,7 +143,7 @@ class ClipboardModuleTest {
     controller.onActivityEntersBackground()
 
     // update clipboard content
-    module.setStringAsync("ronald weasley", SetStringOptions())
+    module.setStringAsync("ronald weasley")
 
     // assert that emit() was NOT called
     verify(inverse = true) { eventEmitter.emit(CLIPBOARD_CHANGED_EVENT_NAME, any()) }
