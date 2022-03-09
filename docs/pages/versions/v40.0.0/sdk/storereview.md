@@ -31,6 +31,7 @@ If the users device is running a version of iOS lower than 10.3, or the user is 
 #### Error Codes
 
 - [`ERR_STORE_REVIEW_UNSUPPORTED`](#err_store_review_unsupported)
+- [`ERR_STORE_REVIEW_FAILED`](#err_store_review_failed)
 
 #### Example
 
@@ -77,6 +78,10 @@ if (await StoreReview.hasAction()) {
 ### `E_STORE_REVIEW_UNSUPPORTED`
 
 Requesting an App Store review is not supported on this device. The device must be iOS 10.3 or greater. Android and web are not supported. Be sure to check for support with `isAvailableAsync()` to avoid this error.
+
+### `E_STORE_REVIEW_FAILED`
+
+This error occurs when the store review request was not successful.
 
 ---
 
