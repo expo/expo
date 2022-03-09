@@ -106,7 +106,7 @@ export class AsyncNgrok {
   public async stopAsync(): Promise<void> {
     Log.debug('[ngrok] Stopping Tunnel');
 
-    await this.resolver.get()?.kill();
+    await this.resolver.get()?.kill?.();
     this.serverUrl = null;
   }
 
@@ -125,22 +125,24 @@ export class AsyncNgrok {
     });
 
     let timer: NodeJS.Timeout | null = null;
-    const results = await Promise.race([
-      // Returns false to try again.
-      this.connectToNgrokInternalAsync(instance, attempts),
+    try {
+      const results = await Promise.race([
+        // Returns false to try again.
+        this.connectToNgrokInternalAsync(instance, attempts),
 
-      // A timeout that correctly surfaces the error to the correct lexical scope.
-      new Promise<false>((_, reject) => {
-        timer = setTimeout(() => {
-          reject(new CommandError('NGROK_TIMEOUT', 'ngrok tunnel took too long to connect.'));
-        }, options.timeout ?? TUNNEL_TIMEOUT);
-      }),
-    ]);
-    clearTimeout(timer);
-    if (typeof results === 'string') {
-      return results;
+        // A timeout that correctly surfaces the error to the correct lexical scope.
+        new Promise<false>((_, reject) => {
+          timer = setTimeout(() => {
+            reject(new CommandError('NGROK_TIMEOUT', 'ngrok tunnel took too long to connect.'));
+          }, options.timeout ?? TUNNEL_TIMEOUT);
+        }),
+      ]);
+      if (typeof results === 'string') {
+        return results;
+      }
+    } finally {
+      clearTimeout(timer);
     }
-
     // Wait 100ms and then try again
     await delayAsync(100);
 

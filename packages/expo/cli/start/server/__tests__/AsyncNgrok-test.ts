@@ -55,6 +55,7 @@ describe('getActiveUrl', () => {
     expect(ngrok.getActiveUrl()).toEqual('http://localhost:3000');
   });
 });
+
 describe('startAsync', () => {
   it(`fails if adb reverse doesn't work`, async () => {
     const { ngrok } = createNgrokInstance();
@@ -85,7 +86,7 @@ describe('startAsync', () => {
           // Lower the time out to speed up the test.
           timeout: 10,
         })
-      ).rejects.toThrow(/Ngrok tunnel took too long to connect/);
+      ).rejects.toThrow(/ngrok tunnel took too long to connect/);
       // Time out is on a per-run basis.
       expect(connect).toHaveBeenCalledTimes(1);
     } finally {
@@ -136,6 +137,7 @@ describe('startAsync', () => {
     expect(connect).toHaveBeenCalledTimes(2);
   });
 });
+
 describe('_getProjectHostnameAsync', () => {
   it(`generates a valid hostname`, async () => {
     const { projectRoot, ngrok } = createNgrokInstance();
