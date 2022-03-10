@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix pauseAsync() causing framedrops and being delayed by not disabling AVAudioSession when there is no need for it ([#15873](https://github.com/expo/expo/pull/16544) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
+- On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/16544) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
 
