@@ -11,7 +11,7 @@ Given a view, `captureRef` will essentially screenshot that view and return an i
 
 If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](gl-view.md#takesnapshotasyncoptions) instead.
 
-<PlatformsSection android emulator ios simulator  />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

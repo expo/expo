@@ -28,9 +28,9 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 - 🗂 create, update, delete Android notification channels,
 - 🎨 set custom icon and color for notifications on Android.
 
-<PlatformsSection title="Push notifications Platform Compatibility" android ios web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
+<PlatformsSection title="Push notifications Platform Compatibility" android ios />
 
-<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
+<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
 
 ## Installation
 
@@ -215,7 +215,8 @@ export default function App() {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around',
-      }}>
+      }}
+    >
       <Text>Your expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>

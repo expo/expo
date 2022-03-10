@@ -10,9 +10,9 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
-<PlatformsSection title="Push notifications Platform Compatibility" android ios web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
+<PlatformsSection title="Push notifications Platform Compatibility" android ios />
 
-<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
+<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
 
 > ⚠️ **Important Android limitation:** Local notifications are cleared when an Android device is restarted. ([See the feature request](https://expo.canny.io/feature-requests/p/keep-scheduled-notifications-after-reboot)).
 
@@ -392,5 +392,5 @@ An object used to describe an Android notification channel that you would like t
 ## Error Codes
 
 | Code                                      | Description                                                           |
-| ----------------------------------------- | --------------------------------------------------------------------- |
-| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED | The device was unable to register for remote notifications with Expo. |  |
+| ----------------------------------------- | --------------------------------------------------------------------- | --- |
+| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED | The device was unable to register for remote notifications with Expo. |     |
