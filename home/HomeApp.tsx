@@ -1,6 +1,8 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { darkTheme, lightTheme } from '@expo/styleguide-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
+import FeatureFlags from 'FeatureFlags';
 import { Asset } from 'expo-asset';
 import { ThemePreferenceProvider } from 'expo-dev-client-components';
 import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
@@ -102,16 +104,27 @@ export default function HomeApp() {
     return null;
   }
 
-  let theme = preferredAppearance === undefined ? colorScheme : preferredAppearance;
+  let theme = !preferredAppearance ? colorScheme : preferredAppearance;
   if (theme === undefined) {
     theme = 'light';
   }
 
   const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
 
+  const redesignedBackgroundColor =
+    theme === 'dark' ? darkTheme.background.default : lightTheme.background.default;
+
   return (
     <ThemePreferenceProvider theme={preferredAppearance as ThemePreference}>
-      <View style={[styles.container, { backgroundColor }]}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+              ? redesignedBackgroundColor
+              : backgroundColor,
+          },
+        ]}>
         <ActionSheetProvider>
           <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
         </ActionSheetProvider>
