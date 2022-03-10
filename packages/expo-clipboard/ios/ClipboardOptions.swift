@@ -26,15 +26,15 @@ internal enum ImageFormat: String, EnumArgument {
 
 internal struct GetStringOptions: Record {
   @Field
-  var preferredType: StringContentType = .plainText
+  var preferredFormat: StringFormat = .plainText
 }
 
 internal struct SetStringOptions: Record {
   @Field
-  var inputType: StringContentType = .plainText
+  var inputFormat: StringFormat = .plainText
 }
 
-internal enum StringContentType: String, EnumArgument {
+internal enum StringFormat: String, EnumArgument {
   case plainText
   case html
 }

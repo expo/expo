@@ -14,12 +14,12 @@ internal class GetImageOptions : Record {
 
 internal class GetStringOptions : Record {
   @Field
-  var preferredType: StringContentType = StringContentType.PLAIN
+  var preferredFormat: StringFormat = StringFormat.PLAIN
 }
 
 internal class SetStringOptions : Record {
   @Field
-  var inputType: StringContentType = StringContentType.PLAIN
+  var inputFormat: StringFormat = StringFormat.PLAIN
 }
 
 internal enum class ImageFormat(val jsName: String) {
@@ -38,6 +38,6 @@ internal enum class ImageFormat(val jsName: String) {
     }
 }
 
-internal enum class StringContentType(val jsValue: String) {
+internal enum class StringFormat(val jsValue: String) {
   PLAIN("plainText"), HTML("html");
 }

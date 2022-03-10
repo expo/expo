@@ -74,7 +74,7 @@ class ClipboardModuleTest {
     val plainResult = module.getStringAsync()
     val htmlResult = module.getStringAsync(
       GetStringOptions().apply {
-        preferredType = StringContentType.HTML
+        preferredFormat = StringFormat.HTML
       }
     )
     assertEquals("hello world", plainResult)

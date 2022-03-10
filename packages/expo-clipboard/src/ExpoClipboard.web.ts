@@ -1,8 +1,10 @@
+import { GetStringOptions, SetStringOptions } from './Clipboard.types';
+
 export default {
   get name(): string {
     return 'ExpoClipboard';
   },
-  async getStringAsync(): Promise<string> {
+  async getStringAsync(_options: GetStringOptions): Promise<string> {
     let text = '';
     try {
       text = await navigator.clipboard.readText();
@@ -30,11 +32,11 @@ export default {
     document.body.removeChild(textField);
     return success;
   },
-  async setStringAsync(text: string): Promise<boolean> {
+  async setStringAsync(text: string, _options: SetStringOptions): Promise<boolean> {
     return this.setString(text);
   },
   async hasStringAsync(): Promise<boolean> {
-    return this.getStringAsync().then((text) => text.length > 0);
+    return this.getStringAsync({}).then((text) => text.length > 0);
   },
   addClipboardListener(): void {},
   removeClipboardListener(): void {},

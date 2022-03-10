@@ -1,6 +1,6 @@
-export var StringContentType;
-(function (StringContentType) {
-    StringContentType["PLAIN_TEXT"] = "plainText";
-    StringContentType["HTML"] = "html";
-})(StringContentType || (StringContentType = {}));
+export var StringFormat;
+(function (StringFormat) {
+    StringFormat["PLAIN_TEXT"] = "plainText";
+    StringFormat["HTML"] = "html";
+})(StringFormat || (StringFormat = {}));
 //# sourceMappingURL=Clipboard.types.js.map

@@ -13,7 +13,7 @@ public class ClipboardModule: Module {
     // MARK: Strings
 
     function("getStringAsync") { (options: GetStringOptions) -> String in
-      switch options.preferredType {
+      switch options.preferredFormat {
       case .plainText:
         return UIPasteboard.general.string ?? ""
       case .html:
@@ -22,7 +22,7 @@ public class ClipboardModule: Module {
     }
 
     function("setStringAsync") { (content: String?, options: SetStringOptions) -> Bool in
-      switch options.inputType {
+      switch options.inputFormat {
       case .plainText:
         UIPasteboard.general.string = content
       case .html:

@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import { StringContentType } from 'expo-clipboard/build/Clipboard.types';
+import { StringFormat } from 'expo-clipboard/build/Clipboard.types';
 import { Platform } from 'react-native';
 
 export const name = 'Clipboard';
@@ -39,23 +39,23 @@ export function test({ describe, expect, it, afterEach, ...t }) {
 
       if (Platform.OS !== 'web') {
         it('gets and sets HTML string', async () => {
-          await Clipboard.setStringAsync('<p>test</p>', { inputType: StringContentType.HTML });
-          const result = await Clipboard.getStringAsync({ preferredType: StringContentType.HTML });
+          await Clipboard.setStringAsync('<p>test</p>', { inputType: StringFormat.HTML });
+          const result = await Clipboard.getStringAsync({ preferredType: StringFormat.HTML });
           expect(result.includes('<p>test</p>')).toBe(true);
         });
 
         it('gets plain text from copied HTML', async () => {
-          await Clipboard.setStringAsync('<p>test</p>', { inputType: StringContentType.HTML });
+          await Clipboard.setStringAsync('<p>test</p>', { inputType: StringFormat.HTML });
           const result = await Clipboard.getStringAsync({
-            preferredType: StringContentType.PLAIN_TEXT,
+            preferredType: StringFormat.PLAIN_TEXT,
           });
           expect(result).toEqual('test');
         });
 
         it('falls back to plain text if no HTML is copied', async () => {
-          await Clipboard.setStringAsync('test', { inputType: StringContentType.PLAIN_TEXT });
+          await Clipboard.setStringAsync('test', { inputType: StringFormat.PLAIN_TEXT });
           const result = await Clipboard.getStringAsync({
-            preferredType: StringContentType.HTML,
+            preferredType: StringFormat.HTML,
           });
           expect(result).toEqual('test');
         });

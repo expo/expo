@@ -35,7 +35,7 @@ export interface ClipboardImage {
         height: number;
     };
 }
-export declare enum StringContentType {
+export declare enum StringFormat {
     PLAIN_TEXT = "plainText",
     HTML = "html"
 }
@@ -46,9 +46,9 @@ export interface GetStringOptions {
      *
      * On web, this option is ignored. The string is always returned without any conversion.
      *
-     * @default `StringContentType.PLAIN_TEXT`
+     * @default `StringFormat.PLAIN_TEXT`
      */
-    preferredType?: StringContentType;
+    preferredFormat?: StringFormat;
 }
 export interface SetStringOptions {
     /**
@@ -57,8 +57,8 @@ export interface SetStringOptions {
      *
      * On web, this option is ignored. The string will be copied directly as-is, without any conversion.
      *
-     * @default `StringContentType.PLAIN_TEXT`
+     * @default `StringFormat.PLAIN_TEXT`
      */
-    inputType?: StringContentType;
+    inputFormat?: StringFormat;
 }
 //# sourceMappingURL=Clipboard.types.d.ts.map

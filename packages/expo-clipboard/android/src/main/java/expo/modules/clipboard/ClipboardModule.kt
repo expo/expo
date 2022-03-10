@@ -40,16 +40,16 @@ class ClipboardModule : Module() {
     // region Strings
     function("getStringAsync") { options: GetStringOptions ->
       val item = clipboardManager.firstItem
-      when (options.preferredType) {
-        StringContentType.PLAIN -> item?.coerceToPlainText(context)
-        StringContentType.HTML -> item?.coerceToHtmlText(context)
+      when (options.preferredFormat) {
+        StringFormat.PLAIN -> item?.coerceToPlainText(context)
+        StringFormat.HTML -> item?.coerceToHtmlText(context)
       } ?: ""
     }
 
     function("setStringAsync") { content: String, options: SetStringOptions ->
-      val clip = when (options.inputType) {
-        StringContentType.PLAIN -> ClipData.newPlainText(null, content)
-        StringContentType.HTML -> {
+      val clip = when (options.inputFormat) {
+        StringFormat.PLAIN -> ClipData.newPlainText(null, content)
+        StringFormat.HTML -> {
           // HTML clip requires complementary plain text content
           val plainText = plainTextFromHtml(content)
           ClipData.newHtmlText(null, plainText, content)
