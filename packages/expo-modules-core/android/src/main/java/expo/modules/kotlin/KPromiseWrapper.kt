@@ -13,7 +13,7 @@ class KPromiseWrapper(
   override fun resolve(value: Any?) {
     bridgePromise.resolve(
       when (value) {
-        is Unit -> null
+        null, is Unit -> null
         is Bundle -> Arguments.fromBundle(value)
         is List<*> -> Arguments.fromList(value)
         is Array<*> -> Arguments.fromArray(value)
