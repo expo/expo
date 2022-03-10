@@ -109,7 +109,12 @@ export default function FunctionDemo({
 
   const handlePress = useCallback(
     async (action: ActionFunction) => {
-      setResult(await action(...args, ...additionalArgs));
+      // force clear the previous result if exists
+      setResult(undefined);
+      const newResult = await action(...args, ...additionalArgs);
+      // undefined is a special value hiding the result box
+      // so we need to replace it with a string
+      setResult(newResult === undefined ? 'undefined' : newResult);
     },
     [args, additionalArgs]
   );
@@ -136,7 +141,7 @@ export default function FunctionDemo({
           ))}
         </View>
       </View>
-      {result && (
+      {result !== undefined && (
         <>
           <MonoTextWithCountdown onCountdownEnded={() => setResult(undefined)}>
             {resultToString(result)}
