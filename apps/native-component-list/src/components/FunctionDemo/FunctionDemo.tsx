@@ -98,7 +98,6 @@ export default function FunctionDemo({
   actions,
   renderAdditionalResult,
   additionalParameters = [],
-  displayUndefinedResult,
 }: Props) {
   const [result, setResult] = useState<unknown>(undefined);
   const [args, updateArgument] = useArguments(parameters);
