@@ -1,8 +1,8 @@
 import { CommandError } from './errors';
 
 /** Await for a given duration of milliseconds. */
-export function delayAsync(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export function delayAsync(timeout: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
 /** Wait for a given action to return a truthy value. */
@@ -36,12 +36,14 @@ export async function waitForActionAsync<T>({
 
 /** Resolves a given function or rejects if the provided timeout is passed. */
 export function resolveWithTimeout<T>(
-  fn: () => Promise<T>,
+  action: () => Promise<T>,
   {
     timeout,
-    errorMessage = 'Timeout',
+    errorMessage,
   }: {
+    /** Duration in milliseconds to wait before asserting a timeout. */
     timeout: number;
+    /** Optional error message to use in the assertion. */
     errorMessage?: string;
   }
 ): Promise<T> {
@@ -49,6 +51,6 @@ export function resolveWithTimeout<T>(
     setTimeout(() => {
       reject(new CommandError('TIMEOUT', errorMessage));
     }, timeout);
-    fn().then(resolve, reject);
+    action().then(resolve, reject);
   });
 }

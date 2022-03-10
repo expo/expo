@@ -6,10 +6,11 @@ afterEach(() => {
 
 describe(delayAsync, () => {
   it(`await for a given duration of milliseconds`, async () => {
-    const start = Date.now();
-    await delayAsync(100);
-    expect(Date.now() - start).toBeGreaterThanOrEqual(99);
-  }, 1000);
+    jest.useFakeTimers();
+    const promise = delayAsync(100);
+    jest.advanceTimersByTime(100);
+    await promise;
+  });
 });
 
 describe(waitForActionAsync, () => {
