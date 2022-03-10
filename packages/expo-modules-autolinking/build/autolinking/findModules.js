@@ -29,17 +29,8 @@ async function findModulesAsync(providedOptions) {
         const isNativeModulesDir = searchPath === options.nativeModulesDir;
         const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
         for (const packageConfigPath of packageConfigPaths) {
-            const packageDirParts = path_1.default.dirname(packageConfigPath).split(path_1.default.sep);
-            const isExpoAdapter = packageDirParts[packageDirParts.length - 1] === 'expo' &&
-                (packageDirParts.length === 2 || // `*/expo/expo-module.config.json`
-                    packageDirParts.length === 3); // `@*/*/expo/expo-module.config.json`
-            let packagePath = await fs_extra_1.default.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
-            let expoModuleConfigPath = path_1.default.join(packagePath, path_1.default.basename(packageConfigPath));
-            if (isExpoAdapter) {
-                packagePath = path_1.default.dirname(packagePath);
-                expoModuleConfigPath = path_1.default.join(packagePath, 'expo', path_1.default.basename(packageConfigPath));
-            }
-            const expoModuleConfig = (0, ExpoModuleConfig_1.requireAndResolveExpoModuleConfig)(expoModuleConfigPath);
+            const packagePath = await fs_extra_1.default.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
+            const expoModuleConfig = (0, ExpoModuleConfig_1.requireAndResolveExpoModuleConfig)(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
             const { name, version } = resolvePackageNameAndVersion(packagePath, {
                 fallbackToDirName: isNativeModulesDir,
             });
@@ -54,9 +45,6 @@ async function findModulesAsync(providedOptions) {
                 version,
                 config: expoModuleConfig,
             };
-            if (isExpoAdapter) {
-                currentRevision.isExpoAdapter = true;
-            }
             addRevisionToResults(results, name, currentRevision);
             // if the module is a native module, we need to add it to the nativeModuleNames set
             if (isNativeModulesDir && !nativeModuleNames.has(name)) {

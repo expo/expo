@@ -61,39 +61,6 @@ describe(resolveModuleAsync, () => {
       modules: [],
     });
   });
-
-  it('should resolve build.gradle in expo adapter folder', async () => {
-    const name = 'react-native-third-party';
-    const pkgDir = path.join('node_modules', name);
-
-    registerGlobMock(
-      glob,
-      [
-        // This gradle project should be linked by rn-cli autolinking, so we should not resolve this build.gradle.
-        `android/build.gradle`,
-
-        'expo/android/build.gradle',
-      ],
-      pkgDir
-    );
-
-    const result = await resolveModuleAsync(name, {
-      path: pkgDir,
-      version: '0.0.1',
-      config: new ExpoModuleConfig({ platforms: ['android'] }),
-      isExpoAdapter: true,
-    });
-    expect(result).toEqual({
-      packageName: 'react-native-third-party',
-      projects: [
-        {
-          name: 'react-native-third-party$expo-android',
-          sourceDir: 'node_modules/react-native-third-party/expo/android',
-        },
-      ],
-      modules: [],
-    });
-  });
 });
 
 describe(convertPackageNameToProjectName, () => {

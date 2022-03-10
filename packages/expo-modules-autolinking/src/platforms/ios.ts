@@ -15,9 +15,8 @@ async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
     return configPodspecPaths;
   }
 
-  const searchPath = revision.isExpoAdapter ? path.join(revision.path, 'expo') : revision.path;
   const podspecFiles = await glob('*/*.podspec', {
-    cwd: searchPath,
+    cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
 
@@ -48,10 +47,9 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const searchPath = revision.isExpoAdapter ? path.join(revision.path, 'expo') : revision.path;
   const pods = podspecFiles.map((podspecFile) => ({
     podName: path.basename(podspecFile, path.extname(podspecFile)),
-    podspecDir: path.dirname(path.join(searchPath, podspecFile)),
+    podspecDir: path.dirname(path.join(revision.path, podspecFile)),
   }));
 
   const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleNames());

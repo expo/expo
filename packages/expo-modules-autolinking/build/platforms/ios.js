@@ -13,9 +13,8 @@ async function findPodspecFiles(revision) {
     if (configPodspecPaths && configPodspecPaths.length) {
         return configPodspecPaths;
     }
-    const searchPath = revision.isExpoAdapter ? path_1.default.join(revision.path, 'expo') : revision.path;
     const podspecFiles = await (0, fast_glob_1.default)('*/*.podspec', {
-        cwd: searchPath,
+        cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });
     return podspecFiles;
@@ -37,10 +36,9 @@ async function resolveModuleAsync(packageName, revision, options) {
     if (!podspecFiles.length) {
         return null;
     }
-    const searchPath = revision.isExpoAdapter ? path_1.default.join(revision.path, 'expo') : revision.path;
     const pods = podspecFiles.map((podspecFile) => ({
         podName: path_1.default.basename(podspecFile, path_1.default.extname(podspecFile)),
-        podspecDir: path_1.default.dirname(path_1.default.join(searchPath, podspecFile)),
+        podspecDir: path_1.default.dirname(path_1.default.join(revision.path, podspecFile)),
     }));
     const swiftModuleNames = getSwiftModuleNames(pods, (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosSwiftModuleNames());
     return {

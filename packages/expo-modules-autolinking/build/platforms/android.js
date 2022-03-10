@@ -22,9 +22,8 @@ async function resolveModuleAsync(packageName, revision) {
     if (packageName === '@unimodules/react-native-adapter') {
         return null;
     }
-    const searchPath = revision.isExpoAdapter ? path_1.default.join(revision.path, 'expo') : revision.path;
     const buildGradleFiles = await (0, fast_glob_1.default)('*/build.gradle', {
-        cwd: searchPath,
+        cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });
     // Just in case where the module doesn't have its own `build.gradle`.
@@ -32,7 +31,7 @@ async function resolveModuleAsync(packageName, revision) {
         return null;
     }
     const projects = buildGradleFiles.map((buildGradleFile) => {
-        const gradleFilePath = path_1.default.join(searchPath, buildGradleFile);
+        const gradleFilePath = path_1.default.join(revision.path, buildGradleFile);
         return {
             name: convertPackageNameToProjectName(packageName, path_1.default.relative(revision.path, gradleFilePath)),
             sourceDir: path_1.default.dirname(gradleFilePath),

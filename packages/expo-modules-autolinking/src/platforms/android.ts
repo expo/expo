@@ -27,9 +27,8 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const searchPath = revision.isExpoAdapter ? path.join(revision.path, 'expo') : revision.path;
   const buildGradleFiles = await glob('*/build.gradle', {
-    cwd: searchPath,
+    cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
 
@@ -39,7 +38,7 @@ export async function resolveModuleAsync(
   }
 
   const projects = buildGradleFiles.map((buildGradleFile) => {
-    const gradleFilePath = path.join(searchPath, buildGradleFile);
+    const gradleFilePath = path.join(revision.path, buildGradleFile);
     return {
       name: convertPackageNameToProjectName(
         packageName,

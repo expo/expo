@@ -74,30 +74,4 @@ describe(findModulesAsync, () => {
     });
     expect(Object.keys(result).length).toBe(2);
   });
-
-  it('should link adapter package inside expo/ directory', async () => {
-    const searchPath = path.join(expoRoot, 'node_modules');
-    const name = 'react-native-third-party';
-    const pkgDir = path.join('node_modules', name);
-
-    // mock require() call to module's package.json
-    registerRequireMock(path.join(expoRoot, pkgDir, 'package.json'), {
-      name,
-      version: '0.0.1',
-    });
-
-    // mock require() call to module's expo-module.config.json
-    registerRequireMock(path.join(expoRoot, pkgDir, 'expo', 'expo-module.config.json'), {
-      platforms: ['ios'],
-    });
-
-    registerGlobMock(glob, [`${name}/expo/expo-module.config.json`], searchPath);
-
-    const result = await findModulesAsync({
-      searchPaths: [searchPath],
-      platform: 'ios',
-    });
-    expect(result[name]).not.toBeNull();
-    expect(result[name].isExpoAdapter).toBe(true);
-  });
 });

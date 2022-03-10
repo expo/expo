@@ -32,18 +32,10 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
     const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
 
     for (const packageConfigPath of packageConfigPaths) {
-      const packageDirParts = path.dirname(packageConfigPath).split(path.sep);
-      const isExpoAdapter =
-        packageDirParts[packageDirParts.length - 1] === 'expo' &&
-        (packageDirParts.length === 2 || // `*/expo/expo-module.config.json`
-          packageDirParts.length === 3); // `@*/*/expo/expo-module.config.json`
-      let packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
-      let expoModuleConfigPath = path.join(packagePath, path.basename(packageConfigPath));
-      if (isExpoAdapter) {
-        packagePath = path.dirname(packagePath);
-        expoModuleConfigPath = path.join(packagePath, 'expo', path.basename(packageConfigPath));
-      }
-      const expoModuleConfig = requireAndResolveExpoModuleConfig(expoModuleConfigPath);
+      const packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
+      const expoModuleConfig = requireAndResolveExpoModuleConfig(
+        path.join(packagePath, path.basename(packageConfigPath))
+      );
 
       const { name, version } = resolvePackageNameAndVersion(packagePath, {
         fallbackToDirName: isNativeModulesDir,
@@ -63,9 +55,6 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
         version,
         config: expoModuleConfig,
       };
-      if (isExpoAdapter) {
-        currentRevision.isExpoAdapter = true;
-      }
       addRevisionToResults(results, name, currentRevision);
 
       // if the module is a native module, we need to add it to the nativeModuleNames set
