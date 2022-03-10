@@ -48,10 +48,6 @@ type Props = {
    * Rendering function to render some additional components based on the function's result.
    */
   renderAdditionalResult?: (result: unknown) => JSX.Element | void;
-  /**
-   * If true, the result box will de displayed even if action returns `undefined`.
-   */
-  displayUndefinedResult?: boolean;
 };
 
 /**
@@ -119,7 +115,7 @@ export default function FunctionDemo({
       const newResult = await action(...args, ...additionalArgs);
       // undefined is a special value hiding the result box
       // so we need to replace it with a string
-      setResult(displayUndefinedResult && newResult === undefined ? 'undefined' : newResult);
+      setResult(newResult === undefined ? 'undefined' : newResult);
     },
     [args, additionalArgs]
   );
