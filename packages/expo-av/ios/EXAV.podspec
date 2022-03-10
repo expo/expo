@@ -15,7 +15,11 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'ReactCommon/turbomodule/core'
+  s.dependency 'ReactCommon'
+  # 'React-runtimeexecutor' is added only for prebuilding purposes as this process cannot resolve transitive headers' paths at the time of writing.
+  # This dependency is transitively included via following chain: 'ReactCommon' -> 'ReactCommon/turbomodule' -> 'React-cxxreact' -> 'React-runtimeexecutor'.
+  # TODO: remove once prebuilding starts supporting resolution of transitive dependencies
+  s.dependency 'React-runtimeexecutor'
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"

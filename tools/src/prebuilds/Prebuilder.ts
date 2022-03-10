@@ -26,7 +26,7 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-app-auth',
   // 'expo-apple-authentication',
   // 'expo-application',
-  // 'expo-av',
+  'expo-av',
   // 'expo-background-fetch',
   'expo-barcode-scanner',
   // 'expo-battery',
