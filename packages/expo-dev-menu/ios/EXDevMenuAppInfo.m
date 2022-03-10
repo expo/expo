@@ -18,7 +18,6 @@
   DevMenuManager *manager = [DevMenuManager shared];
   
   if (manager.currentManifest != nil) {
-    [manager.currentManifest appKey];
     appName = [manager.currentManifest name];
     appVersion = [manager.currentManifest version];
   }
