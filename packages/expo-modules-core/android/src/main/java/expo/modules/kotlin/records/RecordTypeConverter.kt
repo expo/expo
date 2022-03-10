@@ -65,12 +65,14 @@ class RecordTypeConverter<T : Record>(
             descriptor.typeConverter.convert(this)
           }
 
-          descriptor
-            .validators
-            .forEach { validator ->
-              @Suppress("UNCHECKED_CAST")
-              (validator as FieldValidator<Any?>).validate(casted)
-            }
+          if (casted != null) {
+            descriptor
+              .validators
+              .forEach { validator ->
+                @Suppress("UNCHECKED_CAST")
+                (validator as FieldValidator<Any>).validate(casted)
+              }
+          }
 
           javaField.isAccessible = true
           javaField.set(instance, casted)
@@ -96,7 +98,7 @@ class RecordTypeConverter<T : Record>(
       .filterNotNull()
       .map { (annotation, binderAnnotation) ->
         val binderInstance = binderAnnotation.binder.createInstance() as ValidationBinder
-        binderInstance.bind(annotation)
+        binderInstance.bind(annotation, property.returnType)
       }
   }
 
