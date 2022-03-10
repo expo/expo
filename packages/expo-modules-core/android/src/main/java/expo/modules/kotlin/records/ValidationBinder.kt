@@ -2,6 +2,7 @@ package expo.modules.kotlin.records
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 import kotlin.reflect.full.isSubclassOf
 
 interface ValidationBinder {
@@ -64,6 +65,12 @@ internal class IsCollectionNotEmptyBinder : ValidationBinder {
   override fun bind(annotation: Annotation, fieldType: KType): FieldValidator<*> {
     assert(annotation is IsNotEmpty)
 
+    when (fieldType) {
+      IntArray::class.createType() -> return IsNotEmptyIntArrayValidator()
+      DoubleArray::class.createType() -> return IsNotEmptyDoubleArrayValidator()
+      FloatArray::class.createType() -> return IsNotEmptyFloatArrayValidator()
+    }
+
     val kClass = fieldType.classifier as KClass<*>
     if (kClass.isSubclassOf(Array::class) || kClass.java.isArray) {
       return IsNotEmptyArrayValidator()
@@ -76,13 +83,18 @@ internal class IsCollectionNotEmptyBinder : ValidationBinder {
 internal class SizeBinder : ValidationBinder {
   override fun bind(annotation: Annotation, fieldType: KType): FieldValidator<*> {
     val sizeAnnotation = annotation as Size
+
+    when (fieldType) {
+      IntArray::class.createType() -> return IntArraySizeValidator(sizeAnnotation.min, sizeAnnotation.max)
+      DoubleArray::class.createType() -> return DoubleArraySizeValidator(sizeAnnotation.min, sizeAnnotation.max)
+      FloatArray::class.createType() -> return FloatArraySizeValidator(sizeAnnotation.min, sizeAnnotation.max)
+    }
+
     val kClass = fieldType.classifier as KClass<*>
 
     if (kClass.isSubclassOf(String::class)) {
       return StringSizeValidator(sizeAnnotation.min, sizeAnnotation.max)
-    }
-
-    if (kClass.isSubclassOf(Array::class) || kClass.java.isArray) {
+    } else if (kClass.isSubclassOf(Array::class) || kClass.java.isArray) {
       return ArraySizeValidator(sizeAnnotation.min, sizeAnnotation.max)
     }
 

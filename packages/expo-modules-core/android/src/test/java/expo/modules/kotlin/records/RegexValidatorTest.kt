@@ -9,13 +9,13 @@ class RegexValidatorTest {
   fun `should not throw if a value match regex`() {
     val validator = RegexValidator("[a-d]*".toRegex())
 
-    runCatching{ validator.validate("aaaabbbbbccccddd") }.exceptionOrNull().assertNull()
+    runCatching { validator.validate("aaaabbbbbccccddd") }.exceptionOrNull().assertNull()
   }
 
   @Test
   fun `should throw if a value not match regex`() {
     val validator = RegexValidator("[a-d]*".toRegex())
 
-    runCatching{ validator.validate("eeeeffff") }.exceptionOrNull().assertNotNull()
+    runCatching { validator.validate("eeeeffff") }.exceptionOrNull().assertNotNull()
   }
 }

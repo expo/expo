@@ -4,7 +4,6 @@ import expo.modules.assertNotNull
 import expo.modules.assertNull
 import org.junit.Test
 
-
 class NumericRangeValidatorTest {
   @Test
   fun `should not throw if an argument is in the range`() {
@@ -26,7 +25,6 @@ class NumericRangeValidatorTest {
 
     runCatching { validator2.validate(0) }.exceptionOrNull().assertNotNull()
     runCatching { validator2.validate(10) }.exceptionOrNull().assertNotNull()
-
 
     runCatching { validator3.validate(1) }.exceptionOrNull().assertNotNull()
     runCatching { validator3.validate(10) }.exceptionOrNull().assertNotNull()

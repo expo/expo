@@ -32,6 +32,30 @@ class IsNotEmptyCollectionValidator : FieldValidator<Collection<*>> {
   }
 }
 
+class IsNotEmptyIntArrayValidator : FieldValidator<IntArray> {
+  override fun validate(value: IntArray) {
+    if (value.isEmpty()) {
+      throw ValidationException("Array is empty")
+    }
+  }
+}
+
+class IsNotEmptyFloatArrayValidator : FieldValidator<FloatArray> {
+  override fun validate(value: FloatArray) {
+    if (value.isEmpty()) {
+      throw ValidationException("Array is empty")
+    }
+  }
+}
+
+class IsNotEmptyDoubleArrayValidator : FieldValidator<DoubleArray> {
+  override fun validate(value: DoubleArray) {
+    if (value.isEmpty()) {
+      throw ValidationException("Array is empty")
+    }
+  }
+}
+
 class IsNotEmptyArrayValidator : FieldValidator<Array<*>> {
   override fun validate(value: Array<*>) {
     if (value.isEmpty()) {
@@ -47,6 +71,39 @@ class CollectionSizeValidator(
   override fun validate(value: Collection<*>) {
     if (value.size < min || value.size > max) {
       throw ValidationException("Number of elements in the collection should be between $min and $max, got ${value.size}")
+    }
+  }
+}
+
+class IntArraySizeValidator(
+  private val min: Int,
+  private val max: Int
+) : FieldValidator<IntArray> {
+  override fun validate(value: IntArray) {
+    if (value.size < min || value.size > max) {
+      throw ValidationException("Number of elements in the array should be between $min and $max, got ${value.size}")
+    }
+  }
+}
+
+class DoubleArraySizeValidator(
+  private val min: Int,
+  private val max: Int
+) : FieldValidator<DoubleArray> {
+  override fun validate(value: DoubleArray) {
+    if (value.size < min || value.size > max) {
+      throw ValidationException("Number of elements in the array should be between $min and $max, got ${value.size}")
+    }
+  }
+}
+
+class FloatArraySizeValidator(
+  private val min: Int,
+  private val max: Int
+) : FieldValidator<FloatArray> {
+  override fun validate(value: FloatArray) {
+    if (value.size < min || value.size > max) {
+      throw ValidationException("Number of elements in the array should be between $min and $max, got ${value.size}")
     }
   }
 }

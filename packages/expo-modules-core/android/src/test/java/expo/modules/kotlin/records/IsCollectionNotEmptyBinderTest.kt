@@ -19,9 +19,13 @@ class IsCollectionNotEmptyBinderTest {
   fun `should bind the array type to the array validator`() {
     val binder = IsCollectionNotEmptyBinder()
     val intArrayValidator = binder.bind(IsNotEmpty(), typeOf<IntArray>())
+    val doubleArrayValidator = binder.bind(IsNotEmpty(), typeOf<DoubleArray>())
+    val floatArrayValidator = binder.bind(IsNotEmpty(), typeOf<FloatArray>())
     val stringArrayValidator = binder.bind(IsNotEmpty(), typeOf<Array<String>>())
 
-    Truth.assertThat(intArrayValidator).isInstanceOf(IsNotEmptyArrayValidator::class.java)
+    Truth.assertThat(intArrayValidator).isInstanceOf(IsNotEmptyIntArrayValidator::class.java)
+    Truth.assertThat(doubleArrayValidator).isInstanceOf(IsNotEmptyDoubleArrayValidator::class.java)
+    Truth.assertThat(floatArrayValidator).isInstanceOf(IsNotEmptyFloatArrayValidator::class.java)
     Truth.assertThat(stringArrayValidator).isInstanceOf(IsNotEmptyArrayValidator::class.java)
   }
 }
