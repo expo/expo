@@ -1817,7 +1817,8 @@ PODS:
     - ExpoModulesCore
   - EXAV (11.1.0):
     - ExpoModulesCore
-    - ReactCommon/turbomodule/core
+    - React-runtimeexecutor
+    - ReactCommon
   - EXBackgroundFetch (10.1.0):
     - ExpoModulesCore
     - UMTaskManagerInterface
@@ -2420,6 +2421,24 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.67.2)
   - React-runtimeexecutor (0.67.2):
     - React-jsi (= 0.67.2)
+  - ReactCommon (0.67.2):
+    - React-logger (= 0.67.2)
+    - ReactCommon/react_debug_core (= 0.67.2)
+    - ReactCommon/turbomodule (= 0.67.2)
+  - ReactCommon/react_debug_core (0.67.2):
+    - React-logger (= 0.67.2)
+  - ReactCommon/turbomodule (0.67.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.06.28.00-v2)
+    - React-callinvoker (= 0.67.2)
+    - React-Core (= 0.67.2)
+    - React-cxxreact (= 0.67.2)
+    - React-jsi (= 0.67.2)
+    - React-logger (= 0.67.2)
+    - React-perflogger (= 0.67.2)
+    - ReactCommon/turbomodule/core (= 0.67.2)
+    - ReactCommon/turbomodule/samples (= 0.67.2)
   - ReactCommon/turbomodule/core (0.67.2):
     - DoubleConversion
     - glog
@@ -2430,6 +2449,17 @@ PODS:
     - React-jsi (= 0.67.2)
     - React-logger (= 0.67.2)
     - React-perflogger (= 0.67.2)
+  - ReactCommon/turbomodule/samples (0.67.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.06.28.00-v2)
+    - React-callinvoker (= 0.67.2)
+    - React-Core (= 0.67.2)
+    - React-cxxreact (= 0.67.2)
+    - React-jsi (= 0.67.2)
+    - React-logger (= 0.67.2)
+    - React-perflogger (= 0.67.2)
+    - ReactCommon/turbomodule/core (= 0.67.2)
   - RNGestureHandler (2.1.0):
     - React-Core
   - RNReanimated (2.3.1):
@@ -4168,7 +4198,7 @@ SPEC CHECKSUMS:
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
   EXAppleAuthentication: 27a4f7dc44a1b510f5af945b58643165ee486d89
   EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
-  EXAV: 6bef4f902a70b704f5407876698527ab75cba15f
+  EXAV: 851ef1eacaea082131b77a54d02cc1140257af63
   EXBackgroundFetch: 12e8a8c522a2d2c5be07168d74af76567841f023
   EXBarCodeScanner: 0c10fb2bda9e188450b58cc89f7c6177b73f5c25
   EXBattery: 097a76ebb674c57d3df6e1ebcd6e243d569161b5
