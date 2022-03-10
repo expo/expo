@@ -4,23 +4,41 @@ import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
 import expo.modules.kotlin.exception.FieldCastException
+import expo.modules.kotlin.exception.FieldRequiredException
 import expo.modules.kotlin.exception.RecordCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterProvider
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-// TODO(@lukmccall): create all converters during initialization
 class RecordTypeConverter<T : Record>(
   private val converterProvider: TypeConverterProvider,
   val type: KType,
 ) : TypeConverter<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
+  private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> =
+    (type.classifier as KClass<*>)
+      .memberProperties
+      .map { property ->
+        val fieldAnnotation = property.findAnnotation<Field>() ?: return@map null
+        val typeConverter = converterProvider.obtainTypeConverter(property.returnType)
+
+        return@map property to PropertyDescriptor(
+          typeConverter,
+          fieldAnnotation,
+          isRequired = property.findAnnotation<Required>() != null,
+          validators = getValidators(property)
+        )
+      }
+      .filterNotNull()
+      .toMap()
 
   override fun convertNonOptional(value: Dynamic): T = exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
     val jsMap = value.asMap()
@@ -28,23 +46,32 @@ class RecordTypeConverter<T : Record>(
     val kClass = type.classifier as KClass<*>
     val instance = getObjectConstructor(kClass.java).construct()
 
-    kClass
-      .memberProperties
-      .map { property ->
-        val filedInformation = property.findAnnotation<Field>() ?: return@map
-        val jsKey = filedInformation.key.takeUnless { it == "" } ?: property.name
+    propertyDescriptors
+      .forEach { (property, descriptor) ->
+        val jsKey = descriptor.fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
 
         if (!jsMap.hasKey(jsKey)) {
-          // TODO(@lukmccall): handle required keys
-          return@map
+          if (descriptor.isRequired) {
+            throw FieldRequiredException(property)
+          }
+
+          return@forEach
         }
 
         jsMap.getDynamic(jsKey).recycle {
           val javaField = property.javaField!!
 
-          val elementConverter = converterProvider.obtainTypeConverter(property.returnType)
           val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
-            elementConverter.convert(this)
+            descriptor.typeConverter.convert(this)
+          }
+
+          if (casted != null) {
+            descriptor
+              .validators
+              .forEach { validator ->
+                @Suppress("UNCHECKED_CAST")
+                (validator as FieldValidator<Any>).validate(casted)
+              }
           }
 
           javaField.isAccessible = true
@@ -59,4 +86,26 @@ class RecordTypeConverter<T : Record>(
   private fun <T> getObjectConstructor(clazz: Class<T>): ObjectConstructor<T> {
     return objectConstructorFactory.get(clazz)
   }
+
+  private fun getValidators(property: KProperty1<out Any, *>): List<FieldValidator<*>> {
+    return property
+      .annotations
+      .map findValidators@{ annotation ->
+        val binderAnnotation = annotation.annotationClass.findAnnotation<BindUsing>()
+          ?: return@findValidators null
+        annotation to binderAnnotation
+      }
+      .filterNotNull()
+      .map { (annotation, binderAnnotation) ->
+        val binderInstance = binderAnnotation.binder.createInstance() as ValidationBinder
+        binderInstance.bind(annotation, property.returnType)
+      }
+  }
+
+  private data class PropertyDescriptor(
+    val typeConverter: TypeConverter<*>,
+    val fieldAnnotation: Field,
+    val isRequired: Boolean,
+    val validators: List<FieldValidator<*>>
+  )
 }

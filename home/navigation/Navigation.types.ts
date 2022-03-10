@@ -1,9 +1,14 @@
 export type ModalStackRoutes = {
-  QRCode: object;
+  QRCode: undefined;
 };
 
 export type ProjectsStackRoutes = {
   Projects: object;
+};
+
+export type HomeStackRoutes = {
+  Home: object;
+  Account: { accountName: string };
 };
 
 export type ProfileStackRoutes = {

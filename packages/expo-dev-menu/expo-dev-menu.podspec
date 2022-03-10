@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '11.0'
+  s.platform       = :ios, '12.0'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -134,6 +134,7 @@ Pod::Spec.new do |s|
     
     main.dependency 'React-Core'
     main.dependency "EXManifests"
+    main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
   end

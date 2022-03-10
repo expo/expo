@@ -30,6 +30,7 @@ const platformSettings: Record<
   },
 };
 
+/** Download the Expo Go app from the Expo servers (if only it was this easy for every app). */
 export async function downloadExpoGoAsync(
   platform: keyof typeof platformSettings,
   {
@@ -37,7 +38,7 @@ export async function downloadExpoGoAsync(
   }: {
     url?: string;
   } = {}
-) {
+): Promise<string> {
   const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
 
   const bar = new ProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {

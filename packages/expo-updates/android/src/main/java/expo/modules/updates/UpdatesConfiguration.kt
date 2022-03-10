@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import expo.modules.updates.loader.Crypto
+import expo.modules.updates.codesigning.CodeSigningConfiguration
 
 class UpdatesConfiguration private constructor (
   val isEnabled: Boolean,
@@ -20,6 +20,7 @@ class UpdatesConfiguration private constructor (
   val requestHeaders: Map<String, String>,
   val codeSigningCertificate: String?,
   val codeSigningMetadata: Map<String, String>?,
+  val codeSigningIncludeManifestResponseCertificateChain: Boolean,
 ) {
   enum class CheckAutomaticallyConfiguration {
     NEVER, ERROR_RECOVERY_ONLY, WIFI_ONLY, ALWAYS
@@ -62,15 +63,18 @@ class UpdatesConfiguration private constructor (
     codeSigningMetadata = overrideMap?.readValueCheckingType<Map<String, String>>(UPDATES_CONFIGURATION_CODE_SIGNING_METADATA) ?: (context?.getMetadataValue<String>("expo.modules.updates.CODE_SIGNING_METADATA") ?: "{}").let {
       UpdatesUtils.getMapFromJSONString(it)
     },
+    codeSigningIncludeManifestResponseCertificateChain = overrideMap?.readValueCheckingType<Boolean>(
+      UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN
+    ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN") ?: false,
   )
 
   val isMissingRuntimeVersion: Boolean
     get() = (runtimeVersion == null || runtimeVersion.isEmpty()) &&
       (sdkVersion == null || sdkVersion.isEmpty())
 
-  val codeSigningConfiguration: Crypto.CodeSigningConfiguration? by lazy {
+  val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
     codeSigningCertificate?.let {
-      Crypto.CodeSigningConfiguration(it, codeSigningMetadata)
+      CodeSigningConfiguration(it, codeSigningMetadata, codeSigningIncludeManifestResponseCertificateChain)
     }
   }
 
@@ -88,8 +92,10 @@ class UpdatesConfiguration private constructor (
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
     const val UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST = "expectsSignedManifest"
+
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"
+    const val UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN = "codeSigningIncludeManifestResponseCertificateChain"
 
     private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0

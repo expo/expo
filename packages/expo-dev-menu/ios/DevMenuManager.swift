@@ -71,6 +71,13 @@ open class DevMenuManager: NSObject {
   lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
 
   var currentScreen: String?
+
+  /**
+   For backwards compatibility in projects that call this method from AppDelegate
+   */
+  @available(*, deprecated, message: "Manual setup of DevMenuManager in AppDelegate is deprecated in favor of automatic setup with Expo Modules")
+  @objc
+  public static func configure(withBridge bridge: AnyObject) { }
   
   @objc
   public var currentBridge: RCTBridge? {

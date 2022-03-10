@@ -85,9 +85,10 @@ dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "androidx.core:core-ktx:1.6.0"
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
   if (project.findProject(':unimodules-test-core')) {
     testImplementation project(':unimodules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.3.1"
 }

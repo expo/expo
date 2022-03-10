@@ -44,7 +44,7 @@ function getDotExpoProjectDirectory(projectRoot: string): string {
   return path.join(projectRoot, '.expo');
 }
 
-function ensureDotExpoProjectDirectoryInitialized(projectRoot: string): string {
+export function ensureDotExpoProjectDirectoryInitialized(projectRoot: string): string {
   const dirPath = getDotExpoProjectDirectory(projectRoot);
   fs.mkdirSync(dirPath, { recursive: true });
 

@@ -55,13 +55,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AppAuthScreen'));
-    },
-    name: 'AppAuth',
-    options: { title: 'App Auth' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));
     },
     name: 'Appearance',
@@ -179,12 +172,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GoogleScreen'));
-    },
-    name: 'Google',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/GoogleSignInScreen'));
     },
     name: 'GoogleSignIn',
@@ -241,7 +228,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ImagePickerScreen'));
+      return optionalRequire(() => require('../screens/ImagePicker/ImagePickerScreen'));
     },
     name: 'ImagePicker',
   },
