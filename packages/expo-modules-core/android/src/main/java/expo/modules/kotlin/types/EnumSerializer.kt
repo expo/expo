@@ -7,7 +7,7 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 
 fun WritableMap.putEnum(jsKey: String, enum: Enum<*>) {
-  when (val jsValue = enum.getJSValue()) {
+  when (val jsValue = enum.toJSValue()) {
     null, is Unit -> putNull(jsKey)
     is Int -> putInt(jsKey, jsValue)
     is Number -> putDouble(jsKey, jsValue.toDouble())
@@ -17,7 +17,7 @@ fun WritableMap.putEnum(jsKey: String, enum: Enum<*>) {
 }
 
 fun WritableArray.pushEnum(enum: Enum<*>) {
-  when (val jsValue = enum.getJSValue()) {
+  when (val jsValue = enum.toJSValue()) {
     null, is Unit -> pushNull()
     is Int -> pushInt(jsValue)
     is Number -> pushDouble(jsValue.toDouble())
@@ -26,7 +26,7 @@ fun WritableArray.pushEnum(enum: Enum<*>) {
   }
 }
 
-fun Enum<*>.getJSValue(): Any? {
+fun Enum<*>.toJSValue(): Any? {
   val primaryConstructor = requireNotNull(this::class.primaryConstructor) {
     "Cannot convert enum without the primary constructor to js value"
   }

@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.toJSMap
-import expo.modules.kotlin.types.getJSValue
+import expo.modules.kotlin.types.toJSValue
 
 class KPromiseWrapper(
   private val bridgePromise: com.facebook.react.bridge.Promise
@@ -19,7 +19,7 @@ class KPromiseWrapper(
         is List<*> -> Arguments.fromList(value)
         is Array<*> -> Arguments.fromArray(value)
         is Map<*, *> -> Arguments.makeNativeMap(value as Map<String, Any?>) // TODO(@lukmccall): add more sophisticated conversion method
-        is Enum<*> -> value.getJSValue()
+        is Enum<*> -> value.toJSValue()
         is Record -> value.toJSMap()
         else -> value
       }
