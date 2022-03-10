@@ -3,7 +3,7 @@ import { Button, View, Row, Image, UserIcon, Text } from 'expo-dev-client-compon
 import * as Haptics from 'expo-haptics';
 import { CurrentUserDataFragment } from 'graphql/types';
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { useTheme } from '../utils/useTheme';
 
@@ -24,7 +24,15 @@ export function HomeScreenHeader({ currentUser }: Props) {
   }
 
   return (
-    <Row padding="medium" align="center" bg="default" justify="between">
+    <Row
+      padding="medium"
+      align="center"
+      bg="default"
+      justify="between"
+      style={{
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: theme.border.default,
+      }}>
       <Row align="center">
         <View
           align="centered"

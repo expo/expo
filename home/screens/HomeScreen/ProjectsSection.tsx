@@ -20,7 +20,7 @@ export function ProjectsSection({ apps, showMore }: Props) {
   }
 
   return (
-    <View bg="default" rounded="large" style={{ overflow: 'hidden' }}>
+    <View bg="default" rounded="large" border="hairline" overflow="hidden">
       {apps.map((project, i) => {
         if (!project) return null;
 

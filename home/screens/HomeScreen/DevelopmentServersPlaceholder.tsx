@@ -27,7 +27,7 @@ export function DevelopmentServersPlaceholder() {
   };
 
   return (
-    <View bg="default" rounded="large">
+    <View bg="default" rounded="large" border="hairline">
       <View padding="medium">
         <Text size="small" style={{ marginBottom: spacing[2] }}>
           Start a local development server with:

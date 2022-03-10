@@ -1,4 +1,4 @@
-import { Spacer } from 'expo-dev-client-components';
+import { Divider, View } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import { Linking } from 'react-native';
 
@@ -11,7 +11,7 @@ type Props = {
 
 export function RecentlyOpenedSection({ recentHistory }: Props) {
   return (
-    <>
+    <View border="hairline" bg="default" overflow="hidden" rounded="large">
       {recentHistory.map((project, i) => {
         if (!project) return null;
 
@@ -34,10 +34,10 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
                 Linking.openURL(project.url);
               }}
             />
-            {i < recentHistory.count() - 1 && <Spacer.Vertical size="small" />}
+            {i < recentHistory.count() - 1 && <Divider />}
           </Fragment>
         );
       })}
-    </>
+    </View>
   );
 }
