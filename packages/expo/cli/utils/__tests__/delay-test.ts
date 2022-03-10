@@ -1,4 +1,8 @@
-import { delayAsync, waitForActionAsync } from '../delay';
+import { delayAsync, resolveWithTimeout, waitForActionAsync } from '../delay';
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 describe(delayAsync, () => {
   it(`await for a given duration of milliseconds`, async () => {
@@ -29,4 +33,30 @@ describe(waitForActionAsync, () => {
     expect(result).toEqual('');
     expect(fn).toHaveBeenCalledTimes(2);
   }, 500);
+});
+
+describe(resolveWithTimeout, () => {
+  it(`times out`, async () => {
+    jest.useFakeTimers();
+    // Create a function that never resolves.
+    const fn = jest.fn(() => new Promise(() => {}));
+
+    const promise = resolveWithTimeout(fn, { timeout: 50, errorMessage: 'Timeout' });
+    jest.advanceTimersByTime(50);
+    await expect(promise).rejects.toThrowError('Timeout');
+
+    // Ensure the function was called.
+    expect(fn).toBeCalled();
+  });
+  it(`resolves in time`, async () => {
+    jest.useFakeTimers();
+    // Create a function that never resolves.
+    const fn = jest.fn(async () => 'foobar');
+
+    const promise = resolveWithTimeout(fn, { timeout: 50 });
+    jest.advanceTimersByTime(49);
+    await expect(promise).resolves.toEqual('foobar');
+    // Ensure the function was called.
+    expect(fn).toBeCalled();
+  });
 });

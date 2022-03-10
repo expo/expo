@@ -1,3 +1,5 @@
+import { CommandError } from './errors';
+
 /** Await for a given duration of milliseconds. */
 export function delayAsync(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -30,4 +32,23 @@ export async function waitForActionAsync<T>({
   } while (!complete);
 
   return complete;
+}
+
+/** Resolves a given function or rejects if the provided timeout is passed. */
+export function resolveWithTimeout<T>(
+  fn: () => Promise<T>,
+  {
+    timeout,
+    errorMessage = 'Timeout',
+  }: {
+    timeout: number;
+    errorMessage?: string;
+  }
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(new CommandError('TIMEOUT', errorMessage));
+    }, timeout);
+    fn().then(resolve, reject);
+  });
 }

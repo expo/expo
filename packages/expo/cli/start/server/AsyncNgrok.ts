@@ -5,7 +5,7 @@ import slugify from 'slugify';
 import UserSettings from '../../api/user/UserSettings';
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
-import { delayAsync } from '../../utils/delay';
+import { delayAsync, resolveWithTimeout } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
 import { NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../platforms/android/adbReverse';
@@ -96,27 +96,19 @@ export class AsyncNgrok {
       autoInstall: false,
     });
 
-    let timer: NodeJS.Timeout | null = null;
-    try {
-      // TODO(Bacon): Consider dropping the timeout functionality:
-      // https://github.com/expo/expo/pull/16556#discussion_r822307373
-      const results = await Promise.race([
-        // Returns false to try again.
-        this.connectToNgrokInternalAsync(instance, attempts),
-
-        // A timeout that correctly surfaces the error to the correct lexical scope.
-        new Promise<false>((_, reject) => {
-          timer = setTimeout(() => {
-            reject(new CommandError('NGROK_TIMEOUT', 'ngrok tunnel took too long to connect.'));
-          }, options.timeout ?? TUNNEL_TIMEOUT);
-        }),
-      ]);
-      if (typeof results === 'string') {
-        return results;
+    // TODO(Bacon): Consider dropping the timeout functionality:
+    // https://github.com/expo/expo/pull/16556#discussion_r822307373
+    const results = await resolveWithTimeout(
+      () => this.connectToNgrokInternalAsync(instance, attempts),
+      {
+        timeout: options.timeout ?? TUNNEL_TIMEOUT,
+        errorMessage: 'ngrok tunnel took too long to connect.',
       }
-    } finally {
-      clearTimeout(timer);
+    );
+    if (typeof results === 'string') {
+      return results;
     }
+
     // Wait 100ms and then try again
     await delayAsync(100);
 
