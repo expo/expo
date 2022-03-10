@@ -22,7 +22,7 @@
   "expo-application": "~4.0.1",
   "expo-asset": "~8.4.5",
   "expo-auth-session": "~3.5.0",
-  "expo-av": "~11.0.1",
+  "expo-av": "~11.1.0",
   "expo-background-fetch": "~10.1.0",
   "expo-barcode-scanner": "~11.2.0",
   "expo-battery": "~6.1.0",
