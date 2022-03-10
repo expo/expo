@@ -2,7 +2,6 @@ import { spacing } from '@expo/styleguide-native';
 import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
 import { Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ScrollView from '../../components/NavigationScrollView';
 import { AllStackRoutes } from '../../navigation/Navigation.types';
@@ -13,19 +12,17 @@ export function RedesignedDiagnosticsScreen({
   navigation,
 }: StackScreenProps<AllStackRoutes, 'Diagnostics'>) {
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing[4] }}>
-        <AudioDiagnostic navigation={navigation} />
-        <Spacer.Vertical size="medium" />
-        {Environment.IsIOSRestrictedBuild ? (
-          <ForegroundLocationDiagnostic navigation={navigation} />
-        ) : (
-          <BackgroundLocationDiagnostic navigation={navigation} />
-        )}
-        <Spacer.Vertical size="medium" />
-        <GeofencingDiagnostic navigation={navigation} />
-      </ScrollView>
-    </SafeAreaView>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing[4] }}>
+      <AudioDiagnostic navigation={navigation} />
+      <Spacer.Vertical size="medium" />
+      {Environment.IsIOSRestrictedBuild ? (
+        <ForegroundLocationDiagnostic navigation={navigation} />
+      ) : (
+        <BackgroundLocationDiagnostic navigation={navigation} />
+      )}
+      <Spacer.Vertical size="medium" />
+      <GeofencingDiagnostic navigation={navigation} />
+    </ScrollView>
   );
 }
 
