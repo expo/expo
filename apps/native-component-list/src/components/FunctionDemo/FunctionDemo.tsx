@@ -48,6 +48,10 @@ type Props = {
    * Rendering function to render some additional components based on the function's result.
    */
   renderAdditionalResult?: (result: unknown) => JSX.Element | void;
+  /**
+   * If true, the result box will de displayed even if action returns `undefined`.
+   */
+  displayUndefinedResult?: boolean;
 };
 
 /**
@@ -98,6 +102,7 @@ export default function FunctionDemo({
   actions,
   renderAdditionalResult,
   additionalParameters = [],
+  displayUndefinedResult,
 }: Props) {
   const [result, setResult] = useState<unknown>(undefined);
   const [args, updateArgument] = useArguments(parameters);
@@ -109,7 +114,12 @@ export default function FunctionDemo({
 
   const handlePress = useCallback(
     async (action: ActionFunction) => {
-      setResult(await action(...args, ...additionalArgs));
+      // force clear the previous result if exists
+      setResult(undefined);
+      const newResult = await action(...args, ...additionalArgs);
+      // undefined is a special value hiding the result box
+      // so we need to replace it with a string
+      setResult(displayUndefinedResult && newResult === undefined ? 'undefined' : newResult);
     },
     [args, additionalArgs]
   );
@@ -136,7 +146,7 @@ export default function FunctionDemo({
           ))}
         </View>
       </View>
-      {result && (
+      {result !== undefined && (
         <>
           <MonoTextWithCountdown onCountdownEnded={() => setResult(undefined)}>
             {resultToString(result)}
