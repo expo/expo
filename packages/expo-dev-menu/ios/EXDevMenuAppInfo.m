@@ -1,27 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import "EXDevMenuAppInfo.h"
 #import <EXDevMenu-Swift.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 @implementation EXDevMenuAppInfo
-
-// TODO -- EXManifest - use actual interface
-//- (nullable NSString *)sdkVersion;
-//- (NSString *)bundleUrl;
-//- (nullable NSString *)revisionId;
-//- (nullable NSString *)slug;
-//- (nullable NSString *)appKey;
-//- (nullable NSString *)name;
-//- (nullable NSString *)version;
-//- (nullable NSDictionary *)notificationPreferences;
-//- (nullable NSDictionary *)updatesInfo;
-//- (nullable NSDictionary *)iosConfig;
-//- (nullable NSString *)hostUri;
-//- (nullable NSString *)orientation;
-//- (nullable NSDictionary *)experiments;
-//- (nullable NSDictionary *)developer;
-//- (nullable NSString *)facebookAppId;
-//- (nullable NSString *)facebookApplicationName;
-//- (BOOL)facebookAutoInitEnabled;
 
 +(NSDictionary *)getAppInfo
 {
@@ -36,15 +18,11 @@
   DevMenuManager *manager = [DevMenuManager shared];
   
   if (manager.currentManifest != nil) {
-    
-    if (manager.currentManifest[@"name"] != nil) {
-      appName = manager.currentManifest[@"name"];
-    }
-    
-    if (manager.currentManifest[@"version"] != nil) {
-      appVersion = manager.currentManifest[@"version"];
-    }
+    [manager.currentManifest appKey];
+    appName = [manager.currentManifest name];
+    appVersion = [manager.currentManifest version];
   }
+  
   
   NSString *hostUrl = [manager.currentManifestURL absoluteString] ?: @"";
 

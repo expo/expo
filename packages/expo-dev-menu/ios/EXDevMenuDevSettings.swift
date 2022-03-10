@@ -35,8 +35,8 @@ class EXDevMenuDevSettings: NSObject {
       devSettings["isHotLoadingAvailable"] = bridgeSettings.isHotLoadingAvailable
       devSettings["isPerfMonitorAvailable"] = isPerfMonitorAvailable
        
-      // what to do?
-      // devSettings["isElementInspectorAvailable"] = ??
+      let isElementInspectorAvailable = manager.currentManifest?.isDevelopmentMode()
+      devSettings["isElementInspectorAvailable"] = isElementInspectorAvailable
     }
     
     return devSettings

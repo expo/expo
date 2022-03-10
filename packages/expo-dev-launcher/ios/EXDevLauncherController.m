@@ -563,8 +563,7 @@
   manager.currentBridge = self.appBridge;
   
   if (self.manifest != nil) {
-    // TODO - update to proper values / convert via instance method
-    manager.currentManifest = [self.manifest.rawManifestJSON copy];
+    manager.currentManifest = self.manifest;
     manager.currentManifestURL = self.manifestURL;
   }
 }

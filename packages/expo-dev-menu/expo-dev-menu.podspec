@@ -133,6 +133,7 @@ Pod::Spec.new do |s|
     s.exclude_files  = 'ios/*Tests/**/*', 'vendored/**/*'
     
     main.dependency 'React-Core'
+    main.dependency "EXManifests"
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
   end
