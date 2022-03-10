@@ -2,7 +2,6 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { darkTheme, lightTheme } from '@expo/styleguide-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
-import FeatureFlags from 'FeatureFlags';
 import { Asset } from 'expo-asset';
 import { ThemePreferenceProvider } from 'expo-dev-client-components';
 import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
@@ -12,6 +11,7 @@ import * as React from 'react';
 import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-native';
 import url from 'url';
 
+import FeatureFlags from './FeatureFlags';
 import { ColorTheme } from './constants/Colors';
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
