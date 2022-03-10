@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.1.0 — 2022-03-10
+
+### 🐛 Bug fixes
+
+- On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/16544) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
+
 ## 11.0.1 — 2022-03-07
 
 ### 🐛 Bug fixes
