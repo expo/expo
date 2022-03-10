@@ -1,7 +1,16 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
-import { Alert, AppState, Clipboard, Linking, Platform, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  AppState,
+  Clipboard,
+  Linking,
+  NativeEventSubscription,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Config from '../api/Config';
@@ -85,6 +94,7 @@ export default function ProjectsScreen(props: NavigationProps) {
 
 class ProjectsView extends React.Component<Props, State> {
   private _projectPolling?: ReturnType<typeof setInterval>;
+  private _changeEventListener?: NativeEventSubscription;
 
   state: State = {
     projects: [],
@@ -93,7 +103,10 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    AppState.addEventListener('change', this._maybeResumePollingFromAppState);
+    this._changeEventListener = AppState.addEventListener(
+      'change',
+      this._maybeResumePollingFromAppState
+    );
     Connectivity.addListener(this._updateConnectivity);
 
     // @evanbacon: Without this setTimeout, the state doesn't update correctly and the "Recently in Development" items don't load for 10 seconds.
@@ -114,7 +127,7 @@ class ProjectsView extends React.Component<Props, State> {
 
   componentWillUnmount() {
     this._stopPollingForProjects();
-    AppState.removeEventListener('change', this._maybeResumePollingFromAppState);
+    this._changeEventListener?.remove();
     Connectivity.removeListener(this._updateConnectivity);
   }
 
