@@ -202,3 +202,5 @@ export function addClipboardListener(listener: (event: ClipboardEvent) => void):
 export function removeClipboardListener(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }
+
+export * from './Clipboard.types';

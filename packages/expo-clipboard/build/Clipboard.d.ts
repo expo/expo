@@ -117,4 +117,5 @@ export declare function addClipboardListener(listener: (event: ClipboardEvent) =
  * ```
  */
 export declare function removeClipboardListener(subscription: Subscription): void;
+export * from './Clipboard.types';
 //# sourceMappingURL=Clipboard.d.ts.map

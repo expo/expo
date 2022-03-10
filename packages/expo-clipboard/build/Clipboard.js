@@ -171,4 +171,5 @@ export function addClipboardListener(listener) {
 export function removeClipboardListener(subscription) {
     emitter.removeSubscription(subscription);
 }
+export * from './Clipboard.types';
 //# sourceMappingURL=Clipboard.js.map
