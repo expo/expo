@@ -24,7 +24,7 @@ export declare const View: import("react").ForwardRefExoticComponent<import("rea
     shrink?: "0" | "1" | undefined;
     grow?: "0" | "1" | undefined;
     bg?: "none" | "secondary" | "default" | "error" | "warning" | "success" | "overlay" | undefined;
-    border?: "default" | undefined;
+    border?: "default" | "hairline" | undefined;
 } & import("react").RefAttributes<import("react-native").ViewProps>>;
 export declare const Row: import("react").ForwardRefExoticComponent<import("react-native").ViewProps & {
     children?: import("react").ReactNode;
