@@ -5,7 +5,15 @@ import React from 'react';
 import { ScrollView, StyleSheet, Alert } from 'react-native';
 
 import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
+import { ActionFunction, Platform } from '../../components/FunctionDemo/index.types';
+import { isCurrentPlatformSupported } from '../../components/FunctionDemo/utils';
+import ClipboardListenerDemo from './ClipboardListenerDemo';
 import ImagePreview from './ImagePreview';
+
+const withSupportedPlatforms = (platforms: Platform[], action: ActionFunction): ActionFunction =>
+  isCurrentPlatformSupported(platforms)
+    ? action
+    : () => Promise.resolve('Function is not supported on this platform');
 
 const HAS_X_ASYNC_CONFIG: FunctionDescription = {
   name: 'hasXAsync',
@@ -17,11 +25,11 @@ const HAS_X_ASYNC_CONFIG: FunctionDescription = {
     },
     {
       name: 'hasImageAsync',
-      action: Clipboard.hasImageAsync,
+      action: withSupportedPlatforms(['android', 'ios'], Clipboard.hasImageAsync),
     },
     {
       name: 'hasUrlAsync',
-      action: Clipboard.hasUrlAsync,
+      action: withSupportedPlatforms(['ios'], Clipboard.hasImageAsync),
     },
   ],
 };
@@ -45,6 +53,7 @@ const SET_STRIING_ASYNC_CONFIG: FunctionDescription = {
         {
           name: 'inputType',
           type: 'enum',
+          platforms: ['ios', 'android'],
           values: [
             { name: 'StringContentType.PLAIN_TEXT', value: StringContentType.PLAIN_TEXT },
             { name: 'StringContentType.HTML', value: StringContentType.HTML },
@@ -67,6 +76,7 @@ const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
         {
           name: 'preferredType',
           type: 'enum',
+          platforms: ['ios', 'android'],
           values: [
             { name: 'StringContentType.PLAIN_TEXT', value: StringContentType.PLAIN_TEXT },
             { name: 'StringContentType.HTML', value: StringContentType.HTML },
@@ -83,6 +93,7 @@ const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
 
 const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
   name: 'setImageAsync',
+  platforms: ['ios', 'android'],
   parameters: [
     {
       name: 'imageBase64Data',
@@ -110,6 +121,7 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
 
 const GET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
   name: 'getImageAsync',
+  platforms: ['ios', 'android'],
   parameters: [
     {
       name: 'options',
@@ -119,8 +131,8 @@ const GET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
           name: 'format',
           type: 'enum',
           values: [
-            { name: 'png', value: 'png' },
-            { name: 'jpeg', value: 'jpeg' },
+            { name: "'png'", value: 'png' },
+            { name: "'jpeg'", value: 'jpeg' },
           ],
         },
         {
@@ -140,6 +152,7 @@ const GET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
 
 const SET_URL_ASYNC_CONFIG: FunctionDescription = {
   name: 'setUrlAsync',
+  platforms: ['android'],
   parameters: [
     {
       name: 'url',
@@ -152,6 +165,7 @@ const SET_URL_ASYNC_CONFIG: FunctionDescription = {
 
 const GET_URL_ASYNC_CONFIG: FunctionDescription = {
   name: 'getUrlAsync',
+  platforms: ['ios'],
   parameters: [],
   actions: Clipboard.getUrlAsync,
 };
@@ -177,6 +191,7 @@ function ClipboardScreen() {
           renderAdditionalResult={ImagePreview}
         />
       ))}
+      <ClipboardListenerDemo />
     </ScrollView>
   );
 }
