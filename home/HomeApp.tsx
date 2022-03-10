@@ -2,6 +2,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { darkTheme, lightTheme } from '@expo/styleguide-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
+import FeatureFlags from 'FeatureFlags';
 import { Asset } from 'expo-asset';
 import { ThemePreferenceProvider } from 'expo-dev-client-components';
 import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
