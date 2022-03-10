@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAndResolveExpoModuleConfig = exports.ExpoModuleConfig = void 0;
+function arrayize(value) {
+    if (Array.isArray(value)) {
+        return value;
+    }
+    return value != null ? [value] : [];
+}
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -42,15 +48,15 @@ class ExpoModuleConfig {
      * Returns podspec paths defined by the module author.
      */
     iosPodspecPaths() {
-        var _a, _b;
-        return Array.from((_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath) !== null && _b !== void 0 ? _b : []);
+        var _a;
+        return arrayize((_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath);
     }
     /**
      * Returns the product module names, if defined by the module author.
      */
     iosSwiftModuleNames() {
-        var _a, _b;
-        return Array.from((_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName) !== null && _b !== void 0 ? _b : []);
+        var _a;
+        return arrayize((_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName);
     }
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
@@ -66,7 +72,7 @@ class ExpoModuleConfig {
      */
     androidGradlePaths() {
         var _a, _b;
-        return Array.from((_b = (_a = this.rawConfig.android) === null || _a === void 0 ? void 0 : _a.gradlePath) !== null && _b !== void 0 ? _b : []);
+        return arrayize((_b = (_a = this.rawConfig.android) === null || _a === void 0 ? void 0 : _a.gradlePath) !== null && _b !== void 0 ? _b : []);
     }
     /**
      * Returns serializable raw config.
