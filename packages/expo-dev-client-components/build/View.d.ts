@@ -19,7 +19,7 @@ export declare const View: import("react").ForwardRefExoticComponent<import("rea
     roundedTop?: "small" | "none" | "medium" | "large" | "full" | undefined;
     roundedBottom?: "small" | "none" | "medium" | "large" | "full" | undefined;
     overflow?: "hidden" | undefined;
-    align?: "centered" | undefined;
+    align?: "start" | "centered" | undefined;
     flex?: "0" | "1" | undefined;
     shrink?: "0" | "1" | undefined;
     grow?: "0" | "1" | undefined;

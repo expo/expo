@@ -17,6 +17,9 @@ export const View = create(RNView, {
         justifyContent: 'center',
         alignItems: 'center',
       },
+      start: {
+        alignItems: 'flex-start',
+      },
     },
 
     flex: {
