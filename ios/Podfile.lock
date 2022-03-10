@@ -1811,11 +1811,14 @@ PODS:
   - EXAmplitude (11.1.0):
     - Amplitude (~> 6.0.0)
     - ExpoModulesCore
+  - EXAppAuth (11.1.0):
+    - AppAuth (~> 1.2)
+    - ExpoModulesCore
   - EXAppleAuthentication (4.1.0):
     - ExpoModulesCore
   - EXApplication (4.0.1):
     - ExpoModulesCore
-  - EXAV (11.0.1):
+  - EXAV (10.2.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.1.0):
@@ -2817,6 +2820,7 @@ DEPENDENCIES:
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
+  - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../packages/expo-application/ios`)
   - EXAV (from `../packages/expo-av/ios`)
@@ -3621,6 +3625,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-ads-facebook/ios"
   EXAmplitude:
     :path: "../packages/expo-analytics-amplitude/ios"
+  EXAppAuth:
+    :path: "../packages/expo-app-auth/ios"
   EXAppleAuthentication:
     :path: "../packages/expo-apple-authentication/ios"
   EXApplication:
@@ -4166,9 +4172,10 @@ SPEC CHECKSUMS:
   EXAdsAdMob: ac13d1a8fd689e3ac74b63100b13d24f3ea0ff1f
   EXAdsFacebook: 9697b91f55d254ebe4c3a1ddba9c76dfa8302775
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
+  EXAppAuth: 628fbc475121581364241f9f12fc082f23d0b567
   EXAppleAuthentication: 27a4f7dc44a1b510f5af945b58643165ee486d89
   EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
-  EXAV: f029a999db5582493d27e487c242b6742455163e
+  EXAV: e501565d5aff495b7b5e9249d489f5ef94db03b2
   EXBackgroundFetch: 12e8a8c522a2d2c5be07168d74af76567841f023
   EXBarCodeScanner: 0c10fb2bda9e188450b58cc89f7c6177b73f5c25
   EXBattery: 097a76ebb674c57d3df6e1ebcd6e243d569161b5
