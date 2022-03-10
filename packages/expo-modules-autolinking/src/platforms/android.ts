@@ -16,6 +16,20 @@ export async function generatePackageListAsync(
   await fs.outputFile(targetPath, generatedFileContent);
 }
 
+async function findGradleFilesAsync(revision: PackageRevision): Promise<string[]> {
+  const configGradlePaths = revision.config?.androidGradlePaths();
+  if (configGradlePaths && configGradlePaths.length) {
+    return configGradlePaths;
+  }
+
+  const buildGradleFiles = await glob('*/build.gradle', {
+    cwd: revision.path,
+    ignore: ['**/node_modules/**'],
+  });
+
+  return buildGradleFiles;
+}
+
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision
@@ -27,11 +41,7 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const buildGradleFiles = await glob('*/build.gradle', {
-    cwd: revision.path,
-    ignore: ['**/node_modules/**'],
-  });
-
+  const buildGradleFiles = await findGradleFilesAsync(revision);
   // Just in case where the module doesn't have its own `build.gradle`.
   if (!buildGradleFiles.length) {
     return null;

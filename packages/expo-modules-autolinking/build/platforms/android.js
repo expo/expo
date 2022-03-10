@@ -15,6 +15,18 @@ async function generatePackageListAsync(modules, targetPath, namespace) {
     await fs_extra_1.default.outputFile(targetPath, generatedFileContent);
 }
 exports.generatePackageListAsync = generatePackageListAsync;
+async function findGradleFilesAsync(revision) {
+    var _a;
+    const configGradlePaths = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidGradlePaths();
+    if (configGradlePaths && configGradlePaths.length) {
+        return configGradlePaths;
+    }
+    const buildGradleFiles = await (0, fast_glob_1.default)('*/build.gradle', {
+        cwd: revision.path,
+        ignore: ['**/node_modules/**'],
+    });
+    return buildGradleFiles;
+}
 async function resolveModuleAsync(packageName, revision) {
     // TODO: Relative source dir should be configurable through the module config.
     var _a, _b;
@@ -22,10 +34,7 @@ async function resolveModuleAsync(packageName, revision) {
     if (packageName === '@unimodules/react-native-adapter') {
         return null;
     }
-    const buildGradleFiles = await (0, fast_glob_1.default)('*/build.gradle', {
-        cwd: revision.path,
-        ignore: ['**/node_modules/**'],
-    });
+    const buildGradleFiles = await findGradleFilesAsync(revision);
     // Just in case where the module doesn't have its own `build.gradle`.
     if (!buildGradleFiles.length) {
         return null;

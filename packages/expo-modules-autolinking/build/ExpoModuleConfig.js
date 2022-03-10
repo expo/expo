@@ -62,6 +62,13 @@ class ExpoModuleConfig {
         return (_b = (_a = androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modules) !== null && _a !== void 0 ? _a : androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modulesClassNames) !== null && _b !== void 0 ? _b : [];
     }
     /**
+     * Returns build.gradle file paths defined by the module author.
+     */
+    androidGradlePaths() {
+        var _a, _b;
+        return Array.from((_b = (_a = this.rawConfig.android) === null || _a === void 0 ? void 0 : _a.gradlePath) !== null && _b !== void 0 ? _b : []);
+    }
+    /**
      * Returns serializable raw config.
      */
     toJSON() {

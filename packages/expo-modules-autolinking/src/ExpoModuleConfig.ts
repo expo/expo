@@ -62,6 +62,13 @@ export class ExpoModuleConfig {
   }
 
   /**
+   * Returns build.gradle file paths defined by the module author.
+   */
+  androidGradlePaths(): string[] {
+    return Array.from(this.rawConfig.android?.gradlePath ?? []);
+  }
+
+  /**
    * Returns serializable raw config.
    */
   toJSON(): RawExpoModuleConfig {

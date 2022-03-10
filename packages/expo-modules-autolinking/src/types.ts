@@ -129,5 +129,11 @@ export interface RawExpoModuleConfig {
      * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
      */
     modulesClassNames?: string[];
+
+    /**
+     * build.gradle relative path.
+     * To have multiple build.gradle projects, string array type is also supported.
+     */
+    gradlePath?: string | string[];
   };
 }
