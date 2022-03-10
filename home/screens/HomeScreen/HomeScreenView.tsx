@@ -22,10 +22,11 @@ import { DevelopmentServerListItem } from './DevelopmentServerListItem';
 import { DevelopmentServersHeader } from './DevelopmentServersHeader';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
 import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
-import { ProjectsHeader } from './ProjectsHeader';
 import { ProjectsSection } from './ProjectsSection';
 import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
 import { RecentlyOpenedSection } from './RecentlyOpenedSection';
+import { SnacksSection } from './SnacksSection';
+import { TextHeader } from './TextHeader';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -133,10 +134,20 @@ export class HomeScreenView extends React.Component<Props, State> {
           {this.props.currentUser?.apps.length ? (
             <>
               <Spacer.Vertical size="medium" />
-              <ProjectsHeader />
+              <TextHeader header="Projects" />
               <ProjectsSection
                 apps={this.props.currentUser.apps.slice(0, 3)}
                 showMore={this.props.currentUser.apps.length > 3}
+              />
+            </>
+          ) : null}
+          {this.props.currentUser?.snacks.length ? (
+            <>
+              <Spacer.Vertical size="medium" />
+              <TextHeader header="Snacks" />
+              <SnacksSection
+                snacks={this.props.currentUser.snacks.slice(0, 3)}
+                showMore={this.props.currentUser.snacks.length > 3}
               />
             </>
           ) : null}
