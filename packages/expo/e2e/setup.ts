@@ -9,6 +9,7 @@ jest.mock('@expo/package-manager');
 jest.mock('fs/promises');
 jest.mock('child_process');
 jest.mock('better-opn');
+jest.mock('env-editor');
 jest.mock('fs');
 jest.mock('internal-ip');
 jest.mock('ora');

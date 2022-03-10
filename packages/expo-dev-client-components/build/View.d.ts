@@ -19,12 +19,12 @@ export declare const View: import("react").ForwardRefExoticComponent<import("rea
     roundedTop?: "small" | "none" | "medium" | "large" | "full" | undefined;
     roundedBottom?: "small" | "none" | "medium" | "large" | "full" | undefined;
     overflow?: "hidden" | undefined;
-    align?: "centered" | undefined;
+    align?: "start" | "centered" | undefined;
     flex?: "0" | "1" | undefined;
     shrink?: "0" | "1" | undefined;
     grow?: "0" | "1" | undefined;
-    bg?: "none" | "secondary" | "default" | "error" | "warning" | "success" | undefined;
-    border?: "default" | undefined;
+    bg?: "none" | "secondary" | "default" | "error" | "warning" | "success" | "overlay" | undefined;
+    border?: "default" | "hairline" | undefined;
 } & import("react").RefAttributes<import("react-native").ViewProps>>;
 export declare const Row: import("react").ForwardRefExoticComponent<import("react-native").ViewProps & {
     children?: import("react").ReactNode;
@@ -39,8 +39,9 @@ export declare const Row: import("react").ForwardRefExoticComponent<import("reac
     py?: "0" | "1" | "2" | "3" | "4" | "5" | "0.5" | "1.5" | "2.5" | "3.5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | ("small" | "micro" | "tiny" | "medium" | "large" | "xl") | undefined;
     pb?: "0" | "1" | "2" | "3" | "4" | "5" | "0.5" | "1.5" | "2.5" | "3.5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | ("small" | "micro" | "tiny" | "medium" | "large" | "xl") | undefined;
     pt?: "0" | "1" | "2" | "3" | "4" | "5" | "0.5" | "1.5" | "2.5" | "3.5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | ("small" | "micro" | "tiny" | "medium" | "large" | "xl") | undefined;
-    bg?: "none" | "secondary" | "default" | "error" | "warning" | "success" | undefined;
+    bg?: "none" | "secondary" | "default" | "error" | "warning" | "success" | "overlay" | undefined;
     align?: "center" | "end" | "start" | undefined;
+    justify?: "center" | "end" | "start" | "between" | "around" | undefined;
 } & import("react").RefAttributes<import("react-native").ViewProps>>;
 export declare const Spacer: {
     Vertical: import("react").ForwardRefExoticComponent<import("react-native").ViewProps & {

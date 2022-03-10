@@ -8,10 +8,7 @@
 
 import Foundation
 import ExpoModulesCore
-import EXDevMenuInterface
-#if EX_DEV_MENU_ENABLED
-import EXDevMenu
-#endif
+import EXDevLauncher
 
 #if FB_SONARKIT_ENABLED && canImport(FlipperKit)
 import FlipperKit
@@ -19,8 +16,14 @@ import FlipperKit
 
 @UIApplicationMain
 class AppDelegate: ExpoAppDelegate, RCTBridgeDelegate {
+  let useDevClient: Bool = false
+
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     initializeFlipper(with: application)
+
+    if (!useDevClient) {
+      ExpoDevLauncherReactDelegateHandler.enableAutoSetup = false
+    }
 
     let bridge = reactDelegate.createBridge(delegate: self, launchOptions: launchOptions)
     let rootView = reactDelegate.createRootView(bridge: bridge, moduleName: "main", initialProperties: nil)

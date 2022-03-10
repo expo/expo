@@ -1372,6 +1372,26 @@
     serialize-error "6.0.0"
     temp-dir "^2.0.0"
 
+"@expo/dev-server@0.1.103":
+  version "0.1.103"
+  resolved "https://registry.yarnpkg.com/@expo/dev-server/-/dev-server-0.1.103.tgz#311d9bbf60d387334c4f8af44aa10515082be022"
+  integrity sha512-tqx/5/myJfA0lI6SA2Cv/yRXd06gIw5PcsSGKzrX8oBCS/5kRcwCn32IKfArwfuAn5YF+Z3e0A523kS7KOqsjQ==
+  dependencies:
+    "@expo/bunyan" "4.0.0"
+    "@expo/metro-config" "0.3.9"
+    "@expo/osascript" "2.0.31"
+    "@react-native-community/cli-server-api" "^5.0.1"
+    body-parser "1.19.0"
+    chalk "^4.0.0"
+    connect "^3.7.0"
+    fs-extra "9.0.0"
+    node-fetch "^2.6.0"
+    open "^8.3.0"
+    resolve-from "^5.0.0"
+    semver "7.3.2"
+    serialize-error "6.0.0"
+    temp-dir "^2.0.0"
+
 "@expo/devcert@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@expo/devcert/-/devcert-1.0.0.tgz#79df9431e806bc546f6399e35934b9876384f0a9"
@@ -1417,12 +1437,25 @@
     json5 "^1.0.1"
     write-file-atomic "^2.3.0"
 
-"@expo/metro-config@0.3.8", "@expo/metro-config@~0.3.7":
+"@expo/metro-config@0.3.8":
   version "0.3.8"
   resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.3.8.tgz#e784f96ad9d182e7177c191b82471a6c8c9e6704"
   integrity sha512-dDjd5wFlw0t/UEjYvT6atDPEUYI8GyCX0unnRowRCe2V67NMmwZ2FkUBapwOy12HhkdlRJqfp+XdHgj2LiXzdg==
   dependencies:
     "@expo/config" "6.0.15"
+    "@expo/json-file" "8.2.34"
+    chalk "^4.1.0"
+    debug "^4.3.2"
+    find-yarn-workspace-root "~2.0.0"
+    getenv "^1.0.0"
+    sucrase "^3.20.0"
+
+"@expo/metro-config@0.3.9", "@expo/metro-config@~0.3.7":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.3.9.tgz#41e04b7941fc74809852af16fca05b950741da6e"
+  integrity sha512-mtTc+LXdhRAux42OXK25EbPFGCWHn0r4iRJwhGq23nLP1YUWsA8TQJ2QOrYSdTE6FeH2ZyrSBpdJmwQD50GENg==
+  dependencies:
+    "@expo/config" "6.0.16"
     "@expo/json-file" "8.2.34"
     chalk "^4.1.0"
     debug "^4.3.2"
@@ -1437,6 +1470,88 @@
   dependencies:
     lodash "^4.17.4"
 
+"@expo/ngrok-bin-darwin-arm64@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-darwin-arm64/-/ngrok-bin-darwin-arm64-2.3.40.tgz#f9306e15339dfe57a4bce07b4b0fb1a22d9bd35e"
+  integrity sha512-Zij81v/bIsVBvgXgYS71xbi/3lqKfVEfr7rId8BsHO3Ec1nQcp/I+729W3KX9PUHzWlXCLxOKZ3uF4jL/TcNbg==
+
+"@expo/ngrok-bin-darwin-x64@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-darwin-x64/-/ngrok-bin-darwin-x64-2.3.40.tgz#86d64ad118d3e07b348636d3407dcf58ea746025"
+  integrity sha512-nqGLfxIjZBoT79VDk5mqaHQKCWkunSi486zGLeB8Ye8Qar1yo4STFwks+DqTbnGD5ItArQz2LzKRVE4YXuJFuw==
+
+"@expo/ngrok-bin-freebsd-ia32@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-freebsd-ia32/-/ngrok-bin-freebsd-ia32-2.3.40.tgz#86720a356658faea149489831a9d4952611d3f12"
+  integrity sha512-Ji3jZaOuIZO+ege23kZZAAEPUYkF+6mCpghb16b28Is1QHOSl2L4foDnAcWyzSEiBihMicxWltaQyaaxA0fdgw==
+
+"@expo/ngrok-bin-freebsd-x64@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-freebsd-x64/-/ngrok-bin-freebsd-x64-2.3.40.tgz#16b6f456bb561c984711ce34b592b66f373a077e"
+  integrity sha512-mVnzKGQmOyXimZx6udoiyo3ZTYLZnPShlTySaDP0tqQ0vYz4ZscgvaYpMmDSPrsP/YG2owmKgzmOE2V+ycD8qA==
+
+"@expo/ngrok-bin-linux-arm64@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-arm64/-/ngrok-bin-linux-arm64-2.3.40.tgz#97d8404bf35c47f03a96635616c7b423db848478"
+  integrity sha512-S6kbnRqsVXHo/bWNxc0jfq33aQQRsGWjb6e7SvZ2DgXsPFLn27cfK0eHD96uCssARDVhzPsc+VU/B3d8C1DT5A==
+
+"@expo/ngrok-bin-linux-arm@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-arm/-/ngrok-bin-linux-arm-2.3.40.tgz#a8342eb76c0d47dc208abec4c0cb548c2ac01fda"
+  integrity sha512-Je1QBd7x0hbZa4T3gZbVgD0cSzstpJ7Mu0+dM2lOB+vm3bd603yHtD0RlLdqARJFhPTE1M2zLd68gCEeZ5fRgQ==
+
+"@expo/ngrok-bin-linux-ia32@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-ia32/-/ngrok-bin-linux-ia32-2.3.40.tgz#dad55f4fd5f223b1439fba4aa66d057b04349515"
+  integrity sha512-gPY5zv5Fu+TkCm5iZolXQbu7e5hc7fTllIKn/zJQxxZs/WCvSxyB5ip6vQcHiavu/kjr0HtNciPX/guXvWENkg==
+
+"@expo/ngrok-bin-linux-x64@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-x64/-/ngrok-bin-linux-x64-2.3.40.tgz#0038534284cf6db3e23e6cf412c855f04bd0f746"
+  integrity sha512-yOuwpOmMe6RGnk9ninlM7Zg1EiF81ptFOcFmT61PDOA4gK8/ttZKTMkDQiq0DZdcXUyE0HCr83EglJZTnHIzPA==
+
+"@expo/ngrok-bin-sunos-x64@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-sunos-x64/-/ngrok-bin-sunos-x64-2.3.40.tgz#ffe19fa2142a7c3a87386903184638fcf6ad1651"
+  integrity sha512-0itEIQ7KsxRbF9nJk6tt0Ey+9TDC5H7krOsy3t7DPx01EvtaiEdMyhmE1XWjBtwr8+BaY9CpEhUWkx4iCcE4cw==
+
+"@expo/ngrok-bin-win32-ia32@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-win32-ia32/-/ngrok-bin-win32-ia32-2.3.40.tgz#d8f4e6123b160627a9b7662be183c89212fa366b"
+  integrity sha512-RAunwOAskfU0R5mYlxxB+bihLJ4nLRx5/x+q5nIq1muYmaqLvGtkQQHZKzgHJANJ7ZIbzfJY57IN2UICpibgIQ==
+
+"@expo/ngrok-bin-win32-x64@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-win32-x64/-/ngrok-bin-win32-x64-2.3.40.tgz#d497c9cb5a235f5bc04d6b9df4474e2000cc0a61"
+  integrity sha512-a8xtUxX/Ftp2ho+/+VR5GCg0ttP9MNzYj58TVjfiKMkl4mVrbFVIzEinRzmy7PhiOWxqGQSCOdzEfa6C2G4nEA==
+
+"@expo/ngrok-bin@2.3.40":
+  version "2.3.40"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin/-/ngrok-bin-2.3.40.tgz#bfdbd4a32fd71275d5153f859cb4594eec665de7"
+  integrity sha512-40GK1CY1QLPDHSQS7Fd36CJeZgMwtbeezkgp4tzfExVRVtWw30jOBCsM7TBB9IqEmmX7C/XwG47scMQHCnMw8A==
+  optionalDependencies:
+    "@expo/ngrok-bin-darwin-arm64" "2.3.40"
+    "@expo/ngrok-bin-darwin-x64" "2.3.40"
+    "@expo/ngrok-bin-freebsd-ia32" "2.3.40"
+    "@expo/ngrok-bin-freebsd-x64" "2.3.40"
+    "@expo/ngrok-bin-linux-arm" "2.3.40"
+    "@expo/ngrok-bin-linux-arm64" "2.3.40"
+    "@expo/ngrok-bin-linux-ia32" "2.3.40"
+    "@expo/ngrok-bin-linux-x64" "2.3.40"
+    "@expo/ngrok-bin-sunos-x64" "2.3.40"
+    "@expo/ngrok-bin-win32-ia32" "2.3.40"
+    "@expo/ngrok-bin-win32-x64" "2.3.40"
+
+"@expo/ngrok@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok/-/ngrok-4.1.0.tgz#d013ecc694c69132ba72d56562c42f7dc22bd517"
+  integrity sha512-PrtWxBt/SnOF1jZkf7oWznhEPFrmYKKeJPLVRKnEBd/y4eUYfoiNIXOzflIzhdrMubjWVI+pFuPJ6nkjVL95/Q==
+  dependencies:
+    "@expo/ngrok-bin" "2.3.40"
+    got "^11.5.1"
+    uuid "^3.3.2"
+    yaml "^1.10.0"
+
 "@expo/npm-proofread@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@expo/npm-proofread/-/npm-proofread-1.0.1.tgz#8450f71cea47dd9864d61a1a105931dc7ea2209a"
@@ -1444,7 +1559,7 @@
   dependencies:
     semver "^5.3.0"
 
-"@expo/osascript@2.0.31":
+"@expo/osascript@2.0.31", "@expo/osascript@^2.0.31":
   version "2.0.31"
   resolved "https://registry.yarnpkg.com/@expo/osascript/-/osascript-2.0.31.tgz#8cbee70f30748d0d977ff598c01f5a57fbb1e822"
   integrity sha512-5OE8+Fb1mLu9EJNUOx5RcetkJZMXJxthVuIzHPlEZFEAZa3f/zQtJ6vA/hnt1BLZ2X9BR3OzBMALrUzVo95L2w==
@@ -1491,7 +1606,7 @@
     base64-js "^1.2.3"
     xmlbuilder "^14.0.0"
 
-"@expo/plist@0.0.17":
+"@expo/plist@0.0.17", "@expo/plist@^0.0.17":
   version "0.0.17"
   resolved "https://registry.yarnpkg.com/@expo/plist/-/plist-0.0.17.tgz#0f6c594e116f45a28f5ed20998dadb5f3429f88b"
   integrity sha512-5Ul3d/YOYE6mfum0jCE25XUnkKHZ5vGlU/X2275ZmCtGrpRn1Fl8Nq+jQKSaks3NqTfxdyXROi/TgH8Zxeg2wg==
@@ -1574,6 +1689,11 @@
   resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-0.4.1.tgz#93f8e5e40a68c4f776f59ea43a542ba2e926a0d7"
   integrity sha512-g4PWLTJwzH4GKFfrYN8NP0OY3DtFbqIggiFebeWyFfTrmD/Kgb2ZDWQRAe9AyfukzTvhfg+IG9289anaLHBydg==
 
+"@expo/styleguide-native@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.0.tgz#12251f4e22054c6288d1273031d011930cee5898"
+  integrity sha512-izMGG/1BtnFvYfH5QO+DDWNWbm5EvQ987j8fFUlwMYtqsSQ83frFYP8swiInfw1/W/qJtuFqtiHU+g/w962Aow==
+
 "@expo/vector-icons@^12.0.4":
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-12.0.5.tgz#bc508ad05fb7e9a3e008704977cfec6c18aa7728"
@@ -1586,7 +1706,7 @@
     lodash.pick "^4.4.0"
     lodash.template "^4.5.0"
 
-"@expo/webpack-config@0.16.15", "@expo/webpack-config@~0.16.14":
+"@expo/webpack-config@0.16.15":
   version "0.16.15"
   resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.16.15.tgz#fd99561efc6270befd95cf3688ecc69cf5012cdd"
   integrity sha512-ZAgakJm5p1opuAZTEIOctimmyGc4aqjWjWq6fjwZT2O/FI/QZBDvldSl7RvBGs/bweL5zY6rMfNNsjDoch3iBA==
@@ -1599,6 +1719,41 @@
     copy-webpack-plugin "~6.0.3"
     css-loader "~3.6.0"
     expo-pwa "0.0.110"
+    file-loader "~6.0.0"
+    find-yarn-workspace-root "~2.0.0"
+    getenv "^1.0.0"
+    html-loader "~1.1.0"
+    html-webpack-plugin "~4.3.0"
+    image-size "^1.0.0"
+    is-wsl "^2.0.0"
+    loader-utils "^2.0.0"
+    mini-css-extract-plugin "^0.5.0"
+    node-html-parser "^1.2.12"
+    optimize-css-assets-webpack-plugin "^5.0.3"
+    pnp-webpack-plugin "^1.5.0"
+    postcss-safe-parser "^4.0.2"
+    react-dev-utils "~11.0.1"
+    schema-utils "^3.1.1"
+    semver "~7.3.2"
+    style-loader "~1.2.1"
+    terser-webpack-plugin "^3.0.6"
+    url-loader "~4.1.0"
+    webpack "4.43.0"
+    webpack-manifest-plugin "~2.2.0"
+
+"@expo/webpack-config@~0.16.14":
+  version "0.16.16"
+  resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.16.16.tgz#a5587d9d48baf602c59f93a814726e6aae8d44bf"
+  integrity sha512-TlJatXD/TiVkXdr2+n+lLVM7ppQ5qpwHyIqtB/6be3L7qAVEqnBhzDaqnyTasbpaUakq1ZYdNPkhgWeBgK8gjw==
+  dependencies:
+    "@babel/core" "7.9.0"
+    "@expo/config" "6.0.16"
+    babel-loader "8.1.0"
+    chalk "^4.0.0"
+    clean-webpack-plugin "^3.0.0"
+    copy-webpack-plugin "~6.0.3"
+    css-loader "~3.6.0"
+    expo-pwa "0.0.111"
     file-loader "~6.0.0"
     find-yarn-workspace-root "~2.0.0"
     getenv "^1.0.0"
@@ -2056,6 +2211,14 @@
     "@graphql-codegen/plugin-helpers" "^2.3.2"
     "@graphql-tools/schema" "^8.1.2"
     "@graphql-tools/utils" "^8.1.1"
+    tslib "~2.3.0"
+
+"@graphql-codegen/introspection@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/introspection/-/introspection-2.1.1.tgz#5f3aac47ef46ed817baf969e78dd2dd6d307b18a"
+  integrity sha512-O9zsy0IoFYDo37pBVF4pSvRMDx/AKdgOxyko4R/O+0DHEw9Nya/pQ3dbn+LDLj2n6X+xOXUBUfFvqhODTqU28w==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.3.2"
     tslib "~2.3.0"
 
 "@graphql-codegen/plugin-helpers@^2.3.2":
@@ -5720,14 +5883,14 @@ browserslist@4.14.2:
     node-releases "^1.1.61"
 
 browserslist@^4.0.0, browserslist@^4.17.5, browserslist@^4.19.1:
-  version "4.19.1"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.19.1.tgz#4ac0435b35ab655896c31d53018b6dd5e9e4c9a3"
-  integrity sha512-u2tbbG5PdKRTUoctO3NBD8FQ5HdPh1ZXPHzp1rwaa5jTc+RV9/+RlWiAIKmjRPQF+xbGM9Kklj5bZQFa2s/38A==
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.20.0.tgz#35951e3541078c125d36df76056e94738a52ebe9"
+  integrity sha512-bnpOoa+DownbciXj0jVGENf8VYQnE2LNWomhYuCsMmmx9Jd9lwq0WXODuwpSsp8AVdKM2/HorrzxAfbKvWTByQ==
   dependencies:
-    caniuse-lite "^1.0.30001286"
-    electron-to-chromium "^1.4.17"
+    caniuse-lite "^1.0.30001313"
+    electron-to-chromium "^1.4.76"
     escalade "^3.1.1"
-    node-releases "^2.0.1"
+    node-releases "^2.0.2"
     picocolors "^1.0.0"
 
 bs-logger@0.x:
@@ -5943,7 +6106,7 @@ cacheable-request@^6.0.0:
     normalize-url "^4.1.0"
     responselike "^1.0.2"
 
-cacheable-request@^7.0.1:
+cacheable-request@^7.0.2:
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/cacheable-request/-/cacheable-request-7.0.2.tgz#ea0d0b889364a25854757301ca12b2da77f91d27"
   integrity sha512-pouW8/FmiPQbuGpkXQ9BAPv/Mo5xDGANgSNXzTzJ8DrKGuXOssM4wIQRjfanNRh3Yu5cfYPvcorqbhg2KIJtew==
@@ -6031,10 +6194,10 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001286:
-  version "1.0.30001296"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001296.tgz#d99f0f3bee66544800b93d261c4be55a35f1cec8"
-  integrity sha512-WfrtPEoNSoeATDlf4y3QvkwiELl9GyPLISV5GejTbbQRtQx4LhsXmc9IQ6XCL2d7UxCyEzToEZNMeqR79OUw8Q==
+caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001313:
+  version "1.0.30001314"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001314.tgz#65c7f9fb7e4594fca0a333bec1d8939662377596"
+  integrity sha512-0zaSO+TnCHtHJIbpLroX7nsD+vYuOVjl3uzFbJO1wMVbuveJA0RK2WcQA9ZUIOiO0/ArMiMgHJLxfEZhQiC0kw==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -7914,10 +8077,10 @@ ejs@^3.1.5, ejs@^3.1.6:
   dependencies:
     jake "^10.6.1"
 
-electron-to-chromium@^1.3.564, electron-to-chromium@^1.4.17:
-  version "1.4.36"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.36.tgz#446c6184dbe5baeb5eae9a875490831e4bc5319a"
-  integrity sha512-MbLlbF39vKrXWlFEFpCgDHwdlz4O3LmHM5W4tiLRHjSmEUXjJjz8sZkMgWgvYxlZw3N1iDTmCEtOkkESb5TMCg==
+electron-to-chromium@^1.3.564, electron-to-chromium@^1.4.76:
+  version "1.4.77"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.77.tgz#c26e454cb8721d4ebdae3e276c57cd32e51c32ed"
+  integrity sha512-fiDxw8mO9Ph1Z0bjX2sFTPpi0J0QkOiwOJF+5Q0J0baNc/F9lLePAvDPlnoxvbUYYMizqrKPeotRRkJ9LtxAew==
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -8001,6 +8164,11 @@ entities@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
   integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
+
+env-editor@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/env-editor/-/env-editor-1.0.0.tgz#a7de585a96f0198d9ba20a786c17a691c53afaab"
+  integrity sha512-SRy6e7u1tZgohoxL952q9+kbRkkUrzi63dB7J4zr6wOSMQrCD0KJUNhMZajGTNQfdY68PaStfmIzh7To/FKilQ==
 
 envinfo@^7.7.2:
   version "7.8.1"
@@ -8683,6 +8851,17 @@ expo-pwa@0.0.110:
   integrity sha512-oq2ROYzf776qCuZd5rKmuP7ISnJq6H2HhcxcTdWHlWCwrwGx087krYQ7vVSL2A2bziTRhzdC09ETezE1pFROhw==
   dependencies:
     "@expo/config" "6.0.15"
+    "@expo/image-utils" "0.3.18"
+    chalk "^4.0.0"
+    commander "2.20.0"
+    update-check "1.5.3"
+
+expo-pwa@0.0.111:
+  version "0.0.111"
+  resolved "https://registry.yarnpkg.com/expo-pwa/-/expo-pwa-0.0.111.tgz#9c2b7e98f033f539304c64a0b06687806337f837"
+  integrity sha512-rFf+XjTz27RliCr7P0Ec28zLgAeNfIi9Q+tsa3UfA5S5N+9QAmyQ7NFH4ahIcxkbFjbEr5NsCDMGuj8RtfsLQw==
+  dependencies:
+    "@expo/config" "6.0.16"
     "@expo/image-utils" "0.3.18"
     chalk "^4.0.0"
     commander "2.20.0"
@@ -9836,17 +10015,17 @@ globby@^6.1.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-got@11.8.2:
-  version "11.8.2"
-  resolved "https://registry.yarnpkg.com/got/-/got-11.8.2.tgz#7abb3959ea28c31f3576f1576c1effce23f33599"
-  integrity sha512-D0QywKgIe30ODs+fm8wMZiAcZjypcCodPNuMz5H9Mny7RJ+IjJ10BdmGW7OM7fHXP+O7r6ZwapQ/YQmMSvB0UQ==
+got@^11.5.1:
+  version "11.8.3"
+  resolved "https://registry.yarnpkg.com/got/-/got-11.8.3.tgz#f496c8fdda5d729a90b4905d2b07dbd148170770"
+  integrity sha512-7gtQ5KiPh1RtGS9/Jbv1ofDpBFuq42gyfEib+ejaRBJuj/3tQFeR5+gw57e4ipaU8c/rCjvX6fkQz2lyDlGAOg==
   dependencies:
     "@sindresorhus/is" "^4.0.0"
     "@szmarczak/http-timer" "^4.0.5"
     "@types/cacheable-request" "^6.0.1"
     "@types/responselike" "^1.0.0"
     cacheable-lookup "^5.0.3"
-    cacheable-request "^7.0.1"
+    cacheable-request "^7.0.2"
     decompress-response "^6.0.0"
     http2-wrapper "^1.0.0-beta.5.2"
     lowercase-keys "^2.0.0"
@@ -12362,9 +12541,9 @@ jest-worker@^26.0.0, jest-worker@^26.2.1, jest-worker@^26.6.2:
     supports-color "^7.0.0"
 
 jest-worker@^27.4.6:
-  version "27.4.6"
-  resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-27.4.6.tgz#5d2d93db419566cb680752ca0792780e71b3273e"
-  integrity sha512-gHWJF/6Xi5CTG5QCvROr6GcmpIqNYpDJyc8A1h/DyXqH1tD6SnRCM0d3U5msV31D2LB/U+E0M+W4oyvKV44oNw==
+  version "27.5.1"
+  resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-27.5.1.tgz#8d146f0900e8973b106b6f73cc1e9a8cb86f8db0"
+  integrity sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==
   dependencies:
     "@types/node" "*"
     merge-stream "^2.0.0"
@@ -14339,10 +14518,10 @@ node-releases@^1.1.61:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.77.tgz#50b0cfede855dd374e7585bf228ff34e57c1c32e"
   integrity sha512-rB1DUFUNAN4Gn9keO2K1efO35IDK7yKHCdCaIMvFO7yUYmmZYeDjnGKle26G4rwj+LKRQpjyUUvMkPglwGCYNQ==
 
-node-releases@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.1.tgz#3d1d395f204f1f2f29a54358b9fb678765ad2fc5"
-  integrity sha512-CqyzN6z7Q6aMeF/ktcMVTzhAHCEpf8SOarwpzpf8pNBY2k5/oM34UHldUwp8VKI7uxct2HxSRdJjBaZeESzcxA==
+node-releases@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.2.tgz#7139fe71e2f4f11b47d4d2986aaf8c48699e0c01"
+  integrity sha512-XxYDdcQ6eKqp/YjI+tb2C5WM2LgjnZrfYg4vgQt49EK268b6gYCHsBLrK2qvJo4FmCtqmKezb0WZFK4fkrZNsg==
 
 node-stream-zip@^1.9.1:
   version "1.15.0"

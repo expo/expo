@@ -4,6 +4,8 @@ import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
+import expo.modules.kotlin.types.putEnum
 import java.lang.IllegalArgumentException
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
@@ -11,8 +13,7 @@ import kotlin.reflect.jvm.isAccessible
 
 interface Record
 
-fun Record.toJSMap(): ReadableMap {
-  val writableMap = Arguments.createMap()
+fun Record.toJSMap(writableMap: WritableMap = Arguments.createMap()): ReadableMap {
   javaClass
     .kotlin
     .memberProperties.map { property ->
@@ -32,6 +33,7 @@ fun Record.toJSMap(): ReadableMap {
         is ReadableMap -> writableMap.putMap(jsKey, value)
         is Record -> writableMap.putMap(jsKey, value.toJSMap())
         is Bundle -> writableMap.putMap(jsKey, Arguments.fromBundle(value))
+        is Enum<*> -> writableMap.putEnum(jsKey, value)
         is List<*> -> writableMap.putArray(jsKey, Arguments.fromList(value))
         is Array<*> -> writableMap.putArray(jsKey, Arguments.fromArray(value))
         else -> throw IllegalArgumentException("Could not convert " + value.javaClass)
