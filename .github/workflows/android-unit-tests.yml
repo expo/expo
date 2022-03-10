@@ -35,6 +35,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+      - name: 🔨 Use JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
