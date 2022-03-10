@@ -1,9 +1,11 @@
+// Copyright 2018-present 650 Industries. All rights reserved
+
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
-#import <UMCore/UMAppDelegateWrapper.h>
+#import <Expo/Expo.h>
 
-@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>
+@interface AppDelegate : EXAppDelegateWrapper <RCTBridgeDelegate>
 
 @end

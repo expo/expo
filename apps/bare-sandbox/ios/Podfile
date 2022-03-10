@@ -1,22 +1,29 @@
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
-require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 platform :ios, '12.0'
+install! 'cocoapods',
+  :deterministic_uuids => false
+
+require 'json'
+podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
 target 'bare-sandbox' do
   use_expo_modules!
-
   config = use_native_modules!
+
+  # Flags change depending on the env values.
+  flags = get_default_flags()
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => false
+    :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
+    :fabric_enabled => flags[:fabric_enabled],
+    # An abosolute path to your application root.
+    :app_path => "#{Dir.pwd}/.."
   )
 
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :configurations => :debug
-  pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :configurations => :debug
 
   post_install do |installer|
     react_native_post_install(installer)

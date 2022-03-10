@@ -33,7 +33,8 @@
   "expo-yarn-workspaces": {
     "symlinks": [
       "expo-constants",
-      "expo-modules-core"
+      "expo-modules-core",
+      "expo-updates"
     ]
   },
   "expo": {
