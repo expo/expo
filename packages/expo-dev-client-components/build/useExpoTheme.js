@@ -5,10 +5,10 @@ export function useCurrentTheme() {
     const colorScheme = useColorScheme();
     const preference = useThemePreference();
     let theme = 'light';
-    if (preference !== 'no-preference') {
+    if (preference && preference !== 'no-preference') {
         theme = preference;
     }
-    if (preference === 'no-preference' && colorScheme != null) {
+    if ((!preference || preference === 'no-preference') && colorScheme != null) {
         theme = colorScheme;
     }
     return theme;

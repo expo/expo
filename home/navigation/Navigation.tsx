@@ -12,7 +12,7 @@ import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import HomeScreen from 'screens/HomeScreen';
+import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
 
 import FeatureFlags from '../FeatureFlags';
