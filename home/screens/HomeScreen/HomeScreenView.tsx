@@ -136,6 +136,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               <Spacer.Vertical size="medium" />
               <TextHeader header="Projects" />
               <ProjectsSection
+                accountName={this.props.currentUser?.username}
                 apps={this.props.currentUser.apps.slice(0, 3)}
                 showMore={this.props.currentUser.apps.length > 3}
               />
