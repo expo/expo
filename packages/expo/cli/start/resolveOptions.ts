@@ -54,7 +54,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     port: args['--port'],
     minify: !!args['--minify'],
 
-    //
     devClient: !!args['--dev-client'],
 
     scheme,
