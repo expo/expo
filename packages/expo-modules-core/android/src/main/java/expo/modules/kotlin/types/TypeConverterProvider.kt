@@ -69,9 +69,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
-    val maybeConverter = cachedRecordConverters[kClass]
-    if (maybeConverter != null) {
-      return maybeConverter
+    val cachedConverter = cachedRecordConverters[kClass]
+    if (cachedConverter != null) {
+      return cachedConverter
     }
 
     if (kClass.isSubclassOf(Record::class)) {
