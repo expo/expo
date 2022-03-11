@@ -74,7 +74,7 @@ it('runs `npx expo config --json`', async () => {
 it('throws on invalid project root', async () => {
   expect.assertions(1);
   try {
-    await execute('very---invalid', 'config', '--json');
+    await execute('config', 'very---invalid', '--json');
   } catch (e) {
     expect(e.stderr).toMatch(/Invalid project root: \//);
   }
