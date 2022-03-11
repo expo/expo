@@ -10,7 +10,6 @@
 
 #import <jsi/jsi.h>
 
-#import <ExpoModulesCore/EXComponentDataCompatibleWrapper.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
@@ -18,7 +17,7 @@
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
-#import <ExpoModulesCore/JSIInstaller.h>
+#import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/Swift.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
@@ -362,7 +361,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   NSString *className = NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-    RCTComponentData *componentData = [[EXComponentDataCompatibleWrapper alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
+    RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
 }
@@ -406,9 +405,9 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   facebook::jsi::Runtime *jsiRuntime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : nullptr;
 
   if (jsiRuntime) {
-    JavaScriptRuntime *runtime = [[JavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
+    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
 
-    [JavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
+    [EXJavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
     [_swiftInteropBridge setRuntime:runtime];
 
     expo::installRuntimeObjects(*jsiRuntime, _bridge.jsCallInvoker, self);

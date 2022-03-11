@@ -2,6 +2,7 @@ package expo.modules.kotlin.exception
 
 import com.facebook.react.bridge.ReadableType
 import java.util.*
+import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
 /**
@@ -36,6 +37,7 @@ open class CodedException(
     internal fun inferCode(clazz: Class<*>): String {
       val name = requireNotNull(clazz.simpleName) { "Cannot infer code name from class name. We don't support anonymous classes." }
 
+      @Suppress("Deprecation")
       return "ERR_" + name
         .replace("(Exception)$".toRegex(), "")
         .replace("(.)([A-Z])".toRegex(), "$1_$2")
@@ -83,8 +85,14 @@ internal class MethodNotFoundException :
 internal class NullArgumentException :
   CodedException(message = "Cannot assigned null to not nullable type.")
 
+internal class FieldRequiredException(property: KProperty1<*, *>) :
+  CodedException(message = "Value for field '$property' is required, got nil")
+
 internal class UnexpectedException(val throwable: Throwable) :
   CodedException(message = throwable.toString(), throwable)
+
+internal class ValidationException(message: String) :
+  CodedException(message = message)
 
 /**
  * A base class for all exceptions used in `exceptionDecorator` function.

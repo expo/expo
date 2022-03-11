@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `getVisiblilityAsync` crashing on Android 10 and older. ([#16445](https://github.com/expo/expo/pull/16445) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))

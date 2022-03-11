@@ -1,4 +1,5 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { darkTheme, lightTheme } from '@expo/styleguide-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
@@ -7,10 +8,10 @@ import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider'
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { Linking, Platform, StyleSheet, View } from 'react-native';
-import { useColorScheme } from 'react-native-appearance';
+import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-native';
 import url from 'url';
 
+import FeatureFlags from './FeatureFlags';
 import { ColorTheme } from './constants/Colors';
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
@@ -103,16 +104,27 @@ export default function HomeApp() {
     return null;
   }
 
-  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
-  if (theme === 'no-preference') {
+  let theme = !preferredAppearance ? colorScheme : preferredAppearance;
+  if (theme === undefined) {
     theme = 'light';
   }
 
   const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
 
+  const redesignedBackgroundColor =
+    theme === 'dark' ? darkTheme.background.default : lightTheme.background.default;
+
   return (
     <ThemePreferenceProvider theme={preferredAppearance as ThemePreference}>
-      <View style={[styles.container, { backgroundColor }]}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+              ? redesignedBackgroundColor
+              : backgroundColor,
+          },
+        ]}>
         <ActionSheetProvider>
           <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
         </ActionSheetProvider>

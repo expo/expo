@@ -77,8 +77,6 @@
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-
-    EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   }
   return self;
 }
@@ -173,6 +171,7 @@
 {
   _delegate = delegate;
   _launchOptions = launchOptions;
+  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
 }
 
 - (void)autoSetupStart:(UIWindow *)window
@@ -563,8 +562,7 @@
   manager.currentBridge = self.appBridge;
   
   if (self.manifest != nil) {
-    // TODO - update to proper values / convert via instance method
-    manager.currentManifest = [self.manifest.rawManifestJSON copy];
+    manager.currentManifest = self.manifest;
     manager.currentManifestURL = self.manifestURL;
   }
 }

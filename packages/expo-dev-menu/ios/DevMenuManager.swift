@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import EXDevMenuInterface
+import EXManifests
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -70,6 +71,13 @@ open class DevMenuManager: NSObject {
   lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
 
   var currentScreen: String?
+
+  /**
+   For backwards compatibility in projects that call this method from AppDelegate
+   */
+  @available(*, deprecated, message: "Manual setup of DevMenuManager in AppDelegate is deprecated in favor of automatic setup with Expo Modules")
+  @objc
+  public static func configure(withBridge bridge: AnyObject) { }
   
   @objc
   public var currentBridge: RCTBridge? {
@@ -86,7 +94,7 @@ open class DevMenuManager: NSObject {
     }
   }
   @objc
-  public var currentManifest: [AnyHashable: Any] = [:]
+  public var currentManifest: EXManifestsManifestBehavior?
   
   @objc
   public var currentManifestURL: URL?

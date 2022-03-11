@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.ReactNativeHostWrapper;
 import expo.modules.ApplicationLifecycleDispatcher;
-import expo.modules.devlauncher.DevLauncherController;
+import expo.modules.devlauncher.DevLauncherPackageDelegate;
 
 public class MainApplication extends Application implements ReactApplication {
   static final boolean USE_DEV_CLIENT = false;
@@ -57,9 +57,8 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     ReactNativeFlipper.initializeFlipper(this);
-
-    if (USE_DEV_CLIENT) {
-      DevLauncherController.initialize(this, mReactNativeHost);
+    if (!USE_DEV_CLIENT) {
+      DevLauncherPackageDelegate.enableAutoSetup = false;
     }
     ApplicationLifecycleDispatcher.onApplicationCreate(this);
   }

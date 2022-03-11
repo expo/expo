@@ -7,6 +7,7 @@
 #import <EXUpdates/EXUpdatesMultipartStreamReader.h>
 #import <EXUpdates/EXUpdatesParameterParser.h>
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
+#import <EXUpdates/EXUpdatesAppController.h>
 
 #if __has_include(<EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>)
 #import <EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>
@@ -624,7 +625,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   
   EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
   if (codeSigningConfiguration) {
-    [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expects-signature"];
+    [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expect-signature"];
   }
 }
 

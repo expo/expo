@@ -10,6 +10,10 @@ const defaultDevSettings: DevMenu.DevSettings = {
   isElementInspectorShown: false,
   isHotLoadingEnabled: false,
   isPerfMonitorShown: false,
+  isElementInspectorAvailable: true,
+  isHotLoadingAvailable: true,
+  isPerfMonitorAvailable: true,
+  isRemoteDebuggingAvailable: true,
 };
 
 const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
