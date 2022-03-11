@@ -233,7 +233,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         } else {
           DevMenuDefaultSettings()
         }).also {
-          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && it.showsAtLaunch
+          var showsAtLaunchPreference = canLaunchDevMenuOnStart && it.showsAtLaunch
+          shouldLaunchDevMenuOnStart = showsAtLaunchPreference || !it.isOnboardingFinished
           if (shouldLaunchDevMenuOnStart) {
             reactContext.addLifecycleEventListener(this)
           }
@@ -466,6 +467,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun setCurrentScreen(screen: String?) {
     currentScreenName = screen
+  }
+
+  fun getMenuPreferences(): Bundle {
+    return Bundle().apply {
+      putBoolean("isOnboardingFinished", settings?.isOnboardingFinished ?: false)
+    }
   }
 
   //endregion
