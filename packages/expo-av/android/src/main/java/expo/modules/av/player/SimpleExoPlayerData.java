@@ -83,8 +83,8 @@ class SimpleExoPlayerData extends PlayerData
     mLoadCompletionListener = loadCompletionListener;
 
     final Context context = mAVModule.getContext();
-    final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
-    final TrackSelector trackSelector = new DefaultTrackSelector(context, new AdaptiveTrackSelection.Factory());
+    final DefaultBandwidthMeter.Builder(context).setInitialBitrateEstimate(C.NETWORK_TYPE_UNKNOWN, 1_500_000).build();
+    final TrackSelector trackSelector = new DefaultTrackSelector(context, new AdaptiveTrackSelection.Factory(500, 2_000, 25_000, 0.6f, 0.75f, 500));
 
     // Create the player
     mSimpleExoPlayer = new SimpleExoPlayer.Builder(context)
