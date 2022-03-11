@@ -22,6 +22,10 @@ export default (theme: ColorTheme): StackNavigationOptions => {
       fontWeight: Platform.OS === 'ios' ? '600' : '400',
       color: Colors[theme].text,
     },
+    ...(FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && {
+      headerTintColor: theme === 'dark' ? darkTheme.link.default : lightTheme.link.default,
+    }),
+
     headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
   };
 };
