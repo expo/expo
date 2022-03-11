@@ -1,13 +1,19 @@
 import * as Log from '../../../../log';
 import { ExpoMiddleware } from '../ExpoMiddleware';
-import { ServerRequest } from '../server.types';
+import { ServerNext, ServerRequest, ServerResponse } from '../server.types';
 
 jest.mock('../../../../log');
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
+class MockExpoMiddleware extends ExpoMiddleware {
+  handleRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+}
+
 describe('_shouldHandleRequest', () => {
-  const middleware = new ExpoMiddleware('/', ['/', '/index.html']);
+  const middleware = new MockExpoMiddleware('/', ['/', '/index.html']);
   it('returns false when the request url is not defined', () => {
     expect(middleware._shouldHandleRequest(asReq({}))).toBe(false);
   });
@@ -24,7 +30,7 @@ describe('_shouldHandleRequest', () => {
 
 describe('getHandler', () => {
   it(`resolves successfully`, async () => {
-    const middleware = new ExpoMiddleware('/', ['/']);
+    const middleware = new MockExpoMiddleware('/', ['/']);
     middleware.handleRequestAsync = jest.fn();
 
     const handleAsync = middleware.getHandler();
@@ -57,7 +63,7 @@ describe('getHandler', () => {
   });
 
   it(`returns error info in the response`, async () => {
-    const middleware = new ExpoMiddleware('/', ['/']);
+    const middleware = new MockExpoMiddleware('/', ['/']);
     middleware.handleRequestAsync = jest.fn(async () => {
       throw new Error('demo');
     });
@@ -98,7 +104,7 @@ describe('getHandler', () => {
   });
 
   it(`continues`, async () => {
-    const middleware = new ExpoMiddleware('/', ['/']);
+    const middleware = new MockExpoMiddleware('/', ['/']);
     middleware.handleRequestAsync = jest.fn();
     const handleAsync = middleware.getHandler();
 
