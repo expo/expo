@@ -149,6 +149,7 @@ export function Main() {
       <View mx="small">
         <View roundedTop="large">
           <SettingsRowButton
+            disabled={!devSettings.isPerfMonitorAvailable}
             label="Toggle performance monitor"
             icon={<PerformanceIcon />}
             onPress={actions.togglePerformanceMonitor}
@@ -156,6 +157,7 @@ export function Main() {
         </View>
         <Divider />
         <SettingsRowButton
+          disabled={!devSettings.isElementInspectorAvailable}
           label="Toggle element inspector"
           icon={<InspectElementIcon />}
           onPress={actions.toggleElementInspector}
@@ -163,6 +165,7 @@ export function Main() {
         <Divider />
         <View bg="default">
           <SettingsRowSwitch
+            disabled={!devSettings.isRemoteDebuggingAvailable}
             testID="local-dev-tools"
             label="Local dev tools"
             icon={<DebugIcon />}
@@ -173,6 +176,7 @@ export function Main() {
         <Divider />
         <View bg="default" roundedBottom="large">
           <SettingsRowSwitch
+            disabled={!devSettings.isHotLoadingAvailable}
             testID="fast-refresh"
             label="Fast refresh"
             icon={<RunIcon />}
@@ -248,13 +252,20 @@ type SettingsRowButtonProps = {
   label: string;
   description?: string;
   onPress: () => void;
+  disabled?: boolean;
 };
 
-function SettingsRowButton({ label, icon, description = '', onPress }: SettingsRowButtonProps) {
+function SettingsRowButton({
+  label,
+  icon,
+  description = '',
+  onPress,
+  disabled,
+}: SettingsRowButtonProps) {
   return (
-    <GestureHandlerTouchableWrapper onPress={onPress}>
-      <Button.ScaleOnPressContainer onPress={onPress} bg="default">
-        <Row padding="small" align="center" bg="default">
+    <GestureHandlerTouchableWrapper onPress={onPress} disabled={disabled}>
+      <Button.ScaleOnPressContainer onPress={onPress} bg="default" disabled={disabled}>
+        <Row padding="small" align="center" bg="default" style={{ opacity: disabled ? 0.75 : 1 }}>
           <View width="large" height="large">
             {icon}
           </View>
@@ -298,6 +309,7 @@ type SettingsRowSwitchProps = {
   isEnabled?: boolean;
   setIsEnabled: (isEnabled: boolean) => void;
   testID: string;
+  disabled?: boolean;
 };
 
 function SettingsRowSwitch({
@@ -306,10 +318,11 @@ function SettingsRowSwitch({
   icon,
   isEnabled,
   setIsEnabled,
+  disabled,
   testID,
 }: SettingsRowSwitchProps) {
   return (
-    <View>
+    <View style={{ opacity: disabled ? 0.75 : 1 }} pointerEvents={disabled ? 'none' : 'auto'}>
       <Row padding="small" align="center">
         <View width="large" height="large">
           {icon}
@@ -326,6 +339,7 @@ function SettingsRowSwitch({
         <View width="16" style={{ alignItems: 'flex-end' }}>
           <Switch
             testID={testID}
+            disabled={disabled}
             value={isEnabled}
             onValueChange={() => setIsEnabled(!isEnabled)}
           />
@@ -367,9 +381,13 @@ function AppInfoRow({ title, value }: AppInfoRowProps) {
   );
 }
 
-function GestureHandlerTouchableWrapper({ onPress, children }) {
+function GestureHandlerTouchableWrapper({ onPress, disabled = false, children }) {
   if (Platform.OS === 'android') {
-    return <TouchableWithoutFeedback onPress={onPress}>{children}</TouchableWithoutFeedback>;
+    return (
+      <TouchableWithoutFeedback disabled={disabled} onPress={onPress}>
+        {children}
+      </TouchableWithoutFeedback>
+    );
   }
 
   return children;
