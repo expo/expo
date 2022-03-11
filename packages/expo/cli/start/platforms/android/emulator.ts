@@ -9,6 +9,8 @@ import { Device, getAttachedDevicesAsync, isBootAnimationCompleteAsync } from '.
 export const EMULATOR_MAX_WAIT_TIMEOUT = 60 * 1000 * 3;
 
 export function whichEmulator(): string {
+  // https://developer.android.com/studio/command-line/variables
+  // TODO: Add ANDROID_SDK_ROOT support as well https://github.com/expo/expo/pull/16516#discussion_r820037917
   if (process.env.ANDROID_HOME) {
     return `${process.env.ANDROID_HOME}/emulator/emulator`;
   }
@@ -98,7 +100,6 @@ export async function startDeviceAsync(
     const stopWaitingAndReject = (message: string) => {
       stopWaiting();
       reject(new Error(message));
-      clearInterval(waitTimer);
     };
 
     emulatorProcess.on('error', ({ message }) => stopWaitingAndReject(message));

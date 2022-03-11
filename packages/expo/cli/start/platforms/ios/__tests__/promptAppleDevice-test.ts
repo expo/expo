@@ -1,14 +1,14 @@
 import { getBestSimulatorAsync } from '../getBestSimulator';
 import { sortDefaultDeviceToBeginningAsync } from '../promptAppleDevice';
 
+jest.mock('../getBestSimulator');
+
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('../getBestSimulator');
-
 describe(sortDefaultDeviceToBeginningAsync, () => {
   it(`sorts default to the beginning`, async () => {
-    asMock(getBestSimulatorAsync).mockClear().mockResolvedValueOnce('should-be-first');
+    asMock(getBestSimulatorAsync).mockResolvedValueOnce('should-be-first');
 
     const devices = await sortDefaultDeviceToBeginningAsync([
       { udid: 'abc' },
@@ -20,7 +20,7 @@ describe(sortDefaultDeviceToBeginningAsync, () => {
   });
 
   it(`does not change order when there is no default`, async () => {
-    asMock(getBestSimulatorAsync).mockClear().mockResolvedValueOnce(null);
+    asMock(getBestSimulatorAsync).mockResolvedValueOnce(null);
     const devices = await sortDefaultDeviceToBeginningAsync([
       { udid: 'abc' },
       { udid: 'def' },

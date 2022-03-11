@@ -3,15 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import execa from 'execa';
 import fetch from 'node-fetch';
-import {
-  execute,
-  projectRoot,
-  getRoot,
-  getLoadedModulesAsync,
-  setupTestProjectAsync,
-  bin,
-} from './utils';
-import JsonFile from '@expo/json-file';
+import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;

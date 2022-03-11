@@ -4,6 +4,7 @@ import { AppleAppIdResolver } from './AppleAppIdResolver';
 import { AppleDeviceManager } from './AppleDeviceManager';
 import { Device } from './simctl';
 
+/** Manages launching apps on Apple simulators. */
 export class ApplePlatformManager extends PlatformManager<Device> {
   constructor(
     protected projectRoot: string,
@@ -24,7 +25,7 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     });
   }
 
-  public async openAsync(
+  async openAsync(
     options:
       | { runtime: 'expo' | 'web' }
       | { runtime: 'custom'; props?: Partial<BaseOpenInCustomProps> },
@@ -34,7 +35,7 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     return super.openAsync(options, resolveSettings);
   }
 
-  public _getAppIdResolver(): AppIdResolver {
+  _getAppIdResolver(): AppIdResolver {
     return new AppleAppIdResolver(this.projectRoot);
   }
 

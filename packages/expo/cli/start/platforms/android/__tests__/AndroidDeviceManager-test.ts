@@ -9,9 +9,6 @@ import {
 } from '../adb';
 import { shellDumpsysPackage } from './fixtures/adb-output';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
 }));
@@ -21,6 +18,9 @@ jest.mock('../adb', () => ({
   openAppIdAsync: jest.fn(),
   openUrlAsync: jest.fn(),
 }));
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
@@ -60,16 +60,12 @@ describe('launchActivityAsync', () => {
 
 describe('openUrlAsync', () => {
   it('opens Expo Go before launching into Expo Go', async () => {
-    asMock(openUrlAsync).mockClear();
-    asMock(openAppIdAsync).mockClear();
     const device = createDevice();
     await device.openUrlAsync('exp://foobar');
     expect(openAppIdAsync).toBeCalledWith({ pid: '123' }, { applicationId: 'host.exp.exponent' });
     expect(openUrlAsync).toBeCalledWith({ pid: '123' }, { url: 'exp://foobar' });
   });
   it('opens a URL on a device', async () => {
-    asMock(openUrlAsync).mockClear();
-    asMock(openAppIdAsync).mockClear();
     const device = createDevice();
     await device.openUrlAsync('http://foobar');
     expect(openAppIdAsync).not.toBeCalled();

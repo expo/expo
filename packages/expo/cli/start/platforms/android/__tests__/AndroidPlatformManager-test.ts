@@ -6,11 +6,10 @@ import { startAdbReverseAsync } from '../adbReverse';
 jest.mock(`../../../../log`);
 jest.mock('../adb');
 jest.mock('../../ExpoGoInstaller');
-
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
 }));
-const asMock = (fn: any): jest.Mock => fn;
+
 const originalResolveDevice = AndroidDeviceManager.resolveAsync;
 
 afterAll(() => {
@@ -19,9 +18,6 @@ afterAll(() => {
 
 describe('openAsync', () => {
   beforeEach(() => {
-    asMock(Log.log).mockReset();
-    asMock(Log.warn).mockReset();
-    asMock(Log.error).mockReset();
     AndroidDeviceManager.resolveAsync = jest.fn(async () => {
       const manager = new AndroidDeviceManager({ udid: '123', name: 'Pixel 5' } as any);
       manager.isAppInstalledAsync = jest.fn(() => Promise.resolve(true));
@@ -30,7 +26,6 @@ describe('openAsync', () => {
   });
 
   it(`opens a project in a custom development client using intent string`, async () => {
-    asMock(startAdbReverseAsync).mockClear();
     const manager = new AndroidPlatformManager('/', 19000, {
       getCustomRuntimeUrl: () => null,
       getDevServerUrl: () => null,

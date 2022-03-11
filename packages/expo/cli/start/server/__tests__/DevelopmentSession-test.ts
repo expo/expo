@@ -11,11 +11,9 @@ jest.mock('../../../api/settings', () => ({
     isOffline: false,
   },
 }));
-
 jest.mock('../../project/devices', () => ({
   getDevicesInfoAsync: jest.fn(),
 }));
-
 jest.mock('../../../api/user/user');
 
 describe(`startAsync`, () => {

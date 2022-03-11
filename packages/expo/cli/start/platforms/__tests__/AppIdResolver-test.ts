@@ -2,9 +2,6 @@ import { getConfig } from '@expo/config';
 
 import { AppIdResolver } from '../AppIdResolver';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(() => 'app.json'),
   getConfig: jest.fn(() => ({
@@ -17,14 +14,14 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
 function createAppIdResolver() {
   return new AppIdResolver('/', 'ios', 'foo.bar');
 }
 
 describe('getAppIdAsync', () => {
-  beforeEach(() => {
-    asMock(getConfig).mockReset();
-  });
   it('resolves the app id from native files', async () => {
     const resolver = createAppIdResolver();
     resolver.hasNativeProjectAsync = jest.fn(async () => true);

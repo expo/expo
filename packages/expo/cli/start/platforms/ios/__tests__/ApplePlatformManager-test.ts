@@ -10,8 +10,6 @@ jest.mock(`../assertSystemRequirements`);
 jest.mock('../../ExpoGoInstaller');
 jest.mock('../ensureSimulatorAppRunning');
 
-const asMock = (fn: any): jest.Mock => fn;
-
 afterAll(() => {
   AppleDeviceManager.resolveAsync = originalResolveDevice;
 });
@@ -20,10 +18,6 @@ const originalResolveDevice = AppleDeviceManager.resolveAsync;
 
 describe('openAsync', () => {
   beforeEach(() => {
-    asMock(assertSystemRequirementsAsync).mockReset();
-    asMock(Log.log).mockReset();
-    asMock(Log.warn).mockReset();
-    asMock(Log.error).mockReset();
     AppleDeviceManager.resolveAsync = jest.fn(
       async () => new AppleDeviceManager({ udid: '123', name: 'iPhone 13' } as any)
     );

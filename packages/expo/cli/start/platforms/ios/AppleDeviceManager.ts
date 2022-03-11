@@ -133,11 +133,11 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   private async waitForAppInstalledAsync(applicationId: string): Promise<boolean> {
-    if (await this.isAppInstalledAsync(applicationId)) {
-      return true;
-    } else {
+    while (true) {
+      if (await this.isAppInstalledAsync(applicationId)) {
+        return true;
+      }
       await delayAsync(100);
-      return await this.waitForAppInstalledAsync(applicationId);
     }
   }
 
@@ -162,6 +162,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     try {
       await SimControl.openUrlAsync(this.device, { url });
     } catch (error) {
+      // 194 means the device does not conform to a given URL, in this case we'll assume that the desired app is not installed.
       if (error.status === 194) {
         // An error was encountered processing the command (domain=NSOSStatusErrorDomain, code=-10814):
         // The operation couldn’t be completed. (OSStatus error -10814.)

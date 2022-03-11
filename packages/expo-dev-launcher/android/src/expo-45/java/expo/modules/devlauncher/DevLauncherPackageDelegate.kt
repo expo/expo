@@ -16,12 +16,23 @@ import expo.modules.devlauncher.modules.DevLauncherDevMenuExtensions
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
 import expo.modules.devlauncher.modules.DevLauncherModule
 import expo.modules.devlauncher.modules.DevLauncherAuth
+import expo.modules.core.interfaces.ReactNativeHostHandler
+import expo.modules.devlauncher.rncompatibility.DevLauncherReactNativeHostHandler
 
 object DevLauncherPackageDelegate {
-  val shouldEnableAutoSetup: Boolean by lazy {
-    // Backwards compatibility -- if the MainApplication has already set up expo-dev-launcher,
-    // we just skip auto-setup in this case.
-    !DevLauncherController.wasInitialized()
+  @JvmField
+  var enableAutoSetup: Boolean? = null
+  private val shouldEnableAutoSetup: Boolean by lazy {
+    if (enableAutoSetup != null) {
+      // if someone else has set this explicitly, use that value
+      return@lazy enableAutoSetup!!
+    }
+    if (DevLauncherController.wasInitialized()) {
+      // Backwards compatibility -- if the MainApplication has already set up expo-dev-launcher,
+      // we just skip auto-setup in this case.
+      return@lazy false
+    }
+    return@lazy true
   }
 
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
@@ -71,4 +82,6 @@ object DevLauncherPackageDelegate {
         }
       }
     )
+
+  fun createReactNativeHostHandlers(): List<ReactNativeHostHandler> = listOf(DevLauncherReactNativeHostHandler())
 }

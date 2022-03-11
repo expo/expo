@@ -29,7 +29,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     });
   }
 
-  public async openAsync(
+  async openAsync(
     options:
       | { runtime: 'expo' | 'web' }
       | { runtime: 'custom'; props?: Partial<AndroidOpenInCustomProps> },
@@ -39,7 +39,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     return super.openAsync(options, resolveSettings);
   }
 
-  public _getAppIdResolver(): AppIdResolver {
+  _getAppIdResolver(): AppIdResolver {
     return new AndroidAppIdResolver(this.projectRoot);
   }
 

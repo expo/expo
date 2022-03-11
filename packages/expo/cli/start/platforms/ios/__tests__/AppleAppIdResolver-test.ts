@@ -3,9 +3,6 @@ import { IOSConfig } from '@expo/config-plugins';
 
 import { AppleAppIdResolver } from '../AppleAppIdResolver';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('@expo/config-plugins', () => ({
   IOSConfig: {
     BundleIdentifier: {
@@ -27,6 +24,9 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 // Most cases are tested in the superclass.
 

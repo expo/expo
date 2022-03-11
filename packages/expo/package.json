@@ -73,15 +73,14 @@
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
     "@expo/vector-icons": "^12.0.4",
+    "@expo/webpack-config": "0.16.16",
     "@expo/dev-server": "0.1.103",
     "@expo/devcert": "^1.0.0",
-    "@expo/webpack-config": "0.16.16",
     "@urql/core": "2.3.1",
     "@urql/exchange-retry": "0.3.0",
     "arg": "4.1.0",
     "babel-preset-expo": "~9.0.1",
     "better-opn": "~3.0.2",
-    "internal-ip": "4.3.0",
     "cacache": "^15.3.0",
     "chalk": "^4.0.0",
     "cross-spawn": "^6.0.5",
@@ -95,6 +94,7 @@
     "expo-modules-autolinking": "0.6.0",
     "expo-modules-core": "0.7.0",
     "freeport-async": "2.0.0",
+    "is-root": "^2.1.0",
     "fbemitter": "^3.0.0",
     "form-data": "^2.3.2",
     "fs-extra": "9.0.0",
@@ -103,7 +103,6 @@
     "graphql-tag": "2.12.5",
     "internal-ip": "4.3.0",
     "invariant": "^2.2.4",
-    "is-root": "^2.1.0",
     "js-yaml": "^3.13.1",
     "json-schema-deref-sync": "^0.13.0",
     "md5-file": "^3.2.3",
@@ -160,7 +159,6 @@
     "react-native": "0.67.2",
     "taskr": "1.1.0",
     "@types/webpack": "4.41.18",
-    "@types/webpack-dev-server": "3.11.0",
-    "@expo/ngrok": "4.1.0"
+    "@types/webpack-dev-server": "3.11.0"
   }
 }

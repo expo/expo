@@ -3,7 +3,6 @@
 /packages/expo-ads-facebook                     @tsapeta
 /packages/expo-analytics-amplitude              @tsapeta
 /packages/expo-analytics-segment                @tsapeta
-/packages/expo-app-auth                         @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-app-loading                      @bbarthec
 /packages/expo-apple-authentication             @esamelson @tsapeta
@@ -40,7 +39,6 @@
 /packages/expo-font                             @tsapeta
 /packages/expo-gl-cpp                           @tsapeta @bbarthec
 /packages/expo-gl                               @tsapeta @bbarthec
-/packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
 /packages/expo-haptics                          @bbarthec
 /packages/expo-image                            @bbarthec @barthap
@@ -89,9 +87,13 @@
 /packages/expo-web-browser                      @bbarthec
 /packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta
+/packages/expo/cli                              @EvanBacon @bycedric
+/packages/expo/e2e                              @EvanBacon @bycedric
+/packages/expo/bin                              @EvanBacon @bycedric
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne
 /packages/unimodules-task-manager-interface     @tsapeta @bycedric
 /tools                                          @tsapeta
 /.github/workflows                              @tsapeta
+/.github/workflows/cli.yml                      @EvanBacon @bycedric

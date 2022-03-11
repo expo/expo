@@ -7,18 +7,19 @@ import { installExitHooks } from '../../../../utils/exit';
 import { ADBServer } from '../ADBServer';
 
 jest.mock('../../../../log');
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),
 }));
 
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
 const env = process.env;
+
 beforeEach(() => {
   delete process.env.ANDROID_HOME;
 });
+
 afterAll(() => {
   process.env = env;
 });
@@ -59,12 +60,9 @@ describe('resolveAdbPromise', () => {
 
 describe('startAsync', () => {
   it(`starts the ADB server`, async () => {
-    asMock(installExitHooks).mockClear();
-    asMock(spawnAsync)
-      .mockClear()
-      .mockResolvedValueOnce({
-        stderr: '* daemon started successfully',
-      } as any);
+    asMock(spawnAsync).mockResolvedValueOnce({
+      stderr: '* daemon started successfully',
+    } as any);
     const server = new ADBServer();
     await expect(server.startAsync()).resolves.toBe(true);
     expect(server.isRunning).toBe(true);
@@ -72,8 +70,6 @@ describe('startAsync', () => {
     expect(spawnAsync).toBeCalledTimes(1);
   });
   it(`does not start if the server is already running`, async () => {
-    asMock(installExitHooks).mockClear();
-    asMock(spawnAsync).mockClear();
     const server = new ADBServer();
     server.isRunning = true;
     await expect(server.startAsync()).resolves.toBe(false);
@@ -84,12 +80,10 @@ describe('startAsync', () => {
 });
 describe('runAsync', () => {
   it(`runs an ADB command`, async () => {
-    asMock(spawnAsync)
-      .mockClear()
-      .mockResolvedValueOnce({
-        output: ['did thing'],
-        stderr: 'did thing',
-      } as any);
+    asMock(spawnAsync).mockResolvedValueOnce({
+      output: ['did thing'],
+      stderr: 'did thing',
+    } as any);
     const server = new ADBServer();
     server.startAsync = jest.fn();
     server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
@@ -104,7 +98,7 @@ describe('runAsync', () => {
 });
 describe('getFileOutputAsync', () => {
   it(`returns file output from ADB`, async () => {
-    asMock(execFileSync).mockClear().mockReturnValueOnce('foobar');
+    asMock(execFileSync).mockReturnValueOnce('foobar');
     const server = new ADBServer();
     server.startAsync = jest.fn();
     server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
@@ -113,15 +107,16 @@ describe('getFileOutputAsync', () => {
     expect(server.getAdbExecutablePath).toBeCalledTimes(1);
     expect(server.startAsync).toBeCalledTimes(1);
     expect(server.resolveAdbPromise).toBeCalledTimes(1);
-    expect(spawnAsync).toBeCalledTimes(1);
-    expect(spawnAsync).toBeCalledWith('adb', ['foo', 'bar']);
+    expect(execFileSync).toBeCalledTimes(1);
+    expect(execFileSync).toBeCalledWith('adb', ['foo', 'bar'], {
+      encoding: 'latin1',
+      stdio: 'pipe',
+    });
   });
 });
 describe('stopAsync', () => {
   it(`stops the ADB server when running`, async () => {
-    asMock(spawnAsync)
-      .mockClear()
-      .mockResolvedValueOnce({ output: [''] } as any);
+    asMock(spawnAsync).mockResolvedValueOnce({ output: [''] } as any);
     const server = new ADBServer();
     server.isRunning = true;
     await expect(server.stopAsync()).resolves.toBe(true);
@@ -129,9 +124,7 @@ describe('stopAsync', () => {
     expect(spawnAsync).toBeCalledTimes(1);
   });
   it(`stops the ADB server when not running`, async () => {
-    asMock(spawnAsync)
-      .mockClear()
-      .mockResolvedValueOnce({ output: [''] } as any);
+    asMock(spawnAsync).mockResolvedValueOnce({ output: [''] } as any);
     const server = new ADBServer();
     server.isRunning = false;
     await expect(server.stopAsync()).resolves.toBe(false);
@@ -139,7 +132,6 @@ describe('stopAsync', () => {
   });
 
   it(`considers the ADB server stopped if the process fails`, async () => {
-    asMock(Log.error).mockClear();
     const server = new ADBServer();
     server.isRunning = true;
     server.runAsync = jest.fn(() => {

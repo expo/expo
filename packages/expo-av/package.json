@@ -1,6 +1,6 @@
 {
   "name": "expo-av",
-  "version": "11.0.0",
+  "version": "11.1.0",
   "description": "Expo universal module for Audio and Video playback",
   "main": "build/index.js",
   "types": "build/index.d.ts",

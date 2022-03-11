@@ -3,10 +3,6 @@ import { getAttachedDevicesAsync, getServer } from '../adb';
 import { startAdbReverseAsync, stopAdbReverseAsync } from '../adbReverse';
 
 jest.mock('../../../../log');
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../adb', () => {
   const actual = jest.requireActual('../adb');
   const server = {
@@ -18,32 +14,31 @@ jest.mock('../adb', () => {
     getServer: jest.fn(() => server),
   };
 });
-
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),
 }));
 
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
 describe(startAdbReverseAsync, () => {
   it(`reverses devices`, async () => {
-    asMock(getAttachedDevicesAsync)
-      .mockClear()
-      .mockResolvedValueOnce([
-        {
-          isAuthorized: true,
-          isBooted: true,
-          name: 'Pixel_2',
-          pid: 'FA8251A00720',
-          type: 'device',
-        },
-        {
-          isAuthorized: true,
-          isBooted: true,
-          name: 'Pixel_4_XL_API_30',
-          pid: 'emulator-5554',
-          type: 'emulator',
-        },
-      ]);
-    asMock(getServer().runAsync).mockClear();
+    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_2',
+        pid: 'FA8251A00720',
+        type: 'device',
+      },
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_4_XL_API_30',
+        pid: 'emulator-5554',
+        type: 'emulator',
+      },
+    ]);
     await expect(startAdbReverseAsync([3000])).resolves.toBe(true);
 
     expect(getServer().runAsync).toBeCalledTimes(2);
@@ -56,18 +51,15 @@ describe(startAdbReverseAsync, () => {
     ]);
   });
   it(`reverses multiple ports`, async () => {
-    asMock(getAttachedDevicesAsync)
-      .mockClear()
-      .mockResolvedValueOnce([
-        {
-          isAuthorized: true,
-          isBooted: true,
-          name: 'Pixel_4_XL_API_30',
-          pid: 'emulator-5554',
-          type: 'emulator',
-        },
-      ]);
-    asMock(getServer().runAsync).mockClear();
+    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_4_XL_API_30',
+        pid: 'emulator-5554',
+        type: 'emulator',
+      },
+    ]);
     await expect(startAdbReverseAsync([3000, 3001])).resolves.toBe(true);
 
     expect(getServer().runAsync).toBeCalledTimes(2);
@@ -81,38 +73,31 @@ describe(startAdbReverseAsync, () => {
   });
 
   it(`returns false when reversing a device that is unauthorized`, async () => {
-    asMock(Log.warn).mockClear();
-    asMock(getAttachedDevicesAsync)
-      .mockClear()
-      .mockResolvedValueOnce([
-        {
-          isAuthorized: false,
-          isBooted: true,
-          name: 'Device FA8251A00719',
-          pid: 'FA8251A00719',
-          type: 'device',
-        },
-      ]);
-    asMock(getServer().runAsync).mockClear();
+    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+      {
+        isAuthorized: false,
+        isBooted: true,
+        name: 'Device FA8251A00719',
+        pid: 'FA8251A00719',
+        type: 'device',
+      },
+    ]);
     await expect(startAdbReverseAsync([3000])).resolves.toBe(false);
     expect(getServer().runAsync).toBeCalledTimes(0);
     expect(Log.warn).toBeCalledTimes(1);
   });
 
   it(`returns false when reversing a device fails`, async () => {
-    asMock(Log.warn).mockClear();
-    asMock(getAttachedDevicesAsync)
-      .mockClear()
-      .mockResolvedValueOnce([
-        {
-          isAuthorized: true,
-          isBooted: true,
-          name: 'Device FA8251A00719',
-          pid: 'FA8251A00719',
-          type: 'device',
-        },
-      ]);
-    asMock(getServer().runAsync).mockClear().mockRejectedValueOnce(new Error('test'));
+    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Device FA8251A00719',
+        pid: 'FA8251A00719',
+        type: 'device',
+      },
+    ]);
+    asMock(getServer().runAsync).mockRejectedValueOnce(new Error('test'));
     await expect(startAdbReverseAsync([3000])).resolves.toBe(false);
     expect(getServer().runAsync).toBeCalledTimes(1);
     expect(Log.warn).toBeCalledTimes(1);
@@ -121,26 +106,23 @@ describe(startAdbReverseAsync, () => {
 
 describe(stopAdbReverseAsync, () => {
   it(`stops reverse`, async () => {
-    asMock(getAttachedDevicesAsync)
-      .mockClear()
-      .mockResolvedValueOnce([
-        {
-          isAuthorized: true,
-          isBooted: true,
-          name: 'Pixel_2',
-          pid: 'FA8251A00720',
-          type: 'device',
-        },
-        {
-          isAuthorized: true,
-          isBooted: true,
-          name: 'Pixel_4_XL_API_30',
+    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_2',
+        pid: 'FA8251A00720',
+        type: 'device',
+      },
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_4_XL_API_30',
 
-          pid: 'emulator-5554',
-          type: 'emulator',
-        },
-      ]);
-    asMock(getServer().runAsync).mockClear();
+        pid: 'emulator-5554',
+        type: 'emulator',
+      },
+    ]);
     await stopAdbReverseAsync([3000]);
     expect(getServer().runAsync).toBeCalledTimes(2);
     expect(getServer().runAsync).toHaveBeenNthCalledWith(1, [

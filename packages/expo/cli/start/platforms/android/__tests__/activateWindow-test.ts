@@ -14,13 +14,9 @@ function mockPlatform(value: typeof process.platform) {
     value,
   });
 }
+
 afterEach(() => {
   mockPlatform(platform);
-});
-
-beforeEach(() => {
-  asMock(execFileSync).mockClear();
-  asMock(execAsync).mockClear();
 });
 
 it(`skips on windows`, async () => {

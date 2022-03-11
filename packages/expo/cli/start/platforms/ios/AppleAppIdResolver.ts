@@ -32,7 +32,7 @@ export class AppleAppIdResolver extends AppIdResolver {
       const infoPlistPath = IOSConfig.Paths.getInfoPlistPath(this.projectRoot);
       const data = await plist.parse(fs.readFileSync(infoPlistPath, 'utf8'));
       if (data.CFBundleIdentifier && !data.CFBundleIdentifier.startsWith('$(')) {
-        return data.CFBundleIdentifier ?? null;
+        return data.CFBundleIdentifier;
       }
     } catch {}
 

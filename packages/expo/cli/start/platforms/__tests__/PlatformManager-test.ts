@@ -3,13 +3,8 @@ import { DeviceManager } from '../DeviceManager';
 import { PlatformManager } from '../PlatformManager';
 
 // NOTE(Bacon): An extremely self contained system for testing the majority of the complex 'open in device' logic.
-
 jest.mock(`../../../log`);
 jest.mock('../ExpoGoInstaller');
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('@expo/config', () => ({
   getConfig: jest.fn(() => ({
     pkg: {},
@@ -22,12 +17,6 @@ jest.mock('@expo/config', () => ({
 }));
 
 describe('openAsync', () => {
-  beforeEach(() => {
-    asMock(Log.log).mockReset();
-    asMock(Log.warn).mockReset();
-    asMock(Log.error).mockReset();
-  });
-
   // Mock haven
   function createManager({ customUrl = 'custom://path', isAppInstalled = true } = {}) {
     const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');

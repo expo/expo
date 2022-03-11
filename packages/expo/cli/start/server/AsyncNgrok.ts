@@ -5,9 +5,8 @@ import slugify from 'slugify';
 import UserSettings from '../../api/user/UserSettings';
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
-import { delayAsync } from '../../utils/delay';
+import { delayAsync, resolveWithTimeout } from '../../utils/delay';
 import { CommandError } from '../../utils/errors';
-import { installExitHooks } from '../../utils/exit';
 import { NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
@@ -30,35 +29,20 @@ export class AsyncNgrok {
     this.resolver = new NgrokResolver(projectRoot);
   }
 
-  /** Get the active pid from the running instance of ngrok. */
-  // TODO: Use this instead of a stored local value.
-  private getActivePid(): number | null {
-    return this.resolver.get()?.getActiveProcess?.()?.pid ?? null;
-  }
-
   public getActiveUrl(): string | null {
     return this.serverUrl;
   }
 
-  /** Terminate the instance by the pid. */
-  private killInstance() {
-    const pid = this.getActivePid();
-    if (pid !== null) {
-      try {
-        process.kill(pid);
-      } catch (e) {
-        Log.error(`Failed to kill ngrok tunnel PID: ${pid}`);
-      }
-    }
-  }
-
   /** Exposed for testing. */
   async _getProjectHostnameAsync() {
-    // TODO: Maybe assert no robot users?
-    const username = getActorDisplayName(await getUserAsync());
+    const user = await getUserAsync();
+    if (user?.__typename === 'Robot') {
+      throw new CommandError('NGROK_ROBOT', 'Cannot use ngrok with a robot user.');
+    }
+    const username = getActorDisplayName(user);
 
     return [
-      // TODO: Is this needed?
+      // NOTE: https://github.com/expo/expo/pull/16556#discussion_r822944286
       await this.getProjectRandomnessAsync(),
       slugify(username),
       // Use the port to distinguish between multiple tunnels (webpack, metro).
@@ -67,12 +51,8 @@ export class AsyncNgrok {
     ].join('.');
   }
 
+  /** Start ngrok on the given port for the project. */
   async startAsync({ timeout }: { timeout?: number } = {}): Promise<void> {
-    // Ensure that force quitting can clean up ngrok.
-    installExitHooks(() => {
-      this.killInstance();
-    });
-
     // Ensure the instance is loaded first, this can linger so we should run it before the timeout.
     await this.resolver.resolveAsync({
       // For now, prefer global install since the package has native code (harder to install) and doesn't change very often.
@@ -84,7 +64,7 @@ export class AsyncNgrok {
       // TODO: Better error message.
       throw new CommandError(
         'NGROK_ADB',
-        `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android(s).`
+        `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
       );
     }
 
@@ -94,6 +74,7 @@ export class AsyncNgrok {
     Log.log('Tunnel ready.');
   }
 
+  /** Stop the ngrok process if it's running. */
   public async stopAsync(): Promise<void> {
     Log.debug('[ngrok] Stopping Tunnel');
 
@@ -115,19 +96,15 @@ export class AsyncNgrok {
       autoInstall: false,
     });
 
-    let timer: NodeJS.Timeout | null = null;
-    const results = await Promise.race([
-      // Returns false to try again.
-      this.connectToNgrokInternalAsync(instance, attempts),
-
-      // A timeout that correctly surfaces the error to the correct lexical scope.
-      new Promise<false>((_, reject) => {
-        timer = setTimeout(() => {
-          reject(new CommandError('NGROK_TIMEOUT', 'Ngrok tunnel took too long to connect.'));
-        }, options.timeout ?? TUNNEL_TIMEOUT);
-      }),
-    ]);
-    clearTimeout(timer);
+    // TODO(Bacon): Consider dropping the timeout functionality:
+    // https://github.com/expo/expo/pull/16556#discussion_r822307373
+    const results = await resolveWithTimeout(
+      () => this.connectToNgrokInternalAsync(instance, attempts),
+      {
+        timeout: options.timeout ?? TUNNEL_TIMEOUT,
+        errorMessage: 'ngrok tunnel took too long to connect.',
+      }
+    );
     if (typeof results === 'string') {
       return results;
     }
@@ -158,7 +135,7 @@ export class AsyncNgrok {
           if (status === 'closed') {
             Log.error(
               'We noticed your tunnel is having issues. ' +
-                'This may be due to intermittent problems with Ngrok. ' +
+                'This may be due to intermittent problems with ngrok. ' +
                 'If you have trouble connecting to your app, try to restart the project, ' +
                 'or switch the host to `lan`.'
             );
@@ -168,12 +145,8 @@ export class AsyncNgrok {
         },
         port: this.port,
       });
-      // Clear the timeout since we succeeded.
-
       return url;
     } catch (error: any) {
-      // Clear the timeout since we're no longer attempting to connect to a remote.
-
       // Attempt to connect 3 times
       if (attempts >= 2) {
         throw new CommandError('NGROK_CONNECT', error.toString());

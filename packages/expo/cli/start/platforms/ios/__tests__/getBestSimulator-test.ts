@@ -7,12 +7,9 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 beforeEach(() => {
-  asMock(execSync).mockClear();
-  asMock(spawnAsync)
-    .mockClear()
-    .mockResolvedValueOnce({
-      stdout: JSON.stringify(require('./fixtures/xcrun-simctl-list-devices.json')),
-    } as any);
+  asMock(spawnAsync).mockResolvedValueOnce({
+    stdout: JSON.stringify(require('./fixtures/xcrun-simctl-list-devices.json')),
+  } as any);
 });
 
 describe(getBestUnbootedSimulatorAsync, () => {

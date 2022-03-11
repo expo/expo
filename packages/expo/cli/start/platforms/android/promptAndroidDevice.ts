@@ -4,7 +4,7 @@ import { AbortCommandError } from '../../../utils/errors';
 import { promptAsync } from '../../../utils/prompts';
 import { Device, logUnauthorized } from './adb';
 
-function nameStyleForDevice(device: Device) {
+function nameStyleForDevice(device: Device): (name: string) => string {
   const isActive = device.isBooted;
   if (!isActive) {
     // Use no style changes for a disconnected device that is available to be opened.
