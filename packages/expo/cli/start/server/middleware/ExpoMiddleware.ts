@@ -3,18 +3,17 @@ import { parse } from 'url';
 
 import * as Log from '../../../log';
 import { EXPO_DEBUG } from '../../../utils/env';
-import { UnimplementedError } from '../../../utils/errors';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Base middleware creator for Expo dev servers. */
-export class ExpoMiddleware {
+export abstract class ExpoMiddleware {
   constructor(protected projectRoot: string, protected supportedPaths: string[]) {}
 
   /**
    * Returns true when the middleware should handle the incoming server request.
    * Exposed for testing.
    */
-  _shouldContinue(req: ServerRequest): boolean {
+  _shouldHandleRequest(req: ServerRequest): boolean {
     return (
       !!req.url &&
       this.supportedPaths.includes(
@@ -24,9 +23,11 @@ export class ExpoMiddleware {
     );
   }
 
-  async handleRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
-    throw new UnimplementedError();
-  }
+  abstract handleRequestAsync(
+    req: ServerRequest,
+    res: ServerResponse,
+    next: ServerNext
+  ): Promise<void>;
 
   /** Create a server middleware handler. */
   public getHandler(): (
@@ -35,7 +36,7 @@ export class ExpoMiddleware {
     next: ServerNext
   ) => Promise<void> {
     return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (!this._shouldContinue(req)) {
+      if (!this._shouldHandleRequest(req)) {
         return next();
       }
 
@@ -45,7 +46,7 @@ export class ExpoMiddleware {
         Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
         // 5xx = Server Error HTTP code
         res.statusCode = 520;
-        if (typeof e == 'object' && e != null) {
+        if (typeof e === 'object' && e !== null) {
           res.end(
             JSON.stringify({
               error: e.toString(),

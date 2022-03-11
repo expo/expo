@@ -14,8 +14,8 @@ export type RuntimePlatform = 'ios' | 'android';
  *
  * Returns first item in the case of an array.
  */
-export function parsePlatformHeader(req: ServerRequest): string {
-  const url = req?.url ? parse(req.url, /* parseQueryString */ true) : null;
+export function parsePlatformHeader(req: ServerRequest): string | null {
+  const url = req.url ? parse(req.url, /* parseQueryString */ true) : null;
   const platform =
     url?.query?.platform || req?.headers?.['expo-platform'] || req?.headers?.['exponent-platform'];
   return (Array.isArray(platform) ? platform[0] : platform) ?? null;
@@ -26,7 +26,7 @@ export function assertMissingRuntimePlatform(platform?: any): asserts platform {
   if (!platform) {
     throw new CommandError(
       'PLATFORM_HEADER',
-      "Must specify 'expo-platform' header or 'platform' query parameter"
+      `Must specify "expo-platform" header or "platform" query parameter`
     );
   }
 }

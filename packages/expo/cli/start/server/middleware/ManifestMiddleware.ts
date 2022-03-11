@@ -2,7 +2,6 @@ import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
-import { UnimplementedError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
@@ -43,7 +42,7 @@ export type ResponseProjectSettings = {
 export const DEVELOPER_TOOL = 'expo-cli';
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
-export class ManifestMiddleware extends ExpoMiddleware {
+export abstract class ManifestMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: {
@@ -121,9 +120,7 @@ export class ManifestMiddleware extends ExpoMiddleware {
   }
 
   /** Parse request headers into options. */
-  public getParsedHeaders(req: ServerRequest): ParsedHeaders {
-    throw new UnimplementedError();
-  }
+  public abstract getParsedHeaders(req: ServerRequest): ParsedHeaders;
 
   /** Store device IDs that were sent in the request headers. */
   private async saveDevicesAsync(req: ServerRequest) {
@@ -168,18 +165,14 @@ export class ManifestMiddleware extends ExpoMiddleware {
   }
 
   /** Log telemetry. */
-  protected trackManifest(version?: string) {
-    throw new UnimplementedError();
-  }
+  protected abstract trackManifest(version?: string): void;
 
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
-  public async _getManifestResponseAsync(options: ParsedHeaders): Promise<{
+  public abstract _getManifestResponseAsync(options: ParsedHeaders): Promise<{
     body: string;
     version: string;
     headers: ServerHeaders;
-  }> {
-    throw new UnimplementedError();
-  }
+  }>;
 
   private getExpoGoConfig({
     mainModuleName,

@@ -6,19 +6,19 @@ jest.mock('../../../../log');
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
-describe('_shouldContinue', () => {
+describe('_shouldHandleRequest', () => {
   const middleware = new ExpoMiddleware('/', ['/', '/index.html']);
   it('returns false when the request url is not defined', () => {
-    expect(middleware._shouldContinue(asReq({}))).toBe(false);
+    expect(middleware._shouldHandleRequest(asReq({}))).toBe(false);
   });
 
   it('returns false when the request url is not provided', () => {
-    expect(middleware._shouldContinue(asReq({ url: '/foo' }))).toBe(false);
+    expect(middleware._shouldHandleRequest(asReq({ url: '/foo' }))).toBe(false);
   });
 
   it('returns true when the request url is `/`, or `/index.html`', () => {
-    expect(middleware._shouldContinue(asReq({ url: '/' }))).toBe(true);
-    expect(middleware._shouldContinue(asReq({ url: '/index.html' }))).toBe(true);
+    expect(middleware._shouldHandleRequest(asReq({ url: '/' }))).toBe(true);
+    expect(middleware._shouldHandleRequest(asReq({ url: '/index.html' }))).toBe(true);
   });
 });
 

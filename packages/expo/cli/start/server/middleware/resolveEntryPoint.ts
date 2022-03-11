@@ -26,7 +26,7 @@ export function resolveEntryPoint(
   if (!entry) {
     // NOTE(Bacon): I purposefully don't mention all possible resolutions here since the package.json is the most standard and users should opt towards that.
     throw new CommandError(
-      chalk`The project entry file could not be resolved. Please define it in the {bold package.json} 'main' field.`
+      chalk`The project entry file could not be resolved. Please define it in the {bold package.json} "main" field.`
     );
   }
 
