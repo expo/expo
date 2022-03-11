@@ -84,7 +84,7 @@
     "cacache": "^15.3.0",
     "chalk": "^4.0.0",
     "cross-spawn": "^6.0.5",
-    "env-editor": "^1.0.0",
+    "env-editor": "^0.4.1",
     "expo-application": "~4.0.1",
     "expo-asset": "~8.4.5",
     "expo-constants": "~13.0.0",
