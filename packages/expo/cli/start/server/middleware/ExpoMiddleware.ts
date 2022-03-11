@@ -18,7 +18,7 @@ export abstract class ExpoMiddleware {
       !!req.url &&
       this.supportedPaths.includes(
         // Strip the query params
-        parse(req.url).pathname || req.url
+        parse(req.url).pathname
       )
     );
   }

@@ -91,8 +91,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
 
     const headers = this.getDefaultResponseHeaders();
     if (requestOptions.acceptSignature && !shouldUseAnonymousManifest) {
-      // TODO: Should this also be memoized?
-      const manifestSignature = await signExpoGoManifestAsync(expoUpdatesManifest);
+      const manifestSignature = await this.getSignedManifestStringAsync(expoUpdatesManifest);
       headers.set('expo-manifest-signature', manifestSignature);
     }
 
@@ -108,6 +107,8 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
       runtimeVersion: version,
     });
   }
+
+  private getSignedManifestStringAsync = memoize(signExpoGoManifestAsync);
 
   private getScopeKeyForProjectIdAsync = memoize(getScopeKeyForProjectIdAsync);
 }
