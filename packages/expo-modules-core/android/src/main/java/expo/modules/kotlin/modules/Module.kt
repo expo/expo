@@ -1,7 +1,10 @@
 package expo.modules.kotlin.modules
 
 import android.os.Bundle
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.kotlin.AppContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 
 abstract class Module {
   @Suppress("PropertyName")
@@ -12,11 +15,22 @@ abstract class Module {
   val appContext: AppContext
     get() = requireNotNull(_appContext) { "The module wasn't created! You can't access the app context." }
 
+  @Suppress("PropertyName")
+  @PublishedApi
+  internal lateinit var _coroutineScopeDelegate: Lazy<CoroutineScope>
+  val coroutineScope by _coroutineScopeDelegate
+
   fun sendEvent(name: String, body: Bundle?) {
     moduleEventEmitter?.emit(name, body)
   }
 
   abstract fun definition(): ModuleDefinitionData
+
+  internal fun cleanUp() {
+    if (_coroutineScopeDelegate.isInitialized()) {
+      coroutineScope.cancel(ModuleDestroyedException())
+    }
+  }
 }
 
 @Suppress("FunctionName")

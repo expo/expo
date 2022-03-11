@@ -2,6 +2,10 @@ package expo.modules.kotlin
 
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.modules.Module
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.lang.ref.WeakReference
 
 class ModuleRegistry(
@@ -13,6 +17,13 @@ class ModuleRegistry(
   fun register(module: Module) {
     val holder = ModuleHolder(module)
     module._appContext = requireNotNull(appContext.get()) { "Cannot create a module for invalid app context." }
+    module._coroutineScopeDelegate = lazy {
+      CoroutineScope(
+        Dispatchers.Default +
+          SupervisorJob() +
+          CoroutineName(holder.definition.name)
+      )
+    }
     holder.post(EventName.MODULE_CREATE)
     registry[holder.name] = holder
   }
@@ -58,4 +69,10 @@ class ModuleRegistry(
   }
 
   override fun iterator(): Iterator<ModuleHolder> = registry.values.iterator()
+
+  fun cleanUp() {
+    forEach {
+      it.cleanUp()
+    }
+  }
 }
