@@ -1,10 +1,10 @@
 ---
-title: EAS Update debugging guide
+title: Debugging guide
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-It's important to tell the current state of our app at any given time. We built EAS Update with this in mind. Once you know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire. This guide sets out to show how we can verify our EAS Update and expo-updates configuration, so that we can find the source of problems like an app not showing a published update.
+It's important to tell the current state of our app at any given time. We built EAS Update with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire. This guide sets out to show how we can verify our EAS Update and expo-updates configuration, so that we can find the source of problems like an app not showing a published update.
 
 ## expo-updates configuration
 
@@ -15,7 +15,7 @@ The expo-updates library runs inside an end-user's app and makes requests to an 
 When we set up EAS Update, we likely ran `eas update:configure` to configure expo-updates to work with EAS Update. This command makes changes to our app config (**app.json**/**app.config.js**). Here are the fields we'd expect to see:
 
 - `runtimeVersion` should be set. By default it is `{ "policy": "sdkVersion" }`. If our project has **android** and **ios** directories, we'll have to set the `runtimeVersion` manually.
-- `updates.url` should be a value like `https://u.expo.dev/your-project-id`, where `your-project-id` matches the ID of our project. You can see this ID on [our website](https://expo.dev/accounts/[account]/projects/[project]).
+- `updates.url` should be a value like `https://u.expo.dev/your-project-id`, where `your-project-id` matches the ID of our project. We can see this ID on [our website](https://expo.dev/accounts/[account]/projects/[project]).
 - `updates.enabled` should not be `false`. It's `true` by default if it is not specified.
 
 Finally, make sure that `expo-updates` is included in **package.json**. If it's not, run:
@@ -124,7 +124,7 @@ eas channel:view [channel-name]
 eas channel:view production
 ```
 
-If the channel is not linked to the branch you expect, you can change the link with:
+If the channel is not linked to the branch we expect, we can change the link with:
 
 ```bash
 eas channel:edit [channel-name] --branch [branch-name]
@@ -148,7 +148,7 @@ eas branch:view [branch-name]
 eas branch:view production
 ```
 
-The output of this command will show you a list of updates and their runtime versions and platforms. From this list, we should be able to figure out which update should apply to a given build, by matching the build's runtime version and platform to update's runtime version and platform. The most recent update that is compatible will be available for a build to download and execute.
+The output of this command will show us a list of updates and their runtime versions and platforms. From this list, we should be able to figure out which update should apply to a given build, by matching the build's runtime version and platform to update's runtime version and platform. The most recent update that is compatible will be available for a build to download and execute.
 
 ### Verify the update command
 
@@ -162,7 +162,7 @@ After publishing, the output will display the branch and the runtime version. Th
 
 ### Viewing deployments
 
-If you've made builds and updates with EAS, we can view the state of our project on our website on our project's deployments tab. We use the term _deployments_ to refer to the entire system of builds and their updates. The system includes builds, channels, branches, updates, runtime versions, and platforms.
+If we've made builds and updates with EAS, we can view the state of our project on our website on our project's deployments tab. We use the term _deployments_ to refer to the entire system of builds and their updates. The system includes builds, channels, branches, updates, runtime versions, and platforms.
 
 The EAS website has a page that shows the current state of our apps. We can view it at [https://expo.dev/accounts/[account]/projects/[project]/deployments](https://expo.dev/accounts/[account]/projects/[project]/deployments).
 
@@ -231,7 +231,7 @@ Here are the steps for inspecting an iOS simulator build on MacOS:
 1. Create an iOS simulator build of the app using EAS Build. This is done by adding `"ios": { "simulator": true }` to a build profile.
 2. Once the build is finished, download the result and unzip it.
 3. Then, right click on the app and select "Show Package Contents".
-4. From there, you can inspect the **Expo.plist** file.
+4. From there, we can inspect the **Expo.plist** file.
 
 Inside the **Expo.plist** file, we expect to see the following configurations:
 
@@ -251,7 +251,7 @@ Inside the **Expo.plist** file, we expect to see the following configurations:
 
 ### Inspecting the latest update locally
 
-When we publish an update with EAS Update, it creates a **/dist** folder in the root of your project locally, which includes the assets that were uploaded as a part of the update.
+When we publish an update with EAS Update, it creates a **/dist** folder in the root of our project locally, which includes the assets that were uploaded as a part of the update.
 
 <ImageSpotlight alt="Dist directory" src="/static/images/eas-update/dist.png" />
 
@@ -269,7 +269,7 @@ https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production
 
 ### Viewing all assets included in an update
 
-It may be helpful to see which assets are included in your update bundle. You can see a list of named assets by running:
+It may be helpful to see which assets are included in our update bundle. We can see a list of named assets by running:
 
 ```bash
 expo export --experimental-bundle
@@ -313,7 +313,7 @@ updates: [
 
 Since "update 3" is now the most recent update on the "production" branch, all users who query for an update in the future will receive "update 3" instead of the bad update, "update 2".
 
-While this will prevent all new users from seeing the bad update, users who've already received the bad update will run it until they can download the latest update. Since mobile networks are not always able to download the most recent update, sometimes users may run a bad update for a long time. When viewing error logs for your app, it's normal to see a lingering long tail of errors as your users' apps get the most recent update or build. You'll know you solved the bug when you see the error rate decline dramatically; however, it likely will not disappear completely if you have a diverse user base across many locations and mobile networks.
+While this will prevent all new users from seeing the bad update, users who've already received the bad update will run it until they can download the latest update. Since mobile networks are not always able to download the most recent update, sometimes users may run a bad update for a long time. When viewing error logs for our app, it's normal to see a lingering long tail of errors as our users' apps get the most recent update or build. We'll know we solved the bug when we see the error rate decline dramatically; however, it likely will not disappear completely if we have a diverse user base across many locations and mobile networks.
 
 ## Wrap up
 
