@@ -1,7 +1,7 @@
-import { lightTheme } from '@expo/styleguide-native';
-import { darkTheme } from '@expo/styleguide-native';
-import FeatureFlags from 'FeatureFlags';
+import { lightTheme, darkTheme } from '@expo/styleguide-native';
 import { Platform } from 'react-native';
+
+import FeatureFlags from '../FeatureFlags';
 
 export enum ColorTheme {
   LIGHT = 'light',
