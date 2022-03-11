@@ -54,7 +54,7 @@ describe('getParsedHeaders', () => {
   // The classic manifest middleware did not assert.
   it('asserts platform is missing', () => {
     expect(() => middleware.getParsedHeaders(asReq({}))).toThrowError(
-      /Must specify 'expo-platform' header or 'platform' query parameter/
+      /Must specify "expo-platform" header or "platform" query parameter/
     );
   });
 

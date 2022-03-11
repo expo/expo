@@ -88,7 +88,7 @@ describe('getHandler', () => {
     expect(middleware.handleRequestAsync).toBeCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
-    expect(res.statusCode).toEqual(520);
+    expect(res.statusCode).toEqual(500);
 
     expect(next).not.toBeCalled();
     // Returns error info.
