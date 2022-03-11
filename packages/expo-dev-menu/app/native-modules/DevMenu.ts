@@ -14,6 +14,10 @@ export type DevSettings = {
   isElementInspectorShown?: boolean;
   isHotLoadingEnabled?: boolean;
   isPerfMonitorShown?: boolean;
+  isRemoteDebuggingAvailable?: boolean;
+  isElementInspectorAvailable?: boolean;
+  isHotLoadingAvailable?: boolean;
+  isPerfMonitorAvailable?: boolean;
 };
 
 const DevMenu = NativeModules.ExpoDevMenuInternal;

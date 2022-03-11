@@ -54,7 +54,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     port: args['--port'],
     minify: !!args['--minify'],
 
-    //
     devClient: !!args['--dev-client'],
 
     scheme,
@@ -145,7 +144,7 @@ export async function resolvePortsAsync(
     }
     multiBundlerSettings.webpackPort = webpackPort;
   } else {
-    const devClientDefaultPort = Number(process.env.RCT_METRO_PORT) || 8081;
+    const devClientDefaultPort = parseInt(process.env.RCT_METRO_PORT, 10) || 8081;
     const expoGoDefaultPort = 19000;
     const metroPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
