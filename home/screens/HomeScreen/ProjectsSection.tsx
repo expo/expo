@@ -1,7 +1,10 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { PressableOpacity } from 'components/PressableOpacity';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
 import { CommonAppDataFragment } from 'graphql/types';
+import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React, { Fragment } from 'react';
 
 import { ProjectsListItem } from './ProjectsListItem';
@@ -9,14 +12,15 @@ import { ProjectsListItem } from './ProjectsListItem';
 type Props = {
   apps: CommonAppDataFragment[];
   showMore: boolean;
+  accountName: string;
 };
 
-export function ProjectsSection({ apps, showMore }: Props) {
+export function ProjectsSection({ apps, showMore, accountName }: Props) {
   const theme = useExpoTheme();
+  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onSeeAllProjectsPress() {
-    // TODO(fiberjw): navigate to the projects list page
-    console.log('onSeeAllProjectsPress');
+    navigation.push('RedesignedProjectsList', { accountName });
   }
 
   return (
