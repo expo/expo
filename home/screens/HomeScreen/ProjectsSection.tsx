@@ -7,7 +7,7 @@ import { CommonAppDataFragment } from 'graphql/types';
 import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React, { Fragment } from 'react';
 
-import { ProjectsListItem } from './ProjectsListItem';
+import { RedesignedProjectsListItem } from '../../components/RedesignedProjectsListItem';
 
 type Props = {
   apps: CommonAppDataFragment[];
@@ -30,13 +30,12 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
 
         return (
           <Fragment key={project.id}>
-            <ProjectsListItem
+            <RedesignedProjectsListItem
               // iconUrl will be an empty string if the project has no icon
               imageURL={project.iconUrl || undefined}
               name={project.name}
-              onPress={() => {
-                // TODO(fiberjw): navigate to the project details screen
-              }}
+              subtitle={project.packageName || project.fullName}
+              sdkVersion={project.sdkVersion}
             />
             {i < apps.length - 1 && <Divider />}
           </Fragment>

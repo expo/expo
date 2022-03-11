@@ -1,14 +1,18 @@
-import { useTheme } from '@react-navigation/native';
+import { RedesignedProjectsListItem } from 'components/RedesignedProjectsListItem';
 import dedent from 'dedent';
+import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, ScrollView, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItem,
+  ScrollView,
+  View as RNView,
+} from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import PrimaryButton from '../../components/PrimaryButton';
-import ProjectListItem from '../../components/ProjectListItem';
-import SectionHeader from '../../components/SectionHeader';
 import { StyledText } from '../../components/Text';
-import Colors from '../../constants/Colors';
 import SharedStyles from '../../constants/SharedStyles';
 import { CommonAppDataFragment } from '../../graphql/types';
 
@@ -25,8 +29,6 @@ const SERVER_ERROR_TEXT = dedent`
 type Props = {
   data: { apps?: CommonAppDataFragment[]; appCount?: number };
   loadMoreAsync: () => Promise<any>;
-  listTitle?: string;
-
   loading: boolean;
   error?: Error;
   refetch: () => Promise<unknown>;
@@ -35,6 +37,8 @@ type Props = {
 export function ProjectList(props: Props) {
   const [isReady, setReady] = React.useState(false);
   const isRetrying = React.useRef<null | boolean>(false);
+
+  const theme = useExpoTheme();
 
   React.useEffect(() => {
     const readyTimer = setTimeout(() => {
@@ -47,9 +51,9 @@ export function ProjectList(props: Props) {
 
   if (!isReady) {
     return (
-      <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
-        <ActivityIndicator color={Colors.light.tintColor} />
-      </View>
+      <RNView style={{ flex: 1, padding: 30, alignItems: 'center' }}>
+        <ActivityIndicator color={theme.highlight.accent} />
+      </RNView>
     );
   }
 
@@ -73,7 +77,7 @@ export function ProjectList(props: Props) {
       };
 
       return (
-        <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+        <RNView style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
           <StyledText
             style={SharedStyles.noticeDescriptionText}
             lightColor="rgba(36, 44, 58, 0.7)"
@@ -84,18 +88,17 @@ export function ProjectList(props: Props) {
           <PrimaryButton plain onPress={refetchDataAsync}>
             Try again
           </PrimaryButton>
-        </View>
+        </RNView>
       );
     }
 
-    return <View style={{ flex: 1 }} />;
+    return <RNView style={{ flex: 1 }} />;
   }
 
   return <ProjectListView {...props} />;
 }
 
-function ProjectListView({ data, loadMoreAsync, listTitle }: Props) {
-  const theme = useTheme();
+function ProjectListView({ data, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
 
   const extractKey = React.useCallback((item) => item.id, []);
@@ -107,7 +110,7 @@ function ProjectListView({ data, loadMoreAsync, listTitle }: Props) {
     try {
       await loadMoreAsync();
     } catch (e) {
-      console.log({ e });
+      console.error(e);
     } finally {
       isLoading.current = false;
     }
@@ -117,58 +120,47 @@ function ProjectListView({ data, loadMoreAsync, listTitle }: Props) {
   const totalAppCount = data.appCount ?? 0;
   const canLoadMore = currentAppCount < totalAppCount;
 
-  const renderItem = ({ item: app, index }: { item: CommonAppDataFragment; index: number }) => {
-    const experienceInfo = { id: app.id, username: app.username, slug: app.packageName };
+  const renderItem: ListRenderItem<CommonAppDataFragment> = ({ item: app }) => {
     return (
-      <ProjectListItem
+      <RedesignedProjectsListItem
         key={app.id}
-        url={app.fullName}
-        image={app.iconUrl || require('../../assets/placeholder-app-icon.png')}
-        title={app.name}
+        name={app.name}
+        imageURL={app.iconUrl || undefined}
         subtitle={app.packageName || app.fullName}
-        last={index === currentAppCount - 1}
-        experienceInfo={experienceInfo}
         sdkVersion={app.sdkVersion}
       />
     );
   };
 
-  const renderHeader = () => {
-    return listTitle ? <SectionHeader title={listTitle} /> : <View />;
-  };
-
-  const style = React.useMemo(
-    () => [{ flex: 1 }, { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground }],
-    [theme]
-  );
-
   return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        data={data.apps}
-        keyExtractor={extractKey}
-        renderItem={renderItem}
-        style={style}
-        ListHeaderComponent={renderHeader}
-        renderScrollComponent={(props: React.ComponentProps<typeof InfiniteScrollView>) => {
-          // note(brent): renderScrollComponent is passed on to
-          // InfiniteScrollView so it renders itself again and the result is two
-          // loading indicators. So we need to detect if we're in
-          // InfiniteScrollView by checking for a prop that is passed in to it,
-          // in this case we'll just check for props.renderLoadingIndicator.
-          // This should be fixed upstream in InfiniteScrollView, so if InfiniteScrollView
-          // is itself the scroll component being rendered it doesn't once again render
-          // the scroll component.
-          if (props.renderLoadingIndicator) {
-            return <ScrollView {...props} />;
-          } else {
-            return <InfiniteScrollView {...props} />;
-          }
-        }}
-        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-        canLoadMore={canLoadMore}
-        onLoadMoreAsync={handleLoadMoreAsync}
-      />
+    <View flex="1" padding="medium">
+      <View flex="1" bg="default" border="hairline" rounded="large">
+        <FlatList
+          data={data.apps}
+          keyExtractor={extractKey}
+          renderItem={renderItem}
+          style={{ flex: 1, overflow: 'hidden' }}
+          ItemSeparatorComponent={Divider}
+          renderScrollComponent={(props: React.ComponentProps<typeof InfiniteScrollView>) => {
+            // note(brent): renderScrollComponent is passed on to
+            // InfiniteScrollView so it renders itself again and the result is two
+            // loading indicators. So we need to detect if we're in
+            // InfiniteScrollView by checking for a prop that is passed in to it,
+            // in this case we'll just check for props.renderLoadingIndicator.
+            // This should be fixed upstream in InfiniteScrollView, so if InfiniteScrollView
+            // is itself the scroll component being rendered it doesn't once again render
+            // the scroll component.
+            if (props.renderLoadingIndicator) {
+              return <ScrollView {...props} />;
+            } else {
+              return <InfiniteScrollView {...props} />;
+            }
+          }}
+          // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
+          canLoadMore={canLoadMore}
+          onLoadMoreAsync={handleLoadMoreAsync}
+        />
+      </View>
     </View>
   );
 }
