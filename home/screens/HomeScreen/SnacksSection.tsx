@@ -1,22 +1,27 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { PressableOpacity } from 'components/PressableOpacity';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
 import { CommonSnackDataFragment } from 'graphql/types';
+import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React, { Fragment } from 'react';
 
-import { SnacksListItem } from './SnacksListItem';
+import { RedesignedSnacksListItem } from '../../components/RedesignedSnacksListItem';
 
 type Props = {
   snacks: CommonSnackDataFragment[];
   showMore: boolean;
+  accountName: string;
 };
 
-export function SnacksSection({ snacks, showMore }: Props) {
+export function SnacksSection({ snacks, showMore, accountName }: Props) {
   const theme = useExpoTheme();
 
+  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
+
   function onSeeAllSnacksPress() {
-    // TODO(fiberjw): navigate to the snacks list page
-    console.log('onSeeAllSnacksPress');
+    navigation.push('RedesignedSnacksList', { accountName });
   }
 
   return (
@@ -26,7 +31,7 @@ export function SnacksSection({ snacks, showMore }: Props) {
 
         return (
           <Fragment key={snack.id}>
-            <SnacksListItem
+            <RedesignedSnacksListItem
               name={snack.name}
               description={snack.description}
               isDraft={snack.isDraft}
