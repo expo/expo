@@ -124,3 +124,27 @@ test('initial render with the correct style for dark mode', () => {
     selectors.light.bg.test.backgroundColor
   );
 });
+
+test('it handles ad-hoc selectors as props', () => {
+  const Heading = create(Text, {});
+
+  const selectors = { dark: { backgroundColor: 'red' }, light: { backgroundColor: 'blue' } };
+
+  const { toJSON, rerender } = render(
+    <ThemeProvider themePreference="dark">
+      <Heading selectors={selectors} />
+    </ThemeProvider>
+  );
+
+  const darkThemeRender: any = toJSON();
+  expect(darkThemeRender.props.style).toEqual(selectors.dark);
+
+  rerender(
+    <ThemeProvider themePreference="light">
+      <Heading selectors={selectors} />
+    </ThemeProvider>
+  );
+
+  const lightThemeRender: any = toJSON();
+  expect(lightThemeRender.props.style).toEqual(selectors.light);
+});

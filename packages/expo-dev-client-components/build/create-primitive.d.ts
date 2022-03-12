@@ -22,6 +22,10 @@ declare type Selectors<Variants> = {
     light?: SelectorMap<Variants>;
     dark?: SelectorMap<Variants>;
 };
+declare type SelectorProps = {
+    light?: StyleType;
+    dark?: StyleType;
+};
 export declare function create<T, O extends Options>(component: React.ComponentType<T>, config: O & {
     selectors?: Selectors<O['variants']>;
     props?: T;
@@ -30,6 +34,8 @@ export declare function create<T, O extends Options>(component: React.ComponentT
 } & Nested<(O & {
     selectors?: Selectors<O["variants"]> | undefined;
     props?: T | undefined;
-})["variants"]>> & React.RefAttributes<T>>;
+})["variants"]> & {
+    selectors?: SelectorProps | undefined;
+}> & React.RefAttributes<T>>;
 export {};
 //# sourceMappingURL=create-primitive.d.ts.map

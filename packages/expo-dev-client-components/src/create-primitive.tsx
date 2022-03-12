@@ -27,6 +27,11 @@ type Selectors<Variants> = {
   dark?: SelectorMap<Variants>;
 };
 
+type SelectorProps = {
+  light?: StyleType;
+  dark?: StyleType;
+};
+
 export function create<T, O extends Options>(
   component: React.ComponentType<T>,
   config: O & { selectors?: Selectors<O['variants']>; props?: T }
@@ -35,12 +40,13 @@ export function create<T, O extends Options>(
 
   const Component = React.forwardRef<
     T,
-    React.PropsWithChildren<T> & Nested<typeof config['variants']>
+    React.PropsWithChildren<T> & Nested<typeof config['variants']> & { selectors?: SelectorProps }
   >((props, ref) => {
     const theme = useTheme();
 
     const variantStyles = stylesForVariants(props, config.variants);
     const selectorStyles = stylesForSelectors(props, config.selectors, { theme });
+    const selectorPropsStyles = stylesForSelectorProps(props.selectors, { theme });
 
     return React.createElement(component, {
       ...props,
@@ -49,6 +55,7 @@ export function create<T, O extends Options>(
         config.base,
         variantStyles,
         selectorStyles,
+        selectorPropsStyles,
         // @ts-ignore
         props.style || {},
       ]),
@@ -88,6 +95,19 @@ function stylesForSelectors(props: any, selectors: any = {}, state: any = {}) {
       if (variants.base != null) {
         styles.push(variants.base);
       }
+    }
+  }
+
+  return StyleSheet.flatten(styles);
+}
+
+function stylesForSelectorProps(selectors: any = {}, state: any = {}) {
+  const styles: any[] = [];
+
+  if (state.theme != null) {
+    if (selectors[state.theme] != null) {
+      const selectorStyles = selectors[state.theme];
+      styles.push(selectorStyles);
     }
   }
 

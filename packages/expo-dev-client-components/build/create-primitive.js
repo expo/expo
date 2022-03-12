@@ -7,6 +7,7 @@ export function create(component, config) {
         const theme = useTheme();
         const variantStyles = stylesForVariants(props, config.variants);
         const selectorStyles = stylesForSelectors(props, config.selectors, { theme });
+        const selectorPropsStyles = stylesForSelectorProps(props.selectors, { theme });
         return React.createElement(component, {
             ...props,
             ...config.props,
@@ -14,6 +15,7 @@ export function create(component, config) {
                 config.base,
                 variantStyles,
                 selectorStyles,
+                selectorPropsStyles,
                 // @ts-ignore
                 props.style || {},
             ]),
@@ -45,6 +47,16 @@ function stylesForSelectors(props, selectors = {}, state = {}) {
             if (variants.base != null) {
                 styles.push(variants.base);
             }
+        }
+    }
+    return StyleSheet.flatten(styles);
+}
+function stylesForSelectorProps(selectors = {}, state = {}) {
+    const styles = [];
+    if (state.theme != null) {
+        if (selectors[state.theme] != null) {
+            const selectorStyles = selectors[state.theme];
+            styles.push(selectorStyles);
         }
     }
     return StyleSheet.flatten(styles);
