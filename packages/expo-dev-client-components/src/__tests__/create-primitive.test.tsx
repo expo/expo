@@ -148,3 +148,17 @@ test('it handles ad-hoc selectors as props', () => {
   const lightThemeRender: any = toJSON();
   expect(lightThemeRender.props.style).toEqual(selectors.light);
 });
+
+test('it does not pass props that have a variant of the same name to components', () => {
+  const Box = create(View, {
+    variants: {
+      width: {
+        test: { width: 24 },
+      },
+    },
+  });
+
+  const { toJSON } = render(<Box width="test" />);
+  const output: any = toJSON();
+  expect(output.props.width).toBeUndefined();
+});

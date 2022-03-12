@@ -36,7 +36,8 @@ export function create<T, O extends Options>(
   component: React.ComponentType<T>,
   config: O & { selectors?: Selectors<O['variants']>; props?: T }
 ) {
-  config.selectors = config.selectors || {};
+  config.selectors = config.selectors ?? {};
+  config.variants = config.variants ?? {};
 
   const Component = React.forwardRef<
     T,
@@ -48,9 +49,20 @@ export function create<T, O extends Options>(
     const selectorStyles = stylesForSelectors(props, config.selectors, { theme });
     const selectorPropsStyles = stylesForSelectorProps(props.selectors, { theme });
 
+    const variantFreeProps = { ...props };
+
+    // @ts-ignore
+    // there could be a conflict between the primitive prop and the variant name
+    // for example - variant name "width" and prop "width"
+    // in these cases, favor the variant because it is under the users control (e.g they can update the conflicting name)
+
+    Object.keys(config.variants).forEach((variant) => {
+      delete variantFreeProps[variant];
+    });
+
     return React.createElement(component, {
-      ...props,
       ...config.props,
+      ...variantFreeProps,
       style: StyleSheet.flatten([
         config.base,
         variantStyles,
