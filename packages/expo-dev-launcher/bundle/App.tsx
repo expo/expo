@@ -1,12 +1,18 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { HomeFilledIcon, SettingsFilledIcon, useExpoTheme } from 'expo-dev-client-components';
+import {
+  ExtensionsFilledIcon,
+  HomeFilledIcon,
+  SettingsFilledIcon,
+  useExpoTheme,
+} from 'expo-dev-client-components';
 import * as React from 'react';
 
 import { AppProviders } from './components/AppProviders';
 import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
 import { CrashReportScreen } from './screens/CrashReportScreen';
+import { ExtensionsScreen } from './screens/ExtensionsScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
@@ -39,8 +45,6 @@ export function App(props: LauncherAppProps) {
 }
 
 const Main = () => {
-  const theme = useExpoTheme();
-
   return (
     <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }}>
       <Tab.Screen
@@ -48,20 +52,24 @@ const Main = () => {
         component={HomeScreen}
         options={{
           header: () => null,
-          tabBarLabelStyle: {
-            // color: 'red'
-          },
           tabBarIcon: ({ focused }) => <HomeFilledIcon focused={focused} />,
         }}
       />
+      {__DEV__ && (
+        <Tab.Screen
+          name="Extensions"
+          component={ExtensionsScreen}
+          options={{
+            header: () => null,
+            tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,
+          }}
+        />
+      )}
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
           header: () => null,
-          tabBarLabelStyle: {
-            // color: 'red',
-          },
           tabBarIcon: ({ focused }) => <SettingsFilledIcon focused={focused} />,
         }}
       />
