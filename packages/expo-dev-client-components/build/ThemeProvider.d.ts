@@ -1,18 +1,11 @@
 import * as React from 'react';
-export declare type ThemePreference = 'no-preference' | 'light' | 'dark';
-export declare const ThemeContext: React.Context<string>;
+declare type ThemePreference = 'light' | 'dark' | 'no-preference';
+declare type Theme = 'light' | 'dark';
+export declare const useTheme: () => Theme;
 declare type ThemeProviderProps = {
     children: React.ReactNode;
-    theme: ThemePreference;
+    themePreference?: ThemePreference;
 };
-export declare function ThemePreferenceProvider({ children, theme }: ThemeProviderProps): JSX.Element;
-declare type ThemePreferenceChangeListener = (preference: ThemePreference) => void;
-export declare function useThemePreference(): ThemePreference;
-export declare const ThemePreferences: {
-    getPreference: () => ThemePreference;
-    addChangeListener: (listener: ThemePreferenceChangeListener) => void;
-    removeChangeListener: (listener: ThemePreferenceChangeListener) => void;
-    notify: (newPreference: ThemePreference) => void;
-};
+export declare function ThemeProvider({ children, themePreference }: ThemeProviderProps): JSX.Element;
 export {};
 //# sourceMappingURL=ThemeProvider.d.ts.map
