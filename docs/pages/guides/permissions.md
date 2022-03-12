@@ -48,7 +48,7 @@ Apps using dangerous or signature permissions without valid reasons _may be reje
 
 When adding Expo and other React Native modules to your project, certain Android permissions might be implied automatically. The modules should only add relevant permissions **required** to use the module, however, sometimes you may want to remove some of these permissions.
 
-Since the `android.permissions` manifest property doesn't work in the bare workflow- when you want to exclude specific permissions from the build, you have to exclude them in your **AndroidManifest.xml**. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+Since the `android.permissions` manifest property doesn't work in the bare workflow, you'll need to edit **AndroidManifest.xml** to exclude specific permissions from the build. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
 
 ```xml
 <manifest xmlns:tools="http://schemas.android.com/tools">
