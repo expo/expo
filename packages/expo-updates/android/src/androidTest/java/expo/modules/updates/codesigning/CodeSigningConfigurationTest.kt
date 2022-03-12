@@ -76,9 +76,10 @@ class CodeSigningConfigurationTest {
   fun test_validateSignature_Valid() {
     val testCert = getTestCertificate(TestCertificateType.VALID)
     val codeSigningConfiguration = CodeSigningConfiguration(testCert, mapOf(), false)
-    val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader(CertificateFixtures.testSignature)
-    val isValid = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testBody.toByteArray(), null)
-    Assert.assertTrue(isValid)
+    val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader(CertificateFixtures.testNewManifestBodySignature)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testNewManifestBody.toByteArray(), null)
+    Assert.assertTrue(signatureValidationResult.isValid)
+    Assert.assertNull(signatureValidationResult.expoProjectInformation)
   }
 
   @Test
@@ -86,8 +87,9 @@ class CodeSigningConfigurationTest {
     val testCert = getTestCertificate(TestCertificateType.VALID)
     val codeSigningConfiguration = CodeSigningConfiguration(testCert, mapOf(), false)
     val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader("sig=\"aGVsbG8=\"")
-    val isValid = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testBody.toByteArray(), null)
-    Assert.assertFalse(isValid)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testNewManifestBody.toByteArray(), null)
+    Assert.assertFalse(signatureValidationResult.isValid)
+    Assert.assertNull(signatureValidationResult.expoProjectInformation)
   }
 
   @Test(expected = Exception::class)
@@ -102,7 +104,7 @@ class CodeSigningConfigurationTest {
       false
     )
     val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader("sig=\"aGVsbG8=\", keyid=\"other\"")
-    codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testBody.toByteArray(), null)
+    codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testNewManifestBody.toByteArray(), null)
   }
 
   @Test
@@ -113,9 +115,10 @@ class CodeSigningConfigurationTest {
     val intermediateCert = getTestCertificate(TestCertificateType.CHAIN_INTERMEDIATE)
 
     val codeSigningConfiguration = CodeSigningConfiguration(testCert, mapOf(), false)
-    val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader(CertificateFixtures.testSignature)
-    val isValid = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testBody.toByteArray(), leafCert + intermediateCert)
-    Assert.assertTrue(isValid)
+    val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader(CertificateFixtures.testNewManifestBodySignature)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testNewManifestBody.toByteArray(), leafCert + intermediateCert)
+    Assert.assertTrue(signatureValidationResult.isValid)
+    Assert.assertNull(signatureValidationResult.expoProjectInformation)
   }
 
   @Test
@@ -130,8 +133,9 @@ class CodeSigningConfigurationTest {
       ),
       true
     )
-    val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader(CertificateFixtures.testValidChainLeafSignature)
-    val isValid = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testBody.toByteArray(), leafCert + intermediateCert)
-    Assert.assertTrue(isValid)
+    val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader(CertificateFixtures.testNewManifestBodyValidChainLeafSignature)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testNewManifestBody.toByteArray(), leafCert + intermediateCert)
+    Assert.assertTrue(signatureValidationResult.isValid)
+    Assert.assertEquals(signatureValidationResult.expoProjectInformation, ExpoProjectInformation(appId = "285dc9ca-a25d-4f60-93be-36dc312266d7", scopeKey = "@test/app"))
   }
 }
