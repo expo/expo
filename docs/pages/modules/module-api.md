@@ -473,7 +473,7 @@ For more examples from real modules, you can refer to Expo modules that already 
 - `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios/CellularModule.swift), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular/CellularModule.kt))
 - `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios/LinearGradientModule.swift)), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient/LinearGradientModule.kt)
 - `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios/HapticsModule.swift))
-- `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios/EXClipboard/ClipboardModule.swift))
+- `expo-clipboard` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-clipboard/ios/ClipboardModule.swift))
 - `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios/LocalizationModule.swift))
 - `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI/ExpoSystemUIModule.swift))
 - `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios/ImageManipulatorModule.swift))
