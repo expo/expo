@@ -108,14 +108,7 @@ function addRevisionToResults(results, name, revision) {
  */
 async function findPackagesConfigPathsAsync(searchPath) {
     const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-    const paths = await (0, fast_glob_1.default)([
-        `*/${bracedFilenames}`,
-        `@*/*/${bracedFilenames}`,
-        // Search config inside additional `expo` directory.
-        // This is for expo adapter in third party modules.
-        `*/expo/${bracedFilenames}`,
-        `@*/*/expo/${bracedFilenames}`,
-    ], {
+    const paths = await (0, fast_glob_1.default)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
         cwd: searchPath,
     });
     // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
