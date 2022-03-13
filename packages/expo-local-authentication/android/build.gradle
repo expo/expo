@@ -59,7 +59,7 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -72,8 +72,8 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
-    versionCode 30
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    versionCode 31
     versionName "12.1.0"
   }
   lintOptions {
@@ -84,7 +84,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  api "androidx.biometric:biometric:1.1.0"
+  api "androidx.biometric:biometric:1.2.0-alpha04"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

@@ -12,6 +12,13 @@
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 12.1.0 - 2022-03-13
+
+### 🐛 Bug fixes
+
+- Fixed `error: user_cancel` when try to use PIN/Pattern/Password to authenticate by changing android sdk version to 31 and androix.biometric.biometric:1.2.0-alpha04. ([#16612](https://github.com/expo/expo/pull/16612) by [@PolidoroRoot](https://github.com/Polidoro-root))
+
+
 ## 12.1.1 - 2022-02-01
 
 ### 🐛 Bug fixes
