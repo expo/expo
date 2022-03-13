@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android fix crashes caused by accessing player from the wrong thread
+
 ### 💡 Others
 
 ## 11.1.0 — 2022-03-10
