@@ -64,12 +64,6 @@ describe(resolveModuleAsync, () => {
 });
 
 describe(convertPackageNameToProjectName, () => {
-  it('should strip invalid characters', () => {
-    expect(convertPackageNameToProjectName('@unimodules-core', 'android/build.gradle')).toBe(
-      'unimodules-core'
-    );
-  });
-
   it('should convert scoped package name to dash', () => {
     expect(convertPackageNameToProjectName('@expo/expo-test', 'android/build.gradle')).toBe(
       'expo-expo-test'

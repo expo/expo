@@ -9,7 +9,7 @@
 ### 🎉 New features
 
 - Add `ios.swiftModuleName` to module config. ([#16260](https://github.com/expo/expo/pull/16260) by [@esamelson](https://github.com/esamelson))
-- Add linking to multiple podspecs and gradle projects in a package. ([#16511](https://github.com/expo/expo/pull/16511) by [@kudo](https://github.com/kudo))
+- Added support for linking multiple podspecs and Gradle projects in a package. ([#16511](https://github.com/expo/expo/pull/16511) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

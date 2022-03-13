@@ -165,14 +165,11 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
  *   `$` to indicate subprojects
  *   `/` path will transform as `-`
  *
- * Example: `@unimodules/core` + `android/build.gradle` → `unimodules-core`
+ * Example: `@expo/example` + `android/build.gradle` → `expo-example`
  *
  * Example: multiple projects
  *   - `expo-test` + `android/build.gradle` → `react-native-third-party`
  *   - `expo-test` + `subproject/build.gradle` → `react-native-third-party$subproject`
- *
- * Example: third party expo adapter module
- *   - `react-native-third-party` + `expo/android/build.gradle` → `react-native-third-party$expo-android`
  */
 export function convertPackageNameToProjectName(
   packageName: string,
