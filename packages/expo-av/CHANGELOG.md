@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On Android fix crashes caused by accessing player from the wrong thread
+- On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
 
