@@ -5,35 +5,35 @@ import XCTest
 @testable import EXUpdates
 
 class EXUpdatesSignatureHeaderInfoTests : XCTestCase {
-  func testParsesCodeSigningInfo() throws {
-    let codeSigningInfo = try EXUpdatesSignatureHeaderInfo(signatureHeader: "sig=\"12345\", keyid=\"test\", alg=\"rsa-v1_5-sha256\"")
+  func test_parseSignatureHeader_ParsesCodeSigningInfo() throws {
+    let codeSigningInfo = try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "sig=\"12345\", keyid=\"test\", alg=\"rsa-v1_5-sha256\"")
     XCTAssertEqual(codeSigningInfo.signature, "12345")
     XCTAssertEqual(codeSigningInfo.keyId, "test")
     XCTAssertEqual(codeSigningInfo.algorithm, EXUpdatesCodeSigningAlgorithm.RSA_SHA256)
   }
 
-    func testDefaultsKeyIdAndAlg() throws {
-      let codeSigningInfo = try EXUpdatesSignatureHeaderInfo(signatureHeader: "sig=\"12345\"")
+    func test_parseSignatureHeader_DefaultsKeyIdAndAlg() throws {
+      let codeSigningInfo = try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "sig=\"12345\"")
       XCTAssertEqual(codeSigningInfo.signature, "12345")
       XCTAssertEqual(codeSigningInfo.keyId, "root")
       XCTAssertEqual(codeSigningInfo.algorithm, EXUpdatesCodeSigningAlgorithm.RSA_SHA256)
     }
 
-    func testThrowsForInvalidAlg() {
-      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo(signatureHeader: nil)) { error in
-        XCTAssertEqual(error as? EXUpdatesSignatureHeaderInfoError, EXUpdatesSignatureHeaderInfoError.MissingSignatureHeader)
+    func test_parseSignatureHeader_ThrowsForInvalidAlg() {
+      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: nil)) { error in
+        XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.SignatureHeaderMissing)
       }
       
-      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo(signatureHeader: "fake=\"12345\"")) { error in
-        XCTAssertEqual(error as? EXUpdatesSignatureHeaderInfoError, EXUpdatesSignatureHeaderInfoError.SigMissing)
+      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "fake=\"12345\"")) { error in
+        XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.SignatureHeaderSigMissing)
       }
       
-      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo(signatureHeader: "s=1")) { error in
-        XCTAssertEqual(error as? EXUpdatesSignatureHeaderInfoError, EXUpdatesSignatureHeaderInfoError.StructuredFieldParseError)
+      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "s=1")) { error in
+        XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.SignatureHeaderStructuredFieldParseError)
       }
       
-      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo(signatureHeader: "sig=\"12345\", alg=\"blah\"")) { error in
-        XCTAssertEqual(error as? EXUpdatesCodeSigningAlgorithmError, EXUpdatesCodeSigningAlgorithmError.parseError)
+      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "sig=\"12345\", alg=\"blah\"")) { error in
+        XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.AlgorithmParseError)
       }
     }
 }
