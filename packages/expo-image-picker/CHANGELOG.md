@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix failure on Android when `allowsEditing` is `true` and non-jpeg file picked.
+- Fix failure on Android when `allowsEditing` is `true` and non-jpeg file picked. ([#16615](https://github.com/expo/expo/pull/16615) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
 
