@@ -108,6 +108,7 @@ dependencies {
   testImplementation 'junit:junit:4.13.1'
   testImplementation 'io.mockk:mockk:1.10.6'
   testImplementation "com.google.truth:truth:1.1.2"
+  testImplementation "org.robolectric:robolectric:4.5.1"
 }
 
 /**
