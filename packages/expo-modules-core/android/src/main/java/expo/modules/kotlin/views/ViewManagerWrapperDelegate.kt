@@ -15,7 +15,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   private val definition: ViewManagerDefinition
     get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
 
-  private val groupViewDefinition: GroupViewDefinition?
+  internal val groupViewDefinition: GroupViewDefinition?
     get() = definition.groupViewDefinition
 
   val name: String
@@ -77,15 +77,5 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
       viewDelegate.isValidated = true
     }
-  }
-
-  internal inline fun <reified T> callGroupViewActionOrElse(
-    action: GroupViewAction.Action,
-    payload: GroupViewAction.Payload,
-    fallback: () -> T
-  ): T = if (groupViewDefinition?.hasAction(action) == true) {
-    groupViewDefinition!!.callAction(action, payload)
-  } else {
-    fallback()
   }
 }

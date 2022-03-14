@@ -7,6 +7,7 @@ import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
+import expo.modules.core.utilities.ifNull
 
 class GroupViewManagerWrapper(
   override val viewWrapperDelegate: ViewManagerWrapperDelegate
@@ -42,46 +43,51 @@ class GroupViewManagerWrapper(
     return super.getExportedCustomDirectEventTypeConstants()
   }
 
-  override fun addView(parent: ViewGroup?, child: View?, index: Int) {
-    viewWrapperDelegate.callGroupViewActionOrElse<Unit>(
-      GroupViewAction.Action.ADD_VIEW,
-      GroupViewAction.Payload(parent, child, index)
-    ) {
-      super.addView(parent, child, index)
-    }
+  override fun addView(parent: ViewGroup, child: View, index: Int) {
+    viewWrapperDelegate
+      .groupViewDefinition
+      ?.addViewAction
+      ?.invoke(parent, child, index)
+      .ifNull {
+        super.addView(parent, child, index)
+      }
   }
 
-  override fun getChildCount(parent: ViewGroup?): Int =
-    viewWrapperDelegate.callGroupViewActionOrElse<Int>(
-      GroupViewAction.Action.GET_CHILD_COUNT,
-      GroupViewAction.Payload(parentView = parent)
-    ) {
-      super.getChildCount(parent)
-    }
-
-  override fun getChildAt(parent: ViewGroup?, index: Int): View =
-    viewWrapperDelegate.callGroupViewActionOrElse<View>(
-      GroupViewAction.Action.GET_CHILD_AT,
-      GroupViewAction.Payload(parentView = parent, index = index)
-    ) {
-      super.getChildAt(parent, index)
-    }
-
-  override fun removeViewAt(parent: ViewGroup?, index: Int) {
-    viewWrapperDelegate.callGroupViewActionOrElse<Unit>(
-      GroupViewAction.Action.REMOVE_VIEW_AT,
-      GroupViewAction.Payload(parentView = parent, index = index)
-    ) {
-      super.removeViewAt(parent, index)
-    }
+  override fun getChildCount(parent: ViewGroup): Int {
+    return viewWrapperDelegate.groupViewDefinition
+      ?.getChildCountAction
+      ?.invoke(parent)
+      .ifNull {
+        super.getChildCount(parent)
+      }
   }
 
-  override fun removeView(parent: ViewGroup?, view: View?) {
-    viewWrapperDelegate.callGroupViewActionOrElse<Unit>(
-      GroupViewAction.Action.REMOVE_VIEW,
-      GroupViewAction.Payload(parentView = parent, childView = view)
-    ) {
-      super.removeView(parent, view)
-    }
+  override fun getChildAt(parent: ViewGroup, index: Int): View? {
+    viewWrapperDelegate.groupViewDefinition
+      ?.getChildAtAction
+      ?.let {
+        return it.invoke(parent, index)
+      }
+      .ifNull {
+        return super.getChildAt(parent, index)
+      }
+  }
+
+  override fun removeViewAt(parent: ViewGroup, index: Int) {
+    viewWrapperDelegate.groupViewDefinition
+      ?.removeViewAtAction
+      ?.invoke(parent, index)
+      .ifNull {
+        super.removeViewAt(parent, index)
+      }
+  }
+
+  override fun removeView(parent: ViewGroup, view: View) {
+    viewWrapperDelegate.groupViewDefinition
+      ?.removeViewAction
+      ?.invoke(parent, view)
+      .ifNull {
+        super.removeView(parent, view)
+      }
   }
 }
