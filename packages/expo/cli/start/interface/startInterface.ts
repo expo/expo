@@ -22,12 +22,12 @@ const PLATFORM_SETTINGS: Record<
   { name: string; key: 'android' | 'ios'; launchTarget: 'emulator' | 'simulator' }
 > = {
   android: {
-    name: `Android`,
+    name: 'Android',
     key: 'android',
     launchTarget: 'emulator',
   },
   ios: {
-    name: `iOS`,
+    name: 'iOS',
     key: 'ios',
     launchTarget: 'simulator',
   },

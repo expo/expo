@@ -5,7 +5,7 @@ import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../log';
 
-export const BLT = `\u203A`;
+export const BLT = '\u203A';
 
 export type StartOptions = {
   isWebSocketsEnabled?: boolean;
@@ -46,29 +46,29 @@ export function printUsage(
   if (verbose) {
     logCommandsTable([
       {},
-      { key: 'a', msg: `open Android`, disabled: isAndroidDisabled },
-      { key: 'shift+a', msg: `select a device or emulator`, disabled: isAndroidDisabled },
-      isMac && { key: 'i', msg: `open iOS simulator`, disabled: isIosDisabled },
-      isMac && { key: 'shift+i', msg: `select a simulator`, disabled: isIosDisabled },
-      { key: 'w', msg: `open web`, disabled: isWebDisable },
+      { key: 'a', msg: 'open Android', disabled: isAndroidDisabled },
+      { key: 'shift+a', msg: 'select a device or emulator', disabled: isAndroidDisabled },
+      isMac && { key: 'i', msg: 'open iOS simulator', disabled: isIosDisabled },
+      isMac && { key: 'shift+i', msg: 'select a simulator', disabled: isIosDisabled },
+      { key: 'w', msg: 'open web', disabled: isWebDisable },
       {},
-      { key: 'r', msg: `reload app` },
-      !!options.isWebSocketsEnabled && { key: 'm', msg: `toggle menu` },
-      !!options.isWebSocketsEnabled && { key: 'shift+m', msg: `more tools` },
-      !!options.isWebSocketsEnabled && { key: 'j', msg: `open JavaScript inspector for Hermes` },
-      { key: 'o', msg: `open project code in your editor` },
-      { key: 'c', msg: `show project QR` },
+      { key: 'r', msg: 'reload app' },
+      !!options.isWebSocketsEnabled && { key: 'm', msg: 'toggle menu' },
+      !!options.isWebSocketsEnabled && { key: 'shift+m', msg: 'more tools' },
+      !!options.isWebSocketsEnabled && { key: 'j', msg: 'open JavaScript inspector for Hermes' },
+      { key: 'o', msg: 'open project code in your editor' },
+      { key: 'c', msg: 'show project QR' },
       {},
     ]);
   } else {
     logCommandsTable([
       {},
-      { key: 'a', msg: `open Android`, disabled: isAndroidDisabled },
-      isMac && { key: 'i', msg: `open iOS simulator`, disabled: isIosDisabled },
-      { key: 'w', msg: `open web`, disabled: isWebDisable },
+      { key: 'a', msg: 'open Android', disabled: isAndroidDisabled },
+      isMac && { key: 'i', msg: 'open iOS simulator', disabled: isIosDisabled },
+      { key: 'w', msg: 'open web', disabled: isWebDisable },
       {},
-      { key: 'r', msg: `reload app` },
-      !!options.isWebSocketsEnabled && { key: 'm', msg: `toggle menu` },
+      { key: 'r', msg: 'reload app' },
+      !!options.isWebSocketsEnabled && { key: 'm', msg: 'toggle menu' },
       {},
     ]);
   }

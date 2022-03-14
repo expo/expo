@@ -72,8 +72,7 @@ export async function startAsync(
 
   if (!options.forceManifestType) {
     const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
-    const updatesUrl = exp.updates?.url;
-    const isEasUpdatesUrl = updatesUrl && easUpdatesUrlRegex.test(updatesUrl);
+    const isEasUpdatesUrl = easUpdatesUrlRegex.test(exp.updates?.url);
     options.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
   }
 

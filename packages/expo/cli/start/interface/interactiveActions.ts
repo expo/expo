@@ -23,7 +23,7 @@ export class DevServerManagerActions {
         printQRCode(url);
         Log.log(printItem(`Metro waiting on ${chalk.underline(url)}`));
         // TODO: if development build, change this message!
-        Log.log(printItem(`Scan the QR code above with Expo Go (Android) or the Camera app (iOS)`));
+        Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
       } catch (error) {
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
@@ -43,7 +43,7 @@ export class DevServerManagerActions {
       Log.log();
       Log.log(printItem(`Webpack waiting on ${chalk.underline(webUrl)}`));
       Log.log(
-        chalk.gray(printItem(`Expo Webpack (web) is in beta, and subject to breaking changes!`))
+        chalk.gray(printItem('Expo Webpack (web) is in beta, and subject to breaking changes!'))
       );
     }
 
@@ -53,7 +53,7 @@ export class DevServerManagerActions {
   }
 
   async openJsInspectorAsync() {
-    Log.log(`Opening JavaScript inspector in the browser...`);
+    Log.log('Opening JavaScript inspector in the browser...');
     const port = this.devServerManager.getNativeDevServerPort();
     assert(port, 'Metro dev server is not running');
     const metroServerOrigin = `http://localhost:${port}`;
