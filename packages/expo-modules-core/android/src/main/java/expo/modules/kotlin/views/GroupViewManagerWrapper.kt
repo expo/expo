@@ -45,7 +45,7 @@ class GroupViewManagerWrapper(
 
   override fun addView(parent: ViewGroup, child: View, index: Int) {
     viewWrapperDelegate
-      .groupViewDefinition
+      .viewGroupDefinition
       ?.addViewAction
       ?.invoke(parent, child, index)
       .ifNull {
@@ -54,7 +54,7 @@ class GroupViewManagerWrapper(
   }
 
   override fun getChildCount(parent: ViewGroup): Int {
-    return viewWrapperDelegate.groupViewDefinition
+    return viewWrapperDelegate.viewGroupDefinition
       ?.getChildCountAction
       ?.invoke(parent)
       .ifNull {
@@ -63,7 +63,7 @@ class GroupViewManagerWrapper(
   }
 
   override fun getChildAt(parent: ViewGroup, index: Int): View? {
-    viewWrapperDelegate.groupViewDefinition
+    viewWrapperDelegate.viewGroupDefinition
       ?.getChildAtAction
       ?.let {
         return it.invoke(parent, index)
@@ -74,7 +74,7 @@ class GroupViewManagerWrapper(
   }
 
   override fun removeViewAt(parent: ViewGroup, index: Int) {
-    viewWrapperDelegate.groupViewDefinition
+    viewWrapperDelegate.viewGroupDefinition
       ?.removeViewAtAction
       ?.invoke(parent, index)
       .ifNull {
@@ -83,7 +83,7 @@ class GroupViewManagerWrapper(
   }
 
   override fun removeView(parent: ViewGroup, view: View) {
-    viewWrapperDelegate.groupViewDefinition
+    viewWrapperDelegate.viewGroupDefinition
       ?.removeViewAction
       ?.invoke(parent, view)
       .ifNull {

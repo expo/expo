@@ -3,7 +3,7 @@ package expo.modules.kotlin.views
 import android.view.View
 import android.view.ViewGroup
 
-class GroupViewDefinition(
+class ViewGroupDefinition(
   val addViewAction: AddViewAction?,
   val getChildAtAction: GetChildAtAction?,
   val getChildCountAction: GetChildCountAction?,

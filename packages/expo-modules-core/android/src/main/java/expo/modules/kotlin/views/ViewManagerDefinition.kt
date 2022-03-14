@@ -18,7 +18,7 @@ class ViewManagerDefinition(
   private val props: Map<String, AnyViewProp>,
   val onViewDestroys: ((View) -> Unit)? = null,
   val callbacksDefinition: CallbacksDefinition? = null,
-  val groupViewDefinition: GroupViewDefinition? = null
+  val viewGroupDefinition: ViewGroupDefinition? = null
 ) {
 
   fun createView(context: Context): View = viewFactory(context)

@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import expo.modules.kotlin.modules.DefinitionMarker
 
 @DefinitionMarker
-class GroupViewDefinitionBuilder {
+class ViewGroupDefinitionBuilder {
   @PublishedApi internal var addViewAction: AddViewAction? = null
   @PublishedApi internal var getChildAtAction: GetChildAtAction? = null
   @PublishedApi internal var getChildCountAction: GetChildCountAction? = null
   @PublishedApi internal var removeViewAction: RemoveViewAction? = null
   @PublishedApi internal var removeViewAtAction: RemoveViewAtAction? = null
 
-  fun build() = GroupViewDefinition(
+  fun build() = ViewGroupDefinition(
     addViewAction,
     getChildAtAction,
     getChildCountAction,
