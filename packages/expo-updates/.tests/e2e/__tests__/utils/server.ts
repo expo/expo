@@ -5,6 +5,7 @@ let server: any;
 
 let notifyString: string | null = null;
 app.get('/notify/:string', (req: any, res: any) => {
+  console.log('got request');
   notifyString = req.params.string;
   res.set('Cache-Control', 'no-store');
   res.send('Received request');
