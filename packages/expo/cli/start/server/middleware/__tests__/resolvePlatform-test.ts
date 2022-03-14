@@ -9,8 +9,15 @@ const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
 
 // Tests all functions
 describe(parsePlatformHeader, () => {
-  it(`returns nullish`, () => {
-    expect(parsePlatformHeader(asRequest({}))).toBe(null);
+  it(`returns null`, () => {
+    expect(
+      parsePlatformHeader(
+        asRequest({
+          url: 'http://localhost:3000',
+          headers: {},
+        })
+      )
+    ).toBe(null);
   });
   it(`parses from 'platform' query parameter`, () => {
     expect(parsePlatformHeader(asRequest({ url: 'http://localhost:19000/?platform=ios' }))).toBe(
@@ -25,6 +32,7 @@ describe(parsePlatformHeader, () => {
       expect(
         parsePlatformHeader(
           asRequest({
+            url: 'http://localhost:3000',
             headers: { [header]: 'ios' },
           })
         )
@@ -33,6 +41,7 @@ describe(parsePlatformHeader, () => {
       expect(
         parsePlatformHeader(
           asRequest({
+            url: 'http://localhost:3000',
             headers: { [header]: ['android', 'ios'] },
           })
         )
@@ -68,7 +77,7 @@ describe(assertMissingRuntimePlatform, () => {
   it('asserts missing', () => {
     expect(() => {
       assertMissingRuntimePlatform();
-    }).toThrowError("Must specify 'expo-platform' header or 'platform' query parameter");
+    }).toThrowError('Must specify "expo-platform" header or "platform" query parameter');
   });
   it('does not assert on valid', () => {
     assertMissingRuntimePlatform('ios');

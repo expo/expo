@@ -7,12 +7,12 @@ import * as ProjectDevices from '../project/devices';
 
 const UPDATE_FREQUENCY = 20 * 1000; // 20 seconds
 
-async function isAuthenticatedAsync() {
+async function isAuthenticatedAsync(): Promise<boolean> {
   return !!(await getUserAsync().catch(() => null));
 }
 
 export class DevelopmentSession {
-  private timeout: ReturnType<typeof setTimeout>;
+  private timeout: NodeJS.Timeout | null = null;
 
   constructor(
     /** Project root directory. */
@@ -27,7 +27,7 @@ export class DevelopmentSession {
    *
    * This method starts an interval that will continue to ping the servers until we stop it.
    *
-   * @param projectRoot Project root folder, used for retrieving device installation ids.
+   * @param projectRoot Project root folder, used for retrieving device installation IDs.
    * @param props.exp Partial Expo config with values that will be used in the Expo Go app.
    * @param props.runtime which runtime the app should be opened in. `native` for dev clients, `web` for web browsers.
    * @returns
@@ -66,11 +66,12 @@ export class DevelopmentSession {
   /** Get all recent devices for the project. */
   private async getDeviceInstallationIdsAsync(): Promise<string[]> {
     const { devices } = await ProjectDevices.getDevicesInfoAsync(this.projectRoot);
-    return devices?.map(({ installationId }) => installationId);
+    return devices.map(({ installationId }) => installationId);
   }
 
   /** Stop notifying the Expo servers that the development session is running. */
   public stop() {
     clearTimeout(this.timeout);
+    this.timeout = null;
   }
 }

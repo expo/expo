@@ -2,8 +2,8 @@ import { getConfig } from '@expo/config';
 
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
-import { ManifestMiddleware } from '../ManifestMiddleware';
-import { ServerRequest } from '../server.types';
+import { ManifestMiddleware, ParsedHeaders } from '../ManifestMiddleware';
+import { ServerHeaders, ServerRequest } from '../server.types';
 
 jest.mock('../../../../log');
 jest.mock('../resolveAssets', () => ({
@@ -28,17 +28,28 @@ jest.mock('../../../project/devices', () => ({
   saveDevicesAsync: jest.fn(async () => ({})),
 }));
 
-const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
+class MockManifestMiddleware extends ManifestMiddleware {
+  public _getManifestResponseAsync(
+    options: ParsedHeaders
+  ): Promise<{ body: string; version: string; headers: ServerHeaders }> {
+    throw new Error('Method not implemented.');
+  }
+  public getParsedHeaders(req: ServerRequest): ParsedHeaders {
+    throw new Error('Method not implemented.');
+  }
+  protected trackManifest(version?: string): void {
+    throw new Error('Method not implemented.');
+  }
+}
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
+const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
 describe('_getBundleUrl', () => {
   const createConstructUrl = () =>
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
   it('returns the bundle url with the hostname', () => {
     const constructUrl = createConstructUrl();
-    const middleware = new ManifestMiddleware('/', { constructUrl, mode: 'development' });
+    const middleware = new MockManifestMiddleware('/', { constructUrl, mode: 'development' });
     expect(
       middleware._getBundleUrl({
         hostname: 'evanbacon.dev',
@@ -51,7 +62,7 @@ describe('_getBundleUrl', () => {
   });
   it('returns the bundle url in production', () => {
     const constructUrl = createConstructUrl();
-    const middleware = new ManifestMiddleware('/', {
+    const middleware = new MockManifestMiddleware('/', {
       constructUrl,
       mode: 'production',
       minify: true,
@@ -71,7 +82,7 @@ describe('_getBundleUrl', () => {
 
 describe('_resolveProjectSettingsAsync', () => {
   it(`returns the project settings for Metro dev servers`, async () => {
-    const middleware = new ManifestMiddleware('/', {
+    const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
       mode: 'development',
     });
@@ -99,7 +110,7 @@ describe('_resolveProjectSettingsAsync', () => {
     expect(getConfig).toHaveBeenCalledTimes(1);
   });
   it(`returns the project settings for Webpack dev servers`, async () => {
-    const middleware = new ManifestMiddleware('/', {
+    const middleware = new MockManifestMiddleware('/', {
       isNativeWebpack: true,
       constructUrl: jest.fn(() => 'http://fake.mock'),
       mode: 'production',
@@ -131,7 +142,7 @@ describe('_resolveProjectSettingsAsync', () => {
 
 describe('getHandler', () => {
   it(`resolves successfully`, async () => {
-    const middleware = new ManifestMiddleware('/', {
+    const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });
     middleware['trackManifest'] = jest.fn();
@@ -181,7 +192,7 @@ describe('getHandler', () => {
   });
 
   it(`returns error info in the response`, async () => {
-    const middleware = new ManifestMiddleware('/', {
+    const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });
     middleware['trackManifest'] = jest.fn();
@@ -223,12 +234,12 @@ describe('getHandler', () => {
     expect(middleware['trackManifest']).not.toBeCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
-    expect(res.statusCode).toEqual(520);
+    expect(res.statusCode).toEqual(500);
 
     expect(next).not.toBeCalled();
     // Returns error info.
     expect(res.end).toBeCalledWith(JSON.stringify({ error: 'Error: demo' }));
     // Ensure the user sees the error in the terminal.
-    expect(Log.error).toBeCalled();
+    expect(Log.exception).toBeCalled();
   });
 });

@@ -1,15 +1,12 @@
 import { vol } from 'memfs';
 
-import { delayAsync } from '../../../utils/delay';
 import { NgrokInstance } from '../../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../utils/delay', () => ({
   delayAsync: jest.fn(async () => {}),
+  resolveWithTimeout: jest.fn(async (fn) => fn()),
 }));
 jest.mock('../../../api/settings');
 jest.mock('../../doctor/ngrok/NgrokResolver', () => {
@@ -26,12 +23,13 @@ jest.mock('../../doctor/ngrok/NgrokResolver', () => {
     })),
   };
 });
-
 jest.mock('../../platforms/android/adbReverse', () => ({
   startAdbReverseAsync: jest.fn(async () => true),
 }));
-
 jest.mock('../../../utils/exit');
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 function createNgrokInstance() {
   const projectRoot = '/';
@@ -58,6 +56,7 @@ describe('getActiveUrl', () => {
     expect(ngrok.getActiveUrl()).toEqual('http://localhost:3000');
   });
 });
+
 describe('startAsync', () => {
   it(`fails if adb reverse doesn't work`, async () => {
     const { ngrok } = createNgrokInstance();
@@ -69,33 +68,7 @@ describe('startAsync', () => {
     const { ngrok } = createNgrokInstance();
     expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
   });
-  it(`times out`, async () => {
-    const { ngrok } = createNgrokInstance();
 
-    // Add a connect which takes too long
-    let timer: NodeJS.Timeout | null = null;
-    const connect = jest.fn(
-      () =>
-        new Promise((resolve) => {
-          timer = setTimeout(resolve, 1000);
-        })
-    );
-    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect } as any));
-
-    try {
-      await expect(
-        ngrok._connectToNgrokAsync({
-          // Lower the time out to speed up the test.
-          timeout: 10,
-        })
-      ).rejects.toThrow(/Ngrok tunnel took too long to connect/);
-      // Time out is on a per-run basis.
-      expect(connect).toHaveBeenCalledTimes(1);
-    } finally {
-      // clean up
-      clearTimeout(timer);
-    }
-  });
   it(`retries three times`, async () => {
     const { ngrok } = createNgrokInstance();
 
@@ -139,6 +112,7 @@ describe('startAsync', () => {
     expect(connect).toHaveBeenCalledTimes(2);
   });
 });
+
 describe('_getProjectHostnameAsync', () => {
   it(`generates a valid hostname`, async () => {
     const { projectRoot, ngrok } = createNgrokInstance();

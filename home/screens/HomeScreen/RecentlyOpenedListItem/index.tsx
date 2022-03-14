@@ -1,4 +1,4 @@
-import { borderRadius, ChevronDownIcon, spacing } from '@expo/styleguide-native';
+import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
 import { Text, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { View as RNView, StyleSheet, ViewStyle, Share, Platform } from 'react-native';
@@ -35,9 +35,7 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
       onPress={onPress}
       onLongPress={handleLongPress}
       style={[styles.container, style, disabled && styles.disabled]}
-      disabled={disabled}
-      borderRadius={borderRadius.large}
-      containerProps={{ bg: 'default' }}>
+      disabled={disabled}>
       <AppIcon image={image} />
       <RNView style={[styles.contentContainer]}>
         <Text

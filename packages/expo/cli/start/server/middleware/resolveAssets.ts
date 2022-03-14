@@ -118,7 +118,9 @@ export async function resolveManifestAssets(
         `Unable to resolve asset "${e.localAssetPath}" from "${e.manifestField}" in your app.json or app.config.js`
       );
     } else {
-      Log.warn(`Warning: Unable to resolve manifest assets. Icons might not work. ${e.message}.`);
+      Log.warn(
+        `Warning: Unable to resolve manifest assets. Icons and fonts might not work. ${e.message}.`
+      );
     }
   }
 }

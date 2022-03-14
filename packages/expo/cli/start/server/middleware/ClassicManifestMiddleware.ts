@@ -15,14 +15,20 @@ import { DEVELOPER_TOOL, HostInfo, ManifestMiddleware, ParsedHeaders } from './M
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
 
+type SignManifestProps = {
+  manifest: ExpoAppManifest;
+  hostId: string;
+  acceptSignature: boolean;
+};
+
 export class ClassicManifestMiddleware extends ManifestMiddleware {
   public getParsedHeaders(req: ServerRequest): ParsedHeaders {
     const platform = parsePlatformHeader(req) || 'ios';
     assertRuntimePlatform(platform);
     return {
       platform,
-      acceptSignature: Boolean(req.headers?.['exponent-accept-signature']),
-      hostname: stripPort(req.headers?.['host']),
+      acceptSignature: Boolean(req.headers['exponent-accept-signature']),
+      hostname: stripPort(req.headers['host']),
     };
   }
 
@@ -130,12 +136,6 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
     return reason;
   });
 }
-
-type SignManifestProps = {
-  manifest: ExpoAppManifest;
-  hostId: string;
-  acceptSignature: boolean;
-};
 
 // Passed to Expo Go and registered as telemetry.
 // TODO: it's unclear why we don't just send it from the CLI.

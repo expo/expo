@@ -1,5 +1,5 @@
 import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
-import { View as RNView } from 'react-native';
+import { View as RNView, StyleSheet } from 'react-native';
 import { create } from './create-primitive';
 import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
 export const View = create(RNView, {
@@ -13,6 +13,9 @@ export const View = create(RNView, {
             centered: {
                 justifyContent: 'center',
                 alignItems: 'center',
+            },
+            start: {
+                alignItems: 'flex-start',
             },
         },
         flex: {
@@ -30,6 +33,7 @@ export const View = create(RNView, {
         bg,
         border: {
             default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+            hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
         },
         ...rounded,
         shadow: {
@@ -49,6 +53,7 @@ export const View = create(RNView, {
             bg: bgDark,
             border: {
                 default: { borderColor: darkTheme.border.default, borderWidth: 1 },
+                hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
             },
         },
         light: {
@@ -119,22 +124,23 @@ export const Spacer = {
 };
 export const Divider = create(RNView, {
     base: {
-        borderWidth: 0.5,
+        height: StyleSheet.hairlineWidth,
         backgroundColor: lightTheme.border.default,
-        borderColor: lightTheme.border.default,
     },
     variants: {
         weight: {
-            thin: { borderWidth: 0.5 },
-            normal: { borderWidth: 1 },
-            heavy: { borderWidth: 2 },
+            thin: { height: StyleSheet.hairlineWidth },
+            normal: { height: 1 },
+            heavy: { height: 2 },
         },
         ...margin,
     },
     selectors: {
         dark: {
-            backgroundColor: darkTheme.border.default,
-            borderColor: darkTheme.border.default,
+            base: {
+                height: StyleSheet.hairlineWidth,
+                backgroundColor: darkTheme.border.default,
+            },
         },
     },
 });

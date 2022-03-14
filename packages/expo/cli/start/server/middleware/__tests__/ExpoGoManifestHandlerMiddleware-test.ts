@@ -53,25 +53,33 @@ describe('getParsedHeaders', () => {
 
   // The classic manifest middleware did not assert.
   it('asserts platform is missing', () => {
-    expect(() => middleware.getParsedHeaders(asReq({}))).toThrowError(
-      /Must specify 'expo-platform' header or 'platform' query parameter/
-    );
+    expect(() =>
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: {},
+        })
+      )
+    ).toThrowError(/Must specify "expo-platform" header or "platform" query parameter/);
   });
 
   it('returns default values from headers', () => {
-    expect(middleware.getParsedHeaders(asReq({ headers: { 'expo-platform': 'android' } }))).toEqual(
-      {
-        acceptSignature: false,
-        hostname: null,
-        platform: 'android',
-      }
-    );
+    expect(
+      middleware.getParsedHeaders(
+        asReq({ url: 'http://localhost:3000', headers: { 'expo-platform': 'android' } })
+      )
+    ).toEqual({
+      acceptSignature: false,
+      hostname: null,
+      platform: 'android',
+    });
   });
 
   it(`returns a fully qualified object`, () => {
     expect(
       middleware.getParsedHeaders(
         asReq({
+          url: 'http://localhost:3000',
           headers: {
             host: 'localhost:8081',
             'expo-platform': 'ios',

@@ -5,7 +5,7 @@ jest.mock('../../../log');
 
 beforeEach(() => {
   delete process.env.EXPO_PACKAGER_PROXY_URL;
-  delete process.env.EXPO_MANIFEST_PROXY_URL;
+  delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
 });
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>

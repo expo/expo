@@ -12,7 +12,7 @@ import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import HomeScreen from 'screens/HomeScreen';
+import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
 
 import FeatureFlags from '../FeatureFlags';
@@ -53,6 +53,7 @@ import defaultNavigationOptions from './defaultNavigationOptions';
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
 const HomeStack = createStackNavigator<HomeStackRoutes>();
+const SettingsStack = createStackNavigator();
 
 function useThemeName() {
   const theme = useTheme();
@@ -115,6 +116,18 @@ function HomeStackScreen() {
         }}
       />
     </HomeStack.Navigator>
+  );
+}
+
+function SettingsStackScreen() {
+  const themeName = useThemeName();
+
+  return (
+    <SettingsStack.Navigator
+      initialRouteName="Settings"
+      screenOptions={defaultNavigationOptions(themeName)}>
+      <SettingsStack.Screen name="Settings" component={UserSettingsScreen} />
+    </SettingsStack.Navigator>
   );
 }
 
@@ -183,7 +196,6 @@ function DiagnosticsStackScreen() {
         }
         options={{
           title: 'Diagnostics',
-          headerShown: !FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN,
         }}
       />
       <DiagnosticsStack.Screen
@@ -250,7 +262,7 @@ function TabNavigator(props: { theme: string }) {
       {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
         <BottomTab.Screen
           name="SettingsScreen"
-          component={UserSettingsScreen}
+          component={SettingsStackScreen}
           options={{
             title: 'Settings',
             tabBarIcon: (props) => <SettingsFilledIcon {...props} style={styles.icon} size={24} />,
