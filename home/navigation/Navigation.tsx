@@ -14,6 +14,7 @@ import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
 import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
+import { RedesignedSettingsScreen } from 'screens/RedesignedSettingsScreen';
 
 import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
@@ -142,7 +143,14 @@ function SettingsStackScreen() {
     <SettingsStack.Navigator
       initialRouteName="Settings"
       screenOptions={defaultNavigationOptions(themeName)}>
-      <SettingsStack.Screen name="Settings" component={UserSettingsScreen} />
+      <SettingsStack.Screen
+        name="Settings"
+        component={
+          FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+            ? RedesignedSettingsScreen
+            : UserSettingsScreen
+        }
+      />
     </SettingsStack.Navigator>
   );
 }
@@ -177,7 +185,7 @@ function ProfileStackScreen() {
       />
       <ProfileStack.Screen
         name="UserSettings"
-        component={UserSettingsScreen}
+        component={RedesignedSettingsScreen}
         options={{ title: 'Options' }}
       />
       <ProfileStack.Screen
