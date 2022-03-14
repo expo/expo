@@ -39,5 +39,6 @@ internal enum class ImageFormat(val jsName: String) {
 }
 
 internal enum class StringFormat(val jsValue: String) {
-  PLAIN("plainText"), HTML("html");
+  PLAIN("plainText"),
+  HTML("html")
 }

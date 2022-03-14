@@ -26,7 +26,8 @@ extension UIPasteboard {
     }
     set {
       guard let newString = newValue,
-            let attributedString = try? NSAttributedString(htmlString: newString) else {
+            let attributedString = try? NSAttributedString(htmlString: newString)
+      else {
         self.string = ""
         return
       }

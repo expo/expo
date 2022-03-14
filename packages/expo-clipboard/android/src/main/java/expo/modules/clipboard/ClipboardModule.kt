@@ -243,8 +243,8 @@ private fun plainTextFromHtml(htmlContent: String): String {
  * @return Returns the item's textual representation.
  */
 private fun ClipData.Item.coerceToPlainText(context: Context): String =
-  if (this.text == null && this.htmlText != null) {
-    plainTextFromHtml(this.htmlText)
+  if (text == null && htmlText != null) {
+    plainTextFromHtml(htmlText)
   } else {
-    this.coerceToText(context).toString()
+    coerceToText(context).toString()
   }

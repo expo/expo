@@ -1,3 +1,6 @@
+/**
+ * Type used to determine string format stored in the clipboard.
+ */
 export var StringFormat;
 (function (StringFormat) {
     StringFormat["PLAIN_TEXT"] = "plainText";
