@@ -1,6 +1,6 @@
 import { lightTheme } from '@expo/styleguide-native';
 import * as React from 'react';
-declare type ThemePreference = 'light' | 'dark' | 'no-preference';
+export declare type ThemePreference = 'light' | 'dark' | 'no-preference';
 declare type Theme = 'light' | 'dark';
 export declare const useTheme: () => Theme;
 declare type ThemeProviderProps = {

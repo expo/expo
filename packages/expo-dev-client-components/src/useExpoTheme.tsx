@@ -2,7 +2,7 @@ import { lightTheme, darkTheme, palette } from '@expo/styleguide-native';
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
 
-type ThemePreference = 'light' | 'dark' | 'no-preference';
+export type ThemePreference = 'light' | 'dark' | 'no-preference';
 type Theme = 'light' | 'dark';
 
 const ThemeContext = React.createContext<Theme>('light');
