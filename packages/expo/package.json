@@ -15,6 +15,7 @@
   "files": [
     "android",
     "bin",
+    "static",
     "build",
     "build-cli",
     "ios",
