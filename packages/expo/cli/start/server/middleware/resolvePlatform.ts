@@ -15,9 +15,9 @@ export type RuntimePlatform = 'ios' | 'android';
  * Returns first item in the case of an array.
  */
 export function parsePlatformHeader(req: ServerRequest): string | null {
-  const url = req.url ? parse(req.url, /* parseQueryString */ true) : null;
+  const url = parse(req.url!, /* parseQueryString */ true);
   const platform =
-    url?.query?.platform || req?.headers?.['expo-platform'] || req?.headers?.['exponent-platform'];
+    url.query?.platform || req.headers['expo-platform'] || req.headers['exponent-platform'];
   return (Array.isArray(platform) ? platform[0] : platform) ?? null;
 }
 

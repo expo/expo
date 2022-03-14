@@ -240,6 +240,6 @@ describe('getHandler', () => {
     // Returns error info.
     expect(res.end).toBeCalledWith(JSON.stringify({ error: 'Error: demo' }));
     // Ensure the user sees the error in the terminal.
-    expect(Log.error).toBeCalled();
+    expect(Log.exception).toBeCalled();
   });
 });

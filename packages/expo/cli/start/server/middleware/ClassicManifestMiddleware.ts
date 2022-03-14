@@ -27,8 +27,8 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
     assertRuntimePlatform(platform);
     return {
       platform,
-      acceptSignature: Boolean(req.headers?.['exponent-accept-signature']),
-      hostname: stripPort(req.headers?.['host']),
+      acceptSignature: Boolean(req.headers['exponent-accept-signature']),
+      hostname: stripPort(req.headers['host']),
     };
   }
 

@@ -47,7 +47,14 @@ beforeEach(() => {
 describe('getParsedHeaders', () => {
   const middleware = new ClassicManifestMiddleware('/', {} as any);
   it('returns empty object when the request headers are not defined', () => {
-    expect(middleware.getParsedHeaders(asReq({}))).toEqual({
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:8081',
+          headers: {},
+        })
+      )
+    ).toEqual({
       acceptSignature: false,
       hostname: null,
       platform: 'ios',
@@ -56,7 +63,10 @@ describe('getParsedHeaders', () => {
   it(`returns a fully qualified object`, () => {
     expect(
       middleware.getParsedHeaders(
-        asReq({ headers: { host: 'localhost:8081', 'exponent-accept-signature': 'true' } })
+        asReq({
+          url: 'http://localhost:8081',
+          headers: { host: 'localhost:8081', 'exponent-accept-signature': 'true' },
+        })
       )
     ).toEqual({
       acceptSignature: true,
