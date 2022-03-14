@@ -14,7 +14,7 @@ class GroupViewDefinitionBuilder {
   @PublishedApi internal var removeViewAction: RemoveViewAction? = null
   @PublishedApi internal var removeViewAtAction: RemoveViewAtAction? = null
 
-  internal fun build() = GroupViewDefinition(
+  fun build() = GroupViewDefinition(
     addViewAction,
     getChildAtAction,
     getChildCountAction,
