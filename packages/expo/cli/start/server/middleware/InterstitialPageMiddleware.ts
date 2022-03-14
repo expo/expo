@@ -65,7 +65,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     res = disableResponseCache(res);
     res.setHeader('Content-Type', 'text/html');
 
-    const platform = parsePlatformHeader(req) || 'ios';
+    const platform = parsePlatformHeader(req);
     assertRuntimePlatform(platform);
 
     const { appName, runtimeVersion } = this._getProjectOptions(platform);

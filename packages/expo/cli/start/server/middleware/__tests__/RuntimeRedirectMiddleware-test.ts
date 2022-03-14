@@ -24,7 +24,7 @@ function createMockResponse() {
   } as unknown as ServerResponse;
 }
 
-describe('_shouldContinue', () => {
+describe('_shouldHandleRequest', () => {
   const { middleware } = createMiddleware();
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
@@ -32,12 +32,12 @@ describe('_shouldContinue', () => {
       asReq({ url: 'http://localhost:19000' }),
       asReq({ url: 'http://localhost:19000/' }),
     ]) {
-      expect(middleware._shouldContinue(req)).toBe(false);
+      expect(middleware._shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
     for (const req of [asReq({ url: 'http://localhost:19000/_expo/link' })]) {
-      expect(middleware._shouldContinue(req)).toBe(true);
+      expect(middleware._shouldHandleRequest(req)).toBe(true);
     }
   });
 });
