@@ -518,7 +518,7 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 > ⚠️ If you forget to add the correct URL to the "Valid OAuth Redirect URIs", you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
-#### Custom Apps
+#### Custom Apps  
 
 Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for native auth as it supports some nonstandard OAuth features implemented by Facebook.
 
@@ -530,7 +530,19 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 - **Bare:**
   - Regenerate your native projects with `expo eject`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
   - Rebuild the projects with `yarn ios` & `yarn android`
-
+  
+#### Standalone apps with AuthSession
+  Note that in this case you don't need to add your app's redirect URL in the Facebook Developer Console which only supports https links.
+  
+ - **Android**
+ 
+When using AuthSession with Android there are some limitations such as the issue of not being able to perform the redirect directly by adding `facebookScheme: 'fb<YOUR FBID>'` to your **app.config.js** or ** app.json**. To fix this issue follow these instructions from the currently open issue to successfully redirect to your app.
+https://github.com/expo/expo/issues/9917#issuecomment-973839137
+  
+ - **IOS** 
+  
+Follow the same configuration as Android and use the proxies so that Safari can perform the redirection as mentioned here https://github.com/expo/expo/issues/9917#issuecomment-1066704430
+  
 #### Native iOS
 
 - Go to: (Sidebar) Settings > Basic. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/settings/basic/`
