@@ -1,6 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { isCurrentPlatformSupported } from 'src/components/FunctionDemo/utils';
 
 import HeadingText from '../../components/HeadingText';
 import MonoTextWithCountdown from '../../components/MonoTextWithCountdown';
@@ -8,10 +9,25 @@ import MonoTextWithCountdown from '../../components/MonoTextWithCountdown';
 const STRING_TRIM_THRESHOLD = 100;
 
 export default function ClipboardListenerDemo() {
-  const clipboardListener = React.useRef<Clipboard.Subscription | null>(null);
-  const [value, setValue] = React.useState<string | undefined>(undefined);
+  const isSupported = useMemo(() => isCurrentPlatformSupported(['ios', 'android']), []);
 
-  React.useEffect(() => {
+  return (
+    <View style={styles.container}>
+      <HeadingText>Clipboard Listener</HeadingText>
+      {isSupported ? (
+        <ClipboardListenerContent />
+      ) : (
+        <Text>Clipboard listener is not supported on web</Text>
+      )}
+    </View>
+  );
+}
+
+function ClipboardListenerContent() {
+  const clipboardListener = useRef<Clipboard.Subscription | null>(null);
+  const [value, setValue] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
     clipboardListener.current = Clipboard.addClipboardListener(
       (event: Clipboard.ClipboardEvent) => {
         setValue(stringifyEvent(event));
@@ -25,17 +41,12 @@ export default function ClipboardListenerDemo() {
     };
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <HeadingText>Clipboard Listener</HeadingText>
-      {value !== undefined ? (
-        <MonoTextWithCountdown timeout={30 * 1000} onCountdownEnded={() => setValue(undefined)}>
-          {value}
-        </MonoTextWithCountdown>
-      ) : (
-        <Text>No recent changes. Copy something to trigger event</Text>
-      )}
-    </View>
+  return value !== undefined ? (
+    <MonoTextWithCountdown timeout={30 * 1000} onCountdownEnded={() => setValue(undefined)}>
+      {value}
+    </MonoTextWithCountdown>
+  ) : (
+    <Text>No recent changes. Copy something to trigger event</Text>
   );
 }
 

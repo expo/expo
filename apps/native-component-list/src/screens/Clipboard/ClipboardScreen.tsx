@@ -1,8 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
-import { StringContentType } from 'expo-clipboard/build/Clipboard.types';
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
-import { ScrollView, StyleSheet, Alert } from 'react-native';
+import { Text, ScrollView, StyleSheet, Alert } from 'react-native';
 
 import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 import { ActionFunction, Platform } from '../../components/FunctionDemo/index.types';
@@ -34,7 +33,7 @@ const HAS_X_ASYNC_CONFIG: FunctionDescription = {
   ],
 };
 
-const SET_STRIING_ASYNC_CONFIG: FunctionDescription = {
+const SET_STRING_ASYNC_CONFIG: FunctionDescription = {
   name: 'setStringAsync',
   parameters: [
     {
@@ -51,18 +50,18 @@ const SET_STRIING_ASYNC_CONFIG: FunctionDescription = {
       type: 'object',
       properties: [
         {
-          name: 'inputType',
+          name: 'inputFormat',
           type: 'enum',
           platforms: ['ios', 'android'],
           values: [
-            { name: 'StringContentType.PLAIN_TEXT', value: StringContentType.PLAIN_TEXT },
-            { name: 'StringContentType.HTML', value: StringContentType.HTML },
+            { name: 'StringFormat.PLAIN_TEXT', value: Clipboard.StringFormat.PLAIN_TEXT },
+            { name: 'StringFormat.HTML', value: Clipboard.StringFormat.HTML },
           ],
         },
       ],
     },
   ],
-  actions: (value: string, options: { inputType: StringContentType }) =>
+  actions: (value: string, options: { inputFormat: Clipboard.StringFormat }) =>
     Clipboard.setStringAsync(value, options),
 };
 
@@ -74,18 +73,18 @@ const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
       type: 'object',
       properties: [
         {
-          name: 'preferredType',
+          name: 'preferredFormat',
           type: 'enum',
           platforms: ['ios', 'android'],
           values: [
-            { name: 'StringContentType.PLAIN_TEXT', value: StringContentType.PLAIN_TEXT },
-            { name: 'StringContentType.HTML', value: StringContentType.HTML },
+            { name: 'StringFormat.PLAIN_TEXT', value: Clipboard.StringFormat.PLAIN_TEXT },
+            { name: 'StringFormat.HTML', value: Clipboard.StringFormat.HTML },
           ],
         },
       ],
     },
   ],
-  actions: async (options: { preferredType: StringContentType }) => {
+  actions: async (options: { preferredFormat: Clipboard.StringFormat }) => {
     const result = await Clipboard.getStringAsync(options);
     return result.length > 0 ? result : '[nothing]';
   },
@@ -152,7 +151,7 @@ const GET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
 
 const SET_URL_ASYNC_CONFIG: FunctionDescription = {
   name: 'setUrlAsync',
-  platforms: ['android'],
+  platforms: ['ios'],
   parameters: [
     {
       name: 'url',
@@ -172,7 +171,7 @@ const GET_URL_ASYNC_CONFIG: FunctionDescription = {
 
 const FUNCTIONS_DESCRIPTIONS = [
   HAS_X_ASYNC_CONFIG,
-  SET_STRIING_ASYNC_CONFIG,
+  SET_STRING_ASYNC_CONFIG,
   GET_STRING_ASYNC_CONFIG,
   SET_IMAGE_ASYNC_CONFIG,
   GET_IMAGE_ASYNC_CONFIG,
@@ -183,6 +182,9 @@ const FUNCTIONS_DESCRIPTIONS = [
 function ClipboardScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Text>
+        Hint: Try copying/pasting between this screen and other apps: e.g. Web browser and Notes app
+      </Text>
       {FUNCTIONS_DESCRIPTIONS.map((props, idx) => (
         <FunctionDemo
           key={idx}
@@ -202,7 +204,7 @@ ClipboardScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
+    padding: 10,
     justifyContent: 'center',
   },
 });
