@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import ScrollView from '../../components/NavigationScrollView';
+import { ConstantsSection } from './ConstantsSection';
 import { DevMenuGestureSection } from './DevMenuGestureSection';
 import { SignOutSection } from './SignOutSection';
 import { ThemeSection } from './ThemeSection';
@@ -30,6 +31,8 @@ export function RedesignedSettingsScreen() {
             <Spacer.Vertical size="medium" />
           </>
         )}
+        <ConstantsSection />
+        <Spacer.Vertical size="medium" />
         {/* TODO: remove signout from settings screen and move to account modal */}
         <SignOutSection />
       </View>
