@@ -121,6 +121,13 @@ describe('handleRequestAsync', () => {
     );
     expect(response.statusCode).toBe(200);
     expect(response.end).toBeCalledWith('mock-value');
-    expect(response.setHeader).toBeCalledTimes(4);
+    expect(response.setHeader).toHaveBeenNthCalledWith(
+      1,
+      'Cache-Control',
+      'private, no-cache, no-store, must-revalidate'
+    );
+    expect(response.setHeader).toHaveBeenNthCalledWith(2, 'Expires', '-1');
+    expect(response.setHeader).toHaveBeenNthCalledWith(3, 'Pragma', 'no-cache');
+    expect(response.setHeader).toHaveBeenNthCalledWith(4, 'Content-Type', 'text/html');
   });
 });
