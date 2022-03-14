@@ -4,8 +4,10 @@ const app: any = express();
 let server: any;
 
 let notifyString: string | null = null;
-app.get('/notify/:string', (req: any) => {
+app.get('/notify/:string', (req: any, res: any) => {
   notifyString = req.params.string;
+  res.set('Cache-Control', 'no-store');
+  res.send('Received request');
 })
 
 export function start(port: number) {
