@@ -41,6 +41,7 @@ test('starts app, stops, and starts again', async () => {
     await installAndroidApk(APK_PATH);
     await startActivity(ACTIVITY_NAME);
     const response = await Server.waitForResponse(10000);
+    console.log('got first response');
     expect(response).toBe('test');
     await stopApplication(PACKAGE_NAME);
 
@@ -51,9 +52,11 @@ test('starts app, stops, and starts again', async () => {
       didError = true;
     }
     expect(didError).toBe(true);
+    console.log('got first non-response');
 
     await startActivity(ACTIVITY_NAME);
     const response2 = await Server.waitForResponse(10000);
+    console.log('got second response');
     expect(response2).toBe('test');
   } catch (e) {
     console.error(e);

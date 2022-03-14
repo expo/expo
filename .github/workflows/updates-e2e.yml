@@ -98,5 +98,5 @@ jobs:
         with:
           api-level: 30
           arch: x86_64
-          script: yarn test --config .tests/e2e/jest.config.js
+          script: yarn test --config .tests/e2e/jest.config.js --detectOpenHandles
           working-directory: packages/expo-updates
