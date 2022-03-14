@@ -63,7 +63,7 @@ module.exports = async function (args) {
             console.log(JSON.stringify({ modules }));
         }
         else {
-            console.log({ modules });
+            console.log(require('util').inspect({ modules }, false, null, true));
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Generates a source file listing all packages to link.
