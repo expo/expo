@@ -32,27 +32,29 @@ module Expo
 
       UI.section 'Using Expo modules' do
         @packages.each { |package|
-          # The module can already be added to the target, in which case we can just skip it.
-          # This allows us to add a pod before `use_expo_modules` to provide custom flags.
-          if @target_definition.dependencies.any? { |dependency| dependency.name == package.pod_name }
-            UI.message '— ' << package.name.green << ' is already added to the target'.yellow
-            next
-          end
+          package.pods.each { |pod|
+            # The module can already be added to the target, in which case we can just skip it.
+            # This allows us to add a pod before `use_expo_modules` to provide custom flags.
+            if @target_definition.dependencies.any? { |dependency| dependency.name == pod.pod_name }
+              UI.message '— ' << package.name.green << ' is already added to the target'.yellow
+              next
+            end
 
-          podspec_dir_path = Pathname.new(package.podspec_dir).relative_path_from(project_directory).to_path
+            podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
 
-          pod_options = {
-            :path => podspec_dir_path,
-            :testspecs => tests.include?(package.name) ? ['Tests'] : []
-          }.merge(global_flags, package.flags)
+            pod_options = {
+              :path => podspec_dir_path,
+              :testspecs => tests.include?(package.name) ? ['Tests'] : []
+            }.merge(global_flags, package.flags)
 
-          # Install the pod.
-          @podfile.pod(package.pod_name, pod_options)
+            # Install the pod.
+            @podfile.pod(pod.pod_name, pod_options)
 
-          # TODO: Can remove this once we move all the interfaces into the core.
-          next if package.pod_name.end_with?('Interface')
+            # TODO: Can remove this once we move all the interfaces into the core.
+            next if pod.pod_name.end_with?('Interface')
 
-          UI.message "— #{package.name.green} (#{package.version})"
+            UI.message "— #{package.name.green} (#{package.version})"
+          }
         }
       end
       self

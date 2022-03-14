@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAndResolveExpoModuleConfig = exports.ExpoModuleConfig = void 0;
+function arrayize(value) {
+    if (Array.isArray(value)) {
+        return value;
+    }
+    return value != null ? [value] : [];
+}
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -39,18 +45,18 @@ class ExpoModuleConfig {
         return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.reactDelegateHandlers) !== null && _b !== void 0 ? _b : [];
     }
     /**
-     * Returns a podspec path defined by the module author.
+     * Returns podspec paths defined by the module author.
      */
-    iosPodspecPath() {
+    iosPodspecPaths() {
         var _a;
-        return (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath;
+        return arrayize((_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.podspecPath);
     }
     /**
-     * Returns the product module name, if defined by the module author.
+     * Returns the product module names, if defined by the module author.
      */
-    iosSwiftModuleName() {
+    iosSwiftModuleNames() {
         var _a;
-        return (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName;
+        return arrayize((_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName);
     }
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
@@ -60,6 +66,13 @@ class ExpoModuleConfig {
         const androidConfig = this.rawConfig.android;
         // `modulesClassNames` is a legacy name for the same config.
         return (_b = (_a = androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modules) !== null && _a !== void 0 ? _a : androidConfig === null || androidConfig === void 0 ? void 0 : androidConfig.modulesClassNames) !== null && _b !== void 0 ? _b : [];
+    }
+    /**
+     * Returns build.gradle file paths defined by the module author.
+     */
+    androidGradlePaths() {
+        var _a, _b;
+        return arrayize((_b = (_a = this.rawConfig.android) === null || _a === void 0 ? void 0 : _a.gradlePath) !== null && _b !== void 0 ? _b : []);
     }
     /**
      * Returns serializable raw config.
