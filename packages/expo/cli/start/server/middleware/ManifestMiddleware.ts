@@ -127,7 +127,7 @@ export abstract class ManifestMiddleware extends ExpoMiddleware {
     const deviceIds = req.headers?.['expo-dev-client-id'];
     if (deviceIds) {
       await ProjectDevices.saveDevicesAsync(this.projectRoot, deviceIds).catch((e) =>
-        Log.error(e.stack)
+        Log.exception(e)
       );
     }
   }

@@ -43,7 +43,7 @@ export abstract class ExpoMiddleware {
       try {
         return await this.handleRequestAsync(req, res, next);
       } catch (e) {
-        Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+        Log.exception(e);
         // 5xx = Server Error HTTP code
         res.statusCode = 500;
         if (typeof e === 'object' && e !== null) {
