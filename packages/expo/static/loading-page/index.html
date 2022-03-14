@@ -266,8 +266,8 @@
     const devClientLink = document.getElementById("expo-dev-client-link");
     const goLink = document.getElementById("expo-go-link");
 
-    devClientLink.href += "&platform=" + platform;
-    goLink.href += "&platform=" + platform;
+    devClientLink.href += "&platform=" + encodeURIComponent(platform);
+    goLink.href += "&platform=" + encodeURIComponent(platform);
   }
   </script>
 </body>
