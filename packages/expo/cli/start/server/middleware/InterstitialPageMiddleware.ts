@@ -1,6 +1,7 @@
 import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
 import { getRuntimeVersionNullable } from '@expo/config-plugins/build/utils/Updates';
 import { readFile } from 'fs/promises';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
@@ -34,7 +35,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
       // Production: This will resolve when installed in the project.
       resolveFrom.silent(this.projectRoot, 'expo/static/loading-page/index.html') ??
       // Development: This will resolve when testing locally.
-      require.resolve('../../../../../static/loading-page/index.html');
+      path.resolve(__dirname, '../../../../../static/loading-page/index.html');
     let content = (await readFile(templatePath)).toString('utf-8');
 
     content = content.replace(/{{\s*AppName\s*}}/, appName ?? 'App');
