@@ -1,8 +1,6 @@
-import chalk from 'chalk';
 import { parse } from 'url';
 
 import * as Log from '../../../log';
-import { EXPO_DEBUG } from '../../../utils/env';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Base middleware creator for Expo dev servers. */
