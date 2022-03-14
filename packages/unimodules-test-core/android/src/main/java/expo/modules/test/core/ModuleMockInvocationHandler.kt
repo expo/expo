@@ -1,13 +1,9 @@
 package expo.modules.test.core
 
-import com.facebook.react.bridge.JavaOnlyArray
-import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.records.toJSMap
-import expo.modules.kotlin.types.pushEnum
+import expo.modules.kotlin.types.JSTypeConverter
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -103,23 +99,6 @@ class ModuleMockInvocationHandler<T : Any>(
   }
 
   private fun convertArgs(args: Iterable<Any?>): ReadableArray {
-    val argsList = JavaOnlyArray()
-
-    for (arg in args) {
-      @Suppress("UNCHECKED_CAST")
-      when (arg) {
-        null -> argsList.pushNull()
-        is Int -> argsList.pushInt(arg)
-        is Number -> argsList.pushDouble(arg.toDouble())
-        is Boolean -> argsList.pushBoolean(arg)
-        is String -> argsList.pushString(arg)
-        is Record -> argsList.pushMap(arg.toJSMap(JavaOnlyMap()))
-        is Enum<*> -> argsList.pushEnum(arg)
-        is Iterable<*> -> argsList.pushArray(convertArgs(arg as Iterable<Any>))
-        else -> throw IllegalArgumentException("Unsupported argument type ${arg.javaClass} in ModuleMock")
-      }
-    }
-
-    return argsList
+    return JSTypeConverter.convertToJSValue(args, TestJSContainerProvider) as ReadableArray
   }
 }
