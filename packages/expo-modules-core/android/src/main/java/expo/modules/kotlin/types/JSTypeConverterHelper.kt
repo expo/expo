@@ -130,7 +130,7 @@ internal fun WritableMap.putGeneric(key: String, value: Any?) {
     is Int -> putInt(key, value)
     is Number -> putDouble(key, value.toDouble())
     is Boolean -> putBoolean(key, value)
-    else -> throw IllegalArgumentException("Could not put ${value.javaClass} to 'WritableMap'")
+    else -> throw IllegalArgumentException("Could not put '${value.javaClass}' to WritableMap")
   }
 }
 
@@ -143,6 +143,6 @@ internal fun WritableArray.putGeneric(value: Any?) {
     is Int -> pushInt(value)
     is Number -> pushDouble(value.toDouble())
     is Boolean -> pushBoolean(value)
-    else -> throw IllegalArgumentException("Could not put ${value.javaClass} to 'WritableArray'")
+    else -> throw IllegalArgumentException("Could not put '${value.javaClass}' to WritableArray")
   }
 }

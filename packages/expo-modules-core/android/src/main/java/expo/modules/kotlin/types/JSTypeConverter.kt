@@ -12,7 +12,7 @@ object JSTypeConverter {
     fun createArray(): WritableArray
   }
 
-  internal object DefaultContainerProvider: ContainerProvider {
+  internal object DefaultContainerProvider : ContainerProvider {
     override fun createMap(): WritableMap = Arguments.createMap()
     override fun createArray(): WritableArray = Arguments.createArray()
   }
@@ -33,4 +33,3 @@ object JSTypeConverter {
     }
   }
 }
-
