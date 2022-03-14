@@ -29,11 +29,11 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
     assertRuntimePlatform(platform);
     const runtime = isDevClient ? 'custom' : 'expo';
 
+    this.options.onDeepLink({ runtime, platform });
+
     const redirect = this.options.getLocation({ runtime });
     Log.debug('Redirect ->', redirect);
     res.setHeader('Location', redirect);
-
-    this.options.onDeepLink({ runtime, platform });
 
     // Disable caching
     disableResponseCache(res);

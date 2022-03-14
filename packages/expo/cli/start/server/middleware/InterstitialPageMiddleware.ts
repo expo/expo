@@ -1,6 +1,7 @@
 import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
 import { getRuntimeVersionNullable } from '@expo/config-plugins/build/utils/Updates';
 import { readFile } from 'fs/promises';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
@@ -9,7 +10,7 @@ import { ServerRequest, ServerResponse } from './server.types';
 
 export const LoadingEndpoint = '/_expo/loading';
 
-function getRuntimeVersion(exp: ExpoConfig, platform: 'android' | 'ios' | null) {
+function getRuntimeVersion(exp: ExpoConfig, platform: 'android' | 'ios' | null): string {
   if (!platform) {
     return 'Undetected';
   }
@@ -29,12 +30,12 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
   }: {
     appName: string;
     runtimeVersion: string | null;
-  }) {
+  }): Promise<string> {
     const templatePath =
       // Production: This will resolve when installed in the project.
       resolveFrom.silent(this.projectRoot, 'expo/static/loading-page/index.html') ??
       // Development: This will resolve when testing locally.
-      require.resolve('../../../../../static/loading-page/index.html');
+      path.resolve(__dirname, '../../../../../static/loading-page/index.html');
     let content = (await readFile(templatePath)).toString('utf-8');
 
     content = content.replace(/{{\s*AppName\s*}}/, appName ?? 'App');
@@ -65,7 +66,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     res = disableResponseCache(res);
     res.setHeader('Content-Type', 'text/html');
 
-    const platform = parsePlatformHeader(req) || 'ios';
+    const platform = parsePlatformHeader(req);
     assertRuntimePlatform(platform);
 
     const { appName, runtimeVersion } = this._getProjectOptions(platform);

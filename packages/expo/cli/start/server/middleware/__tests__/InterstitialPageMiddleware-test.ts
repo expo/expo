@@ -40,7 +40,7 @@ afterAll(() => {
   process.chdir(originalCwd);
 });
 
-describe('_shouldContinue', () => {
+describe('_shouldHandleRequest', () => {
   const middleware = new InterstitialPageMiddleware('/');
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
@@ -48,12 +48,12 @@ describe('_shouldContinue', () => {
       asReq({ url: 'http://localhost:19000' }),
       asReq({ url: 'http://localhost:19000/' }),
     ]) {
-      expect(middleware._shouldContinue(req)).toBe(false);
+      expect(middleware._shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
     for (const req of [asReq({ url: 'http://localhost:19000/_expo/loading' })]) {
-      expect(middleware._shouldContinue(req)).toBe(true);
+      expect(middleware._shouldHandleRequest(req)).toBe(true);
     }
   });
 });
@@ -115,9 +115,19 @@ describe('handleRequestAsync', () => {
       statusCode: 200,
     } as unknown as ServerResponse;
 
-    await middleware.handleRequestAsync(asReq({}), response);
+    await middleware.handleRequestAsync(
+      asReq({ url: 'http://localhost:3000', headers: { 'expo-platform': 'ios' } }),
+      response
+    );
     expect(response.statusCode).toBe(200);
     expect(response.end).toBeCalledWith('mock-value');
-    expect(response.setHeader).toBeCalledTimes(4);
+    expect(response.setHeader).toHaveBeenNthCalledWith(
+      1,
+      'Cache-Control',
+      'private, no-cache, no-store, must-revalidate'
+    );
+    expect(response.setHeader).toHaveBeenNthCalledWith(2, 'Expires', '-1');
+    expect(response.setHeader).toHaveBeenNthCalledWith(3, 'Pragma', 'no-cache');
+    expect(response.setHeader).toHaveBeenNthCalledWith(4, 'Content-Type', 'text/html');
   });
 });
