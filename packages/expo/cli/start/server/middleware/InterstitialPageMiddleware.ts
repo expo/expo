@@ -9,7 +9,7 @@ import { ServerRequest, ServerResponse } from './server.types';
 
 export const LoadingEndpoint = '/_expo/loading';
 
-function getRuntimeVersion(exp: ExpoConfig, platform: 'android' | 'ios' | null) {
+function getRuntimeVersion(exp: ExpoConfig, platform: 'android' | 'ios' | null): string {
   if (!platform) {
     return 'Undetected';
   }
@@ -29,7 +29,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
   }: {
     appName: string;
     runtimeVersion: string | null;
-  }) {
+  }): Promise<string> {
     const templatePath =
       // Production: This will resolve when installed in the project.
       resolveFrom.silent(this.projectRoot, 'expo/static/loading-page/index.html') ??
