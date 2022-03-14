@@ -22,7 +22,7 @@ class ViewGroupDefinitionBuilder {
     removeViewAtAction
   )
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> addView(
+  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> addChildView(
     noinline body: (parent: ParentViewType, child: ChildViewType, index: Int) -> Unit
   ) {
     addViewAction = { parent, child, index ->
