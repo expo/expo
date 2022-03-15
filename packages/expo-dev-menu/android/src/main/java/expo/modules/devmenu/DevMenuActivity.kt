@@ -24,7 +24,7 @@ import java.util.*
 class DevMenuActivity : ReactActivity() {
   override fun getMainComponentName() = "main"
 
-  private val isSimulator
+  private val isEmulator
     get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
@@ -65,7 +65,7 @@ class DevMenuActivity : ReactActivity() {
         putBundle("appInfo", DevMenuManager.getAppInfo())
         putBundle("devSettings", DevMenuManager.getDevSettings())
         putBundle("menuPreferences", DevMenuManager.getMenuPreferences())
-        putBoolean("isSimulator", isSimulator)
+        putBoolean("isDevice", !isEmulator)
       }
 
       override fun createRootView() = createRootView(this@DevMenuActivity)

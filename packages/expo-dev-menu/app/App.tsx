@@ -9,14 +9,14 @@ type DevMenuInitialProps = {
   appInfo: AppInfo;
   devSettings: DevSettings;
   menuPreferences: MenuPreferences;
-  isSimulator?: boolean;
+  isDevice?: boolean;
 };
 
-export function App({ devSettings, appInfo, menuPreferences, isSimulator }: DevMenuInitialProps) {
+export function App({ devSettings, appInfo, menuPreferences, isDevice }: DevMenuInitialProps) {
   return (
     <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
       <Main />
-      <Onboarding isSimulator={isSimulator} />
+      <Onboarding isDevice={isDevice} />
     </AppProviders>
   );
 }

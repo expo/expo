@@ -82,8 +82,7 @@ open class DevMenuManager: NSObject {
   @objc
   public var currentBridge: RCTBridge? {
     didSet {
-      let prefersAutoLaunch = self.canLaunchDevMenuOnStart && DevMenuSettings.showsAtLaunch
-      guard prefersAutoLaunch || self.shouldShowOnboarding(), let bridge = currentBridge else {
+      guard self.canLaunchDevMenuOnStart && (DevMenuSettings.showsAtLaunch || self.shouldShowOnboarding()), let bridge = currentBridge else {
         return
       }
       

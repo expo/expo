@@ -81,7 +81,7 @@ class DevMenuViewController: UIViewController {
       "devSettings": manager.getDevSettings(),
       "menuPreferences": DevMenuSettings.serialize(),
       "uuid": UUID.init().uuidString,
-      "isSimulator": isSimulator,
+      "isDevice": !isSimulator,
     ]
   }
 

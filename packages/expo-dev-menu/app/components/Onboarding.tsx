@@ -7,7 +7,7 @@ import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper
 
 const deviceMessage = Platform.select({
   ios: `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
-  android: `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.`,
+  android: `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
 });
 
 const simulatorMessage = Platform.select({
@@ -16,10 +16,10 @@ const simulatorMessage = Platform.select({
 });
 
 type OnboardingProps = {
-  isSimulator?: boolean;
+  isDevice?: boolean;
 };
 
-export function Onboarding({ isSimulator }: OnboardingProps) {
+export function Onboarding({ isDevice }: OnboardingProps) {
   const { isOnboardingFinished, actions } = useMenuPreferences();
   const [isVisible, setIsVisible] = React.useState(!isOnboardingFinished);
 
@@ -41,7 +41,7 @@ export function Onboarding({ isSimulator }: OnboardingProps) {
 
             <View>
               <Text size="large" weight="medium">
-                {isSimulator ? simulatorMessage : deviceMessage}
+                {isDevice ? deviceMessage : simulatorMessage}
               </Text>
 
               <Spacer.Vertical size="medium" />

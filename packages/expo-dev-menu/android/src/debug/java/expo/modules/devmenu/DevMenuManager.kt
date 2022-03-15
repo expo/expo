@@ -233,8 +233,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         } else {
           DevMenuDefaultSettings()
         }).also {
-          var showsAtLaunchPreference = canLaunchDevMenuOnStart && it.showsAtLaunch
-          shouldLaunchDevMenuOnStart = showsAtLaunchPreference || !it.isOnboardingFinished
+          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
           if (shouldLaunchDevMenuOnStart) {
             reactContext.addLifecycleEventListener(this)
           }
