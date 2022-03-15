@@ -126,7 +126,6 @@ dependencies {
   implementation("commons-io:commons-io:2.6")
   implementation("commons-fileupload:commons-fileupload:1.4")
   implementation("org.apache.commons:commons-lang3:3.9")
-  implementation("org.bouncycastle:bcprov-jdk14:1.70")
 
   testImplementation 'junit:junit:4.13.1'
   testImplementation 'androidx.test:core:1.4.0'

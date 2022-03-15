@@ -5,12 +5,9 @@ import android.util.Log
 import expo.modules.structuredheaders.BooleanItem
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.StringItem
-import expo.modules.updates.codesigning.CertificateChain.Companion.expoProjectInformation
 import java.security.Signature
 
 private const val TAG = "CodeSigning"
-
-data class SignatureValidationResult(val isValid: Boolean, val expoProjectInformation: ExpoProjectInformation?)
 
 /**
  * Contains all information about code signing.
@@ -35,7 +32,7 @@ class CodeSigningConfiguration(
     codeSigningMetadata?.get(CODE_SIGNING_METADATA_KEY_ID_KEY) ?: CODE_SIGNING_METADATA_DEFAULT_KEY_ID
   }
 
-  fun validateSignature(info: SignatureHeaderInfo, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): SignatureValidationResult {
+  fun validateSignature(info: SignatureHeaderInfo, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): Boolean {
     val certificateChain = if (includeManifestResponseCertificateChain) {
       CertificateChain(
         separateCertificateChain(manifestResponseCertificateChain ?: "") + embeddedCertificateString
@@ -65,12 +62,10 @@ class CodeSigningConfiguration(
     // specify what algorithm should be used in the chain case. One approach may be that in the case of
     // chains served alongside the manifest we fork the behavior to trust the `info.algorithm` while keeping
     // `metadata.algorithm` for the embedded case.
-    val isValid = Signature.getInstance("SHA256withRSA").apply {
+    return Signature.getInstance("SHA256withRSA").apply {
       initVerify(certificateChain.codeSigningCertificate.publicKey)
       update(bodyBytes)
     }.verify(Base64.decode(info.signature, Base64.DEFAULT))
-
-    return SignatureValidationResult(isValid, certificateChain.codeSigningCertificate.expoProjectInformation())
   }
 
   fun getAcceptSignatureHeader(): String {
