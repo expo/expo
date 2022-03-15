@@ -25,7 +25,6 @@ import java.io.ByteArrayOutputStream
 import android.util.Base64
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
-import expo.modules.updates.codesigning.SignatureHeaderInfo
 
 open class FileDownloader(private val client: OkHttpClient) {
   constructor(context: Context) : this(OkHttpClient.Builder().cache(getCache(context)).build())
@@ -386,14 +385,10 @@ open class FileDownloader(private val client: OkHttpClient) {
       callback: ManifestDownloadCallback
     ) {
       configuration.codeSigningConfiguration?.validateSignature(
-        SignatureHeaderInfo.parseSignatureHeader(manifestHeaderData.signature),
+        manifestHeaderData.signature,
         bodyString.toByteArray(),
-        certificateChainFromManifestResponse,
-      )?.let {
-        if (!it) {
-          throw IOException("Manifest download was successful, but signature was incorrect")
-        }
-      }
+        certificateChainFromManifestResponse
+      )
 
       if (configuration.expectsSignedManifest) {
         preManifest.put("isVerified", isVerified)

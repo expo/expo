@@ -5,6 +5,7 @@ import android.util.Log
 import expo.modules.structuredheaders.BooleanItem
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.StringItem
+import java.io.IOException
 import java.security.Signature
 
 private const val TAG = "CodeSigning"
@@ -14,11 +15,13 @@ private const val TAG = "CodeSigning"
  * @param embeddedCertificateString Implicitly trusted self-signed root certificate. May be the code signing certificate if only using embedded certificate (no chain).
  * @param codeSigningMetadata Metadata about the code signing certificate. May be the root certificate or a leaf certificate.
  * @param includeManifestResponseCertificateChain Should a certificate chain in the manifest response be evaluated when validating the signature. If true, ignores codeSigningMetadata when evaluating cert chain.
+ * @param allowUnsignedManifests Should unsigned manifest responses be allowed. Used during Expo Go transition when not all expo-cli versions know how to sign using the new method yet the new Expo Go clients have certificates.
  */
 class CodeSigningConfiguration(
   private val embeddedCertificateString: String,
   private val codeSigningMetadata: Map<String, String>?,
   private val includeManifestResponseCertificateChain: Boolean,
+  private val allowUnsignedManifests: Boolean
 ) {
   private val algorithmFromMetadata: CodeSigningAlgorithm by lazy {
     CodeSigningAlgorithm.parseFromString(
@@ -32,7 +35,28 @@ class CodeSigningConfiguration(
     codeSigningMetadata?.get(CODE_SIGNING_METADATA_KEY_ID_KEY) ?: CODE_SIGNING_METADATA_DEFAULT_KEY_ID
   }
 
-  fun validateSignature(info: SignatureHeaderInfo, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): Boolean {
+  fun validateSignature(signature: String?, bodyBytes: ByteArray, manifestResponseCertificateChain: String?) {
+    if (signature == null) {
+      if (!allowUnsignedManifests) {
+        throw Exception("No expo-signature header specified")
+      } else {
+        // approve this
+        return
+      }
+    }
+
+    validateSignatureInternal(
+      SignatureHeaderInfo.parseSignatureHeader(signature),
+      bodyBytes,
+      manifestResponseCertificateChain,
+    ).let {
+      if (!it) {
+        throw IOException("Manifest download was successful, but signature was incorrect")
+      }
+    }
+  }
+
+  private fun validateSignatureInternal(info: SignatureHeaderInfo, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): Boolean {
     val certificateChain = if (includeManifestResponseCertificateChain) {
       CertificateChain(
         separateCertificateChain(manifestResponseCertificateChain ?: "") + embeddedCertificateString

@@ -21,6 +21,7 @@ class UpdatesConfiguration private constructor (
   val codeSigningCertificate: String?,
   val codeSigningMetadata: Map<String, String>?,
   val codeSigningIncludeManifestResponseCertificateChain: Boolean,
+  val codeSigningAllowUnsignedManifests: Boolean,
 ) {
   enum class CheckAutomaticallyConfiguration {
     NEVER, ERROR_RECOVERY_ONLY, WIFI_ONLY, ALWAYS
@@ -66,6 +67,9 @@ class UpdatesConfiguration private constructor (
     codeSigningIncludeManifestResponseCertificateChain = overrideMap?.readValueCheckingType<Boolean>(
       UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN") ?: false,
+    codeSigningAllowUnsignedManifests = overrideMap?.readValueCheckingType<Boolean>(
+      UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
+    ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
   )
 
   val isMissingRuntimeVersion: Boolean
@@ -74,7 +78,7 @@ class UpdatesConfiguration private constructor (
 
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
     codeSigningCertificate?.let {
-      CodeSigningConfiguration(it, codeSigningMetadata, codeSigningIncludeManifestResponseCertificateChain)
+      CodeSigningConfiguration(it, codeSigningMetadata, codeSigningIncludeManifestResponseCertificateChain, codeSigningAllowUnsignedManifests)
     }
   }
 
@@ -96,6 +100,7 @@ class UpdatesConfiguration private constructor (
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN = "codeSigningIncludeManifestResponseCertificateChain"
+    const val UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS = "codeSigningAllowUnsignedManifests"
 
     private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
