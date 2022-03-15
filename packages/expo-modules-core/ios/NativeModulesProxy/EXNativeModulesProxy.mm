@@ -123,7 +123,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   // Add entries from Swift modules
   [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_swiftInteropBridge exportedFunctionNames]];
 
-  // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
+  // Also, add `viewManagersMetadata` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
   NSMutableDictionary<NSString *, NSDictionary *> *viewManagersMetadata = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
 
