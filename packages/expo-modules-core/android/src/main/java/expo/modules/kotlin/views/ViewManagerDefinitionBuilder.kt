@@ -18,7 +18,8 @@ class ViewManagerDefinitionBuilder {
   internal var props = mutableMapOf<String, AnyViewProp>()
   @PublishedApi
   internal var onViewDestroys: ((View) -> Unit)? = null
-
+  @PublishedApi
+  internal var viewGroupDefinition: ViewGroupDefinition? = null
   private var callbacksDefinition: CallbacksDefinition? = null
 
   fun build(): ViewManagerDefinition =
@@ -27,7 +28,8 @@ class ViewManagerDefinitionBuilder {
       requireNotNull(viewType),
       props,
       onViewDestroys,
-      callbacksDefinition
+      callbacksDefinition,
+      viewGroupDefinition
     )
 
   /**
@@ -64,5 +66,16 @@ class ViewManagerDefinitionBuilder {
    */
   fun events(vararg callbacks: String) {
     callbacksDefinition = CallbacksDefinition(callbacks)
+  }
+
+  /**
+   * Creates the group view definition that scopes group view-related definitions.
+   */
+  inline fun groupView(body: ViewGroupDefinitionBuilder.() -> Unit) {
+    require(viewGroupDefinition == null) { "The viewManager definition may have exported only one groupView definition." }
+
+    val groupViewDefinitionBuilder = ViewGroupDefinitionBuilder()
+    body.invoke(groupViewDefinitionBuilder)
+    viewGroupDefinition = groupViewDefinitionBuilder.build()
   }
 }
