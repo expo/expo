@@ -17,7 +17,9 @@ export async function openPlatformsAsync(
       : null,
   ]);
 
-  const errors = results.map(result => result.reason).filter(Boolean);
+  const errors = results
+    .map((result) => (result.status === 'rejected' ? result.reason : null))
+    .filter(Boolean);
 
   if (errors.length) {
     // ctrl+c
