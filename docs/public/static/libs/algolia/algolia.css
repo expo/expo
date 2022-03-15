@@ -40,6 +40,7 @@
   background: var(--expo-theme-background-default);
   overflow: auto;
   border-radius: 0 0 4px 4px;
+  z-index: 100;
 }
 .algolia-autocomplete .ds-dropdown-menu * {
   box-sizing: border-box;
@@ -50,12 +51,15 @@
 }
 .algolia-autocomplete .algolia-docsearch-suggestion {
   position: relative;
-  padding: 16px 16px 16px 44px;
+  padding: 12px 16px 12px 44px;
   background: var(--expo-theme-background-default);
   color: var(--expo-theme-text-default);
   overflow: hidden;
   display: block;
   border-radius: 4px;
+}
+.algolia-autocomplete .algolia-docsearch-suggestion__main {
+  padding: 16px 16px 16px 44px;
 }
 .algolia-autocomplete .ds-cursor .algolia-docsearch-suggestion {
   background-color: var(--expo-theme-background-secondary);
