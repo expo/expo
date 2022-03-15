@@ -17,7 +17,7 @@ describe('Clipboard', () => {
   });
   it('setString delegates to native setStringAsync', () => {
     Clipboard.setString('test');
-    expect(ExpoClipboard.setStringAsync).toHaveBeenCalledWith('test');
+    expect(ExpoClipboard.setStringAsync).toHaveBeenCalledWith('test', {});
   });
   it('addClipboardListener', () => {
     expect(Clipboard.addClipboardListener).toBeDefined();

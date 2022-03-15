@@ -23,3 +23,18 @@ internal enum ImageFormat: String, EnumArgument {
     }
   }
 }
+
+internal struct GetStringOptions: Record {
+  @Field
+  var preferredFormat: StringFormat = .plainText
+}
+
+internal struct SetStringOptions: Record {
+  @Field
+  var inputFormat: StringFormat = .plainText
+}
+
+internal enum StringFormat: String, EnumArgument {
+  case plainText
+  case html
+}

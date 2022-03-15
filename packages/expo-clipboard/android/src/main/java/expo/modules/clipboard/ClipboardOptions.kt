@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
-class GetImageOptions : Record {
+internal class GetImageOptions : Record {
   @Field(key = "format")
   var imageFormat: ImageFormat = ImageFormat.JPG
 
@@ -12,7 +12,17 @@ class GetImageOptions : Record {
   var jpegQuality: Double = 1.0
 }
 
-enum class ImageFormat(val jsName: String) {
+internal class GetStringOptions : Record {
+  @Field
+  var preferredFormat: StringFormat = StringFormat.PLAIN
+}
+
+internal class SetStringOptions : Record {
+  @Field
+  var inputFormat: StringFormat = StringFormat.PLAIN
+}
+
+internal enum class ImageFormat(val jsName: String) {
   JPG("jpeg"), PNG("png");
 
   val compressFormat: Bitmap.CompressFormat
@@ -26,4 +36,9 @@ enum class ImageFormat(val jsName: String) {
       JPG -> "image/jpeg"
       PNG -> "image/png"
     }
+}
+
+internal enum class StringFormat(val jsValue: String) {
+  PLAIN("plainText"),
+  HTML("html")
 }
