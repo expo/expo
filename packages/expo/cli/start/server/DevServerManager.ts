@@ -37,6 +37,8 @@ export class DevServerManager {
   private watchBabelConfig() {
     const notifier = new FileNotifier(this.projectRoot, [
       './babel.config.js',
+      './babel.config.json',
+      './.babelrc.json',
       './.babelrc',
       './.babelrc.js',
     ]);
@@ -59,7 +61,7 @@ export class DevServerManager {
   }
 
   /**
-   * Sends a message over web sockets to any connected device,
+   * Sends a message over web sockets to all connected devices,
    * does nothing when the dev server is not running.
    *
    * @param method name of the command. In RN projects `reload`, and `devMenu` are available. In Expo Go, `sendDevCommand` is available.
@@ -134,7 +136,7 @@ export class DevServerManager {
         // Stop ADB
         AndroidDebugBridge.getServer().stopAsync(),
       ]),
-      new Promise((resolve) => setTimeout(resolve, 2000, 'stopFailed')),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
     ]);
   }
 }

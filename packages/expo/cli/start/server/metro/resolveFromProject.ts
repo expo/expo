@@ -7,7 +7,7 @@ class MetroImportError extends Error {
   constructor(projectRoot: string, moduleId: string) {
     super(
       `Missing package "${moduleId}" in the project at: ${projectRoot}\n` +
-        'This usually means `react-native` is not installed. ' +
+        'This usually means "react-native" is not installed. ' +
         'Please verify that dependencies in package.json include "react-native" ' +
         'and run `yarn` or `npm install`.'
     );

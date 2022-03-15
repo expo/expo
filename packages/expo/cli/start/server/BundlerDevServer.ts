@@ -45,7 +45,7 @@ export interface BundlerStartOptions {
   devClient?: boolean;
   /** Should run dev servers with clean caches. */
   resetDevServer?: boolean;
-  /** Which manifest handler to use. */
+  /** Which manifest type to serve. */
   forceManifestType?: 'expo-updates' | 'classic';
 
   /** Max amount of workers (threads) to use with Metro bundler, defaults to undefined for max workers. */

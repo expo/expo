@@ -17,14 +17,7 @@ export async function openPlatformsAsync(
       : null,
   ]);
 
-  const errors = results
-    .reduce<Error[]>((prev, curr) => {
-      if (curr instanceof Error) {
-        prev.push(curr);
-      }
-      return prev;
-    }, [])
-    .filter(Boolean);
+  const errors = results.map(result => result.reason).filter(Boolean);
 
   if (errors.length) {
     // ctrl+c
