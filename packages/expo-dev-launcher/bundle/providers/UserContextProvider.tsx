@@ -4,7 +4,7 @@ import { setSessionAsync } from '../apiClient';
 import { getUserProfileAsync, UserAccount, UserData } from '../functions/getUserProfileAsync';
 import { restoreUserAsync } from '../functions/restoreUserAsync';
 import { startAuthSessionAsync } from '../functions/startAuthSessionAsync';
-import { useIsMounted } from './useIsMounted';
+import { useIsMounted } from '../hooks/useIsMounted';
 
 type UserContext = {
   userData?: UserData;

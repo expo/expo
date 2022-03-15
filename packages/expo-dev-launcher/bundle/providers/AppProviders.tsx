@@ -8,17 +8,17 @@ import * as React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 
 import { UserData } from '../functions/getUserProfileAsync';
-import { BuildInfoProvider } from '../hooks/useBuildInfo';
-import { CrashReportProvider } from '../hooks/useCrashReport';
-import { DevMenuSettingsProvider } from '../hooks/useDevMenuSettings';
-import { DevSessionsProvider } from '../hooks/useDevSessions';
-import { ModalProvider } from '../hooks/useModalStack';
-import { PendingDeepLinkProvider } from '../hooks/usePendingDeepLink';
-import { RecentApp, RecentlyOpenedAppsProvider } from '../hooks/useRecentlyOpenedApps';
-import { UserContextProvider } from '../hooks/useUser';
 import { BuildInfo, CrashReport } from '../native-modules/DevLauncherInternal';
 import { DevMenuSettingsType } from '../native-modules/DevMenuInternal';
 import { DevSession } from '../types';
+import { BuildInfoProvider } from './BuildInfoProvider';
+import { CrashReportProvider } from './CrashReportProvider';
+import { DevMenuSettingsProvider } from './DevMenuSettingsProvider';
+import { DevSessionsProvider } from './DevSessionsProvider';
+import { ModalProvider } from './ModalStackProvider';
+import { PendingDeepLinkProvider } from './PendingDeepLinkProvider';
+import { RecentApp, RecentlyOpenedAppsProvider } from './RecentlyOpenedAppsProvider';
+import { UserContextProvider } from './UserContextProvider';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;

@@ -4,13 +4,12 @@ import {
   ExtensionsFilledIcon,
   HomeFilledIcon,
   SettingsFilledIcon,
-  useExpoTheme,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 
-import { AppProviders } from './components/AppProviders';
 import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
+import { AppProviders } from './providers/AppProviders';
 import { CrashReportScreen } from './screens/CrashReportScreen';
 import { ExtensionsScreen } from './screens/ExtensionsScreen';
 import { HomeScreen } from './screens/HomeScreen';
