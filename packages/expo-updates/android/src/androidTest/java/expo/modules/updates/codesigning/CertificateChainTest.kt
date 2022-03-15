@@ -1,7 +1,6 @@
 package expo.modules.updates.codesigning
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import expo.modules.updates.codesigning.CertificateChain.Companion.expoProjectInformation
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,9 +12,7 @@ class CertificateChainTest {
   @Test
   fun test_ValidSingleCertificate() {
     val cert = getTestCertificate(TestCertificateType.VALID)
-    val codeSigningCertificate = CertificateChain(listOf(cert)).codeSigningCertificate
-    Assert.assertNotNull(codeSigningCertificate)
-    Assert.assertNull(codeSigningCertificate.expoProjectInformation())
+    Assert.assertNotNull(CertificateChain(listOf(cert)).codeSigningCertificate)
   }
 
   @Test
@@ -23,9 +20,7 @@ class CertificateChainTest {
     val leafCert = getTestCertificate(TestCertificateType.CHAIN_LEAF)
     val intermediateCert = getTestCertificate(TestCertificateType.CHAIN_INTERMEDIATE)
     val rootCert = getTestCertificate(TestCertificateType.CHAIN_ROOT)
-    val codeSigningCertificate = CertificateChain(listOf(leafCert, intermediateCert, rootCert)).codeSigningCertificate
-    Assert.assertNotNull(codeSigningCertificate)
-    Assert.assertEquals(codeSigningCertificate.expoProjectInformation(), ExpoProjectInformation(projectId = "285dc9ca-a25d-4f60-93be-36dc312266d7", scopeKey = "@test/app"))
+    Assert.assertNotNull(CertificateChain(listOf(leafCert, intermediateCert, rootCert)).codeSigningCertificate)
   }
 
   @Test(expected = CertificateException::class)
