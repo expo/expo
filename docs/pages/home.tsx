@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, useTheme } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 import { Container, Row } from 'react-grid-system';
 
@@ -38,6 +38,7 @@ const Description = ({ children }: PropsWithChildren<object>) => (
 );
 
 const Home = () => {
+  const { themeName } = useTheme();
   const { palette, button, background } = theme;
   return (
     <Layout header={null}>
@@ -83,7 +84,7 @@ const Home = () => {
             md={8}
             style={{
               backgroundColor: palette.primary['100'],
-              borderColor: palette.primary['200'],
+              borderColor: palette.primary[themeName === 'dark' ? '300' : '200'],
               backgroundImage: 'url("/static/images/home/TutorialPattern.svg")',
               backgroundBlendMode: 'multiply',
               minHeight: 250,
@@ -136,7 +137,10 @@ const Home = () => {
           </GridCell>
           <GridCell
             md={4}
-            style={{ backgroundColor: palette.orange['100'], borderColor: palette.orange['200'] }}>
+            style={{
+              backgroundColor: palette.orange['100'],
+              borderColor: palette.orange[themeName === 'dark' ? '300' : '200'],
+            }}>
             <CodecademyImage />
             <H3 style={{ color: palette.orange['900'] }}>
               Learn Expo on

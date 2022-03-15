@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, palette, theme, typography } from '@expo/styleguide';
+import { borderRadius, palette, shadows, theme, typography } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
@@ -40,7 +40,7 @@ export const APIGridCell = ({
   xl = 3,
 }: APIGridCellProps) => (
   <Col css={cellWrapperStyle} md={md} sm={sm} xl={xl}>
-    <div css={[cellStyle, cellAPIStyle]} style={style}>
+    <div css={[cellStyle, cellAPIStyle, cellAPIHoverStyle]} style={style}>
       <div css={cellIconWrapperStyle}>{icon}</div>
       <a href={link} css={cellTitleWrapperStyle}>
         {title}
@@ -101,6 +101,16 @@ const cellAPIStyle = css({
   padding: 0,
   overflow: 'hidden',
 });
+
+const cellAPIHoverStyle = css`
+  & {
+    transition: box-shadow 200ms;
+  }
+
+  &:hover {
+    box-shadow: ${shadows.tiny};
+  }
+`;
 
 const cellIconWrapperStyle = css({
   display: 'flex',
