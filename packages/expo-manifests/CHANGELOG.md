@@ -8,8 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Add support for expo project information certificate extension. ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
-
 ### 💡 Others
 
 ## 0.2.4 - 2022-02-01

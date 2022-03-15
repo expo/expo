@@ -26,7 +26,6 @@ import android.util.Base64
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.codesigning.SignatureHeaderInfo
-import java.security.cert.CertificateException
 
 open class FileDownloader(private val client: OkHttpClient) {
   constructor(context: Context) : this(OkHttpClient.Builder().cache(getCache(context)).build())
@@ -386,47 +385,19 @@ open class FileDownloader(private val client: OkHttpClient) {
       configuration: UpdatesConfiguration,
       callback: ManifestDownloadCallback
     ) {
+      configuration.codeSigningConfiguration?.validateSignature(
+        SignatureHeaderInfo.parseSignatureHeader(manifestHeaderData.signature),
+        bodyString.toByteArray(),
+        certificateChainFromManifestResponse,
+      )?.let {
+        if (!it) {
+          throw IOException("Manifest download was successful, but signature was incorrect")
+        }
+      }
+
       if (configuration.expectsSignedManifest) {
         preManifest.put("isVerified", isVerified)
       }
-
-      // check code signing if code signing is configured
-      // 1. verify the code signing signature (throw if invalid)
-      // 2. then, if the code signing certificate is only valid for a particular project, verify that the manifest
-      //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
-      //    project, it is assumed to be valid for all projects
-      // 3. mark the manifest as verified if both of these pass
-      try {
-        configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
-          val signatureValidationResult = codeSigningConfiguration.validateSignature(
-            SignatureHeaderInfo.parseSignatureHeader(manifestHeaderData.signature),
-            bodyString.toByteArray(),
-            certificateChainFromManifestResponse,
-          )
-          if (!signatureValidationResult.isValid) {
-            throw IOException("Manifest download was successful, but signature was incorrect")
-          }
-          val manifestForProjectInformation = ManifestFactory.getManifest(
-            preManifest,
-            manifestHeaderData,
-            extensions,
-            configuration
-          ).manifest
-          signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
-            if (expoProjectInformation.projectId != manifestForProjectInformation.getEASProjectID() ||
-              expoProjectInformation.scopeKey != manifestForProjectInformation.getScopeKey()
-            ) {
-              throw CertificateException("Invalid certificate for manifest project ID or scope key")
-            }
-          }
-
-          preManifest.put("isVerified", true)
-        }
-      } catch (e: Exception) {
-        callback.onFailure(e.message!!, e)
-        return
-      }
-
       val updateManifest = ManifestFactory.getManifest(preManifest, manifestHeaderData, extensions, configuration)
       if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, updateManifest.manifestFilters)) {
         val message =
