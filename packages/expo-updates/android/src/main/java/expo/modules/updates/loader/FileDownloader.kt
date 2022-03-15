@@ -413,7 +413,7 @@ open class FileDownloader(private val client: OkHttpClient) {
             configuration
           ).manifest
           signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
-            if (expoProjectInformation.appId != manifestForProjectInformation.getEASProjectID() ||
+            if (expoProjectInformation.projectId != manifestForProjectInformation.getEASProjectID() ||
               expoProjectInformation.scopeKey != manifestForProjectInformation.getScopeKey()
             ) {
               throw CertificateException("Invalid certificate for manifest project ID or scope key")

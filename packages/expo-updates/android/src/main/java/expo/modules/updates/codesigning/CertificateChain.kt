@@ -10,10 +10,10 @@ import kotlin.math.min
 // ASN.1 path to the extended key usage info within a CERT
 private const val CODE_SIGNING_OID = "1.3.6.1.5.5.7.3.3"
 
-// OID of expo project info, stored as `<appId>,<scopeKey>`
+// OID of expo project info, stored as `<projectId>,<scopeKey>`
 private const val EXPO_PROJECT_INFORMATION_OID = "1.2.840.113556.1.8000.2554.43437.254.128.102.157.7894389.20439.2.1"
 
-data class ExpoProjectInformation(val appId: String, val scopeKey: String)
+data class ExpoProjectInformation(val projectId: String, val scopeKey: String)
 
 /**
  * Full certificate chain for verifying code signing.

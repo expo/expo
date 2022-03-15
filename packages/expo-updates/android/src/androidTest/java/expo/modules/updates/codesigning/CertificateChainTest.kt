@@ -25,7 +25,7 @@ class CertificateChainTest {
     val rootCert = getTestCertificate(TestCertificateType.CHAIN_ROOT)
     val codeSigningCertificate = CertificateChain(listOf(leafCert, intermediateCert, rootCert)).codeSigningCertificate
     Assert.assertNotNull(codeSigningCertificate)
-    Assert.assertEquals(codeSigningCertificate.expoProjectInformation(), ExpoProjectInformation(appId = "285dc9ca-a25d-4f60-93be-36dc312266d7", scopeKey = "@test/app"))
+    Assert.assertEquals(codeSigningCertificate.expoProjectInformation(), ExpoProjectInformation(projectId = "285dc9ca-a25d-4f60-93be-36dc312266d7", scopeKey = "@test/app"))
   }
 
   @Test(expected = CertificateException::class)

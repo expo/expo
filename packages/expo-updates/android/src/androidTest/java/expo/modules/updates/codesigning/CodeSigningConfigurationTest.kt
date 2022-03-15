@@ -136,6 +136,6 @@ class CodeSigningConfigurationTest {
     val codesigningInfo = SignatureHeaderInfo.parseSignatureHeader(CertificateFixtures.testNewManifestBodyValidChainLeafSignature)
     val signatureValidationResult = codeSigningConfiguration.validateSignature(codesigningInfo, CertificateFixtures.testNewManifestBody.toByteArray(), leafCert + intermediateCert)
     Assert.assertTrue(signatureValidationResult.isValid)
-    Assert.assertEquals(signatureValidationResult.expoProjectInformation, ExpoProjectInformation(appId = "285dc9ca-a25d-4f60-93be-36dc312266d7", scopeKey = "@test/app"))
+    Assert.assertEquals(signatureValidationResult.expoProjectInformation, ExpoProjectInformation(projectId = "285dc9ca-a25d-4f60-93be-36dc312266d7", scopeKey = "@test/app"))
   }
 }
