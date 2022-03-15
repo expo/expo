@@ -30,7 +30,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ClipboardScreen'));
+      return optionalRequire(() => require('../screens/Clipboard/ClipboardScreen'));
     },
     name: 'Clipboard',
   },
