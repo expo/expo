@@ -35,7 +35,7 @@ afterEach(async () => {
 });
 
 test('starts app, stops, and starts again', async () => {
-  jest.setTimeout(60000);
+  jest.setTimeout(300000);
   try {
     Server.start(SERVER_PORT);
     await installAndroidApk(APK_PATH);
