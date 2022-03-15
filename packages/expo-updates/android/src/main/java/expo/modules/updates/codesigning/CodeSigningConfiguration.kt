@@ -40,7 +40,7 @@ class CodeSigningConfiguration(
       if (!allowUnsignedManifests) {
         throw Exception("No expo-signature header specified")
       } else {
-        // approve this
+        // no-op
         return
       }
     }
