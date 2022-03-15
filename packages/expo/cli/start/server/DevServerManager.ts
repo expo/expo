@@ -77,7 +77,7 @@ export class DevServerManager {
   /** Get the port for the dev server (either Webpack or Metro) that is hosting code for React Native runtimes. */
   getNativeDevServerPort() {
     const server = devServers.find((server) => server.isTargetingNative());
-    return server?.getInstance?.()?.location?.port ?? null;
+    return server?.getInstance()?.location.port ?? null;
   }
 
   /** Get the first server that targets web. */

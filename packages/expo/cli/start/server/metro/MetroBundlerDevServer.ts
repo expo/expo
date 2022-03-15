@@ -28,7 +28,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         ? // Don't check if the port is busy if we're using the dev client since most clients are hardcoded to 8081.
           Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
         : // Otherwise (running in Expo Go) use a free port that falls back on the classic 19000 port.
-          await getFreePortAsync(options.port || EXPO_GO_METRO_PORT));
+          await getFreePortAsync(EXPO_GO_METRO_PORT));
 
     this.urlCreator = new UrlCreator(options.location, {
       port,

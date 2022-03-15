@@ -201,8 +201,9 @@ export abstract class BundlerDevServer {
     this.devSession?.stop?.();
 
     // Stop ngrok if running.
-    await this.ngrok?.stopAsync?.().catch((e) => {
-      Log.error(`Error stopping ngrok: ${e.message}`);
+    await this.ngrok?.stopAsync().catch((e) => {
+      Log.error(`Error stopping ngrok:`);
+      Log.exception(e);
     });
 
     return new Promise<void>((resolve, reject) => {
@@ -217,6 +218,7 @@ export abstract class BundlerDevServer {
           }
         });
       } else {
+        this.instance = null;
         resolve();
       }
     });
@@ -242,12 +244,12 @@ export abstract class BundlerDevServer {
     if (options.hostType === 'localhost') {
       return `${location.protocol}://localhost:${location.port}`;
     }
-    return location?.url ?? null;
+    return location.url ?? null;
   }
 
   /** Get the tunnel URL from ngrok. */
   public getTunnelUrl(): string | null {
-    return this.ngrok?.getActiveUrl?.() ?? null;
+    return this.ngrok?.getActiveUrl() ?? null;
   }
 
   /** Open the dev server in a runtime. */
@@ -270,9 +272,8 @@ export abstract class BundlerDevServer {
   protected shouldUseInterstitialPage(): boolean {
     return (
       env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
-      // TODO: >:0
       // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher/package.json')
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
     );
   }
 
@@ -294,7 +295,7 @@ export abstract class BundlerDevServer {
       const Manager = PLATFORM_MANAGERS[platform];
       this.platformManagers[platform] = new Manager(
         this.projectRoot,
-        this.getInstance()?.location?.port,
+        this.getInstance()?.location.port,
         {
           getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
           getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
