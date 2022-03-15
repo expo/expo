@@ -17,7 +17,7 @@ class ModuleRegistry(
   fun register(module: Module) {
     val holder = ModuleHolder(module)
     module._appContext = requireNotNull(appContext.get()) { "Cannot create a module for invalid app context." }
-    module._coroutineScopeDelegate = lazy {
+    module.coroutineScopeDelegate = lazy {
       CoroutineScope(
         Dispatchers.Default +
           SupervisorJob() +

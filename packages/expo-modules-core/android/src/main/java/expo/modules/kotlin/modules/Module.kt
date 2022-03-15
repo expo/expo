@@ -17,8 +17,8 @@ abstract class Module {
 
   @Suppress("PropertyName")
   @PublishedApi
-  internal lateinit var _coroutineScopeDelegate: Lazy<CoroutineScope>
-  val coroutineScope by _coroutineScopeDelegate
+  internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
+  val coroutineScope by coroutineScopeDelegate
 
   fun sendEvent(name: String, body: Bundle?) {
     moduleEventEmitter?.emit(name, body)
@@ -27,7 +27,7 @@ abstract class Module {
   abstract fun definition(): ModuleDefinitionData
 
   internal fun cleanUp() {
-    if (_coroutineScopeDelegate.isInitialized()) {
+    if (coroutineScopeDelegate.isInitialized()) {
       coroutineScope.cancel(ModuleDestroyedException())
     }
   }

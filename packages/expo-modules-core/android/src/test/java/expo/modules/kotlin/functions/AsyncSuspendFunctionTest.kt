@@ -5,47 +5,53 @@ import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AsyncSuspendFunctionTest {
+  private lateinit var testScope: TestScope
+
+  @Before
+  fun setUp() {
+    testScope = TestScope()
+  }
+
   @Test
-  fun `suspend block should resolve promise on finish`() = runTest {
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray(), lazy { this }) {
+  fun `suspend block should resolve promise on finish`() {
+    val suspendMethod = SuspendMethod("test", emptyArray(), lazy { testScope }) {
       delay(2000)
     }
     val promiseMock = PromiseMock()
 
     suspendMethod.call(JavaOnlyArray(), promiseMock)
-    testScheduler.advanceTimeBy(3000)
+    testScope.testScheduler.advanceTimeBy(3000)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.RESOLVED)
   }
 
   @Test
-  fun `suspend block should reject promise when throws`() = runTest {
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray(), lazy { this }) {
+  fun `suspend block should reject promise when throws`() {
+    val suspendMethod = AsyncSuspendFunction("test", emptyArray(), lazy { testScope }) {
       delay(2000)
       throw IllegalStateException()
     }
     val promiseMock = PromiseMock()
 
     suspendMethod.call(JavaOnlyArray(), promiseMock)
-    testScheduler.advanceTimeBy(3000)
+    testScope.testScheduler.advanceTimeBy(3000)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.REJECTED)
   }
 
   @Test
   fun `suspend block should be cancelable`() {
-    val testScope = TestScope()
     val suspendMethod = AsyncSuspendFunction("test", emptyArray(), lazy { testScope }) {
       delay(2000)
     }
@@ -59,7 +65,6 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `suspend block should wait for children`() {
-    val testScope = TestScope()
     var wasAsyncCalled = false
     var wasLaunchCalled = false
 
@@ -87,7 +92,6 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `suspend block should clean whole coroutine hierarchy`() {
-    val testScope = TestScope()
     var wasAsyncCalled = false
     var wasLaunchCalled = false
 
@@ -115,7 +119,6 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `should handle multiple calls`() {
-    val testScope = TestScope(SupervisorJob())
     val suspendMethod = AsyncSuspendFunction("test", emptyArray(), lazy { testScope }) {
       delay(2000)
     }
@@ -133,7 +136,6 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `should not cancel siblings `() {
-    val testScope = TestScope(SupervisorJob())
     val suspendMethod1 = AsyncSuspendFunction("test1", emptyArray(), lazy { testScope }) {
       delay(2000)
     }
