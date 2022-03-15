@@ -33,6 +33,8 @@ concurrency:
 jobs:
   android:
     runs-on: macos-11
+    env:
+      UPDATES_PORT: 4747
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -72,6 +74,12 @@ jobs:
       - name: Manually bump kotlin version (workaround)
         working-directory: ../updates-e2e
         run: sed -i -e 's/\(buildToolsVersion = "[0-9.]*"\)/\1\nkotlinVersion = "1.6.10"/' ./android/build.gradle
+      - name: Copy App.js from test fixtures
+        working-directory: ../updates-e2e
+        run: cp ../expo/packages/expo-updates/.tests/e2e/__tests__/fixtures/App.js .
+      - name: Set port in App.js
+        working-directory: ../updates-e2e
+        run: sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
       - name: Assemble release APK
         working-directory: ../updates-e2e/android
         run: ./gradlew assembleRelease
@@ -82,3 +90,17 @@ jobs:
         with:
           name: updates-e2e-android-apk
           path: artifact
+      - name: Get test APK path
+        id: test-apk-path
+        working-directory: ../updates-e2e/android/app/build/outputs/apk/release
+        run: echo "::set-output name=dir::$(pwd)"
+      - name: Run tests
+        env:
+          TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
+        timeout-minutes: 10
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          script: yarn test --config .tests/e2e/jest.config.js
+          working-directory: packages/expo-updates
