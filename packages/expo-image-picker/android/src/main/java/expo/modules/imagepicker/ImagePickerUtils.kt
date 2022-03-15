@@ -84,7 +84,7 @@ class ExifDataHandler(private val uri: Uri) {
         try {
           newExif.saveAttributes()
         } catch (e: IOException) {
-          e.message?.let { Log.e(TAG, it) }
+          Log.w(TAG, "Couldn't save Exif data: ${e.message}", e)
         }
       }
     }
