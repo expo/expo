@@ -38,15 +38,15 @@ class ViewGroupDefinitionBuilder {
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> getChildAt(
-    noinline body: (view: ParentViewType, index: Int) -> ChildViewType
+  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> getChildViewAt(
+    noinline body: (view: ParentViewType, index: Int) -> ChildViewType?
   ) {
     getChildAtAction = { view, index ->
       body(view as ParentViewType, index)
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup> removeViewAt(
+  inline fun <reified ParentViewType : ViewGroup> removeChildViewAt(
     noinline body: (view: ParentViewType, index: Int) -> Unit
   ) {
     removeViewAtAction = { view, index ->
@@ -54,7 +54,7 @@ class ViewGroupDefinitionBuilder {
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> removeView(
+  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> removeChildView(
     noinline body: (parent: ParentViewType, child: ChildViewType) -> Unit
   ) {
     removeViewAction = { view, child ->
