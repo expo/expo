@@ -62,7 +62,7 @@
   padding: 16px 16px 16px 44px;
 }
 .algolia-autocomplete .ds-cursor .algolia-docsearch-suggestion {
-  background-color: var(--expo-theme-background-secondary);
+  background-color: var(--expo-theme-background-tertiary);
 }
 .algolia-autocomplete .ds-cursor .algolia-docsearch-suggestion:after {
   position: absolute;
