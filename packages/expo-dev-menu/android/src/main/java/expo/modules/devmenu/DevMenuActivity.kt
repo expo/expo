@@ -40,7 +40,6 @@ class DevMenuActivity : ReactActivity() {
           return
         }
 
-
         val reactDelegate: ReactDelegate = ReactActivityDelegate::class.java
           .getPrivateDeclaredFieldValue("mReactDelegate", this)
 
