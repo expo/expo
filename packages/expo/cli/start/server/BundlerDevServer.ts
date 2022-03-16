@@ -198,7 +198,7 @@ export abstract class BundlerDevServer {
   /** Stop the running dev server instance. */
   async stopAsync() {
     // Stop the dev session timer.
-    this.devSession?.stop?.();
+    this.devSession?.stop();
 
     // Stop ngrok if running.
     await this.ngrok?.stopAsync().catch((e) => {
