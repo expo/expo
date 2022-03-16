@@ -22,6 +22,7 @@ public func constants(_ body: @autoclosure @escaping () -> [String: Any?]) -> An
 /**
  Function without arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R>(
   _ name: String,
   _ closure: @escaping () throws -> R
@@ -36,6 +37,7 @@ public func function<R>(
 /**
  Function with one argument.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0) throws -> R
@@ -50,6 +52,7 @@ public func function<R, A0: AnyArgument>(
 /**
  Function with two arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument, A1: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1) throws -> R
@@ -64,6 +67,7 @@ public func function<R, A0: AnyArgument, A1: AnyArgument>(
 /**
  Function with three arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2) throws -> R
@@ -82,6 +86,7 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
 /**
  Function with four arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3) throws -> R
@@ -101,6 +106,7 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 /**
  Function with five arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4) throws -> R
@@ -121,6 +127,7 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 /**
  Function with six arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
@@ -142,6 +149,7 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 /**
  Function with seven arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) throws -> R
@@ -164,6 +172,7 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 /**
  Function with eight arguments.
  */
+@available(*, deprecated, renamed: "asyncFunction")
 public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) throws -> R
