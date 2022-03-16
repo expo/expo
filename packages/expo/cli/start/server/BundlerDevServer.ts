@@ -138,7 +138,7 @@ export abstract class BundlerDevServer {
 
   /** Create ngrok instance and start the tunnel server. Exposed for testing. */
   public async _startTunnelAsync(): Promise<AsyncNgrok | null> {
-    const port = this.getInstance()?.location?.port;
+    const port = this.getInstance()?.location.port;
     if (!port) return null;
     Log.debug('[ngrok] connect to port: ' + port);
     this.ngrok = new AsyncNgrok(this.projectRoot, port);
