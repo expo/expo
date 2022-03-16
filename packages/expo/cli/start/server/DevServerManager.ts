@@ -4,11 +4,11 @@ import assert from 'assert';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
+import { resolveWithTimeout } from '../../utils/delay';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { MetroBundlerDevServer } from './metro/MetroBundlerDevServer';
-import { WebpackBundlerDevServer } from './webpack/WebpackBundlerDevServer';
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -18,7 +18,8 @@ export type MultiBundlerStartOptions = {
 const devServers: BundlerDevServer[] = [];
 
 const BUNDLERS = {
-  webpack: WebpackBundlerDevServer,
+  // TODO: Webpack
+  // webpack: WebpackBundlerDevServer,
   metro: MetroBundlerDevServer,
 };
 
@@ -37,6 +38,8 @@ export class DevServerManager {
   private watchBabelConfig() {
     const notifier = new FileNotifier(this.projectRoot, [
       './babel.config.js',
+      './babel.config.json',
+      './.babelrc.json',
       './.babelrc',
       './.babelrc.js',
     ]);
@@ -59,7 +62,7 @@ export class DevServerManager {
   }
 
   /**
-   * Sends a message over web sockets to any connected device,
+   * Sends a message over web sockets to all connected devices,
    * does nothing when the dev server is not running.
    *
    * @param method name of the command. In RN projects `reload`, and `devMenu` are available. In Expo Go, `sendDevCommand` is available.
@@ -74,7 +77,7 @@ export class DevServerManager {
   /** Get the port for the dev server (either Webpack or Metro) that is hosting code for React Native runtimes. */
   getNativeDevServerPort() {
     const server = devServers.find((server) => server.isTargetingNative());
-    return server?.getInstance?.()?.location?.port ?? null;
+    return server?.getInstance()?.location.port ?? null;
   }
 
   /** Get the first server that targets web. */
@@ -97,12 +100,13 @@ export class DevServerManager {
       return;
     }
     Log.debug('Starting webpack dev server');
-    return this.startAsync([
-      {
-        type: 'webpack',
-        options: this.options,
-      },
-    ]);
+    throw new Error('Not implemented');
+    // return this.startAsync([
+    //   {
+    //     type: 'webpack',
+    //     options: this.options,
+    //   },
+    // ]);
   }
 
   /** Start all dev servers. */
@@ -126,14 +130,17 @@ export class DevServerManager {
 
   /** Stop all servers including ADB. */
   async stopAsync(): Promise<void> {
-    await Promise.race([
-      Promise.allSettled([
-        // Stop all dev servers
-        ...devServers.map((server) => server.stopAsync()),
-        // Stop ADB
-        AndroidDebugBridge.getServer().stopAsync(),
-      ]),
-      new Promise((resolve) => setTimeout(resolve, 2000, 'stopFailed')),
-    ]);
+    await resolveWithTimeout(
+      () =>
+        Promise.allSettled([
+          // Stop all dev servers
+          ...devServers.map((server) => server.stopAsync()),
+          // Stop ADB
+          AndroidDebugBridge.getServer().stopAsync(),
+        ]),
+      {
+        timeout: 2000,
+      }
+    );
   }
 }

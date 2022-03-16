@@ -39,7 +39,11 @@ afterAll(() => {
   delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
 });
 
-class FakeBundlerDevServer extends BundlerDevServer {
+class MockBundlerDevServer extends BundlerDevServer {
+  get name(): string {
+    return 'fake';
+  }
+
   public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     const port = options.port || 3000;
     this.urlCreator = new UrlCreator(
@@ -96,7 +100,7 @@ class FakeBundlerDevServer extends BundlerDevServer {
 }
 
 async function getRunningServer() {
-  const devServer = new FakeBundlerDevServer('/');
+  const devServer = new MockBundlerDevServer('/');
   await devServer.startAsync({ location: {} });
   return devServer;
 }
@@ -139,7 +143,7 @@ describe('openPlatformAsync', () => {
 
 describe('stopAsync', () => {
   it(`stops a running dev server`, async () => {
-    const server = new FakeBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/');
     const instance = await server.startAsync({
       location: {
         hostType: 'tunnel',
@@ -173,7 +177,7 @@ describe('getExpoGoUrl', () => {
       '/'
     );
 
-    const server = new FakeBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/');
     await server.startAsync({
       location: {},
     });
@@ -190,7 +194,7 @@ describe('getExpoGoUrl', () => {
     expect(urlCreator.constructLoadingUrl).toBeCalledTimes(2);
   });
   it(`gets the native Expo Go URL`, async () => {
-    const server = new FakeBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/');
     await server.startAsync({
       location: {},
     });
@@ -202,7 +206,7 @@ describe('getExpoGoUrl', () => {
 
 describe('getNativeRuntimeUrl', () => {
   it(`gets the native runtime URL`, async () => {
-    const server = new FakeBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/');
     await server.startAsync({
       location: {},
     });
@@ -211,7 +215,7 @@ describe('getNativeRuntimeUrl', () => {
     expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe('exp://100.100.1.100:3000');
   });
   it(`gets the native runtime URL for dev client`, async () => {
-    const server = new FakeBundlerDevServer('/', true);
+    const server = new MockBundlerDevServer('/', true);
     await server.startAsync({
       location: {
         scheme: 'my-app',
@@ -230,7 +234,7 @@ describe('getNativeRuntimeUrl', () => {
 });
 
 describe('_getManifestMiddleware', () => {
-  const server = new FakeBundlerDevServer('/');
+  const server = new MockBundlerDevServer('/');
   it(`asserts invalid manifest type`, () => {
     expect(() =>
       server._getManifestMiddleware({
@@ -245,7 +249,7 @@ describe('_getManifestMiddleware', () => {
 });
 
 describe('_startTunnelAsync', () => {
-  const server = new BundlerDevServer('/');
+  const server = new MockBundlerDevServer('/');
   it(`returns null when the server isn't running`, async () => {
     expect(await server._startTunnelAsync()).toEqual(null);
   });

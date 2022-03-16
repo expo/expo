@@ -8,12 +8,12 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 function createDevServerManager() {
   return {
     getDefaultDevServer: jest.fn(() => ({
-      openPlatformAsync: jest.fn(),
+      openPlatformAsync: jest.fn(async () => {}),
     })),
     getWebDevServer: jest.fn(() => ({
-      openPlatformAsync: jest.fn(),
+      openPlatformAsync: jest.fn(async () => {}),
     })),
-    ensureWebDevServerRunningAsync: jest.fn(() => Promise.resolve()),
+    ensureWebDevServerRunningAsync: jest.fn(async () => {}),
   } as unknown as DevServerManager;
 }
 
@@ -54,7 +54,7 @@ it(`rethrows assertions`, async () => {
   asMock(manager.getDefaultDevServer).mockImplementationOnce(
     () =>
       ({
-        openPlatformAsync() {
+        async openPlatformAsync() {
           throw new Error('Failed');
         },
       } as any)
@@ -66,21 +66,21 @@ it(`rethrows assertions`, async () => {
   };
   await expect(openPlatformsAsync(manager, options)).rejects.toThrow(/Failed/);
 
-  expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(1);
-  expect(manager.getWebDevServer).toHaveBeenCalledTimes(0);
-  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(0);
+  expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(2);
+  expect(manager.getWebDevServer).toHaveBeenCalledTimes(1);
+  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(1);
 });
 
 it(`surfaces aborting`, async () => {
   const manager = createDevServerManager();
   asMock(manager.getDefaultDevServer)
     .mockReturnValueOnce({
-      openPlatformAsync() {},
+      async openPlatformAsync() {},
     } as any)
     .mockImplementationOnce(
       () =>
         ({
-          openPlatformAsync() {
+          async openPlatformAsync() {
             throw new AbortCommandError();
           },
         } as any)
@@ -93,6 +93,6 @@ it(`surfaces aborting`, async () => {
   await expect(openPlatformsAsync(manager, options)).rejects.toThrow(AbortCommandError);
 
   expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(2);
-  expect(manager.getWebDevServer).toHaveBeenCalledTimes(0);
-  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(0);
+  expect(manager.getWebDevServer).toHaveBeenCalledTimes(1);
+  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(1);
 });

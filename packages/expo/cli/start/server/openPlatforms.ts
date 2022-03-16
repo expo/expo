@@ -18,12 +18,7 @@ export async function openPlatformsAsync(
   ]);
 
   const errors = results
-    .reduce<Error[]>((prev, curr) => {
-      if (curr instanceof Error) {
-        prev.push(curr);
-      }
-      return prev;
-    }, [])
+    .map((result) => (result.status === 'rejected' ? result.reason : null))
     .filter(Boolean);
 
   if (errors.length) {

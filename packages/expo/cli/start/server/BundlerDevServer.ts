@@ -7,7 +7,6 @@ import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
-import { UnimplementedError } from '../../utils/errors';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
 import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
@@ -46,13 +45,14 @@ export interface BundlerStartOptions {
   devClient?: boolean;
   /** Should run dev servers with clean caches. */
   resetDevServer?: boolean;
-  /** Which manifest handler to use. */
+  /** Which manifest type to serve. */
   forceManifestType?: 'expo-updates' | 'classic';
 
   /** Max amount of workers (threads) to use with Metro bundler, defaults to undefined for max workers. */
   maxWorkers?: number;
   /** Port to start the dev server on. */
   port?: number;
+
   /** Should instruct the bundler to create minified bundles. */
   minify?: boolean;
 
@@ -73,11 +73,9 @@ const MIDDLEWARES = {
   'expo-updates': ExpoGoManifestHandlerMiddleware,
 };
 
-export class BundlerDevServer {
+export abstract class BundlerDevServer {
   /** Name of the bundler. */
-  get name(): string {
-    throw new UnimplementedError();
-  }
+  abstract get name(): string;
 
   /** Ngrok instance for managing tunnel connections. */
   protected ngrok: AsyncNgrok | null = null;
@@ -120,9 +118,7 @@ export class BundlerDevServer {
   }
 
   /** Start the dev server using settings defined in the start command. */
-  public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
-    throw new UnimplementedError();
-  }
+  public abstract startAsync(options: BundlerStartOptions): Promise<DevServerInstance>;
 
   protected async postStartAsync(options: BundlerStartOptions) {
     if (options.location.hostType === 'tunnel' && !APISettings.isOffline) {
@@ -133,9 +129,7 @@ export class BundlerDevServer {
     this.watchConfig();
   }
 
-  protected getConfigModuleIds(): string[] {
-    throw new UnimplementedError();
-  }
+  protected abstract getConfigModuleIds(): string[];
 
   protected watchConfig() {
     const notifier = new FileNotifier(this.projectRoot, this.getConfigModuleIds());
@@ -144,7 +138,7 @@ export class BundlerDevServer {
 
   /** Create ngrok instance and start the tunnel server. Exposed for testing. */
   public async _startTunnelAsync(): Promise<AsyncNgrok | null> {
-    const port = this.getInstance()?.location?.port;
+    const port = this.getInstance()?.location.port;
     if (!port) return null;
     Log.debug('[ngrok] connect to port: ' + port);
     this.ngrok = new AsyncNgrok(this.projectRoot, port);
@@ -193,7 +187,7 @@ export class BundlerDevServer {
     method: 'reload' | 'devMenu' | 'sendDevCommand',
     params?: Record<string, any>
   ) {
-    this.getInstance()?.messageSocket?.broadcast?.(method, params);
+    this.getInstance()?.messageSocket.broadcast(method, params);
   }
 
   /** Get the running dev server instance. */
@@ -204,11 +198,12 @@ export class BundlerDevServer {
   /** Stop the running dev server instance. */
   async stopAsync() {
     // Stop the dev session timer.
-    this.devSession?.stop?.();
+    this.devSession?.stop();
 
     // Stop ngrok if running.
-    await this.ngrok?.stopAsync?.().catch((e) => {
-      Log.error(`Error stopping ngrok: ${e.message}`);
+    await this.ngrok?.stopAsync().catch((e) => {
+      Log.error(`Error stopping ngrok:`);
+      Log.exception(e);
     });
 
     return new Promise<void>((resolve, reject) => {
@@ -223,6 +218,7 @@ export class BundlerDevServer {
           }
         });
       } else {
+        this.instance = null;
         resolve();
       }
     });
@@ -248,12 +244,12 @@ export class BundlerDevServer {
     if (options.hostType === 'localhost') {
       return `${location.protocol}://localhost:${location.port}`;
     }
-    return location?.url ?? null;
+    return location.url ?? null;
   }
 
   /** Get the tunnel URL from ngrok. */
   public getTunnelUrl(): string | null {
-    return this.ngrok?.getActiveUrl?.() ?? null;
+    return this.ngrok?.getActiveUrl() ?? null;
   }
 
   /** Open the dev server in a runtime. */
@@ -276,9 +272,8 @@ export class BundlerDevServer {
   protected shouldUseInterstitialPage(): boolean {
     return (
       env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
-      // TODO: >:0
       // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher/package.json')
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
     );
   }
 
@@ -300,7 +295,7 @@ export class BundlerDevServer {
       const Manager = PLATFORM_MANAGERS[platform];
       this.platformManagers[platform] = new Manager(
         this.projectRoot,
-        this.getInstance()?.location?.port,
+        this.getInstance()?.location.port,
         {
           getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
           getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),

@@ -1,10 +1,10 @@
 import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
-import { Terminal } from 'metro-core';
+// import { Terminal } from 'metro-core';
+// import { MetroTerminalReporter } from './MetroTerminalReporter';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -26,13 +26,12 @@ export async function instantiateMetroAsync(
   const Metro = importMetroFromProject(projectRoot);
   const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
 
-  const terminal = new Terminal(process.stdout);
-
-  const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
+  // const terminal = new Terminal(process.stdout);
+  // const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
 
   const reporter = {
     update(event: any) {
-      terminalReporter.update(event);
+      // terminalReporter.update(event);
       if (reportEvent) {
         reportEvent(event);
       }
