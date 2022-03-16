@@ -6,13 +6,13 @@ import { useMenuPreferences } from '../hooks/useMenuPreferences';
 import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 const deviceMessage = Platform.select({
-  ios: `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
-  android: `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
+  ios: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
+  android: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
 });
 
 const simulatorMessage = Platform.select({
-  ios: `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that in a simulator you can press \u2318D (make sure that 'I/O \u279E Send Keyboard Input to Device' is enabled on your simulator) to get back to it at any time.`,
-  android: `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that in an emulator you can press \u2318M on macOS or Ctrl+M on other platforms to get back to it at any time.`,
+  ios: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that in a simulator you can press \u2318D (make sure that 'I/O \u279E Send Keyboard Input to Device' is enabled on your simulator) to get back to it at any time.`,
+  android: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that in an emulator you can press \u2318M on macOS or Ctrl+M on other platforms to get back to it at any time.`,
 });
 
 type OnboardingProps = {
