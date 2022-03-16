@@ -40,7 +40,7 @@ export function HomeScreenHeader({ currentUser }: Props) {
           shadow="button"
           height="xl"
           width="xl"
-          bg={themeType === 'dark' ? 'overlay' : 'default'}
+          bg={themeType === 'dark' ? 'secondary' : 'default'}
           style={{
             marginRight: spacing[2],
             elevation: themeType === 'light' ? 1 : 0,
