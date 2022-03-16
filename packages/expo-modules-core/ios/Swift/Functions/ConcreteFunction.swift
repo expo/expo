@@ -1,6 +1,6 @@
 import Dispatch
 
-public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
+public class ConcreteFunction<Args, ReturnType>: AnyFunction {
   public typealias ClosureType = (Args) throws -> ReturnType
 
   public let name: String
@@ -29,6 +29,11 @@ public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
     self.name = name
     self.argTypes = argTypes
     self.closure = closure
+
+    // This is temporary solution to keep backwards compatibility for existing functions — they all end with "Async".
+    // `function` component that we've used so far was async by default, but we decided to replace it with `asyncFunction`
+    // and make `function`s synchronous. Introduced in SDK45, can be removed in SDK46 after migrating all modules.
+    self.isAsync = name.hasSuffix("Async")
   }
 
   public func call(args: [Any], promise: Promise) {
