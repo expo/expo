@@ -7,15 +7,15 @@ Shared ESLint configs for Node, Web, and universal Expo projects.
 yarn add --dev eslint-config-universe
 ```
 
-You will also need to install `eslint`, `prettier`, `@typescript-eslint/eslint-plugin`, and `@typescript-eslint/parser`:
+You will also need to install `eslint` and `prettier`:
 
 ```sh
-yarn add --dev eslint prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser
+yarn add --dev eslint prettier
 ```
 
 ## Usage
 
-Import this config into your own ESLint configuration using the `extends` option. ESLint checks both package.json and .eslintrc.* files for its configuration:
+Import this config into your own ESLint configuration using the `extends` option. ESLint checks both `package.json` and `.eslintrc.*` files for its configuration:
 
 ### package.json
 ```js
@@ -53,10 +53,10 @@ Read more about [configuring `prettier`](https://prettier.io/docs/en/configurati
 ## Support for Different Platforms
 
 There are several configs for different platforms. They are:
-* `universe`: the basic config for JavaScript projects for which there isn't a more specific config
-* `universe/native`: the config for React Native projects, including Expo projects, with support for React and JSX
-* `universe/web`: the config for code that runs in web browsers, with support for React and JSX
-* `universe/node`: the config for code that runs in Node
+* `universe`: the basic config for JavaScript projects for which there isn't a more specific config,
+* `universe/native`: the config for React Native projects, including Expo projects, with support for React and JSX,
+* `universe/web`: the config for code that runs in web browsers, with support for React and JSX,
+* `universe/node`: the config for code that runs in Node.
 
 For an Expo project, your configuration might look like this:
 
@@ -76,7 +76,7 @@ You also can extend multiple configs, which is useful for projects that span sev
 
 ## Optional Additional TypeScript Typed Linting
 
-Universe also provides optional additional config for typescript-eslint rules that make use of the parsed type information. Note that this may increase the time it takes to run lint for large projects. More information can be found at https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/TYPED_LINTING.md
+Universe also provides optional additional config for `typescript-eslint` rules that make use of the parsed type information. Note that this may increase the time it takes to run lint for large projects. More information can be found at [TypeScript ESLint website](https://typescript-eslint.io/docs/linting/type-linting).
 
 To enable the additional config, the following changes to your config are required:
 
@@ -103,7 +103,7 @@ module.exports = {
 };
 ```
 
-More info on parserOptions.project can be found at https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#parseroptionsproject
+More information on `parserOptions.project` option can be found in the [`typescript-eslint` repository](https://github.com/typescript-eslint/typescript-eslint/tree/main/packages/parser#parseroptionsproject).
 
 ## Philosophy
 
