@@ -68,6 +68,7 @@ export class MetroTerminalReporter extends TerminalReporter {
     return isAppRegistryStartupMessage(event.data);
   }
 
+  /** Print the cache clear message. */
   transformCacheReset(): void {
     logWarning(
       this.terminal,
@@ -141,6 +142,7 @@ export function formatUsingNodeStandardLibraryError(projectRoot: string, error: 
   return `Unable to resolve "${targetModuleName}" from "${relativePath}"`;
 }
 
+/** If the code frame can be found then append it to the existing message.  */
 function maybeAppendCodeFrame(message: string, rawMessage: string): string {
   const codeFrame = stripMetroInfo(rawMessage);
   if (codeFrame) {
@@ -149,6 +151,11 @@ function maybeAppendCodeFrame(message: string, rawMessage: string): string {
   return message;
 }
 
+/**
+ * Remove the Metro cache clearing steps if they exist.
+ * In future versions we won't need this.
+ * Returns the remaining code frame logs.
+ */
 export function stripMetroInfo(errorMessage: string): string {
   // Newer versions of Metro don't include the list.
   if (!errorMessage.includes('4. Remove the cache')) {
@@ -162,6 +169,7 @@ export function stripMetroInfo(errorMessage: string): string {
   return lines.slice(index + 1).join('\n');
 }
 
+/** @returns if the message matches the initial startup log */
 function isAppRegistryStartupMessage(body: any[]): boolean {
   return (
     body.length === 1 &&
@@ -170,7 +178,8 @@ function isAppRegistryStartupMessage(body: any[]): boolean {
   );
 }
 
-function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null) {
+/** @returns platform specific tag for a `BundleDetails` object */
+function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): string {
   const platform = bundleDetails?.platform ?? null;
   if (platform) {
     const formatted = { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform;
@@ -180,6 +189,7 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null) {
   return '';
 }
 
+// A list of the Node.js standard library modules.
 const NODE_STDLIB_MODULES = [
   'assert',
   'async_hooks',
