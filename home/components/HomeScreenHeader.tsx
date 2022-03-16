@@ -56,7 +56,7 @@ export function HomeScreenHeader({ currentUser }: Props) {
             }}
           />
         </View>
-        <Text color="default" weight="bold">
+        <Text type="InterBold" color="default">
           Expo Go
         </Text>
       </Row>
