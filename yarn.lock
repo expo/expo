@@ -1684,7 +1684,6 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-
 "@expo/styleguide-native@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.1.tgz#b9889266664f885dad15566b5b2956e086b1aa22"
