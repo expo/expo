@@ -187,7 +187,7 @@ export abstract class BundlerDevServer {
     method: 'reload' | 'devMenu' | 'sendDevCommand',
     params?: Record<string, any>
   ) {
-    this.getInstance()?.messageSocket?.broadcast?.(method, params);
+    this.getInstance()?.messageSocket.broadcast(method, params);
   }
 
   /** Get the running dev server instance. */
