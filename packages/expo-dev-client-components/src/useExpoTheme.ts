@@ -11,11 +11,11 @@ export function useCurrentTheme(): 'light' | 'dark' {
 
   let theme: 'light' | 'dark' = 'light';
 
-  if (preference !== 'no-preference') {
+  if (preference && preference !== 'no-preference') {
     theme = preference;
   }
 
-  if (preference === 'no-preference' && colorScheme != null) {
+  if ((!preference || preference === 'no-preference') && colorScheme != null) {
     theme = colorScheme;
   }
 

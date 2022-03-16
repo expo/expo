@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 import { Platform } from './index.types';
 
@@ -10,19 +10,27 @@ function joinWithCamelCase<T extends string, H extends string>([first, second]: 
   return `${first}${second.charAt(0).toUpperCase()}${second.slice(1)}` as `${H}${Capitalize<T>}`;
 }
 
-function PlatformIndicator({ platform }: { platform: Platform }) {
+function PlatformIndicator({ platform, textStyle }: { platform: Platform; textStyle?: TextStyle }) {
   return (
     <View style={[styles.platform, styles[joinWithCamelCase(['platform', platform])]]}>
-      <Text style={styles.platformText}>{platform}</Text>
+      <Text style={[styles.platformText, textStyle]}>{platform}</Text>
     </View>
   );
 }
 
-export default function Platforms({ platforms }: { platforms: Platform[] }) {
+export default function Platforms({
+  platforms,
+  style,
+  textStyle,
+}: {
+  platforms: Platform[];
+  style?: StyleProp<ViewStyle>;
+  textStyle?: TextStyle;
+}) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       {platforms.map((platform) => (
-        <PlatformIndicator key={platform} platform={platform} />
+        <PlatformIndicator key={platform} platform={platform} textStyle={textStyle} />
       ))}
     </View>
   );

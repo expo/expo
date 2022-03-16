@@ -12,6 +12,12 @@ export function error(...message: string[]): void {
   console.error(...message);
 }
 
+/** Print an error and provide additional info (the stack trace) in debug mode. */
+export function exception(e: Error): void {
+  const { EXPO_DEBUG } = require('./utils/env');
+  error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+}
+
 export function warn(...message: string[]): void {
   console.warn(...message.map((value) => chalk.yellow(value)));
 }

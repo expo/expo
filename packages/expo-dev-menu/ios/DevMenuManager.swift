@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import EXDevMenuInterface
+import EXManifests
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -93,7 +94,7 @@ open class DevMenuManager: NSObject {
     }
   }
   @objc
-  public var currentManifest: [AnyHashable: Any] = [:]
+  public var currentManifest: EXManifestsManifestBehavior?
   
   @objc
   public var currentManifestURL: URL?

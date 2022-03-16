@@ -2,14 +2,14 @@
 import arg from 'arg';
 import chalk from 'chalk';
 
-// TODO: Change to `start`
-const defaultCmd = 'config';
+const defaultCmd = 'start';
 
 export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
   'run:ios': () => import('../cli/run/ios').then((i) => i.expoRunIos),
+  start: () => import('../cli/start').then((i) => i.expoStart),
   prebuild: () => import('../cli/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../cli/config').then((i) => i.expoConfig),
   // Auth
