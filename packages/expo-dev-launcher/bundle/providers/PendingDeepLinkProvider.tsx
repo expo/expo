@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { DeepLinkModal } from '../components/DeepLinkModal';
-import { useModalStack } from '../hooks/useModalStack';
+import { useModalStack } from '../providers/ModalStackProvider';
 import { addDeepLinkListener, getPendingDeepLink } from '../native-modules/DevLauncherInternal';
 
 type PendingDeepLinkContext = {

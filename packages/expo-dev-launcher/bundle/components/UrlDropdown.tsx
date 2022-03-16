@@ -22,11 +22,10 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
   const theme = useExpoTheme();
   const currentTheme = useCurrentTheme();
 
-  // dark theme has the default / secondary values reversed
   const buttonColorThemeMap = {
     dark: {
-      active: theme.background.default,
-      inactive: theme.background.secondary,
+      active: theme.background.secondary,
+      inactive: theme.background.default,
     },
     light: {
       active: theme.background.secondary,

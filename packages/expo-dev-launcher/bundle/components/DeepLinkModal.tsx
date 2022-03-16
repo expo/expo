@@ -11,10 +11,10 @@ import {
 import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 
-import { useDevSessions } from '../hooks/useDevSessions';
-import { useModalStack } from '../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { useDevSessions } from '../providers/DevSessionsProvider';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
 import { BaseModal } from './BaseModal';
 import { LoadAppErrorModal } from './LoadAppErrorModal';
 

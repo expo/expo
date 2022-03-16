@@ -55,7 +55,6 @@ export const View = create(RNView, {
     },
 
     width,
-
     height,
 
     ...padding,
@@ -102,6 +101,8 @@ export const Row = create(RNView, {
 
     ...padding,
     ...margin,
+
+    ...rounded,
   },
 
   selectors: {

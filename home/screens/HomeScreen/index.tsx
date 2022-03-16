@@ -1,5 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { ThemeContext, useExpoTheme } from 'expo-dev-client-components';
+import { useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
 import { useHomeScreenDataQuery } from 'graphql/types';
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -42,25 +42,22 @@ export function HomeScreen(props: NavigationProps) {
   );
 
   const theme = useExpoTheme();
+  const themeType = useCurrentTheme();
 
   const { data } = useHomeScreenDataQuery();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.default }} edges={['top']}>
-      <ThemeContext.Consumer>
-        {(theme) => (
-          <HomeScreenView
-            theme={theme}
-            {...props}
-            isFocused={isFocused}
-            dispatch={dispatch}
-            recentHistory={recentHistory}
-            allHistory={allHistory}
-            isAuthenticated={isAuthenticated}
-            currentUser={data?.viewer ?? undefined}
-          />
-        )}
-      </ThemeContext.Consumer>
+      <HomeScreenView
+        theme={themeType}
+        {...props}
+        isFocused={isFocused}
+        dispatch={dispatch}
+        recentHistory={recentHistory}
+        allHistory={allHistory}
+        isAuthenticated={isAuthenticated}
+        currentUser={data?.viewer ?? undefined}
+      />
     </SafeAreaView>
   );
 }

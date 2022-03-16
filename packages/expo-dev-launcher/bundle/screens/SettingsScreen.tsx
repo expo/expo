@@ -14,9 +14,9 @@ import {
 import * as React from 'react';
 import { ScrollView, Switch } from 'react-native';
 
-import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useDevMenuSettings } from '../hooks/useDevMenuSettings';
 import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useDevMenuSettings } from '../providers/DevMenuSettingsProvider';
 
 export function SettingsScreen() {
   const [clipboardError, setClipboardError] = React.useState('');

@@ -2,8 +2,8 @@ import { View, Text, Heading, Button, Row, Spacer } from 'expo-dev-client-compon
 import * as React from 'react';
 import { ScrollView } from 'react-native';
 
-import { useBuildInfo } from '../hooks/useBuildInfo';
 import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
 
 export function CrashReportScreen({ route }) {
   const [clipboardError, setClipboardError] = React.useState('');

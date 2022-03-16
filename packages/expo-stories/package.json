@@ -24,7 +24,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "@expo/styleguide-native": "^0.4.0",
+    "@expo/styleguide-native": "^1.0.1",
     "@react-navigation/native": "^6.0.1",
     "@react-navigation/stack": "^6.0.1",
     "acorn-loose": "^8.1.0",

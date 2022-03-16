@@ -37,12 +37,12 @@ Features:
 ## API
 
 ```tsx
-import { Text } from "react-native";
-import { create } from "./create-primitives";
+import { Text } from 'react-native';
+import { create } from './create-primitives';
 
 const Heading = create(Text, {
   base: {
-    fontFamily: "Helvetica",
+    fontFamily: 'Helvetica',
   },
 
   variants: {
@@ -62,10 +62,10 @@ const Heading = create(Text, {
     },
     color: {
       success: {
-        color: "green",
+        color: 'green',
       },
       danger: {
-        color: "red",
+        color: 'red',
       },
     },
   },
@@ -102,35 +102,30 @@ const Heading = create(RNText, {
         // ...any `Heading` with `color="success"`...
         success: {
           // ...will have these styles applied
-          color: "tomato",
-        },
-      },
-    },
-
-    // selectors can also target a11y traits
-    grayScale: {
-      color: {
-        success: {
-          color: "lightgray",
-        },
-      },
-    },
-
-    //  ...and screen width and height
-    width: {
-      // when `width > 768`...
-      "> 768": {
-        size: {
-          // ...update these styles
-          medium: {
-            fontSize: 32,
-            lineHeight: 36,
-          },
+          color: 'green',
         },
       },
     },
   },
 });
+```
+
+You can also pass selectors to primitives for one-off instances where you need a specific style:
+
+```tsx
+function App() {
+  return (
+    <View>
+      <Heading
+        selectors={{
+          dark: { color: 'green' },
+          light: { color: 'blue' },
+        }}>
+        Hi
+      </Heading>
+    </View>
+  );
+}
 ```
 
 ## Flexibility
@@ -138,26 +133,25 @@ const Heading = create(RNText, {
 You can use any style library you'd like - for example using tailwind for a terser, readable configuration.
 
 ```tsx
-import tw from 'somewhere'
-import { create } from "./create-primitives";
+import tw from 'somewhere';
+import { create } from './create-primitives';
 
 const Heading = create(RNText, {
   size: {
-    large: tw("text-4xl"),
-    medium: tw("text-3xl"),
-    small: tw("text-2xl"),
+    large: tw('text-4xl'),
+    medium: tw('text-3xl'),
+    small: tw('text-2xl'),
   },
   weight: {
-    normal: tw("font-medium"),
-    heavy: tw("font-semibold"),
+    normal: tw('font-medium'),
+    heavy: tw('font-semibold'),
   },
   color: {
-    success: tw("text-green-500"),
-    danger: tw("text-red-500"),
+    success: tw('text-green-500'),
+    danger: tw('text-red-500'),
   },
 });
 ```
-
 
 ## Installation in managed Expo projects
 

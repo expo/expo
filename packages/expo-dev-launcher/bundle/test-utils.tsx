@@ -1,7 +1,7 @@
 import { render as rtlRender, RenderOptions } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { AppProviders, AppProvidersProps } from './components/AppProviders';
+import { AppProviders, AppProvidersProps } from './providers/AppProviders';
 
 export * from '@testing-library/react-native';
 

@@ -22,12 +22,12 @@ import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
 import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
 import { UrlDropdown } from '../components/UrlDropdown';
-import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useCrashReport } from '../hooks/useCrashReport';
-import { useDevSessions } from '../hooks/useDevSessions';
-import { useModalStack } from '../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useCrashReport } from '../providers/CrashReportProvider';
+import { useDevSessions } from '../providers/DevSessionsProvider';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {

@@ -1,4 +1,3 @@
-import { AppProvidersProps } from '../components/AppProviders';
 import {
   getBuildInfoAsync,
   getCrashReport,
@@ -6,6 +5,7 @@ import {
   isDevice,
 } from '../native-modules/DevLauncherInternal';
 import { getSettingsAsync } from '../native-modules/DevMenuInternal';
+import { AppProvidersProps } from '../providers/AppProviders';
 import { getDevSessionsAsync } from './getDevSessionsAsync';
 import { restoreUserAsync } from './restoreUserAsync';
 
