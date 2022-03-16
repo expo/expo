@@ -169,8 +169,8 @@ export const bg = {
 };
 
 export const bgDark = {
-  default: { backgroundColor: darkTheme.background.secondary },
-  secondary: { backgroundColor: darkTheme.background.default },
+  default: { backgroundColor: darkTheme.background.default },
+  secondary: { backgroundColor: darkTheme.background.secondary },
   overlay: { backgroundColor: darkTheme.background.overlay },
   success: { backgroundColor: darkTheme.background.success },
   warning: { backgroundColor: darkTheme.background.warning },
@@ -193,7 +193,7 @@ export const lightNavigationTheme: NavigationTheme = {
   dark: false,
   colors: {
     primary: lightTheme.button.primary.background,
-    background: lightTheme.background.secondary,
+    background: lightTheme.background.screen,
     card: lightTheme.background.default,
     text: lightTheme.text.default,
     border: lightTheme.border.default,
@@ -205,8 +205,8 @@ export const darkNavigationTheme: NavigationTheme = {
   dark: true,
   colors: {
     primary: darkTheme.link.default,
-    background: darkTheme.background.default,
-    card: darkTheme.background.default,
+    background: darkTheme.background.screen,
+    card: darkTheme.background.screen,
     text: darkTheme.text.default,
     border: darkTheme.border.default,
     notification: darkTheme.highlight.accent,
