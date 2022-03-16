@@ -4,7 +4,7 @@ import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-component
 import React from 'react';
 import { Linking, Platform, Share, StyleSheet } from 'react-native';
 
-import * as UrlUtils from '../../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 
 type Props = {
   url: string;
@@ -22,7 +22,7 @@ function normalizeDescription(description?: string): string | undefined {
  * the snacks list page for an account.
  */
 
-export function SnacksListItem({ description, isDraft, name, url }: Props) {
+export function RedesignedSnacksListItem({ description, isDraft, name, url }: Props) {
   const theme = useExpoTheme();
 
   const handlePressProject = () => {
@@ -59,7 +59,7 @@ export function SnacksListItem({ description, isDraft, name, url }: Props) {
             {isDraft && (
               <>
                 <Spacer.Vertical size="tiny" />
-                <View bg="secondary" rounded="medium" flex="0" padding="tiny">
+                <View bg="secondary" rounded="medium" flex="0" padding="tiny" border="default">
                   <Text size="small">Draft</Text>
                 </View>
               </>

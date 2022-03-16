@@ -1,22 +1,26 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { PressableOpacity } from 'components/PressableOpacity';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
 import { CommonAppDataFragment } from 'graphql/types';
+import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React, { Fragment } from 'react';
 
-import { ProjectsListItem } from './ProjectsListItem';
+import { RedesignedProjectsListItem } from '../../components/RedesignedProjectsListItem';
 
 type Props = {
   apps: CommonAppDataFragment[];
   showMore: boolean;
+  accountName: string;
 };
 
-export function ProjectsSection({ apps, showMore }: Props) {
+export function ProjectsSection({ apps, showMore, accountName }: Props) {
   const theme = useExpoTheme();
+  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onSeeAllProjectsPress() {
-    // TODO(fiberjw): navigate to the projects list page
-    console.log('onSeeAllProjectsPress');
+    navigation.push('RedesignedProjectsList', { accountName });
   }
 
   return (
@@ -26,13 +30,12 @@ export function ProjectsSection({ apps, showMore }: Props) {
 
         return (
           <Fragment key={project.id}>
-            <ProjectsListItem
+            <RedesignedProjectsListItem
               // iconUrl will be an empty string if the project has no icon
               imageURL={project.iconUrl || undefined}
               name={project.name}
-              onPress={() => {
-                // TODO(fiberjw): navigate to the project details screen
-              }}
+              subtitle={project.packageName || project.fullName}
+              sdkVersion={project.sdkVersion}
             />
             {i < apps.length - 1 && <Divider />}
           </Fragment>

@@ -13,13 +13,18 @@ export function AppIcon(props: Props) {
 
   if (image !== undefined) {
     if (image === null) {
-      return <View height="8" width="8" style={[styles.image, styles.emptyImage]} />;
+      return <View height="12" width="12" style={[styles.image, styles.emptyImage]} />;
     } else {
       const source = typeof image === 'number' ? image : { uri: image };
       return (
-        <View border="default" rounded="small" height="8" width="8" style={[styles.imageContainer]}>
+        <View
+          border="default"
+          rounded="small"
+          height="12"
+          width="12"
+          style={[styles.imageContainer]}>
           <FadeIn>
-            <Image source={source} style={[styles.image, { height: 31, width: 31 }]} />
+            <Image source={source} style={[styles.image, { height: 47, width: 47 }]} />
           </FadeIn>
         </View>
       );

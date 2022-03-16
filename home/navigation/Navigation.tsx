@@ -34,6 +34,8 @@ import ProjectScreen from '../screens/ProjectScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
+import { RedesignedProjectsListScreen } from '../screens/RedesignedProjectsListScreen';
+import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen.tsx';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
@@ -113,6 +115,20 @@ function HomeStackScreen() {
         component={HomeScreen}
         options={{
           headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedProjectsList"
+        component={RedesignedProjectsListScreen}
+        options={{
+          title: 'Projects',
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedSnacksList"
+        component={RedesignedSnacksListScreen}
+        options={{
+          title: 'Snacks',
         }}
       />
     </HomeStack.Navigator>

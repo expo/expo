@@ -8,6 +8,8 @@ export type ProjectsStackRoutes = {
 
 export type HomeStackRoutes = {
   Home: object;
+  RedesignedProjectsList: { accountName: string };
+  RedesignedSnacksList: { accountName: string };
   Account: { accountName: string };
 };
 
