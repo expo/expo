@@ -33,7 +33,7 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
   const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
   const ReactNativeComponent =
     requireNativeComponent<NativeExpoComponentProps>(reactNativeViewName);
-  const proxiedPropsNames = viewManagerConfig.propsNames;
+  const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
 
   // Define a component for universal-module authors to access their native view manager
   function NativeComponentAdapter(props, ref) {
