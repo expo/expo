@@ -7,9 +7,9 @@
 # script is intended for Xcode build phase scripts on macOS and does not have
 # a shebang so it inherits the current shell.
 
-current_shell=$(ps -cp "$$" -o comm="" | sed s/^-//)
+preferred_shell=$SHELL
 
-if [[ "$current_shell" == zsh ]]; then
+if [[ "$preferred_shell" == '/bin/zsh' ]]; then
    # Zsh's setup script order is:
    #   /etc/zshenv
    #   ~/.zshenv
