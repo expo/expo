@@ -97,7 +97,6 @@
     "form-data": "^2.3.2",
     "fs-extra": "9.0.0",
     "getenv": "^1.0.0",
-    "hasbin": "1.2.3",
     "graphql": "15.5.1",
     "graphql-tag": "2.12.5",
     "internal-ip": "4.3.0",
@@ -120,8 +119,6 @@
     "tempy": "^0.7.1",
     "terminal-link": "^2.1.1",
     "uuid": "^3.4.0",
-    "webpack": "4.43.0",
-    "webpack-dev-server": "3.11.0",
     "wrap-ansi": "^7.0.0"
   },
   "optionalDependencies": {
