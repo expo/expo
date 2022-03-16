@@ -1,7 +1,6 @@
 import { spacing } from '@expo/styleguide-native';
 import { Heading, Row } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 type Props = {
   header: string;
@@ -13,7 +12,8 @@ export function TextHeader({ header }: Props) {
       <Heading
         color="secondary"
         size="small"
-        style={{ marginRight: spacing[2], fontWeight: Platform.OS === 'ios' ? '600' : 'bold' }}>
+        style={{ marginRight: spacing[2] }}
+        type="InterSemiBold">
         {header}
       </Heading>
     </Row>

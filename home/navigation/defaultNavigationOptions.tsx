@@ -21,6 +21,10 @@ export default (theme: ColorTheme): StackNavigationOptions => {
     headerTitleStyle: {
       fontWeight: Platform.OS === 'ios' ? '600' : '400',
       color: Colors[theme].text,
+      ...(FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && {
+        fontFamily: 'Inter-SemiBold',
+        color: theme === 'dark' ? darkTheme.text.default : lightTheme.text.default,
+      }),
     },
     headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
   };

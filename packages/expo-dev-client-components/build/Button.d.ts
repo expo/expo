@@ -59,7 +59,7 @@ export declare const Button: {
         align?: "center" | undefined;
         size?: "small" | "medium" | "large" | undefined;
         leading?: "large" | undefined;
-        type?: "mono" | undefined;
+        type?: "mono" | "InterBlack" | "InterBlackItalic" | "InterBold" | "InterBoldItalic" | "InterExtraBold" | "InterExtraBoldItalic" | "InterExtraLight" | "InterExtraLightItalic" | "InterRegular" | "InterItalic" | "InterLight" | "InterLightItalic" | "InterMedium" | "InterMediumItalic" | "InterSemiBold" | "InterSemiBoldItalic" | "InterThin" | "InterThinItalic" | undefined;
         weight?: "light" | "bold" | "medium" | "normal" | "thin" | "extralight" | "semibold" | "extrabold" | "black" | undefined;
     } & {
         selectors?: {

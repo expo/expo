@@ -11,7 +11,7 @@ export const getNavigatorProps = (props: {
   theme: string;
 }): Partial<ComponentProps<typeof BottomTabNavigator.Navigator>> => ({
   tabBarOptions: {
-    labelStyle: { fontWeight: '600' },
+    labelStyle: { fontFamily: 'Inter-SemiBold' },
     keyboardHidesTabBar: false,
     ...(FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && {
       style: {

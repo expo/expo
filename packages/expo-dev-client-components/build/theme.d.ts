@@ -111,6 +111,60 @@ export declare const text: {
         mono: {
             fontFamily: string;
         };
+        InterBlack: {
+            fontFamily: string;
+        };
+        InterBlackItalic: {
+            fontFamily: string;
+        };
+        InterBold: {
+            fontFamily: string;
+        };
+        InterBoldItalic: {
+            fontFamily: string;
+        };
+        InterExtraBold: {
+            fontFamily: string;
+        };
+        InterExtraBoldItalic: {
+            fontFamily: string;
+        };
+        InterExtraLight: {
+            fontFamily: string;
+        };
+        InterExtraLightItalic: {
+            fontFamily: string;
+        };
+        InterRegular: {
+            fontFamily: string;
+        };
+        InterItalic: {
+            fontFamily: string;
+        };
+        InterLight: {
+            fontFamily: string;
+        };
+        InterLightItalic: {
+            fontFamily: string;
+        };
+        InterMedium: {
+            fontFamily: string;
+        };
+        InterMediumItalic: {
+            fontFamily: string;
+        };
+        InterSemiBold: {
+            fontFamily: string;
+        };
+        InterSemiBoldItalic: {
+            fontFamily: string;
+        };
+        InterThin: {
+            fontFamily: string;
+        };
+        InterThinItalic: {
+            fontFamily: string;
+        };
     };
     weight: {
         thin: {
