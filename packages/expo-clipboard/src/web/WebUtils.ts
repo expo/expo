@@ -20,6 +20,10 @@ export function base64toBlob(base64Data: string, contentType: string): Blob {
     }
     byteArrays[sliceIndex] = new Uint8Array(bytes);
   }
+  // I cannot use `@ts-expect-error` here because some environments consider this correct:
+  // expo-module build - OK,
+  // expo-module test - error
+  // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ somehow
   return new Blob(byteArrays, { type: contentType });
 }
 

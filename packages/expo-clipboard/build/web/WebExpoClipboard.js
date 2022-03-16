@@ -84,8 +84,8 @@ export default {
                 // I cannot use `@ts-expect-error` here because some environments consider this correct:
                 // expo-module build - OK,
                 // et gdad - error
-                // looks like lib.dom.d.ts differs between some tsconfigs
-                // @ts-ignore The expected type definition is not correct for some tooling
+                // Fixed in TS >4.4.3: https://github.com/microsoft/TypeScript/issues/46116#issuecomment-932443415
+                // @ts-ignore Some tools seem to use TS <= 4.4.3
                 new ClipboardItem({
                     [blob.type]: blob,
                 }),
