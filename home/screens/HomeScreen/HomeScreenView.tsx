@@ -211,16 +211,15 @@ export class HomeScreenView extends React.Component<Props, State> {
   private _fetchProjectsAsync = async () => {
     try {
       const api = new ApiV2HttpClient();
-      const projects = await api.getAsync('development-sessions', {
-        deviceId: getSnackId(),
-      });
 
-      const graphQLResponse = await ApolloClient.query<
-        HomeScreenDataQuery,
-        HomeScreenDataQueryVariables
-      >({
-        query: HomeScreenDataDocument,
-      });
+      const [projects, graphQLResponse] = await Promise.all([
+        api.getAsync('development-sessions', {
+          deviceId: getSnackId(),
+        }),
+        ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
+          query: HomeScreenDataDocument,
+        }),
+      ]);
 
       const currentUser = graphQLResponse.data.viewer ?? undefined;
 
