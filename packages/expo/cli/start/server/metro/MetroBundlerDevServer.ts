@@ -2,7 +2,6 @@ import { prependMiddleware } from '@expo/dev-server';
 
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { UrlCreator } from '../UrlCreator';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -18,8 +17,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return 'metro';
   }
 
-  async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
-    await this.stopAsync();
+  async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
     const port =
       // If the manually defined port is busy then an error should be thrown...
       options.port ??
@@ -30,13 +28,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         : // Otherwise (running in Expo Go) use a free port that falls back on the classic 19000 port.
           await getFreePortAsync(EXPO_GO_METRO_PORT));
 
-    this.urlCreator = new UrlCreator(options.location, {
-      port,
-      getTunnelUrl: this.getTunnelUrl.bind(this),
-    });
+    return port;
+  }
+
+  protected async startImplementationAsync(
+    options: BundlerStartOptions
+  ): Promise<DevServerInstance> {
+    options.port = await this.resolvePortAsync(options);
+    this.urlCreator = this.getUrlCreator(options);
 
     const parsedOptions = {
-      port,
+      port: options.port,
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
 
@@ -90,24 +92,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    this.setInstance({
+    return {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port,
+        port: options.port,
         // localhost isn't always correct.
         host: 'localhost',
         // http is the only supported protocol on native.
-        url: `http://localhost:${port}`,
+        url: `http://localhost:${options.port}`,
         protocol: 'http',
       },
       middleware,
       messageSocket,
-    });
-
-    await this.postStartAsync(options);
-
-    return this.instance;
+    };
   }
 
   protected getConfigModuleIds(): string[] {

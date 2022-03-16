@@ -7,13 +7,12 @@ import * as Log from '../../log';
 import { promptToClearMalformedNativeProjectsAsync } from '../../prebuild/clearNativeFolder';
 import { prebuildAsync } from '../../prebuild/prebuildAsync';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
-import { ApplePlatformManager } from '../../start/platforms/ios/ApplePlatformManager';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
 import { getAppDeltaDirectory, installOnDeviceAsync } from './installOnDeviceAsync';
 import * as IOSDeploy from './IOSDeploy';
-import maybePromptToSyncPodsAsync from './Podfile';
+import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { Options, resolveOptionsAsync } from './resolveOptionsAsync';
 import { startBundlerAsync } from './startBundlerAsync';
 import * as XcodeBuild from './XcodeBuild';
@@ -61,13 +60,13 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     'XcodeBuild.getAppBinaryPath'
   )(buildOutput);
 
-  if (props.shouldStartBundler) {
-    await startBundlerAsync(projectRoot, {
-      metroPort: props.port,
-      platforms: exp.platforms,
-    });
-  }
-  const bundleIdentifier = await profile(getBundleIdentifierForBinaryAsync)(binaryPath);
+  const manager = await startBundlerAsync(projectRoot, {
+    metroPort: props.port,
+    headless: props.shouldStartBundler,
+    platforms: exp.platforms,
+  });
+
+  const appId = await profile(getBundleIdentifierForBinaryAsync)(binaryPath);
 
   if (props.isSimulator) {
     XcodeBuild.logPrettyItem(chalk`{bold Installing} on ${props.device.name}`);
@@ -75,36 +74,26 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     const device = await AppleDeviceManager.resolveAsync({ device: props.device });
     await device.installAppAsync(binaryPath);
 
-    XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${device.name} {dim (${bundleIdentifier})}`);
+    XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${device.name} {dim (${appId})}`);
 
     if (props.shouldStartBundler) {
       await SimulatorLogStreamer.getStreamer(device.device, {
-        appId: bundleIdentifier,
+        appId,
       }).attachAsync();
     }
 
-    const platform = new ApplePlatformManager(projectRoot, props.port, {
-      // TODO:...
-    });
-
-    await platform.openAsync(
-      {
-        runtime: 'custom',
-        props: {
-          applicationId: bundleIdentifier,
-          scheme: props.scheme,
-        },
-      },
-      {
-        // TODO: Reduce resolving
-        device: device.device,
-      }
-    );
+    await manager
+      .getDefaultDevServer()
+      .openCustomRuntimeAsync(
+        'simulator',
+        { applicationId: appId, scheme: props.scheme },
+        { device }
+      );
   } else {
     await profile(installOnDeviceAsync)({
-      bundleIdentifier,
+      bundleIdentifier: appId,
       bundle: binaryPath,
-      appDeltaDirectory: getAppDeltaDirectory(bundleIdentifier),
+      appDeltaDirectory: getAppDeltaDirectory(appId),
       udid: props.device.udid,
       deviceName: props.device.name,
     });

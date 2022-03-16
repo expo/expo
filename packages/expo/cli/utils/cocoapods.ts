@@ -9,6 +9,7 @@ import * as Log from '../log';
 import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 import { ensureDirectoryAsync } from './dir';
 import { EXPO_DEBUG } from './env';
+import { AbortCommandError } from './errors';
 import { logNewSection } from './ora';
 
 const PROJECT_PREBUILD_SETTINGS = '.expo/prebuild';
@@ -117,5 +118,63 @@ export async function installCocoaPodsAsync(projectRoot: string) {
       Log.log(`Unknown error: ${e.message}`);
     }
     return false;
+  }
+}
+
+function doesProjectUseCocoaPods(projectRoot: string): boolean {
+  return fs.existsSync(path.join(projectRoot, 'ios', 'Podfile'));
+}
+
+function isLockfileCreated(projectRoot: string): boolean {
+  const podfileLockPath = path.join(projectRoot, 'ios', 'Podfile.lock');
+  return fs.existsSync(podfileLockPath);
+}
+
+function isPodFolderCreated(projectRoot: string): boolean {
+  const podFolderPath = path.join(projectRoot, 'ios', 'Pods');
+  return fs.existsSync(podFolderPath);
+}
+
+// TODO: Same process but with app.config changes + default plugins.
+// This will ensure the user is prompted for extra setup.
+export async function maybePromptToSyncPodsAsync(projectRoot: string) {
+  if (!doesProjectUseCocoaPods(projectRoot)) {
+    // Project does not use CocoaPods
+    return;
+  }
+  if (!isLockfileCreated(projectRoot) || !isPodFolderCreated(projectRoot)) {
+    if (!(await installCocoaPodsAsync(projectRoot))) {
+      throw new AbortCommandError();
+    }
+    return;
+  }
+
+  // Getting autolinked packages can be heavy, optimize around checking every time.
+  if (!(await hasPackageJsonDependencyListChangedAsync(projectRoot))) {
+    return;
+  }
+
+  await promptToInstallPodsAsync(projectRoot, []);
+}
+
+async function promptToInstallPodsAsync(projectRoot: string, missingPods?: string[]) {
+  if (missingPods?.length) {
+    Log.log(
+      `Could not find the following native modules: ${missingPods
+        .map((pod) => chalk.bold(pod))
+        .join(', ')}. Did you forget to run "${chalk.bold('pod install')}" ?`
+    );
+  }
+
+  try {
+    if (!(await installCocoaPodsAsync(projectRoot))) {
+      throw new AbortCommandError();
+    }
+  } catch (error) {
+    await fs.promises.rm(path.join(getTempPrebuildFolder(projectRoot), CACHED_PACKAGE_JSON), {
+      recursive: true,
+      force: true,
+    });
+    throw error;
   }
 }

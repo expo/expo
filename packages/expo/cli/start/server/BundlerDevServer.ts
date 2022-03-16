@@ -7,7 +7,11 @@ import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
-import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
+import {
+  BaseOpenInCustomProps,
+  BaseResolveDeviceProps,
+  PlatformManager,
+} from '../platforms/PlatformManager';
 import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
 import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
 import { AsyncNgrok } from './AsyncNgrok';
@@ -15,6 +19,7 @@ import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { ClassicManifestMiddleware } from './middleware/ClassicManifestMiddleware';
 import { ExpoGoManifestHandlerMiddleware } from './middleware/ExpoGoManifestHandlerMiddleware';
+import { CommandError } from '../../utils/errors';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void);
@@ -53,6 +58,8 @@ export interface BundlerStartOptions {
   /** Port to start the dev server on. */
   port?: number;
 
+  /** Should start a headless dev server e.g. mock representation to approximate info from a server running in a different process. */
+  headless?: boolean;
   /** Should instruct the bundler to create minified bundles. */
   minify?: boolean;
 
@@ -118,7 +125,57 @@ export abstract class BundlerDevServer {
   }
 
   /** Start the dev server using settings defined in the start command. */
-  public abstract startAsync(options: BundlerStartOptions): Promise<DevServerInstance>;
+  public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
+    await this.stopAsync();
+
+    let instance: DevServerInstance;
+    if (options.headless) {
+      instance = await this.startHeadlessAsync(options);
+    } else {
+      instance = await this.startImplementationAsync(options);
+    }
+
+    this.setInstance(instance);
+    await this.postStartAsync(options);
+    return instance;
+  }
+
+  protected abstract startImplementationAsync(
+    options: BundlerStartOptions
+  ): Promise<DevServerInstance>;
+
+  /**
+   * Creates a mock server representation that can be used to estimate URLs for a server started in another process.
+   * This is used for the run commands where you can reuse the server from a previous run.
+   */
+  private async startHeadlessAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
+    assert(options.port, 'headless dev server requires a port option');
+    this.urlCreator = this.getUrlCreator(options);
+
+    return {
+      // Create a mock server
+      server: {
+        close: () => {
+          this.instance = null;
+        },
+      },
+      location: {
+        // The port is the main thing we want to send back.
+        port: options.port,
+        // localhost isn't always correct.
+        host: 'localhost',
+        // http is the only supported protocol on native.
+        url: `http://localhost:${options.port}`,
+        protocol: 'http',
+      },
+      middleware: {},
+      messageSocket: {
+        broadcast: () => {
+          throw new CommandError('HEADLESS_SERVER', 'Cannot broadcast messages to headless server');
+        },
+      },
+    };
+  }
 
   protected async postStartAsync(options: BundlerStartOptions) {
     if (options.location.hostType === 'tunnel' && !APISettings.isOffline) {
@@ -224,8 +281,14 @@ export abstract class BundlerDevServer {
     });
   }
 
-  private getUrlCreator() {
-    assert(this.urlCreator, 'Dev server is not running.');
+  protected getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
+    if (!this.urlCreator) {
+      assert(options?.port, 'Dev server instance not found');
+      this.urlCreator = new UrlCreator(options.location, {
+        port: options.port,
+        getTunnelUrl: this.getTunnelUrl.bind(this),
+      });
+    }
     return this.urlCreator;
   }
 
@@ -266,6 +329,23 @@ export abstract class BundlerDevServer {
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
     const manager = this.getPlatformManager(launchTarget);
     return manager.openAsync({ runtime }, resolver);
+  }
+
+  /** Open the dev server in a runtime. */
+  public async openCustomRuntimeAsync(
+    launchTarget: keyof typeof PLATFORM_MANAGERS,
+    launchProps: Partial<BaseOpenInCustomProps> = {},
+    resolver: BaseResolveDeviceProps<any> = {}
+  ) {
+    const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
+    if (runtime !== 'custom') {
+      throw new CommandError(
+        'dev server cannot open custom runtimes either because it does not target native platforms or because it is not targetting dev clients.'
+      );
+    }
+
+    const manager = this.getPlatformManager(launchTarget);
+    return manager.openAsync({ runtime: 'custom', props: launchProps }, resolver);
   }
 
   /** Should use the interstitial page for selecting which runtime to use. */
