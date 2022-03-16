@@ -17,34 +17,16 @@ import { Options, resolveOptionsAsync } from './resolveOptionsAsync';
 import { startBundlerAsync } from './startBundlerAsync';
 import * as XcodeBuild from './XcodeBuild';
 
-const isMac = process.platform === 'darwin';
-
 export async function runIosAsync(projectRoot: string, options: Options) {
+  assertPlatform();
+
   // If the user has an empty ios folder then the project won't build, this can happen when they delete the prebuild files in git.
   // Check to ensure most of the core files are in place, and prompt to remove the folder if they aren't.
   await profile(promptToClearMalformedNativeProjectsAsync)(projectRoot, ['ios']);
 
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const { exp } = getConfig(projectRoot);
 
-  if (!isMac) {
-    // TODO: Prompt to use EAS?
-
-    Log.warn(
-      `iOS apps can only be built on macOS devices. Use ${chalk.cyan`eas build -p ios`} to build in the cloud.`
-    );
-    return;
-  }
-
-  // If the project doesn't have native code, prebuild it...
-  if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
-    await prebuildAsync(projectRoot, {
-      install: options.install,
-      platforms: ['ios'],
-    });
-  } else if (options.install) {
-    await maybePromptToSyncPodsAsync(projectRoot);
-    // TODO: Ensure the pods are in sync -- https://github.com/expo/expo/pull/11593
-  }
+  await ensureNativeProjectAsync(projectRoot, options.install);
 
   const props = await resolveOptionsAsync(projectRoot, options);
   if (!props.isSimulator) {
@@ -61,7 +43,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   )(buildOutput);
 
   const manager = await startBundlerAsync(projectRoot, {
-    metroPort: props.port,
+    port: props.port,
     headless: !props.shouldStartBundler,
     platforms: exp.platforms,
   });
@@ -104,4 +86,25 @@ async function getBundleIdentifierForBinaryAsync(binaryPath: string): Promise<st
   const builtInfoPlistPath = path.join(binaryPath, 'Info.plist');
   const { CFBundleIdentifier } = await parsePlistAsync(builtInfoPlistPath);
   return CFBundleIdentifier;
+}
+
+async function ensureNativeProjectAsync(projectRoot: string, install?: boolean) {
+  // If the project doesn't have native code, prebuild it...
+  if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
+    await prebuildAsync(projectRoot, {
+      install,
+      platforms: ['ios'],
+    });
+  } else if (install) {
+    await maybePromptToSyncPodsAsync(projectRoot);
+    // TODO: Ensure the pods are in sync -- https://github.com/expo/expo/pull/11593
+  }
+}
+
+function assertPlatform() {
+  if (process.platform !== 'darwin') {
+    Log.exit(
+      chalk`iOS apps can only be built on macOS devices. Use {cyan eas build -p ios} to build in the cloud.`
+    );
+  }
 }

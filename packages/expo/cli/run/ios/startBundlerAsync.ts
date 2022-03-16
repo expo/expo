@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { Project } from 'xdl';
 
 import * as Log from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
@@ -7,14 +6,10 @@ import { CI } from '../../utils/env';
 
 export async function startBundlerAsync(
   projectRoot: string,
-  {
-    metroPort,
-    headless,
-    platforms,
-  }: Pick<Project.StartOptions, 'metroPort' | 'platforms'> & { headless?: boolean }
+  { port, headless, platforms }: { port: number; platforms: string[]; headless?: boolean }
 ) {
   const options = {
-    port: metroPort,
+    port,
     devClient: true,
 
     location: {},

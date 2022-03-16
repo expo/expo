@@ -11,30 +11,7 @@ import { profile } from '../../utils/profile';
 import { selectAsync } from '../../utils/prompts';
 import { resolveDeviceAsync } from './resolveDeviceAsync';
 import * as XcodeBuild from './XcodeBuild';
-
-export type XcodeConfiguration = 'Debug' | 'Release';
-
-export type Options = {
-  /** iOS device to target. */
-  device?: string | boolean;
-  /** Dev server port to use, ignored if `bundler` is `false`. */
-  port?: number;
-  /** Xcode scheme to build. */
-  scheme?: string;
-  /** Xcode configuration to build. Default `Debug` */
-  configuration?: XcodeConfiguration;
-  /** Should start the bundler dev server. */
-  bundler?: boolean;
-  /** Should install missing dependencies before building. */
-  install?: boolean;
-  /** Should use derived data for builds. */
-  buildCache: boolean;
-};
-
-export type ProjectInfo = {
-  isWorkspace: boolean;
-  name: string;
-};
+import { Options, ProjectInfo, XcodeConfiguration } from './XcodeBuild.types';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 
@@ -64,7 +41,7 @@ function resolveXcodeProject(projectRoot: string): ProjectInfo {
   if (paths.length) {
     return { name: paths[0], isWorkspace: false };
   }
-  throw new CommandError(`Xcode project not found in project: ${projectRoot}`);
+  throw new CommandError('RUN_IOS_ARGS', `Xcode project not found in project: ${projectRoot}`);
 }
 
 const isMac = process.platform === 'darwin';
@@ -83,50 +60,43 @@ function getDefaultUserTerminal(): string | undefined {
   return TERM;
 }
 
-async function resolveNativeSchemeAsync(
+/** Resolve the native iOS build `scheme` for a given `configuration`. If the `scheme` isn't provided then the user will be prompted to select one. */
+export async function resolveNativeSchemeAsync(
   projectRoot: string,
   { scheme, configuration }: { scheme?: string | true; configuration?: XcodeConfiguration }
-): Promise<{ name: string; osType?: OSType } | null> {
-  let resolvedScheme: { name: string; osType?: string } | null = null;
-  // @ts-ignore
-  if (scheme === true) {
-    const schemes = IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj(projectRoot, {
-      configuration,
-    });
-    if (!schemes.length) {
-      throw new CommandError('No native iOS build schemes found');
-    }
-    resolvedScheme = schemes[0];
-    if (schemes.length > 1) {
-      const resolvedSchemeName = await selectAsync(
-        'Select a scheme',
-        schemes.map((value) => {
-          const isApp =
-            value.type === IOSConfig.Target.TargetType.APPLICATION && value.osType === 'iOS';
-          return {
-            value: value.name,
-            title: isApp ? chalk.bold(value.name) + chalk.gray(' (app)') : value.name,
-          };
-        }),
-        {
-          nonInteractiveHelp: `--scheme: argument must be provided with a string in non-interactive mode. Valid choices are: ${schemes.join(
-            ', '
-          )}`,
-        }
-      );
-      resolvedScheme = schemes.find(({ name }) => resolvedSchemeName === name) ?? null;
-    } else {
-      Log.log(`Auto selecting only available scheme: ${resolvedScheme.name}`);
-    }
-  } else if (scheme) {
-    // Attempt to match the schemes up so we can open the correct simulator
-    const schemes = IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj(projectRoot, {
-      configuration,
-    });
-    resolvedScheme = schemes.find(({ name }) => name === scheme) || { name: scheme };
+): Promise<{ name: string; osType?: string } | null> {
+  const schemes = IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj(projectRoot, {
+    configuration,
+  });
+  if (!schemes.length) {
+    throw new CommandError('RUN_IOS_ARGS', 'No native iOS build schemes found');
   }
 
-  return resolvedScheme as { name: string; osType?: OSType };
+  if (scheme === true) {
+    if (schemes.length === 1) {
+      Log.log(`Auto selecting only available scheme: ${schemes[0].name}`);
+      return schemes[0];
+    }
+    const resolvedSchemeName = await selectAsync(
+      'Select a scheme',
+      schemes.map((value) => {
+        const isApp =
+          value.type === IOSConfig.Target.TargetType.APPLICATION && value.osType === 'iOS';
+        return {
+          value: value.name,
+          title: isApp ? chalk.bold(value.name) + chalk.gray(' (app)') : value.name,
+        };
+      }),
+      {
+        nonInteractiveHelp: `--scheme: argument must be provided with a string in non-interactive mode. Valid choices are: ${schemes.join(
+          ', '
+        )}`,
+      }
+    );
+    return schemes.find(({ name }) => resolvedSchemeName === name) ?? null;
+  }
+  // Attempt to match the schemes up so we can open the correct simulator
+  return scheme ? schemes.find(({ name }) => name === scheme) || { name: scheme } : null;
 }
 
 export async function resolveOptionsAsync(

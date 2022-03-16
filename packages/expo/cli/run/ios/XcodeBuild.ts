@@ -4,34 +4,13 @@ import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { SimControl } from 'xdl';
 
 import * as Log from '../../log';
 import { ensureDirectory } from '../../utils/dir';
 import { EXPO_DEBUG } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './developmentCodeSigning';
-import { ProjectInfo, XcodeConfiguration } from './resolveOptionsAsync';
-
-export type BuildProps = {
-  /** Root to the iOS native project. */
-  projectRoot: string;
-  /** Is the target a simulator. */
-  isSimulator: boolean;
-  xcodeProject: ProjectInfo;
-  device: Pick<SimControl.XCTraceDevice, 'name' | 'udid'>;
-  configuration: XcodeConfiguration;
-  /** Disable the initial bundling from the native script. */
-  shouldSkipInitialBundling: boolean;
-  /** Skip opening the bundler from the native script. */
-  shouldStartBundler: boolean;
-  /** Should use derived data for builds. */
-  buildCache: boolean;
-  terminal?: string;
-  /** Port to start the dev server. */
-  port: number;
-  scheme: string;
-};
+import { BuildProps, ProjectInfo } from './XcodeBuild.types';
 
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);

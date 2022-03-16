@@ -10,6 +10,14 @@ import { learnMore } from '../../utils/link';
 import { selectAsync } from '../../utils/prompts';
 import * as Security from './Security';
 
+type CodeSigningInfo = Record<
+  string,
+  {
+    developmentTeams: string[];
+    provisioningProfiles: string[];
+  }
+>;
+
 async function getLastDeveloperCodeSigningIdAsync() {
   const { developmentCodeSigningId } = await UserSettings.readAsync();
   return developmentCodeSigningId;
@@ -18,14 +26,6 @@ async function getLastDeveloperCodeSigningIdAsync() {
 async function setLastDeveloperCodeSigningIdAsync(id: string) {
   await UserSettings.setAsync('developmentCodeSigningId', id).catch(() => {});
 }
-
-type CodeSigningInfo = Record<
-  string,
-  {
-    developmentTeams: string[];
-    provisioningProfiles: string[];
-  }
->;
 
 /**
  * Find the development team and provisioning profile that's currently in use by the Xcode project.
