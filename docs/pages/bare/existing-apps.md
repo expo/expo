@@ -9,7 +9,7 @@ If you want to use parts of the Expo SDK in your existing React Native app, you 
 
 ## Setting up the `expo` package
 
-Follow the the [installing Expo modules guide](../bare/installing-expo-modules.md). It should take about five minutes to configure in an existing app.
+Follow the [installing Expo modules guide](../bare/installing-expo-modules.md). It should take about five minutes to configure in an existing app.
 
 ## Install libraries from the Expo SDK
 
