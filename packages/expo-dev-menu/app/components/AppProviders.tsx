@@ -1,4 +1,4 @@
-import { ThemePreferenceProvider } from 'expo-dev-client-components';
+import { ThemeProvider } from 'expo-dev-client-components';
 import * as React from 'react';
 
 import { AppInfoContextProvider, AppInfoContextProviderProps } from '../hooks/useAppInfo';
@@ -23,9 +23,9 @@ export function AppProviders({
     <DevSettingsProvider devSettings={devSettings}>
       <AppInfoContextProvider appInfo={appInfo}>
         <MenuPreferencesProvider menuPreferences={menuPreferences}>
-          <ThemePreferenceProvider theme="no-preference">
+          <ThemeProvider themePreference="no-preference">
             <BottomSheetProvider>{children}</BottomSheetProvider>
-          </ThemePreferenceProvider>
+          </ThemeProvider>
         </MenuPreferencesProvider>
       </AppInfoContextProvider>
     </DevSettingsProvider>
