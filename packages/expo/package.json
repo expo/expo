@@ -131,6 +131,8 @@
   "devDependencies": {
     "@expo/ngrok": "4.1.0",
     "@swc/core": "^1.2.126",
+    "@types/metro": "~0.66.1",
+    "@types/metro-core": "~0.66.0",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
     "@taskr/watch": "1.1.0",
@@ -150,7 +152,6 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-native": "0.67.2",
-    "taskr": "1.1.0",
-    "@expo/ngrok": "4.1.0"
+    "taskr": "1.1.0"
   }
 }
