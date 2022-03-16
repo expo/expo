@@ -2,9 +2,9 @@ import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
 
 // From expo/dev-server but with ability to use custom logger.
