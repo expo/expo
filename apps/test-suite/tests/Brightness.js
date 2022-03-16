@@ -28,7 +28,7 @@ export async function test(t) {
         let wasRejected = false;
         try {
           await Brightness.setBrightnessAsync(originalValue);
-        } catch (error) {
+        } catch {
           wasRejected = true;
         }
         const obtainedValue = await Brightness.getBrightnessAsync();
@@ -43,7 +43,7 @@ export async function test(t) {
           let wasRejected = false;
           try {
             await Brightness.setBrightnessAsync(tooLowValue);
-          } catch (error) {
+          } catch {
             wasRejected = true;
           }
           const obtainedValue = await Brightness.getBrightnessAsync();
@@ -59,7 +59,7 @@ export async function test(t) {
           let wasRejected = false;
           try {
             await Brightness.setBrightnessAsync(tooHighValue);
-          } catch (error) {
+          } catch {
             wasRejected = true;
           }
           const obtainedValue = await Brightness.getBrightnessAsync();
@@ -72,7 +72,7 @@ export async function test(t) {
         let wasRejected = false;
         try {
           await Brightness.setBrightnessAsync(NaN);
-        } catch (error) {
+        } catch {
           wasRejected = true;
         }
         t.expect(wasRejected).toBe(true);
@@ -94,7 +94,7 @@ export async function test(t) {
             let wasRejected = false;
             try {
               await Brightness.setSystemBrightnessAsync(originalValue);
-            } catch (error) {
+            } catch {
               wasRejected = true;
             }
             const obtainedValue = await Brightness.getSystemBrightnessAsync();
@@ -109,7 +109,7 @@ export async function test(t) {
               let wasRejected = false;
               try {
                 await Brightness.setSystemBrightnessAsync(tooLowValue);
-              } catch (error) {
+              } catch {
                 wasRejected = true;
               }
               const obtainedValue = await Brightness.getSystemBrightnessAsync();
@@ -125,7 +125,7 @@ export async function test(t) {
               let wasRejected = false;
               try {
                 await Brightness.setSystemBrightnessAsync(tooHighValue);
-              } catch (error) {
+              } catch {
                 wasRejected = true;
               }
               const obtainedValue = await Brightness.getSystemBrightnessAsync();
@@ -138,7 +138,7 @@ export async function test(t) {
             let wasRejected = false;
             try {
               await Brightness.setSystemBrightnessAsync(NaN);
-            } catch (error) {
+            } catch {
               wasRejected = true;
             }
             t.expect(wasRejected).toBe(true);
@@ -167,7 +167,7 @@ export async function test(t) {
             await Brightness.setSystemBrightnessAsync(systemValue);
             await Brightness.setBrightnessAsync(appValue);
             await Brightness.useSystemBrightnessAsync();
-          } catch (error) {
+          } catch {
             wasRejected = true;
           }
           const obtainedValue = await Brightness.getBrightnessAsync();
@@ -183,7 +183,7 @@ export async function test(t) {
             await Brightness.setSystemBrightnessAsync(systemValue);
             await Brightness.useSystemBrightnessAsync();
             await Brightness.setBrightnessAsync(appValue);
-          } catch (error) {
+          } catch {
             wasRejected = true;
           }
           const obtainedValue = await Brightness.getBrightnessAsync();
@@ -212,7 +212,7 @@ export async function test(t) {
             const beforeValue = await Brightness.isUsingSystemBrightnessAsync();
             try {
               await Brightness.useSystemBrightnessAsync();
-            } catch (error) {
+            } catch {
               wasRejected = true;
             }
             const afterValue = await Brightness.isUsingSystemBrightnessAsync();
@@ -235,7 +235,7 @@ export async function test(t) {
           try {
             await Brightness.setSystemBrightnessModeAsync(Brightness.BrightnessMode.MANUAL);
             await Brightness.setBrightnessAsync(0.5);
-          } catch (error) {
+          } catch {
             wasRejected = true;
           }
           let obtainedValue = await Brightness.getSystemBrightnessModeAsync();
@@ -243,7 +243,7 @@ export async function test(t) {
           try {
             await Brightness.setSystemBrightnessModeAsync(Brightness.BrightnessMode.AUTOMATIC);
             await Brightness.setBrightnessAsync(0.5);
-          } catch (error) {
+          } catch {
             wasRejected = true;
           }
           obtainedValue = await Brightness.getSystemBrightnessModeAsync();
@@ -256,7 +256,7 @@ export async function test(t) {
           try {
             await Brightness.setSystemBrightnessModeAsync(Brightness.BrightnessMode.AUTOMATIC);
             await Brightness.setSystemBrightnessAsync(0.5);
-          } catch (error) {
+          } catch {
             wasRejected = true;
           }
           const obtainedValue = await Brightness.getSystemBrightnessModeAsync();

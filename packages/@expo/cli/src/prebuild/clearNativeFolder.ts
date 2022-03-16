@@ -44,7 +44,7 @@ export async function hasRequiredAndroidFilesAsync(projectRoot: string): Promise
       AndroidConfig.Paths.getMainApplicationAsync(projectRoot),
     ]);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

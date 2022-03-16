@@ -36,7 +36,7 @@ export default {
           type: 'setPreferredAppearance',
           payload: { preferredAppearance },
         });
-      } catch (e) {
+      } catch {
         alert('Oops, something went wrong and we were unable to change the preferred appearance');
       }
     };
@@ -51,7 +51,7 @@ export default {
           type: 'setDevMenuSettings',
           payload: { [key]: value },
         });
-      } catch (e) {
+      } catch {
         alert('Oops, something went wrong and we were unable to change dev menu settings!');
       }
     };
