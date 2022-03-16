@@ -1,4 +1,4 @@
-package expo.modules.kotlin.methods
+package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.Promise
@@ -10,7 +10,7 @@ import expo.modules.kotlin.iterator
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
 
-abstract class AnyMethod(
+abstract class AnyFunction(
   protected val name: String,
   private val desiredArgsTypes: Array<AnyType>
 ) {

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalStdlibApi::class)
 
-package expo.modules.kotlin.methods
+package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.JavaOnlyArray
 import com.google.common.truth.Truth
@@ -15,10 +15,10 @@ import org.junit.Test
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-class AnyMethodTest {
-  class MockedAnyMethod(
+class AnyFunctionTest {
+  class MockedAnyFunction(
     desiredArgsTypes: Array<KType>
-  ) : AnyMethod("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
+  ) : AnyFunction("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
     override fun callImplementation(args: Array<out Any?>, promise: Promise) {
       throw NullPointerException()
     }
@@ -26,7 +26,7 @@ class AnyMethodTest {
 
   @Test
   fun `call should throw if pass more arguments then expected`() {
-    val method = MockedAnyMethod(arrayOf(typeOf<Int>()))
+    val method = MockedAnyFunction(arrayOf(typeOf<Int>()))
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected.") {
@@ -44,7 +44,7 @@ class AnyMethodTest {
 
   @Test
   fun `call should throw if pass less arguments then expected`() {
-    val method = MockedAnyMethod(arrayOf(typeOf<Int>(), typeOf<Int>()))
+    val method = MockedAnyFunction(arrayOf(typeOf<Int>(), typeOf<Int>()))
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected.") {
@@ -61,7 +61,7 @@ class AnyMethodTest {
 
   @Test
   fun `call should throw if cannot convert args`() {
-    val method = MockedAnyMethod(arrayOf(typeOf<Int>()))
+    val method = MockedAnyFunction(arrayOf(typeOf<Int>()))
     val promise = PromiseMock()
 
     assertThrows<ArgumentCastException>(
@@ -83,7 +83,7 @@ class AnyMethodTest {
 
   @Test
   fun `sync exception shouldn't be converter into promise rejection`() {
-    val method = MockedAnyMethod(emptyArray())
+    val method = MockedAnyFunction(emptyArray())
     val promise = PromiseMock()
 
     assertThrows<NullPointerException> {
