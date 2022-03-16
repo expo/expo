@@ -3,7 +3,7 @@ const images = {
   require_jpg2: require('../../../../assets/images/example2.jpg'),
   require_jpg3: require('../../../../assets/images/example3.jpg'),
   require_png: require('../../../../assets/images/chapeau.png'),
-  require_webp: require('../../../../assets/images/example3.webp'),
+  require_webp: require('../../../../assets/images/example4.webp'),
   require_webp_anim: require('../../../../assets/videos/ace.webp'),
   require_svg: require('../../../../assets/images/expo.svg'),
   require_highres: require('../../../../assets/images/highres.jpeg'),
