@@ -16,6 +16,7 @@ import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
+import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import RefreshControl from '../../components/RefreshControl';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -25,13 +26,13 @@ import addListenerWithNativeCallback from '../../utils/addListenerWithNativeCall
 import getSnackId from '../../utils/getSnackId';
 import { DevelopmentServerListItem } from './DevelopmentServerListItem';
 import { DevelopmentServersHeader } from './DevelopmentServersHeader';
+import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
 import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
 import { ProjectsSection } from './ProjectsSection';
 import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
 import { RecentlyOpenedSection } from './RecentlyOpenedSection';
 import { SnacksSection } from './SnacksSection';
-import { TextHeader } from './TextHeader';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -123,6 +124,9 @@ export class HomeScreenView extends React.Component<Props, State> {
                   {projects.length > 1 && i !== projects.length - 1 ? <Divider /> : null}
                 </React.Fragment>
               ))}
+              {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
+                <DevelopmentServersOpenQR />
+              ) : null}
               {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_CLIPBOARD_BUTTON ? (
                 <DevelopmentServersOpenURL />
               ) : null}
@@ -140,7 +144,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           {currentUser?.apps.length ? (
             <>
               <Spacer.Vertical size="medium" />
-              <TextHeader header="Projects" />
+              <RedesignedSectionHeader header="Projects" />
               <ProjectsSection
                 accountName={currentUser.username}
                 apps={currentUser.apps.slice(0, 3)}
@@ -151,7 +155,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           {currentUser?.snacks.length ? (
             <>
               <Spacer.Vertical size="medium" />
-              <TextHeader header="Snacks" />
+              <RedesignedSectionHeader header="Snacks" />
               <SnacksSection
                 accountName={currentUser.username}
                 snacks={currentUser.snacks.slice(0, 3)}
