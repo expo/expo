@@ -10,7 +10,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
@@ -25,7 +24,7 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `suspend block should resolve promise on finish`() {
-    val suspendMethod = SuspendMethod("test", emptyArray(), lazy { testScope }) {
+    val suspendMethod = AsyncSuspendFunction("test", emptyArray(), lazy { testScope }) {
       delay(2000)
     }
     val promiseMock = PromiseMock()

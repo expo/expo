@@ -97,7 +97,7 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
   implementation 'androidx.annotation:annotation:1.2.0'
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
