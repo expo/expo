@@ -9,6 +9,7 @@ import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { MetroBundlerDevServer } from './metro/MetroBundlerDevServer';
+import { WebpackBundlerDevServer } from './webpack/WebpackBundlerDevServer';
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -18,8 +19,7 @@ export type MultiBundlerStartOptions = {
 const devServers: BundlerDevServer[] = [];
 
 const BUNDLERS = {
-  // TODO: Webpack
-  // webpack: WebpackBundlerDevServer,
+  webpack: WebpackBundlerDevServer,
   metro: MetroBundlerDevServer,
 };
 
@@ -100,13 +100,12 @@ export class DevServerManager {
       return;
     }
     Log.debug('Starting webpack dev server');
-    throw new Error('Not implemented');
-    // return this.startAsync([
-    //   {
-    //     type: 'webpack',
-    //     options: this.options,
-    //   },
-    // ]);
+    return this.startAsync([
+      {
+        type: 'webpack',
+        options: this.options,
+      },
+    ]);
   }
 
   /** Start all dev servers. */
