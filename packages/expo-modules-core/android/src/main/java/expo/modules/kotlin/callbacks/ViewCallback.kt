@@ -1,10 +1,12 @@
 package expo.modules.kotlin.callbacks
 
-import android.os.Bundle
 import android.view.View
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.WritableMap
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.putGeneric
 import kotlin.reflect.KType
 
 class ViewCallback<T>(
@@ -22,7 +24,16 @@ class ViewCallback<T>(
       ?: return
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
-    // TODO(@lukmccall): handles other types
-    appContext.callbackInvoker?.emit(view.id, name, arg as Bundle)
+    appContext.callbackInvoker?.emit(view.id, name, convertEventBody(arg))
+  }
+
+  private fun convertEventBody(arg: T): WritableMap? {
+    return when (val converted = JSTypeConverter.convertToJSValue(arg)) {
+      is Unit, null -> null
+      is WritableMap -> converted
+      else -> JSTypeConverter.DefaultContainerProvider.createMap().apply {
+        putGeneric("payload", converted)
+      }
+    }
   }
 }
