@@ -466,7 +466,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun getMenuPreferences(): Bundle {
     return Bundle().apply {
-      putBoolean("isOnboardingFinished", settings?.isOnboardingFinished ?: false)
+      putBoolean("isOnboardingFinished", getSettings()?.isOnboardingFinished ?: false)
     }
   }
 
