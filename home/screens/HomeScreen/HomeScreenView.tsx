@@ -3,12 +3,17 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
 import { View, Divider, Spacer } from 'expo-dev-client-components';
-import { HomeScreenDataQuery } from 'graphql/types';
+import {
+  HomeScreenDataDocument,
+  HomeScreenDataQuery,
+  HomeScreenDataQueryVariables,
+} from 'graphql/types';
 import * as React from 'react';
 import { Alert, AppState, NativeEventSubscription, Platform, StyleSheet } from 'react-native';
 
 import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
+import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
 import RefreshControl from '../../components/RefreshControl';
@@ -36,7 +41,6 @@ type Props = NavigationProps & {
   recentHistory: HistoryList;
   allHistory: HistoryList;
   isAuthenticated: boolean;
-  currentUser?: Exclude<HomeScreenDataQuery['viewer'], null>;
   theme: string;
 };
 
@@ -44,6 +48,7 @@ type State = {
   projects: DevSession[];
   isNetworkAvailable: boolean;
   isRefreshing: boolean;
+  currentUser?: Exclude<HomeScreenDataQuery['viewer'], null>;
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
@@ -56,6 +61,7 @@ export class HomeScreenView extends React.Component<Props, State> {
     projects: [],
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
+    currentUser: undefined,
   };
 
   componentDidMount() {
@@ -85,11 +91,11 @@ export class HomeScreenView extends React.Component<Props, State> {
   }
 
   render() {
-    const { projects, isRefreshing } = this.state;
+    const { projects, isRefreshing, currentUser } = this.state;
 
     return (
       <View style={styles.container}>
-        <HomeScreenHeader currentUser={this.props.currentUser} />
+        <HomeScreenHeader currentUser={currentUser} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
@@ -131,23 +137,23 @@ export class HomeScreenView extends React.Component<Props, State> {
               <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
             </>
           ) : null}
-          {this.props.currentUser?.apps.length ? (
+          {currentUser?.apps.length ? (
             <>
               <Spacer.Vertical size="medium" />
               <TextHeader header="Projects" />
               <ProjectsSection
-                apps={this.props.currentUser.apps.slice(0, 3)}
-                showMore={this.props.currentUser.apps.length > 3}
+                apps={currentUser.apps.slice(0, 3)}
+                showMore={currentUser.apps.length > 3}
               />
             </>
           ) : null}
-          {this.props.currentUser?.snacks.length ? (
+          {currentUser?.snacks.length ? (
             <>
               <Spacer.Vertical size="medium" />
               <TextHeader header="Snacks" />
               <SnacksSection
-                snacks={this.props.currentUser.snacks.slice(0, 3)}
-                showMore={this.props.currentUser.snacks.length > 3}
+                snacks={currentUser.snacks.slice(0, 3)}
+                showMore={currentUser.snacks.length > 3}
               />
             </>
           ) : null}
@@ -205,10 +211,19 @@ export class HomeScreenView extends React.Component<Props, State> {
   private _fetchProjectsAsync = async () => {
     try {
       const api = new ApiV2HttpClient();
-      const projects = await api.getAsync('development-sessions', {
-        deviceId: getSnackId(),
-      });
-      this.setState({ projects });
+
+      const [projects, graphQLResponse] = await Promise.all([
+        api.getAsync('development-sessions', {
+          deviceId: getSnackId(),
+        }),
+        ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
+          query: HomeScreenDataDocument,
+        }),
+      ]);
+
+      const currentUser = graphQLResponse.data.viewer ?? undefined;
+
+      this.setState({ projects, currentUser });
     } catch (e) {
       // this doesn't really matter, we will try again later
       if (__DEV__) {
