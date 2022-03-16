@@ -1,15 +1,14 @@
-package expo.modules.kotlin.methods
+package expo.modules.kotlin.functions
 
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.types.AnyType
 
-class PromiseMethod(
+class AsyncFunction(
   name: String,
   argsType: Array<AnyType>,
-  private val body: (args: Array<out Any?>, promise: Promise) -> Unit
-) : AnyMethod(name, argsType) {
-
+  private val body: (args: Array<out Any?>) -> Any?
+) : AnyFunction(name, argsType) {
   override fun callImplementation(args: Array<out Any?>, promise: Promise) {
-    body(args, promise)
+    promise.resolve(body(args))
   }
 }
