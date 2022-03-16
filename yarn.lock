@@ -1684,12 +1684,7 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/styleguide-native@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.0.tgz#12251f4e22054c6288d1273031d011930cee5898"
-  integrity sha512-izMGG/1BtnFvYfH5QO+DDWNWbm5EvQ987j8fFUlwMYtqsSQ83frFYP8swiInfw1/W/qJtuFqtiHU+g/w962Aow==
-
-"@expo/styleguide-native@^1.0.1":
+"@expo/styleguide-native@^1.0.0", "@expo/styleguide-native@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.1.tgz#b9889266664f885dad15566b5b2956e086b1aa22"
   integrity sha512-VhmMYcOhzQKcng3QH0RBkwK9knhXXFEVzqwjftLK2S4457k6z3OumdyIHp/4P6h5HmfCydtXWvvsFmL7Ui6Pwg==
