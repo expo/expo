@@ -149,7 +149,8 @@ export abstract class BundlerDevServer {
    * This is used for the run commands where you can reuse the server from a previous run.
    */
   private async startHeadlessAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
-    assert(options.port, 'headless dev server requires a port option');
+    if (!options.port)
+      throw new CommandError('HEADLESS_SERVER', 'headless dev server requires a port option');
     this.urlCreator = this.getUrlCreator(options);
 
     return {
@@ -340,7 +341,7 @@ export abstract class BundlerDevServer {
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
     if (runtime !== 'custom') {
       throw new CommandError(
-        'dev server cannot open custom runtimes either because it does not target native platforms or because it is not targetting dev clients.'
+        `dev server cannot open custom runtimes either because it does not target native platforms or because it is not targetting dev clients. (target: ${runtime})`
       );
     }
 

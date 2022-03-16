@@ -62,7 +62,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const manager = await startBundlerAsync(projectRoot, {
     metroPort: props.port,
-    headless: props.shouldStartBundler,
+    headless: !props.shouldStartBundler,
     platforms: exp.platforms,
   });
 
@@ -84,11 +84,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
     await manager
       .getDefaultDevServer()
-      .openCustomRuntimeAsync(
-        'simulator',
-        { applicationId: appId, scheme: props.scheme },
-        { device }
-      );
+      .openCustomRuntimeAsync('simulator', { applicationId: appId }, { device });
   } else {
     await profile(installOnDeviceAsync)({
       bundleIdentifier: appId,
