@@ -81,7 +81,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   @JvmName("functionWithoutArgs")
@@ -93,7 +93,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R> function(
@@ -104,7 +104,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0> function(
@@ -119,7 +119,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0, reified P1> function(
@@ -134,7 +134,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0, reified P1, reified P2> function(
@@ -149,7 +149,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3> function(
@@ -164,7 +164,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> function(
@@ -179,7 +179,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> function(
@@ -194,7 +194,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> function(
@@ -209,7 +209,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
   }
 
   @Deprecated(
-    message = "The 'function' component was deprecated and will be removed in the future.",
+    message = "The 'function' component was deprecated and will change its behavior in the future.",
     replaceWith = ReplaceWith("asyncFunction(name, body)")
   )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> function(
