@@ -20,6 +20,10 @@ export type DevSettings = {
   isPerfMonitorAvailable?: boolean;
 };
 
+export type MenuPreferences = {
+  isOnboardingFinished?: boolean;
+};
+
 const DevMenu = NativeModules.ExpoDevMenuInternal;
 
 export async function dispatchCallableAsync(
@@ -71,4 +75,8 @@ export async function toggleFastRefreshAsync() {
 
 export async function copyToClipboardAsync(content: string) {
   return await DevMenu.copyToClipboardAsync(content);
+}
+
+export async function setOnboardingFinishedAsync(isFinished: boolean) {
+  return await DevMenu.setOnboardingFinished(isFinished);
 }

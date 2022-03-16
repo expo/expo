@@ -24,6 +24,9 @@ import java.util.*
 class DevMenuActivity : ReactActivity() {
   override fun getMainComponentName() = "main"
 
+  private val isEmulator
+    get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
+
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return object : ReactActivityDelegate(this, mainComponentName) {
       // We don't want to destroy the root view, because we want to reuse it later.
@@ -58,10 +61,11 @@ class DevMenuActivity : ReactActivity() {
       override fun getReactNativeHost() = DevMenuManager.getMenuHost()
 
       override fun getLaunchOptions() = Bundle().apply {
-        putBoolean("showOnboardingView", DevMenuManager.getSettings()?.isOnboardingFinished != true)
         putString("uuid", UUID.randomUUID().toString())
         putBundle("appInfo", DevMenuManager.getAppInfo())
         putBundle("devSettings", DevMenuManager.getDevSettings())
+        putBundle("menuPreferences", DevMenuManager.getMenuPreferences())
+        putBoolean("isDevice", !isEmulator)
       }
 
       override fun createRootView() = createRootView(this@DevMenuActivity)

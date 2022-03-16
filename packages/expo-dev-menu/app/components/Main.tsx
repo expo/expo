@@ -19,15 +19,17 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform } from 'react-native';
-import { TouchableWithoutFeedback, Switch } from 'react-native-gesture-handler';
+import { Switch } from 'react-native-gesture-handler';
 
 import { useAppInfo } from '../hooks/useAppInfo';
+import { useBottomSheet } from '../hooks/useBottomSheet';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
+import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 export function Main() {
   const appInfo = useAppInfo();
+  const bottomSheet = useBottomSheet()
   const { devSettings, actions } = useDevSettings();
 
   const urlClipboard = useClipboard();
@@ -85,9 +87,9 @@ export function Main() {
           </Row>
 
           <Spacer.Horizontal />
-          <GestureHandlerTouchableWrapper onPress={actions.closeMenu}>
+          <GestureHandlerTouchableWrapper onPress={bottomSheet.collapse}>
             <Button.ScaleOnPressContainer
-              onPress={actions.closeMenu}
+              onPress={bottomSheet.collapse}
               bg="ghost"
               rounded="full"
               minScale={0.8}>
@@ -379,16 +381,4 @@ function AppInfoRow({ title, value }: AppInfoRowProps) {
       <Text>{value}</Text>
     </Row>
   );
-}
-
-function GestureHandlerTouchableWrapper({ onPress, disabled = false, children }) {
-  if (Platform.OS === 'android') {
-    return (
-      <TouchableWithoutFeedback disabled={disabled} onPress={onPress}>
-        {children}
-      </TouchableWithoutFeedback>
-    );
-  }
-
-  return children;
 }
