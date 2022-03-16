@@ -26,6 +26,10 @@ export default (theme: ColorTheme): StackNavigationOptions => {
         color: theme === 'dark' ? darkTheme.text.default : lightTheme.text.default,
       }),
     },
+    ...(FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && {
+      headerTintColor: theme === 'dark' ? darkTheme.link.default : lightTheme.link.default,
+    }),
+
     headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
   };
 };
