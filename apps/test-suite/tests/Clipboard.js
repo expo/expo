@@ -35,6 +35,32 @@ export function test({ describe, expect, it, afterEach, ...t }) {
         result = await Clipboard.hasStringAsync();
         expect(result).toBe(false);
       });
+
+      if (Platform.OS !== 'web') {
+        it('gets and sets HTML string', async () => {
+          await Clipboard.setStringAsync('<p>test</p>', { inputType: Clipboard.StringFormat.HTML });
+          const result = await Clipboard.getStringAsync({
+            preferredType: Clipboard.StringFormat.HTML,
+          });
+          expect(result.includes('<p>test</p>')).toBe(true);
+        });
+
+        it('gets plain text from copied HTML', async () => {
+          await Clipboard.setStringAsync('<p>test</p>', { inputType: Clipboard.StringFormat.HTML });
+          const result = await Clipboard.getStringAsync({
+            preferredType: Clipboard.StringFormat.PLAIN_TEXT,
+          });
+          expect(result).toEqual('test');
+        });
+
+        it('falls back to plain text if no HTML is copied', async () => {
+          await Clipboard.setStringAsync('test', { inputType: Clipboard.StringFormat.PLAIN_TEXT });
+          const result = await Clipboard.getStringAsync({
+            preferredType: Clipboard.StringFormat.HTML,
+          });
+          expect(result).toEqual('test');
+        });
+      }
     });
 
     if (Platform.OS === 'iOS') {
