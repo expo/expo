@@ -29,7 +29,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
   "dependencies": {
-    "@expo/styleguide-native": "^0.4.0",
+    "@expo/styleguide-native": "^1.0.1",
     "expo-module-scripts": "^2.0.0"
   },
   "devDependencies": {
@@ -39,8 +39,8 @@
   "jest": {
     "preset": "@testing-library/react-native",
     "setupFilesAfterEnv": [
-      "./setupTests",
-      "@testing-library/jest-native/extend-expect"
+      "@testing-library/jest-native/extend-expect",
+      "./setupTests.js"
     ]
   }
 }

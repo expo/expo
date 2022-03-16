@@ -3,7 +3,7 @@ import * as React from 'react';
 import { getDevSessionsAsync } from '../functions/getDevSessionsAsync';
 import { sleepAsync } from '../functions/sleepAsync';
 import { useIsMounted } from '../hooks/useIsMounted';
-import { useUser } from '../hooks/useUser';
+import { useUser } from '../providers/UserContextProvider';
 import { DevSession } from '../types';
 
 type PollOptions = {
@@ -43,7 +43,7 @@ export function useDevSessions() {
 
   async function fetchDevSessionsAsync() {
     setIsFetching(true);
-    const devSessions = await getDevSessionsAsync(isAuthenticated);
+    const devSessions = await getDevSessionsAsync({ isAuthenticated });
     setDevSessions(devSessions);
     setIsFetching(false);
   }

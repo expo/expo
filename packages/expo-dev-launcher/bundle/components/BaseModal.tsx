@@ -1,7 +1,7 @@
 import { Button, Divider, Heading, Row, Spacer, View, XIcon } from 'expo-dev-client-components';
 import * as React from 'react';
 
-import { useModalStack } from '../hooks/useModalStack';
+import { useModalStack } from '../providers/ModalStackProvider';
 
 type BaseModalProps = {
   title?: string;

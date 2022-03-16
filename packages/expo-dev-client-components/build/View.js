@@ -81,6 +81,7 @@ export const Row = create(RNView, {
         },
         ...padding,
         ...margin,
+        ...rounded,
     },
     selectors: {
         dark: {
