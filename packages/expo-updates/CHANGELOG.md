@@ -17,6 +17,7 @@
 ### 🐛 Bug fixes
 
 - Update `fbemitter` to v3. ([#16245](https://github.com/expo/expo/pull/16245) by [@SimenB](https://github.com/SimenB))
+- Allow non-codesigned manifests for Expo Go. ([#16649](https://github.com/expo/expo/pull/16649) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
