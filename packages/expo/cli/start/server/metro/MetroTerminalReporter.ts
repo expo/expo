@@ -105,7 +105,10 @@ export class MetroTerminalReporter extends TerminalReporter {
  * @param error
  * @returns error message or null if not a module resolution error
  */
-export function formatUsingNodeStandardLibraryError(projectRoot: string, error: SnippetError) {
+export function formatUsingNodeStandardLibraryError(
+  projectRoot: string,
+  error: SnippetError
+): string | null {
   if (!error.message) {
     return null;
   }
@@ -118,7 +121,7 @@ export function formatUsingNodeStandardLibraryError(projectRoot: string, error: 
   const DOCS_PAGE_URL =
     'https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries';
 
-  if (NODE_STDLIB_MODULES.includes(targetModuleName)) {
+  if (isNodeStdLibraryModule(targetModuleName)) {
     if (originModulePath.includes('node_modules')) {
       return [
         `The package at "${chalk.bold(
@@ -140,6 +143,10 @@ export function formatUsingNodeStandardLibraryError(projectRoot: string, error: 
     }
   }
   return `Unable to resolve "${targetModuleName}" from "${relativePath}"`;
+}
+
+export function isNodeStdLibraryModule(moduleName: string): boolean {
+  return /^node:/.test(moduleName) || NODE_STDLIB_MODULES.includes(moduleName);
 }
 
 /** If the code frame can be found then append it to the existing message.  */
@@ -202,6 +209,7 @@ const NODE_STDLIB_MODULES = [
   'domain',
   'events',
   'fs',
+  'fs/promises',
   'http',
   'https',
   'net',

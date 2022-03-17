@@ -1,5 +1,9 @@
 import { stripAnsi } from '../../../../utils/ansi';
-import { stripMetroInfo, formatUsingNodeStandardLibraryError } from '../MetroTerminalReporter';
+import {
+  stripMetroInfo,
+  formatUsingNodeStandardLibraryError,
+  isNodeStdLibraryModule,
+} from '../MetroTerminalReporter';
 
 describe(stripMetroInfo, () => {
   it(`sanitizes`, () => {
@@ -27,6 +31,19 @@ describe(stripMetroInfo, () => {
            |         ^
         80 |"
     `);
+  });
+});
+
+describe(isNodeStdLibraryModule, () => {
+  it(`returns true for node standard library modules`, () => {
+    for (const moduleName of ['node:fs', 'fs/promises', 'net']) {
+      expect(isNodeStdLibraryModule(moduleName)).toBe(true);
+    }
+  });
+  it(`returns false for etc modules`, () => {
+    for (const moduleName of ['expo', '@expo/config', 'uuid']) {
+      expect(isNodeStdLibraryModule(moduleName)).toBe(false);
+    }
   });
 });
 
