@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `obfuscatedAccountId`, `obfuscatedProfileId` and `isVrPurchaseFlow` as options to `purchaseItemAsync` for Android in-app purchases. ([#16670](https://github.com/expo/expo/pull/16670) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
