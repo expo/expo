@@ -167,7 +167,10 @@ export async function getPurchaseHistoryAsync(
  * @return Returns a `Promise` that resolves when the purchase is done processing. To get the actual
  * result of the purchase, you must handle purchase events inside the `setPurchaseListener` callback.
  */
-export async function purchaseItemAsync(itemId: string, details?: BillingFlowParams): Promise<void> {
+export async function purchaseItemAsync(
+  itemId: string,
+  details?: BillingFlowParams
+): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
