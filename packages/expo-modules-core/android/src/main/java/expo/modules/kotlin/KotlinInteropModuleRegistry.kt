@@ -80,7 +80,7 @@ class KotlinInteropModuleRegistry(
       .filter { it.definition.viewManagerDefinition != null }
       .map { holder ->
         holder.name to mapOf(
-          "propsNames" to (holder.definition.viewManagerDefinition?.getPropsNames() ?: emptyList())
+          "propsNames" to (holder.definition.viewManagerDefinition?.propsNames ?: emptyList())
         )
       }
       .toMap()
