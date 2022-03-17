@@ -20,7 +20,7 @@ target 'HelloWorld' do
     :path => config[:reactNativePath],
     :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
     :fabric_enabled => flags[:fabric_enabled],
-    # An abosolute path to your application root.
+    # An absolute path to your application root.
     :app_path => "#{Dir.pwd}/.."
   )
 
