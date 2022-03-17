@@ -79,12 +79,6 @@ describe(extractEnvVariableFromBuild, () => {
   it(`gets env variables from build results`, async () => {
     expect(extractEnvVariableFromBuild(fixture, 'APPLE_INTERNAL_LIBRARY_DIR')).toEqual([
       '/AppleInternal/Library',
-      '/AppleInternal/Library',
-      '/AppleInternal/Library',
-      '/AppleInternal/Library',
-      '/AppleInternal/Library',
-      '/AppleInternal/Library',
-      '/AppleInternal/Library',
     ]);
     expect(extractEnvVariableFromBuild(fixture, 'AVAILABLE_PLATFORMS')[0]).toEqual(
       'appletvos\\ appletvsimulator\\ driverkit\\ iphoneos\\ iphonesimulator\\ macosx\\ watchos\\ watchsimulator'
@@ -93,7 +87,7 @@ describe(extractEnvVariableFromBuild, () => {
       extractEnvVariableFromBuild(fixture, 'CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING')[0]
     ).toEqual('YES');
     expect(extractEnvVariableFromBuild(fixture, 'CONFIGURATION_BUILD_DIR')[0]).toEqual(
-      '/Users/evanbacon/Library/Developer/Xcode/DerivedData/basicexpoapp-bhxfzfgdguosemfinvpzbtpjpnji/Build/Products/Debug-iphonesimulator/expo-dev-menu-interface'
+      '/Users/evanbacon/Library/Developer/Xcode/DerivedData/basicexpoapp-bhxfzfgdguosemfinvpzbtpjpnji/Build/Products/Debug-iphonesimulator/expo-dev-launcher'
     );
     expect(extractEnvVariableFromBuild(fixture, 'UNLOCALIZED_RESOURCES_FOLDER_PATH')[0]).toEqual(
       'basicexpoapp.app'
