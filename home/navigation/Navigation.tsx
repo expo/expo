@@ -52,6 +52,7 @@ import {
   ProjectsStackRoutes,
 } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
+import { RedesignedProjectScreen } from 'screens/RedesignedProjectScreen';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
@@ -130,6 +131,13 @@ function HomeStackScreen() {
         component={RedesignedSnacksListScreen}
         options={{
           title: 'Snacks',
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedProjectDetails"
+        component={RedesignedProjectScreen}
+        options={{
+          title: 'Project',
         }}
       />
     </HomeStack.Navigator>

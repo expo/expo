@@ -124,6 +124,7 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
     return (
       <RedesignedProjectsListItem
         key={app.id}
+        id={app.id}
         name={app.name}
         imageURL={app.iconUrl || undefined}
         subtitle={app.packageName || app.fullName}
