@@ -130,12 +130,14 @@ dependencies {
   testImplementation 'junit:junit:4.13.1'
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'io.mockk:mockk:1.12.0'
+  testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"
 
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'
   androidTestImplementation 'io.mockk:mockk-android:1.12.0'
   androidTestImplementation "androidx.room:room-testing:$room_version"
+  androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
