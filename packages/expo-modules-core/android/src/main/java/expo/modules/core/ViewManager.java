@@ -51,6 +51,15 @@ public abstract class ViewManager<V extends View> implements RegistryLifecycleLi
   }
 
   /**
+   * Returns a map of view manager's metadata that will be exposed to JavaScript.
+   */
+  public Map<String, Object> getMetadata() {
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("propsNames", getPropSetters().keySet().toArray());
+    return metadata;
+  }
+
+  /**
    * Returns a map of { propName => propInfo } so that platform adapter knows value of what class
    * does the propsetter expect.
    */

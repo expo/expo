@@ -21,7 +21,7 @@
 #import <ExpoModulesCore/Swift.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
-static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
+static const NSString *viewManagersMetadataKeyPath = @"viewManagersMetadata";
 static const NSString *exportedConstantsKeyPath = @"modulesConstants";
 
 static const NSString *methodInfoKeyKey = @"key";
@@ -123,17 +123,21 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   // Add entries from Swift modules
   [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_swiftInteropBridge exportedFunctionNames]];
 
-  // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
+  // Also, add `viewManagersMetadata` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
-  NSMutableArray<NSString *> *viewManagersNames = [NSMutableArray arrayWithCapacity:[viewManagers count]];
+  NSMutableDictionary<NSString *, NSDictionary *> *viewManagersMetadata = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
+
   for (EXViewManager *viewManager in viewManagers) {
-    [viewManagersNames addObject:[viewManager viewName]];
+    viewManagersMetadata[viewManager.viewName] = @{
+      @"propsNames": [[viewManager getPropsNames] allKeys]
+    };
   }
 
-  [viewManagersNames addObjectsFromArray:[_swiftInteropBridge exportedViewManagersNames]];
+  // Add entries from Swift view managers
+  [viewManagersMetadata addEntriesFromDictionary:[_swiftInteropBridge viewManagersMetadata]];
 
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
-  constantsAccumulator[viewManagersNamesKeyPath] = viewManagersNames;
+  constantsAccumulator[viewManagersMetadataKeyPath] = viewManagersMetadata;
   constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
 

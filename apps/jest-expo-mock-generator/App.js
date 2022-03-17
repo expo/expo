@@ -77,7 +77,7 @@ async function _sendRawLogAsync(message, logUrl) {
 async function _getExpoModuleSpecsAsync() {
   const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
   const moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
-  const expoModuleNames = moduleNames.filter(moduleName => whitelist.test(moduleName)).sort();
+  const expoModuleNames = moduleNames.filter((moduleName) => whitelist.test(moduleName)).sort();
   const specPromises = {};
   for (const moduleName of expoModuleNames) {
     specPromises[moduleName] = _getModuleSpecAsync(moduleName, NativeModules[moduleName]);
@@ -96,7 +96,7 @@ async function _getModuleSpecAsync(moduleName, module) {
   const spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
   if (moduleName === 'NativeUnimoduleProxy') {
     spec.exportedMethods.mock = _sortObject(module.exportedMethods);
-    spec.viewManagersNames.mock = module.viewManagersNames.sort();
+    spec.viewManagersMetadata.mock = module.viewManagersMetadata;
     spec.modulesConstants.type = 'mock';
     spec.modulesConstants.mockDefinition = Object.keys(module.modulesConstants)
       .sort()
@@ -137,7 +137,7 @@ const _addFunctionTypes = (spec, methods) =>
       spec
     );
 
-const _sortObject = obj =>
+const _sortObject = (obj) =>
   Object.keys(obj)
     .sort()
     .reduce(

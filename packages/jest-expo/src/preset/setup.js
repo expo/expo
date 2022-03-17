@@ -95,14 +95,16 @@ for (const moduleName of Object.keys(expoModules)) {
   });
 }
 
-mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach((viewManagerName) => {
-  Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
-    get: () => ({
-      NativeProps: {},
-      directEventTypes: [],
-    }),
-  });
-});
+Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach(
+  (viewManagerName) => {
+    Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
+      get: () => ({
+        NativeProps: {},
+        directEventTypes: [],
+      }),
+    });
+  }
+);
 
 const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
 mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
