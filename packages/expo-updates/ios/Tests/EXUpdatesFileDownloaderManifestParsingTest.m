@@ -213,4 +213,39 @@
   XCTAssertNil(resultUpdateManifest);
 }
 
+- (void)testManifestParsing_JSONBodySigned_UnsignedRequest_ManifestSignatureOptional {
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
+    EXUpdatesConfigCodeSigningMetadataKey: @{},
+    EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey: @YES,
+  }];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  
+  NSString *contentType = @"application/json";
+  
+  NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"]
+                                                            statusCode:200
+                                                           HTTPVersion:@"HTTP/1.1"
+                                                          headerFields:@{
+    @"expo-protocol-version": @"0",
+    @"expo-sfv-version": @"0",
+    @"content-type": contentType,
+  }];
+  
+  NSData *bodyData = [_modernJSON dataUsingEncoding:NSUTF8StringEncoding];
+  
+  __block BOOL errorOccurred;
+  __block EXUpdatesUpdate *resultUpdateManifest;
+  
+  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
+    resultUpdateManifest = update;
+  } errorBlock:^(NSError * _Nonnull error) {
+    errorOccurred = true;
+  }];
+  
+  XCTAssertFalse(errorOccurred);
+  XCTAssertNotNil(resultUpdateManifest);
+}
+
 @end

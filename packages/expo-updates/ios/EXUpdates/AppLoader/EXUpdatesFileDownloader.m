@@ -432,33 +432,16 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
   EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
   if (codeSigningConfiguration) {
     NSError *error;
-    EXUpdatesSignatureHeaderInfo *signatureHeaderInfo = [EXUpdatesSignatureHeaderInfo parseSignatureHeaderWithSignatureHeader:manifestHeaders.signature
-                                                                                                                        error:&error];
-    if (error) {
-      NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
-      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
-                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
-      return;
-    }
-    
-    BOOL isSignatureValid = [codeSigningConfiguration validateSignatureWithSignatureHeaderInfo:signatureHeaderInfo
-                                                                                    signedData:manifestBodyData
-                                                              manifestResponseCertificateChain:certificateChainFromManifestResponse
-                                                                                         error:&error].boolValue;
+    [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
+                                                  signedData:manifestBodyData
+                            manifestResponseCertificateChain:certificateChainFromManifestResponse
+                                                       error:&error];
     
     if (error) {
       NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
                                  userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
-      return;
-    }
-    
-    if (!isSignatureValid) {
-      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
-                                 userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
       return;
     }
   }
