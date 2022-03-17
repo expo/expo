@@ -12,6 +12,31 @@ type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
+export async function getMetroConfigAsync(
+  projectRoot: string,
+  options: Omit<MetroDevServerOptions, 'logger'>
+) {
+  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
+
+  let reportEvent: ((event: any) => void) | undefined;
+
+  const config = await ExpoMetroConfig.loadAsync(projectRoot, {
+    reporter: {
+      update(event: any) {
+        reportEvent?.(event);
+      },
+    },
+    ...options,
+  });
+
+  return {
+    config,
+    setEventReporter(report: (event: any) => void) {
+      reportEvent = report;
+    },
+  };
+}
+
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   projectRoot: string,
@@ -21,31 +46,16 @@ export async function instantiateMetroAsync(
   middleware: any;
   messageSocket: MessageSocket;
 }> {
-  let reportEvent: ((event: any) => void) | undefined;
-
   const Metro = importMetroFromProject(projectRoot);
-  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
 
-  // const terminal = new Terminal(process.stdout);
-  // const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
-
-  const reporter = {
-    update(event: any) {
-      // terminalReporter.update(event);
-      if (reportEvent) {
-        reportEvent(event);
-      }
-    },
-  };
-
-  const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  const { config, setEventReporter } = await getMetroConfigAsync(projectRoot, options);
 
   const { middleware, attachToServer } = createDevServerMiddleware({
-    port: metroConfig.server.port,
-    watchFolders: metroConfig.watchFolders,
+    port: config.server.port,
+    watchFolders: config.watchFolders,
   });
 
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
+  const customEnhanceMiddleware = config.server.enhanceMiddleware;
   // @ts-ignore can't mutate readonly config
   metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
     if (customEnhanceMiddleware) {
@@ -54,13 +64,13 @@ export async function instantiateMetroAsync(
     return middleware.use(metroMiddleware);
   };
 
-  const server = await Metro.runServer(metroConfig, {
+  const server = await Metro.runServer(config, {
     // @ts-expect-error: TODO: Update the types.
     hmrEnabled: true,
   });
 
   const { messageSocket, eventsSocket } = attachToServer(server);
-  reportEvent = eventsSocket.reportEvent;
+  setEventReporter(eventsSocket.reportEvent);
 
   return {
     server,

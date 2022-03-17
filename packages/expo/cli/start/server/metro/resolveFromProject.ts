@@ -26,6 +26,12 @@ function importFromProject(projectRoot: string, moduleId: string) {
   return require(resolveFromProject(projectRoot, moduleId));
 }
 
+export function importCliPluginMetroFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-plugin-metro') {
+  return importFromProject(projectRoot, '@react-native-community/cli-plugin-metro');
+}
+
 /** Import `metro` from the project. */
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');
