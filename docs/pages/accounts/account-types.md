@@ -61,14 +61,18 @@ If you aren't happy with the name you originally chose for your account, you may
 
 > ⚠️ This feature is in private beta and supported only for projects on SDK 43 or newer. Please upgrade your SDK if necessary and email secure@expo.dev including the following in your email and you will be added to the waitlist.
 
-| Account                              | Type                  | Are you an Owner? |
-| ------------------------------------ | --------------------- | ----------------- |
-| name (source)                        | Personal/Organization | yes/no            |
-| name (destination)                   | Personal/Organization | yes/no            |
+Account name (source)<br/>
+Account type: Personal/Organization<br/>
+Are you an Owner? yes/no<br/>
 
-| Projects      | Currently uses Push Notifications? | upgraded to SDK 43 or newer?| 
-| ------------- | ---------------------------------- | --------------------------- |
-| slug          | yes/no                             | yes/no                      |
+Account name (destination)<br/>
+Account type: Personal/Organization<br/>
+Are you an Owner? yes/no<br/>
 
+(the following for each project)<br/>
 
-> 💡 If it is your case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and you need to transfer the project to their Account (`destination`) where the receiving party does not want to grant you Owner access to said `destination` Account, you can create a new Organization Account (`escrow`) to complete the transfer from while safely sharing Owner access on the `escrow` Account. 
+Project: slug<br/>
+Currently uses Push Notifications? yes/no<br/>
+Upgraded to SDK 43 or newer? yes/no<br/>
+
+> 💡 If it is your case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and you need to transfer the project to their Account (`destination`) where the receiving party does not want to grant you Owner access to said `destination` Account, you can create a new Organization Account (`escrow`) to complete the transfer from while safely sharing Owner access on the `escrow` Account.

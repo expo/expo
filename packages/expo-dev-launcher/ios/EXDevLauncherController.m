@@ -37,7 +37,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//  #define DEV_LAUNCHER_URL "http://192.168.0.136:8090//index.bundle?platform=ios&dev=true&minify=false"
+// #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -86,7 +86,6 @@
   
   NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
   
-  [modules addObject:[DevMenuInternalModule new]];
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
@@ -562,8 +561,7 @@
   manager.currentBridge = self.appBridge;
   
   if (self.manifest != nil) {
-    // TODO - update to proper values / convert via instance method
-    manager.currentManifest = [self.manifest.rawManifestJSON copy];
+    manager.currentManifest = self.manifest;
     manager.currentManifestURL = self.manifestURL;
   }
 }

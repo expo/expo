@@ -1503,6 +1503,7 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   logFiles: Array<Scalars['String']>;
   metrics?: Maybe<BuildMetrics>;
   platform: AppPlatform;
+  priority: BuildPriority;
   project: Project;
   /** Queue position is 1-indexed */
   queuePosition?: Maybe<Scalars['Int']>;
@@ -1713,6 +1714,11 @@ export type BuildMutationDeleteBuildArgs = {
 export type BuildOrBuildJob = {
   id: Scalars['ID'];
 };
+
+export enum BuildPriority {
+  High = 'HIGH',
+  Normal = 'NORMAL'
+}
 
 /** Publicly visible data for a Build. */
 export type BuildPublicData = {
@@ -2174,8 +2180,16 @@ export type InvoiceLineItem = {
   description: Scalars['String'];
   id: Scalars['ID'];
   period: InvoicePeriod;
+  plan: InvoiceLineItemPlan;
   proration: Scalars['Boolean'];
   quantity: Scalars['Int'];
+  title: Scalars['String'];
+};
+
+export type InvoiceLineItemPlan = {
+  __typename?: 'InvoiceLineItemPlan';
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type InvoicePeriod = {
@@ -2984,6 +2998,8 @@ export type Snack = Project & {
   description: Scalars['String'];
   /** Full name of the Snack, e.g. "@john/mysnack", "@snack/245631" */
   fullName: Scalars['String'];
+  /** Has the Snack been run without errors */
+  hasBeenRunSuccessfully?: Maybe<Scalars['Boolean']>;
   hashId: Scalars['String'];
   /** @deprecated No longer supported */
   iconUrl?: Maybe<Scalars['String']>;
@@ -2992,6 +3008,8 @@ export type Snack = Project & {
   isDraft: Scalars['Boolean'];
   /** Name of the Snack, e.g. "My Snack" */
   name: Scalars['String'];
+  /** Preview image of the running snack */
+  previewImage?: Maybe<Scalars['String']>;
   published: Scalars['Boolean'];
   /** Slug name, e.g. "mysnack", "245631" */
   slug: Scalars['String'];
@@ -3733,6 +3751,11 @@ export type Home_ViewerUsernameQueryVariables = Exact<{ [key: string]: never; }>
 
 export type Home_ViewerUsernameQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string } | null | undefined };
 
+export type HomeScreenDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', viewer?: { __typename?: 'User', appCount: number, id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null | undefined, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }>, accounts: Array<{ __typename?: 'Account', id: string, name: string }> } | null | undefined };
+
 export const CommonAppDataFragmentDoc = gql`
     fragment CommonAppData on App {
   id
@@ -4204,4 +4227,50 @@ export type Home_ViewerUsernameLazyQueryHookResult = ReturnType<typeof useHome_V
 export type Home_ViewerUsernameQueryResult = Apollo.QueryResult<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>;
 export function refetchHome_ViewerUsernameQuery(variables?: Home_ViewerUsernameQueryVariables) {
       return { query: Home_ViewerUsernameDocument, variables: variables }
+    }
+export const HomeScreenDataDocument = gql`
+    query HomeScreenData {
+  viewer {
+    ...CurrentUserData
+    apps(limit: 5, offset: 0, includeUnpublished: true) {
+      ...CommonAppData
+    }
+    snacks(limit: 5, offset: 0) {
+      ...CommonSnackData
+    }
+    appCount
+  }
+}
+    ${CurrentUserDataFragmentDoc}
+${CommonAppDataFragmentDoc}
+${CommonSnackDataFragmentDoc}`;
+
+/**
+ * __useHomeScreenDataQuery__
+ *
+ * To run a query within a React component, call `useHomeScreenDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomeScreenDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomeScreenDataQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHomeScreenDataQuery(baseOptions?: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+      }
+export function useHomeScreenDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+        }
+export type HomeScreenDataQueryHookResult = ReturnType<typeof useHomeScreenDataQuery>;
+export type HomeScreenDataLazyQueryHookResult = ReturnType<typeof useHomeScreenDataLazyQuery>;
+export type HomeScreenDataQueryResult = Apollo.QueryResult<HomeScreenDataQuery, HomeScreenDataQueryVariables>;
+export function refetchHomeScreenDataQuery(variables?: HomeScreenDataQueryVariables) {
+      return { query: HomeScreenDataDocument, variables: variables }
     }

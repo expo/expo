@@ -3,46 +3,52 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveModuleAsync = exports.getSwiftModuleName = void 0;
+exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
-async function findPodspecFile(revision) {
+async function findPodspecFiles(revision) {
     var _a;
-    if ((_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPath()) {
-        return revision.config.iosPodspecPath();
+    const configPodspecPaths = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPaths();
+    if (configPodspecPaths && configPodspecPaths.length) {
+        return configPodspecPaths;
     }
-    const [podspecFile] = await (0, fast_glob_1.default)('*/*.podspec', {
+    const podspecFiles = await (0, fast_glob_1.default)('*/*.podspec', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });
-    return podspecFile;
+    return podspecFiles;
 }
-function getSwiftModuleName(podName, swiftModuleName) {
+function getSwiftModuleNames(pods, swiftModuleNames) {
+    if (swiftModuleNames && swiftModuleNames.length) {
+        return swiftModuleNames;
+    }
     // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
-    return swiftModuleName !== null && swiftModuleName !== void 0 ? swiftModuleName : podName.replace(/[^a-zA-Z0-9]/g, '_');
+    return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
 }
-exports.getSwiftModuleName = getSwiftModuleName;
+exports.getSwiftModuleNames = getSwiftModuleNames;
 /**
  * Resolves module search result with additional details required for iOS platform.
  */
 async function resolveModuleAsync(packageName, revision, options) {
-    var _a, _b, _c, _d;
-    const podspecFile = await findPodspecFile(revision);
-    if (!podspecFile) {
+    var _a, _b, _c, _d, _e, _f, _g;
+    const podspecFiles = await findPodspecFiles(revision);
+    if (!podspecFiles.length) {
         return null;
     }
-    const podName = path_1.default.basename(podspecFile, path_1.default.extname(podspecFile));
-    const podspecDir = path_1.default.dirname(path_1.default.join(revision.path, podspecFile));
-    const swiftModuleName = getSwiftModuleName(podName, (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosSwiftModuleName());
+    const pods = podspecFiles.map((podspecFile) => ({
+        podName: path_1.default.basename(podspecFile, path_1.default.extname(podspecFile)),
+        podspecDir: path_1.default.dirname(path_1.default.join(revision.path, podspecFile)),
+    }));
+    const swiftModuleNames = getSwiftModuleNames(pods, (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosSwiftModuleNames());
     return {
-        podName,
-        podspecDir,
-        swiftModuleName,
+        packageName,
+        pods,
+        swiftModuleNames,
         flags: options.flags,
-        modules: (_b = revision.config) === null || _b === void 0 ? void 0 : _b.iosModules(),
-        appDelegateSubscribers: (_c = revision.config) === null || _c === void 0 ? void 0 : _c.iosAppDelegateSubscribers(),
-        reactDelegateHandlers: (_d = revision.config) === null || _d === void 0 ? void 0 : _d.iosReactDelegateHandlers(),
+        modules: (_c = (_b = revision.config) === null || _b === void 0 ? void 0 : _b.iosModules()) !== null && _c !== void 0 ? _c : [],
+        appDelegateSubscribers: (_e = (_d = revision.config) === null || _d === void 0 ? void 0 : _d.iosAppDelegateSubscribers()) !== null && _e !== void 0 ? _e : [],
+        reactDelegateHandlers: (_g = (_f = revision.config) === null || _f === void 0 ? void 0 : _f.iosReactDelegateHandlers()) !== null && _g !== void 0 ? _g : [],
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
@@ -62,13 +68,13 @@ async function generatePackageListFileContentAsync(modules, className) {
     const modulesToImport = modules.filter((module) => module.modules.length ||
         module.appDelegateSubscribers.length ||
         module.reactDelegateHandlers.length);
-    const swiftModules = modulesToImport.map((module) => module.swiftModuleName);
+    const swiftModules = []
+        .concat(...modulesToImport.map((module) => module.swiftModuleNames))
+        .filter(Boolean);
     const modulesClassNames = []
         .concat(...modulesToImport.map((module) => module.modules))
         .filter(Boolean);
-    const appDelegateSubscribers = []
-        .concat(...modulesToImport.map((module) => module.appDelegateSubscribers))
-        .filter(Boolean);
+    const appDelegateSubscribers = [].concat(...modulesToImport.map((module) => module.appDelegateSubscribers));
     const reactDelegateHandlerModules = modulesToImport.filter((module) => !!module.reactDelegateHandlers.length);
     return `/**
  * Automatically generated by expo-modules-autolinking.

@@ -2,7 +2,7 @@ export default {
     get name() {
         return 'ExpoClipboard';
     },
-    async getStringAsync() {
+    async getStringAsync(_options) {
         let text = '';
         try {
             text = await navigator.clipboard.readText();
@@ -33,11 +33,11 @@ export default {
         document.body.removeChild(textField);
         return success;
     },
-    async setStringAsync(text) {
+    async setStringAsync(text, _options) {
         return this.setString(text);
     },
     async hasStringAsync() {
-        return this.getStringAsync().then((text) => text.length > 0);
+        return this.getStringAsync({}).then((text) => text.length > 0);
     },
     addClipboardListener() { },
     removeClipboardListener() { },

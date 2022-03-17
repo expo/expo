@@ -1,23 +1,31 @@
-import { lightTheme, darkTheme } from '@expo/styleguide-native';
+import { lightTheme, darkTheme, palette } from '@expo/styleguide-native';
+import * as React from 'react';
 import { useColorScheme } from 'react-native';
-import { useThemePreference } from './ThemeProvider';
+const ThemeContext = React.createContext('light');
+export const useTheme = () => React.useContext(ThemeContext);
+export function ThemeProvider({ children, themePreference = 'no-preference' }) {
+    const systemTheme = useColorScheme();
+    const theme = React.useMemo(() => {
+        if (themePreference !== 'no-preference') {
+            return themePreference;
+        }
+        return systemTheme ?? 'light';
+    }, [themePreference, systemTheme]);
+    return React.createElement(ThemeContext.Provider, { value: theme }, children);
+}
 export function useCurrentTheme() {
-    const colorScheme = useColorScheme();
-    const preference = useThemePreference();
-    let theme = 'light';
-    if (preference !== 'no-preference') {
-        theme = preference;
-    }
-    if (preference === 'no-preference' && colorScheme != null) {
-        theme = colorScheme;
-    }
+    const theme = useTheme();
     return theme;
 }
 export function useExpoTheme() {
-    const theme = useCurrentTheme();
+    const theme = useTheme();
     if (theme === 'dark') {
         return darkTheme;
     }
     return lightTheme;
+}
+export function useExpoPalette() {
+    const theme = useTheme();
+    return palette[theme];
 }
 //# sourceMappingURL=useExpoTheme.js.map

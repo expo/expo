@@ -16,3 +16,13 @@ inline fun <reified T : Throwable> assertThrows(expectedMessage: String? = null,
 
   Assert.fail("Provided block should throw.")
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun Any?.assertNotNull() {
+  Truth.assertThat(this).isNotNull()
+}
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun Any?.assertNull() {
+  Truth.assertThat(this).isNull()
+}

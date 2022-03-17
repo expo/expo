@@ -55,7 +55,7 @@ export function githubUrl(path: string) {
 }
 
 // Add any page in the /sdk/ section that is not an actual Expo API
-const SDK_BLACKLIST = ['Overview'];
+const SDK_IGNORE = ['Overview'];
 
 type Props = {
   router: NextRouter;
@@ -78,7 +78,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   }
 
   private renderForumsLink() {
-    if (!this.props.router.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.router.asPath.includes('/sdk/') || SDK_IGNORE.includes(this.props.title)) {
       return (
         <LI>
           <a
@@ -131,7 +131,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   }
 
   private maybeRenderIssuesLink = () => {
-    if (!this.props.router.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.router.asPath.includes('/sdk/') || SDK_IGNORE.includes(this.props.title)) {
       return;
     }
 

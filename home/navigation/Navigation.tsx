@@ -12,8 +12,9 @@ import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import HomeScreen from 'screens/HomeScreen';
+import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
+import { RedesignedSettingsScreen } from 'screens/RedesignedSettingsScreen';
 
 import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
@@ -34,6 +35,8 @@ import ProjectScreen from '../screens/ProjectScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
+import { RedesignedProjectsListScreen } from '../screens/RedesignedProjectsListScreen';
+import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen.tsx';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
@@ -53,6 +56,7 @@ import defaultNavigationOptions from './defaultNavigationOptions';
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
 const HomeStack = createStackNavigator<HomeStackRoutes>();
+const SettingsStack = createStackNavigator();
 
 function useThemeName() {
   const theme = useTheme();
@@ -114,7 +118,40 @@ function HomeStackScreen() {
           headerShown: false,
         }}
       />
+      <HomeStack.Screen
+        name="RedesignedProjectsList"
+        component={RedesignedProjectsListScreen}
+        options={{
+          title: 'Projects',
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedSnacksList"
+        component={RedesignedSnacksListScreen}
+        options={{
+          title: 'Snacks',
+        }}
+      />
     </HomeStack.Navigator>
+  );
+}
+
+function SettingsStackScreen() {
+  const themeName = useThemeName();
+
+  return (
+    <SettingsStack.Navigator
+      initialRouteName="Settings"
+      screenOptions={defaultNavigationOptions(themeName)}>
+      <SettingsStack.Screen
+        name="Settings"
+        component={
+          FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+            ? RedesignedSettingsScreen
+            : UserSettingsScreen
+        }
+      />
+    </SettingsStack.Navigator>
   );
 }
 
@@ -148,7 +185,7 @@ function ProfileStackScreen() {
       />
       <ProfileStack.Screen
         name="UserSettings"
-        component={UserSettingsScreen}
+        component={RedesignedSettingsScreen}
         options={{ title: 'Options' }}
       />
       <ProfileStack.Screen
@@ -183,7 +220,6 @@ function DiagnosticsStackScreen() {
         }
         options={{
           title: 'Diagnostics',
-          headerShown: !FeatureFlags.ENABLE_2022_DIAGNOSTICS_REDESIGN,
         }}
       />
       <DiagnosticsStack.Screen
@@ -250,7 +286,7 @@ function TabNavigator(props: { theme: string }) {
       {FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN ? (
         <BottomTab.Screen
           name="SettingsScreen"
-          component={UserSettingsScreen}
+          component={SettingsStackScreen}
           options={{
             title: 'Settings',
             tabBarIcon: (props) => <SettingsFilledIcon {...props} style={styles.icon} size={24} />,
