@@ -39,4 +39,8 @@ class ModuleHolder(val module: Module) {
     val listener = definition.eventListeners[eventName] ?: return
     (listener as? EventListenerWithSenderAndPayload<Sender, Payload>)?.call(sender, payload)
   }
+
+  fun cleanUp() {
+    module.cleanUp()
+  }
 }
