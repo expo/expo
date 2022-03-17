@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the component not rendering correctly when the border radius style is set.
+
 ### 💡 Others
 
 ## 11.0.0 — 2021-12-03
