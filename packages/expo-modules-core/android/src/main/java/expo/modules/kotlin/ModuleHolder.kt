@@ -20,7 +20,7 @@ class ModuleHolder(val module: Module) {
     val method = definition.methods[methodName]
       ?: throw MethodNotFoundException()
 
-    method.call(args, promise)
+    method.call(this, args, promise)
   }
 
   fun post(eventName: EventName) {

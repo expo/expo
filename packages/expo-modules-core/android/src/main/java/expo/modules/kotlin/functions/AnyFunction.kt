@@ -1,6 +1,7 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
+import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.CodedException
@@ -15,17 +16,17 @@ abstract class AnyFunction(
   private val desiredArgsTypes: Array<AnyType>
 ) {
   @Throws(CodedException::class)
-  fun call(args: ReadableArray, promise: Promise) {
+  fun call(module: ModuleHolder, args: ReadableArray, promise: Promise) {
     if (desiredArgsTypes.size != args.size()) {
       throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size)
     }
 
     val convertedArgs = convertArgs(args)
-    callImplementation(convertedArgs, promise)
+    callImplementation(module, convertedArgs, promise)
   }
 
   @Throws(CodedException::class)
-  internal abstract fun callImplementation(args: Array<out Any?>, promise: Promise)
+  internal abstract fun callImplementation(holder: ModuleHolder, args: Array<out Any?>, promise: Promise)
 
   val argsCount get() = desiredArgsTypes.size
 
