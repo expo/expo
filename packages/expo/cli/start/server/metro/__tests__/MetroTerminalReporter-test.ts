@@ -1,9 +1,102 @@
 import { stripAnsi } from '../../../../utils/ansi';
 import {
-  stripMetroInfo,
   formatUsingNodeStandardLibraryError,
   isNodeStdLibraryModule,
+  MetroTerminalReporter,
+  stripMetroInfo,
 } from '../MetroTerminalReporter';
+import { BundleDetails } from '../TerminalReporter.types';
+
+const asBundleDetails = (value: any) => value as BundleDetails;
+
+describe('_getBundleStatusMessage', () => {
+  const buildID = '1';
+  const reporter = new MetroTerminalReporter('/', {
+    log: jest.fn(),
+    persistStatus: jest.fn(),
+    status: jest.fn(),
+  });
+  reporter._getElapsedTime = jest.fn(() => 100);
+  reporter._bundleTimers.set(buildID, 0);
+
+  it(`should format standard progress`, () => {
+    expect(
+      stripAnsi(
+        reporter._getBundleStatusMessage(
+          {
+            bundleDetails: asBundleDetails({
+              entryFile: './index.js',
+              platform: 'ios',
+              buildID,
+            }),
+            ratio: 0.5,
+            totalFileCount: 100,
+            transformedFileCount: 50,
+          },
+          'in_progress'
+        )
+      )
+    ).toMatchInlineSnapshot(`"iOS ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
+  });
+
+  it(`should format standard progress at 0%`, () => {
+    expect(
+      stripAnsi(
+        reporter._getBundleStatusMessage(
+          {
+            bundleDetails: asBundleDetails({
+              entryFile: './index.js',
+              platform: 'android',
+              buildID,
+            }),
+            ratio: 0,
+            totalFileCount: 100,
+            transformedFileCount: 0,
+          },
+          'in_progress'
+        )
+      )
+    ).toMatchInlineSnapshot(`"Android ./index.js ░░░░░░░░░░░░░░░░  0.0% (  0/100)"`);
+  });
+  it(`should format complete loading`, () => {
+    expect(
+      stripAnsi(
+        reporter._getBundleStatusMessage(
+          {
+            bundleDetails: asBundleDetails({
+              entryFile: './index.js',
+              platform: 'android',
+              buildID,
+            }),
+            ratio: 1.0,
+            totalFileCount: 100,
+            transformedFileCount: 100,
+          },
+          'done'
+        )
+      )
+    ).toMatchInlineSnapshot(`"Android Bundling complete 100ms"`);
+  });
+  it(`should format failed loading`, () => {
+    expect(
+      stripAnsi(
+        reporter._getBundleStatusMessage(
+          {
+            bundleDetails: asBundleDetails({
+              entryFile: './index.js',
+              platform: 'android',
+              buildID,
+            }),
+            ratio: 1.0,
+            totalFileCount: 100,
+            transformedFileCount: 100,
+          },
+          'failed'
+        )
+      )
+    ).toMatchInlineSnapshot(`"Android Bundling failed 100ms"`);
+  });
+});
 
 describe(stripMetroInfo, () => {
   it(`sanitizes`, () => {

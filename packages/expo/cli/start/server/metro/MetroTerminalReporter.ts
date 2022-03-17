@@ -17,6 +17,11 @@ export class MetroTerminalReporter extends TerminalReporter {
   constructor(public projectRoot: string, terminal: Terminal) {
     super(terminal);
   }
+
+  // Used for testing
+  _getElapsedTime(startTime: number): number {
+    return Date.now() - startTime;
+  }
   /**
    * Extends the bundle progress to include the current platform that we're bundling.
    *
@@ -31,7 +36,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID);
-      const time = chalk.dim(Date.now() - startTime + 'ms');
+      const time = chalk.dim(this._getElapsedTime(startTime) + 'ms');
       // iOS Bundling complete 150ms
       return color(platform + status) + time;
     }
@@ -42,8 +47,12 @@ export class MetroTerminalReporter extends TerminalReporter {
     const _progress = inProgress
       ? chalk.green.bgGreen(DARK_BLOCK_CHAR.repeat(filledBar)) +
         chalk.bgWhite.white(LIGHT_BLOCK_CHAR.repeat(MAX_PROGRESS_BAR_CHAR_WIDTH - filledBar)) +
-        chalk.bold(` ${(100 * progress.ratio).toFixed(1)}% `) +
-        chalk.dim(`(${progress.transformedFileCount}/${progress.totalFileCount})`)
+        chalk.bold(` ${(100 * progress.ratio).toFixed(1).padStart(4)}% `) +
+        chalk.dim(
+          `(${progress.transformedFileCount
+            .toString()
+            .padStart(progress.totalFileCount.toString().length)}/${progress.totalFileCount})`
+        )
       : '';
 
     return (
@@ -80,10 +89,13 @@ export class MetroTerminalReporter extends TerminalReporter {
   dependencyGraphLoading(hasReducedPerformance: boolean): void {
     // this.terminal.log('Dependency graph is loading...');
     if (hasReducedPerformance) {
+      // Extends https://github.com/facebook/metro/blob/347b1d7ed87995d7951aaa9fd597c04b06013dac/packages/metro/src/lib/TerminalReporter.js#L283-L290
       this.terminal.log(
         chalk.red(
-          'Metro is operating with reduced performance.\n' +
-            'Please fix the problem above and restart Metro.\n\n'
+          [
+            'Metro is operating with reduced performance.',
+            'Please fix the problem above and restart Metro.',
+          ].join('\n')
         )
       );
     }
