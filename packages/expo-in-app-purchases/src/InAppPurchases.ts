@@ -12,6 +12,7 @@ import {
   IAPItemDetails,
   IAPPurchaseHistoryOptions,
   QueryResult,
+  BillingFlowParams,
 } from './InAppPurchases.types';
 
 export {
@@ -24,6 +25,7 @@ export {
   IAPItemDetails,
   IAPPurchaseHistoryOptions,
   QueryResult,
+  BillingFlowParams,
 };
 
 const errors = {
@@ -155,19 +157,22 @@ export async function getPurchaseHistoryAsync(
  * service on iOS.
  *
  * @param itemId The product ID of the item you want to buy.
- * @param oldPurchaseToken __Android Only.__ The `purchaseToken` of the purchase that the user is
- * upgrading or downgrading from. This is mandatory for replacing an old subscription such as when
- * a user upgrades from a monthly subscription to a yearly one that provides the same content.
- * You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
+ * @param details __Android Only.__ details for billing flow, can be one of:
+ *  - 'oldPurchaseToken' : the `purchaseToken` of the purchase that the user is upgrading or downgrading from. This is mandatory
+ *    for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly
+ *    one that provides the same content. You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
+ *  - 'obfuscatedAccountId' : the obfuscated account id of the user's Google Play account.
+ *  - 'obfuscatedProfileId' : the obfuscated profile id of the user's Google Play account.
+ *  - 'isVrPurchaseFlow' : whether the purchase is happening in a VR context.
  * @return Returns a `Promise` that resolves when the purchase is done processing. To get the actual
  * result of the purchase, you must handle purchase events inside the `setPurchaseListener` callback.
  */
-export async function purchaseItemAsync(itemId: string, oldPurchaseToken?: string): Promise<void> {
+export async function purchaseItemAsync(itemId: string, details?: BillingFlowParams): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldPurchaseToken);
+  await ExpoInAppPurchases.purchaseItemAsync(itemId, details);
 }
 
 // @needsAudit
