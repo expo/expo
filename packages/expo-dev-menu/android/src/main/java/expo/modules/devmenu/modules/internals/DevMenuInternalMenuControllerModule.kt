@@ -35,28 +35,6 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     devMenuManager.getSettings()?.isOnboardingFinished = finished
   }
 
-  override fun getSettingsAsync(promise: Promise) = promise.resolve(devMenuManager.getSettings()?.serialize())
-
-  override fun setSettingsAsync(settings: ReadableMap, promise: Promise) {
-    if (settings.hasKey("motionGestureEnabled")) {
-      devMenuManager.getSettings()?.motionGestureEnabled = settings.getBoolean("motionGestureEnabled")
-    }
-
-    if (settings.hasKey("keyCommandsEnabled")) {
-      devMenuManager.getSettings()?.keyCommandsEnabled = settings.getBoolean("keyCommandsEnabled")
-    }
-
-    if (settings.hasKey("showsAtLaunch")) {
-      devMenuManager.getSettings()?.showsAtLaunch = settings.getBoolean("showsAtLaunch")
-    }
-
-    if (settings.hasKey("touchGestureEnabled")) {
-      devMenuManager.getSettings()?.touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
-    }
-
-    promise.resolve(null)
-  }
-
   override fun openDevMenuFromReactNative() {
     devMenuManager.getReactInstanceManager()?.devSupportManager?.let {
       devMenuManager.closeMenu()

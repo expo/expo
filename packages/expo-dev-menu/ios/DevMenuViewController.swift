@@ -79,7 +79,7 @@ class DevMenuViewController: UIViewController {
       "showOnboardingView": manager.shouldShowOnboarding(),
       "appInfo": manager.getAppInfo(),
       "devSettings": manager.getDevSettings(),
-      "menuPreferences": DevMenuSettings.serialize(),
+      "menuPreferences": DevMenuPreferences.serialize(),
       "uuid": UUID.init().uuidString,
       "isDevice": !isSimulator,
     ]

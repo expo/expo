@@ -16,7 +16,7 @@ import { ScrollView, Switch } from 'react-native';
 
 import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
-import { useDevMenuSettings } from '../providers/DevMenuSettingsProvider';
+import { useDevMenuPreferences } from '../providers/DevMenuPreferencesProvider';
 
 export function SettingsScreen() {
   const [clipboardError, setClipboardError] = React.useState('');
@@ -29,7 +29,7 @@ export function SettingsScreen() {
     setTouchGestureEnabled,
     motionGestureEnabled,
     setMotionGestureEnabled,
-  } = useDevMenuSettings();
+  } = useDevMenuPreferences();
 
   const buildInfo = useBuildInfo();
 

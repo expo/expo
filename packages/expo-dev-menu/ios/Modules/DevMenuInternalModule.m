@@ -14,8 +14,6 @@ RCT_EXTERN_METHOD(dispatchCallableAsync:(NSString *)callableId args:(NSDictionar
 RCT_EXTERN_METHOD(fetchDataSourceAsync:(NSString *)dataSourceId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(hideMenu)
 RCT_EXTERN_METHOD(setOnboardingFinished:(BOOL)finished)
-RCT_EXTERN_METHOD(getSettingsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(setSettingsAsync:(NSDictionary *)dict resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(openDevMenuFromReactNative)
 RCT_EXTERN_METHOD(onScreenChangeAsync:(NSString *)currentScreen resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 
