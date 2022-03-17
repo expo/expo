@@ -148,6 +148,7 @@ class AppContext(
   fun onDestroy() {
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
+    registry.cleanUp()
   }
 
   fun onHostResume() {

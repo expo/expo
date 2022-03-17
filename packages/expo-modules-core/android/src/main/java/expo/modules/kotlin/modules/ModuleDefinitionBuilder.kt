@@ -32,7 +32,7 @@ import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 import kotlin.reflect.typeOf
 
 @DefinitionMarker
-class ModuleDefinitionBuilder(private val module: Module? = null) {
+class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
   private var eventsDefinition: EventsDefinition? = null
