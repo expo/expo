@@ -1,16 +1,7 @@
 import * as React from 'react';
-import {
-  Appearance,
-  AccessibilityInfo,
-  AccessibilityChangeEventName,
-  StyleSheet,
-  ViewStyle,
-  ImageStyle,
-  TextStyle,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, ViewStyle, ImageStyle, TextStyle } from 'react-native';
 
-import { ThemePreference, ThemePreferences } from './ThemeProvider';
+import { useTheme } from './useExpoTheme';
 
 type StyleType = ViewStyle | TextStyle | ImageStyle;
 
@@ -34,39 +25,51 @@ type SelectorMap<Variants> = Partial<{
 type Selectors<Variants> = {
   light?: SelectorMap<Variants>;
   dark?: SelectorMap<Variants>;
-  boldText?: SelectorMap<Variants>;
-  grayScale?: SelectorMap<Variants>;
-  invertColors?: SelectorMap<Variants>;
-  reduceTransparency?: SelectorMap<Variants>;
-  screenReader?: SelectorMap<Variants>;
-  width?: { [key: string]: SelectorMap<Variants> };
-  height?: { [key: string]: SelectorMap<Variants> };
 };
 
-const selectorStore = createSelectorStore();
+type SelectorProps = {
+  light?: StyleType;
+  dark?: StyleType;
+};
 
 export function create<T, O extends Options>(
   component: React.ComponentType<T>,
   config: O & { selectors?: Selectors<O['variants']>; props?: T }
 ) {
-  const styleFn = getStylesFn(config);
-  config.selectors = config.selectors || {};
+  config.selectors = config.selectors ?? {};
+  config.variants = config.variants ?? {};
 
   const Component = React.forwardRef<
     T,
-    React.PropsWithChildren<T> & Nested<typeof config['variants']>
+    React.PropsWithChildren<T> & Nested<typeof config['variants']> & { selectors?: SelectorProps }
   >((props, ref) => {
-    const style = styleFn(props);
-    const selectorStyle = useSelectors(config.selectors, props);
+    const theme = useTheme();
+
+    const variantStyles = stylesForVariants(props, config.variants);
+    const selectorStyles = stylesForSelectors(props, config.selectors, { theme });
+    const selectorPropsStyles = stylesForSelectorProps(props.selectors, { theme });
+
+    const variantFreeProps = { ...props };
+
+    // @ts-ignore
+    // there could be a conflict between the primitive prop and the variant name
+    // for example - variant name "width" and prop "width"
+    // in these cases, favor the variant because it is under the users control (e.g they can update the conflicting name)
+
+    Object.keys(config.variants).forEach((variant) => {
+      delete variantFreeProps[variant];
+    });
 
     return React.createElement(component, {
-      ...props,
       ...config.props,
+      ...variantFreeProps,
       style: StyleSheet.flatten([
-        style,
+        config.base,
+        variantStyles,
+        selectorStyles,
+        selectorPropsStyles,
         // @ts-ignore
         props.style || {},
-        selectorStyle,
       ]),
       ref,
     });
@@ -75,270 +78,50 @@ export function create<T, O extends Options>(
   return Component;
 }
 
-export function getStylesFn(options: Options) {
-  let styles: any = options.base || {};
+function stylesForVariants(props: any, variants: any = {}) {
+  let styles = {};
 
-  function handleVariantProps(props: any) {
-    options.variants = options.variants || {};
-    styles = options.base;
+  for (const key in props) {
+    if (variants[key]) {
+      const value = props[key];
 
-    for (const key in props) {
-      if (options.variants[key]) {
-        const value = props[key];
-
-        const styleValue = options.variants[key][value];
-        if (styleValue) {
-          styles = StyleSheet.flatten(StyleSheet.compose(styles, styleValue));
-        }
+      const styleValue = variants[key][value];
+      if (styleValue) {
+        styles = StyleSheet.flatten(StyleSheet.compose(styles, styleValue));
       }
     }
-
-    return styles;
   }
 
-  return handleVariantProps;
+  return styles;
 }
 
-type SelectorStoreListener = (updatedKeys: string[], state: any) => void;
+function stylesForSelectors(props: any, selectors: any = {}, state: any = {}) {
+  const styles: any[] = [];
 
-function createSelectorStore() {
-  const activeSelectorMap: Record<string, boolean> = {};
-  const dimensionMap: Record<string, number> = {};
+  if (state.theme != null) {
+    if (selectors[state.theme] != null) {
+      const variants = selectors[state.theme];
+      const variantStyles = stylesForVariants(props, variants);
+      styles.push(variantStyles);
 
-  let listeners: SelectorStoreListener[] = [];
-
-  const currentPreference = ThemePreferences.getPreference();
-
-  let currentColorScheme = Appearance.getColorScheme();
-
-  if (currentPreference !== 'no-preference') {
-    currentColorScheme = currentPreference;
-  }
-
-  if (currentColorScheme != null) {
-    if (currentColorScheme === 'light') {
-      activeSelectorMap['light'] = true;
-      activeSelectorMap['dark'] = false;
-    } else if (currentColorScheme === 'dark') {
-      activeSelectorMap['light'] = false;
-      activeSelectorMap['dark'] = true;
-    }
-
-    notify(['light', 'dark']);
-  }
-
-  Appearance.addChangeListener(({ colorScheme }) => {
-    const currentPreference = ThemePreferences.getPreference();
-
-    if (currentPreference === 'no-preference') {
-      if (colorScheme === 'light') {
-        activeSelectorMap['light'] = true;
-        activeSelectorMap['dark'] = false;
-      } else if (colorScheme === 'dark') {
-        activeSelectorMap['light'] = false;
-        activeSelectorMap['dark'] = true;
-      } else {
-        delete activeSelectorMap['light'];
-        delete activeSelectorMap['dark'];
-      }
-
-      notify(['light', 'dark']);
-    }
-  });
-
-  ThemePreferences.addChangeListener((currentPreference: ThemePreference) => {
-    if (currentPreference === 'light') {
-      activeSelectorMap['light'] = true;
-      activeSelectorMap['dark'] = false;
-    } else if (currentPreference === 'dark') {
-      activeSelectorMap['light'] = false;
-      activeSelectorMap['dark'] = true;
-    } else {
-      const currentColorScheme = Appearance.getColorScheme();
-
-      if (currentColorScheme != null) {
-        if (currentColorScheme === 'light') {
-          activeSelectorMap['light'] = true;
-          activeSelectorMap['dark'] = false;
-        } else if (currentColorScheme === 'dark') {
-          activeSelectorMap['light'] = false;
-          activeSelectorMap['dark'] = true;
-        } else {
-          delete activeSelectorMap['light'];
-          delete activeSelectorMap['dark'];
-        }
+      if (variants.base != null) {
+        styles.push(variants.base);
       }
     }
-
-    notify(['light', 'dark']);
-  });
-
-  const a11yTraits: AccessibilityChangeEventName[] = [
-    'boldTextChanged',
-    'grayscaleChanged',
-    'invertColorsChanged',
-    'reduceMotionChanged',
-    'reduceTransparencyChanged',
-    'screenReaderChanged',
-  ];
-
-  a11yTraits.forEach((trait) => {
-    AccessibilityInfo.addEventListener(trait, (isActive) => {
-      activeSelectorMap[trait] = isActive;
-      notify([trait]);
-    });
-  });
-
-  async function getInitialValues() {
-    const [
-      isBoldTextEnabled,
-      isGrayscaleEnabled,
-      isInvertColorsEnabled,
-      isReduceMotionEnabled,
-      isReduceTransparencyEnabled,
-      isScreenReaderEnabled,
-    ] = await Promise.all([
-      AccessibilityInfo.isBoldTextEnabled(),
-      AccessibilityInfo.isGrayscaleEnabled(),
-      AccessibilityInfo.isInvertColorsEnabled(),
-      AccessibilityInfo.isReduceMotionEnabled(),
-      AccessibilityInfo.isReduceTransparencyEnabled(),
-      AccessibilityInfo.isScreenReaderEnabled(),
-    ]);
-
-    activeSelectorMap['boldText'] = isBoldTextEnabled;
-    activeSelectorMap['grayScale'] = isGrayscaleEnabled;
-    activeSelectorMap['invertColors'] = isInvertColorsEnabled;
-    activeSelectorMap['reduceMotion'] = isReduceMotionEnabled;
-    activeSelectorMap['reduceTransparency'] = isReduceTransparencyEnabled;
-    activeSelectorMap['screenReader'] = isScreenReaderEnabled;
-
-    notify(a11yTraits);
   }
 
-  getInitialValues();
-
-  const { width: initialWidth, height: initialHeight } = Dimensions.get('screen');
-
-  dimensionMap['width'] = initialWidth;
-  dimensionMap['height'] = initialHeight;
-
-  Dimensions.addEventListener('change', ({ screen }) => {
-    dimensionMap['width'] = screen.width;
-    dimensionMap['height'] = screen.height;
-
-    notify(['width', 'height']);
-  });
-
-  function subscribe(fn: SelectorStoreListener) {
-    listeners.push(fn);
-
-    notify([]);
-
-    return () => {
-      listeners = listeners.filter((l) => l !== fn);
-    };
-  }
-
-  function getState() {
-    return {
-      ...activeSelectorMap,
-      ...dimensionMap,
-    };
-  }
-
-  function notify(keys: string[]) {
-    const state = getState();
-    listeners.forEach((listener) => listener(keys, state));
-  }
-
-  return {
-    subscribe,
-  };
+  return StyleSheet.flatten(styles);
 }
 
-function useSelectors(selectors: any, props: any) {
-  const isMounted = React.useRef(false);
+function stylesForSelectorProps(selectors: any = {}, state: any = {}) {
+  const styles: any[] = [];
 
-  React.useEffect(() => {
-    isMounted.current = true;
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  const [activeVariants, setActiveVariants] = React.useState<any>({});
-
-  React.useEffect(() => {
-    const unsubscribe = selectorStore.subscribe((keys, state) => {
-      const variants: any = {};
-
-      Object.entries(state).forEach(([selectorKey, selectorValue]: any) => {
-        if (selectorValue !== false) {
-          if (selectorKey === 'width' || selectorKey === 'height') {
-            const queries = selectors[selectorKey];
-            for (const mediaQuery in queries) {
-              const expression = `${selectorValue} ${mediaQuery}`;
-              try {
-                // eslint-disable-next-line
-                if (eval(expression)) {
-                  mergeDeep(variants, queries[mediaQuery]);
-                }
-              } catch (error) {
-                console.warn(
-                  `Did not pass in a valid query selector '${expression}' -> try a key with a valid expression like '> {number}'`
-                );
-              }
-            }
-          } else {
-            mergeDeep(variants, selectors[selectorKey]);
-          }
-        }
-      });
-
-      if (isMounted.current) {
-        setActiveVariants(variants);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [selectors]);
-
-  const activeStyles = {};
-
-  if (activeVariants['base']) {
-    mergeDeep(activeStyles, activeVariants['base']);
+  if (state.theme != null) {
+    if (selectors[state.theme] != null) {
+      const selectorStyles = selectors[state.theme];
+      styles.push(selectorStyles);
+    }
   }
 
-  Object.entries(props).forEach(([variantKey, variantValue]: any) => {
-    if (activeVariants[variantKey] && activeVariants[variantKey][variantValue]) {
-      mergeDeep(activeStyles, activeVariants[variantKey][variantValue]);
-    }
-  });
-
-  return activeStyles;
-}
-
-function mergeDeep(target: any, source: any) {
-  const isObject = (obj: any) => obj && typeof obj === 'object';
-
-  if (!isObject(target) || !isObject(source)) {
-    return source;
-  }
-
-  Object.keys(source).forEach((key) => {
-    const targetValue = target[key];
-    const sourceValue = source[key];
-
-    if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
-      target[key] = targetValue.concat(sourceValue);
-    } else if (isObject(targetValue) && isObject(sourceValue)) {
-      target[key] = mergeDeep(Object.assign({}, targetValue), sourceValue);
-    } else {
-      target[key] = sourceValue;
-    }
-  });
-
-  return target;
+  return StyleSheet.flatten(styles);
 }

@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
  */
 public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private final static String NAME = "NativeUnimoduleProxy";
-  private final static String VIEW_MANAGERS_NAMES_KEY = "viewManagersNames";
+  private final static String VIEW_MANAGERS_METADATA_KEY = "viewManagersMetadata";
   private final static String MODULES_CONSTANTS_KEY = "modulesConstants";
   private final static String EXPORTED_METHODS_KEY = "exportedMethods";
 
@@ -97,7 +97,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
 
     Map<String, Object> modulesConstants = new HashMap<>(exportedModules.size());
     Map<String, Object> exportedMethodsMap = new HashMap<>(exportedModules.size());
-    List<String> viewManagersNames = new ArrayList<>(viewManagers.size());
+    Map<String, Object> viewManagersMetadata = new HashMap<>(viewManagers.size());
 
     for (ExportedModule exportedModule : exportedModules) {
       String moduleName = exportedModule.getName();
@@ -116,15 +116,15 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     }));
 
     for (ViewManager viewManager : viewManagers) {
-      viewManagersNames.add(viewManager.getName());
+      viewManagersMetadata.put(viewManager.getName(), viewManager.getMetadata());
     }
 
-    viewManagersNames.addAll(mKotlinInteropModuleRegistry.exportedViewManagersNames());
+    viewManagersMetadata.putAll(mKotlinInteropModuleRegistry.viewManagersMetadata());
 
     Map<String, Object> constants = new HashMap<>(3);
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
-    constants.put(VIEW_MANAGERS_NAMES_KEY, viewManagersNames);
+    constants.put(VIEW_MANAGERS_METADATA_KEY, viewManagersMetadata);
     return constants;
   }
 

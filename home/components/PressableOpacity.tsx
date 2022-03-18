@@ -58,8 +58,8 @@ function BorderRadiusContainer({
 }: BorderRadiusContainerProps) {
   return (
     <View
-      style={[borderRadius ? { borderRadius, overflow: 'hidden' } : undefined, style]}
-      {...props}>
+      {...props}
+      style={[borderRadius ? { borderRadius, overflow: 'hidden' } : undefined, style]}>
       {children}
     </View>
   );
