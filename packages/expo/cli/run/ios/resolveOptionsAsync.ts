@@ -9,8 +9,8 @@ import { CommandError } from '../../utils/errors';
 import { resolvePortAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { selectAsync } from '../../utils/prompts';
-import { resolveDeviceAsync } from './resolveDeviceAsync';
 import { BuildProps, Options, ProjectInfo, XcodeConfiguration } from './XcodeBuild.types';
+import { resolveDeviceAsync } from './resolveDeviceAsync';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 
