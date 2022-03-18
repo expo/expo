@@ -140,6 +140,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       '/symbolicate',
       createSymbolicateMiddleware({
         projectRoot: this.projectRoot,
+        // @ts-expect-error: type mismatch -- Webpack types aren't great.
         compiler,
         logger: nativeMiddleware.logger,
       })
@@ -228,7 +229,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     }
     const { attachNativeDevServerMiddlewareToDevServer } = this;
 
-    const server = new WebpackDevServer(compiler, config.devServer);
+    const server = new WebpackDevServer(
+      // @ts-expect-error: type mismatch -- Webpack types aren't great.
+      compiler,
+      config.devServer
+    );
     // Launch WebpackDevServer.
     server.listen(port, WEB_HOST, function (this: http.Server, error) {
       if (nativeMiddleware) {
