@@ -12,7 +12,7 @@ import {
   IAPItemDetails,
   IAPPurchaseHistoryOptions,
   QueryResult,
-  BillingFlowParams,
+  IAPPurchaseItemOptions,
 } from './InAppPurchases.types';
 
 export {
@@ -25,7 +25,7 @@ export {
   IAPItemDetails,
   IAPPurchaseHistoryOptions,
   QueryResult,
-  BillingFlowParams,
+  IAPPurchaseItemOptions,
 };
 
 const errors = {
@@ -157,19 +157,20 @@ export async function getPurchaseHistoryAsync(
  * service on iOS.
  *
  * @param itemId The product ID of the item you want to buy.
- * @param details __Android Only.__ details for billing flow, can be one of:
+ * @param details __Android Only.__ details for billing flow is an object with the following properties:
  *  - 'oldPurchaseToken' : the `purchaseToken` of the purchase that the user is upgrading or downgrading from. This is mandatory
  *    for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly
  *    one that provides the same content. You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
- *  - 'obfuscatedAccountId' : the obfuscated account id of the user's Google Play account.
- *  - 'obfuscatedProfileId' : the obfuscated profile id of the user's Google Play account.
+ *  - 'accountIdentifiers' : account identifiers. Note: both ids must be provided for payments to work on Google Play.
+ *      - 'obfuscatedAccountId' : the obfuscated account ID of the user in the app's system.
+ *      - 'obfuscatedProfileId' : the obfuscated profile ID of the user in the app's system.
  *  - 'isVrPurchaseFlow' : whether the purchase is happening in a VR context.
  * @return Returns a `Promise` that resolves when the purchase is done processing. To get the actual
  * result of the purchase, you must handle purchase events inside the `setPurchaseListener` callback.
  */
 export async function purchaseItemAsync(
   itemId: string,
-  details?: BillingFlowParams
+  details?: IAPPurchaseItemOptions
 ): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);

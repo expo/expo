@@ -279,7 +279,7 @@ export type IAPPurchaseHistoryOptions = {
 /**
  * The purchaseItemAsync billing context on Android
  */
-export interface BillingFlowParams {
+export interface IAPPurchaseItemOptions {
   /**
    * __Android Only.__ the `purchaseToken` of the purchase that the user is upgrading or downgrading from.
    */
@@ -291,11 +291,11 @@ export interface BillingFlowParams {
     /**
      * __Android Only.__ the obfuscated account id of the user's Google Play account.
      */
-    obfuscatedAccountId?: string;
+    obfuscatedAccountId: string;
     /**
      * __Android Only.__ the obfuscated profile id of the user's Google Play account.
      */
-    obfuscatedProfileId?: string;
+    obfuscatedProfileId: string;
   };
   /**
    * __Android Only.__ whether the purchase is happening in a VR context.
