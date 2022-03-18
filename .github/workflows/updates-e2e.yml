@@ -11,7 +11,8 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/**
+      - packages/expo/android/**
+      - packages/expo/ios/**
   push:
     branches: [main, 'sdk-*']
     paths:
@@ -22,7 +23,8 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/**
+      - packages/expo/android/**
+      - packages/expo/ios/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -69,7 +71,7 @@ jobs:
       # TODO: remove once the local template projects are using SDK 45 packages
       - name: Manually bump kotlin version (workaround)
         working-directory: ../updates-e2e
-        run: sed -i -e 's/\(buildToolsVersion\ =\ \"[0-9.]*\"\)/\1\nkotlinVersion\ =\ \"1\.6\.10\"/' ./android/build.gradle
+        run: sed -i -e 's/\(buildToolsVersion = "[0-9.]*"\)/\1\nkotlinVersion = "1.6.10"/' ./android/build.gradle
       - name: Assemble release APK
         working-directory: ../updates-e2e/android
         run: ./gradlew assembleRelease
