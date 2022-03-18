@@ -10,8 +10,7 @@ import { resolvePortAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { selectAsync } from '../../utils/prompts';
 import { resolveDeviceAsync } from './resolveDeviceAsync';
-import * as XcodeBuild from './XcodeBuild';
-import { Options, ProjectInfo, XcodeConfiguration } from './XcodeBuild.types';
+import { BuildProps, Options, ProjectInfo, XcodeConfiguration } from './XcodeBuild.types';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 
@@ -102,7 +101,7 @@ export async function resolveNativeSchemeAsync(
 export async function resolveOptionsAsync(
   projectRoot: string,
   options: Options
-): Promise<XcodeBuild.BuildProps> {
+): Promise<BuildProps> {
   const xcodeProject = resolveXcodeProject(projectRoot);
 
   let port = options.bundler

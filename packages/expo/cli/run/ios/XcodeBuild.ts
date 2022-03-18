@@ -9,8 +9,8 @@ import * as Log from '../../log';
 import { ensureDirectory } from '../../utils/dir';
 import { EXPO_DEBUG } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
-import { ensureDeviceIsCodeSignedForDeploymentAsync } from './developmentCodeSigning';
 import { BuildProps, ProjectInfo } from './XcodeBuild.types';
+import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
 
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
