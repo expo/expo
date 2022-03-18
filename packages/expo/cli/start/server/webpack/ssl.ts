@@ -1,4 +1,5 @@
 import { certificateFor } from '@expo/devcert';
+import chalk from 'chalk';
 import fs from 'fs/promises';
 import * as path from 'path';
 
@@ -23,7 +24,9 @@ export async function ensureEnvironmentSupportsSSLAsync(projectRoot: string) {
 export async function getSSLCertAsync(
   projectRoot: string
 ): Promise<{ keyPath: string; certPath: string } | false> {
-  Log.log(`Creating SSL certificate for localhost (you might need to re-run with sudo)`);
+  Log.log(
+    chalk`Creating SSL certificate for localhost. {dim This functionality may not work on all computers.}`
+  );
 
   const name = 'localhost';
   const result = await certificateFor(name);
