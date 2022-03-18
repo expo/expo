@@ -86,9 +86,12 @@ export default {
         }
 
         try {
-          // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ
-          const blobInput = new Blob([text], { type: 'text/html' });
-          const clipboardItemInput = new ClipboardItem({ 'text/html': blobInput });
+          const clipboardItemInput = new ClipboardItem({
+            // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ
+            'text/html': new Blob([text], { type: 'text/html' }),
+            // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ
+            'text/plain': new Blob([htmlToPlainText(text)], { type: 'text/plain' }),
+          });
           await navigator.clipboard.write([clipboardItemInput]);
           return true;
         } catch (e) {
