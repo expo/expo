@@ -134,7 +134,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // Add manifest middleware to the other middleware.
     // TODO: Move this in to expo/dev-server.
 
-    const middleware = this._getManifestMiddleware(options);
+    const middleware = await this.getManifestMiddlewareAsync(options);
 
     nativeMiddleware.middleware.use(middleware).use(
       '/symbolicate',
