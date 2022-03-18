@@ -1,5 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import path from 'path';
+
 import * as Server from './utils/server';
 
 const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);
@@ -43,7 +44,7 @@ test('starts app, stops, and starts again', async () => {
   expect(response).toBe('test');
   await stopApplication(PACKAGE_NAME);
 
-  await expect(Server.waitForResponse(5000)).rejects.toThrow('expected error');
+  await expect(Server.waitForResponse(5000)).rejects.toThrow('Timed out waiting for response');
 
   await startActivity(ACTIVITY_NAME);
   const response2 = await Server.waitForResponse(10000);

@@ -12,7 +12,7 @@ export default function App() {
         if (response.status === 200) {
           break;
         }
-      } catch (e) {
+      } catch {
         // do nothing; expected if the server isn't running yet
       }
       // wait 50 ms and then try again
