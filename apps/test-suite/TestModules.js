@@ -165,7 +165,7 @@ export function getTestModules() {
     // Crashes app when mounting component
     modules.push(optionalRequire(() => require('./tests/Video')));
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
-    // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
+    // 'java.util.Map expo.modules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
     modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));

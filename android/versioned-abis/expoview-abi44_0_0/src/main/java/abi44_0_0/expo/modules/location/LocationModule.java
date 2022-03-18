@@ -50,7 +50,6 @@ import abi44_0_0.expo.modules.core.interfaces.ExpoMethod;
 import abi44_0_0.expo.modules.core.interfaces.LifecycleEventListener;
 import abi44_0_0.expo.modules.core.interfaces.services.EventEmitter;
 import abi44_0_0.expo.modules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import androidx.annotation.RequiresApi;
 
@@ -64,6 +63,7 @@ import abi44_0_0.expo.modules.location.exceptions.LocationUnauthorizedException;
 import abi44_0_0.expo.modules.location.exceptions.LocationUnavailableException;
 import abi44_0_0.expo.modules.location.taskConsumers.GeofencingTaskConsumer;
 import abi44_0_0.expo.modules.location.taskConsumers.LocationTaskConsumer;
+import expo.modules.interfaces.taskManager.TaskManagerInterface;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.geocoding.utils.LocationAddress;
 import io.nlopez.smartlocation.location.config.LocationParams;

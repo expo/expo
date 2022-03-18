@@ -8,7 +8,7 @@ import abi44_0_0.expo.modules.core.ExportedModule;
 import abi44_0_0.expo.modules.core.ModuleRegistry;
 import abi44_0_0.expo.modules.core.Promise;
 import abi44_0_0.expo.modules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+import expo.modules.interfaces.taskManager.TaskManagerInterface;
 
 class BackgroundFetchModule extends ExportedModule {
   private TaskManagerInterface mTaskManager;
