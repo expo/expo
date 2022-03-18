@@ -109,6 +109,9 @@ class UpdatesConfiguration private constructor (
 
 private inline fun <reified T : Any> Context.getMetadataValue(key: String): T? {
   val ai = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
+  if (!ai.containsKey(key)) {
+    return null
+  }
   return when (T::class) {
     String::class -> ai.getString(key) as T?
     Boolean::class -> ai.getBoolean(key) as T?
