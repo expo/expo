@@ -3,14 +3,20 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
 import { View, Divider, Spacer } from 'expo-dev-client-components';
-import { HomeScreenDataQuery } from 'graphql/types';
+import {
+  HomeScreenDataDocument,
+  HomeScreenDataQuery,
+  HomeScreenDataQueryVariables,
+} from 'graphql/types';
 import * as React from 'react';
 import { Alert, AppState, NativeEventSubscription, Platform, StyleSheet } from 'react-native';
 
 import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
+import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
+import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import RefreshControl from '../../components/RefreshControl';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -20,13 +26,13 @@ import addListenerWithNativeCallback from '../../utils/addListenerWithNativeCall
 import getSnackId from '../../utils/getSnackId';
 import { DevelopmentServerListItem } from './DevelopmentServerListItem';
 import { DevelopmentServersHeader } from './DevelopmentServersHeader';
+import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
 import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
 import { ProjectsSection } from './ProjectsSection';
 import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
 import { RecentlyOpenedSection } from './RecentlyOpenedSection';
 import { SnacksSection } from './SnacksSection';
-import { TextHeader } from './TextHeader';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -36,7 +42,6 @@ type Props = NavigationProps & {
   recentHistory: HistoryList;
   allHistory: HistoryList;
   isAuthenticated: boolean;
-  currentUser?: Exclude<HomeScreenDataQuery['viewer'], null>;
   theme: string;
 };
 
@@ -44,6 +49,7 @@ type State = {
   projects: DevSession[];
   isNetworkAvailable: boolean;
   isRefreshing: boolean;
+  currentUser?: Exclude<HomeScreenDataQuery['viewer'], null>;
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
@@ -56,6 +62,7 @@ export class HomeScreenView extends React.Component<Props, State> {
     projects: [],
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
+    currentUser: undefined,
   };
 
   componentDidMount() {
@@ -85,11 +92,11 @@ export class HomeScreenView extends React.Component<Props, State> {
   }
 
   render() {
-    const { projects, isRefreshing } = this.state;
+    const { projects, isRefreshing, currentUser } = this.state;
 
     return (
       <View style={styles.container}>
-        <HomeScreenHeader currentUser={this.props.currentUser} />
+        <HomeScreenHeader currentUser={currentUser} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
@@ -117,6 +124,9 @@ export class HomeScreenView extends React.Component<Props, State> {
                   {projects.length > 1 && i !== projects.length - 1 ? <Divider /> : null}
                 </React.Fragment>
               ))}
+              {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
+                <DevelopmentServersOpenQR />
+              ) : null}
               {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_CLIPBOARD_BUTTON ? (
                 <DevelopmentServersOpenURL />
               ) : null}
@@ -131,23 +141,25 @@ export class HomeScreenView extends React.Component<Props, State> {
               <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
             </>
           ) : null}
-          {this.props.currentUser?.apps.length ? (
+          {currentUser?.apps.length ? (
             <>
               <Spacer.Vertical size="medium" />
-              <TextHeader header="Projects" />
+              <RedesignedSectionHeader header="Projects" />
               <ProjectsSection
-                apps={this.props.currentUser.apps.slice(0, 3)}
-                showMore={this.props.currentUser.apps.length > 3}
+                accountName={currentUser.username}
+                apps={currentUser.apps.slice(0, 3)}
+                showMore={currentUser.apps.length > 3}
               />
             </>
           ) : null}
-          {this.props.currentUser?.snacks.length ? (
+          {currentUser?.snacks.length ? (
             <>
               <Spacer.Vertical size="medium" />
-              <TextHeader header="Snacks" />
+              <RedesignedSectionHeader header="Snacks" />
               <SnacksSection
-                snacks={this.props.currentUser.snacks.slice(0, 3)}
-                showMore={this.props.currentUser.snacks.length > 3}
+                accountName={currentUser.username}
+                snacks={currentUser.snacks.slice(0, 3)}
+                showMore={currentUser.snacks.length > 3}
               />
             </>
           ) : null}
@@ -205,10 +217,19 @@ export class HomeScreenView extends React.Component<Props, State> {
   private _fetchProjectsAsync = async () => {
     try {
       const api = new ApiV2HttpClient();
-      const projects = await api.getAsync('development-sessions', {
-        deviceId: getSnackId(),
-      });
-      this.setState({ projects });
+
+      const [projects, graphQLResponse] = await Promise.all([
+        api.getAsync('development-sessions', {
+          deviceId: getSnackId(),
+        }),
+        ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
+          query: HomeScreenDataDocument,
+        }),
+      ]);
+
+      const currentUser = graphQLResponse.data.viewer ?? undefined;
+
+      this.setState({ projects, currentUser });
     } catch (e) {
       // this doesn't really matter, we will try again later
       if (__DEV__) {

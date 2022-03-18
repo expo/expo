@@ -5,4 +5,3 @@ export * from './Text';
 export * from './theme';
 export * from './View';
 export * from './useExpoTheme';
-export { ThemePreferenceProvider, ThemeContext } from './ThemeProvider';

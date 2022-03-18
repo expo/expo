@@ -3,8 +3,7 @@ import { darkTheme, lightTheme } from '@expo/styleguide-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
-import { ThemePreferenceProvider } from 'expo-dev-client-components';
-import { ThemePreference } from 'expo-dev-client-components/build/ThemeProvider';
+import { ThemePreference, ThemeProvider } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
@@ -95,6 +94,27 @@ export default function HomeApp() {
       } else {
         await Promise.all([Font.loadAsync(Ionicons.font), Font.loadAsync(MaterialIcons.font)]);
       }
+
+      await Font.loadAsync({
+        'Inter-Black': require('./assets/Inter/Inter-Black.otf'),
+        'Inter-BlackItalic': require('./assets/Inter/Inter-BlackItalic.otf'),
+        'Inter-Bold': require('./assets/Inter/Inter-Bold.otf'),
+        'Inter-BoldItalic': require('./assets/Inter/Inter-BoldItalic.otf'),
+        'Inter-ExtraBold': require('./assets/Inter/Inter-ExtraBold.otf'),
+        'Inter-ExtraBoldItalic': require('./assets/Inter/Inter-ExtraBoldItalic.otf'),
+        'Inter-ExtraLight': require('./assets/Inter/Inter-ExtraLight.otf'),
+        'Inter-ExtraLightItalic': require('./assets/Inter/Inter-ExtraLightItalic.otf'),
+        'Inter-Regular': require('./assets/Inter/Inter-Regular.otf'),
+        'Inter-Italic': require('./assets/Inter/Inter-Italic.otf'),
+        'Inter-Light': require('./assets/Inter/Inter-Light.otf'),
+        'Inter-LightItalic': require('./assets/Inter/Inter-LightItalic.otf'),
+        'Inter-Medium': require('./assets/Inter/Inter-Medium.otf'),
+        'Inter-MediumItalic': require('./assets/Inter/Inter-MediumItalic.otf'),
+        'Inter-SemiBold': require('./assets/Inter/Inter-SemiBold.otf'),
+        'Inter-SemiBoldItalic': require('./assets/Inter/Inter-SemiBoldItalic.otf'),
+        'Inter-Thin': require('./assets/Inter/Inter-Thin.otf'),
+        'Inter-ThinItalic': require('./assets/Inter/Inter-ThinItalic.otf'),
+      });
     } finally {
       return;
     }
@@ -115,7 +135,7 @@ export default function HomeApp() {
     theme === 'dark' ? darkTheme.background.default : lightTheme.background.default;
 
   return (
-    <ThemePreferenceProvider theme={preferredAppearance as ThemePreference}>
+    <ThemeProvider themePreference={theme as ThemePreference}>
       <View
         style={[
           styles.container,
@@ -129,7 +149,7 @@ export default function HomeApp() {
           <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
         </ActionSheetProvider>
       </View>
-    </ThemePreferenceProvider>
+    </ThemeProvider>
   );
 }
 

@@ -40,7 +40,7 @@ export function HomeScreenHeader({ currentUser }: Props) {
           shadow="button"
           height="xl"
           width="xl"
-          bg={themeType === 'dark' ? 'overlay' : 'default'}
+          bg={themeType === 'dark' ? 'secondary' : 'default'}
           style={{
             marginRight: spacing[2],
             elevation: themeType === 'light' ? 1 : 0,
@@ -56,7 +56,7 @@ export function HomeScreenHeader({ currentUser }: Props) {
             }}
           />
         </View>
-        <Text color="default" weight="bold">
+        <Text type="InterBold" color="default">
           Expo Go
         </Text>
       </Row>

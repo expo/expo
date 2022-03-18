@@ -37,9 +37,6 @@
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
 #import <ABI43_0_0React/ABI43_0_0RCTAppearance.h>
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
-#import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
-#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -629,9 +626,6 @@ NS_ASSUME_NONNULL_BEGIN
   ABI43_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
-  ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
 }
 
 #pragma mark - user interface style

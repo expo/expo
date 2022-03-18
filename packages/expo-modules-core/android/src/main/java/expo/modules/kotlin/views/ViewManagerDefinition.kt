@@ -23,6 +23,8 @@ class ViewManagerDefinition(
 
   fun createView(context: Context): View = viewFactory(context)
 
+  val propsNames: List<String> = props.keys.toList()
+
   fun getViewManagerType(): ViewManager.ViewManagerType {
     return if (ViewGroup::class.java.isAssignableFrom(viewType)) {
       ViewManager.ViewManagerType.GROUP
