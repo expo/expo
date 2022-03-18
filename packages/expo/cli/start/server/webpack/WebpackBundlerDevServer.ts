@@ -32,7 +32,9 @@ function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer
   if (!value?.sockWrite) {
     throw new CommandError(
       'WEBPACK',
-      value ? 'Expected Webpack dev server, found: ' + value : 'Webpack dev server not started yet.'
+      value
+        ? 'Expected Webpack dev server, found: ' + (value.constructor?.name ?? value)
+        : 'Webpack dev server not started yet.'
     );
   }
 }
