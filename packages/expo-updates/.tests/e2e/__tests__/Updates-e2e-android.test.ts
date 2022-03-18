@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 import * as Server from './utils/server';
 
-const SERVER_PORT = parseInt(process.env.UPDATES_PORT);
+const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);
 const APK_PATH = process.env.TEST_APK_PATH;
 const ADB_PATH = process.env.HOME
   ? path.join(process.env.HOME, 'Library', 'Android', 'sdk', 'platform-tools', 'adb')
@@ -43,13 +43,7 @@ test('starts app, stops, and starts again', async () => {
   expect(response).toBe('test');
   await stopApplication(PACKAGE_NAME);
 
-  let didError = false;
-  try {
-    await Server.waitForResponse(5000);
-  } catch (e) {
-    didError = true;
-  }
-  expect(didError).toBe(true);
+  await expect(Server.waitForResponse(5000)).rejects.toThrow('expected error');
 
   await startActivity(ACTIVITY_NAME);
   const response2 = await Server.waitForResponse(10000);

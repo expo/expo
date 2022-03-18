@@ -7,9 +7,13 @@ const RETRY_COUNT = 5;
 export default function App() {
   useEffect(async () => {
     for (let i = 0; i < RETRY_COUNT; i++) {
-      const response = await fetch('http://10.0.2.2:UPDATES_PORT/notify/test');
-      if (response.status === 200) {
-        break;
+      try {
+        const response = await fetch('http://10.0.2.2:UPDATES_PORT/notify/test');
+        if (response.status === 200) {
+          break;
+        }
+      } catch (e) {
+        // do nothing; expected if the server isn't running yet
       }
       // wait 50 ms and then try again
       await new Promise((resolve) => setTimeout(resolve, 50));

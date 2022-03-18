@@ -1,4 +1,5 @@
 import express from 'express';
+import { setTimeout } from 'timers/promises';
 
 const app: any = express();
 let server: any;
@@ -23,18 +24,14 @@ export function stop() {
   }
 }
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function waitForResponse(timeout: number) {
-  let delayLength = 0;
+  const finishTime = new Date().getTime() + timeout
   while (!notifyString) {
-    delayLength += 50;
-    if (delayLength > timeout) {
+    const currentTime = new Date().getTime();
+    if (currentTime >= finishTime) {
       throw new Error('Timed out waiting for response')
     }
-    await delay(50);
+    await setTimeout(50);
   }
   
   const response = notifyString;
