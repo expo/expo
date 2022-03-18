@@ -18,13 +18,11 @@ const devServers: BundlerDevServer[] = [];
 
 const BUNDLERS = {
   webpack: () =>
-    import('./webpack/WebpackBundlerDevServer').then(
-      ({ WebpackBundlerDevServer }) => WebpackBundlerDevServer
-    ),
+    require('./webpack/WebpackBundlerDevServer')
+      .WebpackBundlerDevServer as typeof import('./webpack/WebpackBundlerDevServer').WebpackBundlerDevServer,
   metro: () =>
-    import('./metro/MetroBundlerDevServer').then(
-      ({ MetroBundlerDevServer }) => MetroBundlerDevServer
-    ),
+    require('./metro/MetroBundlerDevServer')
+      .MetroBundlerDevServer as typeof import('./metro/MetroBundlerDevServer').MetroBundlerDevServer,
 };
 
 /** Manages interacting with multiple dev servers. */

@@ -5,6 +5,7 @@ import { BundlerStartOptions } from '../../BundlerDevServer';
 import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 
 jest.mock('../../../../log');
+jest.mock('../resolveFromProject');
 
 const originalCwd = process.cwd();
 

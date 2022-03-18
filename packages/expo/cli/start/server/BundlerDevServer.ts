@@ -61,24 +61,20 @@ export interface BundlerStartOptions {
 
 const PLATFORM_MANAGERS = {
   simulator: () =>
-    import('../platforms/ios/ApplePlatformManager').then(
-      ({ ApplePlatformManager }) => ApplePlatformManager
-    ),
+    require('../platforms/ios/ApplePlatformManager')
+      .ApplePlatformManager as typeof import('../platforms/ios/ApplePlatformManager').ApplePlatformManager,
   emulator: () =>
-    import('../platforms/android/AndroidPlatformManager').then(
-      ({ AndroidPlatformManager }) => AndroidPlatformManager
-    ),
+    require('../platforms/android/AndroidPlatformManager')
+      .AndroidPlatformManager as typeof import('../platforms/android/AndroidPlatformManager').AndroidPlatformManager,
 };
 
 const MIDDLEWARES = {
   classic: () =>
-    import('./middleware/ClassicManifestMiddleware').then(
-      ({ ClassicManifestMiddleware }) => ClassicManifestMiddleware
-    ),
+    require('./middleware/ClassicManifestMiddleware')
+      .ClassicManifestMiddleware as typeof import('./middleware/ClassicManifestMiddleware').ClassicManifestMiddleware,
   'expo-updates': () =>
-    import('./middleware/ExpoGoManifestHandlerMiddleware').then(
-      ({ ExpoGoManifestHandlerMiddleware }) => ExpoGoManifestHandlerMiddleware
-    ),
+    require('./middleware/ExpoGoManifestHandlerMiddleware')
+      .ExpoGoManifestHandlerMiddleware as typeof import('./middleware/ExpoGoManifestHandlerMiddleware').ExpoGoManifestHandlerMiddleware,
 };
 
 export abstract class BundlerDevServer {
@@ -112,8 +108,8 @@ export abstract class BundlerDevServer {
     options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'forceManifestType'> = {}
   ) {
     const manifestType = options.forceManifestType || 'classic';
-    const Middleware = await MIDDLEWARES[manifestType]();
-    assert(Middleware, `Manifest middleware for type '${manifestType}' not found`);
+    assert(manifestType in MIDDLEWARES, `Manifest middleware for type '${manifestType}' not found`);
+    const Middleware = MIDDLEWARES[manifestType]();
 
     const urlCreator = this.getUrlCreator();
     const middleware = new Middleware(this.projectRoot, {
@@ -300,7 +296,7 @@ export abstract class BundlerDevServer {
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
     if (!this.platformManagers[platform]) {
-      const Manager = await PLATFORM_MANAGERS[platform]();
+      const Manager = PLATFORM_MANAGERS[platform]();
       this.platformManagers[platform] = new Manager(
         this.projectRoot,
         this.getInstance()?.location.port,

@@ -25,7 +25,7 @@ function importFromProject(projectRoot: string, moduleId: string) {
 
 /** Import `webpack` from the project. */
 export function importWebpackFromProject(projectRoot: string): typeof import('webpack') {
-  return importFromProject(projectRoot, 'webpack');
+  return importFromProject(projectRoot, 'webpack').default;
 }
 
 /** Import `@expo/webpack-config` from the project. */
@@ -39,5 +39,5 @@ export function importExpoWebpackConfigFromProject(
 export function importWebpackDevServerFromProject(
   projectRoot: string
 ): typeof import('webpack-dev-server') {
-  return importFromProject(projectRoot, 'webpack-dev-server');
+  return importFromProject(projectRoot, 'webpack-dev-server').default;
 }

@@ -323,7 +323,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       // Fallback to the default expo webpack config.
       const loadDefaultConfigAsync = importExpoWebpackConfigFromProject(this.projectRoot);
       // @ts-expect-error: types appear to be broken
-      config = await loadDefaultConfigAsync.default(env, argv);
+      config = await loadDefaultConfigAsync(env, argv);
     }
     return config;
   }
