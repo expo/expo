@@ -76,7 +76,7 @@ jobs:
         run: sed -i -e 's/\(buildToolsVersion = "[0-9.]*"\)/\1\nkotlinVersion = "1.6.10"/' ./android/build.gradle
       - name: Copy App.js from test fixtures
         working-directory: ../updates-e2e
-        run: cp ../expo/packages/expo-updates/.tests/e2e/__tests__/fixtures/App.js .
+        run: cp ../expo/packages/expo-updates/e2e/__tests__/fixtures/App.js .
       - name: Set port in App.js
         working-directory: ../updates-e2e
         run: sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
