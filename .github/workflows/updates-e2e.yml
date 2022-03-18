@@ -102,5 +102,5 @@ jobs:
         with:
           api-level: 30
           arch: x86_64
-          script: yarn test --config .tests/e2e/jest.config.js
+          script: yarn test --config e2e/jest.config.js
           working-directory: packages/expo-updates
