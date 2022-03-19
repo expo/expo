@@ -3,10 +3,10 @@ import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-import ProjectView from './ProjectView';
 import { AppPlatform, useWebContainerProjectPage_Query } from '../../graphql/types';
 import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
+import { ProjectView } from './ProjectView';
 
 export function ProjectContainer(
   props: { appId: string } & StackScreenProps<HomeStackRoutes, 'RedesignedProjectDetails'>

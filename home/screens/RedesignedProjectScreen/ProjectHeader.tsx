@@ -1,6 +1,6 @@
 import { Row, useExpoTheme, View, Text, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
 import { WebContainerProjectPage_Query } from '../../graphql/types';
@@ -15,10 +15,8 @@ export function ProjectHeader(props: { app: ProjectPageApp }) {
     <View
       bg="default"
       padding="medium"
-      border="hairline"
       style={{
         borderColor: theme.border.default,
-        borderTopWidth: StyleSheet.hairlineWidth,
         borderBottomWidth: 1,
       }}>
       <Row align="center">

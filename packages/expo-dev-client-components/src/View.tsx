@@ -2,7 +2,18 @@ import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
 import { View as RNView, StyleSheet } from 'react-native';
 
 import { create } from './create-primitive';
-import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
+import {
+  scale,
+  padding,
+  margin,
+  rounded,
+  bg,
+  bgDark,
+  width,
+  height,
+  borderDark,
+  border,
+} from './theme';
 
 export const View = create(RNView, {
   variants: {
@@ -39,10 +50,7 @@ export const View = create(RNView, {
 
     bg,
 
-    border: {
-      default: { borderColor: lightTheme.border.default, borderWidth: 1 },
-      hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
-    },
+    border,
 
     ...rounded,
 
@@ -65,10 +73,7 @@ export const View = create(RNView, {
     dark: {
       bg: bgDark,
 
-      border: {
-        default: { borderColor: darkTheme.border.default, borderWidth: 1 },
-        hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
-      },
+      border: borderDark,
     },
 
     light: {
@@ -103,11 +108,14 @@ export const Row = create(RNView, {
     ...margin,
 
     ...rounded,
+
+    border,
   },
 
   selectors: {
     dark: {
       bg: bgDark,
+      border: borderDark,
     },
   },
 });

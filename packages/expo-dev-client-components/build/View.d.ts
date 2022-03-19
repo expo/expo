@@ -24,7 +24,7 @@ export declare const View: import("react").ForwardRefExoticComponent<import("rea
     shrink?: "0" | "1" | undefined;
     grow?: "0" | "1" | undefined;
     bg?: "secondary" | "default" | "none" | "error" | "warning" | "success" | "overlay" | undefined;
-    border?: "default" | "hairline" | undefined;
+    border?: "default" | "warning" | "hairline" | undefined;
 } & {
     selectors?: {
         light?: (import("react-native").ViewStyle | import("react-native").TextStyle | import("react-native").ImageStyle) | undefined;
@@ -34,6 +34,7 @@ export declare const View: import("react").ForwardRefExoticComponent<import("rea
 export declare const Row: import("react").ForwardRefExoticComponent<import("react-native").ViewProps & {
     children?: import("react").ReactNode;
 } & {
+    border?: "default" | "warning" | "hairline" | undefined;
     rounded?: "small" | "medium" | "large" | "none" | "full" | undefined;
     roundedTop?: "small" | "medium" | "large" | "none" | "full" | undefined;
     roundedBottom?: "small" | "medium" | "large" | "none" | "full" | undefined;

@@ -1,45 +1,41 @@
 import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
+import { iconSize, OpenInternalIcon } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import dedent from 'dedent';
-import { Row, useExpoTheme, View, Text, Spacer } from 'expo-dev-client-components';
+import { View, Text, Spacer, Row, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Linking,
   Platform,
   StyleSheet,
   Text as RNText,
   View as RNView,
 } from 'react-native';
-import FadeIn from 'react-native-fade-in-image';
 import semver from 'semver';
 
-import { Ionicons } from '../../components/Icons';
 import ListItem from '../../components/ListItem';
 import ScrollView from '../../components/NavigationScrollView';
+import { PressableOpacity } from '../../components/PressableOpacity';
+import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import SectionHeader from '../../components/SectionHeader';
 import ShareProjectButton from '../../components/ShareProjectButton';
 import { StyledText } from '../../components/Text';
-import { StyledView } from '../../components/Views';
 import Colors from '../../constants/Colors';
 import SharedStyles from '../../constants/SharedStyles';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import Environment from '../../utils/Environment';
 import * as UrlUtils from '../../utils/UrlUtils';
+import { EmptySection } from './EmptySection';
 import { ProjectHeader } from './ProjectHeader';
+import { WarningBox } from './WarningBox';
 
 const ERROR_TEXT = dedent`
   An unexpected error has occurred.
   Sorry about this. We will resolve the issue as soon as possible.
-`;
-
-const NO_PUBLISHES_TEXT = dedent`
-  This project has not yet been published.
 `;
 
 type Props = {
@@ -51,7 +47,7 @@ type Props = {
 type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
 type ProjectUpdateBranch = WebContainerProjectPage_Query['app']['byId']['updateBranches'][0];
 
-export default function ProjectView({ loading, error, data, navigation }: Props) {
+export function ProjectView({ loading, error, data, navigation }: Props) {
   let contents;
   if (error && !data?.app?.byId) {
     console.log(error);
@@ -134,42 +130,6 @@ function appHasEASUpdates(app: ProjectPageApp): boolean {
   return app.updateBranches.some((branch) => branch.updates.length > 0);
 }
 
-function WarningBox({
-  title,
-  message,
-  showLearnMore,
-  onLearnMorePress,
-}: {
-  title: string;
-  message: string;
-  showLearnMore?: boolean;
-  onLearnMorePress?: () => void;
-}) {
-  const learnMoreButton = showLearnMore ? (
-    <StyledText
-      onPress={onLearnMorePress}
-      style={[styles.warningMessage, styles.warningLearnMoreButton]}>
-      Learn more
-    </StyledText>
-  ) : null;
-  return (
-    <RNView style={styles.warningContainer}>
-      <RNView style={styles.warningHeaderContainer}>
-        <Ionicons
-          name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
-          size={18}
-          lightColor="#735C0F"
-          darkColor="#735C0F"
-          style={styles.warningHeaderIcon}
-        />
-        <StyledText style={styles.warningTitle}>{title}</StyledText>
-      </RNView>
-      <StyledText style={styles.warningMessage}>{message}</StyledText>
-      {learnMoreButton}
-    </RNView>
-  );
-}
-
 function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   const legacyUpdatesSDKMajorVersion = getSDKMajorVersionsForLegacyUpdates(app);
   const isLatestLegacyPublishDeprecated =
@@ -205,20 +165,28 @@ function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
     );
   }
 
+  const theme = useExpoTheme();
+
   return (
-    <RNView>
-      <SectionHeader title="Classic release channels" />
-      <ListItem
-        title="default"
-        disabled={warning !== null}
-        onPress={() => {
-          Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-        }}
-        last
-      />
+    <View>
+      <View bg="default" overflow="hidden" rounded="large" border="hairline">
+        <PressableOpacity
+          onPress={() => {
+            Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
+          }}
+          containerProps={{ bg: 'default' }}>
+          <Row padding="medium" justify="between" align="center">
+            <Text size="medium" type="InterRegular">
+              Use Classic Updates
+            </Text>
+            <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
+          </Row>
+        </PressableOpacity>
+      </View>
+      <Spacer.Vertical size="medium" />
       <RNText style={styles.moreLegacyBranchesText}>{moreLegacyBranchesText}</RNText>
       {warning}
-    </RNView>
+    </View>
   );
 }
 
@@ -264,17 +232,6 @@ function NewLaunchSection({ app }: { app: ProjectPageApp }) {
       <SectionHeader title="EAS branches" />
       {branchManifests.map(renderBranchManifest)}
     </RNView>
-  );
-}
-
-function EmptySection() {
-  return (
-    <StyledText
-      style={[SharedStyles.noticeDescriptionText, styles.emptyInfo]}
-      lightColor="rgba(36, 44, 58, 0.7)"
-      darkColor="#ccc">
-      {NO_PUBLISHES_TEXT}
-    </StyledText>
   );
 }
 
@@ -335,11 +292,8 @@ const styles = StyleSheet.create({
   warningContainer: {
     borderRadius: 4,
     padding: 16,
-    backgroundColor: '#FFFBDD',
-    borderColor: '#FFEA7F',
     borderWidth: 1,
     marginBottom: 20,
-    marginHorizontal: 16,
   },
   warningHeaderContainer: {
     flexDirection: 'row',

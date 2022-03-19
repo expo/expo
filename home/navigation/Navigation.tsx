@@ -14,6 +14,7 @@ import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
 import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
+import { RedesignedProjectScreen } from 'screens/RedesignedProjectScreen';
 import { RedesignedSettingsScreen } from 'screens/RedesignedSettingsScreen';
 
 import FeatureFlags from '../FeatureFlags';
@@ -52,7 +53,6 @@ import {
   ProjectsStackRoutes,
 } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
-import { RedesignedProjectScreen } from 'screens/RedesignedProjectScreen';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
