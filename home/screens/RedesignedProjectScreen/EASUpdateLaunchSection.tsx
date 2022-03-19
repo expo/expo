@@ -1,13 +1,12 @@
 import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
-import * as React from 'react';
-import { Alert, Linking, View as RNView } from 'react-native';
+import { ChevronDownIcon } from '@expo/styleguide-native';
+import { BranchListItem } from 'components/BranchListItem';
+import { PressableOpacity } from 'components/PressableOpacity';
+import { Divider, Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
+import React, { Fragment } from 'react';
 import semver from 'semver';
 
-import ListItem from '../../components/ListItem';
-import SectionHeader from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
-import Environment from '../../utils/Environment';
-import * as UrlUtils from '../../utils/UrlUtils';
 
 type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
 type ProjectUpdateBranch = WebContainerProjectPage_Query['app']['byId']['updateBranches'][0];
@@ -38,42 +37,45 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
     (updateBranch) => updateBranch.updates.length > 0
   );
 
-  const branchManifests = branchesToRender.map((branch) => ({
-    branchName: branch.name,
-    manifestUrl: branch.updates[0].manifestPermalink,
+  const branchManifests = branchesToRender.slice(0, 3).map((branch) => ({
+    name: branch.name,
+    id: branch.id,
+    latestUpdate: branch.updates[0],
     sdkVersion: getSDKMajorVersionForEASUpdateBranch(branch),
   }));
 
-  const renderBranchManifest = (
-    branchManifest: { branchName: string; manifestUrl: string; sdkVersion: number | null },
-    index: number
-  ) => {
-    const isLatestLegacyPublishDeprecated =
-      branchManifest.sdkVersion !== null &&
-      branchManifest.sdkVersion < Environment.lowestSupportedSdkVersion;
+  const theme = useExpoTheme();
 
-    return (
-      <ListItem
-        key={`branch-${branchManifest.branchName}`}
-        title={branchManifest.branchName}
-        onPress={() => {
-          if (isLatestLegacyPublishDeprecated) {
-            Alert.alert(
-              `This branch's SDK version (${branchManifest.sdkVersion}) is no longer supported.`
-            );
-          } else {
-            Linking.openURL(UrlUtils.toExps(branchManifest.manifestUrl));
-          }
-        }}
-        last={index === branchManifests.length - 1}
-      />
-    );
-  };
+  function onSeeAllBranchesPress() {
+    // TODO: open branches list page
+  }
 
   return (
-    <RNView>
-      <SectionHeader title="EAS branches" />
-      {branchManifests.map(renderBranchManifest)}
-    </RNView>
+    <View bg="default" rounded="large" border="hairline" overflow="hidden">
+      {branchManifests.map((branch, i) => {
+        return (
+          <Fragment key={branch.id}>
+            <BranchListItem name={branch.name} latestUpdate={branch.latestUpdate} />
+            {i < branchManifests.length - 1 && <Divider />}
+          </Fragment>
+        );
+      })}
+      {branchesToRender.length > 3 && (
+        <>
+          <Divider />
+          <PressableOpacity onPress={onSeeAllBranchesPress}>
+            <View padding="medium">
+              <Row align="center" justify="between">
+                <Text>See all branches</Text>
+                <ChevronDownIcon
+                  style={{ transform: [{ rotate: '-90deg' }] }}
+                  color={theme.icon.secondary}
+                />
+              </Row>
+            </View>
+          </PressableOpacity>
+        </>
+      )}
+    </View>
   );
 }

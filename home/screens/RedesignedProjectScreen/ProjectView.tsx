@@ -1,7 +1,7 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { Text, View } from 'expo-dev-client-components';
+import { Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
 
@@ -29,6 +29,8 @@ type Props = {
 type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
 
 export function ProjectView({ loading, error, data, navigation }: Props) {
+  const theme = useExpoTheme();
+
   let contents;
   if (error && !data?.app?.byId) {
     console.log(error);
@@ -43,7 +45,7 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
   } else if (loading || !data?.app?.byId) {
     contents = (
       <View flex="1" align="centered">
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.highlight.accent} />
       </View>
     );
   } else {

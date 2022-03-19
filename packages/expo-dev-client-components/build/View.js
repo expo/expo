@@ -61,6 +61,18 @@ export const Row = create(RNView, {
     },
     variants: {
         bg,
+        flex: {
+            '1': { flex: 1 },
+            '0': { flex: 0 },
+        },
+        shrink: {
+            '1': { flexShrink: 1 },
+            '0': { flexShrink: 0 },
+        },
+        grow: {
+            '1': { flexGrow: 1 },
+            '0': { flexGrow: 0 },
+        },
         align: {
             center: { alignItems: 'center' },
             start: { alignItems: 'flex-start' },
