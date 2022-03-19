@@ -1,37 +1,25 @@
 import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
-import { iconSize, OpenInternalIcon } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { View, Text, Spacer, Row, useExpoTheme } from 'expo-dev-client-components';
-import * as WebBrowser from 'expo-web-browser';
+import { View } from 'expo-dev-client-components';
 import * as React from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Linking,
-  Platform,
-  StyleSheet,
-  Text as RNText,
-  View as RNView,
-} from 'react-native';
+import { ActivityIndicator, Alert, Linking, StyleSheet, View as RNView } from 'react-native';
 import semver from 'semver';
 
 import ListItem from '../../components/ListItem';
 import ScrollView from '../../components/NavigationScrollView';
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import SectionHeader from '../../components/SectionHeader';
 import ShareProjectButton from '../../components/ShareProjectButton';
 import { StyledText } from '../../components/Text';
-import Colors from '../../constants/Colors';
 import SharedStyles from '../../constants/SharedStyles';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import Environment from '../../utils/Environment';
 import * as UrlUtils from '../../utils/UrlUtils';
 import { EmptySection } from './EmptySection';
+import { LegacyLaunchSection } from './LegacyLaunchSection';
 import { ProjectHeader } from './ProjectHeader';
-import { WarningBox } from './WarningBox';
 
 const ERROR_TEXT = dedent`
   An unexpected error has occurred.
@@ -101,10 +89,6 @@ function truthy<TValue>(value: TValue | null | undefined): value is TValue {
   return !!value;
 }
 
-function getSDKMajorVersionsForLegacyUpdates(app: ProjectPageApp): number | null {
-  return app.sdkVersion ? semver.major(app.sdkVersion) : null;
-}
-
 function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): number | null {
   const updates = branch.updates;
   if (updates.length === 0) {
@@ -128,66 +112,6 @@ function appHasLegacyUpdate(app: ProjectPageApp): boolean {
 
 function appHasEASUpdates(app: ProjectPageApp): boolean {
   return app.updateBranches.some((branch) => branch.updates.length > 0);
-}
-
-function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
-  const legacyUpdatesSDKMajorVersion = getSDKMajorVersionsForLegacyUpdates(app);
-  const isLatestLegacyPublishDeprecated =
-    legacyUpdatesSDKMajorVersion !== null &&
-    legacyUpdatesSDKMajorVersion < Environment.lowestSupportedSdkVersion;
-  const doesLatestLegacyPublishHaveRuntimeVersion =
-    app.latestReleaseForReleaseChannel?.runtimeVersion !== null;
-
-  const moreLegacyBranchesText =
-    Platform.OS === 'ios'
-      ? 'To launch from another classic release channel, follow the instructions on the project webpage.'
-      : 'To launch from another classic release channel, scan the QR code on the project webpage.';
-
-  let warning: JSX.Element | null = null;
-  if (doesLatestLegacyPublishHaveRuntimeVersion) {
-    warning = (
-      <WarningBox
-        title="Incompatible update"
-        message="The latest update uses a runtime version that is not compatible with Expo Go. To continue, create a custom dev client."
-        showLearnMore
-        onLearnMorePress={() => {
-          WebBrowser.openBrowserAsync('https://docs.expo.dev/clients/getting-started/');
-        }}
-      />
-    );
-  } else if (isLatestLegacyPublishDeprecated) {
-    warning = (
-      <WarningBox
-        title="Unsupported SDK version"
-        message={`This project's SDK version (${legacyUpdatesSDKMajorVersion}) is no longer supported.`}
-        showLearnMore={false}
-      />
-    );
-  }
-
-  const theme = useExpoTheme();
-
-  return (
-    <View>
-      <View bg="default" overflow="hidden" rounded="large" border="hairline">
-        <PressableOpacity
-          onPress={() => {
-            Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-          }}
-          containerProps={{ bg: 'default' }}>
-          <Row padding="medium" justify="between" align="center">
-            <Text size="medium" type="InterRegular">
-              Use Classic Updates
-            </Text>
-            <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
-          </Row>
-        </PressableOpacity>
-      </View>
-      <Spacer.Vertical size="medium" />
-      <RNText style={styles.moreLegacyBranchesText}>{moreLegacyBranchesText}</RNText>
-      {warning}
-    </View>
-  );
 }
 
 function NewLaunchSection({ app }: { app: ProjectPageApp }) {
@@ -282,41 +206,5 @@ const styles = StyleSheet.create({
   headerNameText: {
     fontSize: 20,
     fontWeight: '500',
-  },
-  moreLegacyBranchesText: {
-    fontSize: 12,
-    color: Colors.light.greyText,
-    marginBottom: 20,
-    marginHorizontal: 16,
-  },
-  warningContainer: {
-    borderRadius: 4,
-    padding: 16,
-    borderWidth: 1,
-    marginBottom: 20,
-  },
-  warningHeaderContainer: {
-    flexDirection: 'row',
-  },
-  warningHeaderIcon: {
-    marginRight: 4,
-  },
-  warningTitle: {
-    color: '#735C0F',
-    fontWeight: '600',
-    fontSize: 15,
-    marginBottom: 6,
-    lineHeight: 22,
-  },
-  warningMessage: {
-    color: '#1B1F23',
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  warningLearnMoreButton: {
-    textDecorationLine: 'underline',
-  },
-  emptyInfo: {
-    marginTop: 16,
   },
 });
