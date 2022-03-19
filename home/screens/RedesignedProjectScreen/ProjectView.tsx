@@ -1,10 +1,11 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
 
+import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
 import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import ShareProjectButton from '../../components/ShareProjectButton';
@@ -61,6 +62,14 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
           {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
           {appHasEASUpdates(app) && <EASUpdateLaunchSection app={app} />}
           {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}
+          <Spacer.Vertical size="medium" />
+          <View bg="default" border="hairline" overflow="hidden" rounded="large">
+            <ConstantItem title="Owner" value={app.username} />
+            <Divider />
+            <ConstantItem title="SDK Version" value={app.sdkVersion} />
+            <Divider />
+            <ConstantItem title="Privacy" value={app.privacy} />
+          </View>
         </View>
       </ScrollView>
     );

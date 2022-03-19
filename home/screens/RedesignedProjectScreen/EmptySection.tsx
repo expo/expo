@@ -13,10 +13,8 @@ export function EmptySection() {
   const theme = useExpoTheme();
 
   return (
-    <View bg="default" border="hairline" rounded="medium" padding="medium" margin="medium">
-      <Text color="warning" type="InterRegular">
-        {NO_PUBLISHES_TEXT}
-      </Text>
+    <View bg="default" border="hairline" rounded="medium" padding="medium">
+      <Text type="InterRegular">{NO_PUBLISHES_TEXT}</Text>
       <Spacer.Vertical size="medium" />
       <PressableOpacity
         onPress={() => {
@@ -26,11 +24,13 @@ export function EmptySection() {
           style: {
             padding: spacing[2],
             alignSelf: 'flex-start',
-            backgroundColor: theme.button.tertiary.background,
+            backgroundColor: theme.button.ghost.background,
+            borderWidth: 1,
+            borderColor: theme.button.ghost.border,
           },
           rounded: 'small',
         }}>
-        <Text type="InterSemiBold" style={{ color: theme.button.tertiary.foreground }} size="small">
+        <Text type="InterSemiBold" style={{ color: theme.button.ghost.foreground }} size="small">
           Learn more
         </Text>
       </PressableOpacity>
