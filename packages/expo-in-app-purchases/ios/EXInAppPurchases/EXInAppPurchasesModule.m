@@ -68,7 +68,7 @@ EX_EXPORT_METHOD_AS(getProductsAsync,
 
 EX_EXPORT_METHOD_AS(purchaseItemAsync,
                     purchaseItemAsync:(NSString *)productIdToPurchase
-                    replace:(NSString *)oldItem // ignore on iOS
+                    replace:(NSDictionary *)details // ignore on iOS
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {

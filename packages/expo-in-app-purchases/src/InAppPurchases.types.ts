@@ -36,8 +36,7 @@ export enum IAPResponseCode {
    */
   ERROR = 2,
   /**
-   * Purchase was deferred.
-   * @platform ios
+   * __iOS Only.__ Purchase was deferred.
    */
   DEFERRED = 3,
 }
@@ -57,17 +56,15 @@ export enum InAppPurchaseState {
    */
   FAILED = 2,
   /**
-   * This transaction restores content previously purchased by the user. Read the
+   * __iOS Only.__ This transaction restores content previously purchased by the user. Read the
    * `originalTransaction` properties to obtain information about the original purchase.
-   * @platform ios
    */
   RESTORED = 3,
   /**
-   * The transaction has been received, but its final status is pending external
+   * __iOS Only.__ The transaction has been received, but its final status is pending external
    * action such as the Ask to Buy feature where a child initiates a new purchase and has to wait
    * for the family organizer's approval. Update your UI to show the deferred state, and wait for
-   * another callback that indicates the final status.
-   * @platform ios
+   * another callback that indicates the final status
    */
   DEFERRED = 4,
 }
@@ -187,29 +184,24 @@ export interface InAppPurchase {
    */
   orderId: string;
   /**
-   * The application package from which the purchase originated.
+   * __Android Only.__ The application package from which the purchase originated.
    * @example `com.example.myapp`
-   * @platform android
    */
   packageName?: string;
   /**
-   * A token that uniquely identifies a purchase for a given item and user pair.
-   * @platform android
+   * __Android Only.__ A token that uniquely identifies a purchase for a given item and user pair.
    */
   purchaseToken?: string;
   /**
-   * Represents the original order ID for restored purchases.
-   * @platform ios
+   * __iOS Only.__ Represents the original order ID for restored purchases.
    */
   originalOrderId?: string;
   /**
-   * Represents the original purchase time for restored purchases.
-   * @platform ios
+   * __iOS Only.__ Represents the original purchase time for restored purchases.
    */
   originalPurchaseTime?: string;
   /**
-   * The App Store receipt found in the main bundle encoded as a Base64 String.
-   * @platform ios
+   * __iOS Only.__ The App Store receipt found in the main bundle encoded as a Base64 String.
    */
   transactionReceipt?: string;
 }
@@ -269,8 +261,9 @@ export interface IAPItemDetails {
 // @needsAudit
 export type IAPPurchaseHistoryOptions = {
   /**
-   * A boolean that indicates whether or not you want to make a network request
+   * __Android Only.__ A boolean that indicates whether or not you want to make a network request
    * to sync expired/consumed purchases and those on other devices.
+   * @default `true`.
    * - If set to `true`, this method returns purchase details **only** for the user's currently
    *   owned items (active subscriptions and non-consumed one-time purchases). If set to `false`, it
    *   will make a network request and return the most recent purchase made by the user for each
@@ -279,9 +272,33 @@ export type IAPPurchaseHistoryOptions = {
    *   Android returns a [`PurchaseHistoryRecord`](https://developer.android.com/reference/com/android/billingclient/api/PurchaseHistoryRecord)
    *   which only contains the purchase time, purchase token, and product ID, rather than all of the
    *   attributes found in the [`InAppPurchase`](#inapppurchase) type.
-   *
-   * @default true
-   * @platform android
    */
   useGooglePlayCache: boolean;
 };
+
+/**
+ * The purchaseItemAsync billing context on Android
+ */
+export interface IAPPurchaseItemOptions {
+  /**
+   * __Android Only.__ the `purchaseToken` of the purchase that the user is upgrading or downgrading from.
+   */
+  oldPurchaseToken?: string;
+  /**
+   * __Android Only.__ account identifiers, both need to be provided to work with Google Play
+   */
+  accountIdentifiers?: {
+    /**
+     * __Android Only.__ the obfuscated account id of the user's Google Play account.
+     */
+    obfuscatedAccountId: string;
+    /**
+     * __Android Only.__ the obfuscated profile id of the user's Google Play account.
+     */
+    obfuscatedProfileId: string;
+  };
+  /**
+   * __Android Only.__ whether the purchase is happening in a VR context.
+   */
+  isVrPurchaseFlow?: boolean;
+}
