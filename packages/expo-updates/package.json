@@ -56,6 +56,7 @@
     "@types/node": "^17.0.15",
     "@types/node-forge": "^1.0.0",
     "expo-module-scripts": "^2.0.0",
+    "express": "^4.17.2",
     "fs-extra": "^9.1.0",
     "memfs": "^3.2.0"
   },
