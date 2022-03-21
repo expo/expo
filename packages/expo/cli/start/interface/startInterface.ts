@@ -87,7 +87,7 @@ export async function startInterfaceAsync(
       case CTRL_L:
         return Log.clear();
       case '?':
-        return await printUsage(usageOptions, { verbose: true });
+        return printUsage(usageOptions, { verbose: true });
     }
 
     // Optionally enabled

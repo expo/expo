@@ -29,8 +29,6 @@ export const getTerminalColumns = () => process.stdout.columns || 80;
 export const printItem = (text: string): string =>
   `${BLT} ` + wrapAnsi(text, getTerminalColumns()).trimStart();
 
-const div = chalk.dim(`│`);
-
 export function printUsage(
   options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>,
   { verbose }: { verbose: boolean }
@@ -85,7 +83,7 @@ function logCommandsTable(
         if (!key) return '';
         let view = `${BLT} `;
         if (key.length === 1) view += 'Press ';
-        view += `${chalk.bold(key)} ${div} `;
+        view += chalk`{bold ${key}} {dim │} `;
         view += msg;
         if (status) {
           view += ` ${chalk.dim(`(${chalk.italic(status)})`)}`;

@@ -22,13 +22,13 @@ export class KeyPressHandler {
     });
   }
 
-  private handleKeypress = async (key: string) => {
+  private async handleKeypress(key: string) {
     try {
       await this.onPress(key);
     } catch (err) {
       await logCmdError(err);
     }
-  };
+  }
 
   /** Start intercepting all key strokes and passing them to the input `onPress` method. */
   startInterceptingKeyStrokes() {
@@ -49,7 +49,7 @@ export class KeyPressHandler {
   }
 
   /** Stop intercepting all key strokes. */
-  stopInterceptingKeyStrokes = () => {
+  stopInterceptingKeyStrokes() {
     if (!this.isInterceptingKeyStrokes) {
       return;
     }
@@ -63,5 +63,5 @@ export class KeyPressHandler {
     }
     stdin.setRawMode(false);
     stdin.resume();
-  };
+  }
 }

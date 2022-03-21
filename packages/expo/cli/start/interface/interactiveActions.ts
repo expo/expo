@@ -21,7 +21,7 @@ export class DevServerManagerActions {
         const url = this.devServerManager.getDefaultDevServer().getNativeRuntimeUrl();
 
         printQRCode(url);
-        Log.log(printItem(`Metro waiting on ${chalk.underline(url)}`));
+        Log.log(printItem(chalk`Metro waiting on {underline ${url}}`));
         // TODO: if development build, change this message!
         Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
       } catch (error) {
@@ -30,7 +30,7 @@ export class DevServerManagerActions {
           throw error;
         } else {
           const serverUrl = this.devServerManager.getDefaultDevServer().getDevServerUrl();
-          Log.log(printItem(`Metro waiting on ${chalk.underline(serverUrl)}`));
+          Log.log(printItem(chalk`Metro waiting on {underline ${serverUrl}}`));
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
         }
       }
@@ -41,7 +41,7 @@ export class DevServerManagerActions {
       ?.getDevServerUrl({ hostType: 'localhost' });
     if (webUrl) {
       Log.log();
-      Log.log(printItem(`Webpack waiting on ${chalk.underline(webUrl)}`));
+      Log.log(printItem(chalk`Webpack waiting on {underline ${webUrl}}`));
       Log.log(
         chalk.gray(printItem('Expo Webpack (web) is in beta, and subject to breaking changes!'))
       );
@@ -80,7 +80,7 @@ export class DevServerManagerActions {
   async openMoreToolsAsync() {
     try {
       // Options match: Chrome > View > Developer
-      const value = await selectAsync(`Dev tools ${chalk.dim`(native only)`}`, [
+      const value = await selectAsync(chalk`Dev tools {dim (native only)}`, [
         { title: 'Inspect elements', value: 'toggleElementInspector' },
         { title: 'Toggle performance monitor', value: 'togglePerformanceMonitor' },
         { title: 'Toggle developer menu', value: 'toggleDevMenu' },
