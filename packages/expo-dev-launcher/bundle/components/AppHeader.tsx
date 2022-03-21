@@ -12,7 +12,7 @@ import {
 import * as React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useUser } from '../hooks/useUser';
+import { useUser } from '../providers/UserContextProvider';
 
 type AppHeaderProps = {
   title?: string;

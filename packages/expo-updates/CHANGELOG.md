@@ -13,10 +13,13 @@
 - Add support for dev client auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
 - Fix codesigning header name. ([#16480](https://github.com/expo/expo/pull/16480) by [@wschurman](https://github.com/wschurman))
 - Support certificate chains. ([#16375](https://github.com/expo/expo/pull/16375) by [@wschurman](https://github.com/wschurman))
+- Add support for expo project information certificate extension. ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
 - Update `fbemitter` to v3. ([#16245](https://github.com/expo/expo/pull/16245) by [@SimenB](https://github.com/SimenB))
+- Allow non-codesigned manifests for Expo Go. ([#16649](https://github.com/expo/expo/pull/16649) by [@wschurman](https://github.com/wschurman))
+- Fix issue where default values for primitive-typed configuration values were not correctly set. ([#16644](https://github.com/expo/expo/pull/16644) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 

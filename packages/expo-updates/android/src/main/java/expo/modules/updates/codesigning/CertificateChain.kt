@@ -1,5 +1,7 @@
 package expo.modules.updates.codesigning
 
+import org.bouncycastle.asn1.ASN1Primitive
+import org.bouncycastle.asn1.DEROctetString
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
@@ -7,6 +9,11 @@ import kotlin.math.min
 
 // ASN.1 path to the extended key usage info within a CERT
 private const val CODE_SIGNING_OID = "1.3.6.1.5.5.7.3.3"
+
+// OID of expo project info, stored as `<projectId>,<scopeKey>`
+private const val EXPO_PROJECT_INFORMATION_OID = "1.2.840.113556.1.8000.2554.43437.254.128.102.157.7894389.20439.2.1"
+
+data class ExpoProjectInformation(val projectId: String, val scopeKey: String)
 
 /**
  * Full certificate chain for verifying code signing.
@@ -51,6 +58,22 @@ class CertificateChain(private val certificateStrings: List<String>) {
       )
     }
 
+    fun X509Certificate.expoProjectInformation(): ExpoProjectInformation? {
+      return getExtensionValue(EXPO_PROJECT_INFORMATION_OID)?.let {
+        ASN1Primitive.fromByteArray(it)
+      }?.let {
+        if (it is DEROctetString) {
+          it.octets.decodeToString()
+        } else null
+      }?.let {
+        val components = it.split(',')
+        if (components.size != 2) {
+          throw CertificateException("Invalid Expo project information extension value")
+        }
+        ExpoProjectInformation(components[0], components[1])
+      }
+    }
+
     private fun X509Certificate.isCACertificate(): Boolean {
       return basicConstraints > -1 && keyUsage != null && keyUsage.isNotEmpty() && keyUsage[5]
     }
@@ -81,6 +104,7 @@ class CertificateChain(private val certificateStrings: List<String>) {
         // all certificates between root and leaf (non-inclusive)
         for (i in (size - 2) downTo 1) {
           val cert = get(i)
+
           if (!cert.isCACertificate()) {
             throw CertificateException("Non-leaf certificate subject must be a Certificate Authority")
           }

@@ -8,7 +8,6 @@ import { resolveWithTimeout } from '../../utils/delay';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import { MetroBundlerDevServer } from './metro/MetroBundlerDevServer';
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -18,9 +17,12 @@ export type MultiBundlerStartOptions = {
 const devServers: BundlerDevServer[] = [];
 
 const BUNDLERS = {
-  // TODO: Webpack
-  // webpack: WebpackBundlerDevServer,
-  metro: MetroBundlerDevServer,
+  webpack: () =>
+    require('./webpack/WebpackBundlerDevServer')
+      .WebpackBundlerDevServer as typeof import('./webpack/WebpackBundlerDevServer').WebpackBundlerDevServer,
+  metro: () =>
+    require('./metro/MetroBundlerDevServer')
+      .MetroBundlerDevServer as typeof import('./metro/MetroBundlerDevServer').MetroBundlerDevServer,
 };
 
 /** Manages interacting with multiple dev servers. */
@@ -100,13 +102,12 @@ export class DevServerManager {
       return;
     }
     Log.debug('Starting webpack dev server');
-    throw new Error('Not implemented');
-    // return this.startAsync([
-    //   {
-    //     type: 'webpack',
-    //     options: this.options,
-    //   },
-    // ]);
+    return this.startAsync([
+      {
+        type: 'webpack',
+        options: this.options,
+      },
+    ]);
   }
 
   /** Start all dev servers. */
@@ -119,7 +120,7 @@ export class DevServerManager {
 
     // Start all dev servers...
     for (const { type, options } of startOptions) {
-      const BundlerDevServerClass = BUNDLERS[type];
+      const BundlerDevServerClass = await BUNDLERS[type]();
       const server = new BundlerDevServerClass(this.projectRoot, !!options?.devClient);
       await server.startAsync(options ?? this.options);
       devServers.push(server);

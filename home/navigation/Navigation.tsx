@@ -14,6 +14,7 @@ import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
 import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
+import { RedesignedSettingsScreen } from 'screens/RedesignedSettingsScreen';
 
 import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
@@ -34,6 +35,8 @@ import ProjectScreen from '../screens/ProjectScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
+import { RedesignedProjectsListScreen } from '../screens/RedesignedProjectsListScreen';
+import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen.tsx';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
@@ -115,6 +118,20 @@ function HomeStackScreen() {
           headerShown: false,
         }}
       />
+      <HomeStack.Screen
+        name="RedesignedProjectsList"
+        component={RedesignedProjectsListScreen}
+        options={{
+          title: 'Projects',
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedSnacksList"
+        component={RedesignedSnacksListScreen}
+        options={{
+          title: 'Snacks',
+        }}
+      />
     </HomeStack.Navigator>
   );
 }
@@ -126,7 +143,14 @@ function SettingsStackScreen() {
     <SettingsStack.Navigator
       initialRouteName="Settings"
       screenOptions={defaultNavigationOptions(themeName)}>
-      <SettingsStack.Screen name="Settings" component={UserSettingsScreen} />
+      <SettingsStack.Screen
+        name="Settings"
+        component={
+          FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+            ? RedesignedSettingsScreen
+            : UserSettingsScreen
+        }
+      />
     </SettingsStack.Navigator>
   );
 }
@@ -161,7 +185,7 @@ function ProfileStackScreen() {
       />
       <ProfileStack.Screen
         name="UserSettings"
-        component={UserSettingsScreen}
+        component={RedesignedSettingsScreen}
         options={{ title: 'Options' }}
       />
       <ProfileStack.Screen

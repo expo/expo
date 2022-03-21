@@ -88,7 +88,7 @@ class KotlinInteropModuleRegistryTest {
   @Test
   fun `should export view manages`() {
     val rnManagers = interopModuleRegistry.exportViewManagers()
-    val expoManagersNames = interopModuleRegistry.exportedViewManagersNames()
+    val expoManagersNames = interopModuleRegistry.viewManagersMetadata().keys
 
     Truth.assertThat(rnManagers).hasSize(1)
     Truth.assertThat(rnManagers.first().name).isEqualTo("ViewManagerAdapter_test-2")
