@@ -29,7 +29,6 @@ import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
-import { KitchenSink } from '../screens/KitchenSink';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
 import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
@@ -328,18 +327,6 @@ function TabNavigator(props: { theme: string }) {
           tabBarLabel: 'Profile',
         }}
       />
-      {Boolean(__DEV__) && (
-        <BottomTab.Screen
-          name="KitchenSink"
-          component={KitchenSink}
-          options={{
-            tabBarIcon: (props) => (
-              <Ionicons {...props} style={styles.icon} name="pizza-outline" size={26} />
-            ),
-            tabBarLabel: 'Kitchen Sink',
-          }}
-        />
-      )}
     </BottomTab.Navigator>
   );
 }
