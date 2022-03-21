@@ -10,6 +10,7 @@
 {
   return @{
            @"upc_e" : AVMetadataObjectTypeUPCECode,
+           @"codabar" : AVMetadataObjectTypeCodabarCode,
            @"code39" : AVMetadataObjectTypeCode39Code,
            @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
            @"ean13" : AVMetadataObjectTypeEAN13Code,
@@ -137,6 +138,8 @@
       return AVMetadataObjectTypePDF417Code;
     case kBarcodeFormatCode39:
       return AVMetadataObjectTypeCode39Code;
+    case kBarcodeFormatCodabar:
+      return AVMetadataObjectTypeCodabarCode;
     default:
       return @"unknown";
   }

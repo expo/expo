@@ -40,6 +40,8 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
       AVMetadataObjectTypePDF417Code: [ZXPDF417Reader new],
       // Code39 - built-in Code39 reader doesn't read non-ideal (slightly rotated) images like this - https://github.com/expo/expo/pull/5976#issuecomment-545001008
       AVMetadataObjectTypeCode39Code: [ZXCode39Reader new],
+      // Codabar
+      AVMetadataObjectTypeCodabarCode: [ZXCodaBarReader new],
     };
     _zxingFPSProcessed = 6;
     _zxingCaptureQueue = dispatch_queue_create("com.zxing.captureQueue", NULL);
@@ -309,6 +311,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
       return AVMetadataObjectTypePDF417Code;
     case kBarcodeFormatCode39:
       return AVMetadataObjectTypeCode39Code;
+    case kBarcodeFormatCodabar:
+      return AVMetadataObjectTypeCodabarCode;
     default:
       return @"unknown";
   }
