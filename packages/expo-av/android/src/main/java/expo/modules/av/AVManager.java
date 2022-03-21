@@ -42,6 +42,8 @@ import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
 import expo.modules.interfaces.permissions.Permissions;
 
+import com.facebook.react.bridge.ReactApplicationContext;
+
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
 public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule {
@@ -71,7 +73,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     DUCK_OTHERS,
   }
 
-  private final Context mContext;
+  private final ReactApplicationContext mContext;
 
   private boolean mEnabled = true;
 
@@ -103,7 +105,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private ModuleRegistry mModuleRegistry;
 
   public AVManager(final Context reactContext) {
-    mContext = reactContext;
+    mContext = (ReactApplicationContext) reactContext;
 
     mAudioManager = (AudioManager) reactContext.getSystemService(Context.AUDIO_SERVICE);
     // Implemented because of the suggestion here:
@@ -112,7 +114,12 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       @Override
       public void onReceive(Context context, Intent intent) {
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-          abandonAudioFocus();
+          mContext.runOnNativeModulesQueueThread(new Runnable() {
+            @Override
+            public void run() {
+              abandonAudioFocus();
+            }
+          });
         }
       }
     };
@@ -160,34 +167,44 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void onHostResume() {
-    if (mAppIsPaused) {
-      mAppIsPaused = false;
-      if (!mStaysActiveInBackground) {
-        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-          handler.onResume();
-        }
-        if (mShouldRouteThroughEarpiece) {
-          updatePlaySoundThroughEarpiece(true);
+    mContext.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        if (mAppIsPaused) {
+          mAppIsPaused = false;
+          if (!mStaysActiveInBackground) {
+            for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+              handler.onResume();
+            }
+            if (mShouldRouteThroughEarpiece) {
+              updatePlaySoundThroughEarpiece(true);
+            }
+          }
         }
       }
-    }
+    });
   }
 
   @Override
   public void onHostPause() {
-    if (!mAppIsPaused) {
-      mAppIsPaused = true;
-      if (!mStaysActiveInBackground) {
-        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-          handler.onPause();
-        }
-        abandonAudioFocus();
+    mContext.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        if (!mAppIsPaused) {
+          mAppIsPaused = true;
+          if (!mStaysActiveInBackground) {
+            for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+              handler.onPause();
+            }
+            abandonAudioFocus();
 
-        if (mShouldRouteThroughEarpiece) {
-          updatePlaySoundThroughEarpiece(false);
+            if (mShouldRouteThroughEarpiece) {
+              updatePlaySoundThroughEarpiece(false);
+            }
+          }
         }
       }
-    }
+    });
   }
 
   @Override
@@ -197,22 +214,27 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       mIsRegistered = false;
     }
 
-    // remove all remaining sounds
-    Iterator<PlayerData> iter = mSoundMap.values().iterator();
-    while (iter.hasNext()) {
-      final PlayerData data = iter.next();
-      iter.remove();
-      if (data != null) {
-        data.release();
+    mContext.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        // remove all remaining sounds
+        Iterator<PlayerData> iter = mSoundMap.values().iterator();
+        while (iter.hasNext()) {
+          final PlayerData data = iter.next();
+          iter.remove();
+          if (data != null) {
+            data.release();
+          }
+        }
+
+        for (final VideoView videoView : mVideoViewSet) {
+          videoView.unloadPlayerAndMediaController();
+        }
+
+        removeAudioRecorder();
+        abandonAudioFocus();
       }
-    }
-
-    for (final VideoView videoView : mVideoViewSet) {
-      videoView.unloadPlayerAndMediaController();
-    }
-
-    removeAudioRecorder();
-    abandonAudioFocus();
+    });
   }
 
   // Global audio state control API

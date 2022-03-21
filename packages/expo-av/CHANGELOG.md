@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
+
 ### 💡 Others
 
 ## 11.1.0 — 2022-03-10
