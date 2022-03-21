@@ -50,7 +50,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       parsedOptions
     );
 
-    const manifestMiddleware = this._getManifestMiddleware(options);
+    const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
 
     // We need the manifest handler to be the first middleware to run so our
     // routes take precedence over static files. For example, the manifest is

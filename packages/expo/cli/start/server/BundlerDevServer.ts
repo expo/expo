@@ -8,13 +8,9 @@ import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
-import { AndroidPlatformManager } from '../platforms/android/AndroidPlatformManager';
-import { ApplePlatformManager } from '../platforms/ios/ApplePlatformManager';
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { ClassicManifestMiddleware } from './middleware/ClassicManifestMiddleware';
-import { ExpoGoManifestHandlerMiddleware } from './middleware/ExpoGoManifestHandlerMiddleware';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void);
@@ -64,13 +60,21 @@ export interface BundlerStartOptions {
 }
 
 const PLATFORM_MANAGERS = {
-  simulator: ApplePlatformManager,
-  emulator: AndroidPlatformManager,
+  simulator: () =>
+    require('../platforms/ios/ApplePlatformManager')
+      .ApplePlatformManager as typeof import('../platforms/ios/ApplePlatformManager').ApplePlatformManager,
+  emulator: () =>
+    require('../platforms/android/AndroidPlatformManager')
+      .AndroidPlatformManager as typeof import('../platforms/android/AndroidPlatformManager').AndroidPlatformManager,
 };
 
 const MIDDLEWARES = {
-  classic: ClassicManifestMiddleware,
-  'expo-updates': ExpoGoManifestHandlerMiddleware,
+  classic: () =>
+    require('./middleware/ClassicManifestMiddleware')
+      .ClassicManifestMiddleware as typeof import('./middleware/ClassicManifestMiddleware').ClassicManifestMiddleware,
+  'expo-updates': () =>
+    require('./middleware/ExpoGoManifestHandlerMiddleware')
+      .ExpoGoManifestHandlerMiddleware as typeof import('./middleware/ExpoGoManifestHandlerMiddleware').ExpoGoManifestHandlerMiddleware,
 };
 
 export abstract class BundlerDevServer {
@@ -99,13 +103,13 @@ export abstract class BundlerDevServer {
     this.instance = instance;
   }
 
-  /** Get the manifest middleware function. Exposed for testing. */
-  public _getManifestMiddleware(
+  /** Get the manifest middleware function. */
+  protected async getManifestMiddlewareAsync(
     options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'forceManifestType'> = {}
   ) {
     const manifestType = options.forceManifestType || 'classic';
-    const Middleware = MIDDLEWARES[manifestType];
-    assert(Middleware, `Manifest middleware for type '${manifestType}' not found`);
+    assert(manifestType in MIDDLEWARES, `Manifest middleware for type '${manifestType}' not found`);
+    const Middleware = MIDDLEWARES[manifestType]();
 
     const urlCreator = this.getUrlCreator();
     const middleware = new Middleware(this.projectRoot, {
@@ -264,7 +268,7 @@ export abstract class BundlerDevServer {
     }
 
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
-    const manager = this.getPlatformManager(launchTarget);
+    const manager = await this.getPlatformManagerAsync(launchTarget);
     return manager.openAsync({ runtime }, resolver);
   }
 
@@ -290,9 +294,9 @@ export abstract class BundlerDevServer {
     return this.urlCreator.constructUrl({ scheme: 'exp' });
   }
 
-  protected getPlatformManager(platform: keyof typeof PLATFORM_MANAGERS) {
+  protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
     if (!this.platformManagers[platform]) {
-      const Manager = PLATFORM_MANAGERS[platform];
+      const Manager = PLATFORM_MANAGERS[platform]();
       this.platformManagers[platform] = new Manager(
         this.projectRoot,
         this.getInstance()?.location.port,

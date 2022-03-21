@@ -129,11 +129,9 @@ describe('openPlatformAsync', () => {
         devServer.isDevClient = isDevClient;
         const { url } = await devServer.openPlatformAsync(runtime);
 
-        expect(devServer['getPlatformManager'](runtime).openAsync).toHaveBeenNthCalledWith(
-          1,
-          { runtime: isDevClient ? 'custom' : 'expo' },
-          {}
-        );
+        expect(
+          (await devServer['getPlatformManagerAsync'](runtime)).openAsync
+        ).toHaveBeenNthCalledWith(1, { runtime: isDevClient ? 'custom' : 'expo' }, {});
 
         expect(url).toBe(platform === 'ios' ? 'mock-apple-url' : 'mock-android-url');
       });
@@ -233,18 +231,20 @@ describe('getNativeRuntimeUrl', () => {
   });
 });
 
-describe('_getManifestMiddleware', () => {
+describe('getManifestMiddlewareAsync', () => {
   const server = new MockBundlerDevServer('/');
-  it(`asserts invalid manifest type`, () => {
-    expect(() =>
-      server._getManifestMiddleware({
+  it(`asserts invalid manifest type`, async () => {
+    await expect(
+      server['getManifestMiddlewareAsync']({
         // @ts-expect-error
         forceManifestType: 'foobar',
       })
-    ).toThrow(/Manifest middleware for type 'foobar' not found/);
+    ).rejects.toThrow(/Manifest middleware for type 'foobar' not found/);
   });
-  it(`asserts server is not running`, () => {
-    expect(() => server._getManifestMiddleware()).toThrow(/Dev server is not running/);
+  it(`asserts server is not running`, async () => {
+    await expect(server['getManifestMiddlewareAsync']()).rejects.toThrow(
+      /Dev server is not running/
+    );
   });
 });
 
