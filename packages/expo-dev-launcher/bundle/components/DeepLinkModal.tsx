@@ -11,10 +11,10 @@ import {
 import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 
-import { useDevSessions } from '../hooks/useDevSessions';
-import { useModalStack } from '../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { useDevSessions } from '../providers/DevSessionsProvider';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
 import { BaseModal } from './BaseModal';
 import { LoadAppErrorModal } from './LoadAppErrorModal';
 
@@ -114,13 +114,17 @@ function PackagersList() {
         <Spacer.Vertical size="medium" />
         {devSessions.length > 0 && (
           <>
-            {devSessions.map((devSession) => {
+            {devSessions.map((devSession, index, arr) => {
+              const isLast = index === arr.length - 1;
+
               return (
-                <PackagerRow
-                  key={devSession.url}
-                  label={devSession.description}
-                  onPress={() => onPackagerPress(devSession)}
-                />
+                <View key={devSession.url}>
+                  <PackagerRow
+                    label={devSession.description}
+                    onPress={() => onPackagerPress(devSession)}
+                  />
+                  {!isLast && <Divider />}
+                </View>
               );
             })}
           </>
@@ -128,9 +132,14 @@ function PackagersList() {
 
         {recentlyOpenedApps.length > 0 && (
           <>
-            {recentlyOpenedApps.map((app) => {
+            <Divider />
+            {recentlyOpenedApps.map((app, index, arr) => {
+              const isLast = index === arr.length - 1;
               return (
-                <PackagerRow key={app.url} label={app.name} onPress={() => onPackagerPress(app)} />
+                <View key={app.url}>
+                  <PackagerRow label={app.name} onPress={() => onPackagerPress(app)} />
+                  {!isLast && <Divider />}
+                </View>
               );
             })}
           </>
@@ -157,7 +166,6 @@ function PackagerRow({ onPress, label }: PackagerRowProps) {
           <ChevronRightIcon />
         </Row>
       </Button.ScaleOnPressContainer>
-      <Divider />
     </View>
   );
 }

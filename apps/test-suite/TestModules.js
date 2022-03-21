@@ -73,6 +73,7 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDKCompat'),
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
+    require('./tests/Clipboard'),
     optionalRequire(() => require('./tests/SQLite'))
   );
 

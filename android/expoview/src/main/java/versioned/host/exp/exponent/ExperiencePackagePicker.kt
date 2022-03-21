@@ -4,7 +4,6 @@ import expo.modules.ads.admob.AdMobPackage
 import expo.modules.ads.facebook.AdsFacebookPackage
 import expo.modules.analytics.amplitude.AmplitudePackage
 import expo.modules.analytics.segment.SegmentPackage
-import expo.modules.appauth.AppAuthPackage
 import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
 import expo.modules.backgroundfetch.BackgroundFetchPackage
@@ -71,7 +70,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AVPackage(),
     AdMobPackage(),
     AdsFacebookPackage(),
-    AppAuthPackage(),
     ApplicationPackage(),
     AmplitudePackage(),
     BatteryPackage(),

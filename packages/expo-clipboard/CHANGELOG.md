@@ -4,17 +4,27 @@
 
 ### 🛠 Breaking changes
 
-- Deprecated `setString`. Use `setStringAsync` instead. ([#16320](https://github.com/expo/expo/pull/16320) by [@barthap](https://github.com/barthap))
-
 ### 🎉 New features
 
 - Native module on Android is now written in Kotlin using the new API. ([#16269](https://github.com/expo/expo/pull/16269) by [@barthap](https://github.com/barthap))
+- Added support for setting and getting images (`setImageAsync`, `hasImageAsync`, `getImageAsync`). ([#16391](https://github.com/expo/expo/pull/16391), [#16413](https://github.com/expo/expo/pull/16413) by [@barthap](https://github.com/barthap))
+- On iOS added support for setting and getting URLs (`setUrlAsync`, `hasUrlAsync`, `getUrlAsync`). ([#16391](https://github.com/expo/expo/pull/16391) by [@graszka22](https://github.com/graszka22), [@barthap](https://github.com/barthap))
+- Added new method `hasStringAsync` that checks whether clipboard has text content. ([#16524](https://github.com/expo/expo/pull/16524) by [@barthap](https://github.com/barthap))
+- Added support for HTML content in `getStringAsync` and `setStringAsync`. ([#16551](https://github.com/expo/expo/pull/16551) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+### ⚠ Notices
+
+- Deprecated `setString`. Use `setStringAsync` instead. ([#16320](https://github.com/expo/expo/pull/16320) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+## 2.1.1 - 2022-02-01
 
 ### 🐛 Bug fixes
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 2.1.0 — 2021-12-03
 

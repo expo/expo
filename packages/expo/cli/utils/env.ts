@@ -1,4 +1,4 @@
-import { boolish } from 'getenv';
+import { boolish, int, string } from 'getenv';
 
 /** Skip warning users about a dirty git status */
 export const EXPO_NO_GIT_STATUS = boolish('EXPO_NO_GIT_STATUS', false);
@@ -24,12 +24,37 @@ export const CI = boolish('CI', false);
 /** Disable telemetry (analytics) */
 export const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
 
-/** Expo automated authentication token for use in CI environments */
-export const EXPO_TOKEN = process.env.EXPO_TOKEN ?? null;
+/** local directory to the universe repo for testing locally */
+export const EXPO_UNIVERSE_DIR = string('EXPO_UNIVERSE_DIR', '');
 
-/** Disable all API caches. Does not disable bundler caches. */
-export const EXPO_NO_CACHE = () => boolish('EXPO_NO_CACHE', false);
+/** @deprecated Default Webpack host string */
+export const WEB_HOST = string('WEB_HOST', '0.0.0.0');
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
 
 // TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
+
+class Env {
+  /** Disable auto web setup */
+  get EXPO_NO_WEB_SETUP() {
+    return boolish('EXPO_NO_WEB_SETUP', false);
+  }
+  /** Disable auto TypeScript setup */
+  get EXPO_NO_TYPESCRIPT_SETUP() {
+    return boolish('EXPO_NO_TYPESCRIPT_SETUP', false);
+  }
+  /** Disable all API caches. Does not disable bundler caches. */
+  get EXPO_NO_CACHE() {
+    return boolish('EXPO_NO_CACHE', false);
+  }
+  /** Enable the experimental interstitial app select page. */
+  get EXPO_ENABLE_INTERSTITIAL_PAGE() {
+    return boolish('EXPO_ENABLE_INTERSTITIAL_PAGE', false);
+  }
+  /** The React Metro port that's baked into react-native scripts and tools. */
+  get RCT_METRO_PORT() {
+    return int('RCT_METRO_PORT', 0);
+  }
+}
+
+export const env = new Env();

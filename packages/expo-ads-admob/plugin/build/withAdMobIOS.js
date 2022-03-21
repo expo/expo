@@ -29,6 +29,7 @@ function setGoogleMobileAdsAppId(config, { GADApplicationIdentifier, ...infoPlis
     return {
         ...infoPlist,
         GADApplicationIdentifier: appId,
+        GADIsAdManagerApp: true,
     };
 }
 exports.setGoogleMobileAdsAppId = setGoogleMobileAdsAppId;

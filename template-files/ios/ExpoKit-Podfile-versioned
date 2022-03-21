@@ -19,6 +19,9 @@ ${PODFILE_VERSIONED_RN_DEPENDENCIES}
     installer.pods_project.main_group.tab_width = '2';
     installer.pods_project.main_group.indent_width = '2';
 
+    # Workaround build error for Folly
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
 ${PODFILE_DETACHED_SERVICE_POSTINSTALL}

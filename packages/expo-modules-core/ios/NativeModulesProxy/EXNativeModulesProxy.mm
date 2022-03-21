@@ -10,7 +10,6 @@
 
 #import <jsi/jsi.h>
 
-#import <ExpoModulesCore/EXComponentDataCompatibleWrapper.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
@@ -18,11 +17,11 @@
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
-#import <ExpoModulesCore/JSIInstaller.h>
+#import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/Swift.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
-static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
+static const NSString *viewManagersMetadataKeyPath = @"viewManagersMetadata";
 static const NSString *exportedConstantsKeyPath = @"modulesConstants";
 
 static const NSString *methodInfoKeyKey = @"key";
@@ -124,17 +123,21 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   // Add entries from Swift modules
   [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_swiftInteropBridge exportedFunctionNames]];
 
-  // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
+  // Also, add `viewManagersMetadata` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
-  NSMutableArray<NSString *> *viewManagersNames = [NSMutableArray arrayWithCapacity:[viewManagers count]];
+  NSMutableDictionary<NSString *, NSDictionary *> *viewManagersMetadata = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
+
   for (EXViewManager *viewManager in viewManagers) {
-    [viewManagersNames addObject:[viewManager viewName]];
+    viewManagersMetadata[viewManager.viewName] = @{
+      @"propsNames": [[viewManager getPropsNames] allKeys]
+    };
   }
 
-  [viewManagersNames addObjectsFromArray:[_swiftInteropBridge exportedViewManagersNames]];
+  // Add entries from Swift view managers
+  [viewManagersMetadata addEntriesFromDictionary:[_swiftInteropBridge viewManagersMetadata]];
 
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
-  constantsAccumulator[viewManagersNamesKeyPath] = viewManagersNames;
+  constantsAccumulator[viewManagersMetadataKeyPath] = viewManagersMetadata;
   constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
 
@@ -362,7 +365,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   NSString *className = NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-    RCTComponentData *componentData = [[EXComponentDataCompatibleWrapper alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
+    RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
 }
@@ -406,9 +409,9 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   facebook::jsi::Runtime *jsiRuntime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : nullptr;
 
   if (jsiRuntime) {
-    JavaScriptRuntime *runtime = [[JavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
+    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
 
-    [JavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
+    [EXJavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
     [_swiftInteropBridge setRuntime:runtime];
 
     expo::installRuntimeObjects(*jsiRuntime, _bridge.jsCallInvoker, self);

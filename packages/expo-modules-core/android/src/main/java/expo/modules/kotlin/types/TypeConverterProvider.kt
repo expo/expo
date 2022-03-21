@@ -35,6 +35,7 @@ fun convert(value: Dynamic, type: KType): Any? {
 
 object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCashedConverters(false) + createCashedConverters(true)
+  private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
 
   override fun obtainTypeConverter(type: KType): TypeConverter<*> {
     cachedConverters[type]?.let {
@@ -68,8 +69,15 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
+    val cachedConverter = cachedRecordConverters[kClass]
+    if (cachedConverter != null) {
+      return cachedConverter
+    }
+
     if (kClass.isSubclassOf(Record::class)) {
-      return RecordTypeConverter<Record>(this, type)
+      val converter = RecordTypeConverter<Record>(this, type)
+      cachedRecordConverters[kClass] = converter
+      return converter
     }
 
     throw MissingTypeConverter(type)

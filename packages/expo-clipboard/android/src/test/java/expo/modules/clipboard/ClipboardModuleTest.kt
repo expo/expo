@@ -1,21 +1,21 @@
 package expo.modules.clipboard
 
+import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.errorCodeOf
 import expo.modules.test.core.ModuleMock
-import expo.modules.test.core.PromiseState
-import expo.modules.test.core.assertResolved
-import expo.modules.test.core.promiseResolved
+import expo.modules.test.core.ModuleMockHolder
 import io.mockk.confirmVerified
 import io.mockk.verify
-
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -24,80 +24,140 @@ import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowContextImpl
 
+private interface ClipboardModuleTestInterface {
+  @Throws(CodedException::class)
+  fun getStringAsync(options: GetStringOptions = GetStringOptions()): String
+
+  @Throws(CodedException::class)
+  fun setStringAsync(content: String, options: SetStringOptions = SetStringOptions()): Boolean
+
+  @Throws(CodedException::class)
+  fun hasStringAsync(): Boolean
+}
+
+private inline fun withClipboardMock(
+  block: ModuleMockHolder<ClipboardModuleTestInterface>.() -> Unit
+) = ModuleMock.createMock(ClipboardModuleTestInterface::class, ClipboardModule(), block = block)
+
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P]) // API 28
 class ClipboardModuleTest {
 
-  private lateinit var module: ModuleMock<ClipboardModule>
-
-  @Before
-  fun initializeMock() {
-    module = ModuleMock(ClipboardModule(), autoOnCreate = true)
-  }
-
   @Test
-  fun `should save to and read from clipboard`() {
+  fun `should save to and read from clipboard`() = withClipboardMock {
     // write to clipboard
-    val writePromise = module.callFunction("setStringAsync", "albus dumbledore")
-    assertResolved(writePromise)
+    val writeResult = module.setStringAsync("album dumbledore")
 
     // read from clipboard
-    val readPromise = module.callFunction("getStringAsync")
-    promiseResolved<String>(readPromise) { resolvedValue ->
-      assertEquals("albus dumbledore", resolvedValue)
-    }
+    val readResult = module.getStringAsync()
+
+    assertTrue(writeResult)
+    assertEquals("album dumbledore", readResult)
   }
 
   @Test
-  fun `should get empty string when clipboard is empty`() {
+  fun `should get empty string when clipboard is empty`() = withClipboardMock {
     // This requires API 28
     clipboardManager.clearPrimaryClip()
 
-    val promise = module.callFunction("getStringAsync")
+    val content = module.getStringAsync()
 
-    promiseResolved<String>(promise) { resolvedValue ->
-      assertTrue("Clipboard content should be empty", resolvedValue.isEmpty())
-    }
+    assertTrue("Clipboard content should be empty", content.isEmpty())
   }
 
   @Test
-  fun `should emit events when clipboard changes`() {
+  fun `getStringAsync should support HTML`() = withClipboardMock {
+    clipboardManager.setPrimaryClip(
+      ClipData.newHtmlText(null, "hello world", "<p>hello world</p>")
+    )
+
+    val plainResult = module.getStringAsync()
+    val htmlResult = module.getStringAsync(
+      GetStringOptions().apply {
+        preferredFormat = StringFormat.HTML
+      }
+    )
+    assertEquals("hello world", plainResult)
+    assertEquals("<p>hello world</p>", htmlResult)
+  }
+
+  // TODO (barthap): Uncomment this once fixed race condition "React Application Context is null"
+//  @Test
+//  fun `setStringAsync should support HTML`() = withClipboardMock {
+//    module.setStringAsync("<p>hello</p>", SetStringOptions().apply {
+//      inputType = StringContentType.HTML
+//    })
+//
+//    assertTrue(
+//      clipboardManager.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true
+//    )
+//    assertEquals("<p>hello</p>", clipboardManager.primaryClip!!.getItemAt(0).htmlText)
+//  }
+
+  @Test
+  fun `hasStringAsync should return correct values`() = withClipboardMock {
+    // plain text
+    clipboardManager.setPrimaryClip(ClipData.newPlainText(null, "hello world"))
+    var result = module.hasStringAsync()
+    assertTrue("hasStringAsync returns false for plain text (should be true)", result)
+
+    // html
+    clipboardManager.setPrimaryClip(
+      ClipData.newHtmlText(null, "hello world", "<p>hello world</p>")
+    )
+    result = module.hasStringAsync()
+    assertTrue("hasStringAsync returns false for plain text (should be true)", result)
+
+    // non-text content type
+    clipboardManager.setPrimaryClip(ClipData.newRawUri(null, Uri.EMPTY))
+    result = module.hasStringAsync()
+    assertFalse("hasStringAsync returns true for non-text (should be false)", result)
+
+    // empty clipboard
+    clipboardManager.clearPrimaryClip()
+    result = module.hasStringAsync()
+    assertFalse("hasStringAsync returns true for empty clipboard (should be false)", result)
+  }
+
+  @Test
+  fun `should emit events when clipboard changes`() = withClipboardMock {
     // update clipboard content
-    val promise1 = module.callFunction("setStringAsync", "severus snape")
-    assertEquals(promise1.state, PromiseState.RESOLVED)
+    val result = module.setStringAsync("severus snape")
 
     // assert
+    assertTrue(result)
     verify {
-      module.eventEmitter.emit(
-        clipboardChangedEventName,
+      eventEmitter.emit(
+        CLIPBOARD_CHANGED_EVENT_NAME,
         match {
           it.getString("content") == "severus snape"
         }
       )
     }
-    confirmVerified(module.eventEmitter)
+    confirmVerified(eventEmitter)
   }
 
   @Test
-  fun `shouldn't emit events when in background`() {
+  fun `shouldn't emit events when in background`() = withClipboardMock {
     // prepare
-    module.activityGoesBackground()
+    controller.onActivityEntersBackground()
 
     // update clipboard content
-    module.callFunction("setStringAsync", "ronald weasley")
+    module.setStringAsync("ronald weasley")
 
     // assert that emit() was NOT called
-    verify(inverse = true) { module.eventEmitter.emit(clipboardChangedEventName, any()) }
-    confirmVerified(module.eventEmitter)
+    verify(inverse = true) { eventEmitter.emit(CLIPBOARD_CHANGED_EVENT_NAME, any()) }
+    confirmVerified(eventEmitter)
   }
 
   @Test
   @Config(shadows = [ContextWithoutClipboardService::class])
-  fun `should throw when ClipboardManager is unavailable`() {
-    val exception = runCatching { module.callFunction("getStringAsync") }.exceptionOrNull()
+  fun `should throw when ClipboardManager is unavailable`() = withClipboardMock {
+    val exception = runCatching { module.hasStringAsync() }.exceptionOrNull()
     assertNotNull(exception)
     assertTrue(exception is CodedException)
-    assertEquals(ERR_CLIPBOARD_UNAVAILABLE, (exception as CodedException).code)
+    exception as CodedException
+    assertEquals(errorCodeOf<ClipboardUnavailableException>(), exception.code)
   }
 
   private val clipboardManager: ClipboardManager

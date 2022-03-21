@@ -14,9 +14,9 @@ import {
 import * as React from 'react';
 import { ScrollView, Switch } from 'react-native';
 
-import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useDevMenuSettings } from '../hooks/useDevMenuSettings';
 import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useDevMenuPreferences } from '../providers/DevMenuPreferencesProvider';
 
 export function SettingsScreen() {
   const [clipboardError, setClipboardError] = React.useState('');
@@ -29,7 +29,7 @@ export function SettingsScreen() {
     setTouchGestureEnabled,
     motionGestureEnabled,
     setMotionGestureEnabled,
-  } = useDevMenuSettings();
+  } = useDevMenuPreferences();
 
   const buildInfo = useBuildInfo();
 
@@ -105,11 +105,11 @@ export function SettingsScreen() {
             roundedBottom="none"
             onPress={() => setMotionGestureEnabled(!motionGestureEnabled)}
             accessibilityState={{ checked: motionGestureEnabled }}>
-            <Row px="medium" py="small" align="center">
+            <Row px="medium" py="small" align="center" bg="default">
               <ShakeDeviceIcon />
               <Spacer.Horizontal size="small" />
-              <Text size="large" color="secondary">
-                Shake Device
+              <Text size="large" color="default">
+                Shake device
               </Text>
               <Spacer.Horizontal />
               {motionGestureEnabled && <CheckIcon />}
@@ -124,10 +124,10 @@ export function SettingsScreen() {
             roundedTop="none"
             onPress={() => setTouchGestureEnabled(!touchGestureEnabled)}
             accessibilityState={{ checked: touchGestureEnabled }}>
-            <Row px="medium" py="small">
+            <Row px="medium" py="small" bg="default">
               <ThreeFingerPressIcon />
               <Spacer.Horizontal size="small" />
-              <Text size="large" color="secondary">
+              <Text size="large" color="default">
                 Three-finger long-press
               </Text>
               <Spacer.Horizontal />
@@ -139,7 +139,7 @@ export function SettingsScreen() {
         <View padding="small">
           <Text color="secondary" size="small" leading="large">
             Selected gestures will toggle the developer menu while inside a preview. The menu allows
-            you to reload or return to home, and exposes developer tools.
+            you to reload or return to home and exposes developer tools.
           </Text>
         </View>
 
@@ -182,8 +182,8 @@ export function SettingsScreen() {
             bg="default"
             roundedTop="none"
             roundedBottom="large">
-            <Row px="medium" py="small" align="center">
-              <Text color="primary" size="large">
+            <Row px="medium" py="small" align="center" bg="default">
+              <Text color="link" size="medium">
                 {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
             </Row>

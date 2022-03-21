@@ -1,7 +1,7 @@
-import { lightTheme } from '@expo/styleguide-native';
+import { darkTheme, lightTheme, shadows } from '@expo/styleguide-native';
 import { Text as RNText, TextInput as RNTextInput } from 'react-native';
-import { create } from 'react-native-primitives';
-import { text, textDark } from './theme';
+import { create } from './create-primitive';
+import { text, textDark, padding, rounded } from './theme';
 export const Heading = create(RNText, {
     base: {
         fontSize: 18,
@@ -18,6 +18,10 @@ export const Heading = create(RNText, {
             large: {
                 fontSize: 22,
                 lineHeight: 28,
+            },
+            small: {
+                fontSize: 13,
+                lineHeight: 20,
             },
         },
     },
@@ -51,9 +55,28 @@ export const TextInput = create(RNTextInput, {
     },
     variants: {
         ...text,
+        border: {
+            default: {
+                borderWidth: 1,
+                borderColor: lightTheme.border.default,
+            },
+        },
+        ...rounded,
+        ...padding,
+        shadow: {
+            input: shadows.input,
+        },
     },
     selectors: {
-        dark: textDark,
+        dark: {
+            ...textDark,
+            border: {
+                default: {
+                    borderColor: darkTheme.border.default,
+                    borderWidth: 1,
+                },
+            },
+        },
     },
 });
 //# sourceMappingURL=Text.js.map

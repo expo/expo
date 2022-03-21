@@ -20,12 +20,6 @@ interface DevMenuInternalMenuControllerModuleInterface {
   fun setOnboardingFinished(finished: Boolean)
 
   @ReactMethod
-  fun getSettingsAsync(promise: Promise)
-
-  @ReactMethod
-  fun setSettingsAsync(settings: ReadableMap, promise: Promise)
-
-  @ReactMethod
   fun openDevMenuFromReactNative()
 
   @ReactMethod
@@ -33,12 +27,6 @@ interface DevMenuInternalMenuControllerModuleInterface {
 
   @ReactMethod
   fun fetchDataSourceAsync(id: String?, promise: Promise)
-
-  @ReactMethod
-  fun getDevSettingsAsync(promise: Promise)
-
-  @ReactMethod
-  fun getAppInfoAsync(promise: Promise)
 
   @ReactMethod
   fun copyToClipboardAsync(content: String, promise: Promise)

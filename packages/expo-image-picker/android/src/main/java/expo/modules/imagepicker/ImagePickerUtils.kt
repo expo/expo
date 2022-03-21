@@ -9,6 +9,7 @@ import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.utilities.FileUtilities.generateOutputPath
 import expo.modules.core.utilities.ifNull
+import expo.modules.imagepicker.ImagePickerConstants.TAG
 import java.io.File
 import java.io.IOException
 
@@ -80,7 +81,11 @@ class ExifDataHandler(private val uri: Uri) {
             newExif.setAttribute(exifTag, value)
           }
         }
-        newExif.saveAttributes()
+        try {
+          newExif.saveAttributes()
+        } catch (e: IOException) {
+          Log.w(TAG, "Couldn't save Exif data: ${e.message}", e)
+        }
       }
     }
   }

@@ -1,0 +1,12 @@
+query HomeScreenData {
+  viewer {
+    ...CurrentUserData
+    apps(limit: 5, offset: 0, includeUnpublished: true) {
+      ...CommonAppData
+    }
+    snacks(limit: 5, offset: 0) {
+      ...CommonSnackData
+    }
+    appCount
+  }
+}

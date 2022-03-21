@@ -1,16 +1,14 @@
 package expo.modules.devlauncher.modules
 
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.AdaptiveIconDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
@@ -19,9 +17,9 @@ import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
+import expo.modules.devlauncher.launcher.errors.DevLauncherErrorRegistry
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
-import kotlin.reflect.typeOf
 
 private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
@@ -122,6 +120,12 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     }
 
     promise.resolve(intentRegistry.intent?.action)
+  }
+
+  @ReactMethod
+  fun getCrashReport(promise: Promise) {
+    val registry = DevLauncherErrorRegistry(reactApplicationContext)
+    promise.resolve(registry.consumeException()?.toWritableMap())
   }
 
   private fun onNewPendingIntent(intent: Intent) {

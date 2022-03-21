@@ -8,13 +8,7 @@ import { extractAsync } from '../tar';
 
 const asMock = (fn: any): jest.Mock => fn;
 
-jest.mock('fs');
-
-jest.mock('progress');
-
-jest.mock('tempy', () => ({
-  file: jest.fn(({ name }) => '/tmp/' + name),
-}));
+jest.mock('../../log');
 
 jest.mock(`../downloadAppAsync`, () => ({
   downloadAppAsync: jest.fn(),
@@ -68,7 +62,7 @@ describe(downloadExpoGoAsync, () => {
   it('downloads the Expo Go app on Android', async () => {
     vol.fromJSON({}, '');
 
-    asMock(extractAsync).mockReset();
+    asMock(extractAsync).mockClear();
 
     const scope = nock(getExpoApiBaseUrl())
       .get('/v2/versions/latest')

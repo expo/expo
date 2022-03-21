@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Add support for expo project information certificate extension. ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
+
+## 0.2.4 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 0.2.3 - 2022-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 0.2.2 — 2021-10-15
 

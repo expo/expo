@@ -3,11 +3,10 @@ package abi43_0_0.expo.modules.av.video;
 import android.content.Context;
 import androidx.annotation.Nullable;
 
-import com.yqritc.scalablevideoview.ScalableType;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import abi43_0_0.expo.modules.av.video.scalablevideoview.ScalableType;
 import abi43_0_0.expo.modules.core.ExportedModule;
 import abi43_0_0.expo.modules.core.ModuleRegistry;
 import abi43_0_0.expo.modules.core.Promise;

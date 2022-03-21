@@ -41,7 +41,32 @@ export type SearchResults = {
   [moduleName: string]: PackageRevision;
 };
 
-export type ModuleDescriptor = Record<string, any>;
+export interface ModuleAndroidProjectInfo {
+  name: string;
+  sourceDir: string;
+}
+
+export interface ModuleDescriptorAndroid {
+  packageName: string;
+  projects: ModuleAndroidProjectInfo[];
+  modules: string[];
+}
+
+export interface ModuleIosPodspecInfo {
+  podName: string;
+  podspecDir: string;
+}
+export interface ModuleDescriptorIos {
+  packageName: string;
+  pods: ModuleIosPodspecInfo[];
+  flags: Record<string, any> | undefined;
+  swiftModuleNames: string[];
+  modules: string[];
+  appDelegateSubscribers: string[];
+  reactDelegateHandlers: string[];
+}
+
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
 
 /**
  * Represents a raw config from `expo-module.json`.
@@ -79,13 +104,15 @@ export interface RawExpoModuleConfig {
 
     /**
      * Podspec relative path.
+     * To have multiple podspecs, string array type is also supported.
      */
-    podspecPath?: string;
+    podspecPath?: string | string[];
 
     /**
      * Swift product module name. If empty, the pod name is used for Swift imports.
+     * To have multiple modules, string array is also supported.
      */
-    swiftModuleName?: string;
+    swiftModuleName?: string | string[];
   };
 
   /**
@@ -102,5 +129,11 @@ export interface RawExpoModuleConfig {
      * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
      */
     modulesClassNames?: string[];
+
+    /**
+     * build.gradle relative path.
+     * To have multiple build.gradle projects, string array type is also supported.
+     */
+    gradlePath?: string | string[];
   };
 }

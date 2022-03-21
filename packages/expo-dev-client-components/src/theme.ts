@@ -1,5 +1,5 @@
 import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
-import { TextStyle } from 'react-native';
+import { TextStyle, Platform } from 'react-native';
 
 type SpacingKey = `${keyof typeof spacing}`;
 type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' | 'xl';
@@ -115,8 +115,26 @@ export const text = {
 
   type: {
     mono: {
-      fontFamily: 'Menlo',
+      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     },
+    InterBlack: { fontFamily: 'Inter-Black' },
+    InterBlackItalic: { fontFamily: 'Inter-BlackItalic' },
+    InterBold: { fontFamily: 'Inter-Bold' },
+    InterBoldItalic: { fontFamily: 'Inter-BoldItalic' },
+    InterExtraBold: { fontFamily: 'Inter-ExtraBold' },
+    InterExtraBoldItalic: { fontFamily: 'Inter-ExtraBoldItalic' },
+    InterExtraLight: { fontFamily: 'Inter-ExtraLight' },
+    InterExtraLightItalic: { fontFamily: 'Inter-ExtraLightItalic' },
+    InterRegular: { fontFamily: 'Inter-Regular' },
+    InterItalic: { fontFamily: 'Inter-Italic' },
+    InterLight: { fontFamily: 'Inter-Light' },
+    InterLightItalic: { fontFamily: 'Inter-LightItalic' },
+    InterMedium: { fontFamily: 'Inter-Medium' },
+    InterMediumItalic: { fontFamily: 'Inter-MediumItalic' },
+    InterSemiBold: { fontFamily: 'Inter-SemiBold' },
+    InterSemiBoldItalic: { fontFamily: 'Inter-SemiBoldItalic' },
+    InterThin: { fontFamily: 'Inter-Thin' },
+    InterThinItalic: { fontFamily: 'Inter-ThinItalic' },
   },
 
   weight: {
@@ -138,6 +156,7 @@ export const text = {
     success: { color: lightTheme.text.success },
     secondary: { color: lightTheme.text.secondary },
     primary: { color: lightTheme.button.primary.background },
+    link: { color: lightTheme.link.default },
   },
 };
 
@@ -153,6 +172,7 @@ export const textDark = {
     success: { color: darkTheme.text.success },
     secondary: { color: darkTheme.text.secondary },
     primary: { color: darkTheme.button.primary.background },
+    link: { color: darkTheme.link.default },
   },
 };
 
@@ -160,6 +180,7 @@ export const bg = {
   none: { backgroundColor: 'transparent' },
   default: { backgroundColor: lightTheme.background.default },
   secondary: { backgroundColor: lightTheme.background.secondary },
+  overlay: { backgroundColor: lightTheme.background.overlay },
   success: { backgroundColor: lightTheme.background.success },
   warning: { backgroundColor: lightTheme.background.warning },
   error: { backgroundColor: lightTheme.background.error },
@@ -168,6 +189,7 @@ export const bg = {
 export const bgDark = {
   default: { backgroundColor: darkTheme.background.default },
   secondary: { backgroundColor: darkTheme.background.secondary },
+  overlay: { backgroundColor: darkTheme.background.overlay },
   success: { backgroundColor: darkTheme.background.success },
   warning: { backgroundColor: darkTheme.background.warning },
   error: { backgroundColor: darkTheme.background.error },
@@ -189,7 +211,7 @@ export const lightNavigationTheme: NavigationTheme = {
   dark: false,
   colors: {
     primary: lightTheme.button.primary.background,
-    background: lightTheme.background.secondary,
+    background: lightTheme.background.screen,
     card: lightTheme.background.default,
     text: lightTheme.text.default,
     border: lightTheme.border.default,
@@ -200,9 +222,9 @@ export const lightNavigationTheme: NavigationTheme = {
 export const darkNavigationTheme: NavigationTheme = {
   dark: true,
   colors: {
-    primary: darkTheme.button.primary.background,
-    background: darkTheme.background.secondary,
-    card: darkTheme.background.default,
+    primary: darkTheme.link.default,
+    background: darkTheme.background.screen,
+    card: darkTheme.background.screen,
     text: darkTheme.text.default,
     border: darkTheme.border.default,
     notification: darkTheme.highlight.accent,

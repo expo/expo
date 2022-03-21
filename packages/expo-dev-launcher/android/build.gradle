@@ -5,9 +5,24 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.6.10")
+    }
   }
 
   repositories {
@@ -15,7 +30,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
@@ -56,7 +71,6 @@ android {
     main {
       java {
         def rnVersion = getRNVersion()
-
         if (rnVersion >= versionToNumber(0, 67, 0)) {
           srcDirs += "src/react-native-67"
         } else if (rnVersion >= versionToNumber(0, 66, 0)) {
@@ -65,6 +79,22 @@ android {
           srcDirs += "src/react-native-65"
         } else {
           srcDirs += 'src/react-native-64'
+        }
+
+        if (projectIncludesExpoUpdates()) {
+          srcDirs += 'src/with-updates'
+        } else {
+          srcDirs += 'src/without-updates'
+        }
+      }
+    }
+    debug {
+      java {
+        def expoPackageVersion = getExpoPackageVersion()
+        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
+          srcDirs += "src/expo-45"
+        } else {
+          srcDirs += "src/expo-44"
         }
       }
     }
@@ -100,6 +130,10 @@ dependencies {
   implementation project(":expo-updates-interface")
   implementation project(":expo-dev-menu")
 
+  if (projectIncludesExpoUpdates()) {
+    implementation project(":expo-updates")
+  }
+
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
 
@@ -114,10 +148,10 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
 
   api "io.insert-koin:koin-core:3.1.2"
 
@@ -145,14 +179,11 @@ def versionToNumber(major, minor, patch) {
   return patch * 100 + minor * 10000 + major * 1000000
 }
 
-def getRNVersion() {
-  def reactNativePackageJsonPath = ["node", "-e", "console.log(require.resolve('react-native/package.json'));"].execute([], projectDir).text.trim()
-  def packageJsonFile = new File(reactNativePackageJsonPath)
-  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-  def version = safeExtGet("reactNativeVersion", packageJson.version)
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
-
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
   return versionToNumber(
@@ -160,6 +191,23 @@ def getRNVersion() {
       minor,
       patch
   )
+}
+
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+}
+
+def getExpoPackageVersion() {
+  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
+}
+
+def projectIncludesExpoUpdates() {
+  try {
+    def version = getNodeModulesPackageVersion("expo-updates", "expoUpdatesVersion")
+    return version != null
+  } catch (Exception e) {
+    return false
+  }
 }
 
 // [BEGIN] Workaround okhttp/okio compatibility issue

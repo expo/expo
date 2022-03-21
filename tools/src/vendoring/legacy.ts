@@ -161,7 +161,7 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   const applyRNVersionPatches = async () => {
-    const rnVersion = '0.64.3';
+    const rnVersion = '0.67.2';
     const patchVersion = rnVersion.split('.')[1];
     const patchSourceDir = path.join(clonedProjectPath, 'android', 'rnVersionPatch', patchVersion);
     const javaFiles = await glob('**/*.java', {
@@ -336,21 +336,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/screens',
         sourceAndroidPackage: 'com.swmansion.rnscreens',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
-      },
-    ],
-  },
-  'react-native-appearance': {
-    repoUrl: 'https://github.com/expo/react-native-appearance.git',
-    installableInManagedApps: true,
-    semverPrefix: '~',
-    steps: [
-      {
-        sourceIosPath: 'ios/Appearance',
-        targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
-        targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'io.expo.appearance',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
       },
     ],
   },

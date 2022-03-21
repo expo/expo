@@ -2,7 +2,7 @@ import RudderAnalytics from '@expo/rudder-sdk-node';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 
-import { UserSettings } from '../../api/user/UserSettings';
+import UserSettings from '../../api/user/UserSettings';
 import { EXPO_LOCAL, EXPO_STAGING, EXPO_NO_TELEMETRY } from '../env';
 
 const PLATFORM_TO_ANALYTICS_PLATFORM: { [platform: string]: string } = {
@@ -43,11 +43,8 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
   if (EXPO_NO_TELEMETRY) {
     return;
   }
-  const savedDeviceId = await UserSettings.getAsync('analyticsDeviceId', null);
-  const deviceId = savedDeviceId ?? uuidv4();
-  if (!savedDeviceId) {
-    await UserSettings.setAsync('analyticsDeviceId', deviceId);
-  }
+
+  const deviceId = await UserSettings.getAnonymousIdentifierAsync();
 
   identifyData = {
     userId,
@@ -58,7 +55,15 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
   ensureIdentified();
 }
 
-export function logEvent(event: 'action', properties: Record<string, any> = {}): void {
+export function logEvent(
+  event:
+    | 'action'
+    | 'Open Url on Device'
+    | 'Start Project'
+    | 'Serve Manifest'
+    | 'Serve Expo Updates Manifest',
+  properties: Record<string, any> = {}
+): void {
   if (EXPO_NO_TELEMETRY) {
     return;
   }

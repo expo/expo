@@ -89,7 +89,7 @@ module.exports = async function (args: string[]) {
     if (options.json) {
       console.log(JSON.stringify({ modules }));
     } else {
-      console.log({ modules });
+      console.log(require('util').inspect({ modules }, false, null, true));
     }
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 

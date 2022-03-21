@@ -1,7 +1,7 @@
 import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
-import { View as RNView } from 'react-native';
-import { create } from 'react-native-primitives';
+import { View as RNView, StyleSheet } from 'react-native';
 
+import { create } from './create-primitive';
 import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
 
 export const View = create(RNView, {
@@ -16,6 +16,9 @@ export const View = create(RNView, {
       centered: {
         justifyContent: 'center',
         alignItems: 'center',
+      },
+      start: {
+        alignItems: 'flex-start',
       },
     },
 
@@ -38,6 +41,7 @@ export const View = create(RNView, {
 
     border: {
       default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+      hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
     },
 
     ...rounded,
@@ -51,7 +55,6 @@ export const View = create(RNView, {
     },
 
     width,
-
     height,
 
     ...padding,
@@ -64,6 +67,7 @@ export const View = create(RNView, {
 
       border: {
         default: { borderColor: darkTheme.border.default, borderWidth: 1 },
+        hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
       },
     },
 
@@ -87,8 +91,18 @@ export const Row = create(RNView, {
       end: { alignItems: 'flex-end' },
     },
 
+    justify: {
+      center: { justifyContent: 'center' },
+      start: { justifyContent: 'flex-start' },
+      end: { justifyContent: 'flex-end' },
+      between: { justifyContent: 'space-between' },
+      around: { justifyContent: 'space-around' },
+    },
+
     ...padding,
     ...margin,
+
+    ...rounded,
   },
 
   selectors: {
@@ -137,15 +151,15 @@ export const Spacer = {
 
 export const Divider = create(RNView, {
   base: {
-    borderWidth: 0.5,
-    borderColor: lightTheme.border.default,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: lightTheme.border.default,
   },
 
   variants: {
     weight: {
-      thin: { borderWidth: 0.5 },
-      normal: { borderWidth: 1 },
-      heavy: { borderWidth: 2 },
+      thin: { height: StyleSheet.hairlineWidth },
+      normal: { height: 1 },
+      heavy: { height: 2 },
     },
 
     ...margin,
@@ -153,7 +167,10 @@ export const Divider = create(RNView, {
 
   selectors: {
     dark: {
-      borderColor: darkTheme.border.default,
+      base: {
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: darkTheme.border.default,
+      },
     },
   },
 });

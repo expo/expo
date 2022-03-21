@@ -1,6 +1,11 @@
-import { AppProvidersProps } from '../components/AppProviders';
-import { getBuildInfoAsync, installationID, isDevice } from '../native-modules/DevLauncherInternal';
-import { getSettingsAsync } from '../native-modules/DevMenuInternal';
+import {
+  getBuildInfoAsync,
+  getCrashReport,
+  installationID,
+  isDevice,
+} from '../native-modules/DevLauncherInternal';
+import { getMenuPreferencesAsync } from '../native-modules/DevMenuPreferences';
+import { AppProvidersProps } from '../providers/AppProviders';
 import { getDevSessionsAsync } from './getDevSessionsAsync';
 import { restoreUserAsync } from './restoreUserAsync';
 
@@ -15,12 +20,15 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
   });
 
   const initialBuildInfo = await getBuildInfoAsync();
-  const initialDevMenuSettings = await getSettingsAsync();
+  const initialDevMenuPreferences = await getMenuPreferencesAsync();
+
+  const initialCrashReport = await getCrashReport();
 
   return {
     initialDevSessions,
     initialUserData,
     initialBuildInfo,
-    initialDevMenuSettings,
+    initialDevMenuPreferences,
+    initialCrashReport,
   };
 }

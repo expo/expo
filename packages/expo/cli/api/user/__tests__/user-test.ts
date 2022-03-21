@@ -3,10 +3,10 @@ import { fs, vol } from 'memfs';
 import nock from 'nock';
 
 import { getExpoApiBaseUrl } from '../../endpoint';
-import { getSessionSecret } from '../sessionStorage';
+import UserSettings from '../UserSettings';
 import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
 
-jest.mock('fs');
+jest.unmock('../UserSettings');
 jest.mock('../../graphql/client', () => ({
   graphqlClient: {
     query: () => {
@@ -90,10 +90,10 @@ describe(logoutAsync, () => {
   it('removes the session secret', async () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
-    expect(getSessionSecret()).toBe('SESSION_SECRET');
+    expect(UserSettings.getSession()?.sessionSecret).toBe('SESSION_SECRET');
 
     await logoutAsync();
-    expect(getSessionSecret()).toBe(null);
+    expect(UserSettings.getSession()?.sessionSecret).toBeUndefined();
   });
 });
 

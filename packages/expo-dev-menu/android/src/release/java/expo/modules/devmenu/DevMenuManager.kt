@@ -9,7 +9,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuSettingsInterface
+import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import expo.modules.devmenu.api.DevMenuMetroClient
@@ -26,6 +26,14 @@ object DevMenuManager : DevMenuManagerInterface {
 
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null
+  }
+
+  fun getAppInfo(): Bundle {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  fun getDevSettings(): Bundle {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
   val metroClient: DevMenuMetroClient by lazy {
@@ -68,7 +76,11 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun getSettings(): DevMenuSettingsInterface? {
+  override fun getSettings(): DevMenuPreferencesInterface? {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  fun getMenuPreferences(): Bundle {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

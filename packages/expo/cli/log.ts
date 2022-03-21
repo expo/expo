@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 export function time(label?: string): void {
   console.time(label);
 }
@@ -10,8 +12,14 @@ export function error(...message: string[]): void {
   console.error(...message);
 }
 
+/** Print an error and provide additional info (the stack trace) in debug mode. */
+export function exception(e: Error): void {
+  const { EXPO_DEBUG } = require('./utils/env');
+  error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+}
+
 export function warn(...message: string[]): void {
-  console.warn(...message);
+  console.warn(...message.map((value) => chalk.yellow(value)));
 }
 
 export function log(...message: string[]): void {
@@ -20,6 +28,11 @@ export function log(...message: string[]): void {
 
 export function debug(...message: string[]): void {
   if (require('./utils/env').EXPO_DEBUG) console.log(...message);
+}
+
+/** Clear the terminal of all text. */
+export function clear(): void {
+  process.stdout.write(process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
 }
 
 /** Log a message and exit the current process. If the `code` is non-zero then `console.error` will be used instead of `console.log`. */

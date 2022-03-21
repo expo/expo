@@ -18,7 +18,6 @@ type ActionOptions = {
 const REACT_NATIVE_SUBMODULE_PATH = getReactNativeSubmoduleDir();
 const REACT_ANDROID_PATH = path.join(ANDROID_DIR, 'ReactAndroid');
 const REACT_COMMON_PATH = path.join(ANDROID_DIR, 'ReactCommon');
-const REACT_APPLICATION_MK_PATH = path.join(REACT_ANDROID_PATH, 'src/main/jni/Application.mk');
 const REACT_ANDROID_GRADLE_PATH = path.join(REACT_ANDROID_PATH, 'build.gradle');
 
 async function checkoutReactNativeSubmoduleAsync(checkoutRef: string): Promise<void> {
@@ -49,20 +48,26 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
 
   logger.info(
     '📇 Transforming',
-    chalk.magenta('Application.mk'),
+    chalk.magenta('ReactAndroid/build.gradle'),
     'to make use of',
     chalk.yellow('NDK_ABI_FILTERS')
   );
-  await transformFileAsync(REACT_APPLICATION_MK_PATH, [
+  await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
     {
-      find: /^APP_ABI := (.*)$/m,
-      replaceWith: 'APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$($1))',
+      find: /^(def reactNativeArchitectures\(\) {)/m,
+      replaceWith: `$1\n    if (System.getenv('NDK_ABI_FILTERS')) { return System.getenv('NDK_ABI_FILTERS'); }`,
     },
   ]);
   await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
     {
       find: /^(\s*jsRootDir\s*=\s*)file\(.+\)$/m,
-      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native/Libraries")',
+      replaceWith:
+        '$1file("$projectDir/../../react-native-lab/react-native/Libraries")' +
+        '\n    codegenDir = file("$projectDir/../../react-native-lab/react-native/packages/react-native-codegen")',
+    },
+    {
+      find: /^(\s*reactRoot\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
     },
     {
       find: /^(\s*reactNativeRootDir\s*=\s*)file\(.+\)$/m,

@@ -26,6 +26,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
       NSLog("DevLauncher tries to handle uncaught exception: %@", exception)
       NSLog("Stack Trace: %@", exception.callStackSymbols)
       
+      EXDevLauncherUncaughtExceptionHandler.tryToSaveException(exception)
       EXDevLauncherUncaughtExceptionHandler.tryToSendExceptionToBundler(exception)
       EXDevLauncherUncaughtExceptionHandler.defaultHandler?(exception)
     }
@@ -61,5 +62,10 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
     }
     
     return URL.init(string: "logs", relativeTo: appUrl)
+  }
+  
+  static func tryToSaveException(_ exception: NSException) {
+    let registry = EXDevLauncherErrorRegistry()
+    registry.storeException(exception)
   }
 }

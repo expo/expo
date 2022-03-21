@@ -4,21 +4,21 @@ declare type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' 
 declare type Scale = Record<SpacingKey | DescriptiveScale, number>;
 export declare const scale: Scale;
 export declare const padding: {
-    padding: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    px: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    py: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    pb: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    pt: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    padding: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    px: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    py: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    pb: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    pt: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 };
 export declare const margin: {
-    margin: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    mx: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    my: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    mb: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-    mt: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    margin: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mx: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    my: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mb: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mt: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 };
-export declare const width: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
-export declare const height: Record<"0.5" | "1.5" | "2.5" | "3.5" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+export declare const width: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+export declare const height: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 export declare const rounded: {
     rounded: {
         none: {
@@ -111,34 +111,88 @@ export declare const text: {
         mono: {
             fontFamily: string;
         };
+        InterBlack: {
+            fontFamily: string;
+        };
+        InterBlackItalic: {
+            fontFamily: string;
+        };
+        InterBold: {
+            fontFamily: string;
+        };
+        InterBoldItalic: {
+            fontFamily: string;
+        };
+        InterExtraBold: {
+            fontFamily: string;
+        };
+        InterExtraBoldItalic: {
+            fontFamily: string;
+        };
+        InterExtraLight: {
+            fontFamily: string;
+        };
+        InterExtraLightItalic: {
+            fontFamily: string;
+        };
+        InterRegular: {
+            fontFamily: string;
+        };
+        InterItalic: {
+            fontFamily: string;
+        };
+        InterLight: {
+            fontFamily: string;
+        };
+        InterLightItalic: {
+            fontFamily: string;
+        };
+        InterMedium: {
+            fontFamily: string;
+        };
+        InterMediumItalic: {
+            fontFamily: string;
+        };
+        InterSemiBold: {
+            fontFamily: string;
+        };
+        InterSemiBoldItalic: {
+            fontFamily: string;
+        };
+        InterThin: {
+            fontFamily: string;
+        };
+        InterThinItalic: {
+            fontFamily: string;
+        };
     };
     weight: {
         thin: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         extralight: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         light: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         normal: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         medium: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         semibold: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         bold: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         extrabold: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
         black: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontWeight: "bold" | "100" | "normal" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
         };
     };
     color: {
@@ -158,6 +212,9 @@ export declare const text: {
             color: string;
         };
         primary: {
+            color: string;
+        };
+        link: {
             color: string;
         };
     };
@@ -185,6 +242,9 @@ export declare const textDark: {
         primary: {
             color: string;
         };
+        link: {
+            color: string;
+        };
     };
 };
 export declare const bg: {
@@ -195,6 +255,9 @@ export declare const bg: {
         backgroundColor: string;
     };
     secondary: {
+        backgroundColor: string;
+    };
+    overlay: {
         backgroundColor: string;
     };
     success: {
@@ -212,6 +275,9 @@ export declare const bgDark: {
         backgroundColor: string;
     };
     secondary: {
+        backgroundColor: string;
+    };
+    overlay: {
         backgroundColor: string;
     };
     success: {

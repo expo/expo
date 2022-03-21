@@ -37,9 +37,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//  #define DEV_LAUNCHER_URL "http://10.0.0.226:8090/index.bundle?platform=ios&dev=true&minify=false"
-
-NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
+// #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -79,8 +77,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-
-    EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   }
   return self;
 }
@@ -90,7 +86,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   
   NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
   
-  [modules addObject:[DevMenuInternalModule new]];
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
@@ -175,6 +170,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 {
   _delegate = delegate;
   _launchOptions = launchOptions;
+  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
 }
 
 - (void)autoSetupStart:(UIWindow *)window
@@ -565,8 +561,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   manager.currentBridge = self.appBridge;
   
   if (self.manifest != nil) {
-    // TODO - update to proper values / convert via instance method
-    manager.currentManifest = [self.manifest.rawManifestJSON copy];
+    manager.currentManifest = self.manifest;
     manager.currentManifestURL = self.manifestURL;
   }
 }

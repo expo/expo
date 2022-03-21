@@ -22,11 +22,12 @@ import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
 import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
 import { UrlDropdown } from '../components/UrlDropdown';
-import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useDevSessions } from '../hooks/useDevSessions';
-import { useModalStack } from '../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useCrashReport } from '../providers/CrashReportProvider';
+import { useDevSessions } from '../providers/DevSessionsProvider';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
@@ -47,6 +48,8 @@ export function HomeScreen({
 
   const buildInfo = useBuildInfo();
   const { appName, appIcon } = buildInfo;
+
+  const crashReport = useCrashReport();
 
   const initialDevSessionData = React.useRef(devSessions);
 
@@ -88,17 +91,33 @@ export function HomeScreen({
     modalStack.push({ element: <DevServerExplainerModal /> });
   };
 
+  const onCrashReportPress = () => {
+    navigation.navigate('Crash Report', crashReport);
+  };
+
   return (
     <View testID="DevLauncherMainScreen">
       <View bg="default">
         <AppHeader
           title={appName}
           appImageUri={appIcon}
-          subtitle="Development App"
+          subtitle="Development Build"
           onUserProfilePress={onUserProfilePress}
         />
       </View>
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
+        {crashReport && (
+          <View px="medium" py="small" mt="small">
+            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default" rounded="large">
+              <Row align="center" padding="medium" bg="default">
+                <Button.Text color="default">
+                  The last time you tried to open an app the development build crashed. Tap to get
+                  more information.
+                </Button.Text>
+              </Row>
+            </Button.ScaleOnPressContainer>
+          </View>
+        )}
         <View py="large">
           <Row px="small" align="center">
             <View px="medium">
@@ -114,7 +133,7 @@ export function HomeScreen({
                 rounded="full"
                 minScale={0.85}
                 onPress={onDevServerQuestionPress}>
-                <View rounded="full" padding="small">
+                <View rounded="full" padding="tiny">
                   <InfoIcon />
                 </View>
               </Button.ScaleOnPressContainer>
@@ -132,7 +151,9 @@ export function HomeScreen({
                     <Spacer.Vertical size="small" />
 
                     <View bg="secondary" border="default" rounded="medium" padding="medium">
-                      <Text type="mono">expo start --dev-client</Text>
+                      <Text type="mono" size="small">
+                        expo start --dev-client
+                      </Text>
                     </View>
 
                     <Spacer.Vertical size="small" />
@@ -177,12 +198,16 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button.ScaleOnPressContainer onPress={onRefetchPress} disabled={isFetching} bg="default">
-      <Row align="center" padding="medium">
+    <Button.ScaleOnPressContainer
+      onPress={onRefetchPress}
+      disabled={isFetching}
+      bg="default"
+      rounded="none">
+      <Row align="center" padding="medium" bg="default">
         <PulseIndicator isActive={isFetching} color={backgroundColor} />
         <Spacer.Horizontal size="small" />
         <Button.Text color="default">
-          {isFetching ? 'Searching for development servers...' : 'Refetch development servers'}
+          {isFetching ? 'Searching for development servers...' : 'Fetch development servers'}
         </Button.Text>
         <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
@@ -211,7 +236,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
               roundedTop="large"
               roundedBottom="none"
               bg="default">
-              <Row align="center" padding="medium">
+              <Row align="center" padding="medium" bg="default">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
                 <View flex="1">
@@ -257,7 +282,7 @@ function RecentlyOpenedApps({ onAppPress }) {
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
                 bg="default">
-                <Row align="center" padding="medium">
+                <Row align="center" padding="medium" bg="default">
                   <StatusIndicator size="small" status="success" />
                   <Spacer.Horizontal size="small" />
                   <View flex="1">
