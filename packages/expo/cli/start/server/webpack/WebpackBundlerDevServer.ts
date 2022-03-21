@@ -20,7 +20,7 @@ import {
   importWebpackDevServerFromProject,
   importWebpackFromProject,
 } from './resolveFromProject';
-import { ensureEnvironmentSupportsSSLAsync } from './ssl';
+import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
 type AnyCompiler = webpack.Compiler | webpack.MultiCompiler;
 
@@ -195,9 +195,9 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     }
 
     if (https) {
-      Log.debug('Configuring SSL to enable HTTPS support');
-      await ensureEnvironmentSupportsSSLAsync(this.projectRoot).catch((error) => {
-        Log.error(`Error creating SSL certificates: ${error}`);
+      Log.debug('Configuring TLS to enable HTTPS support');
+      await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
+        Log.error(`Error creating TLS certificates: ${error}`);
       });
     }
 

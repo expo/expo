@@ -9,23 +9,23 @@ import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo'
 
 // TODO: Move to doctor as a prereq.
 
-/** Ensure SSL is setup and environment variables are set. */
-export async function ensureEnvironmentSupportsSSLAsync(projectRoot: string) {
+/** Ensure TLS is setup and environment variables are set. */
+export async function ensureEnvironmentSupportsTLSAsync(projectRoot: string) {
   if (!process.env.SSL_CRT_FILE || !process.env.SSL_KEY_FILE) {
-    const ssl = await getSSLCertAsync(projectRoot);
-    if (ssl) {
-      process.env.SSL_CRT_FILE = ssl.certPath;
-      process.env.SSL_KEY_FILE = ssl.keyPath;
+    const tls = await getTLSCertAsync(projectRoot);
+    if (tls) {
+      process.env.SSL_CRT_FILE = tls.certPath;
+      process.env.SSL_KEY_FILE = tls.keyPath;
     }
   }
 }
 
-/** Create SSL and write to files in the temporary directory. Exposed for testing. */
-export async function getSSLCertAsync(
+/** Create TLS and write to files in the temporary directory. Exposed for testing. */
+export async function getTLSCertAsync(
   projectRoot: string
 ): Promise<{ keyPath: string; certPath: string } | false> {
   Log.log(
-    chalk`Creating SSL certificate for localhost. {dim This functionality may not work on all computers.}`
+    chalk`Creating TLS certificate for localhost. {dim This functionality may not work on all computers.}`
   );
 
   const name = 'localhost';
@@ -34,7 +34,7 @@ export async function getSSLCertAsync(
     const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
 
     const { key, cert } = result;
-    const folder = path.join(dotExpoDir, 'ssl');
+    const folder = path.join(dotExpoDir, 'tls');
     const keyPath = path.join(folder, `key-${name}.pem`);
     const certPath = path.join(folder, `cert-${name}.pem`);
 
