@@ -19,7 +19,7 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
   const theme = useExpoTheme();
 
   const handlePress = () => {
-    Linking.openURL(UrlUtils.normalizeUrl(manifestPermalink));
+    Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(manifestPermalink)));
   };
 
   return (

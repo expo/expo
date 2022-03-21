@@ -32,7 +32,7 @@ export function BranchHeader(props: Props) {
         </Row>
         <PressableOpacity
           onPress={() => {
-            Linking.openURL(UrlUtils.normalizeUrl(props.manifestPermalink));
+            Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(props.manifestPermalink)));
           }}
           borderRadius={4}
           containerProps={{
