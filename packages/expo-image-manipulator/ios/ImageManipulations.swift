@@ -67,7 +67,7 @@ internal func manipulate(image: UIImage, rotate: Double) throws -> UIImage {
 
   rotatedView.transform = CGAffineTransform(rotationAngle: rads)
 
-  let rotatedSize = rotatedView.frame.size
+  let rotatedSize = CGSize(width: rotatedView.frame.size.width.rounded(.down), height: rotatedView.frame.size.height.rounded(.down))
   let origin = CGPoint(x: -image.size.width / 2, y: -image.size.height / 2)
 
   return try drawInNewContext(size: rotatedSize) { context in
