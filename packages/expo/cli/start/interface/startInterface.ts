@@ -80,7 +80,7 @@ export async function startInterfaceAsync(
           process.exit();
         } catch (error) {
           spinner.fail('Failed to stop server');
-          Log.exit(error);
+          throw error;
         }
         break;
       }
@@ -126,7 +126,7 @@ export async function startInterfaceAsync(
           printHelp();
         } catch (e) {
           if (!(e instanceof AbortCommandError)) {
-            Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+            Log.exception(e);
           }
         }
       }
@@ -168,7 +168,7 @@ export async function startInterfaceAsync(
           printHelp();
         } catch (e) {
           if (!(e instanceof AbortCommandError)) {
-            Log.error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+            Log.exception(e);
           }
         }
         break;

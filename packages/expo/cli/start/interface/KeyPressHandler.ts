@@ -5,6 +5,7 @@ import { addInteractionListener } from '../../utils/prompts';
 /** An abstract key stroke interceptor. */
 export class KeyPressHandler {
   private isInterceptingKeyStrokes = false;
+  private isHandlingKeyPress = false;
 
   constructor(public onPress: (key: string) => Promise<any>) {
     // Support observing prompts.
@@ -23,10 +24,17 @@ export class KeyPressHandler {
   }
 
   private async handleKeypress(key: string) {
+    // Prevent sending another event until the previous event has finished.
+    if (this.isHandlingKeyPress) {
+      return;
+    }
+    this.isHandlingKeyPress = true;
     try {
       await this.onPress(key);
     } catch (err) {
       await logCmdError(err);
+    } finally {
+      this.isHandlingKeyPress = false;
     }
   }
 
@@ -45,7 +53,7 @@ export class KeyPressHandler {
     stdin.setRawMode(true);
     stdin.resume();
     stdin.setEncoding('utf8');
-    stdin.on('data', this.handleKeypress);
+    stdin.on('data', this.handleKeypress.bind(this));
   }
 
   /** Stop intercepting all key strokes. */
@@ -55,7 +63,7 @@ export class KeyPressHandler {
     }
     this.isInterceptingKeyStrokes = false;
     const { stdin } = process;
-    stdin.removeListener('data', this.handleKeypress);
+    stdin.removeListener('data', this.handleKeypress.bind(this));
     // TODO: This might be here because of an old Node version.
     if (!stdin.setRawMode) {
       Log.warn('Using a non-interactive terminal, keyboard commands are disabled.');
