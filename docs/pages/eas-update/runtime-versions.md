@@ -69,7 +69,7 @@ The `"nativeVersion"` policy will set the runtime version to the projects curren
 }
 ```
 
-The runtime version for the iOS and Android builds and any updates would be the combination of `"[version]-[buildNumber|versionCode]"`, which in this case would be `"1.0.0-1"`.
+The runtime version for the iOS and Android builds and any updates would be the combination of `"[version]([buildNumber|versionCode])"`, which in this case would be `"1.0.0(1)"`.
 
 This policy is great for projects that contain custom native code and that update the native version numbers (`"buildNumber"`for iOS and `"versionCode"` for Android) for each build. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient for projects who use the Play Store's Internal Test Track and the App Store's TestFlight distribution tools.
 
