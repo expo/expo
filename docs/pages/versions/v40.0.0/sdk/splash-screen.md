@@ -23,7 +23,7 @@ This example shows how to keep the splash screen visible while loading app resou
 ```js
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 
