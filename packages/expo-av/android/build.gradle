@@ -83,6 +83,9 @@ android {
 }
 
 dependencies {
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+
   implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
