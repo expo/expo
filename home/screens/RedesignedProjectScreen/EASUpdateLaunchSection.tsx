@@ -1,12 +1,15 @@
 import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
 import { ChevronDownIcon } from '@expo/styleguide-native';
-import { BranchListItem } from 'components/BranchListItem';
-import { PressableOpacity } from 'components/PressableOpacity';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Divider, Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import semver from 'semver';
 
+import { BranchListItem } from '../../components/BranchListItem';
+import { PressableOpacity } from '../../components/PressableOpacity';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
 type ProjectUpdateBranch = WebContainerProjectPage_Query['app']['byId']['updateBranches'][0];
@@ -15,7 +18,7 @@ function truthy<TValue>(value: TValue | null | undefined): value is TValue {
   return !!value;
 }
 
-function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): number | null {
+export function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): number | null {
   const updates = branch.updates;
   if (updates.length === 0) {
     return null;
@@ -45,9 +48,10 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
   }));
 
   const theme = useExpoTheme();
+  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onSeeAllBranchesPress() {
-    // TODO: open branches list page
+    navigation.navigate('Branches', { appId: app.id });
   }
 
   return (

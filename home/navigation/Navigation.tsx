@@ -12,6 +12,7 @@ import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
+import { BranchListScreen } from 'screens/BranchListScreen';
 import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
 import { RedesignedProjectScreen } from 'screens/RedesignedProjectScreen';
@@ -37,7 +38,7 @@ import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
 import { RedesignedProjectsListScreen } from '../screens/RedesignedProjectsListScreen';
-import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen.tsx';
+import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
@@ -138,6 +139,13 @@ function HomeStackScreen() {
         component={RedesignedProjectScreen}
         options={{
           title: 'Project',
+        }}
+      />
+      <HomeStack.Screen
+        name="Branches"
+        component={BranchListScreen}
+        options={{
+          title: 'Branches',
         }}
       />
     </HomeStack.Navigator>

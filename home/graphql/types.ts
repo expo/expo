@@ -92,6 +92,7 @@ export type Account = {
   availableBuilds?: Maybe<Scalars['Int']>;
   /** Billing information */
   billing?: Maybe<Billing>;
+  billingPeriod: BillingPeriod;
   /** Build Jobs associated with this account */
   buildJobs: Array<BuildJob>;
   /**
@@ -189,6 +190,15 @@ export type AccountAppsArgs = {
   includeUnpublished?: InputMaybe<Scalars['Boolean']>;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
+};
+
+
+/**
+ * An account is a container owning projects, credentials, billing and other organization
+ * data and settings. Actors may own and be members of accounts.
+ */
+export type AccountBillingPeriodArgs = {
+  date: Scalars['DateTime'];
 };
 
 
@@ -1478,6 +1488,13 @@ export type Billing = {
   subscription?: Maybe<SubscriptionDetails>;
 };
 
+export type BillingPeriod = {
+  __typename?: 'BillingPeriod';
+  anchor: Scalars['DateTime'];
+  end: Scalars['DateTime'];
+  start: Scalars['DateTime'];
+};
+
 /** Represents an EAS Build */
 export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   __typename?: 'Build';
@@ -1495,6 +1512,8 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   expirationDate?: Maybe<Scalars['DateTime']>;
   gitCommitHash?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  /** Queue position is 1-indexed */
+  initialQueuePosition?: Maybe<Scalars['Int']>;
   initiatingActor?: Maybe<Actor>;
   /** @deprecated User type is deprecated */
   initiatingUser?: Maybe<User>;
@@ -3690,6 +3709,17 @@ export type Home_AccountDataQueryVariables = Exact<{
 
 export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null | undefined, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
+export type BranchesForProjectQueryVariables = Exact<{
+  appId: Scalars['String'];
+  platform: AppPlatform;
+  runtimeVersions: Array<Scalars['String']> | Scalars['String'];
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+}>;
+
+
+export type BranchesForProjectQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: string | null | undefined, playStoreUrl?: string | null | undefined, appStoreUrl?: string | null | undefined, sdkVersion: string, iconUrl?: string | null | undefined, privacy: string, icon?: { __typename?: 'AppIcon', url: string } | null | undefined, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null | undefined, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
+
 export type Home_CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3842,6 +3872,82 @@ export type Home_AccountDataLazyQueryHookResult = ReturnType<typeof useHome_Acco
 export type Home_AccountDataQueryResult = Apollo.QueryResult<Home_AccountDataQuery, Home_AccountDataQueryVariables>;
 export function refetchHome_AccountDataQuery(variables: Home_AccountDataQueryVariables) {
       return { query: Home_AccountDataDocument, variables: variables }
+    }
+export const BranchesForProjectDocument = gql`
+    query BranchesForProject($appId: String!, $platform: AppPlatform!, $runtimeVersions: [String!]!, $limit: Int!, $offset: Int!) {
+  app {
+    byId(appId: $appId) {
+      id
+      name
+      slug
+      fullName
+      username
+      published
+      description
+      githubUrl
+      playStoreUrl
+      appStoreUrl
+      sdkVersion
+      iconUrl
+      privacy
+      icon {
+        url
+      }
+      updateBranches(limit: $limit, offset: $offset) {
+        id
+        name
+        updates(
+          limit: 1
+          offset: 0
+          filter: {platform: $platform, runtimeVersions: $runtimeVersions}
+        ) {
+          id
+          group
+          message
+          createdAt
+          runtimeVersion
+          platform
+          manifestPermalink
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useBranchesForProjectQuery__
+ *
+ * To run a query within a React component, call `useBranchesForProjectQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBranchesForProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBranchesForProjectQuery({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      platform: // value for 'platform'
+ *      runtimeVersions: // value for 'runtimeVersions'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useBranchesForProjectQuery(baseOptions: Apollo.QueryHookOptions<BranchesForProjectQuery, BranchesForProjectQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BranchesForProjectQuery, BranchesForProjectQueryVariables>(BranchesForProjectDocument, options);
+      }
+export function useBranchesForProjectLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BranchesForProjectQuery, BranchesForProjectQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BranchesForProjectQuery, BranchesForProjectQueryVariables>(BranchesForProjectDocument, options);
+        }
+export type BranchesForProjectQueryHookResult = ReturnType<typeof useBranchesForProjectQuery>;
+export type BranchesForProjectLazyQueryHookResult = ReturnType<typeof useBranchesForProjectLazyQuery>;
+export type BranchesForProjectQueryResult = Apollo.QueryResult<BranchesForProjectQuery, BranchesForProjectQueryVariables>;
+export function refetchBranchesForProjectQuery(variables: BranchesForProjectQueryVariables) {
+      return { query: BranchesForProjectDocument, variables: variables }
     }
 export const Home_CurrentUserDocument = gql`
     query Home_CurrentUser {
