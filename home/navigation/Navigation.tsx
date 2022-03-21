@@ -26,6 +26,7 @@ import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
 import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
+import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import { KitchenSink } from '../screens/KitchenSink';
@@ -146,6 +147,13 @@ function HomeStackScreen() {
         component={BranchListScreen}
         options={{
           title: 'Branches',
+        }}
+      />
+      <HomeStack.Screen
+        name="BranchDetails"
+        component={BranchDetailsScreen}
+        options={{
+          title: 'Branch',
         }}
       />
     </HomeStack.Navigator>

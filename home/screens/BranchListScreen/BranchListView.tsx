@@ -14,6 +14,7 @@ type BranchManifest = {
 };
 
 type Props = {
+  appId: string;
   data: BranchManifest[];
   loadMoreAsync: () => Promise<any>;
 };
@@ -45,11 +46,11 @@ export function BranchListView(props: Props) {
   return <BranchList {...props} />;
 }
 
-function BranchList({ data, loadMoreAsync }: Props) {
+function BranchList({ data, appId, loadMoreAsync }: Props) {
   const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
 
-  const extractKey = React.useCallback((item) => item.slug, []);
+  const extractKey = React.useCallback((item) => item.id, []);
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -75,7 +76,14 @@ function BranchList({ data, loadMoreAsync }: Props) {
   };
 
   const renderItem = React.useCallback(({ item: branch }) => {
-    return <BranchListItem key={branch.id} name={branch.name} latestUpdate={branch.latestUpdate} />;
+    return (
+      <BranchListItem
+        key={branch.id}
+        appId={appId}
+        name={branch.name}
+        latestUpdate={branch.latestUpdate}
+      />
+    );
   }, []);
 
   return (
