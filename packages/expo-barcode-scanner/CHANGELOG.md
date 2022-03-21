@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for Codabar barcode type on iOS. ([#16703](https://github.com/expo/expo/pull/16703) by [@7nohe](https://github.com/7nohe))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
