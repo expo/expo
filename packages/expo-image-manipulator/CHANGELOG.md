@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Remove `data:image` part in web base64 result. ([#16191](https://github.com/expo/expo/pull/16191) by [@AllanChain](https://github.com/AllanChain))
-- Fix rotation on iOS may cause a border around the image. ([#16669](https://github.com/expo/expo/pull/16669) by [@mnightingale](https://github.com/mnightingale))
+- On iOS fix rotation causing extra image borders. ([#16669](https://github.com/expo/expo/pull/16669) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
 
