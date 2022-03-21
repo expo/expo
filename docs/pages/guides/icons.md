@@ -16,7 +16,7 @@ This library is installed by default on the template project that get through `e
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function App() {
   return (
@@ -41,9 +41,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-This component loads the Ionicons font if it hasn't been loaded already, and renders a checkmark icon that I found through the vector-icons directory mentioned above. `@expo/vector-icons` is built on top of [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) and uses a similar API. The only difference is `@expo/vector-icons` uses a more idiomatic `import` style:
-
-`import { Ionicons } from '@expo/vector-icons/Ionicons';` instead of.. `import Ionicons from 'react-native-vector-icons/Ionicons';`.
+This component loads the Ionicons font if it hasn't been loaded already, and renders a checkmark icon that I found through the vector-icons directory mentioned above. `@expo/vector-icons` is built on top of [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) and uses a similar API.
 
 > **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](preloading-and-caching-assets.md).
 
@@ -192,7 +190,7 @@ A convenience component for creating buttons with an icon on the left side.
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons/FontAwesome';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function App() {
   /* @hide const loginWithFacebook = () => { ... } */
