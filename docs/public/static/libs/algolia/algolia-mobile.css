@@ -14,18 +14,16 @@
   .ds-dropdown-menu {
     margin-top: -30px !important;
     left: -16px !important;
-    max-width: 100vw !important;
-    min-width: 100vw !important;
+    width: 100vw !important;
     box-shadow: none !important;
   }
 
   .algolia-autocomplete [class^='ds-dataset-'] {
-    max-width: 100vw !important;
-    min-width: 100vw !important;
+    width: 100vw !important;
     border-style: hidden !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    min-height: calc(100vh - (60px * 2)) !important;
+    min-height: 100px !important;
   }
 
   .ds-dropdown-menu:before {

@@ -1,6 +1,5 @@
-import { css } from '@emotion/react';
+import { css, Global } from '@emotion/react';
 import { breakpoints, theme } from '@expo/styleguide';
-import Head from 'next/head';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import { Header } from '~/ui/components/Header';
@@ -17,23 +16,28 @@ type LayoutProps = PropsWithChildren<{
 
 export function Layout({ header = <Header />, navigation, sidebar, children }: LayoutProps) {
   return (
-    <div css={layoutStyle}>
-      {/* note(simek): meh, we need to move this tag to more appropriate place, once new Layout will be used globally */}
-      <Head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale = 1.0, maximum-scale=1.0, user-scalable=no"
-        />
-      </Head>
-      <div css={headerStyle}>{header}</div>
-      <div css={navigationStyle}>{navigation}</div>
-      <div css={contentStyle}>
-        <LayoutScroll>
-          <div css={innerContentStyle}>{children}</div>
-        </LayoutScroll>
+    <>
+      <Global
+        styles={css`
+          html,
+          body {
+            min-height: 100vh;
+            min-width: 100vw;
+            overflow: hidden;
+          }
+        `}
+      />
+      <div css={layoutStyle}>
+        <div css={headerStyle}>{header}</div>
+        <div css={navigationStyle}>{navigation}</div>
+        <div css={contentStyle}>
+          <LayoutScroll>
+            <div css={innerContentStyle}>{children}</div>
+          </LayoutScroll>
+        </div>
+        <div css={sidebarStyle}>{sidebar}</div>
       </div>
-      <div css={sidebarStyle}>{sidebar}</div>
-    </div>
+    </>
   );
 }
 
@@ -46,6 +50,7 @@ const layoutStyle = css({
     "header header header"
     "navigation content sidebar"
   `,
+  overflow: 'hidden',
   backgroundColor: theme.background.default,
   '[data-expo-theme="dark"] &': {
     backgroundColor: theme.background.screen,
@@ -55,6 +60,7 @@ const layoutStyle = css({
       "header"
       "content"
     `,
+    gridTemplateRows: '60px calc(100% - 140px)',
     gridTemplateColumns: 'auto',
   },
 });
