@@ -1,4 +1,5 @@
 require 'json'
+require 'open3'
 require 'pathname'
 require 'colored2' # dependency of CocoaPods
 
@@ -23,4 +24,25 @@ def expo_patch_react_imports!(installer, options = {})
   end
 
   Expo::ReactImportPatcher.new(installer, options).run!
+end
+
+def expo_get_config(field, options = {})
+  project_root = options[:project_root] || '..'
+  node_statement = "require('@expo/config').getConfig('#{project_root}').exp.#{field}"
+  node_command = options[:json] ?
+    "node --print \"JSON.stringify(#{node_statement} ?? null)\"" :
+    "node --print \"(#{node_statement} ?? '')\""
+
+  stdout, stderr, _ = Open3.capture3(node_command)
+  unless stderr.empty?
+    Pod::UI.warn "expo_get_config() Execution failed - node_command[#{node_command}]\n" + stderr
+    return nil
+  end
+  config = stdout.strip
+  Pod::UI.message "expo_get_config() - Execution - node_command[#{node_command}] result[#{config}]"
+
+  if options[:json]
+    return JSON.parse(config)
+  end
+  return config.empty? ? nil : config
 end

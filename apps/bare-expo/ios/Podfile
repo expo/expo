@@ -10,9 +10,6 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
-require 'json'
-podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
-
 abstract_target 'BareExpoMain' do
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
@@ -25,9 +22,11 @@ abstract_target 'BareExpoMain' do
 
   config = use_native_modules!
 
+  ios_schemes = expo_get_config('ios.scheme', { :json => true })
+  puts "ios schemes: #{ios_schemes}"
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
+    :hermes_enabled => (expo_get_config('ios.jsEngine') || expo_get_config('jsEngine')) == 'hermes',
   )
 
   # Fix Google Sign-in and Flipper
