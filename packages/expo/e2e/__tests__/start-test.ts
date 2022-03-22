@@ -1,8 +1,17 @@
 /* eslint-env jest */
-import execa from 'execa';
 import fs from 'fs-extra';
-
-import { bin, execute, getLoadedModulesAsync, projectRoot } from './utils';
+import path from 'path';
+import execa from 'execa';
+import fetch from 'node-fetch';
+import {
+  execute,
+  projectRoot,
+  getRoot,
+  getLoadedModulesAsync,
+  setupTestProjectAsync,
+  bin,
+} from './utils';
+import JsonFile from '@expo/json-file';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -77,6 +86,11 @@ it('runs `npx expo start --help`', async () => {
   `);
 });
 
+beforeAll(async () => {
+  // Kill port
+  await execa('kill', ['-9', '$(lsof -ti:19000)']).catch(() => {});
+});
+
 for (const args of [
   ['--lan', '--tunnel'],
   ['--offline', '--localhost'],
@@ -89,3 +103,77 @@ for (const args of [
     );
   });
 }
+
+it(
+  'runs `npx expo start`',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('basic-start', 'with-blank');
+    await fs.remove(path.join(projectRoot, '.expo'));
+
+    const promise = execa('node', [bin, 'start'], { cwd: projectRoot });
+
+    console.log('Starting server');
+
+    await new Promise<void>((resolve, reject) => {
+      promise.on('close', (code: number) => {
+        reject(
+          code === 0
+            ? 'Server closed too early. Run `kill -9 $(lsof -ti:19000)` to kill the orphaned process.'
+            : code
+        );
+      });
+
+      promise.stdout.on('data', (data) => {
+        const stdout = data.toString();
+        console.log('output:', stdout);
+        if (stdout.includes('Logs for your project')) {
+          resolve();
+        }
+      });
+    });
+
+    console.log('Fetching manifest');
+    const results = await fetch('http://localhost:19000/').then((res) => res.json());
+
+    // Required for Expo Go
+    expect(results.packagerOpts).toStrictEqual({
+      dev: true,
+    });
+    expect(results.developer).toStrictEqual({
+      projectRoot: expect.anything(),
+      tool: 'expo-cli',
+    });
+
+    // URLs
+    expect(results.bundleUrl).toBe(
+      'http://127.0.0.1:19000/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false'
+    );
+    expect(results.debuggerHost).toBe('127.0.0.1:19000');
+    expect(results.hostUri).toBe('127.0.0.1:19000');
+    expect(results.logUrl).toBe('http://127.0.0.1:19000/logs');
+    expect(results.mainModuleName).toBe('node_modules/expo/AppEntry');
+
+    // Manifest
+    expect(results.sdkVersion).toBe('44.0.0');
+    expect(results.slug).toBe('basic-start');
+    expect(results.name).toBe('basic-start');
+
+    // Custom
+    expect(results.__flipperHack).toBe('React Native packager is running');
+
+    console.log('Fetching bundle');
+    const bundle = await fetch(results.bundleUrl).then((res) => res.text());
+    console.log('Fetched bundle: ', bundle.length);
+    expect(bundle.length).toBeGreaterThan(1000);
+    console.log('Finished');
+
+    // Kill process.
+    promise.kill('SIGTERM', {
+      forceKillAfterTimeout: 2000,
+    });
+
+    await promise;
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);

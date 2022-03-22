@@ -1,6 +1,7 @@
 import assert from 'assert';
 import prompts, { Choice, Options, PromptObject, PromptType } from 'prompts';
 
+import * as Log from '../log';
 import { CI } from './env';
 import { AbortCommandError, CommandError } from './errors';
 
@@ -119,6 +120,7 @@ export function removeInteractionListener(callback: InteractionCallback) {
 
 /** Notify all listeners that keypress observations must pause. */
 export function pauseInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
+  Log.debug('Interaction observers paused');
   for (const listener of listeners) {
     listener({ pause: true, ...options });
   }
@@ -126,6 +128,7 @@ export function pauseInteractions(options: Omit<InteractionOptions, 'pause'> = {
 
 /** Notify all listeners that keypress observations can start.. */
 export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
+  Log.debug('Interaction observers resumed');
   for (const listener of listeners) {
     listener({ pause: false, ...options });
   }

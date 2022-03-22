@@ -57,10 +57,7 @@ export function logCmdError(error: Error): never {
     error.name === 'ApiV2Error'
   ) {
     // Print the stack trace in debug mode only.
-    exit(
-      chalk.red(error.toString()) +
-        (require('./env').EXPO_DEBUG ? '\n' + chalk.gray(error.stack) : '')
-    );
+    exit(error);
   }
 
   exit(chalk.red(error.toString()) + '\n' + chalk.gray(error.stack));
