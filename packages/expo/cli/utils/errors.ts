@@ -1,7 +1,7 @@
 import { AssertionError } from 'assert';
 import chalk from 'chalk';
 
-import { exit, exception } from '../log';
+import { exit } from '../log';
 
 const ERROR_PREFIX = 'Error: ';
 

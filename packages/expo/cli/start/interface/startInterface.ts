@@ -2,11 +2,10 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
-import { EXPO_DEBUG } from '../../utils/env';
 import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
 import { getProgressBar, setProgressBar } from '../../utils/progress';
-import { pauseInteractions } from '../../utils/prompts';
+import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../server/DevServerManager';
 import { KeyPressHandler } from './KeyPressHandler';
@@ -187,6 +186,10 @@ export async function startInterfaceAsync(
   };
 
   const keyPressHandler = new KeyPressHandler(onPressAsync);
+
+  const listener = keyPressHandler.createInteractionListener();
+
+  addInteractionListener(listener);
 
   // Start observing...
   keyPressHandler.startInterceptingKeyStrokes();

@@ -1,16 +1,19 @@
 import * as Log from '../../log';
 import { logCmdError } from '../../utils/errors';
-import { addInteractionListener } from '../../utils/prompts';
 
 /** An abstract key stroke interceptor. */
 export class KeyPressHandler {
   private isInterceptingKeyStrokes = false;
   private isHandlingKeyPress = false;
 
-  constructor(public onPress: (key: string) => Promise<any>) {
+  constructor(public onPress: (key: string) => Promise<any>) {}
+
+  /** Start observing interaction pause listeners. */
+  createInteractionListener() {
     // Support observing prompts.
     let wasIntercepting = false;
-    addInteractionListener(({ pause }) => {
+
+    const listener = ({ pause }: { pause: boolean }) => {
       if (pause) {
         // Track if we were already intercepting key strokes before pausing, so we can
         // resume after pausing.
@@ -20,10 +23,12 @@ export class KeyPressHandler {
         // Only start if we were previously intercepting.
         this.startInterceptingKeyStrokes();
       }
-    });
+    };
+
+    return listener;
   }
 
-  private async handleKeypress(key: string) {
+  private handleKeypress = async (key: string) => {
     // Prevent sending another event until the previous event has finished.
     if (this.isHandlingKeyPress) {
       return;
@@ -36,7 +41,7 @@ export class KeyPressHandler {
     } finally {
       this.isHandlingKeyPress = false;
     }
-  }
+  };
 
   /** Start intercepting all key strokes and passing them to the input `onPress` method. */
   startInterceptingKeyStrokes() {
@@ -53,7 +58,7 @@ export class KeyPressHandler {
     stdin.setRawMode(true);
     stdin.resume();
     stdin.setEncoding('utf8');
-    stdin.on('data', this.handleKeypress.bind(this));
+    stdin.on('data', this.handleKeypress);
   }
 
   /** Stop intercepting all key strokes. */
@@ -63,7 +68,7 @@ export class KeyPressHandler {
     }
     this.isInterceptingKeyStrokes = false;
     const { stdin } = process;
-    stdin.removeListener('data', this.handleKeypress.bind(this));
+    stdin.removeListener('data', this.handleKeypress);
     // TODO: This might be here because of an old Node version.
     if (!stdin.setRawMode) {
       Log.warn('Using a non-interactive terminal, keyboard commands are disabled.');
