@@ -35,14 +35,16 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     _settings = [[NSMutableDictionary alloc] initWithDictionary:[[self class] _getDefaultSettings]];
 
     // zxing handles barcodes reading of following types:
-    _zxingBarcodeReaders = @{
+      NSMutableDictionary *_zxingBarcodeReaders = @{
       // PDF417 - built-in PDF417 reader doesn't handle u'\0' (null) character - https://github.com/expo/expo/issues/4817
       AVMetadataObjectTypePDF417Code: [ZXPDF417Reader new],
       // Code39 - built-in Code39 reader doesn't read non-ideal (slightly rotated) images like this - https://github.com/expo/expo/pull/5976#issuecomment-545001008
       AVMetadataObjectTypeCode39Code: [ZXCode39Reader new],
-      // Codabar
-      AVMetadataObjectTypeCodabarCode: [ZXCodaBarReader new],
     };
+    // Codabar - available in iOS 15.4+
+    if (@available(iOS 15.4, *)) {
+        [_zxingBarcodeReaders setObject: [ZXCodaBarReader new] forKey:@"AVMetadataObjectTypeCodabarCode"];
+    }
     _zxingFPSProcessed = 6;
     _zxingCaptureQueue = dispatch_queue_create("com.zxing.captureQueue", NULL);
     _zxingEnabled = YES;
@@ -312,7 +314,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     case kBarcodeFormatCode39:
       return AVMetadataObjectTypeCode39Code;
     case kBarcodeFormatCodabar:
-      return AVMetadataObjectTypeCodabarCode;
+      // available in iOS 15.4+
+      if (@available(iOS 15.4, *)) {
+        return AVMetadataObjectTypeCodabarCode;
+      } else {
+        return @"unknown";
+      }
     default:
       return @"unknown";
   }
