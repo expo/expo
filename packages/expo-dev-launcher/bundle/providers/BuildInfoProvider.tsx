@@ -16,6 +16,7 @@ const defaultBuildInfo: BuildInfo = {
   appIcon: '',
   sdkVersion: '',
   runtimeVersion: '',
+  appId: '',
 };
 
 export function BuildInfoProvider({

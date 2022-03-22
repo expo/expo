@@ -197,16 +197,35 @@
   [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
+  
+  NSMutableDictionary *insets = [NSMutableDictionary new];
+  [insets setObject:@(0) forKey:@"top"];
+  [insets setObject:@(0) forKey:@"right"];
+  [insets setObject:@(0) forKey:@"bottom"];
+  [insets setObject:@(0) forKey:@"left"];
+  
+  if (@available(iOS 11.0, *)) {
+    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+    UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
+    
+    [insets setObject:@(safeAreaInsets.top) forKey:@"top"];
+    [insets setObject:@(safeAreaInsets.right) forKey:@"right"];
+    [insets setObject:@(safeAreaInsets.bottom) forKey:@"bottom"];
+    [insets setObject:@(safeAreaInsets.left) forKey:@"left"];
+  }
+  
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
                                             initialProperties:@{
+                                              @"insets": insets,
                                               @"isSimulator":
                                                               #if TARGET_IPHONE_SIMULATOR
                                                               @YES
                                                               #else
                                                               @NO
                                                               #endif
+                                              
                                             }];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
@@ -502,12 +521,22 @@
   NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
-
+  
+  // TODO - this could be moved to the expo-updates repo and installed as a dev extension
+  // url structore for EASUpdates: `http://u.expo.dev/{appId}`
+  // this url field is added to app.json.updates when running `eas update:configure`
+  // the `u.expo.dev` determines that it is the modern manifest protocol
+  NSString *updatesUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+  NSURL *url = [NSURL URLWithString:updatesUrl];
+  NSString *appId = [[url pathComponents] lastObject];
+  
+  
   [buildInfo setObject:appName forKey:@"appName"];
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
   [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
   [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
+  [buildInfo setObject:appId forKey:@"appId"];
 
   return buildInfo;
 }
