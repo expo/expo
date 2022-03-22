@@ -12,9 +12,7 @@ import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
 import { AppProviders } from './providers/AppProviders';
 import { CrashReportScreen } from './screens/CrashReportScreen';
-import { EASUpdatesBranchScreen } from './screens/EASUpdatesBranchScreen';
-import { EASUpdatesScreen } from './screens/EASUpdatesScreen';
-import { ExtensionsScreen } from './screens/ExtensionsScreen';
+import { ExtensionsStack } from './screens/ExtensionsStack';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
@@ -36,6 +34,7 @@ export function App(props: LauncherAppProps) {
   return (
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
+        {/* TODO -- remove this when safe area context provider is vendored */}
         <View style={{ height: props.insets.top }} bg="default" />
         <Stack.Navigator initialRouteName="Main" mode="modal">
           <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
@@ -53,30 +52,6 @@ export function App(props: LauncherAppProps) {
   );
 }
 
-const ExtensionsStack = createStackNavigator();
-
-function Extensions() {
-  return (
-    <ExtensionsStack.Navigator>
-      <ExtensionsStack.Screen
-        name="Extensions"
-        component={ExtensionsScreen}
-        options={{ header: () => null }}
-      />
-      <ExtensionsStack.Screen
-        name="EASUpdates"
-        options={{ headerTitle: 'EAS Update' }}
-        component={EASUpdatesScreen}
-      />
-      <ExtensionsStack.Screen
-        name="Branch"
-        options={{ headerTitle: 'Branch' }}
-        component={EASUpdatesBranchScreen}
-      />
-    </ExtensionsStack.Navigator>
-  );
-}
-
 const Main = () => {
   return (
     <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }}>
@@ -91,7 +66,7 @@ const Main = () => {
       {__DEV__ && (
         <Tab.Screen
           name="Extensions"
-          component={Extensions}
+          component={ExtensionsStack}
           options={{
             header: () => null,
             tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,

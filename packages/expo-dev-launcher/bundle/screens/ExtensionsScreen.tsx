@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import {
   Spacer,
   View,
@@ -16,17 +16,22 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
-import { EASUpdateBranchRow } from '../components/EASUpdateBranchRow';
+import { EASBranchRow } from '../components/EASUpdatesRows';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useBranchesForApp } from '../queries/useBranchesForApp';
+import { ExtensionsStackParamList } from './ExtensionsStack';
 
 const extensions = ['updates'];
 const hasEASUpdatesInstalled = extensions.includes('updates');
 
-export function ExtensionsScreen() {
+type ExtensionsScreenProps = {
+  navigation: StackNavigationProp<ExtensionsStackParamList>;
+};
+
+export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   return (
     <View>
-      <AppHeader />
+      <AppHeader navigation={navigation} />
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         <View flex="1">
           {extensions.length === 0 && (
@@ -59,7 +64,7 @@ export function ExtensionsScreen() {
           {hasEASUpdatesInstalled && (
             <>
               <Spacer.Vertical size="medium" />
-              <EASUpdatesPreview />
+              <EASUpdatesPreview navigation={navigation} />
               <Spacer.Vertical size="medium" />
             </>
           )}
@@ -78,18 +83,16 @@ export function ExtensionsScreen() {
   );
 }
 
-function EASUpdatesPreview() {
+function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
   const { appId } = useBuildInfo();
   const { isLoading, data: branches } = useBranchesForApp(appId);
 
-  const navigation = useNavigation();
-
   function onSeeAllBranchesPress() {
-    navigation.navigate('EASUpdates');
+    navigation.navigate('Branches');
   }
 
   function onBranchPress(branchName: string) {
-    navigation.navigate('Branch', { branchName });
+    navigation.navigate('Updates', { branchName });
   }
 
   if (isLoading) {
@@ -124,7 +127,7 @@ function EASUpdatesPreview() {
                   roundedBottom="none"
                   py="small"
                   px="small">
-                  <EASUpdateBranchRow {...branch} update={branch.updates[0]} />
+                  <EASBranchRow branch={branch} />
                 </View>
               </Button.ScaleOnPressContainer>
               <Divider />

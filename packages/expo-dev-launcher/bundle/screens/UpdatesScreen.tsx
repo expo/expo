@@ -18,7 +18,7 @@ import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useChannelsForApp } from '../queries/useChannelsForApp';
 import { Update, useUpdatesForBranch } from '../queries/useUpdatesForBranch';
 
-export function EASBranchDetailsScreen({ route }) {
+export function UpdatesScreen({ route }) {
   const { branchName } = route.params;
   const {
     data: updates,

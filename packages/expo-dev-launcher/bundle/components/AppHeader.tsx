@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import {
   Button,
   Image,
@@ -15,9 +14,7 @@ import * as React from 'react';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useUser } from '../providers/UserContextProvider';
 
-export function AppHeader() {
-  const navigation = useNavigation();
-
+export function AppHeader({ navigation }) {
   const buildInfo = useBuildInfo();
   const { appName, appIcon } = buildInfo;
 

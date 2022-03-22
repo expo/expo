@@ -7,7 +7,7 @@ import { queryClient } from '../providers/QueryProvider';
 import { primeCacheWithUpdates, Update, updatesPageSize } from './useUpdatesForBranch';
 
 const query = gql`
-  query getUpdates($appId: String!, $offset: Int!, $limit: Int!, $updatesLimit: Int!) {
+  query getBranches($appId: String!, $offset: Int!, $limit: Int!, $updatesLimit: Int!) {
     app {
       byId(appId: $appId) {
         updateBranches(offset: $offset, limit: $limit) {

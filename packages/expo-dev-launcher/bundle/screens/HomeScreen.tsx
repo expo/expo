@@ -89,7 +89,7 @@ export function HomeScreen({
 
   return (
     <View testID="DevLauncherMainScreen">
-      <AppHeader />
+      <AppHeader navigation={navigation} />
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         {crashReport && (
           <View px="medium" py="small" mt="small">

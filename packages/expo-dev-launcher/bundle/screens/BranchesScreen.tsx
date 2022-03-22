@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Heading, View, Button, Divider } from 'expo-dev-client-components';
 import * as React from 'react';
 
@@ -7,9 +7,13 @@ import { FlatList } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
+import { ExtensionsStackParamList } from './ExtensionsStack';
 
-export function EASUpdatesScreen() {
-  const navigation = useNavigation();
+type BranchesScreenProps = {
+  navigation: StackNavigationProp<ExtensionsStackParamList>;
+};
+
+export function BranchesScreen({ navigation }: BranchesScreenProps) {
   const { appId } = useBuildInfo();
   const {
     data: branches,
@@ -22,7 +26,7 @@ export function EASUpdatesScreen() {
   } = useBranchesForApp(appId);
 
   function onBranchPress(branchName: string) {
-    navigation.navigate('Branch', { branchName });
+    navigation.navigate('Updates', { branchName });
   }
 
   function Header() {
