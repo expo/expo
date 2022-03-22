@@ -140,7 +140,7 @@ export class DevServerManager {
           AndroidDebugBridge.getServer().stopAsync(),
         ]),
       {
-        timeout: 2000,
+        timeout: 3000,
       }
     );
   }

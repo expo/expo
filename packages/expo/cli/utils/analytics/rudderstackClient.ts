@@ -56,11 +56,12 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
 }
 
 export function logEvent(
-  event:
-    | 'action'
+  event: // TODO: revise
+  | 'action'
     | 'Open Url on Device'
     | 'Start Project'
     | 'Serve Manifest'
+    | 'dev client start command'
     | 'Serve Expo Updates Manifest',
   properties: Record<string, any> = {}
 ): void {

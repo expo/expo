@@ -36,7 +36,12 @@ export function clear(): void {
 }
 
 /** Log a message and exit the current process. If the `code` is non-zero then `console.error` will be used instead of `console.log`. */
-export function exit(message: string, code: number = 1): never {
+export function exit(message: string | Error, code: number = 1): never {
+  if (message instanceof Error) {
+    exception(message);
+    process.exit(code);
+  }
+
   if (code === 0) {
     log(message);
   } else {
