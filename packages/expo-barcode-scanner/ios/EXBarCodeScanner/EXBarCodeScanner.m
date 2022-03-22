@@ -43,7 +43,7 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     };
     // Codabar - available in iOS 15.4+
     if (@available(iOS 15.4, *)) {
-        [_zxingBarcodeReaders setObject: [ZXCodaBarReader new] forKey:@"AVMetadataObjectTypeCodabarCode"];
+      [_zxingBarcodeReaders setObject: [ZXCodaBarReader new] forKey: AVMetadataObjectTypeCodabarCode];
     }
     _zxingFPSProcessed = 6;
     _zxingCaptureQueue = dispatch_queue_create("com.zxing.captureQueue", NULL);
