@@ -112,7 +112,6 @@ function HomeStackScreen() {
 
   return (
     <HomeStack.Navigator
-      mode="modal"
       initialRouteName="Home"
       screenOptions={{
         ...defaultNavigationOptions(themeName),
@@ -143,17 +142,20 @@ function HomeStackScreen() {
         component={AccountModal}
         options={({ route, navigation }) => ({
           title: 'Account',
-          headerShown: false,
-          gestureEnabled: true,
-          cardOverlayEnabled: true,
-          headerStatusBarHeight:
-            navigation
-              .dangerouslyGetState()
-              .routes.findIndex((r: RouteProp<HomeStackRoutes, 'Account'>) => r.key === route.key) >
-            0
-              ? 0
-              : undefined,
-          ...TransitionPresets.ModalPresentationIOS,
+          ...(Platform.OS === 'ios' && {
+            headerShown: false,
+            gestureEnabled: true,
+            cardOverlayEnabled: true,
+            headerStatusBarHeight:
+              navigation
+                .dangerouslyGetState()
+                .routes.findIndex(
+                  (r: RouteProp<HomeStackRoutes, 'Account'>) => r.key === route.key
+                ) > 0
+                ? 0
+                : undefined,
+            ...TransitionPresets.ModalPresentationIOS,
+          }),
         })}
       />
     </HomeStack.Navigator>
