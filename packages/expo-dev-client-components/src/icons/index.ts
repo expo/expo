@@ -9,6 +9,7 @@ export * from './ExtensionsFilledIcon';
 export * from './HomeFilledIcon';
 export * from './InfoIcon';
 export * from './InspectElementIcon';
+export * from './LoadingIndicatorIcon';
 export * from './PerformanceIcon';
 export * from './QuestionMarkIcon';
 export * from './RefreshIcon';
