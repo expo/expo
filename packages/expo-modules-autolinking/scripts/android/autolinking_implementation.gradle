@@ -170,6 +170,29 @@ if (rootProject instanceof ProjectDescriptor) {
     // Save the manager in the shared context, so that we can later use it in `build.gradle`.
     gradle.ext.expoAutolinkingManager = manager
   }
+
+  gradle.ext.expoGetConfig = { String field, Map options = [:] ->
+    String projectRoot = options["projectRoot"] ?: ".."
+    String nodeStatement = "require('@expo/config').getConfig('${projectRoot}').exp.${field}"
+    String[] nodeCommand = options["json"]
+      ? ["node", "--print", "JSON.stringify(${nodeStatement} ?? null)"]
+      : ["node", "--print", "(${nodeStatement} ?? '')"]
+
+    Process proc = nodeCommand.execute(null, rootDir)
+    String error = proc.err.text
+    if (error) {
+      logger.error("expoGetConfig() Execution failed - nodeCommand[${nodeCommand.join(' ')}]\n" + error)
+      return null
+    }
+    String config = proc.text.trim()
+    logger.info("expoGetConfig() - Execution - nodeCommand[${nodeCommand.join(' ')}] result[${config}]")
+
+    if (options["json"]) {
+      return new JsonSlurper().parseText(config)
+    }
+    return config.isEmpty() ? null : config
+  }
+
 } else {
   def addModule = { DependencyHandler handler, String projectName, Boolean useAAR ->
     Project dependency = rootProject.project(":${projectName}")
