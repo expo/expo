@@ -14,7 +14,7 @@ afterAll(() => {
 });
 
 it('loads expected modules by default', async () => {
-  const modules = await getLoadedModulesAsync(`require('../../build-cli/cli/config').expoConfig`);
+  const modules = await getLoadedModulesAsync(`require('../../build/cli/config').expoConfig`);
   expect(modules).toStrictEqual([
     'node_modules/ansi-styles/index.js',
     'node_modules/arg/index.js',
@@ -22,9 +22,9 @@ it('loads expected modules by default', async () => {
     'node_modules/chalk/source/util.js',
     'node_modules/has-flag/index.js',
     'node_modules/supports-color/index.js',
-    'packages/expo/build-cli/cli/config/index.js',
-    'packages/expo/build-cli/cli/log.js',
-    'packages/expo/build-cli/cli/utils/args.js',
+    'packages/@expo/cli/build/cli/config/index.js',
+    'packages/@expo/cli/build/cli/log.js',
+    'packages/@expo/cli/build/cli/utils/args.js',
   ]);
 });
 

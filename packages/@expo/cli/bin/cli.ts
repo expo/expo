@@ -8,14 +8,14 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
-  start: () => import('../cli/start').then((i) => i.expoStart),
-  prebuild: () => import('../cli/prebuild').then((i) => i.expoPrebuild),
-  config: () => import('../cli/config').then((i) => i.expoConfig),
+  start: () => import('../src/start').then((i) => i.expoStart),
+  prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
+  config: () => import('../src/config').then((i) => i.expoConfig),
   // Auth
-  login: () => import('../cli/login').then((i) => i.expoLogin),
-  logout: () => import('../cli/logout').then((i) => i.expoLogout),
-  register: () => import('../cli/register').then((i) => i.expoRegister),
-  whoami: () => import('../cli/whoami').then((i) => i.expoWhoami),
+  login: () => import('../src/login').then((i) => i.expoLogin),
+  logout: () => import('../src/logout').then((i) => i.expoLogout),
+  register: () => import('../src/register').then((i) => i.expoRegister),
+  whoami: () => import('../src/whoami').then((i) => i.expoWhoami),
 };
 
 const args = arg(
