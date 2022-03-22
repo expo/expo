@@ -175,5 +175,5 @@ it(
     await promise;
   },
   // Could take 45s depending on how fast npm installs
-  60 * 1000
+  120 * 1000
 );
