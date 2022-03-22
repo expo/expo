@@ -24,6 +24,7 @@ import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
+import { AccountModal } from '../screens/AccountModal';
 import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
@@ -111,8 +112,11 @@ function HomeStackScreen() {
 
   return (
     <HomeStack.Navigator
+      mode="modal"
       initialRouteName="Home"
-      screenOptions={defaultNavigationOptions(themeName)}>
+      screenOptions={{
+        ...defaultNavigationOptions(themeName),
+      }}>
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}
@@ -135,25 +139,22 @@ function HomeStackScreen() {
         }}
       />
       <HomeStack.Screen
-        name="RedesignedProjectDetails"
-        component={RedesignedProjectScreen}
-        options={{
-          title: 'Project',
-        }}
-      />
-      <HomeStack.Screen
-        name="Branches"
-        component={BranchListScreen}
-        options={{
-          title: 'Branches',
-        }}
-      />
-      <HomeStack.Screen
-        name="BranchDetails"
-        component={BranchDetailsScreen}
-        options={{
-          title: 'Branch',
-        }}
+        name="Account"
+        component={AccountModal}
+        options={({ route, navigation }) => ({
+          title: 'Account',
+          headerShown: false,
+          gestureEnabled: true,
+          cardOverlayEnabled: true,
+          headerStatusBarHeight:
+            navigation
+              .dangerouslyGetState()
+              .routes.findIndex((r: RouteProp<HomeStackRoutes, 'Account'>) => r.key === route.key) >
+            0
+              ? 0
+              : undefined,
+          ...TransitionPresets.ModalPresentationIOS,
+        })}
       />
     </HomeStack.Navigator>
   );

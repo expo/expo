@@ -1,7 +1,10 @@
 import { spacing } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Button, View, Row, Image, UserIcon, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
 import { CurrentUserDataFragment } from 'graphql/types';
+import { HomeStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
@@ -14,13 +17,15 @@ type Props = {
 export function HomeScreenHeader({ currentUser }: Props) {
   const { theme, themeType } = useTheme();
 
+  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
+
   async function onAccountButtonPress() {
     try {
       if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } catch (e) {
       console.error(e);
     }
-    console.log('Show Account Modal');
+    navigation.navigate('Account');
   }
 
   return (
