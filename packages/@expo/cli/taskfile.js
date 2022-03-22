@@ -11,7 +11,7 @@ export async function cli(task, opts) {
       ignore: ['**/__tests__/**', '**/__mocks__/**'],
     })
     .swc('cli', { dev: opts.dev })
-    .target('build/cli');
+    .target('build/src');
 }
 
 export async function build(task, opts) {
@@ -32,7 +32,7 @@ export default async function (task) {
   await task.clear('build');
   await task.start('build', opts);
   await task.watch('bin/*', 'bin', opts);
-  await task.watch('src/**/*.+(js|ts)', 'cli', opts);
+  await task.watch('src/**/*.+(js|ts)', 'src', opts);
 }
 
 export async function release(task) {

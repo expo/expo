@@ -16,18 +16,18 @@ afterAll(() => {
 });
 
 it('loads expected modules by default', async () => {
-  const modules = await getLoadedModulesAsync(`require('../../build/cli/login');`);
+  const modules = await getLoadedModulesAsync(`require('../../build/src/login');`);
   expect(modules).toStrictEqual([
-    'node_modules/ansi-styles/index.js',
-    'node_modules/arg/index.js',
-    'node_modules/chalk/source/index.js',
-    'node_modules/chalk/source/util.js',
-    'node_modules/has-flag/index.js',
-    'node_modules/supports-color/index.js',
-    'packages/@expo/cli/build/cli/log.js',
-    'packages/@expo/cli/build/cli/login/index.js',
-    'packages/@expo/cli/build/cli/utils/args.js',
-    'packages/@expo/cli/build/cli/utils/errors.js',
+    '../node_modules/ansi-styles/index.js',
+    '../node_modules/arg/index.js',
+    '../node_modules/chalk/source/index.js',
+    '../node_modules/chalk/source/util.js',
+    '../node_modules/has-flag/index.js',
+    '../node_modules/supports-color/index.js',
+    '@expo/cli/build/src/log.js',
+    '@expo/cli/build/src/login/index.js',
+    '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/errors.js',
   ]);
 });
 

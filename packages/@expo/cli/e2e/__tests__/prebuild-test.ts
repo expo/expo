@@ -29,17 +29,17 @@ afterAll(() => {
 });
 
 it('loads expected modules by default', async () => {
-  const modules = await getLoadedModulesAsync(`require('../../build/cli/prebuild').expoPrebuild`);
+  const modules = await getLoadedModulesAsync(`require('../../build/src/prebuild').expoPrebuild`);
   expect(modules).toStrictEqual([
-    'node_modules/ansi-styles/index.js',
-    'node_modules/arg/index.js',
-    'node_modules/chalk/source/index.js',
-    'node_modules/chalk/source/util.js',
-    'node_modules/has-flag/index.js',
-    'node_modules/supports-color/index.js',
-    'packages/@expo/cli/build/cli/log.js',
-    'packages/@expo/cli/build/cli/prebuild/index.js',
-    'packages/@expo/cli/build/cli/utils/args.js',
+    '../node_modules/ansi-styles/index.js',
+    '../node_modules/arg/index.js',
+    '../node_modules/chalk/source/index.js',
+    '../node_modules/chalk/source/util.js',
+    '../node_modules/has-flag/index.js',
+    '../node_modules/supports-color/index.js',
+    '@expo/cli/build/src/log.js',
+    '@expo/cli/build/src/prebuild/index.js',
+    '@expo/cli/build/src/utils/args.js',
   ]);
 });
 
