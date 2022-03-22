@@ -23,7 +23,5 @@ export function BranchDetailsContainer(
     },
   });
 
-  console.log(query.error, props.appId, props.branchName);
-
   return <BranchDetailsView {...props} {...query} />;
 }
