@@ -1,45 +1,23 @@
 {
-  "name": "expo",
-  "version": "44.0.0-beta.1",
-  "description": "The Expo SDK",
-  "main": "build/Expo.js",
-  "module": "build/Expo.js",
-  "types": "build/Expo.d.ts",
-  "sideEffects": [
-    "*.fx.js",
-    "*.fx.web.js"
-  ],
+  "name": "@expo/cli",
+  "version": "1.0.0",
+  "description": "The Expo CLI",
+  "main": "build/bin/cli",
   "bin": {
-    "expo": "build-cli/bin/cli"
+    "expo": "build/bin/cli"
   },
   "files": [
-    "android",
-    "bin",
     "static",
-    "build",
-    "build-cli",
-    "ios",
-    "scripts",
-    "tools",
-    "AppEntry.js",
-    "bundledNativeModules.json",
-    "expo-module.config.json",
-    "metro-config.js",
-    "react-native.config.js",
-    "requiresExtraSetup.json",
-    "tsconfig.base.json"
+    "build"
   ],
   "scripts": {
-    "build:cli": "taskr",
-    "prepare:cli": "taskr release",
-    "build": "expo-module build",
+    "build": "taskr",
+    "prepare": "taskr release",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "lint:cli": "yarn eslint cli",
+    "lint": "yarn eslint cli",
     "test": "expo-module test",
-    "test:cli": "jest --config e2e/jest-cli.config.js",
-    "test:cli:e2e": "jest --config e2e/jest-e2e.config.js",
-    "prepublishOnly": "npm run prepare:cli && expo-module prepublishOnly",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "jest": {
@@ -48,7 +26,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo"
+    "directory": "packages/@expo/cli"
   },
   "keywords": [
     "expo"
@@ -58,7 +36,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@expo/config": "^6.0.15",
@@ -73,25 +51,13 @@
     "@expo/prebuild-config": "^3.0.16",
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
-    "@expo/vector-icons": "^12.0.4",
     "@urql/core": "2.3.1",
     "@urql/exchange-retry": "0.3.0",
     "arg": "4.1.0",
-    "babel-preset-expo": "~9.0.1",
     "better-opn": "~3.0.2",
     "cacache": "^15.3.0",
     "chalk": "^4.0.0",
-    "cross-spawn": "^6.0.5",
     "env-editor": "^0.4.1",
-    "expo-application": "~4.0.1",
-    "expo-asset": "~8.4.5",
-    "expo-constants": "~13.0.0",
-    "expo-file-system": "~13.2.0",
-    "expo-font": "~10.0.4",
-    "expo-keep-awake": "~10.0.1",
-    "expo-modules-autolinking": "0.6.0",
-    "expo-modules-core": "0.7.0",
-    "fbemitter": "^3.0.0",
     "form-data": "^2.3.2",
     "freeport-async": "2.0.0",
     "fs-extra": "9.0.0",
@@ -99,7 +65,6 @@
     "graphql": "15.5.1",
     "graphql-tag": "2.12.5",
     "internal-ip": "4.3.0",
-    "invariant": "^2.2.4",
     "is-root": "^2.1.0",
     "js-yaml": "^3.13.1",
     "json-schema-deref-sync": "^0.13.0",
@@ -121,9 +86,6 @@
     "uuid": "^3.4.0",
     "wrap-ansi": "^7.0.0"
   },
-  "optionalDependencies": {
-    "expo-error-recovery": "~3.0.4"
-  },
   "taskr": {
     "requires": [
       "./taskfile-swc.js"
@@ -137,25 +99,17 @@
     "@taskr/esnext": "1.1.0",
     "@taskr/watch": "1.1.0",
     "@types/cacache": "^15.0.1",
-    "@types/fbemitter": "^2.0.32",
     "@types/form-data": "^2.2.0",
-    "@types/invariant": "^2.2.33",
     "@types/js-yaml": "^3.12.2",
     "@types/metro": "~0.66.1",
     "@types/metro-core": "~0.66.0",
     "@types/prompts": "^2.0.6",
-    "@types/react": "~17.0.21",
-    "@types/react-native": "~0.66.13",
-    "@types/react-test-renderer": "^17.0.1",
     "@types/uuid": "^3.4.7",
     "@types/webpack": "4.41.18",
     "@types/webpack-dev-server": "3.11.0",
     "expo-module-scripts": "^2.0.0",
     "klaw-sync": "^6.0.0",
     "nock": "~13.2.2",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-native": "0.67.2",
     "taskr": "1.1.0"
   }
 }
