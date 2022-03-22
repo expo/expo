@@ -46,11 +46,11 @@ jobs:
           key: ${{ runner.os }}-modules-v2-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
-      - name: Build CLI
-        run: yarn prepare
-        working-directory: packages/@expo/cli
       - name: Lint CLI
         run: yarn lint --max-warnings 0
+        working-directory: packages/@expo/cli
+      - name: Build CLI
+        run: yarn prepare
         working-directory: packages/@expo/cli
       - name: Unit Test CLI
         run: yarn test
