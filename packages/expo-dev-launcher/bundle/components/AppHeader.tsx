@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import {
   Button,
   Image,
@@ -10,45 +11,44 @@ import {
   UserIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useUser } from '../providers/UserContextProvider';
 
-type AppHeaderProps = {
-  title?: string;
-  subtitle?: string;
-  appImageUri?: string;
-  onUserProfilePress: () => void;
-};
+export function AppHeader() {
+  const navigation = useNavigation();
 
-export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: AppHeaderProps) {
-  const insets = useSafeAreaInsets();
+  const buildInfo = useBuildInfo();
+  const { appName, appIcon } = buildInfo;
+
   const { userData, selectedAccount } = useUser();
+
+  const onUserProfilePress = () => {
+    navigation.navigate('User Profile');
+  };
 
   const isAuthenticated = userData != null;
   const selectedUserImage = selectedAccount?.owner?.profilePhoto;
 
   return (
-    <View>
-      <View style={{ height: insets.top }} />
-
+    <View bg="default">
       <Row align="center" pb="small">
         <Spacer.Horizontal size="medium" />
         <View flex="1" shrink="1">
           <Row align="center">
-            {Boolean(appImageUri) && (
+            {Boolean(appIcon) && (
               <>
-                <Image size="xl" rounded="large" source={{ uri: appImageUri }} />
+                <Image size="xl" rounded="large" source={{ uri: appIcon }} />
                 <Spacer.Horizontal size="small" />
               </>
             )}
 
             <View flex="1">
               <Heading weight="semibold" numberOfLines={1}>
-                {title}
+                {appName}
               </Heading>
               <Text size="small" color="secondary">
-                {subtitle}
+                Development Build
               </Text>
             </View>
           </Row>

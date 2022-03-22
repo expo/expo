@@ -17,6 +17,7 @@ import { DevMenuPreferencesProvider } from './DevMenuPreferencesProvider';
 import { DevSessionsProvider } from './DevSessionsProvider';
 import { ModalProvider } from './ModalStackProvider';
 import { PendingDeepLinkProvider } from './PendingDeepLinkProvider';
+import { QueryProvider } from './QueryProvider';
 import { RecentApp, RecentlyOpenedAppsProvider } from './RecentlyOpenedAppsProvider';
 import { UserContextProvider } from './UserContextProvider';
 
@@ -46,28 +47,30 @@ export function AppProviders({
   const statusBarContent = isDark ? 'light-content' : 'dark-content';
 
   return (
-    <ThemeProvider themePreference="no-preference">
-      <UserContextProvider initialUserData={initialUserData}>
-        <DevMenuPreferencesProvider initialPreferences={initialDevMenuPreferences}>
-          <DevSessionsProvider initialDevSessions={initialDevSessions}>
-            <RecentlyOpenedAppsProvider initialApps={initialRecentlyOpenedApps}>
-              <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
-                <CrashReportProvider initialCrashReport={initialCrashReport}>
-                  <ModalProvider>
-                    <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
-                      <NavigationContainer
-                        theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
-                        <StatusBar barStyle={statusBarContent} />
-                        {children}
-                      </NavigationContainer>
-                    </PendingDeepLinkProvider>
-                  </ModalProvider>
-                </CrashReportProvider>
-              </BuildInfoProvider>
-            </RecentlyOpenedAppsProvider>
-          </DevSessionsProvider>
-        </DevMenuPreferencesProvider>
-      </UserContextProvider>
-    </ThemeProvider>
+    <QueryProvider>
+      <ThemeProvider themePreference="no-preference">
+        <UserContextProvider initialUserData={initialUserData}>
+          <DevMenuPreferencesProvider initialPreferences={initialDevMenuPreferences}>
+            <DevSessionsProvider initialDevSessions={initialDevSessions}>
+              <RecentlyOpenedAppsProvider initialApps={initialRecentlyOpenedApps}>
+                <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
+                  <CrashReportProvider initialCrashReport={initialCrashReport}>
+                    <ModalProvider>
+                      <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
+                        <NavigationContainer
+                          theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
+                          <StatusBar barStyle={statusBarContent} />
+                          {children}
+                        </NavigationContainer>
+                      </PendingDeepLinkProvider>
+                    </ModalProvider>
+                  </CrashReportProvider>
+                </BuildInfoProvider>
+              </RecentlyOpenedAppsProvider>
+            </DevSessionsProvider>
+          </DevMenuPreferencesProvider>
+        </UserContextProvider>
+      </ThemeProvider>
+    </QueryProvider>
   );
 }

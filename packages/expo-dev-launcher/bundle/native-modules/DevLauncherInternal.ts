@@ -41,6 +41,7 @@ export type BuildInfo = {
   appIcon?: string;
   sdkVersion?: string;
   runtimeVersion?: string;
+  appId?: string;
 };
 
 export async function getBuildInfoAsync(): Promise<BuildInfo> {

@@ -4,6 +4,7 @@ import {
   ExtensionsFilledIcon,
   HomeFilledIcon,
   SettingsFilledIcon,
+  View,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 
@@ -11,6 +12,8 @@ import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
 import { AppProviders } from './providers/AppProviders';
 import { CrashReportScreen } from './screens/CrashReportScreen';
+import { EASUpdatesBranchScreen } from './screens/EASUpdatesBranchScreen';
+import { EASUpdatesScreen } from './screens/EASUpdatesScreen';
 import { ExtensionsScreen } from './screens/ExtensionsScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
@@ -21,12 +24,19 @@ const Stack = createStackNavigator();
 
 type LauncherAppProps = {
   isSimulator?: boolean;
+  insets: {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+  };
 };
 
 export function App(props: LauncherAppProps) {
   return (
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
+        <View style={{ height: props.insets.top }} bg="default" />
         <Stack.Navigator initialRouteName="Main" mode="modal">
           <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 
@@ -40,6 +50,30 @@ export function App(props: LauncherAppProps) {
         </Stack.Navigator>
       </AppProviders>
     </LoadInitialData>
+  );
+}
+
+const ExtensionsStack = createStackNavigator();
+
+function Extensions() {
+  return (
+    <ExtensionsStack.Navigator>
+      <ExtensionsStack.Screen
+        name="Extensions"
+        component={ExtensionsScreen}
+        options={{ header: () => null }}
+      />
+      <ExtensionsStack.Screen
+        name="EASUpdates"
+        options={{ headerTitle: 'EAS Update' }}
+        component={EASUpdatesScreen}
+      />
+      <ExtensionsStack.Screen
+        name="Branch"
+        options={{ headerTitle: 'Branch' }}
+        component={EASUpdatesBranchScreen}
+      />
+    </ExtensionsStack.Navigator>
   );
 }
 
@@ -57,7 +91,7 @@ const Main = () => {
       {__DEV__ && (
         <Tab.Screen
           name="Extensions"
-          component={ExtensionsScreen}
+          component={Extensions}
           options={{
             header: () => null,
             tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,

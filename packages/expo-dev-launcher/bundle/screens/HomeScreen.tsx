@@ -23,7 +23,6 @@ import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
 import { UrlDropdown } from '../components/UrlDropdown';
 import { loadApp } from '../native-modules/DevLauncherInternal';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useCrashReport } from '../providers/CrashReportProvider';
 import { useDevSessions } from '../providers/DevSessionsProvider';
 import { useModalStack } from '../providers/ModalStackProvider';
@@ -45,9 +44,6 @@ export function HomeScreen({
 }: HomeScreenProps) {
   const modalStack = useModalStack();
   const { data: devSessions, pollAsync, isFetching } = useDevSessions();
-
-  const buildInfo = useBuildInfo();
-  const { appName, appIcon } = buildInfo;
 
   const crashReport = useCrashReport();
 
@@ -79,10 +75,6 @@ export function HomeScreen({
     pollAsync({ pollAmount, pollInterval });
   };
 
-  const onUserProfilePress = () => {
-    navigation.navigate('User Profile');
-  };
-
   const onAppPress = async (url: string) => {
     onLoadUrl(url);
   };
@@ -97,14 +89,7 @@ export function HomeScreen({
 
   return (
     <View testID="DevLauncherMainScreen">
-      <View bg="default">
-        <AppHeader
-          title={appName}
-          appImageUri={appIcon}
-          subtitle="Development Build"
-          onUserProfilePress={onUserProfilePress}
-        />
-      </View>
+      <AppHeader />
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         {crashReport && (
           <View px="medium" py="small" mt="small">
