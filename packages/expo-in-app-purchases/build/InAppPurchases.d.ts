@@ -1,5 +1,5 @@
-import { IAPErrorCode, IAPItemType, IAPQueryResponse, IAPResponseCode, InAppPurchase, InAppPurchaseState, IAPItemDetails, IAPPurchaseHistoryOptions, QueryResult } from './InAppPurchases.types';
-export { InAppPurchase, InAppPurchaseState, IAPResponseCode, IAPErrorCode, IAPItemType, IAPQueryResponse, IAPItemDetails, IAPPurchaseHistoryOptions, QueryResult, };
+import { IAPErrorCode, IAPItemType, IAPQueryResponse, IAPResponseCode, InAppPurchase, InAppPurchaseState, IAPItemDetails, IAPPurchaseHistoryOptions, QueryResult, IAPPurchaseItemOptions } from './InAppPurchases.types';
+export { InAppPurchase, InAppPurchaseState, IAPResponseCode, IAPErrorCode, IAPItemType, IAPQueryResponse, IAPItemDetails, IAPPurchaseHistoryOptions, QueryResult, IAPPurchaseItemOptions, };
 /**
  * Connects to the app store and performs all of the necessary initialization to prepare the module
  * to accept payments.
@@ -83,14 +83,18 @@ export declare function getPurchaseHistoryAsync(options?: IAPPurchaseHistoryOpti
  * service on iOS.
  *
  * @param itemId The product ID of the item you want to buy.
- * @param oldPurchaseToken __Android Only.__ The `purchaseToken` of the purchase that the user is
- * upgrading or downgrading from. This is mandatory for replacing an old subscription such as when
- * a user upgrades from a monthly subscription to a yearly one that provides the same content.
- * You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
+ * @param details __Android Only.__ details for billing flow is an object with the following properties:
+ *  - 'oldPurchaseToken' : the `purchaseToken` of the purchase that the user is upgrading or downgrading from. This is mandatory
+ *    for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly
+ *    one that provides the same content. You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
+ *  - 'accountIdentifiers' : account identifiers. Note: both ids must be provided for payments to work on Google Play.
+ *      - 'obfuscatedAccountId' : the obfuscated account ID of the user in the app's system.
+ *      - 'obfuscatedProfileId' : the obfuscated profile ID of the user in the app's system.
+ *  - 'isVrPurchaseFlow' : whether the purchase is happening in a VR context.
  * @return Returns a `Promise` that resolves when the purchase is done processing. To get the actual
  * result of the purchase, you must handle purchase events inside the `setPurchaseListener` callback.
  */
-export declare function purchaseItemAsync(itemId: string, oldPurchaseToken?: string): Promise<void>;
+export declare function purchaseItemAsync(itemId: string, details?: IAPPurchaseItemOptions): Promise<void>;
 /**
  * Sets a callback that handles incoming purchases. This must be done before any calls to
  * `purchaseItemAsync` are made, otherwise those transactions will be lost. You should **set the
