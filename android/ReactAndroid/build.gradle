@@ -551,7 +551,7 @@ react {
     libraryName = "rncore"
     jsRootDir = file("$projectDir/../../react-native-lab/react-native/Libraries")
     codegenDir = file("$projectDir/../../react-native-lab/react-native/packages/react-native-codegen")
-    reactRoot = file("$projectDir/../../react-native-lab/react-native")
+    reactNativeDir = file("$projectDir/../../react-native-lab/react-native")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 
