@@ -20,9 +20,6 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -51,10 +48,12 @@
     "@expo/prebuild-config": "^3.0.16",
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
+    "@expo/xcpretty": "^4.1.0",
     "@urql/core": "2.3.1",
     "@urql/exchange-retry": "0.3.0",
     "arg": "4.1.0",
     "better-opn": "~3.0.2",
+    "bplist-parser": "^0.3.1",
     "cacache": "^15.3.0",
     "chalk": "^4.0.0",
     "env-editor": "^0.4.1",
@@ -71,8 +70,8 @@
     "md5-file": "^3.2.3",
     "minipass": "3.1.6",
     "node-fetch": "^2.6.7",
+    "node-forge": "^1.2.1",
     "ora": "3.4.0",
-    "pretty-format": "^26.5.2",
     "progress": "2.0.3",
     "prompts": "^2.3.2",
     "qrcode-terminal": "0.11.0",
