@@ -107,6 +107,7 @@ dependencies {
   implementation project(':expo-updates-interface')
   implementation project(':expo-manifests')
   implementation project(':expo-json-utils')
+  implementation project(':expo-eas-client-id')
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
