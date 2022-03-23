@@ -18,9 +18,7 @@ on:
       - packages/**
       - yarn.lock
       # Ignore Expo CLI for now...
-      - '!packages/expo/cli/**'
-      - '!packages/expo/bin/**'
-      - '!packages/expo/e2e/**'
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -49,6 +47,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
+            packages/@expo/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
@@ -99,6 +98,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
+            packages/@expo/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
@@ -177,6 +177,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
+            packages/@expo/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}

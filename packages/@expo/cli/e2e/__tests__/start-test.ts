@@ -3,15 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import execa from 'execa';
 import fetch from 'node-fetch';
-import {
-  execute,
-  projectRoot,
-  getRoot,
-  getLoadedModulesAsync,
-  setupTestProjectAsync,
-  bin,
-} from './utils';
-import JsonFile from '@expo/json-file';
+import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -28,18 +20,18 @@ afterAll(() => {
 });
 
 it('loads expected modules by default', async () => {
-  const modules = await getLoadedModulesAsync(`require('../../build-cli/cli/start').expoStart`);
+  const modules = await getLoadedModulesAsync(`require('../../build/src/start').expoStart`);
   expect(modules).toStrictEqual([
-    'node_modules/ansi-styles/index.js',
-    'node_modules/arg/index.js',
-    'node_modules/chalk/source/index.js',
-    'node_modules/chalk/source/util.js',
-    'node_modules/has-flag/index.js',
-    'node_modules/supports-color/index.js',
-    'packages/expo/build-cli/cli/log.js',
-    'packages/expo/build-cli/cli/start/index.js',
-    'packages/expo/build-cli/cli/utils/args.js',
-    'packages/expo/build-cli/cli/utils/errors.js',
+    '../node_modules/ansi-styles/index.js',
+    '../node_modules/arg/index.js',
+    '../node_modules/chalk/source/index.js',
+    '../node_modules/chalk/source/util.js',
+    '../node_modules/has-flag/index.js',
+    '../node_modules/supports-color/index.js',
+    '@expo/cli/build/src/log.js',
+    '@expo/cli/build/src/start/index.js',
+    '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/errors.js',
   ]);
 });
 
