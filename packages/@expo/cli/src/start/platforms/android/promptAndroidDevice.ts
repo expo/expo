@@ -18,7 +18,7 @@ function nameStyleForDevice(device: Device): (name: string) => string {
   return (text: string) => chalk.bold(chalk.gray(text));
 }
 
-export async function promptForDeviceAsync(devices: Device[]): Promise<Device | null> {
+export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
   // TODO: provide an option to add or download more simulators
 
   const { value } = await promptAsync({
@@ -40,12 +40,12 @@ export async function promptForDeviceAsync(devices: Device[]): Promise<Device | 
     },
   });
 
-  const device = value ? devices.find(({ name }) => name === value)! : null;
+  const device = devices.find(({ name }) => name === value);
 
   if (device?.isAuthorized === false) {
     logUnauthorized(device);
     throw new AbortCommandError();
   }
 
-  return device;
+  return device!;
 }

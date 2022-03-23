@@ -2,7 +2,7 @@ import * as Log from '../../../log';
 import { installExitHooks } from '../../../utils/exit';
 import { adbArgs, Device, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
 
-let removeExitHook: () => void | null = null;
+let removeExitHook: (() => void) | null = null;
 
 export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   // Install cleanup automatically...
@@ -42,8 +42,8 @@ async function adbReverseAsync(device: Device, port: number): Promise<boolean> {
   try {
     await getServer().runAsync(adbArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`));
     return true;
-  } catch (e) {
-    Log.warn(`[ADB] Couldn't reverse port ${port}: ${e.message}`);
+  } catch (error: any) {
+    Log.warn(`[ADB] Couldn't reverse port ${port}: ${error.message}`);
     return false;
   }
 }
@@ -56,9 +56,9 @@ async function adbReverseRemoveAsync(device: Device, port: number): Promise<bool
   try {
     await getServer().runAsync(adbArgs(device.pid, 'reverse', '--remove', `tcp:${port}`));
     return true;
-  } catch (e) {
+  } catch (error: any) {
     // Don't send this to warn because we call this preemptively sometimes
-    Log.debug(`[ADB] Couldn't reverse remove port ${port}: ${e.message}`);
+    Log.debug(`[ADB] Couldn't reverse remove port ${port}: ${error.message}`);
     return false;
   }
 }

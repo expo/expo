@@ -123,9 +123,9 @@ export async function startInterfaceAsync(
         try {
           await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
           printHelp();
-        } catch (e) {
-          if (!(e instanceof AbortCommandError)) {
-            Log.exception(e);
+        } catch (error: any) {
+          if (!(error instanceof AbortCommandError)) {
+            Log.exception(error);
           }
         }
       }
@@ -163,11 +163,11 @@ export async function startInterfaceAsync(
 
         Log.log(`${BLT} Open in the web browser...`);
         try {
-          await devServerManager.getWebDevServer().openPlatformAsync('desktop');
+          await devServerManager.getWebDevServer()?.openPlatformAsync('desktop');
           printHelp();
-        } catch (e) {
-          if (!(e instanceof AbortCommandError)) {
-            Log.exception(e);
+        } catch (error: any) {
+          if (!(error instanceof AbortCommandError)) {
+            Log.exception(error);
           }
         }
         break;

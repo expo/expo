@@ -28,7 +28,7 @@ export class XcrunPrerequisite extends Prerequisite {
       return;
     }
 
-    async function pendingAsync() {
+    async function pendingAsync(): Promise<void> {
       if (!(await isXcrunInstalledAsync())) {
         await delayAsync(100);
         return await pendingAsync();

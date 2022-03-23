@@ -12,9 +12,9 @@ export async function extractAsync(input: string, output: string): Promise<void>
       });
       return;
     }
-  } catch (e) {
+  } catch (error: any) {
     Log.warn(
-      `Failed to extract tar using native tools, falling back on JS tar module. ${e.message}`
+      `Failed to extract tar using native tools, falling back on JS tar module. ${error.message}`
     );
   }
   // tar node module has previously had problems with big files, and seems to

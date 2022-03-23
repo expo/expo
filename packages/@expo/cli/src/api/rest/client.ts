@@ -75,7 +75,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
         if (data?.errors?.length) {
           throw new ApiV2Error(data.errors[0]);
         }
-      } catch (error) {
+      } catch (error: any) {
         // Server returned non-json response.
         if (error.message.includes('in JSON at position')) {
           throw new UnexpectedServerError(body);

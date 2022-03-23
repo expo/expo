@@ -30,7 +30,7 @@ export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>):
   // Google Emulator ID: `emulator-5554` -> `5554`
   const androidPid = device.pid!.match(/-(\d+)/)?.[1];
   if (!androidPid) {
-    return;
+    return false;
   }
   // Unix PID
   const pid = getUnixPID(androidPid);

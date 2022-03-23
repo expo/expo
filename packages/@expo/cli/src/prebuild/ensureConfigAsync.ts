@@ -30,7 +30,7 @@ export async function ensureConfigExistsAsync(projectRoot: string) {
         { json5: false }
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     // TODO(Bacon): Currently this is already handled in the command
     Log.log();
     throw new CommandError(`${error.message}\n`);
