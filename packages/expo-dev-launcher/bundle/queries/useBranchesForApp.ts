@@ -87,14 +87,20 @@ export function useBranchesForApp(appId: string) {
     }
   );
 
+  // branches (including empty ones) that might have been created recently
   const branches =
     query.data?.pages
       .flatMap((page) => page.branches)
       .filter((branch) => branch.updates.length > 0) ?? [];
 
+  const emptyBranches = query.data.pages[0].branches.filter(
+    (branch) => branch.updates.length === 0
+  );
+
   return {
     ...query,
     data: branches,
+    emptyBranches,
     isRefreshing: query.isRefetching && !query.isFetchingNextPage,
     isFetchingNextPage: !query.isLoading && query.isFetchingNextPage,
   };

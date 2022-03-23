@@ -31,7 +31,25 @@ export const View = create(RNView, {
             '0': { flexGrow: 0 },
         },
         bg,
+<<<<<<< HEAD
         border,
+||||||| parent of a6d1e1f66d (add recently created branches to footer of branch list)
+        border: {
+            default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+            hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+        },
+=======
+        opacity: {
+            '1': { opacity: 1 },
+            '0.5': { opacity: 0.5 },
+            '0.75': { opacity: 0.75 },
+            '0': { opacity: 0 },
+        },
+        border: {
+            default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+            hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+        },
+>>>>>>> a6d1e1f66d (add recently created branches to footer of branch list)
         ...rounded,
         shadow: {
             micro: shadows.micro,

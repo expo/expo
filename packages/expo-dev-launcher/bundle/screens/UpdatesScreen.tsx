@@ -31,6 +31,10 @@ export function UpdatesScreen({ route }) {
   } = useUpdatesForBranch(branchName);
 
   function Header() {
+    if (updates.length === 0) {
+      return null;
+    }
+
     return (
       <View py="small" px="large">
         <Heading size="small" color="secondary">
@@ -46,6 +50,15 @@ export function UpdatesScreen({ route }) {
     }
 
     return null;
+  }
+
+  function EmptyList() {
+    return (
+      <View px="large">
+        <Spacer.Vertical size="large" />
+        <Heading color="secondary">This branch has no published updates yet.</Heading>
+      </View>
+    );
   }
 
   function renderUpdate({ index, item: update }: { index; item: Update }) {
@@ -86,6 +99,7 @@ export function UpdatesScreen({ route }) {
         renderItem={renderUpdate}
         keyExtractor={(item) => item.id}
         ListFooterComponent={Footer}
+        ListEmptyComponent={EmptyList}
       />
     </View>
   );

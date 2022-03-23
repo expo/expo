@@ -1,8 +1,8 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Heading, View, Button, Divider } from 'expo-dev-client-components';
+import { Heading, View, Button, Divider, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
 
-import { EASBranchRow } from '../components/EASUpdatesRows';
+import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
@@ -17,6 +17,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   const { appId } = useBuildInfo();
   const {
     data: branches,
+    emptyBranches,
     isLoading,
     isRefreshing,
     isFetchingNextPage,
@@ -40,11 +41,15 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   }
 
   function Footer() {
-    if (hasNextPage) {
-      return <LoadMoreButton isLoading={isFetchingNextPage} onPress={fetchNextPage} />;
-    }
-
-    return null;
+    return (
+      <View>
+        <EmptyBranchesList
+          branches={emptyBranches}
+          onBranchPress={(branch) => onBranchPress(branch.name)}
+        />
+        {hasNextPage && <LoadMoreButton isLoading={isFetchingNextPage} onPress={fetchNextPage} />}
+      </View>
+    );
   }
 
   function renderBranch({ index, item: branch }: { index: number; item: Branch }) {
@@ -52,20 +57,9 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
     const isLast = index === branches?.length - 1;
 
     return (
-      <Button.ScaleOnPressContainer
-        bg="default"
-        onPress={() => onBranchPress(branch.name)}
-        roundedBottom={isLast ? 'large' : 'none'}
-        roundedTop={isFirst ? 'large' : 'none'}>
-        <View
-          bg="default"
-          roundedTop={isFirst ? 'large' : 'none'}
-          roundedBottom={isLast ? 'large' : 'none'}
-          py="small"
-          px="small">
-          <EASBranchRow branch={branch} />
-        </View>
-      </Button.ScaleOnPressContainer>
+      <ButtonContainer onPress={() => onBranchPress(branch.name)} isFirst={isFirst} isLast={isLast}>
+        <EASBranchRow branch={branch} />
+      </ButtonContainer>
     );
   }
 
@@ -83,6 +77,67 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
         keyExtractor={(item) => item?.id}
         ListFooterComponent={Footer}
       />
+    </View>
+  );
+}
+
+function ButtonContainer({ children, onPress, isFirst, isLast }) {
+  return (
+    <Button.ScaleOnPressContainer
+      bg="default"
+      onPress={onPress}
+      roundedBottom={isLast ? 'large' : 'none'}
+      roundedTop={isFirst ? 'large' : 'none'}>
+      <View
+        bg="default"
+        roundedTop={isFirst ? 'large' : 'none'}
+        roundedBottom={isLast ? 'large' : 'none'}
+        py="small"
+        px="small">
+        {children}
+      </View>
+    </Button.ScaleOnPressContainer>
+  );
+}
+
+type EmptyBranchesListProps = {
+  branches: Branch[];
+  onBranchPress: (branch: Branch) => void;
+};
+
+function EmptyBranchesList({ branches, onBranchPress }: EmptyBranchesListProps) {
+  if (branches.length === 0) {
+    return null;
+  }
+
+  return (
+    <View>
+      <Spacer.Vertical size="medium" />
+
+      <View py="small" px="small">
+        <Heading size="small" color="secondary">
+          Recently created branches
+        </Heading>
+      </View>
+
+      {branches.slice(0, 3).map((branch, index, arr) => {
+        const isFirst = index === 0;
+        const isLast = index === arr?.length - 1;
+
+        return (
+          <View key={branch.id}>
+            <ButtonContainer
+              onPress={() => onBranchPress(branch)}
+              isFirst={isFirst}
+              isLast={isLast}>
+              <EASEmptyBranchRow branch={branch} />
+            </ButtonContainer>
+            {!isLast && <Divider />}
+          </View>
+        );
+      })}
+
+      <Spacer.Vertical size="small" />
     </View>
   );
 }

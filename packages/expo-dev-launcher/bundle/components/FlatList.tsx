@@ -32,6 +32,7 @@ export function FlatList<T>({
     <View flex="1">
       <RNFlatList
         style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: scale[22] }}
         refreshControl={
           <RefreshControl

@@ -24,7 +24,14 @@ export declare const View: import("react").ForwardRefExoticComponent<import("rea
     shrink?: "0" | "1" | undefined;
     grow?: "0" | "1" | undefined;
     bg?: "secondary" | "default" | "none" | "error" | "warning" | "success" | "overlay" | undefined;
+<<<<<<< HEAD
     border?: "default" | "warning" | "hairline" | undefined;
+||||||| parent of a6d1e1f66d (add recently created branches to footer of branch list)
+    border?: "default" | "hairline" | undefined;
+=======
+    opacity?: "0" | "1" | "0.5" | "0.75" | undefined;
+    border?: "default" | "hairline" | undefined;
+>>>>>>> a6d1e1f66d (add recently created branches to footer of branch list)
 } & {
     selectors?: {
         light?: (import("react-native").ViewStyle | import("react-native").TextStyle | import("react-native").ImageStyle) | undefined;

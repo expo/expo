@@ -47,32 +47,79 @@ export function EASBranchRow({ branch }: EASBranchRowProps) {
         </View>
       </Row>
 
+      <Spacer.Vertical size="small" />
+
       {latestUpdate != null && (
-        <>
-          <Spacer.Vertical size="small" />
-
-          <Row>
-            <View>
-              <Spacer.Vertical size="tiny" />
-              <UpdateIcon />
-            </View>
-            <Spacer.Horizontal size="small" />
-            <View flex="1" shrink="1">
-              <Heading size="small" numberOfLines={1}>
-                {`Update "${latestUpdate.message}"`}
-              </Heading>
-              <Spacer.Horizontal size="large" />
-              <Spacer.Vertical size="tiny" />
-              <Text size="small" color="secondary">
-                {`Published ${latestUpdate.createdAt}`}
-              </Text>
-            </View>
-
+        <Row>
+          <View>
+            <Spacer.Vertical size="tiny" />
+            <UpdateIcon />
+          </View>
+          <Spacer.Horizontal size="small" />
+          <View flex="1" shrink="1">
+            <Heading size="small" numberOfLines={1}>
+              {`Update "${latestUpdate.message}"`}
+            </Heading>
             <Spacer.Horizontal size="large" />
-          </Row>
-        </>
+            <Spacer.Vertical size="tiny" />
+            <Text size="small" color="secondary">
+              {`Published ${latestUpdate?.createdAt}`}
+            </Text>
+          </View>
+
+          <Spacer.Horizontal size="large" />
+        </Row>
       )}
       <Spacer.Vertical size="small" />
+    </View>
+  );
+}
+
+export function EASEmptyBranchRow({ branch }: EASBranchRowProps) {
+  const palette = useExpoPalette();
+
+  const { name } = branch;
+
+  return (
+    <View opacity="0.5">
+      <Row>
+        <Row
+          style={{ backgroundColor: palette.blue['100'] }}
+          py="tiny"
+          px="1.5"
+          rounded="medium"
+          align="center">
+          <BranchIcon
+            style={{ maxHeight: 10, maxWidth: 12, resizeMode: 'contain' }}
+            resizeMethod="scale"
+          />
+          <Spacer.Horizontal size="tiny" />
+          <Text size="small">{`Branch: ${name}`}</Text>
+        </Row>
+
+        <View style={{ position: 'absolute', right: 0, top: scale.tiny }}>
+          <ChevronRightIcon />
+        </View>
+      </Row>
+
+      <Spacer.Vertical size="small" />
+
+      <Row>
+        <View>
+          <Spacer.Vertical size="tiny" />
+          <UpdateIcon />
+        </View>
+        <Spacer.Horizontal size="small" />
+        <View flex="1" shrink="1">
+          <Heading size="small" numberOfLines={1}>
+            No updates available.
+          </Heading>
+          <Spacer.Horizontal size="large" />
+          <Spacer.Vertical size="tiny" />
+        </View>
+
+        <Spacer.Horizontal size="large" />
+      </Row>
     </View>
   );
 }
