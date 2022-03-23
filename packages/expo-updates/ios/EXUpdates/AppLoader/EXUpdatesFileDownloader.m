@@ -429,14 +429,25 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
                      successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
+  NSMutableDictionary *mutableManifest = manifest.mutableCopy;
+  if (_config.expectsSignedManifest) {
+    // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
+    mutableManifest[@"isVerified"] = @(isVerified);
+  }
+  
+  // check code signing if code signing is configured
+  // 1. verify the code signing signature (throw if invalid)
+  // 2. then, if the code signing certificate is only valid for a particular project, verify that the manifest
+  //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
+  //    project, it is assumed to be valid for all projects
+  // 3. mark the manifest as verified if both of these pass
   EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
   if (codeSigningConfiguration) {
     NSError *error;
-    [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
+    EXUpdatesSignatureValidationResult *signatureValidationResult = [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
                                                   signedData:manifestBodyData
                             manifestResponseCertificateChain:certificateChainFromManifestResponse
                                                        error:&error];
-    
     if (error) {
       NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
@@ -444,13 +455,55 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
                                  userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
       return;
     }
+    
+    if (signatureValidationResult.validationResult == EXUpdatesValidationResultInvalid) {
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
+      return;
+    }
+    
+    if (signatureValidationResult.validationResult != EXUpdatesValidationResultSkipped) {
+      EXUpdatesExpoProjectInformation *expoProjectInformation = signatureValidationResult.expoProjectInformation;
+      if (expoProjectInformation != nil) {
+        NSError *error;
+        EXUpdatesUpdate *update;
+        @try {
+          update = [EXUpdatesUpdate updateWithManifest:mutableManifest
+                                       manifestHeaders:manifestHeaders
+                                            extensions:extensions
+                                                config:_config
+                                              database:database
+                                                 error:&error];
+        }
+        @catch (NSException *exception) {
+          // Catch any assertions related to parsing the manifest JSON,
+          // this will ensure invalid manifests can be easily debugged.
+          // For example, this will catch nullish sdkVersion assertions.
+          error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                      code:EXUpdatesFileDownloaderErrorCodeManifestParseError
+                                  userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
+        }
+        if (error) {
+          errorBlock(error);
+          return;
+        }
+        
+        EXManifestsManifest *manifestForProjectInformation = update.manifest;
+        if (![expoProjectInformation.projectId isEqualToString:manifestForProjectInformation.easProjectId] ||
+            ![expoProjectInformation.scopeKey isEqualToString:manifestForProjectInformation.scopeKey]) {
+          errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                         code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Invalid certificate for manifest project ID or scope key"}]);
+          return;
+        }
+      }
+      
+      mutableManifest[@"isVerified"] = @YES;
+    }
   }
   
-  NSMutableDictionary *mutableManifest = manifest.mutableCopy;
-  if (_config.expectsSignedManifest) {
-    // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
-    mutableManifest[@"isVerified"] = @(isVerified);
-  }
+  
 
   NSError *error;
   EXUpdatesUpdate *update;

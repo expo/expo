@@ -20,7 +20,7 @@ import Foundation
   case SignatureHeaderSignatureEncodingError
   case SignatureEncodingError
   case AlgorithmParseError
-  case InvalidSignature
+  case InvalidExpoProjectInformationExtensionValue
 }
 
 @objc public class EXUpdatesCodeSigningErrorUtils : NSObject {
@@ -60,8 +60,8 @@ import Foundation
       return "Invalid signature encoding"
     case .AlgorithmParseError:
       return "Invalid algorithm"
-    case .InvalidSignature:
-      return "Manifest download was successful, but signature was incorrect"
+    case .InvalidExpoProjectInformationExtensionValue:
+      return "Invalid Expo project information extension value"
     }
   }
 }
