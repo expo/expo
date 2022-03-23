@@ -7,7 +7,7 @@ public class EASClientIDModule: Module {
     name("EASClientID")
     
     asyncFunction("getClientIDAsync") {
-      return EASClientID.uuid.uuidString
+      return EASClientID.uuid().uuidString
     }
   }
 }
