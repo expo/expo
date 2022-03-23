@@ -60,6 +60,7 @@ export function getTestModules() {
 
   // Universally tested APIs
   modules.push(
+    require('./tests/EASClientID'),
     require('./tests/Random'),
     require('./tests/Crypto'),
     require('./tests/KeepAwake'),

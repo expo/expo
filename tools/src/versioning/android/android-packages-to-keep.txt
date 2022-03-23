@@ -7,6 +7,7 @@ expo.modules.apploader
 expo.modules.interfaces.taskManager
 expo.modules.core.interfaces.Consumer
 expo.modules.core.interfaces.SingletonModule
+expo.modules.easclientid
 expo.modules.jsonutils
 expo.modules.manifests
 expo.modules.notifications.notifications.model

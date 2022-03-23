@@ -29,6 +29,7 @@
     "expo-contacts": "~10.1.0",
     "expo-crypto": "~10.1.0",
     "expo-device": "~4.1.0",
+    "expo-eas-client-id": "~0.1.0",
     "expo-file-system": "~13.2.0",
     "expo-gl": "~11.1.0",
     "expo-google-sign-in": "~10.1.0",
