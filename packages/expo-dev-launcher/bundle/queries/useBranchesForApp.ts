@@ -3,17 +3,33 @@ import { gql } from 'graphql-request';
 import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { queryClient } from '../providers/QueryProvider';
 import { primeCacheWithUpdates, Update, updatesPageSize } from './useUpdatesForBranch';
 
 const query = gql`
-  query getBranches($appId: String!, $offset: Int!, $limit: Int!, $updatesLimit: Int!) {
+  query getBranches(
+    $appId: String!
+    $offset: Int!
+    $limit: Int!
+    $updatesLimit: Int!
+    $runtimeVersion: String!
+  ) {
     app {
       byId(appId: $appId) {
         updateBranches(offset: $offset, limit: $limit) {
           id
           name
-          updates(offset: 0, limit: $updatesLimit) {
+
+          compatibleUpdates: updates(
+            offset: 0
+            limit: 1
+            filter: { runtimeVersions: [$runtimeVersion] }
+          ) {
+            id
+          }
+
+          updates: updates(offset: 0, limit: $updatesLimit) {
             id
             message
             runtimeVersion
@@ -33,10 +49,26 @@ export type Branch = {
 
 export const branchPageSize = 10;
 
-function getBranchesAsync({ appId, page = 1 }: { appId: string; page?: number }) {
+function getBranchesAsync({
+  appId,
+  page = 1,
+  runtimeVersion,
+}: {
+  appId: string;
+  page?: number;
+  runtimeVersion: string;
+}) {
   const offset = (page - 1) * branchPageSize;
-  const variables = { appId, offset, limit: branchPageSize, updatesLimit: updatesPageSize };
+  const variables = {
+    appId,
+    offset,
+    limit: branchPageSize,
+    updatesLimit: updatesPageSize,
+    runtimeVersion,
+  };
+
   const branches: Branch[] = [];
+  const incompatibleBranches: Branch[] = [];
 
   return apiClient.request(query, variables).then((response) => {
     const updateBranches = response.app.byId.updateBranches;
@@ -53,7 +85,13 @@ function getBranchesAsync({ appId, page = 1 }: { appId: string; page?: number })
         }),
       };
 
-      branches.push(branch);
+      const isCompatible = updateBranch.compatibleUpdates.length > 0;
+
+      if (isCompatible) {
+        branches.push(branch);
+      } else {
+        incompatibleBranches.push(branch);
+      }
 
       // side-effect: prime the cache with branches
       primeCacheWithBranch(appId, branch);
@@ -64,16 +102,19 @@ function getBranchesAsync({ appId, page = 1 }: { appId: string; page?: number })
 
     return {
       branches,
+      incompatibleBranches,
       page,
     };
   });
 }
 
 export function useBranchesForApp(appId: string) {
+  const { runtimeVersion } = useBuildInfo();
+
   const query = useInfiniteQuery(
     ['branches', appId],
     ({ pageParam }) => {
-      return getBranchesAsync({ appId, page: pageParam });
+      return getBranchesAsync({ appId, page: pageParam, runtimeVersion });
     },
     {
       refetchOnMount: false,
@@ -87,13 +128,16 @@ export function useBranchesForApp(appId: string) {
     }
   );
 
-  // branches (including empty ones) that might have been created recently
   const branches =
     query.data?.pages
       .flatMap((page) => page.branches)
       .filter((branch) => branch.updates.length > 0) ?? [];
 
-  const emptyBranches = query.data.pages[0].branches.filter(
+  // incompatible branches are branches that have no compatible updates with the current runtimeVersion
+  const incompatibleBranches = query?.data.pages.flatMap((page) => page.incompatibleBranches) ?? [];
+
+  // emptyBranches are branches that have no updates and have been created recently
+  const emptyBranches = query?.data.pages[0].branches.filter(
     (branch) => branch.updates.length === 0
   );
 
@@ -101,14 +145,15 @@ export function useBranchesForApp(appId: string) {
     ...query,
     data: branches,
     emptyBranches,
+    incompatibleBranches,
     isRefreshing: query.isRefetching && !query.isFetchingNextPage,
     isFetchingNextPage: !query.isLoading && query.isFetchingNextPage,
   };
 }
 
-export function prefetchBranchesForApp(appId: string) {
+export function prefetchBranchesForApp(appId: string, runtimeVersion: string) {
   return queryClient.prefetchInfiniteQuery(['branches', appId], ({ pageParam = 1 }) =>
-    getBranchesAsync({ page: pageParam, appId })
+    getBranchesAsync({ page: pageParam, appId, runtimeVersion })
   );
 }
 

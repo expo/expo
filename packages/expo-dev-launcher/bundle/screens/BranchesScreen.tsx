@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Heading, View, Button, Divider, Spacer } from 'expo-dev-client-components';
+import { Heading, View, Button, Divider, Spacer, Text } from 'expo-dev-client-components';
 import * as React from 'react';
 
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
@@ -18,6 +18,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   const {
     data: branches,
     emptyBranches,
+    incompatibleBranches,
     isLoading,
     isRefreshing,
     isFetchingNextPage,
@@ -47,6 +48,18 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
           branches={emptyBranches}
           onBranchPress={(branch) => onBranchPress(branch.name)}
         />
+
+        {incompatibleBranches.length > 0 && (
+          <>
+            <Spacer.Vertical size="small" />
+            <View px="small">
+              <Text size="small" color="secondary">
+                {getIncompatibleBranchMessage(incompatibleBranches.length)}
+              </Text>
+            </View>
+          </>
+        )}
+
         {hasNextPage && <LoadMoreButton isLoading={isFetchingNextPage} onPress={fetchNextPage} />}
       </View>
     );
@@ -140,4 +153,12 @@ function EmptyBranchesList({ branches, onBranchPress }: EmptyBranchesListProps) 
       <Spacer.Vertical size="small" />
     </View>
   );
+}
+
+function getIncompatibleBranchMessage(numberOfIncompatibleBranches: number) {
+  if (numberOfIncompatibleBranches === 1) {
+    return `There is 1 branch that is not compatible with this development app. To preview it, download or build a development client that matches its runtime version.`;
+  }
+
+  return `There are ${numberOfIncompatibleBranches} branches that are not compatible with this development app. To preview them, download or build a development client that matches their runtime version.`;
 }
