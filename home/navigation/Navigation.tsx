@@ -137,27 +137,6 @@ function HomeStackScreen() {
           title: 'Snacks',
         }}
       />
-      <HomeStack.Screen
-        name="Account"
-        component={AccountModal}
-        options={({ route, navigation }) => ({
-          title: 'Account',
-          ...(Platform.OS === 'ios' && {
-            headerShown: false,
-            gestureEnabled: true,
-            cardOverlayEnabled: true,
-            headerStatusBarHeight:
-              navigation
-                .dangerouslyGetState()
-                .routes.findIndex(
-                  (r: RouteProp<HomeStackRoutes, 'Account'>) => r.key === route.key
-                ) > 0
-                ? 0
-                : undefined,
-            ...TransitionPresets.ModalPresentationIOS,
-          }),
-        })}
-      />
     </HomeStack.Navigator>
   );
 }
@@ -399,6 +378,25 @@ export default (props: { theme: ColorTheme }) => {
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>
+              <RootStack.Screen
+                name="Account"
+                component={AccountModal}
+                options={({ route, navigation }) => ({
+                  title: 'Account',
+                  ...(Platform.OS === 'ios' && {
+                    headerShown: false,
+                    gestureEnabled: true,
+                    cardOverlayEnabled: true,
+                    headerStatusBarHeight:
+                      navigation
+                        .dangerouslyGetState()
+                        .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
+                        ? 0
+                        : undefined,
+                    ...TransitionPresets.ModalPresentationIOS,
+                  }),
+                })}
+              />
             </RootStack.Navigator>
           )}
         </ModalStack.Screen>
