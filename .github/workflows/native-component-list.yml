@@ -8,9 +8,7 @@ on:
       - apps/native-component-list/**
       - packages/**
       - yarn.lock
-      - '!packages/expo/cli/**'
-      - '!packages/expo/bin/**'
-      - '!packages/expo/e2e/**'
+      - '!packages/@expo/cli/**'
   push:
     branches: [main]
     paths:
@@ -18,9 +16,7 @@ on:
       - apps/native-component-list/**
       - packages/**
       - yarn.lock
-      - '!packages/expo/cli/**'
-      - '!packages/expo/bin/**'
-      - '!packages/expo/e2e/**'
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

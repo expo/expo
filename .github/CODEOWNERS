@@ -1,3 +1,4 @@
+/packages/@expo/cli                             @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne
 /packages/expo-ads-admob                        @tsapeta
 /packages/expo-ads-facebook                     @tsapeta
@@ -87,9 +88,6 @@
 /packages/expo-web-browser                      @bbarthec
 /packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta
-/packages/expo/cli                              @EvanBacon @bycedric
-/packages/expo/e2e                              @EvanBacon @bycedric
-/packages/expo/bin                              @EvanBacon @bycedric
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne

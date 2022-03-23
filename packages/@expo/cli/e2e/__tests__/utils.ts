@@ -7,9 +7,9 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { copySync } from '../../cli/utils/dir';
+import { copySync } from '../../src/utils/dir';
 
-export const bin = require.resolve('../../build-cli/bin/cli');
+export const bin = require.resolve('../../build/bin/cli');
 
 export const projectRoot = getTemporaryPath();
 
