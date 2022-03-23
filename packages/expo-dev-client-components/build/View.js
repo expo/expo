@@ -45,9 +45,31 @@ export const View = create(RNView, {
             '0.75': { opacity: 0.75 },
             '0': { opacity: 0 },
         },
+        absolute: {
+            top: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+            },
+            bottom: {
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+            },
+            all: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+            },
+        },
         border: {
             default: { borderColor: lightTheme.border.default, borderWidth: 1 },
             hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+            warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
         },
 >>>>>>> a6d1e1f66d (add recently created branches to footer of branch list)
         ...rounded,

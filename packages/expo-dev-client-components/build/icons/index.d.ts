@@ -22,5 +22,6 @@ export * from './ThreeFingerPressIcon';
 export * from './ToolbarOverlayIcon';
 export * from './UpdateIcon';
 export * from './UserIcon';
+export * from './WarningIcon';
 export * from './XIcon';
 //# sourceMappingURL=index.d.ts.map

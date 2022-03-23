@@ -1,7 +1,13 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 {"version":3,"file":"View.d.ts","sourceRoot":"","sources":["../src/View.tsx"],"names":[],"mappings":";AAiBA,eAAO,MAAM,IAAI;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;oEAiEf,CAAC;AAEH,eAAO,MAAM,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;oEAmDd,CAAC;AAkCH,eAAO,MAAM,MAAM;;;;;;;;;;;;;;;;;;;;;CAGlB,CAAC;AAEF,eAAO,MAAM,OAAO;;;;;;;;;;;;;;oEAwBlB,CAAC;AAEH,eAAO,MAAM,eAAe;;;;;;;;;;oEAoC1B,CAAC"}
 ||||||| parent of a6d1e1f66d (add recently created branches to footer of branch list)
 {"version":3,"file":"View.d.ts","sourceRoot":"","sources":["../src/View.tsx"],"names":[],"mappings":";AAMA,eAAO,MAAM,IAAI;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;oEAuEf,CAAC;AAEH,eAAO,MAAM,GAAG;;;;;;;;;;;;;;;;;;;;;;;;oEAiCd,CAAC;AAkCH,eAAO,MAAM,MAAM;;;;;;;;;;;;;;;;;;;;;CAGlB,CAAC;AAEF,eAAO,MAAM,OAAO;;;;;;;;;;;;;;oEAwBlB,CAAC;AAEH,eAAO,MAAM,eAAe;;;;;;;;;;oEAoC1B,CAAC"}
 =======
 {"version":3,"file":"View.d.ts","sourceRoot":"","sources":["../src/View.tsx"],"names":[],"mappings":";AAMA,eAAO,MAAM,IAAI;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;oEA8Ef,CAAC;AAEH,eAAO,MAAM,GAAG;;;;;;;;;;;;;;;;;;;;;;;;oEAiCd,CAAC;AAkCH,eAAO,MAAM,MAAM;;;;;;;;;;;;;;;;;;;;;CAGlB,CAAC;AAEF,eAAO,MAAM,OAAO;;;;;;;;;;;;;;oEAwBlB,CAAC;AAEH,eAAO,MAAM,eAAe;;;;;;;;;;oEAoC1B,CAAC"}
 >>>>>>> a6d1e1f66d (add recently created branches to footer of branch list)
+||||||| parent of 48c62c7718 (add incompatible update + warning, update header layout on updates screen)
+{"version":3,"file":"View.d.ts","sourceRoot":"","sources":["../src/View.tsx"],"names":[],"mappings":";AAMA,eAAO,MAAM,IAAI;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;oEA8Ef,CAAC;AAEH,eAAO,MAAM,GAAG;;;;;;;;;;;;;;;;;;;;;;;;oEAiCd,CAAC;AAkCH,eAAO,MAAM,MAAM;;;;;;;;;;;;;;;;;;;;;CAGlB,CAAC;AAEF,eAAO,MAAM,OAAO;;;;;;;;;;;;;;oEAwBlB,CAAC;AAEH,eAAO,MAAM,eAAe;;;;;;;;;;oEAoC1B,CAAC"}
+=======
+{"version":3,"file":"View.d.ts","sourceRoot":"","sources":["../src/View.tsx"],"names":[],"mappings":";AAMA,eAAO,MAAM,IAAI;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;oEAuGf,CAAC;AAEH,eAAO,MAAM,GAAG;;;;;;;;;;;;;;;;;;;;;;;;oEAiCd,CAAC;AAkCH,eAAO,MAAM,MAAM;;;;;;;;;;;;;;;;;;;;;CAGlB,CAAC;AAEF,eAAO,MAAM,OAAO;;;;;;;;;;;;;;oEAwBlB,CAAC;AAEH,eAAO,MAAM,eAAe;;;;;;;;;;oEAoC1B,CAAC"}
+>>>>>>> 48c62c7718 (add incompatible update + warning, update header layout on updates screen)

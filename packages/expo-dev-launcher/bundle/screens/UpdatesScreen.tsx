@@ -1,3 +1,6 @@
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
 import {
   Heading,
   View,
@@ -8,8 +11,10 @@ import {
   Spacer,
   Text,
   useExpoPalette,
+  WarningIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
@@ -17,8 +22,15 @@ import { LoadMoreButton } from '../components/LoadMoreButton';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useChannelsForApp } from '../queries/useChannelsForApp';
 import { Update, useUpdatesForBranch } from '../queries/useUpdatesForBranch';
+import { ExtensionsStackParamList } from './ExtensionsStack';
 
-export function UpdatesScreen({ route }) {
+type UpdatesScreenProps = {
+  navigation: StackNavigationProp<ExtensionsStackParamList, 'Updates'>;
+  route: RouteProp<ExtensionsStackParamList, 'Updates'>;
+};
+
+export function UpdatesScreen({ route }: UpdatesScreenProps) {
+  const { runtimeVersion } = useBuildInfo();
   const { branchName } = route.params;
   const {
     data: updates,
@@ -29,6 +41,32 @@ export function UpdatesScreen({ route }) {
     isRefreshing,
     isFetchingNextPage,
   } = useUpdatesForBranch(branchName);
+
+  const [warningVisible, setWarningVisible] = React.useState(false);
+  const timerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (warningVisible) {
+      timerRef.current = setTimeout(() => {
+        setWarningVisible(false);
+      }, 5000);
+    }
+
+    return () => {
+      clearTimeout(timerRef.current);
+    };
+  }, [warningVisible]);
+
+  const onUpdatePress = React.useCallback(
+    (update: Update) => {
+      const isCompatible = update.runtimeVersion === runtimeVersion;
+
+      if (!isCompatible) {
+        setWarningVisible(true);
+      }
+    },
+    [runtimeVersion]
+  );
 
   function Header() {
     if (updates.length === 0) {
@@ -65,11 +103,13 @@ export function UpdatesScreen({ route }) {
     const isFirst = index === 0;
     const isLast = index === updates.length - 1;
 
+    const isCompatibleUpdate = update.runtimeVersion === runtimeVersion;
+
     return (
-      <View px="medium">
+      <View px="medium" opacity={isCompatibleUpdate ? '1' : '0.5'}>
         <Button.ScaleOnPressContainer
           bg="default"
-          onPress={() => {}}
+          onPress={() => onUpdatePress(update)}
           roundedBottom={isLast ? 'large' : 'none'}
           roundedTop={isFirst ? 'large' : 'none'}>
           <View
@@ -88,7 +128,11 @@ export function UpdatesScreen({ route }) {
 
   return (
     <View flex="1">
-      <BranchDetailsHeader branchName={branchName} />
+      <BranchDetailsHeader
+        branchName={branchName}
+        updates={updates}
+        onOpenPress={() => onUpdatePress(updates[0])}
+      />
       <FlatList
         isLoading={isLoading}
         isRefreshing={isRefreshing}
@@ -101,16 +145,24 @@ export function UpdatesScreen({ route }) {
         ListFooterComponent={Footer}
         ListEmptyComponent={EmptyList}
       />
+
+      {warningVisible && (
+        <IncompatibleUpdateWarning
+          branchName={branchName}
+          onPress={() => setWarningVisible(false)}
+        />
+      )}
     </View>
   );
 }
 
 type BranchDetailsHeaderProps = {
   branchName: string;
+  updates: Update[];
+  onOpenPress: () => void;
 };
 
-function BranchDetailsHeader({ branchName }: BranchDetailsHeaderProps) {
-  const palette = useExpoPalette();
+function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetailsHeaderProps) {
   const { appId } = useBuildInfo();
   const { data: channels } = useChannelsForApp(appId);
 
@@ -122,8 +174,10 @@ function BranchDetailsHeader({ branchName }: BranchDetailsHeaderProps) {
     }
   });
 
+  const hasUpdates = updates.length > 0;
+
   return (
-    <View bg="default" px="medium" py="large">
+    <View bg="default" px="medium" py="medium">
       <Row align="center">
         <View width="8">
           <BranchIcon />
@@ -134,40 +188,87 @@ function BranchDetailsHeader({ branchName }: BranchDetailsHeaderProps) {
         </View>
 
         <Spacer.Horizontal />
-
-        <View>
-          <Button.ScaleOnPressContainer bg="tertiary">
-            <View px="2" py="1.5">
-              <Button.Text size="small" weight="medium" color="tertiary">
-                Open
-              </Button.Text>
-            </View>
-          </Button.ScaleOnPressContainer>
-        </View>
+        {hasUpdates && (
+          <View>
+            <Button.ScaleOnPressContainer bg="tertiary" onPress={onOpenPress}>
+              <View px="2" py="1.5">
+                <Button.Text size="small" weight="medium" color="tertiary">
+                  Open Latest
+                </Button.Text>
+              </View>
+            </Button.ScaleOnPressContainer>
+          </View>
+        )}
       </Row>
 
-      {availableChannels.length > 0 && (
-        <View mx="8">
-          <Spacer.Vertical size="tiny" />
+      <Spacer.Vertical size="medium" />
+      <AvailableChannelsList channels={availableChannels} />
+    </View>
+  );
+}
+
+function AvailableChannelsList({ channels }) {
+  const palette = useExpoPalette();
+
+  if (channels.length === 0) {
+    return null;
+  }
+
+  return (
+    <View>
+      <Row align="center">
+        <Text size="small" color="secondary">
+          Available on:{' '}
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <Row>
-            <Text size="small" color="secondary">
-              Available on:{' '}
-            </Text>
-            {availableChannels.map((channelName) => {
+            {channels.map((channelName) => {
               return (
-                <View
-                  key={channelName}
-                  rounded="medium"
-                  px="1.5"
-                  py="1"
-                  style={{ backgroundColor: palette.orange['000'] }}>
-                  <Text size="small" color="secondary">{`Channel: ${channelName}`}</Text>
+                <View key={channelName}>
+                  <View
+                    align="start"
+                    key={channelName}
+                    rounded="medium"
+                    px="1.5"
+                    mx="0.5"
+                    py="1"
+                    style={{ backgroundColor: palette.orange['000'] }}>
+                    <Text size="small" color="secondary">{`Channel: ${channelName}`}</Text>
+                  </View>
                 </View>
               );
             })}
           </Row>
+        </ScrollView>
+      </Row>
+    </View>
+  );
+}
+
+function IncompatibleUpdateWarning({ branchName, onPress }) {
+  return (
+    <View mx="large" mb="large" absolute="bottom">
+      <Button.ScaleOnPressContainer onPress={onPress}>
+        <View bg="warning" padding="medium" rounded="medium" border="warning">
+          <Row align="center">
+            <WarningIcon />
+
+            <Spacer.Horizontal size="tiny" />
+
+            <Heading color="warning" size="small" style={{ top: 1 }}>
+              Warning
+            </Heading>
+          </Row>
+
+          <Spacer.Vertical size="small" />
+
+          <View>
+            <Text size="small">
+              {`You are currently running an older development app version than the latest update on the branch "${branchName}". To get the latest update, upgrade this development client app.`}
+            </Text>
+          </View>
         </View>
-      )}
+      </Button.ScaleOnPressContainer>
     </View>
   );
 }
