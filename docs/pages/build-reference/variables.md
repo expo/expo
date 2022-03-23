@@ -64,7 +64,7 @@ The following environment variables are exposed to each build job &mdash; they a
 
 To provide your build jobs with access to values that are too sensitive to include in your source code and Git repository, you can use "Secrets".
 
-A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores.
+A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores and the value is limited to 32 KiB.
 
 The secret values are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
 
