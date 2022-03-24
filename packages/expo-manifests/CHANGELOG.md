@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `logUrl` getter to both platforms.
+- Add `logUrl` getter to both platforms. ([#16709](https://github.com/expo/expo/pull/16709) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
