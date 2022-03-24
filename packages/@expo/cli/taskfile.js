@@ -33,7 +33,7 @@ export default async function (task) {
   const opts = { dev: true };
   await task.clear('build');
   await task.start('build', opts);
-  if (!boolish('CI', false)) {
+  if (!boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
     await task.watch('bin/*', 'bin', opts);
     await task.watch('src/**/*.+(js|ts)', 'src', opts);
   }
