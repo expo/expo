@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { DevLauncher } from '../native-modules/DevLauncher';
 import * as DevMenu from '../native-modules/DevMenu';
 import { useBottomSheet } from './useBottomSheet';
 
@@ -72,7 +73,7 @@ export function useDevSettings() {
   }, []);
 
   const navigateToLauncher = React.useCallback(async () => {
-    await DevMenu.navigateToLauncherAsync();
+    await DevLauncher.navigateToLauncherAsync();
     bottomSheet.collapse();
   }, []);
 
