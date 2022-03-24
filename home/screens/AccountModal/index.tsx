@@ -1,4 +1,4 @@
-import { CheckIcon, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
+import { borderRadius, CheckIcon, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
@@ -159,14 +159,20 @@ export function AccountModal() {
               ItemSeparatorComponent={Divider}
             />
           </View>
-          <Spacer.Vertical size="small" />
-          <View bg="default" overflow="hidden" rounded="large" border="hairline">
-            <PressableOpacity onPress={onSignOutPress} containerProps={{ bg: 'default' }}>
-              <View padding="medium">
-                <Text size="medium">Sign out</Text>
-              </View>
-            </PressableOpacity>
-          </View>
+          <Spacer.Vertical size="large" />
+          <PressableOpacity
+            onPress={onSignOutPress}
+            style={{
+              backgroundColor: theme.button.tertiary.background,
+              padding: spacing[3],
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            borderRadius={borderRadius.medium}>
+            <Text style={{ color: theme.button.tertiary.foreground }} type="InterSemiBold">
+              Log Out
+            </Text>
+          </PressableOpacity>
         </View>
       ) : (
         <LoggedOutAccountView />
