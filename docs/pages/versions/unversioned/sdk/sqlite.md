@@ -28,11 +28,9 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
-module.exports = {
-  resolver: {
-    assetExts: [...defaultConfig.resolver.assetExts, 'db'],
-  },
-};
+defaultConfig.resolver.assetExts.push('db');
+
+module.exports = defaultConfig;
 ```
 
 - Use the following function (or similar) to open your database:
