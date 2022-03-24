@@ -61,17 +61,16 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
   await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
     {
       find: /^(\s*jsRootDir\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native/Libraries")',
+    },
+    {
+      find: /^(\s*reactNativeDir\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
+    },
+    {
+      find: /^(\s*\/\/ We search for the codegen.*\n\s*\/\/ root packages folder.*\n\s*codegenDir = .*)$/m,
       replaceWith:
-        '$1file("$projectDir/../../react-native-lab/react-native/Libraries")' +
-        '\n    codegenDir = file("$projectDir/../../react-native-lab/react-native/packages/react-native-codegen")',
-    },
-    {
-      find: /^(\s*reactRoot\s*=\s*)file\(.+\)$/m,
-      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
-    },
-    {
-      find: /^(\s*reactNativeRootDir\s*=\s*)file\(.+\)$/m,
-      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
+        '    codegenDir = file("$projectDir/../../react-native-lab/react-native/packages/react-native-codegen")',
     },
     {
       find: /api\("androidx.appcompat:appcompat:\d+\.\d+\.\d+"\)/,
