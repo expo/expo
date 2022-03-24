@@ -36,6 +36,10 @@
       return true;
     }
     
+    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
+      return true;
+    }
+    
     NSString* clazzName = NSStringFromClass(clazz);
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {

@@ -49,10 +49,6 @@ export function openDevMenuFromReactNative() {
   DevMenu.openDevMenuFromReactNative();
 }
 
-export async function navigateToLauncherAsync(): Promise<void> {
-  return await dispatchCallableAsync('backToLauncher');
-}
-
 export async function togglePerformanceMonitorAsync() {
   return await dispatchCallableAsync('performance-monitor');
 }

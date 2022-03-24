@@ -54,7 +54,7 @@ open class DevMenuManager: NSObject {
   var canLaunchDevMenuOnStart = true
 
   public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
-
+  
   /**
    Shared singleton instance.
    */
