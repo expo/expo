@@ -245,7 +245,7 @@ class ProjectsView extends React.Component<Props, State> {
         this._fetchProjectsAsync(),
         new Promise((resolve) => setTimeout(resolve, 1000)),
       ]);
-    } catch (e) {
+    } catch {
       // not sure what to do here, maybe nothing?
     } finally {
       this.setState({ isRefreshing: false });

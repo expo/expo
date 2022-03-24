@@ -177,7 +177,7 @@ export function createURL(
       if (typeof parsedParams === 'object') {
         paramsFromHostUri = parsedParams;
       }
-    } catch (e) {}
+    } catch {}
     queryParams = {
       ...queryParams,
       ...paramsFromHostUri,

@@ -19,6 +19,12 @@ export class Example {
 
   hi(): void {
     _fn();
+
+    try {
+      _fn();
+    } catch (_notIgnored) {
+      _fn();
+    }
   }
 
   async byeAsync(): Promise<void> {

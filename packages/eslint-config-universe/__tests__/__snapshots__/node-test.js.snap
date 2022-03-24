@@ -13,7 +13,19 @@ Object {
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": Array [
+    Object {
+      "column": 14,
+      "endColumn": 15,
+      "endLine": 30,
+      "line": 30,
+      "message": "'e' is defined but never used. Allowed unused args must match /^_/u.",
+      "messageId": "unusedVar",
+      "nodeType": "Identifier",
+      "ruleId": "no-unused-vars",
+      "severity": 1,
+    },
+  ],
   "output": "import 'hi';
 
 import a from 'a';
@@ -38,12 +50,18 @@ export class Example {
 
   hi() {
     _fn() ?? this.byeAsync();
-    m &&= {};
-    s?.a?.();
+    this.m &&= {};
+    Example.s?.a?.();
 
     try {
       _fn();
-    } catch {
+    } catch (e) {
+      _fn();
+    }
+
+    try {
+      _fn();
+    } catch (_ignored) {
       _fn();
     }
 
@@ -68,13 +86,14 @@ function _fn() {}
 
 function* gen() {}
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
       "ruleId": "no-buffer-constructor",
     },
   ],
-  "warningCount": 0,
+  "warningCount": 1,
 }
 `;
 
@@ -94,6 +113,17 @@ Object {
       "messageId": "unexpected",
       "nodeType": "PropertyDefinition",
       "ruleId": "@typescript-eslint/no-dupe-class-members",
+      "severity": 1,
+    },
+    Object {
+      "column": 14,
+      "endColumn": 25,
+      "endLine": 25,
+      "line": 25,
+      "message": "'_notIgnored' is defined but never used.",
+      "messageId": "unusedVar",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
   ],
@@ -118,6 +148,12 @@ export class Example {
 
   hi(): void {
     _fn();
+
+    try {
+      _fn();
+    } catch (_notIgnored) {
+      _fn();
+    }
   }
 
   async byeAsync(): Promise<void> {
@@ -127,13 +163,14 @@ export class Example {
 
 function _fn(...args: any): void {}
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
       "ruleId": "no-buffer-constructor",
     },
   ],
-  "warningCount": 1,
+  "warningCount": 2,
 }
 `;
 
@@ -152,7 +189,7 @@ Object {
       "message": "'unused1' is assigned a value but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
     Object {
@@ -163,7 +200,7 @@ Object {
       "message": "'unused2' is defined but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
     Object {
@@ -174,7 +211,7 @@ Object {
       "message": "'unused3' is assigned a value but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
   ],
@@ -184,6 +221,7 @@ function unused2() {
   const unused3 = 'hi';
 }
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
@@ -265,6 +303,7 @@ function tsUnused2() {
   const angleBracketCast = <string>x;
 }
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
@@ -286,6 +325,7 @@ Object {
   return ['1'];
 };
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
@@ -305,6 +345,7 @@ Object {
   "messages": Array [],
   "output": "export const blah = 3!;
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
@@ -329,6 +370,7 @@ export const objectTest: object | null = null;
 export const stringTest: string | null = null;
 export const objectShorthandTest: object | null = null;
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
@@ -356,6 +398,7 @@ const e = require('e');
 
 export default a + b + c + d + e;
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],
@@ -381,7 +424,7 @@ Object {
       "message": "'data' is assigned a value but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
     Object {
@@ -398,6 +441,7 @@ Object {
   ],
   "source": "const data = new Buffer(16);
 ",
+  "suppressedMessages": Array [],
   "usedDeprecatedRules": Array [
     Object {
       "replacedBy": Array [],

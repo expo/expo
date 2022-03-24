@@ -273,7 +273,7 @@ async function getSavedLocations() {
   try {
     const item = await AsyncStorage.getItem(STORAGE_KEY);
     return item ? JSON.parse(item) : [];
-  } catch (e) {
+  } catch {
     return [];
   }
 }

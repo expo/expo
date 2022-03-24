@@ -138,8 +138,8 @@ class FirebaseAnalyticsJS {
           this.flushEventsTimer = undefined;
           try {
             await this.flushEventsPromise;
-          } catch (err) {
-            // nop
+          } catch {
+            // no-op
           }
           this.flushEventsPromise = this.flushEvents();
         },

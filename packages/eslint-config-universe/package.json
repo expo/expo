@@ -40,15 +40,15 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-universe",
   "dependencies": {
-    "@babel/eslint-parser": "^7.16.5",
+    "@babel/eslint-parser": "^7.17.0",
     "@babel/eslint-plugin": "^7.16.5",
-    "@typescript-eslint/eslint-plugin": "^5.9.0",
-    "@typescript-eslint/parser": "^5.9.0",
-    "eslint-config-prettier": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react": "^7.29.3",
     "eslint-plugin-react-hooks": "^4.3.0"
   },
   "peerDependencies": {
@@ -65,10 +65,10 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@expo/spawn-async": "^1.5.0",
-    "eslint": "^8.6.0",
-    "jest": "^27.4.7",
+    "@babel/core": "^7.17.5",
+    "@expo/spawn-async": "^1.6.0",
+    "eslint": "^8.10.0",
+    "jest": "^27.5.1",
     "prettier": "^2.5.1"
   }
 }

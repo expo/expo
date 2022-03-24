@@ -32,7 +32,7 @@ export async function test({ describe, it, expect, beforeAll }) {
   beforeAll(() => {
     try {
       firebase.initializeApp(FIREBASE_CONFIG);
-    } catch (err) {
+    } catch {
       // nop
     }
   });

@@ -8,12 +8,12 @@ export default {
     let text = '';
     try {
       text = await navigator.clipboard.readText();
-    } catch (e) {
+    } catch {
       try {
         // Internet Explorer
         // @ts-ignore
         text = window.clipboardData.getData('Text');
-      } catch (e) {
+      } catch {
         return Promise.reject(new Error('Unable to retrieve item from clipboard.'));
       }
     }
@@ -28,7 +28,7 @@ export default {
     try {
       document.execCommand('copy');
       success = true;
-    } catch (e) {}
+    } catch {}
     document.body.removeChild(textField);
     return success;
   },

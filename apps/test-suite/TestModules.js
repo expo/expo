@@ -13,7 +13,7 @@ function browserSupportsWebGL() {
       !!window.WebGLRenderingContext &&
       (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
     );
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -21,7 +21,7 @@ function browserSupportsWebGL() {
 function optionalRequire(requirer) {
   try {
     return requirer();
-  } catch (e) {
+  } catch {
     // eslint-disable-next-line
     return;
   }

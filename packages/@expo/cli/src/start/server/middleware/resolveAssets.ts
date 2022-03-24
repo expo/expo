@@ -31,7 +31,7 @@ export async function resolveGoogleServicesFile(
         'utf8'
       );
       manifest.android.googleServicesFile = contents;
-    } catch (error) {
+    } catch {
       Log.warn(
         `Could not parse Expo config: android.googleServicesFile: "${manifest.android.googleServicesFile}"`
       );
@@ -46,7 +46,7 @@ export async function resolveGoogleServicesFile(
         'base64'
       );
       manifest.ios.googleServicesFile = contents;
-    } catch (error) {
+    } catch {
       Log.warn(
         `Could not parse Expo config: ios.googleServicesFile: "${manifest.ios.googleServicesFile}"`
       );

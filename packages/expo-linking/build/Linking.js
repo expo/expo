@@ -154,7 +154,7 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
                 paramsFromHostUri = parsedParams;
             }
         }
-        catch (e) { }
+        catch { }
         queryParams = {
             ...queryParams,
             ...paramsFromHostUri,

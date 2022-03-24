@@ -4,7 +4,7 @@ module.exports = {
   parser: '@babel/eslint-parser',
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2021,
+    ecmaVersion: 2022,
     ecmaFeatures: { impliedStrict: true },
     requireConfigFile: false,
     babelOptions: {
@@ -21,7 +21,7 @@ module.exports = {
       },
     },
   },
-  env: { es6: true, jest: true },
+  env: { es2022: true, jest: true },
   globals: {
     console: false,
     exports: false,
@@ -111,7 +111,16 @@ module.exports = {
     'no-unsafe-negation': 'warn',
     'no-unused-expressions': 'off',
     'no-unused-labels': 'warn',
-    'no-unused-vars': ['warn', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
+    'no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        args: 'none',
+        ignoreRestSiblings: true,
+        caughtErrors: 'all',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
     'no-useless-computed-key': 'warn',
     'no-useless-concat': 'warn',
     'no-useless-constructor': 'warn',

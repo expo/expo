@@ -10,7 +10,7 @@ const qrWorkerMethod = ({ data, width, height }) => {
     try {
         parsed = JSON.parse(decoded);
     }
-    catch (err) {
+    catch {
         parsed = decoded;
     }
     if (parsed?.data) {

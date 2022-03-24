@@ -127,7 +127,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     // ignore this, we set it here to null anyway
     try {
       this._sound?.setOnAudioSampleReceived(null);
-    } catch (_e) {}
+    } catch {}
   };
 
   render() {

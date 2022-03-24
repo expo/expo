@@ -7,7 +7,7 @@ function getElement(component) {
     try {
         return findDOMNode(component);
     }
-    catch (e) {
+    catch {
         return component;
     }
 }

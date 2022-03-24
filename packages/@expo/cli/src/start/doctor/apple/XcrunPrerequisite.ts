@@ -51,7 +51,7 @@ export class XcrunPrerequisite extends Prerequisite {
         ]);
         // Most likely the user will cancel the process, but if they don't this will continue checking until the CLI is available.
         return await pendingAsync();
-      } catch (error) {
+      } catch {
         // TODO: Figure out why this might get called (cancel early, network issues, server problems)
         // TODO: Handle me
       }
