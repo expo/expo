@@ -11,8 +11,9 @@ class EASClientIDModule : Module() {
 
   override fun definition() = ModuleDefinition {
     name("EASClientID")
-    constants(
-      "clientID" to EASClientID(context).uuid.toString()
-    )
+
+    asyncFunction("getClientIDAsync") {
+      EASClientID(context).uuid.toString()
+    }
   }
 }
