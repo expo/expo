@@ -10,10 +10,11 @@ import { useTheme } from '../utils/useTheme';
 import { PressableOpacity } from './PressableOpacity';
 
 type Props = {
+  loading?: boolean;
   currentUser?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
 };
 
-export function HomeScreenHeader({ currentUser }: Props) {
+export function HomeScreenHeader({ currentUser, loading }: Props) {
   const { theme, themeType } = useTheme();
 
   const navigation = useNavigation();
@@ -64,17 +65,16 @@ export function HomeScreenHeader({ currentUser }: Props) {
           Expo Go
         </Text>
       </Row>
-      {!currentUser ? (
+      {loading ? null : !currentUser ? (
         <PressableOpacity
           borderRadius={borderRadius.small}
           onPress={onAccountButtonPress}
-          containerProps={{
-            style: {
-              backgroundColor: theme.button.ghost.background,
-              borderWidth: 1,
-              borderColor: theme.button.ghost.border,
-              padding: spacing[2],
-            },
+          hitSlop={8}
+          style={{
+            padding: spacing[2],
+            backgroundColor: theme.button.ghost.background,
+            borderWidth: 1,
+            borderColor: theme.button.ghost.border,
           }}>
           <Button.Text type="InterSemiBold" color="ghost" size="small">
             Log in
@@ -87,7 +87,6 @@ export function HomeScreenHeader({ currentUser }: Props) {
             <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
           ) : (
             <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
-              {/* TODO: Show log in button when there is no session */}
               <UsersIcon color={theme.icon.default} size={iconSize.small} />
             </View>
           )}

@@ -3,6 +3,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
 import { ActivityIndicator, FlatList, Platform } from 'react-native';
+import { useDispatch, useSelector } from 'redux/Hooks';
+import SessionActions from 'redux/SessionActions';
+import isUserAuthenticated from 'utils/isUserAuthenticated';
 
 import { PressableOpacity } from '../../components/PressableOpacity';
 import { useHome_CurrentUserQuery } from '../../graphql/types';
@@ -15,6 +18,20 @@ export function AccountModal() {
   const theme = useExpoTheme();
 
   const { data, loading, error, refetch } = useHome_CurrentUserQuery();
+
+  const { isAuthenticated } = useSelector((data) => {
+    const isAuthenticated = isUserAuthenticated(data.session);
+    return {
+      isAuthenticated,
+    };
+  });
+  const dispatch = useDispatch();
+
+  const onSignOutPress = React.useCallback(() => {
+    dispatch(SessionActions.signOut());
+  }, [dispatch]);
+
+  if (isAuthenticated && !data?.viewer) refetch(); // get accounts info after logging in
 
   if (loading) {
     return (
@@ -86,8 +103,8 @@ export function AccountModal() {
   return (
     <View flex="1">
       {Platform.OS === 'ios' && <ModalHeader />}
-      <View flex="1" padding="medium">
-        {data?.viewer?.accounts ? (
+      {data?.viewer?.accounts ? (
+        <View flex="1" padding="medium">
           <View bg="default" border="hairline" overflow="hidden" rounded="large">
             <FlatList<typeof data.viewer.accounts[number]>
               data={data.viewer.accounts}
@@ -100,7 +117,7 @@ export function AccountModal() {
                     setAccountName(account.name);
                   }}>
                   <Row justify="between">
-                    <Row align={!account.owner ? 'center' : 'start'}>
+                    <Row align={!account.owner?.fullName ? 'center' : 'start'}>
                       {account?.owner?.profilePhoto ? (
                         <Image
                           size="xl"
@@ -142,10 +159,18 @@ export function AccountModal() {
               ItemSeparatorComponent={Divider}
             />
           </View>
-        ) : (
-          <LoggedOutAccountView />
-        )}
-      </View>
+          <Spacer.Vertical size="small" />
+          <View bg="default" overflow="hidden" rounded="large" border="hairline">
+            <PressableOpacity onPress={onSignOutPress} containerProps={{ bg: 'default' }}>
+              <View padding="medium">
+                <Text size="medium">Sign out</Text>
+              </View>
+            </PressableOpacity>
+          </View>
+        </View>
+      ) : (
+        <LoggedOutAccountView />
+      )}
     </View>
   );
 }

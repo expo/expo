@@ -1,8 +1,7 @@
-import { spacing } from '@expo/styleguide-native';
+import { borderRadius, spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
-import { View, Divider, Spacer } from 'expo-dev-client-components';
+import { View, Divider, Spacer, Text } from 'expo-dev-client-components';
 import {
   HomeScreenDataDocument,
   HomeScreenDataQuery,
@@ -15,7 +14,9 @@ import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
+import { HomeScreenHeader } from '../../components/HomeScreenHeader';
 import ScrollView from '../../components/NavigationScrollView';
+import { PressableOpacity } from '../../components/PressableOpacity';
 import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import RefreshControl from '../../components/RefreshControl';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
@@ -51,6 +52,7 @@ type State = {
   isNetworkAvailable: boolean;
   isRefreshing: boolean;
   data?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
+  loading: boolean;
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
@@ -64,6 +66,7 @@ export class HomeScreenView extends React.Component<Props, State> {
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
     data: undefined,
+    loading: true,
   };
 
   componentDidMount() {
@@ -102,7 +105,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        <HomeScreenHeader currentUser={data} />
+        <HomeScreenHeader currentUser={data} loading={this.state.loading} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
@@ -147,17 +150,37 @@ export class HomeScreenView extends React.Component<Props, State> {
               <RecentlyOpenedSection recentHistory={recentHistory} />
             </>
           ) : null}
-          {data?.apps.length && this.props.accountName ? (
+          {this.props.accountName ? (
+            data?.apps.length && this.props.accountName ? (
+              <>
+                <Spacer.Vertical size="medium" />
+                <RedesignedSectionHeader header="Projects" />
+                <ProjectsSection
+                  accountName={this.props.accountName}
+                  apps={data.apps.slice(0, 3)}
+                  showMore={data.apps.length > 3}
+                />
+              </>
+            ) : null
+          ) : (
             <>
               <Spacer.Vertical size="medium" />
               <RedesignedSectionHeader header="Projects" />
-              <ProjectsSection
-                accountName={this.props.accountName}
-                apps={data.apps.slice(0, 3)}
-                showMore={data.apps.length > 3}
-              />
+              <PressableOpacity
+                onPress={() => this.props.navigation.navigate('Account')}
+                hitSlop={16}
+                style={{
+                  padding: spacing[4],
+                }}
+                containerProps={{ bg: 'default', border: 'hairline' }}
+                borderRadius={borderRadius.large}>
+                <Text type="InterRegular" style={{ lineHeight: 20 }}>
+                  Log in or create an Expo account to view your projects.
+                </Text>
+              </PressableOpacity>
             </>
-          ) : null}
+          )}
+
           {data?.snacks.length && this.props.accountName ? (
             <>
               <Spacer.Vertical size="medium" />
@@ -209,7 +232,8 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _startPollingForProjects = async () => {
-    this._fetchProjectsAsync();
+    await this._fetchProjectsAsync();
+    this.setState({ loading: false });
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 

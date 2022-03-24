@@ -12,11 +12,11 @@ import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import { BranchListScreen } from 'screens/BranchListScreen';
-import { HomeScreen } from 'screens/HomeScreen';
-import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
-import { RedesignedProjectScreen } from 'screens/RedesignedProjectScreen';
-import { RedesignedSettingsScreen } from 'screens/RedesignedSettingsScreen';
+import { BranchListScreen } from '../screens/BranchListScreen';
+import { HomeScreen } from '../screens/HomeScreen';
+import { RedesignedDiagnosticsScreen } from '../screens/RedesignedDiagnosticsScreen';
+import { RedesignedProjectScreen } from '../screens/RedesignedProjectScreen';
+import { RedesignedSettingsScreen } from '../screens/RedesignedSettingsScreen';
 
 import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
@@ -135,6 +135,27 @@ function HomeStackScreen() {
         component={RedesignedSnacksListScreen}
         options={{
           title: 'Snacks',
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedProjectDetails"
+        component={RedesignedProjectScreen}
+        options={{
+          title: 'Project',
+        }}
+      />
+      <HomeStack.Screen
+        name="Branches"
+        component={BranchListScreen}
+        options={{
+          title: 'Branches',
+        }}
+      />
+      <HomeStack.Screen
+        name="BranchDetails"
+        component={BranchDetailsScreen}
+        options={{
+          title: 'Branch',
         }}
       />
     </HomeStack.Navigator>
@@ -270,14 +291,16 @@ function TabNavigator(props: { theme: string }) {
           }}
         />
       ) : null}
-      <BottomTab.Screen
-        name="ProjectsStack"
-        component={ProjectsStackScreen}
-        options={{
-          tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
-          tabBarLabel: 'Projects',
-        }}
-      />
+      {!FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && (
+        <BottomTab.Screen
+          name="ProjectsStack"
+          component={ProjectsStackScreen}
+          options={{
+            tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+            tabBarLabel: 'Projects',
+          }}
+        />
+      )}
       {Platform.OS === 'ios' && (
         <BottomTab.Screen
           name="DiagnosticsStack"
@@ -299,16 +322,18 @@ function TabNavigator(props: { theme: string }) {
           }}
         />
       ) : null}
-      <BottomTab.Screen
-        name="ProfileStack"
-        component={ProfileStackScreen}
-        options={{
-          tabBarIcon: (props) => (
-            <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
-          ),
-          tabBarLabel: 'Profile',
-        }}
-      />
+      {!FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && (
+        <BottomTab.Screen
+          name="ProfileStack"
+          component={ProfileStackScreen}
+          options={{
+            tabBarIcon: (props) => (
+              <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
+            ),
+            tabBarLabel: 'Profile',
+          }}
+        />
+      )}
     </BottomTab.Navigator>
   );
 }

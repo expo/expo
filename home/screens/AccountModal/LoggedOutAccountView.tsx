@@ -1,23 +1,22 @@
+import { borderRadius, spacing } from '@expo/styleguide-native';
+import { View, Text, Spacer, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
 import url from 'url';
 
 import Analytics from '../../api/Analytics';
 import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
-import Colors from '../../constants/Colors';
+import { PressableOpacity } from '../../components/PressableOpacity';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
-import ScrollView from '../../components/NavigationScrollView';
-import PrimaryButton from '../../components/PrimaryButton';
-import { StyledText } from '../../components/Text';
 
 export function LoggedOutAccountView() {
   const dispatch = useDispatch();
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
   const [authenticationError, setAuthenticationError] = React.useState<string | null>(null);
   const mounted = React.useRef<boolean | null>(true);
+  const theme = useExpoTheme();
 
   React.useEffect(() => {
     mounted.current = true;
@@ -75,7 +74,7 @@ export function LoggedOutAccountView() {
         Analytics.identify(null, trackingOpts);
         Analytics.track(analyticsEvent, trackingOpts);
 
-        ApolloClient.resetStore();
+        await ApolloClient.resetStore();
         dispatch(
           SessionActions.setSession({
             sessionSecret: decodeURIComponent(sessionSecret),
@@ -84,99 +83,59 @@ export function LoggedOutAccountView() {
       }
     } catch (e) {
       // TODO(wschurman): Put this into Sentry
-      console.log({ e });
+      console.error({ e });
       setAuthenticationError(e.message);
     } finally {
       setIsAuthenticating(false);
     }
   };
 
-  const title = Platform.OS === 'ios' ? 'Sign in to Continue' : 'Your Profile';
-  const description =
-    Platform.OS === 'ios'
-      ? 'Sign in or create an Expo account to view your projects.'
-      : 'To access your own projects, please sign in or create an Expo account.';
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <StyledText style={styles.titleText}>{title}</StyledText>
+    <View bg="default" padding="medium">
+      <Text color="secondary" type="InterRegular" style={{ lineHeight: 20 }}>
+        Log in or create an account to access your projects, view local development servers, and
+        more.
+      </Text>
+      <Spacer.Vertical size="medium" />
 
-      <StyledText
-        style={styles.descriptionText}
-        darkColor="#ccc"
-        lightColor="rgba(36, 44, 58, 0.7)">
-        {description}
-      </StyledText>
+      <PressableOpacity
+        onPress={_handleSignInPress}
+        style={{
+          backgroundColor: theme.button.tertiary.background,
+          padding: spacing[3],
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        borderRadius={borderRadius.medium}>
+        <Text style={{ color: theme.button.tertiary.foreground }} type="InterSemiBold">
+          Log In
+        </Text>
+      </PressableOpacity>
 
-      <PrimaryButton onPress={_handleSignInPress}>Sign in to your account</PrimaryButton>
+      <Spacer.Vertical size="small" />
 
-      <View style={{ marginBottom: 20 }} />
-
-      <PrimaryButton plain onPress={_handleSignUpPress}>
-        Sign up for Expo
-      </PrimaryButton>
+      <PressableOpacity
+        onPress={_handleSignUpPress}
+        style={{
+          backgroundColor: theme.button.secondary.background,
+          padding: spacing[3],
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        borderRadius={borderRadius.medium}>
+        <Text style={{ color: theme.button.secondary.foreground }} type="InterSemiBold">
+          Sign Up
+        </Text>
+      </PressableOpacity>
 
       {authenticationError && (
-        <StyledText
-          style={styles.errorText}
-          darkColor={Colors.dark.error}
-          lightColor={Colors.light.error}>
-          Something went wrong when authenticating: {authenticationError}
-        </StyledText>
+        <>
+          <Spacer.Vertical size="small" />
+          <Text type="InterRegular" color="error" size="small">
+            Something went wrong when authenticating: {authenticationError}
+          </Text>
+        </>
       )}
-    </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 30,
-  },
-  titleText: {
-    marginBottom: 15,
-    fontWeight: '400',
-    ...Platform.select({
-      ios: {
-        fontSize: 22,
-      },
-      android: {
-        fontSize: 23,
-      },
-    }),
-  },
-  descriptionText: {
-    textAlign: 'center',
-    marginHorizontal: 15,
-    marginBottom: 20,
-    ...Platform.select({
-      ios: {
-        fontSize: 15,
-        lineHeight: 20,
-      },
-      android: {
-        fontSize: 16,
-        lineHeight: 24,
-      },
-    }),
-  },
-  errorText: {
-    textAlign: 'center',
-    marginHorizontal: 15,
-    marginTop: 20,
-    ...Platform.select({
-      ios: {
-        fontSize: 15,
-        lineHeight: 20,
-      },
-      android: {
-        fontSize: 16,
-        lineHeight: 24,
-      },
-    }),
-  },
-});
