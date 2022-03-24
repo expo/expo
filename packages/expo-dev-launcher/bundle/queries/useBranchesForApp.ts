@@ -134,10 +134,11 @@ export function useBranchesForApp(appId: string) {
       .filter((branch) => branch.updates.length > 0) ?? [];
 
   // incompatible branches are branches that have no compatible updates with the current runtimeVersion
-  const incompatibleBranches = query?.data.pages.flatMap((page) => page.incompatibleBranches) ?? [];
+  const incompatibleBranches =
+    query?.data?.pages.flatMap((page) => page.incompatibleBranches) ?? [];
 
   // emptyBranches are branches that have no updates and have been created recently
-  const emptyBranches = query?.data.pages[0].branches.filter(
+  const emptyBranches = query?.data?.pages[0].branches.filter(
     (branch) => branch.updates.length === 0
   );
 

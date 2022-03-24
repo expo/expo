@@ -17,6 +17,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow } from '../components/EASUpdatesRows';
+import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
@@ -85,7 +86,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 
 function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
   const { appId } = useBuildInfo();
-  const { isLoading, data: branches } = useBranchesForApp(appId);
+  const { isLoading, data: branches, incompatibleBranches } = useBranchesForApp(appId);
 
   function onSeeAllBranchesPress() {
     navigation.navigate('Branches');
@@ -99,6 +100,25 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
     return (
       <View height="44" align="centered">
         <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (branches.length === 0) {
+    return (
+      <View mx="medium">
+        <View px="small">
+          <Heading size="small" color="secondary">
+            EAS Updates
+          </Heading>
+        </View>
+        <Spacer.Vertical size="small" />
+        <EmptyBranchesMessage
+          branches={branches}
+          incompatibleBranches={incompatibleBranches}
+          // TODO - link to docs?
+          onLearnMorePress={() => {}}
+        />
       </View>
     );
   }

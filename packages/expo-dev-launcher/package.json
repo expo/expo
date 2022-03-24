@@ -31,7 +31,6 @@
   "dependencies": {
     "@expo/config-plugins": "^4.0.14",
     "date-fns": "^2.28.0",
-    "dayjs": "^1.11.0",
     "expo-dev-menu": "0.9.1",
     "react-query": "^3.34.16",
     "resolve-from": "^5.0.0",

@@ -62,3 +62,4 @@ jest.mock('react-native-safe-area-context', () => {
     useSafeAreaInsets: jest.fn().mockReturnValue(MOCK_INITIAL_METRICS.insets),
   };
 });
+

@@ -3,6 +3,7 @@ import { Heading, View, Button, Divider, Spacer, Text } from 'expo-dev-client-co
 import * as React from 'react';
 
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
+import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { FlatList } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
@@ -49,7 +50,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
           onBranchPress={(branch) => onBranchPress(branch.name)}
         />
 
-        {incompatibleBranches.length > 0 && (
+        {branches.length > 0 && incompatibleBranches.length > 0 && (
           <>
             <Spacer.Vertical size="small" />
             <View px="small">
@@ -62,6 +63,17 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
 
         {hasNextPage && <LoadMoreButton isLoading={isFetchingNextPage} onPress={fetchNextPage} />}
       </View>
+    );
+  }
+
+  function EmptyList() {
+    return (
+      <EmptyBranchesMessage
+        branches={branches}
+        incompatibleBranches={incompatibleBranches}
+        // TODO - link to docs?
+        onLearnMorePress={() => {}}
+      />
     );
   }
 
@@ -89,6 +101,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
         renderItem={renderBranch}
         keyExtractor={(item) => item?.id}
         ListFooterComponent={Footer}
+        ListEmptyComponent={EmptyList}
       />
     </View>
   );
@@ -155,7 +168,7 @@ function EmptyBranchesList({ branches, onBranchPress }: EmptyBranchesListProps) 
   );
 }
 
-function getIncompatibleBranchMessage(numberOfIncompatibleBranches: number) {
+export function getIncompatibleBranchMessage(numberOfIncompatibleBranches: number) {
   if (numberOfIncompatibleBranches === 1) {
     return `There is 1 branch that is not compatible with this development app. To preview it, download or build a development client that matches its runtime version.`;
   }

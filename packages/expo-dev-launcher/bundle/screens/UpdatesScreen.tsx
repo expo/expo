@@ -200,9 +200,12 @@ function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetails
           </View>
         )}
       </Row>
-
-      <Spacer.Vertical size="medium" />
-      <AvailableChannelsList channels={availableChannels} />
+      {availableChannels.length > 0 && (
+        <>
+          <Spacer.Vertical size="medium" />
+          <AvailableChannelsList channels={availableChannels} />
+        </>
+      )}
     </View>
   );
 }
