@@ -7,9 +7,9 @@ export const name = 'EASClientID';
 export function test(t) {
   t.describe('EASClientID', () => {
     t.it('gets the EAS client ID', async () => {
-      const clientId = EASClientID.clientID;
+      const clientId = await EASClientID.getClientIDAsync();
       t.expect(clientId).toBeTruthy();
-      const clientId2 = EASClientID.clientID;
+      const clientId2 = await EASClientID.getClientIDAsync();
       t.expect(clientId).toEqual(clientId2);
     });
   });

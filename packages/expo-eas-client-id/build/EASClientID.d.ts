@@ -1,2 +1,2 @@
-export declare const clientID: any;
+export declare const getClientIDAsync: () => Promise<any>;
 //# sourceMappingURL=EASClientID.d.ts.map

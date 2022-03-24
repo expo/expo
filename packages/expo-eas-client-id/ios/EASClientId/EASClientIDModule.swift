@@ -5,8 +5,9 @@ import ExpoModulesCore
 public class EASClientIDModule: Module {
   public func definition() -> ModuleDefinition {
     name("EASClientID")
-    constants([
-      "clientID": EASClientID.uuid.uuidString
-    ])
+    
+    asyncFunction("getClientIDAsync") {
+      return EASClientID.uuid.uuidString
+    }
   }
 }
