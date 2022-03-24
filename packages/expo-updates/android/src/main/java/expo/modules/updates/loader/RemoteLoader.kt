@@ -43,12 +43,13 @@ class RemoteLoader internal constructor(
   }
 
   override fun loadAsset(
+    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
     callback: AssetDownloadCallback
   ) {
-    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, callback)
+    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, context, callback)
   }
 
   override fun shouldSkipAsset(assetEntity: AssetEntity): Boolean {
