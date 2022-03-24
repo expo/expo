@@ -23,7 +23,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   // MARK: JavaScript API
-
   @objc
   public func constantsToExport() -> [AnyHashable: Any] {
 #if targetEnvironment(simulator)
@@ -31,7 +30,9 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 #else
     let doesDeviceSupportKeyCommands = false
 #endif
-    return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
+    return [
+      "doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands,
+    ]
   }
 
   @objc

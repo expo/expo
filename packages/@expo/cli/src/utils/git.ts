@@ -42,7 +42,7 @@ export async function validateGitStatusAsync(): Promise<boolean> {
   try {
     const result = await spawnAsync('git', ['status', '--porcelain']);
     workingTreeStatus = result.stdout === '' ? 'clean' : 'dirty';
-  } catch (e) {
+  } catch {
     // Maybe git is not installed?
     // Maybe this project is not using git?
   }

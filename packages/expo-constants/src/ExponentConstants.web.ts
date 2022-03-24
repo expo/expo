@@ -59,7 +59,7 @@ export default {
         installationId = uuidv4();
         localStorage.setItem(ID_KEY, installationId as string);
       }
-    } catch (error) {
+    } catch {
       installationId = _sessionId;
     } finally {
       return installationId;

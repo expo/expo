@@ -123,7 +123,7 @@ class DevLauncherUncaughtExceptionHandler(
   }
 
   private fun getLogsUrl(): Uri {
-    val logsUrlFromManifest = controller.manifest?.getRawJson()?.optString("logUrl")
+    val logsUrlFromManifest = controller.manifest?.getLogUrl()
     if (logsUrlFromManifest.isNullOrEmpty()) {
       return Uri.parse(logsUrlFromManifest)
     }

@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
   s.dependency 'EXStructuredHeaders'
   s.dependency 'EXUpdatesInterface'
   s.dependency 'EXManifests'
+  s.dependency 'EASClientID'
   s.dependency 'ASN1Decoder', '~> 1.8'
 
   s.pod_target_xcconfig = {

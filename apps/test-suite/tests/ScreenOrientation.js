@@ -312,7 +312,7 @@ export function test(t) {
           let hasError = false;
           try {
             await ScreenOrientation.supportsOrientationLockAsync(notLock);
-          } catch (e) {
+          } catch {
             hasError = true;
           }
           t.expect(hasError).toBe(true);

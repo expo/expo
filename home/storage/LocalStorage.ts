@@ -25,7 +25,7 @@ async function getSettingsAsync(): Promise<Settings> {
 
   try {
     return JSON.parse(json);
-  } catch (e) {
+  } catch {
     return {};
   }
 }
@@ -53,7 +53,7 @@ async function getSessionAsync() {
         results = JSON.parse(json);
         await saveSessionAsync(results as SessionObject);
         await AsyncStorage.removeItem(Keys.Session);
-      } catch (e) {
+      } catch {
         return null;
       }
     }

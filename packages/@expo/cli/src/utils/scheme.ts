@@ -49,7 +49,7 @@ async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<stri
     const getDefaultScheme = require(resolveFrom(projectRoot, 'expo-dev-client/getDefaultScheme'));
     const scheme = getDefaultScheme(exp);
     return scheme;
-  } catch (error) {
+  } catch {
     Log.warn(
       '\nDevelopment build: Unable to get the default URI scheme for the project. Please make sure the expo-dev-client package is installed.'
     );
