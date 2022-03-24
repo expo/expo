@@ -25,6 +25,7 @@ export default async function checkPackageAsync(
     const args = options.isPlugin ? ['plugin'] : [];
     if (options.build) {
       await runPackageScriptAsync(pkg, 'clean', args);
+      await runPackageScriptAsync(pkg, 'typecheck', args);
       await runPackageScriptAsync(pkg, 'build', args);
 
       if (options.uniformityCheck) {
