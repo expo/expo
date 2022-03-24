@@ -17,7 +17,7 @@
 @property (nonatomic, strong) NSDictionary<NSString *, id> *settings;
 @property (nonatomic, weak) AVCaptureVideoPreviewLayer *previewLayer;
 
-@property (nonatomic, strong) NSDictionary<NSString *, id<ZXReader>> *zxingBarcodeReaders;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, id<ZXReader>> *zxingBarcodeReaders;
 @property (nonatomic, assign) CGFloat zxingFPSProcessed;
 @property (nonatomic, strong) AVCaptureVideoDataOutput* videoDataOutput;
 @property (nonatomic, strong) dispatch_queue_t zxingCaptureQueue;
@@ -35,15 +35,15 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     _settings = [[NSMutableDictionary alloc] initWithDictionary:[[self class] _getDefaultSettings]];
 
     // zxing handles barcodes reading of following types:
-      NSMutableDictionary *_zxingBarcodeReaders = @{
+    _zxingBarcodeReaders = [@{
       // PDF417 - built-in PDF417 reader doesn't handle u'\0' (null) character - https://github.com/expo/expo/issues/4817
       AVMetadataObjectTypePDF417Code: [ZXPDF417Reader new],
       // Code39 - built-in Code39 reader doesn't read non-ideal (slightly rotated) images like this - https://github.com/expo/expo/pull/5976#issuecomment-545001008
       AVMetadataObjectTypeCode39Code: [ZXCode39Reader new],
-    };
+    } mutableCopy];
     // Codabar - available in iOS 15.4+
     if (@available(iOS 15.4, *)) {
-      [_zxingBarcodeReaders setObject: [ZXCodaBarReader new] forKey: AVMetadataObjectTypeCodabarCode];
+      _zxingBarcodeReaders[AVMetadataObjectTypeCodabarCode] = [ZXCodaBarReader new];
     }
     _zxingFPSProcessed = 6;
     _zxingCaptureQueue = dispatch_queue_create("com.zxing.captureQueue", NULL);

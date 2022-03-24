@@ -8,7 +8,7 @@
 
 + (NSDictionary *)validBarCodeTypes
 {
-    NSMutableDictionary *_validBarcodeTypes = @{
+    NSMutableDictionary *validTypes = [@{
       @"upc_e" : AVMetadataObjectTypeUPCECode,
       @"code39" : AVMetadataObjectTypeCode39Code,
       @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
@@ -22,12 +22,11 @@
       @"interleaved2of5" : AVMetadataObjectTypeInterleaved2of5Code,
       @"itf14" : AVMetadataObjectTypeITF14Code,
       @"datamatrix" : AVMetadataObjectTypeDataMatrixCode,
-    };
-    // available in iOS 15.4+
+    } mutableCopy];
     if (@available(iOS 15.4, *)) {
-      [_validBarcodeTypes setObject: AVMetadataObjectTypeCodabarCode forKey:@"codabar"];
+      validTypes[@"codabar"] = AVMetadataObjectTypeCodabarCode;
     }
-    return _validBarcodeTypes;
+    return validTypes;
 }
 
 + (AVCaptureVideoOrientation)videoOrientationForInterfaceOrientation:(UIInterfaceOrientation)orientation
