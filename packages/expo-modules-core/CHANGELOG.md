@@ -18,6 +18,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the `Fatal error: Expo modules provider must implement "ModulesProviderProtocol"` runtime error in XCTest targets and SwiftUI Preview. ([#16733](https://github.com/expo/expo/pull/16733) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.7.0 — 2022-01-26
