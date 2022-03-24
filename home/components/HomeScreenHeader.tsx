@@ -1,23 +1,22 @@
-import { spacing } from '@expo/styleguide-native';
+import { borderRadius, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Button, View, Row, Image, UserIcon, Text } from 'expo-dev-client-components';
+import { Button, View, Row, Image, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
-import { CurrentUserDataFragment } from 'graphql/types';
-import { HomeStackRoutes } from 'navigation/Navigation.types';
+import { HomeScreenDataQuery } from 'graphql/types';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import { useTheme } from '../utils/useTheme';
+import { PressableOpacity } from './PressableOpacity';
 
 type Props = {
-  currentUser?: CurrentUserDataFragment;
+  currentUser?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
 };
 
 export function HomeScreenHeader({ currentUser }: Props) {
   const { theme, themeType } = useTheme();
 
-  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
+  const navigation = useNavigation();
 
   async function onAccountButtonPress() {
     try {
@@ -65,20 +64,35 @@ export function HomeScreenHeader({ currentUser }: Props) {
           Expo Go
         </Text>
       </Row>
-      <Button.Container onPress={onAccountButtonPress}>
-        {currentUser?.profilePhoto ? (
-          <Image size="xl" rounded="full" source={{ uri: currentUser.profilePhoto }} />
-        ) : (
-          <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
-            <UserIcon
-              style={{
-                tintColor: theme.icon.default,
-              }}
-              size="small"
-            />
-          </View>
-        )}
-      </Button.Container>
+      {!currentUser ? (
+        <PressableOpacity
+          borderRadius={borderRadius.small}
+          onPress={onAccountButtonPress}
+          containerProps={{
+            style: {
+              backgroundColor: theme.button.ghost.background,
+              borderWidth: 1,
+              borderColor: theme.button.ghost.border,
+              padding: spacing[2],
+            },
+          }}>
+          <Button.Text type="InterSemiBold" color="ghost" size="small">
+            Log in
+          </Button.Text>
+        </PressableOpacity>
+      ) : (
+        <Button.Container onPress={onAccountButtonPress}>
+          {/* Show profile picture for personal accounts / accounts with members */}
+          {currentUser?.owner?.profilePhoto ? (
+            <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
+          ) : (
+            <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
+              {/* TODO: Show log in button when there is no session */}
+              <UsersIcon color={theme.icon.default} size={iconSize.small} />
+            </View>
+          )}
+        </Button.Container>
+      )}
     </Row>
   );
 }
