@@ -46,18 +46,6 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
     stdio: 'inherit',
   });
 
-  logger.info(
-    '📇 Transforming',
-    chalk.magenta('ReactAndroid/build.gradle'),
-    'to make use of',
-    chalk.yellow('NDK_ABI_FILTERS')
-  );
-  await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
-    {
-      find: /^(def reactNativeArchitectures\(\) {)/m,
-      replaceWith: `$1\n    if (System.getenv('NDK_ABI_FILTERS')) { return System.getenv('NDK_ABI_FILTERS'); }`,
-    },
-  ]);
   await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
     {
       find: /^(\s*jsRootDir\s*=\s*)file\(.+\)$/m,

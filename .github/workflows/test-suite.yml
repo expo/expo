@@ -156,7 +156,7 @@ jobs:
   android:
     runs-on: macos-11
     env:
-      NDK_ABI_FILTERS: x86_64
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     steps:
       - name: ⬢ Setup Node

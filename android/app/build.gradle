@@ -40,9 +40,6 @@ android {
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
     ]
-    ndk {
-      abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
-    }
   }
   dexOptions {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"

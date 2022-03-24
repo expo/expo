@@ -65,7 +65,10 @@ def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
 def RN_SO_DIR = "$reactNative/ReactAndroid/build/react-ndk/exported"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
 def FOR_HERMES = false
-def ABI_FILTERS = System.getenv("NDK_ABI_FILTERS") ?: 'arm64-v8a, armeabi-v7a, x86, x86_64'
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -142,8 +145,7 @@ android {
             "-DRN_SO_DIR=${RN_SO_DIR}",
             "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
             "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
-        abiFilters = []
-        abiFilters.addAll(ABI_FILTERS.split(',').collect { (it as String).trim() })
+        abiFilters (*reactNativeArchitectures())
       }
     }
 

@@ -125,9 +125,9 @@ jobs:
           IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
         run: |
           if [ "$IS_RELEASE_BUILD" == "false" ]; then
-            export NDK_ABI_FILTERS="x86_64"
+            export ORG_GRADLE_PROJECT_reactNativeArchitectures="x86_64"
             BUILD_TYPE="Debug"
-            echo "Using ABI filters: $NDK_ABI_FILTERS"
+            echo "Using ABI filters: $ORG_GRADLE_PROJECT_reactNativeArchitectures"
           else
             BUILD_TYPE="Release"
           fi
