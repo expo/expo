@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)orientation;
 - (nullable NSDictionary *)experiments;
 - (nullable NSDictionary *)developer;
+- (nullable NSString *)logUrl;
 - (nullable NSString *)facebookAppId;
 - (nullable NSString *)facebookApplicationName;
 - (BOOL)facebookAutoInitEnabled;

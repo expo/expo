@@ -52,7 +52,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
   }
   
   static func getLogsUrl(_ controller: EXDevLauncherController) -> URL? {
-    let logsUrlFromManifest = controller.appManifest()?.rawManifestJSON()["logUrl"] as? String
+    let logsUrlFromManifest = controller.appManifest()?.logUrl()
     if (logsUrlFromManifest != nil) {
       return URL.init(string: logsUrlFromManifest!)
     }
