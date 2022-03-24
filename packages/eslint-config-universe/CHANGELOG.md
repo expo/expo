@@ -4,6 +4,10 @@
 
 ### 🛠 Breaking changes
 
+- Warn for unused `catch` variables: `catch (e) {}` is a linter warning if `e` is unused. ([#16591](https://github.com/expo/expo/pull/16591) by [@ide](https://github.com/ide))
+- TypeScript linter rules now run only on .ts (and .tsx and .d.ts files), not .js files ([#16591](https://github.com/expo/expo/pull/16591) by [@ide](https://github.com/ide))
+- Linter configuration targets ES2022 syntax. This means code that is valid ES2022 code will lint properly. ([#16591](https://github.com/expo/expo/pull/16591) by [@ide](https://github.com/ide))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -15,7 +19,7 @@
 ### 🛠 Breaking changes
 
 - Dropped support for Node 10 due to dependency upgrades. Also ESlint 7.28.x or newer is required. ([#15810](https://github.com/expo/expo/pull/15810) by [@ide](https://github.com/ide))
-- Bumped `@typescript-eslint/eslint-plugin` from 4.28.5 to 5.9.0 for ESLint 8.x support. Same with `@typescript-eslint/parser`. 
+- Bumped `@typescript-eslint/eslint-plugin` from 4.28.5 to 5.9.0 for ESLint 8.x support. Same with `@typescript-eslint/parser`.
 - Bumped `"eslint-plugin-prettier` from 3.4.0 to 4.0.0
 
 ### 🎉 New features

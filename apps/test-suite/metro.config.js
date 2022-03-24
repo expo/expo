@@ -1,5 +1,6 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
 
+/* global __dirname */
 const baseConfig = createMetroConfiguration(__dirname);
 
 module.exports = {

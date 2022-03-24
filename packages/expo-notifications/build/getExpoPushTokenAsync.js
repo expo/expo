@@ -49,7 +49,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
         try {
             body = await response.text();
         }
-        catch (error) {
+        catch {
             // do nothing
         }
         throw new CodedError('ERR_NOTIFICATIONS_SERVER_ERROR', `Error encountered while fetching Expo token, expected an OK response, received: ${statusInfo} (body: "${body}").`);
@@ -75,11 +75,11 @@ async function parseResponse(response) {
     try {
         return await response.json();
     }
-    catch (error) {
+    catch {
         try {
             throw new CodedError('ERR_NOTIFICATIONS_SERVER_ERROR', `Expected a JSON response from server when fetching Expo token, received body: ${JSON.stringify(await response.text())}.`);
         }
-        catch (innerError) {
+        catch {
             throw new CodedError('ERR_NOTIFICATIONS_SERVER_ERROR', `Expected a JSON response from server when fetching Expo token, received response: ${JSON.stringify(response)}.`);
         }
     }
@@ -122,7 +122,7 @@ async function shouldUseDevelopmentNotificationService() {
                 return true;
             }
         }
-        catch (e) {
+        catch {
             // We can't do anything here, we'll fallback to false then.
         }
     }
