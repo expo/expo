@@ -40,6 +40,8 @@ The following resources are useful for learning Expo and some of the projects th
 - [React lessons on Egghead.io](https://egghead.io/technologies/react) - several playlists that cover React and Redux fundamentals.
 - [Official React Documentation](https://reactjs.org/docs/getting-started.html)
 
+
 ## JavaScript
 
+- [ES6 by Wes Bos](https://wesbos.com/es6-for-everyone) - ES6 for Everyone! (free)
 - [ES6 Katas](http://es6katas.org/) - exercises to familiarize yourself with new JavaScript features used in React Native
