@@ -36,7 +36,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       const color = phase === 'done' ? chalk.green : chalk.red;
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
-      const time = startTime ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
+      const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
       // iOS Bundling complete 150ms
       return color(platform + status) + time;
     }
