@@ -265,7 +265,7 @@ export abstract class BundlerDevServer {
   ) {
     if (launchTarget === 'desktop') {
       const url = this.getDevServerUrl({ hostType: 'localhost' });
-      await openBrowserAsync(url);
+      await openBrowserAsync(url!);
       return { url };
     }
 

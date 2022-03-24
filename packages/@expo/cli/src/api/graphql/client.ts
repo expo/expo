@@ -38,6 +38,7 @@ export const graphqlClient = createUrqlClient({
     }),
     fetchExchange,
   ],
+  // @ts-ignore Type 'typeof fetch' is not assignable to type '(input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>'.
   fetch,
   fetchOptions: (): { headers?: AccessTokenHeaders | SessionHeaders } => {
     const token = UserSettings.getAccessToken();

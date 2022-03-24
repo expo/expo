@@ -38,5 +38,5 @@ declare module 'json-schema-deref-sync' {
     loaders?: Record<string, Function>;
   }
 
-  export default function deref(schema: object, options?: {}): object | Error;
+  export default function deref(schema: object, options?: object): object | Error;
 }
