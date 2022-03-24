@@ -1,4 +1,5 @@
 const { boolish } = require('getenv');
+const process = require('process');
 
 export async function bin(task, opts) {
   await task
@@ -33,7 +34,7 @@ export default async function (task) {
   const opts = { dev: true };
   await task.clear('build');
   await task.start('build', opts);
-  if (!boolish('CI', false)) {
+  if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
     await task.watch('bin/*', 'bin', opts);
     await task.watch('src/**/*.+(js|ts)', 'src', opts);
   }
