@@ -9,6 +9,8 @@
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 
+@import EASClientID;
+
 #if __has_include(<EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>)
 #import <EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>
 #else
@@ -567,6 +569,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
+  [request setValue:EASClientID.uuid.UUIDString forHTTPHeaderField:@"EAS-Client-ID"];
 
   for (NSString *key in _config.requestHeaders) {
     [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
@@ -597,6 +600,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
+  [request setValue:EASClientID.uuid.UUIDString forHTTPHeaderField:@"EAS-Client-ID"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   [request setValue:(_config.expectsSignedManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
   [request setValue:_config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];

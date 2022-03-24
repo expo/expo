@@ -2,14 +2,15 @@
 
 import Foundation
 
-public struct EASClientID {
+@objc
+public class EASClientID : NSObject {
   private static let EAS_CLIENT_ID_SHARED_PREFERENCES_KEY = "expo.eas-client-id"
 
-  public static var uuid: UUID = {
+  @objc public static func uuid() -> UUID {
     return UUID.init(uuidString: UserDefaults.standard.computeStringIfAbsent(forKey: EAS_CLIENT_ID_SHARED_PREFERENCES_KEY) {
       UUID.init().uuidString
     })!
-  }()
+  }
 }
 
 extension UserDefaults {

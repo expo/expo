@@ -14,6 +14,7 @@
 - Fix codesigning header name. ([#16480](https://github.com/expo/expo/pull/16480) by [@wschurman](https://github.com/wschurman))
 - Support certificate chains. ([#16375](https://github.com/expo/expo/pull/16375) by [@wschurman](https://github.com/wschurman))
 - Add support for expo project information certificate extension. ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
+- Pass EAS-Client-ID in header for asset and manifest requests. ([#16729](https://github.com/expo/expo/pull/16729) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

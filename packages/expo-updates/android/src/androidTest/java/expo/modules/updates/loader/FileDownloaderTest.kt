@@ -114,7 +114,7 @@ class FileDownloaderTest {
     }
 
     // assetRequestHeaders should not be able to override preset headers
-    val actual = FileDownloader.createRequestForAsset(assetEntity, config)
+    val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -152,7 +152,7 @@ class FileDownloaderTest {
     var didSucceed = false
 
     FileDownloader(client).downloadAsset(
-      assetEntity, File(context.cacheDir, "test"), config,
+      assetEntity, File(context.cacheDir, "test"), config, context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e
