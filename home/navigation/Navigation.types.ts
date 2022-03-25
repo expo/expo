@@ -11,6 +11,8 @@ export type HomeStackRoutes = {
   RedesignedProjectsList: { accountName: string };
   RedesignedSnacksList: { accountName: string };
   RedesignedProjectDetails: { id: string };
+  Branches: { appId: string };
+  BranchDetails: { appId: string; branchName: string };
 };
 
 export type ProfileStackRoutes = {
