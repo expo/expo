@@ -96,5 +96,5 @@ export function BranchList({ appId }: { appId: string }) {
       .map((kernelSDKVersion) => getRuntimeVersionForSDKVersion(kernelSDKVersion)),
   });
 
-  return <BranchListView data={branchManifests} loadMoreAsync={loadMoreAsync} />;
+  return <BranchListView data={branchManifests} appId={appId} loadMoreAsync={loadMoreAsync} />;
 }

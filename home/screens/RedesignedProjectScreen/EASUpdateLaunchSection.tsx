@@ -59,7 +59,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
       {branchManifests.map((branch, i) => {
         return (
           <Fragment key={branch.id}>
-            <BranchListItem name={branch.name} latestUpdate={branch.latestUpdate} />
+            <BranchListItem appId={app.id} name={branch.name} latestUpdate={branch.latestUpdate} />
             {i < branchManifests.length - 1 && <Divider />}
           </Fragment>
         );

@@ -1,12 +1,13 @@
 import { BranchIcon, UpdateIcon, iconSize, ChevronDownIcon } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import format from 'date-fns/format';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import { WebContainerProjectPage_Query } from 'graphql/types';
+import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React from 'react';
-import { Linking } from 'react-native';
 
 import { DateFormats } from '../constants/DateFormats';
-import * as UrlUtils from '../utils/UrlUtils';
 import { PressableOpacity } from './PressableOpacity';
 
 type Update =
@@ -15,6 +16,7 @@ type Update =
 type Props = {
   name: string;
   latestUpdate: Update;
+  appId: string;
 };
 
 /**
@@ -22,16 +24,13 @@ type Props = {
  * the branches list page for an app.
  */
 
-export function BranchListItem({
-  name,
-  latestUpdate: { message, manifestPermalink, createdAt },
-}: Props) {
+export function BranchListItem({ name, appId, latestUpdate: { message, createdAt } }: Props) {
   const theme = useExpoTheme();
 
-  const handlePressBranch = () => {
-    // TODO: open branch page
+  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
-    Linking.openURL(UrlUtils.normalizeUrl(manifestPermalink));
+  const handlePressBranch = () => {
+    navigation.navigate('BranchDetails', { appId, branchName: name });
   };
 
   return (
