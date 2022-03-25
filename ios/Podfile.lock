@@ -1302,10 +1302,8 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (11.1.0):
     - ExpoModulesCore
-  - EXManifests (0.2.2):
-    - EXJSONUtils
-  - EXManifests/Tests (0.2.2):
-    - EXJSONUtils
+  - EXManifests (0.2.2)
+  - EXManifests/Tests (0.2.2)
   - EXMediaLibrary (14.0.0):
     - ExpoModulesCore
     - React-Core
@@ -1388,6 +1386,7 @@ PODS:
   - EXUpdates (0.11.2):
     - ASN1Decoder (~> 1.8)
     - EASClientID
+    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -1396,6 +1395,7 @@ PODS:
   - EXUpdates/Tests (0.11.2):
     - ASN1Decoder (~> 1.8)
     - EASClientID
+    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -3232,11 +3232,11 @@ SPEC CHECKSUMS:
   EXGL_CPP: 835a91b5a8aecb79f4f819ce57def685e90b81a2
   EXGoogleSignIn: be1c4d935ea46d0d6495b1ce51bc37c98a64c07a
   EXImageLoader: ad85d98d686b33a2cf3788d1e35c5156d3ffd2e0
-  EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
+  EXJSONUtils: c906aff1e7ca9c4983754bc846b9c9a98acfb472
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
   EXLocation: 2d5cf099880b0dc3bc72b64d71007c536e538790
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
-  EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
+  EXManifests: cd345996af0fe2f9341cf935b1b1ed2515b6615f
   EXMediaLibrary: 92ad88fa1904ad703b636ce4818cd6d5c5ba653b
   EXNetwork: 197bd56612e7afad31429941614efd3403c15dc8
   EXNotifications: 2845e7f95660bc68ce113d78e9fa6cfb46cb0349
@@ -3270,7 +3270,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 7469fed1192a7794be7093fb873798bdf10d5f6e
   EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
-  EXUpdates: 2ede0133ed52945daeb3183beccda3cf0fc628ae
+  EXUpdates: b7d38b7d93de0b1a124efa5a90734170e5486d4b
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: 847d648d6f4bc0c1afad05caa56a487dc543445e
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6

@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXManifests/EXManifestsManifest.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

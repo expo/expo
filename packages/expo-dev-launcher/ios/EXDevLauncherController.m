@@ -25,7 +25,7 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
-#import <EXManifests/EXManifestsManifestFactory.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 @import EXDevMenu;
 
@@ -83,15 +83,15 @@
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  
+
   NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
-  
+
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
   [modules addObject:[EXDevLauncherAuth new]];
-  
+
   return modules;
 }
 
@@ -124,7 +124,7 @@
   if (!deepLink) {
     return nil;
   }
-  
+
   return @{
     UIApplicationLaunchOptionsURLKey: deepLink
   };
@@ -186,14 +186,14 @@
 {
   [_appBridge invalidate];
   [self invalidateDevMenuApp];
-  
+
   self.manifest = nil;
   self.manifestURL = nil;
 
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
   }
-  
+
   [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
@@ -210,7 +210,7 @@
                                             }];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
-  
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
@@ -226,7 +226,7 @@
     // Connect to the websocket
     [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:[NSURL URLWithString:@DEV_LAUNCHER_URL]];
 #endif
-  
+
   [_window makeKeyAndVisible];
 }
 
@@ -235,7 +235,7 @@
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
-  
+
   NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
   if (appUrl) {
     [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
@@ -245,14 +245,14 @@
         if (!self) {
           return;
         }
-        
+
         EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
         [self.errorManager showError:appError];
       });
     }];
     return true;
   }
-  
+
   [self navigateToLauncher];
   return true;
 }
@@ -262,7 +262,7 @@
   if ([self isAppRunning]) {
     return false;
   }
-  
+
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
   return true;
 }
@@ -370,25 +370,25 @@
   self.manifestURL = appUrl;
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
-  
+
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!weakSelf) {
       return;
     }
     __typeof(self) self = weakSelf;
-    
+
     self.sourceUrl = bundleUrl;
-    
+
 #if RCT_DEV
     // Connect to the websocket
     [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
 #endif
-    
+
     if (@available(iOS 12, *)) {
       UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
       [self _applyUserInterfaceStyle:userInterfaceStyle];
-      
+
       // Fix for the community react-native-appearance.
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
@@ -401,16 +401,16 @@
     }
 
     [self _addInitModuleObserver];
-    
+
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
-    
+
     [self setDevMenuAppBridge];
-    
+
     [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
     [UIViewController attemptRotationToDeviceOrientation];
-    
+
     if (backgroundColor) {
       self.window.rootViewController.view.backgroundColor = backgroundColor;
       self.window.backgroundColor = backgroundColor;
@@ -467,7 +467,7 @@
   } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
     colorSchema = @"light";
   }
-  
+
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
 }
@@ -494,7 +494,7 @@
 }
 
 -(NSDictionary *)getBuildInfo
-{ 
+{
   NSMutableDictionary *buildInfo = [NSMutableDictionary new];
 
   NSString *appIcon = [self getAppIcon];
@@ -512,17 +512,17 @@
   return buildInfo;
 }
 
--(NSString *)getAppIcon 
+-(NSString *)getAppIcon
 {
   NSString *appIcon = @"";
   NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
-  
+
   if (appIconName != nil) {
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString *appIconPath = [[resourcePath stringByAppendingString:appIconName] stringByAppendingString:@".png"];
     appIcon = [@"file://" stringByAppendingString:appIconPath];
   }
-  
+
   return appIcon;
 }
 
@@ -530,10 +530,10 @@
 {
   NSString *value = @"";
   NSString *path = [[NSBundle mainBundle] pathForResource:@"Expo" ofType:@"plist"];
-  
+
   if (path != nil) {
     NSDictionary *expoConfig = [NSDictionary dictionaryWithContentsOfFile:path];
-    
+
     if (expoConfig != nil) {
       value = [expoConfig objectForKey:key] ?: @"";
     }
@@ -542,7 +542,7 @@
   return value;
 }
 
--(NSString *)getFormattedAppVersion 
+-(NSString *)getFormattedAppVersion
 {
   NSString *shortVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
   NSString *buildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
@@ -559,7 +559,7 @@
 {
   DevMenuManager *manager = [DevMenuManager shared];
   manager.currentBridge = self.appBridge;
-  
+
   if (self.manifest != nil) {
     manager.currentManifest = self.manifest;
     manager.currentManifestURL = self.manifestURL;

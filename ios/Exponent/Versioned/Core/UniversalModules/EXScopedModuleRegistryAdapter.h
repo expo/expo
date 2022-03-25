@@ -2,7 +2,7 @@
 
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
-#import <EXManifests/EXManifestsManifest.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 @interface EXScopedModuleRegistryAdapter : EXModuleRegistryAdapter
 

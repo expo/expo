@@ -2,7 +2,7 @@
 
 #import <EXUpdates/EXUpdatesUpdate.h>
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
-#import <EXManifests/EXManifestsNewManifest.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

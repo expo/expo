@@ -4,7 +4,7 @@
 #import <OHHTTPStubs/HTTPStubs.h>
 
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
-#import <EXManifests/EXManifestsManifest.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 @interface EXDevLauncherManifestParserTests : XCTestCase
 
@@ -94,7 +94,7 @@
   } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
     return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Exponent-Server": @"exponent server"}];
   }];
-  
+
   [self _testIsManifestURLString:@"http://ohhttpstubs/no-expo-server" expected:NO description:@"should assume a response with no exponent-server header means not a manifest URL"];
   [self _testIsManifestURLString:@"http://ohhttpstubs/expo-server" expected:YES description:@"should detect exponent-server header from expo dev server"];
 }
@@ -103,9 +103,9 @@
 {
   NSURL *url = [NSURL URLWithString:urlString];
   EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc] initWithURL:url installationID:nil session:NSURLSession.sharedSession];
-  
+
   XCTestExpectation *expectation = [self expectationWithDescription:description];
-  
+
   [parser isManifestURLWithCompletion:^(BOOL isManifestURL) {
     XCTAssertEqual(expectedIsManifestUrl, isManifestURL);
     [expectation fulfill];
@@ -113,7 +113,7 @@
     XCTFail(@"Response should have been successful");
     [expectation fulfill];
   }];
-  
+
   [self waitForExpectationsWithTimeout:5 handler:nil];
 }
 

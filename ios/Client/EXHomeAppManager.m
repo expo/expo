@@ -16,7 +16,7 @@
 
 #import <EXConstants/EXConstantsService.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
-#import <EXManifests/EXManifestsManifestFactory.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>

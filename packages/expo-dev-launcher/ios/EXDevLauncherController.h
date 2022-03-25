@@ -3,7 +3,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <EXManifests/EXManifestsManifest.h>
+#import <EXManifests/EXManifests-Swift.h>
 #import <EXUpdatesInterface/EXUpdatesExternalInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN

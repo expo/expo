@@ -5,8 +5,8 @@
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
-#import <EXManifests/EXManifestsBareManifest.h>
-#import <EXManifests/EXManifestsManifestFactory.h>
+#import <EXManifests/EXManifests-Swift.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

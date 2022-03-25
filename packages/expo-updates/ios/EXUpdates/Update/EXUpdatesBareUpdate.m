@@ -4,7 +4,7 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXManifests/EXManifestsBareManifest.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

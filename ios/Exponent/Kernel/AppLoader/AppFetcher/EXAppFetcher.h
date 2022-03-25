@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import "EXResourceLoader.h"
-#import <EXManifests/EXManifestsManifest.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 @class EXAppLoader;
 @class EXAppFetcher;

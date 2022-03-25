@@ -1,5 +1,6 @@
 #import "EXKernelAppRegistry.h"
-#import <EXManifests/EXManifestsManifest.h>
+
+#import <EXManifests/EXManifests-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

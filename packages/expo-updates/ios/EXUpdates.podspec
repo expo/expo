@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'EXStructuredHeaders'
   s.dependency 'EXUpdatesInterface'
+  s.dependency 'EXJSONUtils'
   s.dependency 'EXManifests'
   s.dependency 'EASClientID'
   s.dependency 'ASN1Decoder', '~> 1.8'

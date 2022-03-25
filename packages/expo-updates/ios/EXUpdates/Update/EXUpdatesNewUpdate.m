@@ -6,6 +6,7 @@
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTConvert.h>
+#import <EXJSONUtils/NSDictionary+EXJSONUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
