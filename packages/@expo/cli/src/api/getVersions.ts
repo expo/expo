@@ -33,9 +33,12 @@ export type Versions = {
 };
 
 /** Get versions from remote endpoint. */
-export async function getVersionsAsync(): Promise<Versions> {
+export async function getVersionsAsync({
+  skipCache,
+}: { skipCache?: boolean } = {}): Promise<Versions> {
   // Reconstruct the cached fetch since caching could be disabled.
   const fetchAsync = createCachedFetch({
+    skipCache,
     cacheDirectory: 'versions-cache',
     // We'll use a 1 week cache for versions so older versions get flushed out eventually.
     ttl: 1000 * 60 * 60 * 24 * 7,
