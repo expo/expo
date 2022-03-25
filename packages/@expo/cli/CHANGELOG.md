@@ -21,6 +21,6 @@
 
 ### 🐛 Bug fixes
 
-- Fix process memory leak warning in `expo start`.
+- Fix process memory leak warning in `expo start`. ([#16753](https://github.com/expo/expo/pull/16753) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
