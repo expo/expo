@@ -1,7 +1,8 @@
 import { spacing } from '@expo/styleguide-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { Text, View, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
 import { useSelector } from 'redux/Hooks';
 import isUserAuthenticated from 'utils/isUserAuthenticated';
@@ -16,7 +17,7 @@ export function AccountModal() {
   const theme = useExpoTheme();
 
   const { data, loading, error, refetch } = useHome_CurrentUserQuery();
-
+  const navigation = useNavigation();
   const { isAuthenticated } = useSelector((data) => {
     const isAuthenticated = isUserAuthenticated(data.session);
     return {
@@ -24,7 +25,15 @@ export function AccountModal() {
     };
   });
 
-  if (isAuthenticated && !data?.viewer) refetch(); // get accounts info after logging in
+  useEffect(() => {
+    // wait for redux action to dispatch so other queries can be fetched
+    if (isAuthenticated && !data?.viewer) {
+      // get accounts info after logging in, then dismiss the modal
+      refetch().then(() => {
+        navigation.goBack();
+      });
+    }
+  }, [isAuthenticated]);
 
   if (loading) {
     return (

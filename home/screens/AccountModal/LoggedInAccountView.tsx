@@ -33,7 +33,8 @@ export function LoggedInAccountView({ accounts }: Props) {
           renderItem={({ item: account }) => (
             <PressableOpacity
               key={account.id}
-              containerProps={{ bg: 'default', style: { padding: 16 } }}
+              style={{ padding: 16 }}
+              containerProps={{ bg: 'default' }}
               onPress={() => {
                 setAccountName(account.name);
               }}>

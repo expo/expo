@@ -45,6 +45,7 @@ type Props = NavigationProps & {
   isAuthenticated: boolean;
   theme: string;
   accountName?: string;
+  initialData?: HomeScreenDataQuery;
 };
 
 type State = {
@@ -65,8 +66,8 @@ export class HomeScreenView extends React.Component<Props, State> {
     projects: [],
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
-    data: undefined,
-    loading: true,
+    data: this.props.initialData?.account.byName,
+    loading: !Boolean(this.props.initialData?.account.byName), // if there is initial data, we're not loading
   };
 
   componentDidMount() {

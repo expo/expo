@@ -15,6 +15,9 @@ import FeatureFlags from './FeatureFlags';
 import ApolloClient from './api/ApolloClient';
 import { ColorTheme } from './constants/Colors';
 import {
+  HomeScreenDataDocument,
+  HomeScreenDataQuery,
+  HomeScreenDataQueryVariables,
   Home_CurrentUserDocument,
   Home_CurrentUserQuery,
   Home_CurrentUserQueryVariables,
@@ -30,6 +33,7 @@ import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
 import isUserAuthenticated from './utils/isUserAuthenticated';
+import { useInitialData } from './utils/InitialDataContext';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
@@ -62,6 +66,8 @@ export default function HomeApp() {
   const isShowingSplashScreen = useSplashScreenWhileLoadingResources(async () => {
     await initStateAsync();
   });
+
+  const { setCurrentUserData, setHomeScreenData } = useInitialData();
 
   const { isAuthenticated } = useSelector((data) => {
     const isAuthenticated = isUserAuthenticated(data.session);
@@ -158,23 +164,43 @@ export default function HomeApp() {
       ]);
 
       if (currentUserQueryResult.data && currentUserQueryResult.data.viewer) {
-        let newAccountName = persistedCurrentAccount;
-        if (persistedCurrentAccount) {
+        let firstLoadAccountName = persistedCurrentAccount;
+        if (firstLoadAccountName) {
           // if there was a persisted account, and it matches the accounts available to the current user, use it
           if (
             [
               currentUserQueryResult.data.viewer.username,
               ...currentUserQueryResult.data.viewer.accounts.map((account) => account.name),
-            ].includes(persistedCurrentAccount)
+            ].includes(firstLoadAccountName)
           ) {
-            setAccountName(persistedCurrentAccount);
+            setAccountName(firstLoadAccountName);
           } else {
+            // if this persisted account is stale, clear it
             await AsyncStorage.removeItem('currentAccount');
           }
         } else {
           // if there was no persisted account, use the current user's personal account
-          newAccountName = currentUserQueryResult.data.viewer.username;
-          setAccountName(newAccountName);
+          firstLoadAccountName = currentUserQueryResult.data.viewer.username;
+          setAccountName(firstLoadAccountName);
+        }
+
+        // set initial data for home screen
+
+        setCurrentUserData(currentUserQueryResult.data);
+
+        if (firstLoadAccountName) {
+          const homeScreenData = await ApolloClient.query<
+            HomeScreenDataQuery,
+            HomeScreenDataQueryVariables
+          >({
+            query: HomeScreenDataDocument,
+            variables: {
+              accountName: firstLoadAccountName,
+            },
+            context: { headers: { 'expo-session': storedSession?.sessionSecret } },
+          });
+
+          setHomeScreenData(homeScreenData.data);
         }
       } else {
         // if there is no current user data, clear the accountName
