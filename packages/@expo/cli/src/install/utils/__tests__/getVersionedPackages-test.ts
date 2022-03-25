@@ -18,7 +18,7 @@ jest.mock('../../../start/doctor/dependencies/bundledNativeModules', () => ({
 }));
 
 describe(getVersionedPackagesAsync, () => {
-  it('should call the progress callback', async () => {
+  it('should return versioned packages', async () => {
     asMock(getBundledNativeModulesAsync).mockResolvedValueOnce({});
     asMock(getVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
@@ -50,7 +50,7 @@ describe(getVersionedPackagesAsync, () => {
       'uuid@^3.4.0',
     ]);
 
-    expect(messages).toEqual(['4 other packages']);
+    expect(messages).toEqual(['2 SDK 1.0.0 compatible native modules', '2 other packages']);
   });
 });
 
