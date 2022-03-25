@@ -3698,7 +3698,7 @@ export type CommonAppDataFragment = { __typename?: 'App', id: string, fullName: 
 
 export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean };
 
-export type CurrentUserDataFragment = { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string }> };
+export type CurrentUserDataFragment = { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null | undefined, fullName?: string | null | undefined, lastName?: string | null | undefined } | null | undefined }> };
 
 export type Home_AccountDataQueryVariables = Exact<{
   accountName: Scalars['String'];
@@ -3733,7 +3733,7 @@ export type BranchesForProjectQuery = { __typename?: 'RootQuery', app: { __typen
 export type Home_CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Home_CurrentUserQuery = { __typename?: 'RootQuery', viewer?: { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string }> } | null | undefined };
+export type Home_CurrentUserQuery = { __typename?: 'RootQuery', viewer?: { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null | undefined, fullName?: string | null | undefined, lastName?: string | null | undefined } | null | undefined }> } | null | undefined };
 
 export type Home_ProfileData2QueryVariables = Exact<{
   appLimit: Scalars['Int'];
@@ -3791,10 +3791,12 @@ export type Home_ViewerUsernameQueryVariables = Exact<{ [key: string]: never; }>
 
 export type Home_ViewerUsernameQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string } | null | undefined };
 
-export type HomeScreenDataQueryVariables = Exact<{ [key: string]: never; }>;
+export type HomeScreenDataQueryVariables = Exact<{
+  accountName: Scalars['String'];
+}>;
 
 
-export type HomeScreenDataQuery = { __typename?: 'RootQuery', viewer?: { __typename?: 'User', appCount: number, id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null | undefined, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }>, accounts: Array<{ __typename?: 'Account', id: string, name: string }> } | null | undefined };
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, owner?: { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null | undefined, fullName?: string | null | undefined, lastName?: string | null | undefined } | null | undefined }> } | null | undefined, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null | undefined, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
 export const CommonAppDataFragmentDoc = gql`
     fragment CommonAppData on App {
@@ -3829,6 +3831,14 @@ export const CurrentUserDataFragmentDoc = gql`
   accounts {
     id
     name
+    owner {
+      id
+      username
+      profilePhoto
+      firstName
+      fullName
+      lastName
+    }
   }
 }
     `;
@@ -4408,16 +4418,23 @@ export function refetchHome_ViewerUsernameQuery(variables?: Home_ViewerUsernameQ
       return { query: Home_ViewerUsernameDocument, variables: variables }
     }
 export const HomeScreenDataDocument = gql`
-    query HomeScreenData {
-  viewer {
-    ...CurrentUserData
-    apps(limit: 5, offset: 0, includeUnpublished: true) {
-      ...CommonAppData
+    query HomeScreenData($accountName: String!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      isCurrent
+      owner {
+        ...CurrentUserData
+      }
+      apps(limit: 5, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: 5, offset: 0) {
+        ...CommonSnackData
+      }
+      appCount
     }
-    snacks(limit: 5, offset: 0) {
-      ...CommonSnackData
-    }
-    appCount
   }
 }
     ${CurrentUserDataFragmentDoc}
@@ -4436,10 +4453,11 @@ ${CommonSnackDataFragmentDoc}`;
  * @example
  * const { data, loading, error } = useHomeScreenDataQuery({
  *   variables: {
+ *      accountName: // value for 'accountName'
  *   },
  * });
  */
-export function useHomeScreenDataQuery(baseOptions?: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+export function useHomeScreenDataQuery(baseOptions: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
       }
@@ -4450,6 +4468,6 @@ export function useHomeScreenDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type HomeScreenDataQueryHookResult = ReturnType<typeof useHomeScreenDataQuery>;
 export type HomeScreenDataLazyQueryHookResult = ReturnType<typeof useHomeScreenDataLazyQuery>;
 export type HomeScreenDataQueryResult = Apollo.QueryResult<HomeScreenDataQuery, HomeScreenDataQueryVariables>;
-export function refetchHomeScreenDataQuery(variables?: HomeScreenDataQueryVariables) {
+export function refetchHomeScreenDataQuery(variables: HomeScreenDataQueryVariables) {
       return { query: HomeScreenDataDocument, variables: variables }
     }

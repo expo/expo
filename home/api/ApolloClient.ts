@@ -19,6 +19,7 @@ const connectivityLink = setContext(async (): Promise<any> => {
 
 const authMiddlewareLink = setContext((): any => {
   const { sessionSecret } = Store.getState().session;
+
   if (sessionSecret) {
     return {
       headers: { 'expo-session': sessionSecret },
