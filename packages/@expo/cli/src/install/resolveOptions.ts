@@ -63,7 +63,7 @@ export async function resolveArgsAsync(
 
   return {
     // Variadic arguments like `npx expo install react react-dom` -> ['react', 'react-dom']
-    variadic: variadic,
+    variadic,
     options: resolveOptions({
       yarn: !!flags['--yarn'],
       npm: !!flags['--npm'],

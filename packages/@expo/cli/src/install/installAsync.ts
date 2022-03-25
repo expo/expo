@@ -3,8 +3,8 @@ import * as PackageManager from '@expo/package-manager';
 
 import * as Log from '../log';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
-import { getVersionedPackagesAsync } from './utils/getVersionedPackages';
 import { Options } from './resolveOptions';
+import { getVersionedPackagesAsync } from './utils/getVersionedPackages';
 
 export async function installAsync(packages: string[], options: Options, extras: string[] = []) {
   // Locate the project root based on the process current working directory.
