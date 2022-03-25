@@ -4,6 +4,7 @@ org.unimodules.core.interfaces.Consumer
 org.unimodules.core.interfaces.SingletonModule
 expo.modules.apploader
 expo.modules.interfaces.taskManager
+expo.modules.clipboard.CLIPBOARD_FILE_PROVIDER_PATHS
 expo.modules.core.interfaces.Consumer
 expo.modules.core.interfaces.SingletonModule
 expo.modules.easclient
