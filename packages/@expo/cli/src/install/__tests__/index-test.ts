@@ -1,9 +1,8 @@
+import * as Log from '../../log';
 import { expoInstall } from '../index';
 import { installAsync } from '../installAsync';
 
-jest.mock('../installAsync', () => ({
-  installAsync: jest.fn(async () => {}),
-}));
+jest.mock('../../log');
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
@@ -25,14 +24,15 @@ describe(expoInstall, () => {
   beforeEach(() => {
     setProcessExit(jest.fn());
   });
+
   it(`prints help`, async () => {
-    expoInstall(['--help']);
+    asMock(Log.exit).mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    await expect(expoInstall(['--help'])).rejects.toThrow();
+
     expect(installAsync).not.toBeCalled();
-    expect(process.exit).toBeCalledWith(0);
-  });
-  it(`parses arguments`, async () => {
-    // asMock(installAsync).mockImplementation(async () => {});
-    expoInstall(['react', 'react-dom']);
-    expect(installAsync).toHaveBeenCalledWith(['react', 'react-dom']);
+    expect(Log.exit).toBeCalledWith(expect.any(String), 0);
   });
 });

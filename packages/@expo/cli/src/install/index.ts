@@ -3,19 +3,21 @@ import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import * as Log from '../log';
-import { assertArgs } from '../utils/args';
+import { assertWithOptionsArgs } from '../utils/args';
 
 export const expoInstall: Command = async (argv) => {
-  const args = assertArgs(
+  const args = assertWithOptionsArgs(
     {
-      // Types
-      '--npm': Boolean,
-      '--yarn': Boolean,
+      // Other options are parsed manually.
       '--help': Boolean,
       // Aliases
       '-h': '--help',
     },
-    argv
+    {
+      argv,
+      // Allow other options, we'll throw an error if unexpected values are passed.
+      permissive: true,
+    }
   );
 
   if (args['--help']) {
@@ -40,33 +42,13 @@ export const expoInstall: Command = async (argv) => {
     );
   }
 
-  // Everything after `--` that is not an option is passed to the underlying install command.
-  const extras: string[] = [];
+  // Load modules after the help prompt so `npx expo install -h` shows as fast as possible.
+  const { installAsync } = require('./installAsync') as typeof import('./installAsync');
+  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { resolveArgsAsync } = require('./resolveOptions') as typeof import('./resolveOptions');
 
-  // Detect unparsed parameters that are passed in
-  // Assume anything after the first one to be a parameter (to support cases like `-- --loglevel verbose`)
-  argv?.forEach((arg) => {
-    if (arg.startsWith('-')) {
-      extras.push(arg);
-    }
-  });
-
-  // Load modules after the help prompt so `npx expo config -h` shows as fast as possible.
-  const [
-    // ./configAsync
-    { installAsync },
-    // ../utils/errors
-    { logCmdError },
-  ] = await Promise.all([import('./installAsync'), import('../utils/errors')]);
-
-  return installAsync(
-    // Variadic arguments like `npx expo install react react-dom` -> ['react', 'react-dom']
-    args._,
-    {
-      // Parsed options
-      npm: args['--npm'],
-      yarn: args['--yarn'],
-    },
-    extras
-  ).catch(logCmdError);
+  const { variadic, options, extras } = await resolveArgsAsync(process.argv.slice(3)).catch(
+    logCmdError
+  );
+  return installAsync(variadic, options, extras).catch(logCmdError);
 };

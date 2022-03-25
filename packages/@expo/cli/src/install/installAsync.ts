@@ -1,109 +1,86 @@
 import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
-import npmPackageArg from 'npm-package-arg';
-import path from 'path';
-import assert from 'assert';
-import resolveFrom from 'resolve-from';
 
-import { getVersionsAsync } from '../api/getVersions';
 import * as Log from '../log';
-import { getBundledNativeModulesAsync } from '../start/doctor/dependencies/bundledNativeModules';
-import { CommandError } from '../utils/errors';
-import { autoAddConfigPluginsAsync } from './utils/autoAddConfigPluginsAsync';
-
-type Options = Pick<PackageManager.CreateForProjectOptions, 'npm' | 'yarn'>;
-
-function findUpPackageJson(cwd: string) {
-  let found = resolveFrom(cwd, 'package.json');
-  if (found) {
-    return found;
-  }
-  return findUpPackageJson(path.dirname(cwd));
-}
-
-export type DependencyList = Record<string, string>;
-
-export async function getRemoteVersionsForSdkAsync(sdkVersion?: string): Promise<DependencyList> {
-  const { sdkVersions } = await getVersionsAsync({ skipCache: true });
-  if (sdkVersion && sdkVersion in sdkVersions) {
-    const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } =
-      sdkVersions[sdkVersion];
-    const reactVersion = facebookReactVersion
-      ? {
-          react: facebookReactVersion,
-          'react-dom': facebookReactVersion,
-        }
-      : undefined;
-    return {
-      ...relatedPackages,
-      ...reactVersion,
-      'react-native': facebookReactNativeVersion,
-    };
-  }
-  return {};
-}
+import { findUpProjectRootOrAssert } from '../utils/findUp';
+import { getVersionedPackagesAsync } from './utils/getVersionedPackages';
+import { Options } from './resolveOptions';
 
 export async function installAsync(packages: string[], options: Options, extras: string[] = []) {
-  const projectRoot = await findUpPackageJson(process.cwd());
+  // Locate the project root based on the process current working directory.
+  // This enables users to run `npx expo install` from a subdirectory of the project.
+  const projectRoot = findUpProjectRootOrAssert(process.cwd());
 
+  // Resolve the package manager used by the project, or based on the provided arguments.
   const packageManager = PackageManager.createForProject(projectRoot, {
     npm: options.npm,
     yarn: options.yarn,
     log: Log.log,
   });
 
-  const { exp, pkg } = getConfig(projectRoot, {
+  // Read the project Expo config without plugins.
+  const { exp } = getConfig(projectRoot, {
     // Sometimes users will add a plugin to the config before installing the library,
     // this wouldn't work unless we dangerously disable plugin serialization.
     skipPlugins: true,
   });
-  assert(exp.sdkVersion);
 
-  // This shouldn't be invoked because `findProjectRootAsync` will throw if node_modules are missing.
-  // Every React project should have react installed...
-  if (!resolveFrom.silent(projectRoot, 'react')) {
-    Log.log();
-    Log.log(chalk.cyan(`node_modules not found, running ${packageManager.name} install command.`));
-    Log.log();
-    await packageManager.installAsync();
-  }
-
-  const bundledNativeModules = await getBundledNativeModulesAsync(projectRoot, exp.sdkVersion!);
-  const versionsForSdk = await getRemoteVersionsForSdkAsync(exp.sdkVersion);
-
-  let nativeModulesCount = 0;
-  let othersCount = 0;
-
-  const versionedPackages = packages.map((arg) => {
-    const { name, type, raw } = npmPackageArg(arg);
-
-    if (['tag', 'version', 'range'].includes(type) && name && bundledNativeModules[name]) {
-      // Unimodule packages from npm registry are modified to use the bundled version.
-      nativeModulesCount++;
-      return `${name}@${bundledNativeModules[name]}`;
-    } else if (name && versionsForSdk[name]) {
-      // Some packages have the recommended version listed in https://exp.host/--/api/v2/versions.
-      othersCount++;
-      return `${name}@${versionsForSdk[name]}`;
-    } else {
-      // Other packages are passed through unmodified.
-      othersCount++;
-      return raw;
-    }
-  });
-
-  const messages = getOperationLog({
-    othersCount,
-    nativeModulesCount,
+  // Resolve the versioned packages, then install them.
+  return installPackagesAsync(projectRoot, {
+    packageManager,
+    packages,
+    extras,
     sdkVersion: exp.sdkVersion!,
   });
+}
 
-  Log.log(`Installing ${messages.join(' and ')} using ${packageManager.name}.`);
-
-  if (extras.length) {
-    await packageManager.addWithParametersAsync(versionedPackages, extras);
+/** Version packages and install in a project. */
+export async function installPackagesAsync(
+  projectRoot: string,
+  {
+    packages,
+    packageManager,
+    sdkVersion,
+    extras,
+  }: {
+    /**
+     * List of packages to version
+     * @example ['uuid', 'react-native-reanimated@latest']
+     */
+    packages: string[];
+    /** Package manager to use when installing the versioned packages. */
+    packageManager: PackageManager.NpmPackageManager | PackageManager.YarnPackageManager;
+    /**
+     * SDK to version `packages` for.
+     * @example '44.0.0'
+     */
+    sdkVersion: string;
+    /**
+     * Extra parameters to pass to the `packageManager` when installing versioned packages.
+     * @example ['--no-save']
+     */
+    extras: string[];
   }
+): Promise<void> {
+  const versioning = await getVersionedPackagesAsync(projectRoot, {
+    packages,
+    // sdkVersion is always defined because we don't skipSDKVersionRequirement in getConfig.
+    sdkVersion,
+  });
+
+  Log.log(`Installing ${versioning.messages.join(' and ')} using ${packageManager.name}.`);
+
+  await packageManager.addWithParametersAsync(versioning.packages, extras);
+
+  await applyPluginsAsync(projectRoot, versioning.packages);
+}
+
+/**
+ * A convenience feature for automatically applying Expo Config Plugins to the `app.json` after installing them.
+ * This should be dropped in favor of autolinking in the future.
+ */
+async function applyPluginsAsync(projectRoot: string, packages: string[]) {
+  const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins');
 
   try {
     const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
@@ -112,31 +89,16 @@ export async function installAsync(packages: string[], options: Options, extras:
     await autoAddConfigPluginsAsync(
       projectRoot,
       exp,
-      versionedPackages.map((pkg) => pkg.split('@')[0]).filter(Boolean)
+      // Split any possible NPM tags. i.e. `expo@latest` -> `expo`
+      packages.map((pkg) => pkg.split('@')[0]).filter(Boolean)
     );
   } catch (error: any) {
+    // If we fail to apply plugins, the log a warning and continue.
     if (error.isPluginError) {
       Log.warn(`Skipping config plugin check: ` + error.message);
       return;
     }
+    // Any other error, rethrow.
     throw error;
   }
-}
-
-function getOperationLog({
-  nativeModulesCount,
-  sdkVersion,
-  othersCount,
-}: {
-  nativeModulesCount: number;
-  othersCount: number;
-  sdkVersion: string;
-}): string[] {
-  return [
-    nativeModulesCount > 0 &&
-      `${nativeModulesCount} SDK ${sdkVersion} compatible native ${
-        nativeModulesCount === 1 ? 'module' : 'modules'
-      }`,
-    othersCount > 0 && `${othersCount} other ${othersCount === 1 ? 'package' : 'packages'}`,
-  ].filter(Boolean) as string[];
 }

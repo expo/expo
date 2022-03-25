@@ -29,8 +29,15 @@ export function getProjectRoot(args: arg.Result<arg.Spec>) {
  * @returns processed args object.
  */
 export function assertArgs(schema: arg.Spec, argv: string[]): arg.Result<arg.Spec> {
+  return assertWithOptionsArgs(schema, { argv });
+}
+
+export function assertWithOptionsArgs(
+  schema: arg.Spec,
+  options: arg.Options
+): arg.Result<arg.Spec> {
   try {
-    return arg(schema, { argv });
+    return arg(schema, options);
   } catch (error) {
     // Ensure unknown options are handled the same way.
     if (error.code === 'ARG_UNKNOWN_OPTION') {

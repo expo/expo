@@ -19,6 +19,11 @@ export type SDKVersion = {
   androidClientVersion?: string;
   /** @example { "typescript": "~3.9.5" } */
   relatedPackages?: Record<string, string>;
+
+  facebookReactNativeVersion: string;
+
+  facebookReactVersion?: string;
+
   beta?: boolean;
 };
 

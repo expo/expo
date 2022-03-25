@@ -1,4 +1,4 @@
-import { getNamedPlugins } from '../autoAddConfigPluginsAsync';
+import { getNamedPlugins } from '../autoAddConfigPlugins';
 
 describe(getNamedPlugins, () => {
   it('gets named plugins', () => {
@@ -11,11 +11,11 @@ describe(getNamedPlugins, () => {
         // @ts-ignore
         ['invalid', null, null],
         // @ts-ignore
-        c => c,
+        (c) => c,
         // @ts-ignore
         false,
         // @ts-ignore
-        [c => c, null],
+        [(c) => c, null],
       ])
     ).toStrictEqual(['bacon', '@evan/bacon', '@evan/bacon/foobar.js', './avocado.js']);
   });
