@@ -385,6 +385,7 @@ NS_ASSUME_NONNULL_BEGIN
       @"alg": @"rsa-v1_5-sha256",
     };
     updatesConfig[EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
+    updatesConfig[EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
   }
 
   _config = [EXUpdatesConfig configWithDictionary:updatesConfig];

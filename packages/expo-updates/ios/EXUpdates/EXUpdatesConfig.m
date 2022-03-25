@@ -45,6 +45,7 @@ NSString * const EXUpdatesConfigExpectsSignedManifestKey = @"EXUpdatesExpectsSig
 NSString * const EXUpdatesConfigCodeSigningCertificateKey = @"EXUpdatesCodeSigningCertificate";
 NSString * const EXUpdatesConfigCodeSigningMetadataKey = @"EXUpdatesCodeSigningMetadata";
 NSString * const EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey = @"EXUpdatesCodeSigningIncludeManifestResponseCertificateChain";
+NSString * const EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey = @"EXUpdatesConfigCodeSigningAllowUnsignedManifests";
 
 NSString * const EXUpdatesConfigReleaseChannelDefaultValue = @"default";
 
@@ -207,10 +208,17 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
     codeSigningIncludeManifestResponseCertificateChain = [(NSNumber *)codeSigningIncludeManifestResponseCertificateChainRaw boolValue];
   }
   
+  BOOL codeSigningAllowUnsignedManifests = NO;
+  id codeSigningAllowUnsignedManifestsRaw = config[EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey];
+  if (codeSigningAllowUnsignedManifestsRaw && [codeSigningAllowUnsignedManifestsRaw isKindOfClass:[NSNumber class]]) {
+    codeSigningAllowUnsignedManifests = [(NSNumber *)codeSigningAllowUnsignedManifestsRaw boolValue];
+  }
+  
   if (codeSigningCertificate) {
     _codeSigningConfiguration = [EXUpdatesConfig codeSigningConfigurationForCodeSigningCertificate:codeSigningCertificate
                                                                                codeSigningMetadata:codeSigningMetadata
-                                                codeSigningIncludeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain];
+                                                codeSigningIncludeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
+                                                                 codeSigningAllowUnsignedManifests:codeSigningAllowUnsignedManifests];
   }
 }
 
@@ -221,11 +229,13 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
 
 + (nullable EXUpdatesCodeSigningConfiguration *)codeSigningConfigurationForCodeSigningCertificate:(NSString *)codeSigningCertificate
                                                                               codeSigningMetadata:(nullable NSDictionary *)codeSigningMetadata
-                                               codeSigningIncludeManifestResponseCertificateChain:(BOOL)codeSigningIncludeManifestResponseCertificateChain {
+                                               codeSigningIncludeManifestResponseCertificateChain:(BOOL)codeSigningIncludeManifestResponseCertificateChain
+                                                                codeSigningAllowUnsignedManifests:(BOOL)codeSigningAllowUnsignedManifests {
   NSError *error;
   EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = [[EXUpdatesCodeSigningConfiguration alloc] initWithEmbeddedCertificateString:codeSigningCertificate
                                                                                                                                     metadata:codeSigningMetadata
                                                                                                      includeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
+                                                                                                                      allowUnsignedManifests:codeSigningAllowUnsignedManifests
                                                                                                                                        error:&error];
   if (error) {
     NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];

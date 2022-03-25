@@ -20,7 +20,8 @@
 ### 🐛 Bug fixes
 
 - Update `fbemitter` to v3. ([#16245](https://github.com/expo/expo/pull/16245) by [@SimenB](https://github.com/SimenB))
-- Allow non-codesigned manifests for Expo Go. ([#16649](https://github.com/expo/expo/pull/16649) by [@wschurman](https://github.com/wschurman))
+- Allow non-codesigned manifests for Expo Go (Android). ([#16649](https://github.com/expo/expo/pull/16649) by [@wschurman](https://github.com/wschurman))
+- Allow non-codesigned manifests for Expo Go (iOS). ([#16682](https://github.com/expo/expo/pull/16682) by [@wschurman](https://github.com/wschurman))
 - Fix issue where default values for primitive-typed configuration values were not correctly set. ([#16644](https://github.com/expo/expo/pull/16644) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others

@@ -15,13 +15,18 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
   private var keyIdFromMetadata: String
   private var algorithmFromMetadata: EXUpdatesCodeSigningAlgorithm
   private var includeManifestResponseCertificateChain: Bool
+  private var allowUnsignedManifests: Bool
   
   @objc
-  public required init(embeddedCertificateString: String, metadata: [String: String], includeManifestResponseCertificateChain: Bool) throws {
+  public required init(embeddedCertificateString: String,
+                       metadata: [String: String],
+                       includeManifestResponseCertificateChain: Bool,
+                       allowUnsignedManifests: Bool) throws {
     self.embeddedCertificateString = embeddedCertificateString
     self.keyIdFromMetadata = metadata[EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey] ?? EXUpdatesSignatureHeaderInfo.DefaultKeyId
     self.algorithmFromMetadata = try EXUpdatesCodeSigningAlgorithm.parseFromString(metadata[EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey])
     self.includeManifestResponseCertificateChain = includeManifestResponseCertificateChain
+    self.allowUnsignedManifests = allowUnsignedManifests
   }
   
   /**
@@ -37,7 +42,31 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
   }
   
   @objc
-  public func validateSignature(signatureHeaderInfo: EXUpdatesSignatureHeaderInfo, signedData: Data, manifestResponseCertificateChain: String?) throws -> NSNumber {
+  public func validateSignature(signature: String?,
+                                signedData: Data,
+                                manifestResponseCertificateChain: String?) throws {
+    guard let signature = signature else {
+      if !self.allowUnsignedManifests {
+        throw EXUpdatesCodeSigningError.SignatureHeaderMissing
+      } else {
+        // no-op
+        return
+      }
+    }
+    
+    let validateResult = try validateSignatureInternal(
+      signatureHeaderInfo: try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: signature),
+      signedData: signedData,
+      manifestResponseCertificateChain: manifestResponseCertificateChain
+    )
+    if !validateResult {
+      throw EXUpdatesCodeSigningError.InvalidSignature
+    }
+  }
+  
+  private func validateSignatureInternal(signatureHeaderInfo: EXUpdatesSignatureHeaderInfo,
+                                         signedData: Data,
+                                         manifestResponseCertificateChain: String?) throws -> Bool {
     let certificateChain: EXUpdatesCertificateChain
     if (self.includeManifestResponseCertificateChain) {
       certificateChain = try EXUpdatesCertificateChain(
@@ -75,8 +104,7 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
       throw EXUpdatesCodeSigningError.SignatureEncodingError
     }
     
-    let isValid = try self.verifyRSASHA256SignedData(signedData: signedData, signatureData: signatureData, publicKey: publicKey)
-    return isValid ? NSNumber(booleanLiteral: true) : NSNumber(booleanLiteral: false)
+    return try self.verifyRSASHA256SignedData(signedData: signedData, signatureData: signatureData, publicKey: publicKey)
   }
   
   private func verifyRSASHA256SignedData(signedData: Data, signatureData: Data, publicKey: SecKey) throws -> Bool {
