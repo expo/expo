@@ -6,7 +6,6 @@ group = 'host.exp.exponent'
 version = '11.1.0'
 
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
-println(REACT_NATIVE_DIR)
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -96,7 +95,18 @@ android {
   }
 
   packagingOptions {
-    excludes = ["**/libc++_shared.so"]
+    // Gradle will add cmake target dependencies into packaging.
+    // Theses files are intermediated linking files to build reanimated and should not be in final package.
+    excludes = [
+        "**/libc++_shared.so",
+        "**/libreactnativejni.so",
+        "**/libglog.so",
+        "**/libjscexecutor.so",
+        "**/libfbjni.so",
+        "**/libfolly_json.so",
+        "**/libhermes.so",
+        "**/libjsi.so",
+    ]
   }
   configurations {
     extractHeaders

@@ -3,7 +3,6 @@ package expo.modules.av.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,9 +14,6 @@ import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
@@ -130,8 +126,11 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
-  protected synchronized double getCurrentPositionSeconds() {
-    return (double)mSimpleExoPlayer.getCurrentPosition() / 1000.0;
+  protected double getCurrentPositionSeconds() {
+    // TODO: Find a way to fix "IllegalStateException: SimpleExoPlayer is accessed on the wrong thread."
+    // this is called synchronously on JS thread while SimpleExoPlayer is accessed on main thread.
+    return -1.0;
+    // return (double)mSimpleExoPlayer.getCurrentPosition() / 1000.0;
   }
 
   @Override

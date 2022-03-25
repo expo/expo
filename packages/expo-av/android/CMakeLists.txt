@@ -14,11 +14,9 @@ add_library(
         src/main/cpp/EXAV.cpp
         src/main/cpp/JPlayerData.cpp
         src/main/cpp/JAVManager.cpp
-        "${REACT_NATIVE_DIR}/ReactCommon/jsi/jsi/jsi.cpp"
 )
 
 file(GLOB LIBRN_DIR "${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}")
-file(GLOB libfbjni_link_DIRS "${BUILD_DIR}/fbjni*.aar/jni/${ANDROID_ABI}")
 file(GLOB libfbjni_include_DIRS "${BUILD_DIR}/fbjni-*-headers.jar/")
 
 # includes
@@ -39,7 +37,20 @@ target_include_directories(
 # find libraries
 
 find_library(LOG_LIB log)
-find_library(FBJNI_LIBRARY fbjni PATHS ${libfbjni_link_DIRS} NO_CMAKE_FIND_ROOT_PATH)
+
+find_library(
+        FBJNI_LIB
+        fbjni
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
+
+find_library(
+        JSI_LIB
+        jsi
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
 
 find_library(
         REACT_NATIVE_JNI_LIB
@@ -54,7 +65,8 @@ find_library(
 target_link_libraries(
         ${PACKAGE_NAME}
         ${LOG_LIB}
-        ${FBJNI_LIBRARY}
+        ${FBJNI_LIB}
+        ${JSI_LIB}
         ${REACT_NATIVE_JNI_LIB}
         android
 )
