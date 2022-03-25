@@ -53,7 +53,7 @@ function createExitHook(signal: NodeJS.Signals) {
 }
 
 function attachMasterListener() {
-  let hooks: [NodeJS.Signals, () => any][] = [];
+  const hooks: [NodeJS.Signals, () => any][] = [];
   for (const signal of PRE_EXIT_SIGNALS) {
     const hook = createExitHook(signal);
     hooks.push([signal, hook]);
