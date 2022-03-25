@@ -2,13 +2,13 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useInitialData } from '../../utils/InitialDataContext';
 
 import { HomeScreenDataQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useDispatch, useSelector } from '../../redux/Hooks';
 import { HistoryList } from '../../types';
 import { useAccountName } from '../../utils/AccountNameContext';
+import { useInitialData } from '../../utils/InitialDataContext';
 import isUserAuthenticated from '../../utils/isUserAuthenticated';
 import { HomeScreenView } from './HomeScreenView';
 

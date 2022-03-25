@@ -67,7 +67,7 @@ export class HomeScreenView extends React.Component<Props, State> {
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
     data: this.props.initialData?.account.byName,
-    loading: !Boolean(this.props.initialData?.account.byName), // if there is initial data, we're not loading
+    loading: !this.props.initialData?.account.byName, // if there is initial data, we're not loading
   };
 
   componentDidMount() {

@@ -9,7 +9,6 @@ import { Provider as ReduxProvider } from 'react-redux';
 import HomeApp from './HomeApp';
 import ApolloClient from './api/ApolloClient';
 import Store from './redux/Store';
-
 import './menu/DevMenuApp';
 import { AccountNameProvider } from './utils/AccountNameContext';
 import { InitialDataProvider } from './utils/InitialDataContext';

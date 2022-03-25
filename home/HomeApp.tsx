@@ -29,11 +29,11 @@ import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
 import { useAccountName } from './utils/AccountNameContext';
+import { useInitialData } from './utils/InitialDataContext';
 import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
 import isUserAuthenticated from './utils/isUserAuthenticated';
-import { useInitialData } from './utils/InitialDataContext';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
