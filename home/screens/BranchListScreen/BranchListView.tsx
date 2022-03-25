@@ -3,15 +3,23 @@ import * as React from 'react';
 import { ActivityIndicator, FlatList, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
-import { RedesignedSnacksListItem } from '../../components/RedesignedSnacksListItem';
-import { CommonSnackDataFragment } from '../../graphql/types';
+import { BranchListItem } from '../../components/BranchListItem';
+import { BranchesForProjectQuery } from '../../graphql/types';
+
+type BranchManifest = {
+  name: string;
+  id: string;
+  latestUpdate: BranchesForProjectQuery['app']['byId']['updateBranches'][0]['updates'][0];
+  sdkVersion: number | null;
+};
 
 type Props = {
-  data: CommonSnackDataFragment[];
+  appId: string;
+  data: BranchManifest[];
   loadMoreAsync: () => Promise<any>;
 };
 
-export function SnackListView(props: Props) {
+export function BranchListView(props: Props) {
   const [isReady, setReady] = React.useState(false);
 
   React.useEffect(() => {
@@ -35,14 +43,14 @@ export function SnackListView(props: Props) {
     return <RNView style={{ flex: 1 }} />;
   }
 
-  return <SnackList {...props} />;
+  return <BranchList {...props} />;
 }
 
-function SnackList({ data, loadMoreAsync }: Props) {
+function BranchList({ data, appId, loadMoreAsync }: Props) {
   const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
 
-  const extractKey = React.useCallback((item) => item.slug, []);
+  const extractKey = React.useCallback((item) => item.id, []);
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -60,10 +68,6 @@ function SnackList({ data, loadMoreAsync }: Props) {
   };
 
   const canLoadMore = () => {
-    // TODO: replace the code below this comment with the following line
-    // once we have implemented snackCount
-    // return this.props.data.snacks.length < this.props.data.snackCount;
-
     if (isLoadingMore) {
       return false;
     } else {
@@ -71,21 +75,20 @@ function SnackList({ data, loadMoreAsync }: Props) {
     }
   };
 
-  const renderItem = React.useCallback(({ item: snack, index }) => {
+  const renderItem = React.useCallback(({ item: branch }) => {
     return (
-      <RedesignedSnacksListItem
-        key={index.toString()}
-        url={snack.fullName}
-        name={snack.name}
-        description={snack.description}
-        isDraft={snack.isDraft}
+      <BranchListItem
+        key={branch.id}
+        appId={appId}
+        name={branch.name}
+        latestUpdate={branch.latestUpdate}
       />
     );
   }, []);
 
   return (
     <View flex="1" padding="medium">
-      <View flex="1" bg="default" border="hairline" rounded="large">
+      <View bg="default" border="hairline" rounded="large" overflow="hidden">
         <FlatList
           data={data}
           keyExtractor={extractKey}
@@ -93,7 +96,6 @@ function SnackList({ data, loadMoreAsync }: Props) {
           // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
           renderLoadingIndicator={() => <RNView />}
           renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
-          style={{ flex: 1, overflow: 'hidden' }}
           ItemSeparatorComponent={Divider}
           canLoadMore={canLoadMore()}
           onLoadMoreAsync={handleLoadMoreAsync}

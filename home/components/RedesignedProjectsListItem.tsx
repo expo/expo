@@ -1,6 +1,9 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { PressableOpacity } from 'components/PressableOpacity';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
@@ -12,6 +15,7 @@ type Props = {
   name: string;
   subtitle?: string;
   sdkVersion?: string;
+  id: string;
 };
 
 /**
@@ -19,13 +23,14 @@ type Props = {
  * the projects list page for an account.
  */
 
-export function RedesignedProjectsListItem({ imageURL, name, subtitle, sdkVersion }: Props) {
+export function RedesignedProjectsListItem({ imageURL, name, subtitle, sdkVersion, id }: Props) {
   const theme = useExpoTheme();
   const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
+  const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
+
   function onPress() {
-    // TODO(fiberjw): navigate to the project page
-    console.log('RedesignedProjectsListItem.onPress');
+    navigation.push('RedesignedProjectDetails', { id });
   }
 
   return (

@@ -31,6 +31,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
         return (
           <Fragment key={project.id}>
             <RedesignedProjectsListItem
+              id={project.id}
               // iconUrl will be an empty string if the project has no icon
               imageURL={project.iconUrl || undefined}
               name={project.name}

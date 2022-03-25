@@ -1,5 +1,5 @@
 import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
-import { TextStyle, Platform } from 'react-native';
+import { TextStyle, Platform, StyleSheet } from 'react-native';
 
 type SpacingKey = `${keyof typeof spacing}`;
 type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' | 'xl';
@@ -229,4 +229,16 @@ export const darkNavigationTheme: NavigationTheme = {
     border: darkTheme.border.default,
     notification: darkTheme.highlight.accent,
   },
+};
+
+export const border = {
+  default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+  warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
+  hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+};
+
+export const borderDark = {
+  default: { borderColor: darkTheme.border.default, borderWidth: 1 },
+  warning: { borderColor: darkTheme.border.warning, borderWidth: 1 },
+  hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
 };

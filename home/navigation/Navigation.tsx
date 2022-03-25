@@ -12,8 +12,10 @@ import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
+import { BranchListScreen } from 'screens/BranchListScreen';
 import { HomeScreen } from 'screens/HomeScreen';
 import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
+import { RedesignedProjectScreen } from 'screens/RedesignedProjectScreen';
 import { RedesignedSettingsScreen } from 'screens/RedesignedSettingsScreen';
 
 import FeatureFlags from '../FeatureFlags';
@@ -24,9 +26,9 @@ import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
 import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
+import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
-import { KitchenSink } from '../screens/KitchenSink';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
 import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
@@ -36,7 +38,7 @@ import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
 import { RedesignedProjectsListScreen } from '../screens/RedesignedProjectsListScreen';
-import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen.tsx';
+import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
@@ -130,6 +132,27 @@ function HomeStackScreen() {
         component={RedesignedSnacksListScreen}
         options={{
           title: 'Snacks',
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedProjectDetails"
+        component={RedesignedProjectScreen}
+        options={{
+          title: 'Project',
+        }}
+      />
+      <HomeStack.Screen
+        name="Branches"
+        component={BranchListScreen}
+        options={{
+          title: 'Branches',
+        }}
+      />
+      <HomeStack.Screen
+        name="BranchDetails"
+        component={BranchDetailsScreen}
+        options={{
+          title: 'Branch',
         }}
       />
     </HomeStack.Navigator>
@@ -304,18 +327,6 @@ function TabNavigator(props: { theme: string }) {
           tabBarLabel: 'Profile',
         }}
       />
-      {Boolean(__DEV__) && (
-        <BottomTab.Screen
-          name="KitchenSink"
-          component={KitchenSink}
-          options={{
-            tabBarIcon: (props) => (
-              <Ionicons {...props} style={styles.icon} name="pizza-outline" size={26} />
-            ),
-            tabBarLabel: 'Kitchen Sink',
-          }}
-        />
-      )}
     </BottomTab.Navigator>
   );
 }

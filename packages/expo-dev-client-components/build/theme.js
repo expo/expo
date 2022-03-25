@@ -1,5 +1,5 @@
 import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 export const scale = {
     micro: spacing[0.5],
     tiny: spacing[1],
@@ -189,5 +189,15 @@ export const darkNavigationTheme = {
         border: darkTheme.border.default,
         notification: darkTheme.highlight.accent,
     },
+};
+export const border = {
+    default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+    warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
+    hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+};
+export const borderDark = {
+    default: { borderColor: darkTheme.border.default, borderWidth: 1 },
+    warning: { borderColor: darkTheme.border.warning, borderWidth: 1 },
+    hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
 };
 //# sourceMappingURL=theme.js.map
