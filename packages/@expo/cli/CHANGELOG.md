@@ -21,6 +21,6 @@
 
 ### 🐛 Bug fixes
 
-- Fix build watcher.
+- Fix build watcher. ([#16754](https://github.com/expo/expo/pull/16754) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
