@@ -21,4 +21,6 @@
 
 ### 🐛 Bug fixes
 
+- Fix build watcher.
+
 ### 💡 Others
