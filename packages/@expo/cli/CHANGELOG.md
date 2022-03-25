@@ -21,4 +21,6 @@
 
 ### 🐛 Bug fixes
 
+- Fix process memory leak warning in `expo start`.
+
 ### 💡 Others

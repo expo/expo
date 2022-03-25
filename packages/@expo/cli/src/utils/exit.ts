@@ -3,20 +3,42 @@ import { guardAsync } from './fn';
 
 type AsyncExitHook = (signal: NodeJS.Signals) => void | Promise<void>;
 
+const PRE_EXIT_SIGNALS: NodeJS.Signals[] = ['SIGHUP', 'SIGINT', 'SIGTERM', 'SIGBREAK'];
+
 // We create a queue since Node.js throws an error if we try to append too many listeners:
 // (node:4405) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 SIGINT listeners added to [process]. Use emitter.setMaxListeners() to increase limit
 const queue: AsyncExitHook[] = [];
 
+let unsubscribe: (() => void) | null = null;
+
 /** Add functions that run before the process exits. Returns a function for removing the listeners. */
-export function installExitHooks(hook: AsyncExitHook): void {
-  queue.push(hook);
+export function installExitHooks(asyncExitHook: AsyncExitHook): () => void {
+  // We need to instantiate the master listener the first time the queue is used.
+  if (!queue.length) {
+    // Track the master listener so we can remove it later.
+    unsubscribe = attachMasterListener();
+  }
+
+  queue.push(asyncExitHook);
+
+  return () => {
+    const index = queue.indexOf(asyncExitHook);
+    if (index >= 0) {
+      queue.splice(index, 1);
+    }
+    // Clean up the master listener if we don't need it anymore.
+    if (!queue.length) {
+      unsubscribe?.();
+    }
+  };
 }
 
-const preExitHook = (signal: NodeJS.Signals) =>
-  guardAsync(async () => {
+// Create a function that runs before the process exits and guards against running multiple times.
+function createExitHook(signal: NodeJS.Signals) {
+  return guardAsync(async () => {
     Log.debug(`pre-exit (signal: ${signal}, queue length: ${queue.length})`);
 
-    for (const [index, hookAsync] of queue.entries()) {
+    for (const [index, hookAsync] of Object.entries(queue)) {
       try {
         await hookAsync(signal);
       } catch (error: any) {
@@ -28,9 +50,18 @@ const preExitHook = (signal: NodeJS.Signals) =>
 
     process.exit();
   });
+}
 
-const PRE_EXIT_SIGNALS: NodeJS.Signals[] = ['SIGHUP', 'SIGINT', 'SIGTERM', 'SIGBREAK'];
-
-for (const signal of PRE_EXIT_SIGNALS) {
-  process.on(signal, preExitHook(signal));
+function attachMasterListener() {
+  let hooks: [NodeJS.Signals, () => any][] = [];
+  for (const signal of PRE_EXIT_SIGNALS) {
+    const hook = createExitHook(signal);
+    hooks.push([signal, hook]);
+    process.on(signal, hook);
+  }
+  return () => {
+    for (const [signal, hook] of hooks) {
+      process.removeListener(signal, hook);
+    }
+  };
 }
