@@ -29,6 +29,7 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigHasEmbeddedUpdateKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigExpectsSignedManifestKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningCertificateKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningMetadataKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey;
 
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueAlways;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueWifiOnly;
