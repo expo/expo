@@ -19,11 +19,7 @@ class EXUpdatesSignatureHeaderInfoTests : XCTestCase {
       XCTAssertEqual(codeSigningInfo.algorithm, EXUpdatesCodeSigningAlgorithm.RSA_SHA256)
     }
 
-    func test_parseSignatureHeader_ThrowsForInvalidAlg() {
-      XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: nil)) { error in
-        XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.SignatureHeaderMissing)
-      }
-      
+    func test_parseSignatureHeader_ThrowsForInvalidAlg() {      
       XCTAssertThrowsError(try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "fake=\"12345\"")) { error in
         XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.SignatureHeaderSigMissing)
       }

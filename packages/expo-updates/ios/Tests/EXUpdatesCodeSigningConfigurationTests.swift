@@ -29,7 +29,8 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     let cert = try TestHelper.getTestCertificate(TestCertificate.test)
     let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [:],
-                                                              includeManifestResponseCertificateChain: false)
+                                                              includeManifestResponseCertificateChain: false,
+                                                              allowUnsignedManifests: false)
     let signatureHeader = configuration.createAcceptSignatureHeader()
     XCTAssertEqual(signatureHeader, "sig, keyid=\"root\", alg=\"rsa-v1_5-sha256\"")
   }
@@ -39,7 +40,8 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey: EXUpdatesCodeSigningAlgorithm.RSA_SHA256.rawValue,
                                                                          EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
-                                                              includeManifestResponseCertificateChain: false)
+                                                              includeManifestResponseCertificateChain: false,
+                                                              allowUnsignedManifests: false)
     let signatureHeader = configuration.createAcceptSignatureHeader()
     XCTAssertEqual(signatureHeader, "sig, keyid=\"test\", alg=\"rsa-v1_5-sha256\"")
   }
@@ -49,7 +51,8 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey: EXUpdatesCodeSigningAlgorithm.RSA_SHA256.rawValue,
                                                                          EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: #"test"hello\"#],
-                                                              includeManifestResponseCertificateChain: false)
+                                                              includeManifestResponseCertificateChain: false,
+                                                              allowUnsignedManifests: false)
     let signatureHeader = configuration.createAcceptSignatureHeader()
     XCTAssertEqual(signatureHeader, #"sig, keyid="test\"hello\\", alg="rsa-v1_5-sha256""#)
   }
@@ -59,7 +62,8 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     XCTAssertThrowsError(try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert,
                                                                metadata: [EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey: "fake",
                                                                           EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
-                                                               includeManifestResponseCertificateChain: false)) { error in
+                                                               includeManifestResponseCertificateChain: false,
+                                                               allowUnsignedManifests: false)) { error in
     XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.AlgorithmParseError)
     }
   }
@@ -68,27 +72,31 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     let cert = try TestHelper.getTestCertificate(TestCertificate.test)
     let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [:],
-                                                              includeManifestResponseCertificateChain: false)
-    let codeSigningInfo = try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: TestHelper.testSignature)
-    let isValid = try configuration.validateSignature(signatureHeaderInfo: codeSigningInfo, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
-    XCTAssertTrue(isValid.boolValue)
+                                                              includeManifestResponseCertificateChain: false,
+                                                              allowUnsignedManifests: false)
+    try configuration.validateSignature(signature: TestHelper.testSignature,
+                                        signedData: TestHelper.testBody.data(using: .utf8)!,
+                                        manifestResponseCertificateChain: nil)
   }
   
   func test_validateSignature_ReturnsFalseWhenSignatureIsInvalid() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.test)
-    let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert, metadata: [:], includeManifestResponseCertificateChain: false)
-    let codeSigningInfo = try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "sig=\"aGVsbG8=\"")
-    let isValid = try configuration.validateSignature(signatureHeaderInfo: codeSigningInfo, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
-    XCTAssertFalse(isValid.boolValue)
+    let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert,
+                                                              metadata: [:],
+                                                              includeManifestResponseCertificateChain: false,
+                                                              allowUnsignedManifests: false)
+    XCTAssertThrowsError(try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.InvalidSignature)
+    }
   }
   
   func test_validateSignature_ThrowsWhenKeyDoesNotMatch() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.test)
     let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
-                                                              includeManifestResponseCertificateChain: false)
-    let codeSigningInfo = try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: "sig=\"aGVsbG8=\", keyid=\"other\"")
-    XCTAssertThrowsError(try configuration.validateSignature(signatureHeaderInfo: codeSigningInfo, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
+                                                              includeManifestResponseCertificateChain: false,
+                                                              allowUnsignedManifests: false)
+    XCTAssertThrowsError(try configuration.validateSignature(signature: "sig=\"aGVsbG8=\", keyid=\"other\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
       XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.KeyIdMismatchError)
     }
   }
@@ -99,10 +107,9 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
     let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: testCert,
                                                               metadata: [:],
-                                                              includeManifestResponseCertificateChain: false)
-    let codeSigningInfo = try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: TestHelper.testSignature)
-    let isValid = try configuration.validateSignature(signatureHeaderInfo: codeSigningInfo, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
-    XCTAssertTrue(isValid.boolValue)
+                                                              includeManifestResponseCertificateChain: false,
+                                                              allowUnsignedManifests: false)
+    try configuration.validateSignature(signature: TestHelper.testSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
   }
     
   func test_validateSignature_DoesUseChainInManifestResponseIfFlagIsTrue() throws {
@@ -111,9 +118,28 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainRoot)
     let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: rootCert,
                                                               metadata: [EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "ca-root"],
-                                                              includeManifestResponseCertificateChain: true)
-    let codeSigningInfo = try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: TestHelper.testValidChainLeafSignature)
-    let isValid = try configuration.validateSignature(signatureHeaderInfo: codeSigningInfo, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
-    XCTAssertTrue(isValid.boolValue)
+                                                              includeManifestResponseCertificateChain: true,
+                                                              allowUnsignedManifests: false)
+    try configuration.validateSignature(signature: TestHelper.testValidChainLeafSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
+  }
+  
+  func test_validateSignature_AllowsUnsignedManifestIfAllowUnsignedFlagIsTrue() throws {
+    let testCert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: testCert,
+                                                              metadata: [EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
+                                                              includeManifestResponseCertificateChain: true,
+                                                              allowUnsignedManifests: true)
+    try configuration.validateSignature(signature: nil, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+  }
+                                                                         
+  func test_validateSignature_ChecksSignedManifestIfAllowUnsignedFlagIsTrueButSignatureIsProvided() throws {
+    let testCert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let configuration = try EXUpdatesCodeSigningConfiguration(embeddedCertificateString: testCert,
+                                                             metadata: [EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
+                                                             includeManifestResponseCertificateChain: true,
+                                                             allowUnsignedManifests: true)
+    XCTAssertThrowsError(try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.InvalidSignature)
+    }
   }
 }

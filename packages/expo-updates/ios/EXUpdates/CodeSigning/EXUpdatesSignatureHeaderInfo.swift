@@ -9,8 +9,7 @@ struct EXUpdatesSignatureHeaderFields {
   static let AlgorithmFieldKey = "alg"
 }
 
-@objc
-public final class EXUpdatesSignatureHeaderInfo : NSObject {
+public final class EXUpdatesSignatureHeaderInfo {
   static let DefaultKeyId = "root"
   
   let signature: String
@@ -23,12 +22,7 @@ public final class EXUpdatesSignatureHeaderInfo : NSObject {
     self.algorithm = algorithm
   }
   
-  @objc
-  public static func parseSignatureHeader(signatureHeader: String?) throws -> EXUpdatesSignatureHeaderInfo {
-    guard let signatureHeader = signatureHeader else {
-      throw EXUpdatesCodeSigningError.SignatureHeaderMissing
-    }
-    
+  public static func parseSignatureHeader(signatureHeader: String) throws -> EXUpdatesSignatureHeaderInfo {    
     let parser = EXStructuredHeadersParser.init(rawInput: signatureHeader,
                                                 fieldType: EXStructuredHeadersParserFieldType.dictionary,
                                                 ignoringParameters: true)
