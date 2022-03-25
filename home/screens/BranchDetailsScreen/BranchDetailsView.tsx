@@ -3,9 +3,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
 import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 
-import ScrollView from '../../components/NavigationScrollView';
 import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
 import { BranchDetailsQuery } from '../../graphql/types';
@@ -46,7 +45,7 @@ export function BranchDetailsView({ loading, error, data }: Props) {
     );
   } else {
     contents = (
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
+      <View style={{ flex: 1, paddingBottom: 20 }}>
         <BranchHeader
           name={data.app.byId.updateBranchByName.name}
           manifestPermalink={data.app.byId.updateBranchByName.updates[0].manifestPermalink}
@@ -55,23 +54,23 @@ export function BranchDetailsView({ loading, error, data }: Props) {
           <RedesignedSectionHeader header="Updates" style={{ paddingTop: 0 }} />
 
           <View bg="default" rounded="large" border="hairline" overflow="hidden">
-            {data.app.byId.updateBranchByName.updates.map((update, i) => {
-              return (
-                <React.Fragment key={update.id}>
-                  <UpdateListItem
-                    id={update.id}
-                    message={update.message ?? undefined}
-                    manifestPermalink={update.manifestPermalink}
-                    createdAt={update.createdAt}
-                  />
-                  {i < data.app.byId.updateBranchByName!.updates.length - 1 && <Divider />}
-                </React.Fragment>
-              );
-            })}
+            <FlatList<typeof data.app.byId.updateBranchByName.updates[number]>
+              data={data.app.byId.updateBranchByName.updates}
+              keyExtractor={(update) => update.id}
+              ItemSeparatorComponent={Divider}
+              renderItem={({ item: update }) => (
+                <UpdateListItem
+                  id={update.id}
+                  message={update.message ?? undefined}
+                  manifestPermalink={update.manifestPermalink}
+                  createdAt={update.createdAt}
+                />
+              )}
+            />
           </View>
           {!data.app.byId.updateBranchByName!.updates.length && <EmptySection />}
         </View>
-      </ScrollView>
+      </View>
     );
   }
 
