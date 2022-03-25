@@ -79,9 +79,6 @@ android {
   testOptions {
     unitTests.includeAndroidResources = true
   }
-  sourceSets {
-    androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
-  }
 }
 
 dependencies {

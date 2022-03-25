@@ -4,6 +4,7 @@
   "expo-dev-launcher",
   "expo-dev-menu",
   "expo-dev-menu-interface",
+  "expo-eas-client-id",
   "expo-gl-cpp",
   "expo-image",
   "expo-in-app-purchases",

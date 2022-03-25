@@ -12,9 +12,6 @@ import DiagnosticsIcon from 'components/Icons';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
-import { HomeScreen } from 'screens/HomeScreen';
-import { RedesignedDiagnosticsScreen } from 'screens/RedesignedDiagnosticsScreen';
-import { RedesignedSettingsScreen } from 'screens/RedesignedSettingsScreen';
 
 import FeatureFlags from '../FeatureFlags';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
@@ -22,11 +19,14 @@ import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
+import { AccountModal } from '../screens/AccountModal';
 import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
+import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
+import { BranchListScreen } from '../screens/BranchListScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
-import { KitchenSink } from '../screens/KitchenSink';
+import { HomeScreen } from '../screens/HomeScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
 import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
@@ -35,8 +35,11 @@ import ProjectScreen from '../screens/ProjectScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
+import { RedesignedDiagnosticsScreen } from '../screens/RedesignedDiagnosticsScreen';
+import { RedesignedProjectScreen } from '../screens/RedesignedProjectScreen';
 import { RedesignedProjectsListScreen } from '../screens/RedesignedProjectsListScreen';
-import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen.tsx';
+import { RedesignedSettingsScreen } from '../screens/RedesignedSettingsScreen';
+import { RedesignedSnacksListScreen } from '../screens/RedesignedSnacksListScreen';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
@@ -110,7 +113,9 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator
       initialRouteName="Home"
-      screenOptions={defaultNavigationOptions(themeName)}>
+      screenOptions={{
+        ...defaultNavigationOptions(themeName),
+      }}>
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}
@@ -130,6 +135,27 @@ function HomeStackScreen() {
         component={RedesignedSnacksListScreen}
         options={{
           title: 'Snacks',
+        }}
+      />
+      <HomeStack.Screen
+        name="RedesignedProjectDetails"
+        component={RedesignedProjectScreen}
+        options={{
+          title: 'Project',
+        }}
+      />
+      <HomeStack.Screen
+        name="Branches"
+        component={BranchListScreen}
+        options={{
+          title: 'Branches',
+        }}
+      />
+      <HomeStack.Screen
+        name="BranchDetails"
+        component={BranchDetailsScreen}
+        options={{
+          title: 'Branch',
         }}
       />
     </HomeStack.Navigator>
@@ -265,14 +291,16 @@ function TabNavigator(props: { theme: string }) {
           }}
         />
       ) : null}
-      <BottomTab.Screen
-        name="ProjectsStack"
-        component={ProjectsStackScreen}
-        options={{
-          tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
-          tabBarLabel: 'Projects',
-        }}
-      />
+      {!FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && (
+        <BottomTab.Screen
+          name="ProjectsStack"
+          component={ProjectsStackScreen}
+          options={{
+            tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+            tabBarLabel: 'Projects',
+          }}
+        />
+      )}
       {Platform.OS === 'ios' && (
         <BottomTab.Screen
           name="DiagnosticsStack"
@@ -294,25 +322,15 @@ function TabNavigator(props: { theme: string }) {
           }}
         />
       ) : null}
-      <BottomTab.Screen
-        name="ProfileStack"
-        component={ProfileStackScreen}
-        options={{
-          tabBarIcon: (props) => (
-            <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
-          ),
-          tabBarLabel: 'Profile',
-        }}
-      />
-      {Boolean(__DEV__) && (
+      {!FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN && (
         <BottomTab.Screen
-          name="KitchenSink"
-          component={KitchenSink}
+          name="ProfileStack"
+          component={ProfileStackScreen}
           options={{
             tabBarIcon: (props) => (
-              <Ionicons {...props} style={styles.icon} name="pizza-outline" size={26} />
+              <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
             ),
-            tabBarLabel: 'Kitchen Sink',
+            tabBarLabel: 'Profile',
           }}
         />
       )}
@@ -385,6 +403,25 @@ export default (props: { theme: ColorTheme }) => {
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>
+              <RootStack.Screen
+                name="Account"
+                component={AccountModal}
+                options={({ route, navigation }) => ({
+                  title: 'Account',
+                  ...(Platform.OS === 'ios' && {
+                    headerShown: false,
+                    gestureEnabled: true,
+                    cardOverlayEnabled: true,
+                    headerStatusBarHeight:
+                      navigation
+                        .dangerouslyGetState()
+                        .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
+                        ? 0
+                        : undefined,
+                    ...TransitionPresets.ModalPresentationIOS,
+                  }),
+                })}
+              />
             </RootStack.Navigator>
           )}
         </ModalStack.Screen>

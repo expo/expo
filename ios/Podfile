@@ -32,6 +32,7 @@ abstract_target 'Expo Go' do
     ],
     # Modules for which to include Tests subspec
     tests: [
+      'expo-eas-client-id',
       'expo-modules-core',
       'expo-updates',
       'expo-manifests',

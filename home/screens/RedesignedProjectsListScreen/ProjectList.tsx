@@ -124,6 +124,7 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
     return (
       <RedesignedProjectsListItem
         key={app.id}
+        id={app.id}
         name={app.name}
         imageURL={app.iconUrl || undefined}
         subtitle={app.packageName || app.fullName}
@@ -134,12 +135,11 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
 
   return (
     <View flex="1" padding="medium">
-      <View flex="1" bg="default" border="hairline" rounded="large">
+      <View overflow="hidden" bg="default" border="hairline" rounded="large">
         <FlatList
           data={data.apps}
           keyExtractor={extractKey}
           renderItem={renderItem}
-          style={{ flex: 1, overflow: 'hidden' }}
           ItemSeparatorComponent={Divider}
           renderScrollComponent={(props: React.ComponentProps<typeof InfiniteScrollView>) => {
             // note(brent): renderScrollComponent is passed on to

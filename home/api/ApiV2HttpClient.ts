@@ -55,7 +55,7 @@ export default class ApiV2HttpClient {
     let result: any;
     try {
       result = JSON.parse(resultText);
-    } catch (e) {
+    } catch {
       const error: any = new Error(`There was a problem understanding the server.`);
       error.responseBody = resultText;
       throw error;

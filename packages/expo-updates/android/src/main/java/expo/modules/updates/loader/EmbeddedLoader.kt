@@ -63,6 +63,7 @@ class EmbeddedLoader internal constructor(
   }
 
   override fun loadAsset(
+    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,

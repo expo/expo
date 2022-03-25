@@ -1,6 +1,7 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { darkTheme, lightTheme } from '@expo/styleguide-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
 import { ThemePreference, ThemeProvider } from 'expo-dev-client-components';
@@ -11,15 +12,28 @@ import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-nativ
 import url from 'url';
 
 import FeatureFlags from './FeatureFlags';
+import ApolloClient from './api/ApolloClient';
 import { ColorTheme } from './constants/Colors';
+import {
+  HomeScreenDataDocument,
+  HomeScreenDataQuery,
+  HomeScreenDataQueryVariables,
+  Home_CurrentUserDocument,
+  Home_CurrentUserQuery,
+  Home_CurrentUserQueryVariables,
+} from './graphql/types';
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
 import { useDispatch, useSelector } from './redux/Hooks';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
+import { useAccountName } from './utils/AccountNameContext';
+import { useInitialData } from './utils/InitialDataContext';
 import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
+import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
+import isUserAuthenticated from './utils/isUserAuthenticated';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
@@ -48,14 +62,42 @@ export default function HomeApp() {
   const colorScheme = useColorScheme();
   const preferredAppearance = useSelector((data) => data.settings.preferredAppearance);
   const dispatch = useDispatch();
-
+  const { accountName, setAccountName } = useAccountName();
   const isShowingSplashScreen = useSplashScreenWhileLoadingResources(async () => {
     await initStateAsync();
+  });
+
+  const { setCurrentUserData, setHomeScreenData } = useInitialData();
+
+  const { isAuthenticated } = useSelector((data) => {
+    const isAuthenticated = isUserAuthenticated(data.session);
+    return {
+      isAuthenticated,
+    };
   });
 
   React.useEffect(() => {
     addProjectHistoryListener();
   }, []);
+
+  // when the user logs in, set the current account view to the account they just logged in with
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      setAccountName(undefined);
+    } else {
+      getViewerUsernameAsync().then(
+        (viewerUsername) => {
+          if (viewerUsername && !accountName) {
+            setAccountName(viewerUsername);
+          }
+        },
+        (error) => {
+          setAccountName(undefined);
+          console.warn(`There was an error fetching the viewer's username`, error);
+        }
+      );
+    }
+  }, [isAuthenticated]);
 
   React.useEffect(() => {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
@@ -89,32 +131,81 @@ export default function HomeApp() {
         dispatch(SessionActions.setSession(storedSession));
       }
 
-      if (Platform.OS === 'ios') {
-        await Promise.all([Font.loadAsync(Ionicons.font)]);
-      } else {
-        await Promise.all([Font.loadAsync(Ionicons.font), Font.loadAsync(MaterialIcons.font)]);
-      }
+      const [currentUserQueryResult, persistedCurrentAccount] = await Promise.all([
+        ApolloClient.query<Home_CurrentUserQuery, Home_CurrentUserQueryVariables>({
+          query: Home_CurrentUserDocument,
+          context: { headers: { 'expo-session': storedSession?.sessionSecret } },
+        }),
+        AsyncStorage.getItem('currentAccount'),
+        Font.loadAsync(Ionicons.font),
+        Platform.OS === 'android'
+          ? Font.loadAsync(MaterialIcons.font)
+          : new Promise((resolve) => setTimeout(resolve, 0)),
+        Font.loadAsync({
+          'Inter-Black': require('./assets/Inter/Inter-Black.otf'),
+          'Inter-BlackItalic': require('./assets/Inter/Inter-BlackItalic.otf'),
+          'Inter-Bold': require('./assets/Inter/Inter-Bold.otf'),
+          'Inter-BoldItalic': require('./assets/Inter/Inter-BoldItalic.otf'),
+          'Inter-ExtraBold': require('./assets/Inter/Inter-ExtraBold.otf'),
+          'Inter-ExtraBoldItalic': require('./assets/Inter/Inter-ExtraBoldItalic.otf'),
+          'Inter-ExtraLight': require('./assets/Inter/Inter-ExtraLight.otf'),
+          'Inter-ExtraLightItalic': require('./assets/Inter/Inter-ExtraLightItalic.otf'),
+          'Inter-Regular': require('./assets/Inter/Inter-Regular.otf'),
+          'Inter-Italic': require('./assets/Inter/Inter-Italic.otf'),
+          'Inter-Light': require('./assets/Inter/Inter-Light.otf'),
+          'Inter-LightItalic': require('./assets/Inter/Inter-LightItalic.otf'),
+          'Inter-Medium': require('./assets/Inter/Inter-Medium.otf'),
+          'Inter-MediumItalic': require('./assets/Inter/Inter-MediumItalic.otf'),
+          'Inter-SemiBold': require('./assets/Inter/Inter-SemiBold.otf'),
+          'Inter-SemiBoldItalic': require('./assets/Inter/Inter-SemiBoldItalic.otf'),
+          'Inter-Thin': require('./assets/Inter/Inter-Thin.otf'),
+          'Inter-ThinItalic': require('./assets/Inter/Inter-ThinItalic.otf'),
+        }),
+      ]);
 
-      await Font.loadAsync({
-        'Inter-Black': require('./assets/Inter/Inter-Black.otf'),
-        'Inter-BlackItalic': require('./assets/Inter/Inter-BlackItalic.otf'),
-        'Inter-Bold': require('./assets/Inter/Inter-Bold.otf'),
-        'Inter-BoldItalic': require('./assets/Inter/Inter-BoldItalic.otf'),
-        'Inter-ExtraBold': require('./assets/Inter/Inter-ExtraBold.otf'),
-        'Inter-ExtraBoldItalic': require('./assets/Inter/Inter-ExtraBoldItalic.otf'),
-        'Inter-ExtraLight': require('./assets/Inter/Inter-ExtraLight.otf'),
-        'Inter-ExtraLightItalic': require('./assets/Inter/Inter-ExtraLightItalic.otf'),
-        'Inter-Regular': require('./assets/Inter/Inter-Regular.otf'),
-        'Inter-Italic': require('./assets/Inter/Inter-Italic.otf'),
-        'Inter-Light': require('./assets/Inter/Inter-Light.otf'),
-        'Inter-LightItalic': require('./assets/Inter/Inter-LightItalic.otf'),
-        'Inter-Medium': require('./assets/Inter/Inter-Medium.otf'),
-        'Inter-MediumItalic': require('./assets/Inter/Inter-MediumItalic.otf'),
-        'Inter-SemiBold': require('./assets/Inter/Inter-SemiBold.otf'),
-        'Inter-SemiBoldItalic': require('./assets/Inter/Inter-SemiBoldItalic.otf'),
-        'Inter-Thin': require('./assets/Inter/Inter-Thin.otf'),
-        'Inter-ThinItalic': require('./assets/Inter/Inter-ThinItalic.otf'),
-      });
+      if (currentUserQueryResult.data && currentUserQueryResult.data.viewer) {
+        let firstLoadAccountName = persistedCurrentAccount;
+        if (firstLoadAccountName) {
+          // if there was a persisted account, and it matches the accounts available to the current user, use it
+          if (
+            [
+              currentUserQueryResult.data.viewer.username,
+              ...currentUserQueryResult.data.viewer.accounts.map((account) => account.name),
+            ].includes(firstLoadAccountName)
+          ) {
+            setAccountName(firstLoadAccountName);
+          } else {
+            // if this persisted account is stale, clear it
+            await AsyncStorage.removeItem('currentAccount');
+          }
+        } else {
+          // if there was no persisted account, use the current user's personal account
+          firstLoadAccountName = currentUserQueryResult.data.viewer.username;
+          setAccountName(firstLoadAccountName);
+        }
+
+        // set initial data for home screen
+
+        setCurrentUserData(currentUserQueryResult.data);
+
+        if (firstLoadAccountName) {
+          const homeScreenData = await ApolloClient.query<
+            HomeScreenDataQuery,
+            HomeScreenDataQueryVariables
+          >({
+            query: HomeScreenDataDocument,
+            variables: {
+              accountName: firstLoadAccountName,
+            },
+            context: { headers: { 'expo-session': storedSession?.sessionSecret } },
+          });
+
+          setHomeScreenData(homeScreenData.data);
+        }
+      } else {
+        // if there is no current user data, clear the accountName
+        setAccountName(undefined);
+      }
     } finally {
       return;
     }

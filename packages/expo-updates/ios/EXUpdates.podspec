@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
   s.dependency 'EXStructuredHeaders'
   s.dependency 'EXUpdatesInterface'
   s.dependency 'EXManifests'
+  s.dependency 'EASClientID'
   s.dependency 'ASN1Decoder', '~> 1.8'
 
   s.pod_target_xcconfig = {
@@ -52,6 +53,7 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/*.{h,m,swift}'
+    test_spec.resources = 'Tests/Support/**/*'
     test_spec.dependency 'OCMockito', '~> 6.0'
   end
 end

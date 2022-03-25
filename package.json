@@ -16,7 +16,8 @@
       "apps/*",
       "apps/test-suite/puppeteer-test",
       "home",
-      "packages/*"
+      "packages/*",
+      "packages/@expo/*"
     ]
   },
   "resolutions": {

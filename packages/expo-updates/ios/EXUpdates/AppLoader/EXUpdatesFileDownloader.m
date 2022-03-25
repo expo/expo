@@ -9,6 +9,8 @@
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 
+@import EASClientID;
+
 #if __has_include(<EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>)
 #import <EXUpdates/EXUpdatesCodeSigningConfiguration-Swift.h>
 #else
@@ -21,6 +23,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 
 NSString * const EXUpdatesMultipartManifestPartName = @"manifest";
 NSString * const EXUpdatesMultipartExtensionsPartName = @"extensions";
+NSString * const EXUpdatesMultipartCertificateChainPartName = @"certificate_chain";
 
 NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
 const NSInteger EXUpdatesFileDownloaderErrorCodeFileWriteError = 1002;
@@ -176,6 +179,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
     return [self parseManifestBodyData:data
                        manifestHeaders:manifestHeaders
                             extensions:@{}
+  certificateChainFromManifestResponse:nil
                               database:database
                           successBlock:successBlock
                             errorBlock:errorBlock];
@@ -194,6 +198,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   __block NSDictionary *manifestPartHeaders = nil;
   __block NSData *manifestPartData = nil;
   __block NSData *extensionsData = nil;
+  __block NSData *certificateChainStringData = nil;
 
   BOOL completed = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
     id contentDispositionRaw;
@@ -217,6 +222,8 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
           manifestPartData = content;
         } else if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartExtensionsPartName]) {
           extensionsData = content;
+        } else if ([contentDispositionNameFieldValue isEqualToString:EXUpdatesMultipartCertificateChainPartName]) {
+          certificateChainStringData = content;
         }
       }
     }
@@ -264,6 +271,11 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
     }
   }
   
+  NSString *certificateChain = nil;
+  if (certificateChainStringData != nil) {
+    certificateChain = [[NSString alloc] initWithData:certificateChainStringData encoding:NSUTF8StringEncoding];
+  }
+  
   NSDictionary *responseHeaders = [httpResponse allHeaderFields];
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:responseHeaders[@"expo-protocol-version"]
                                                                                    serverDefinedHeaders:responseHeaders[@"expo-server-defined-headers"]
@@ -274,6 +286,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   return [self parseManifestBodyData:manifestPartData
                      manifestHeaders:manifestHeaders
                           extensions:extensions
+certificateChainFromManifestResponse:certificateChain
                             database:database
                         successBlock:successBlock
                           errorBlock:errorBlock];
@@ -282,6 +295,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
 - (void)parseManifestBodyData:(NSData *)manifestBodyData
               manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
                    extensions:(NSDictionary *)extensions
+certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromManifestResponse
                      database:(EXUpdatesDatabase *)database
                  successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                    errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock {
@@ -351,6 +365,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
                                                                  manifestBodyData:manifestBodyData
                                                                   manifestHeaders:manifestHeaders
                                                                        extensions:extensions
+                                             certificateChainFromManifestResponse:certificateChainFromManifestResponse
                                                                          database:database
                                                                        isVerified:YES
                                                                      successBlock:successBlock
@@ -371,6 +386,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
                    manifestBodyData:manifestBodyData
                     manifestHeaders:manifestHeaders
                          extensions:extensions
+certificateChainFromManifestResponse:certificateChainFromManifestResponse
                            database:database
                          isVerified:NO
                        successBlock:successBlock
@@ -407,64 +423,87 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
                  manifestBodyData:(NSData *)manifestBodyData
                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
                        extensions:(NSDictionary *)extensions
+certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromManifestResponse
                          database:(EXUpdatesDatabase *)database
                        isVerified:(BOOL)isVerified
                      successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
-  if (codeSigningConfiguration) {
-    NSError *error;
-    EXUpdatesSignatureHeaderInfo *signatureHeaderInfo = [[EXUpdatesSignatureHeaderInfo alloc] initWithSignatureHeader:manifestHeaders.signature
-                                                                                                                error:&error];
-    if (error) {
-      NSString *message;
-      if (error.code == EXUpdatesSignatureHeaderInfoErrorMissingSignatureHeader) {
-        message = @"No expo-signature header specified";
-      } else if (error.code == EXUpdatesSignatureHeaderInfoErrorStructuredFieldParseError) {
-        message = @"expo-signature structured header parsing failed";
-      } else if (error.code == EXUpdatesSignatureHeaderInfoErrorSigMissing) {
-        message = @"Structured field sig not found in expo-signature header";
-      }
-      
-      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
-                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
-      return;
-    }
-    
-    BOOL isSignatureValid = [codeSigningConfiguration verifySignatureHeaderInfoWithSignatureHeaderInfo:signatureHeaderInfo
-                                                                                            signedData:manifestBodyData
-                                                                                                 error:&error].boolValue;
-    if (error) {
-      NSString *message;
-      if (error.code == EXUpdatesCodeSigningConfigurationErrorKeyIdMismatchError) {
-        message = @"Key with keyid from signature not found in client configuration";
-      } else if (error.code == EXUpdatesCodeSigningConfigurationErrorSignatureEncodingError) {
-        message = @"Signature in header has invalid encoding";
-      } else if (error.code == EXUpdatesCodeSigningConfigurationErrorSecurityFrameworkError) {
-        message = @"Signature verification failed due to security framework error";
-      }
-      
-      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
-                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
-      return;
-    }
-    
-    if (!isSignatureValid) {
-      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
-                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
-                                 userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
-      return;
-    }
-  }
-  
   NSMutableDictionary *mutableManifest = manifest.mutableCopy;
   if (_config.expectsSignedManifest) {
     // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
     mutableManifest[@"isVerified"] = @(isVerified);
   }
+  
+  // check code signing if code signing is configured
+  // 1. verify the code signing signature (throw if invalid)
+  // 2. then, if the code signing certificate is only valid for a particular project, verify that the manifest
+  //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
+  //    project, it is assumed to be valid for all projects
+  // 3. mark the manifest as verified if both of these pass
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  if (codeSigningConfiguration) {
+    NSError *error;
+    EXUpdatesSignatureValidationResult *signatureValidationResult = [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
+                                                  signedData:manifestBodyData
+                            manifestResponseCertificateChain:certificateChainFromManifestResponse
+                                                       error:&error];
+    if (error) {
+      NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
+      return;
+    }
+    
+    if (signatureValidationResult.validationResult == EXUpdatesValidationResultInvalid) {
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                 userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
+      return;
+    }
+    
+    if (signatureValidationResult.validationResult != EXUpdatesValidationResultSkipped) {
+      EXUpdatesExpoProjectInformation *expoProjectInformation = signatureValidationResult.expoProjectInformation;
+      if (expoProjectInformation != nil) {
+        NSError *error;
+        EXUpdatesUpdate *update;
+        @try {
+          update = [EXUpdatesUpdate updateWithManifest:mutableManifest
+                                       manifestHeaders:manifestHeaders
+                                            extensions:extensions
+                                                config:_config
+                                              database:database
+                                                 error:&error];
+        }
+        @catch (NSException *exception) {
+          // Catch any assertions related to parsing the manifest JSON,
+          // this will ensure invalid manifests can be easily debugged.
+          // For example, this will catch nullish sdkVersion assertions.
+          error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                      code:EXUpdatesFileDownloaderErrorCodeManifestParseError
+                                  userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
+        }
+        if (error) {
+          errorBlock(error);
+          return;
+        }
+        
+        EXManifestsManifest *manifestForProjectInformation = update.manifest;
+        if (![expoProjectInformation.projectId isEqualToString:manifestForProjectInformation.easProjectId] ||
+            ![expoProjectInformation.scopeKey isEqualToString:manifestForProjectInformation.scopeKey]) {
+          errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                         code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Invalid certificate for manifest project ID or scope key"}]);
+          return;
+        }
+      }
+      
+      mutableManifest[@"isVerified"] = @YES;
+    }
+  }
+  
+  
 
   NSError *error;
   EXUpdatesUpdate *update;
@@ -567,6 +606,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
+  [request setValue:EASClientID.uuid.UUIDString forHTTPHeaderField:@"EAS-Client-ID"];
 
   for (NSString *key in _config.requestHeaders) {
     [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
@@ -597,6 +637,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
+  [request setValue:EASClientID.uuid.UUIDString forHTTPHeaderField:@"EAS-Client-ID"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   [request setValue:(_config.expectsSignedManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
   [request setValue:_config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];

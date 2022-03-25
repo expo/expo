@@ -26,16 +26,18 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.functions.AnyFunction
 import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.functions.AsyncFunctionWithPromise
+import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 import kotlin.reflect.typeOf
 
 @DefinitionMarker
-class ModuleDefinitionBuilder(private val module: Module? = null) {
+class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
   private var eventsDefinition: EventsDefinition? = null
+  private var functionBuilders = mutableListOf<AsyncFunctionBuilder>()
 
   @PublishedApi
   internal var methods = mutableMapOf<String, AnyFunction>()
@@ -52,7 +54,7 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
     return ModuleDefinitionData(
       requireNotNull(moduleName),
       constantsProvider,
-      methods,
+      methods + functionBuilders.associate { it.build() },
       viewManagerDefinition,
       eventListeners,
       eventsDefinition
@@ -325,6 +327,10 @@ class ModuleDefinitionBuilder(private val module: Module? = null) {
       AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
     }
   }
+
+  fun asyncFunction(
+    name: String
+  ) = AsyncFunctionBuilder(name).also { functionBuilders.add(it) }
 
   /**
    * Creates the view manager definition that scopes other view-related definitions.

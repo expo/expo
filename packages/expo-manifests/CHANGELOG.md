@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add `logUrl` getter to both platforms. ([#16709](https://github.com/expo/expo/pull/16709) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
+
+- Add support for expo project information certificate extension. ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

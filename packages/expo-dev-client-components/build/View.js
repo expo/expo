@@ -1,7 +1,7 @@
 import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
 import { View as RNView, StyleSheet } from 'react-native';
 import { create } from './create-primitive';
-import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
+import { scale, padding, margin, rounded, bg, bgDark, width, height, borderDark, border, } from './theme';
 export const View = create(RNView, {
     variants: {
         overflow: {
@@ -31,10 +31,7 @@ export const View = create(RNView, {
             '0': { flexGrow: 0 },
         },
         bg,
-        border: {
-            default: { borderColor: lightTheme.border.default, borderWidth: 1 },
-            hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
-        },
+        border,
         ...rounded,
         shadow: {
             micro: shadows.micro,
@@ -51,10 +48,7 @@ export const View = create(RNView, {
     selectors: {
         dark: {
             bg: bgDark,
-            border: {
-                default: { borderColor: darkTheme.border.default, borderWidth: 1 },
-                hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
-            },
+            border: borderDark,
         },
         light: {
             bg: {},
@@ -67,6 +61,18 @@ export const Row = create(RNView, {
     },
     variants: {
         bg,
+        flex: {
+            '1': { flex: 1 },
+            '0': { flex: 0 },
+        },
+        shrink: {
+            '1': { flexShrink: 1 },
+            '0': { flexShrink: 0 },
+        },
+        grow: {
+            '1': { flexGrow: 1 },
+            '0': { flexGrow: 0 },
+        },
         align: {
             center: { alignItems: 'center' },
             start: { alignItems: 'flex-start' },
@@ -82,10 +88,12 @@ export const Row = create(RNView, {
         ...padding,
         ...margin,
         ...rounded,
+        border,
     },
     selectors: {
         dark: {
             bg: bgDark,
+            border: borderDark,
         },
     },
 });

@@ -25,7 +25,7 @@
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "^2.0.0",
     "glob": "^7.1.7",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "mkdirp": "^0.5.1"
   }
 }

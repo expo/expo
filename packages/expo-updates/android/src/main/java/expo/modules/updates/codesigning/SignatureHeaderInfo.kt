@@ -9,11 +9,7 @@ const val CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_ALGORITHM = "alg"
 
 data class SignatureHeaderInfo(val signature: String, val keyId: String, val algorithm: CodeSigningAlgorithm) {
   companion object {
-    fun parseSignatureHeader(signatureHeader: String?): SignatureHeaderInfo {
-      if (signatureHeader == null) {
-        throw Exception("No expo-signature header specified")
-      }
-
+    fun parseSignatureHeader(signatureHeader: String): SignatureHeaderInfo {
       val signatureMap = Parser(signatureHeader).parseDictionary().get()
 
       val sigFieldValue = signatureMap[CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE]

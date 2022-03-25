@@ -106,7 +106,7 @@ async function shouldUseDevelopmentNotificationService() {
                 return true;
             }
         }
-        catch (e) {
+        catch {
             // We can't do anything here, we'll fallback to false then.
         }
     }

@@ -1,8 +1,7 @@
-import { spacing } from '@expo/styleguide-native';
+import { borderRadius, spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
-import { View, Divider, Spacer } from 'expo-dev-client-components';
+import { View, Divider, Spacer, Text } from 'expo-dev-client-components';
 import {
   HomeScreenDataDocument,
   HomeScreenDataQuery,
@@ -15,7 +14,9 @@ import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
+import { HomeScreenHeader } from '../../components/HomeScreenHeader';
 import ScrollView from '../../components/NavigationScrollView';
+import { PressableOpacity } from '../../components/PressableOpacity';
 import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import RefreshControl from '../../components/RefreshControl';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
@@ -43,13 +44,16 @@ type Props = NavigationProps & {
   allHistory: HistoryList;
   isAuthenticated: boolean;
   theme: string;
+  accountName?: string;
+  initialData?: HomeScreenDataQuery;
 };
 
 type State = {
   projects: DevSession[];
   isNetworkAvailable: boolean;
   isRefreshing: boolean;
-  currentUser?: Exclude<HomeScreenDataQuery['viewer'], null>;
+  data?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
+  loading: boolean;
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
@@ -62,7 +66,8 @@ export class HomeScreenView extends React.Component<Props, State> {
     projects: [],
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
-    currentUser: undefined,
+    data: this.props.initialData?.account.byName,
+    loading: !this.props.initialData?.account.byName, // if there is initial data, we're not loading
   };
 
   componentDidMount() {
@@ -92,11 +97,16 @@ export class HomeScreenView extends React.Component<Props, State> {
   }
 
   render() {
-    const { projects, isRefreshing, currentUser } = this.state;
+    const { projects, isRefreshing, data } = this.state;
+
+    // TODO: update to show EAS Updates when we get data for that
+    const recentHistory = this.props.recentHistory.filter(
+      (project) => project.manifest && 'name' in project.manifest
+    );
 
     return (
       <View style={styles.container}>
-        <HomeScreenHeader currentUser={currentUser} />
+        <HomeScreenHeader currentUser={data} loading={this.state.loading} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
@@ -134,32 +144,52 @@ export class HomeScreenView extends React.Component<Props, State> {
           ) : (
             <DevelopmentServersPlaceholder />
           )}
-          {this.props.recentHistory.count() ? (
+          {recentHistory.count() ? (
             <>
               <Spacer.Vertical size="medium" />
               <RecentlyOpenedHeader onClearPress={this._handlePressClearHistory} />
-              <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
+              <RecentlyOpenedSection recentHistory={recentHistory} />
             </>
           ) : null}
-          {currentUser?.apps.length ? (
+          {this.props.accountName ? (
+            data?.apps.length && this.props.accountName ? (
+              <>
+                <Spacer.Vertical size="medium" />
+                <RedesignedSectionHeader header="Projects" />
+                <ProjectsSection
+                  accountName={this.props.accountName}
+                  apps={data.apps.slice(0, 3)}
+                  showMore={data.apps.length > 3}
+                />
+              </>
+            ) : null
+          ) : (
             <>
               <Spacer.Vertical size="medium" />
               <RedesignedSectionHeader header="Projects" />
-              <ProjectsSection
-                accountName={currentUser.username}
-                apps={currentUser.apps.slice(0, 3)}
-                showMore={currentUser.apps.length > 3}
-              />
+              <PressableOpacity
+                onPress={() => this.props.navigation.navigate('Account')}
+                hitSlop={16}
+                style={{
+                  padding: spacing[4],
+                }}
+                containerProps={{ bg: 'default', border: 'hairline' }}
+                borderRadius={borderRadius.large}>
+                <Text type="InterRegular" style={{ lineHeight: 20 }}>
+                  Log in or create an Expo account to view your projects.
+                </Text>
+              </PressableOpacity>
             </>
-          ) : null}
-          {currentUser?.snacks.length ? (
+          )}
+
+          {data?.snacks.length && this.props.accountName ? (
             <>
               <Spacer.Vertical size="medium" />
               <RedesignedSectionHeader header="Snacks" />
               <SnacksSection
-                accountName={currentUser.username}
-                snacks={currentUser.snacks.slice(0, 3)}
-                showMore={currentUser.snacks.length > 3}
+                accountName={this.props.accountName}
+                snacks={data.snacks.slice(0, 3)}
+                showMore={data.snacks.length > 3}
               />
             </>
           ) : null}
@@ -203,7 +233,8 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _startPollingForProjects = async () => {
-    this._fetchProjectsAsync();
+    await this._fetchProjectsAsync();
+    this.setState({ loading: false });
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 
@@ -215,6 +246,8 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _fetchProjectsAsync = async () => {
+    const { accountName } = this.props;
+
     try {
       const api = new ApiV2HttpClient();
 
@@ -222,18 +255,23 @@ export class HomeScreenView extends React.Component<Props, State> {
         api.getAsync('development-sessions', {
           deviceId: getSnackId(),
         }),
-        ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
-          query: HomeScreenDataDocument,
-        }),
+        accountName
+          ? ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
+              query: HomeScreenDataDocument,
+              variables: {
+                accountName,
+              },
+            })
+          : new Promise<undefined>((resolve) => {
+              resolve(undefined);
+            }),
       ]);
 
-      const currentUser = graphQLResponse.data.viewer ?? undefined;
-
-      this.setState({ projects, currentUser });
+      this.setState({ projects, data: graphQLResponse?.data.account.byName });
     } catch (e) {
       // this doesn't really matter, we will try again later
       if (__DEV__) {
-        console.log(e);
+        console.error(e);
       }
     }
   };
@@ -246,7 +284,7 @@ export class HomeScreenView extends React.Component<Props, State> {
         this._fetchProjectsAsync(),
         new Promise((resolve) => setTimeout(resolve, 1000)),
       ]);
-    } catch (e) {
+    } catch {
       // not sure what to do here, maybe nothing?
     } finally {
       this.setState({ isRefreshing: false });
