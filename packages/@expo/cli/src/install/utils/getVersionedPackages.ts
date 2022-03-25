@@ -71,7 +71,7 @@ export async function getVersionedPackagesAsync(
       return `${name}@${bundledNativeModules[name]}`;
     } else if (name && versionsForSdk[name]) {
       // Some packages have the recommended version listed in https://exp.host/--/api/v2/versions.
-      othersCount++;
+      nativeModulesCount++;
       return `${name}@${versionsForSdk[name]}`;
     } else {
       // Other packages are passed through unmodified.
