@@ -5,6 +5,17 @@ import ASN1Decoder
 
 typealias Certificate = (SecCertificate, X509Certificate)
 
+@objc
+public class EXUpdatesExpoProjectInformation : NSObject {
+  @objc private(set) public var projectId: String
+  @objc private(set) public var scopeKey: String
+  
+  required init(projectId: String, scopeKey: String) {
+    self.projectId = projectId
+    self.scopeKey = scopeKey
+  }
+}
+
 /**
  * Full certificate chain for verifying code signing.
  * The chain should look like the following:
@@ -20,6 +31,8 @@ typealias Certificate = (SecCertificate, X509Certificate)
 class EXUpdatesCertificateChain {
   // ASN.1 path to the extended key usage info within a CERT
   static let EXUpdatesCodeSigningCertificateExtendedUsageCodeSigningOID = "1.3.6.1.5.5.7.3.3"
+  // OID of expo project info, stored as `<projectId>,<scopeKey>`
+  static let EXUpdatesCodeSigningCertificateExpoProjectInformationOID = "1.2.840.113556.1.8000.2554.43437.254.128.102.157.7894389.20439.2.1"
   
   private var certificateStrings: [String]
   
@@ -135,6 +148,18 @@ extension X509Certificate {
     }
     
     return true
+  }
+  
+  func expoProjectInformation() throws -> EXUpdatesExpoProjectInformation? {
+    guard let projectInformationExtensionValue = extensionObject(oid: EXUpdatesCertificateChain.EXUpdatesCodeSigningCertificateExpoProjectInformationOID)?.value else {
+      return nil
+    }
+    
+    let components = (projectInformationExtensionValue as! String).components(separatedBy: ",")
+    if (components.count != 2) {
+      throw EXUpdatesCodeSigningError.InvalidExpoProjectInformationExtensionValue
+    }
+    return EXUpdatesExpoProjectInformation(projectId: components[0], scopeKey: components[1])
   }
 }
 

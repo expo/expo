@@ -7,14 +7,20 @@ import XCTest
 class EXUpdatesCertificateChainTests : XCTestCase {
   func test_ValidSingleCertificate() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.test)
-    XCTAssertNotNil(try EXUpdatesCertificateChain(certificateStrings: [cert]).codeSigningCertificate())
+    let codeSigningCertificate = try EXUpdatesCertificateChain(certificateStrings: [cert]).codeSigningCertificate()
+    XCTAssertNotNil(codeSigningCertificate)
+    XCTAssertNil(try codeSigningCertificate.1.expoProjectInformation())
   }
   
   func test_ValidCertificateChain() throws {
     let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainLeaf)
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainRoot)
-    XCTAssertNotNil(try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate())
+    let codeSigningCertificate = try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()
+    XCTAssertNotNil(codeSigningCertificate)
+    let expoProjectInformation = try codeSigningCertificate.1.expoProjectInformation()
+    XCTAssertEqual(expoProjectInformation?.scopeKey, "@test/app")
+    XCTAssertEqual(expoProjectInformation?.projectId, "285dc9ca-a25d-4f60-93be-36dc312266d7")
   }
   
   func test_RequiresLengthGreaterThanZero() throws {
