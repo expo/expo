@@ -3,13 +3,18 @@ import { useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { HomeScreenDataQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useDispatch, useSelector } from '../../redux/Hooks';
 import { HistoryList } from '../../types';
+import { useAccountName } from '../../utils/AccountNameContext';
+import { useInitialData } from '../../utils/InitialDataContext';
 import isUserAuthenticated from '../../utils/isUserAuthenticated';
 import { HomeScreenView } from './HomeScreenView';
 
-type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
+type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'> & {
+  homeScreenData?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
+};
 
 export function HomeScreen(props: NavigationProps) {
   const [isFocused, setFocused] = React.useState(true);
@@ -42,6 +47,8 @@ export function HomeScreen(props: NavigationProps) {
 
   const theme = useExpoTheme();
   const themeType = useCurrentTheme();
+  const { accountName } = useAccountName();
+  const { homeScreenData } = useInitialData();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.default }} edges={['top']}>
@@ -52,7 +59,9 @@ export function HomeScreen(props: NavigationProps) {
         dispatch={dispatch}
         recentHistory={recentHistory}
         allHistory={allHistory}
+        accountName={accountName}
         isAuthenticated={isAuthenticated}
+        initialData={homeScreenData}
       />
     </SafeAreaView>
   );

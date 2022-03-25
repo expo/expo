@@ -7,5 +7,13 @@ fragment CurrentUserData on User {
   accounts {
     id
     name
+    owner {
+      id
+      username
+      profilePhoto
+      firstName
+      fullName
+      lastName
+    }
   }
 }
