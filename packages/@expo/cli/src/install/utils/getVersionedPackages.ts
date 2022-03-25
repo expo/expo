@@ -1,9 +1,8 @@
 import npmPackageArg from 'npm-package-arg';
 
 import { getVersionsAsync } from '../../api/getVersions';
-import { getBundledNativeModulesAsync } from '../../start/doctor/dependencies/bundledNativeModules';
-
 import * as Log from '../../log';
+import { getBundledNativeModulesAsync } from '../../start/doctor/dependencies/bundledNativeModules';
 
 export type DependencyList = Record<string, string>;
 
