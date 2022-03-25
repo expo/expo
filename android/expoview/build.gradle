@@ -62,7 +62,7 @@ def GLOG_VERSION = reactProperties.getProperty("GLOG_VERSION")
 def REACT_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
 def REACT_NATIVE_PATH = reactNative.absolutePath
 def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
-def RN_SO_DIR = "$reactNative/ReactAndroid/build/react-ndk/exported"
+def RN_SO_DIR = "$reactNative/ReactAndroid/build/intermediates/library_*/*/jni"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
 def FOR_HERMES = false
 def reactNativeArchitectures() {
@@ -743,15 +743,17 @@ task prepareThirdPartyNdkHeaders(dependsOn: [downloadNdkBuildDependencies, prepa
 // pre-native build pipeline
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild')) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(prepareThirdPartyNdkHeaders)
     extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
     extractSOFiles.dependsOn(prepareThirdPartyNdkHeaders)
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractSOFiles)
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   } else if (task.name.startsWith('generateJsonModel')) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }
 
