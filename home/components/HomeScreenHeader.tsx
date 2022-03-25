@@ -28,6 +28,45 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
     navigation.navigate('Account');
   }
 
+  let rightContent: React.ReactNode | null = null;
+
+  // when loading, show nothing to rather than a loading indicator to prevent flicker
+  if (!loading) {
+    // when user is logged in, show account button
+    if (currentUser) {
+      rightContent = (
+        <Button.Container onPress={onAccountButtonPress}>
+          {/* Show profile picture for personal accounts / accounts with members */}
+          {currentUser?.owner?.profilePhoto ? (
+            <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
+          ) : (
+            <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
+              <UsersIcon color={theme.icon.default} size={iconSize.small} />
+            </View>
+          )}
+        </Button.Container>
+      );
+    } else {
+      // when user is logged out, show log in button
+      rightContent = (
+        <PressableOpacity
+          borderRadius={borderRadius.small}
+          onPress={onAccountButtonPress}
+          hitSlop={8}
+          style={{
+            padding: spacing[2],
+            backgroundColor: theme.button.ghost.background,
+            borderWidth: 1,
+            borderColor: theme.button.ghost.border,
+          }}>
+          <Button.Text type="InterSemiBold" color="ghost" size="small">
+            Log in
+          </Button.Text>
+        </PressableOpacity>
+      );
+    }
+  }
+
   return (
     <Row
       padding="medium"
@@ -65,33 +104,7 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
           Expo Go
         </Text>
       </Row>
-      {loading ? null : !currentUser ? (
-        <PressableOpacity
-          borderRadius={borderRadius.small}
-          onPress={onAccountButtonPress}
-          hitSlop={8}
-          style={{
-            padding: spacing[2],
-            backgroundColor: theme.button.ghost.background,
-            borderWidth: 1,
-            borderColor: theme.button.ghost.border,
-          }}>
-          <Button.Text type="InterSemiBold" color="ghost" size="small">
-            Log in
-          </Button.Text>
-        </PressableOpacity>
-      ) : (
-        <Button.Container onPress={onAccountButtonPress}>
-          {/* Show profile picture for personal accounts / accounts with members */}
-          {currentUser?.owner?.profilePhoto ? (
-            <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
-          ) : (
-            <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
-              <UsersIcon color={theme.icon.default} size={iconSize.small} />
-            </View>
-          )}
-        </Button.Container>
-      )}
+      {rightContent}
     </Row>
   );
 }
