@@ -23,20 +23,20 @@ export const expoInstall: Command = async (argv) => {
   if (args['--help']) {
     Log.exit(
       chalk`
-      {bold Description}
-        Install a module or other package to a project
+  {bold Description}
+    Install a module or other package to a project
 
-      {bold Usage}
-        $ npx expo install {dim [packages...] [options]}
+  {bold Usage}
+    $ npx expo install {dim [packages...] [options]}
 
-      Options
-        --npm       Use npm to install dependencies. {dim Default when package-lock.json exists}
-        --yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}
-        -h, --help  Output usage information
+  {bold Options}
+    --npm       Use npm to install dependencies. {dim Default when package-lock.json exists}
+    --yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}
+    -h, --help  Output usage information
 
-      Additional options can be passed to the underlying install command by using {bold --}
-        $ expo install react -- --verbose
-        {dim >} yarn add react --verbose
+  Additional options can be passed to the underlying install command by using {bold --}
+    $ expo install react -- --verbose
+    {dim >} yarn add react --verbose
     `,
       0
     );
