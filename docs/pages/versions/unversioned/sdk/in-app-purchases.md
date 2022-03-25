@@ -36,6 +36,8 @@ No additional set up necessary.
 
 ## Setup
 
+> Note that in-app purchases require physical devices to work on both platforms and therefore **cannot be tested on simulators**.
+
 ### iOS
 
 In order to use the In-App Purchases API on iOS, you’ll need to sign the [Paid Applications Agreement](https://help.apple.com/app-store-connect/#/devb6df5ee51) and set up your banking and tax information. You also need to enable the [In-App Purchases capability](https://help.apple.com/xcode/mac/current/#/dev88ff319e7) for your app in Xcode.
@@ -52,7 +54,11 @@ On Android, you must first create an entry for your app and upload a release APK
 
 Then to test your purchases, you must publish your app to a closed or open testing track in Google Play. Note that it may take a few hours for the app to be available for testers. Ensure the testers you invite (including yourself) opt in to your app's test. On your test’s opt-in URL, your testers will get an explanation of what it means to be a tester and a link to opt-in. At this point, they're all set and can start making purchases once they download your app or build from source. For more information on testing, follow [these instructions](https://developer.android.com/google/play/billing/billing_testing).
 
-> Note that in-app purchases require physical devices to work on both platforms and therefore **cannot be tested on simulators**.
+#### Associating users and handling out-of-app purchases
+
+Google Play does not provide information in its API regarding the purchasing user. To associate this data (e.g., to link users in your app's backend to a purchase), you must provide both the `obfuscatedAccountId` and `obfuscatedProfileId` values in the `IAPPurchaseItemOptions` object passed to `InAppPurchases.purchaseItemAsync()`.
+
+If you sell subscriptions, they may be configured to be eligible for repurchase up to a year after expiration. In this case, your purchase listener callback must be configured in such a way as to handle [out-of-app payments](https://developer.android.com/google/play/billing/integrate#ooap), which may be initiated at any time. In addition, these payments may even be made when the your app is not installed or inactive, and so you must provide a feature for users to claim and activate the purchase. In this case, there is no method to associate an obfuscated account or profile ID with the purchase, so you must handle this condition accordingly in your app and backend.
 
 ## API
 
