@@ -105,7 +105,7 @@ public class ClipboardModule: Module {
   @objc
   func clipboardChangedListener() {
     sendEvent(onClipboardChanged, [
-      "content": UIPasteboard.general.string ?? ""
+      "contentTypes": availableContentTypes()
     ])
   }
 }
@@ -115,4 +115,15 @@ private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
     case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
     case .png: return image.pngData()
   }
+}
+        
+private func availableContentTypes() -> [String] {
+  let predicateDict = [
+    "plain-text": UIPasteboard.general.hasStrings,
+    "html": UIPasteboard.general.contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String]),
+    "image": UIPasteboard.general.hasImages,
+    "url": UIPasteboard.general.hasURLs
+  ]
+  let availableTypes = predicateDict.filter { $0.value }.keys
+  return Array(availableTypes)
 }
