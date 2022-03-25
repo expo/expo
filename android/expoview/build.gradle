@@ -101,10 +101,10 @@ repositories {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
-  ndkVersion ANDROID_NDK_VERSION
-
-  if (ANDROID_NDK_PATH != null) {
-    ndkPath ANDROID_NDK_PATH
+  // Used to override the NDK path & version on internal CI
+  if (System.getenv("ANDROID_NDK_HOME") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+    ndkPath System.getenv("ANDROID_NDK_HOME")
+    ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
   }
 
   compileOptions {
@@ -259,12 +259,12 @@ dependencies {
   testImplementation 'junit:junit:4.12'
 
 
-  api("com.facebook.fbjni:fbjni-java-only:0.0.3")
+  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 
-  extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-  extractSO("com.facebook.fbjni:fbjni:0.0.2")
+  extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+  extractSO("com.facebook.fbjni:fbjni:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
