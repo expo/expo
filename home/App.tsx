@@ -11,6 +11,7 @@ import ApolloClient from './api/ApolloClient';
 import Store from './redux/Store';
 
 import './menu/DevMenuApp';
+import { AccountNameProvider } from './utils/AccountNameContext';
 
 if (Platform.OS === 'android') {
   enableScreens(false);
@@ -22,7 +23,9 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ReduxProvider store={Store}>
         <ApolloProvider client={ApolloClient}>
-          <HomeApp />
+          <AccountNameProvider>
+            <HomeApp />
+          </AccountNameProvider>
         </ApolloProvider>
       </ReduxProvider>
     </GestureHandlerRootView>

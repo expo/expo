@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from './redux/Hooks';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
-import { AccountNameContext } from './utils/AccountNameContext';
+import { useAccountName } from './utils/AccountNameContext';
 import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
@@ -58,7 +58,7 @@ export default function HomeApp() {
   const colorScheme = useColorScheme();
   const preferredAppearance = useSelector((data) => data.settings.preferredAppearance);
   const dispatch = useDispatch();
-  const [accountName, setAccountName] = React.useState<string | undefined>();
+  const { accountName, setAccountName } = useAccountName();
   const isShowingSplashScreen = useSplashScreenWhileLoadingResources(async () => {
     await initStateAsync();
   });
@@ -74,15 +74,7 @@ export default function HomeApp() {
     addProjectHistoryListener();
   }, []);
 
-  React.useEffect(
-    function persistCurrentAccount() {
-      if (accountName) {
-        AsyncStorage.setItem('currentAccount', accountName);
-      }
-    },
-    [accountName]
-  );
-
+  // when the user logs in, set the current account view to the account they just logged in with
   React.useEffect(() => {
     if (!isAuthenticated) {
       setAccountName(undefined);
@@ -208,23 +200,21 @@ export default function HomeApp() {
     theme === 'dark' ? darkTheme.background.default : lightTheme.background.default;
 
   return (
-    <AccountNameContext.Provider value={{ accountName, setAccountName }}>
-      <ThemeProvider themePreference={theme as ThemePreference}>
-        <View
-          style={[
-            styles.container,
-            {
-              backgroundColor: FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
-                ? redesignedBackgroundColor
-                : backgroundColor,
-            },
-          ]}>
-          <ActionSheetProvider>
-            <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
-          </ActionSheetProvider>
-        </View>
-      </ThemeProvider>
-    </AccountNameContext.Provider>
+    <ThemeProvider themePreference={theme as ThemePreference}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
+              ? redesignedBackgroundColor
+              : backgroundColor,
+          },
+        ]}>
+        <ActionSheetProvider>
+          <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
+        </ActionSheetProvider>
+      </View>
+    </ThemeProvider>
   );
 }
 
