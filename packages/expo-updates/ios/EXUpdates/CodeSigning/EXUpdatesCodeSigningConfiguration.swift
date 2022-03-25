@@ -9,6 +9,24 @@ struct EXUpdatesCodeSigningMetadataFields {
   static let AlgorithmFieldKey = "alg"
 }
 
+@objc public enum EXUpdatesValidationResult : Int {
+  case Valid
+  case Invalid
+  case Skipped
+}
+
+
+@objc
+public class EXUpdatesSignatureValidationResult : NSObject {
+  @objc private(set) public var validationResult: EXUpdatesValidationResult
+  @objc private(set) public var expoProjectInformation: EXUpdatesExpoProjectInformation?
+  
+  required init(validationResult: EXUpdatesValidationResult, expoProjectInformation: EXUpdatesExpoProjectInformation?) {
+    self.validationResult = validationResult
+    self.expoProjectInformation = expoProjectInformation
+  }
+}
+
 @objc
 public class EXUpdatesCodeSigningConfiguration : NSObject {
   private var embeddedCertificateString: String
@@ -44,29 +62,26 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
   @objc
   public func validateSignature(signature: String?,
                                 signedData: Data,
-                                manifestResponseCertificateChain: String?) throws {
+                                manifestResponseCertificateChain: String?) throws -> EXUpdatesSignatureValidationResult {
     guard let signature = signature else {
       if !self.allowUnsignedManifests {
         throw EXUpdatesCodeSigningError.SignatureHeaderMissing
       } else {
         // no-op
-        return
+        return EXUpdatesSignatureValidationResult(validationResult: EXUpdatesValidationResult.Skipped, expoProjectInformation: nil)
       }
     }
     
-    let validateResult = try validateSignatureInternal(
+    return try validateSignatureInternal(
       signatureHeaderInfo: try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: signature),
       signedData: signedData,
       manifestResponseCertificateChain: manifestResponseCertificateChain
     )
-    if !validateResult {
-      throw EXUpdatesCodeSigningError.InvalidSignature
-    }
   }
   
   private func validateSignatureInternal(signatureHeaderInfo: EXUpdatesSignatureHeaderInfo,
                                          signedData: Data,
-                                         manifestResponseCertificateChain: String?) throws -> Bool {
+                                         manifestResponseCertificateChain: String?) throws -> EXUpdatesSignatureValidationResult {
     let certificateChain: EXUpdatesCertificateChain
     if (self.includeManifestResponseCertificateChain) {
       certificateChain = try EXUpdatesCertificateChain(
@@ -104,7 +119,9 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
       throw EXUpdatesCodeSigningError.SignatureEncodingError
     }
     
-    return try self.verifyRSASHA256SignedData(signedData: signedData, signatureData: signatureData, publicKey: publicKey)
+    let isValid = try self.verifyRSASHA256SignedData(signedData: signedData, signatureData: signatureData, publicKey: publicKey)
+    return EXUpdatesSignatureValidationResult(validationResult: isValid ? EXUpdatesValidationResult.Valid : EXUpdatesValidationResult.Invalid,
+                                              expoProjectInformation: try certificateChain.codeSigningCertificate().1.expoProjectInformation())
   }
   
   private func verifyRSASHA256SignedData(signedData: Data, signatureData: Data, publicKey: SecKey) throws -> Bool {

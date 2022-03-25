@@ -64,7 +64,7 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
                                                                           EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
                                                                includeManifestResponseCertificateChain: false,
                                                                allowUnsignedManifests: false)) { error in
-    XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.AlgorithmParseError)
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.AlgorithmParseError)
     }
   }
   
@@ -74,9 +74,11 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
                                                               metadata: [:],
                                                               includeManifestResponseCertificateChain: false,
                                                               allowUnsignedManifests: false)
-    try configuration.validateSignature(signature: TestHelper.testSignature,
-                                        signedData: TestHelper.testBody.data(using: .utf8)!,
-                                        manifestResponseCertificateChain: nil)
+    let signatureValidationResult = try configuration.validateSignature(signature: TestHelper.testSignature,
+                                                                        signedData: TestHelper.testBody.data(using: .utf8)!,
+                                                                        manifestResponseCertificateChain: nil)
+    XCTAssertEqual(signatureValidationResult.validationResult, EXUpdatesValidationResult.Valid)
+    XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
   
   func test_validateSignature_ReturnsFalseWhenSignatureIsInvalid() throws {
@@ -85,9 +87,9 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
                                                               metadata: [:],
                                                               includeManifestResponseCertificateChain: false,
                                                               allowUnsignedManifests: false)
-    XCTAssertThrowsError(try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
-      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.InvalidSignature)
-    }
+    let signatureValidationResult = try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+    XCTAssertEqual(signatureValidationResult.validationResult, EXUpdatesValidationResult.Invalid)
+    XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
   
   func test_validateSignature_ThrowsWhenKeyDoesNotMatch() throws {
@@ -109,7 +111,9 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
                                                               metadata: [:],
                                                               includeManifestResponseCertificateChain: false,
                                                               allowUnsignedManifests: false)
-    try configuration.validateSignature(signature: TestHelper.testSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
+    let signatureValidationResult = try configuration.validateSignature(signature: TestHelper.testSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
+    XCTAssertEqual(signatureValidationResult.validationResult, EXUpdatesValidationResult.Valid)
+    XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
     
   func test_validateSignature_DoesUseChainInManifestResponseIfFlagIsTrue() throws {
@@ -120,7 +124,11 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
                                                               metadata: [EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "ca-root"],
                                                               includeManifestResponseCertificateChain: true,
                                                               allowUnsignedManifests: false)
-    try configuration.validateSignature(signature: TestHelper.testValidChainLeafSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
+    let signatureValidationResult = try configuration.validateSignature(signature: TestHelper.testValidChainLeafSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
+    XCTAssertEqual(signatureValidationResult.validationResult, EXUpdatesValidationResult.Valid)
+    let expoProjectInformation = signatureValidationResult.expoProjectInformation
+    XCTAssertEqual(expoProjectInformation?.scopeKey, "@test/app")
+    XCTAssertEqual(expoProjectInformation?.projectId, "285dc9ca-a25d-4f60-93be-36dc312266d7")
   }
   
   func test_validateSignature_AllowsUnsignedManifestIfAllowUnsignedFlagIsTrue() throws {
@@ -129,7 +137,9 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
                                                               metadata: [EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
                                                               includeManifestResponseCertificateChain: true,
                                                               allowUnsignedManifests: true)
-    try configuration.validateSignature(signature: nil, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+    let signatureValidationResult = try configuration.validateSignature(signature: nil, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+    XCTAssertEqual(signatureValidationResult.validationResult, EXUpdatesValidationResult.Skipped)
+    XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
                                                                          
   func test_validateSignature_ChecksSignedManifestIfAllowUnsignedFlagIsTrueButSignatureIsProvided() throws {
@@ -138,8 +148,8 @@ class EXUpdatesCodeSigningConfigurationTests : XCTestCase {
                                                              metadata: [EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey: "test"],
                                                              includeManifestResponseCertificateChain: true,
                                                              allowUnsignedManifests: true)
-    XCTAssertThrowsError(try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
-      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.InvalidSignature)
-    }
+    let signatureValidationResult = try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+    XCTAssertEqual(signatureValidationResult.validationResult, EXUpdatesValidationResult.Invalid)
+    XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
 }
