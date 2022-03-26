@@ -140,7 +140,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 {
   "cli": {
     "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
-    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defults to false. */boolean/* @end */
+    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defaults to false. */boolean/* @end */
 
   },
   "build": {
