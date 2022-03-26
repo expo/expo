@@ -5,8 +5,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import abi43_0_0.expo.modules.core.ExportedModule;
 import abi43_0_0.expo.modules.core.ModuleRegistry;
@@ -61,10 +60,10 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
    */
   @ExpoMethod
   public void getDevicePushTokenAsync(final Promise promise) {
-    FirebaseInstanceId.getInstance().getInstanceId()
-        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+    FirebaseMessaging.getInstance().getToken()
+        .addOnCompleteListener(new OnCompleteListener<String>() {
           @Override
-          public void onComplete(@NonNull Task<InstanceIdResult> task) {
+          public void onComplete(@NonNull Task<String> task) {
             if (!task.isSuccessful() || task.getResult() == null) {
               if (task.getException() == null) {
                 promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed.");
@@ -74,7 +73,7 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
               return;
             }
 
-            String token = task.getResult().getToken();
+            String token = task.getResult();
 
             promise.resolve(token);
             onNewToken(token);
