@@ -15,7 +15,7 @@ Use release channels in Expo to send out different versions of your application 
 
 Publish your release by running:
 
-`expo publish --release-channel <your-channel>`
+<TerminalBlock cmd={['# Publish to release channel <your-channel>', 'expo publish --release-channel <your-channel>']} />
 
 with the Expo CLI. Your users can see this release in the Expo Go app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-channel>`. If you do not specify a channel, you will publish to the `default` channel.
 
@@ -102,12 +102,7 @@ Environment variables don't exist explicitly, but you can utilize release channe
 
 Say you have a workflow of releasing builds like this:
 
-- `expo publish --release-channel prod-v1`
-- `expo publish --release-channel prod-v2`
-- `expo publish --release-channel prod-v3`
-
-- `expo publish --release-channel staging-v1`
-- `expo publish --release-channel staging-v2`
+<TerminalBlock cmd={['# Publish to release channel prod-v1', 'expo publish --release-channel prod-v2', '', '# Publish to release channel prod-v2', 'expo publish --release-channel prod-v1', '', '# Publish to release channel prod-v3', 'expo publish --release-channel prod-v3', '', '', '# Publish to release channel staging-v1', 'expo publish --release-channel staging-v1', '', '# Publish to release channel staging-v2', 'expo publish --release-channel staging-v2', '']} />  
 
 You can create a function that looks for the specific release and adjust your app's behaviour accordingly:
 
