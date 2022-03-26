@@ -62,7 +62,7 @@ function DocumentationSidebarSection(props: SidebarNodeProps) {
 
   return (
     <DocumentationSidebarCollapsible
-      key={`group-${props.route.name}`}
+      key={`section-${props.route.name}`}
       router={props.router}
       info={props.route}>
       {props.route.children.map(group => (
