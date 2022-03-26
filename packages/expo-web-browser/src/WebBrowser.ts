@@ -204,7 +204,7 @@ export function dismissBrowser(): void {
  * to authenticate using the given url.
  *
  * # On Android:
- * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),
+ * This will be done using a "custom Chrome tabs" browser, [AppState](./react-native/appstate/),
  * and [Linking](./linking/) APIs.
  *
  * # On web:
