@@ -50,7 +50,11 @@ export const mdComponents: MDComponents = {
   ul: ({ children }) => <UL>{children}</UL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
-    if (href?.startsWith('../') && !href?.startsWith('../..') && !href?.startsWith('../react-native')) {
+    if (
+      href?.startsWith('../') &&
+      !href?.startsWith('../..') &&
+      !href?.startsWith('../react-native')
+    ) {
       if (isDev) {
         throw new Error(getInvalidLinkMessage(href));
       } else {
