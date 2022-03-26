@@ -42,17 +42,15 @@ export function UserProfileScreen({ navigation }) {
   };
 
   const onLogoutPress = () => {
-    modalStack.push({
-      element: (
-        <LogoutConfirmationModal
-          onClosePress={() => modalStack.pop()}
-          onLogoutPress={() => {
-            actions.logout();
-            modalStack.pop();
-          }}
-        />
-      ),
-    });
+    modalStack.push(() => (
+      <LogoutConfirmationModal
+        onClosePress={() => modalStack.pop()}
+        onLogoutPress={() => {
+          actions.logout();
+          modalStack.pop();
+        }}
+      />
+    ));
   };
 
   const onClosePress = () => {

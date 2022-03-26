@@ -19,7 +19,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
+import { Toast } from '../components/Toasts';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useToastStack } from '../providers/ToastStackProvider';
 import { useChannelsForApp } from '../queries/useChannelsForApp';
 import { Update, useUpdatesForBranch } from '../queries/useUpdatesForBranch';
 import { ExtensionsStackParamList } from './ExtensionsStack';
@@ -32,6 +34,8 @@ type UpdatesScreenProps = {
 export function UpdatesScreen({ route }: UpdatesScreenProps) {
   const { runtimeVersion } = useBuildInfo();
   const { branchName } = route.params;
+  const toastStack = useToastStack();
+
   const {
     data: updates,
     isLoading,
@@ -42,30 +46,20 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
     isFetchingNextPage,
   } = useUpdatesForBranch(branchName);
 
-  const [warningVisible, setWarningVisible] = React.useState(false);
-  const timerRef = React.useRef(null);
-
-  React.useEffect(() => {
-    if (warningVisible) {
-      timerRef.current = setTimeout(() => {
-        setWarningVisible(false);
-      }, 5000);
-    }
-
-    return () => {
-      clearTimeout(timerRef.current);
-    };
-  }, [warningVisible]);
-
   const onUpdatePress = React.useCallback(
     (update: Update) => {
       const isCompatible = update.runtimeVersion === runtimeVersion;
 
-      if (!isCompatible) {
-        setWarningVisible(true);
+      // prevent multiple taps bringing up the toast
+      if (!isCompatible && toastStack.getItems().length === 0) {
+        toastStack.push(() => (
+          <Toast.Warning>
+            {`You are currently running an older development app version than the latest update on the branch "${branchName}". To get the latest update, upgrade this development client app.`}
+          </Toast.Warning>
+        ));
       }
     },
-    [runtimeVersion]
+    [runtimeVersion, branchName]
   );
 
   function Header() {
@@ -92,9 +86,24 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
 
   function EmptyList() {
     return (
-      <View px="large">
-        <Spacer.Vertical size="large" />
-        <Heading color="secondary">This branch has no published updates yet.</Heading>
+      <View mt="large" mx="medium" bg="default" rounded="large" padding="medium">
+        <View>
+          <Heading>There are no updates available for this branch.</Heading>
+          <Spacer.Vertical size="small" />
+          <Text color="secondary" size="small">
+            Updates allow you to deliver code directly to your users.
+          </Text>
+
+          <View py="medium" align="centered">
+            <Button.ScaleOnPressContainer bg="tertiary">
+              <View px="2.5" py="2">
+                <Button.Text weight="medium" color="tertiary">
+                  Publish an update
+                </Button.Text>
+              </View>
+            </Button.ScaleOnPressContainer>
+          </View>
+        </View>
       </View>
     );
   }
@@ -145,13 +154,6 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
         ListFooterComponent={Footer}
         ListEmptyComponent={EmptyList}
       />
-
-      {warningVisible && (
-        <IncompatibleUpdateWarning
-          branchName={branchName}
-          onPress={() => setWarningVisible(false)}
-        />
-      )}
     </View>
   );
 }
@@ -244,34 +246,6 @@ function AvailableChannelsList({ channels }) {
           </Row>
         </ScrollView>
       </Row>
-    </View>
-  );
-}
-
-function IncompatibleUpdateWarning({ branchName, onPress }) {
-  return (
-    <View mx="large" mb="large" absolute="bottom">
-      <Button.ScaleOnPressContainer onPress={onPress}>
-        <View bg="warning" padding="medium" rounded="medium" border="warning">
-          <Row align="center">
-            <WarningIcon />
-
-            <Spacer.Horizontal size="tiny" />
-
-            <Heading color="warning" size="small" style={{ top: 1 }}>
-              Warning
-            </Heading>
-          </Row>
-
-          <Spacer.Vertical size="small" />
-
-          <View>
-            <Text size="small">
-              {`You are currently running an older development app version than the latest update on the branch "${branchName}". To get the latest update, upgrade this development client app.`}
-            </Text>
-          </View>
-        </View>
-      </Button.ScaleOnPressContainer>
     </View>
   );
 }

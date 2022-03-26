@@ -81,7 +81,7 @@ export function EASEmptyBranchRow({ branch }: EASBranchRowProps) {
   const { name } = branch;
 
   return (
-    <View opacity="0.5">
+    <View>
       <Row>
         <Row
           style={{ backgroundColor: palette.blue['100'] }}

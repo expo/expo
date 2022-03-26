@@ -11,44 +11,18 @@ type EmptyBranchesMessageProps = {
 };
 
 export function EmptyBranchesMessage({
-  branches,
-  incompatibleBranches,
+  branches = [],
+  incompatibleBranches = [],
   onLearnMorePress,
 }: EmptyBranchesMessageProps) {
   const { runtimeVersion } = useBuildInfo();
 
-  if (branches.length > 0) {
-    return null;
-  }
-
-  // no branches for app
-  if (branches.length === 0 && incompatibleBranches.length === 0) {
-    return (
-      <View padding="medium" rounded="large" bg="default">
-        <View>
-          <View>
-            <Heading>This app has no published branches yet.</Heading>
-            <Spacer.Vertical size="small" />
-
-            <View py="medium" align="centered">
-              <Button.ScaleOnPressContainer bg="tertiary">
-                <View px="2.5" py="2">
-                  <Button.Text weight="medium" color="tertiary">
-                    Learn More
-                  </Button.Text>
-                </View>
-              </Button.ScaleOnPressContainer>
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  }
-
   // no compatible branches
   if (branches.length === 0 && incompatibleBranches.length > 0) {
-    const latestRuntimeVersion = incompatibleBranches.find((branch) => branch.updates.length > 0)
-      .updates[0].runtimeVersion;
+    const recentBranchWithUpdates = incompatibleBranches.find(
+      (branch) => branch.updates.length > 0
+    );
+    const latestRuntimeVersion = recentBranchWithUpdates?.updates?.[0].runtimeVersion;
 
     return (
       <View padding="medium" rounded="large" bg="default">
@@ -74,7 +48,7 @@ export function EmptyBranchesMessage({
             <Button.ScaleOnPressContainer bg="tertiary" onPress={onLearnMorePress}>
               <View px="2.5" py="2">
                 <Button.Text weight="medium" color="tertiary">
-                  Learn More
+                  See Available Builds
                 </Button.Text>
               </View>
             </Button.ScaleOnPressContainer>
@@ -83,4 +57,30 @@ export function EmptyBranchesMessage({
       </View>
     );
   }
+
+  return (
+    <View padding="medium" rounded="large" bg="default">
+      <View>
+        <View>
+          <Heading>This app has no published branches yet.</Heading>
+          <Spacer.Vertical size="small" />
+
+          <Spacer.Vertical size="small" />
+          <Text color="secondary" size="small">
+            Branches allow you to deliver code to builds through EAS Update.
+          </Text>
+
+          <View py="medium" align="centered">
+            <Button.ScaleOnPressContainer bg="tertiary">
+              <View px="2.5" py="2">
+                <Button.Text weight="medium" color="tertiary">
+                  Create a branch
+                </Button.Text>
+              </View>
+            </Button.ScaleOnPressContainer>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
 }

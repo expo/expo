@@ -1,10 +1,13 @@
 import format from 'date-fns/format';
 import { gql } from 'graphql-request';
+import React from 'react';
 import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
+import { Toast } from '../components/Toasts';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { queryClient } from '../providers/QueryProvider';
+import { useToastStack } from '../providers/ToastStackProvider';
 
 export type Update = {
   id: string;
@@ -55,6 +58,7 @@ function getUpdatesForBranchAsync(appId: string, branchName: string, page: numbe
 
 export function useUpdatesForBranch(branchName: string) {
   const { appId } = useBuildInfo();
+  const toastStack = useToastStack();
 
   const query = useInfiniteQuery(
     ['updates', appId, branchName],
@@ -72,6 +76,14 @@ export function useUpdatesForBranch(branchName: string) {
   );
 
   const updates = query.data?.pages.flatMap((page) => page.updates) ?? [];
+
+  React.useEffect(() => {
+    if (query.error) {
+      toastStack.push(() => (
+        <Toast.Error>Something went wrong trying to fetch updates for this branch</Toast.Error>
+      ));
+    }
+  }, [query.error]);
 
   return {
     ...query,

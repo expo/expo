@@ -57,9 +57,7 @@ export function HomeScreen({
 
   const onLoadUrl = (url: string) => {
     loadApp(url).catch((error) => {
-      modalStack.push({
-        element: <LoadAppErrorModal message={error.message} />,
-      });
+      modalStack.push(() => <LoadAppErrorModal message={error.message} />);
     });
   };
 
@@ -80,7 +78,7 @@ export function HomeScreen({
   };
 
   const onDevServerQuestionPress = () => {
-    modalStack.push({ element: <DevServerExplainerModal /> });
+    modalStack.push(() => <DevServerExplainerModal />);
   };
 
   const onCrashReportPress = () => {

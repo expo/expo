@@ -1,7 +1,10 @@
 import { gql } from 'graphql-request';
+import * as React from 'react';
 import { useQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
+import { Toast } from '../components/Toasts';
+import { useToastStack } from '../providers/ToastStackProvider';
 
 const query = gql`
   query getUpdates($appId: String!) {
@@ -45,5 +48,17 @@ function getChannelsAsync(appId: string) {
 }
 
 export function useChannelsForApp(appId: string) {
-  return useQuery(['channels', appId], () => getChannelsAsync(appId));
+  const toastStack = useToastStack();
+
+  const query = useQuery(['channels', appId], () => getChannelsAsync(appId));
+
+  React.useEffect(() => {
+    if (query.error && toastStack.getItems().length === 0) {
+      toastStack.push(() => (
+        <Toast.Error>Something went wrong trying to find the channels for this branch.</Toast.Error>
+      ));
+    }
+  }, [query.error]);
+
+  return query;
 }

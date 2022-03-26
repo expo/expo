@@ -14,7 +14,6 @@ jest.mock('graphql-request', () => {
   };
 });
 
-
 function mockUpdatesResponse(updates: Update[]) {
   return mockGraphQLResponse({
     app: {
@@ -93,10 +92,11 @@ describe('<UpdatesScreen />', () => {
     );
 
     await act(async () => {
-      expect(queryByText(/branch has no published updates/i)).toBe(null);
-      await waitFor(() => getByText(/branch has no published updates/i));
+      expect(queryByText(/no updates available/i)).toBe(null);
+      await waitFor(() => getByText(/no updates available/i));
     });
   });
 
+  test.todo('show warning for incompatible update');
   test.todo('shows error toast');
 });

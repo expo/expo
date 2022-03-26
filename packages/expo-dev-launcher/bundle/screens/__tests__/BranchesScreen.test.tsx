@@ -1,4 +1,5 @@
 import { queryClient } from '../../providers/QueryProvider';
+import { Branch } from '../../queries/useBranchesForApp';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
 import { BranchesScreen, getIncompatibleBranchMessage } from '../BranchesScreen';
@@ -103,7 +104,7 @@ describe('<BranchesScreen />', () => {
     });
   });
 
-  test('renders incompatible branch message', async () => {
+  test('renders incompatible branch message in footer', async () => {
     const mockNavigation: any = {
       navigate: jest.fn(),
     };
@@ -115,10 +116,27 @@ describe('<BranchesScreen />', () => {
       createdAt: new Date().toISOString(),
     };
 
-    mockBranchResponse({
-      branchName: 'testBranch',
-      compatibleUpdates: [],
+    const compatibleBranch: Branch = {
+      id: '1',
+      name: 'testBranch',
       updates: [testUpdate],
+    };
+
+    const incompatibleBranch: Branch = {
+      id: '2',
+      name: 'Incompatible branch',
+      updates: [{ ...testUpdate, id: '2' }],
+    };
+
+    mockGraphQLResponse({
+      app: {
+        byId: {
+          updateBranches: [
+            { ...compatibleBranch, compatibleUpdates: [testUpdate] },
+            { ...incompatibleBranch, compatibleUpdates: [] },
+          ],
+        },
+      },
     });
 
     const { getByText } = render(<BranchesScreen navigation={mockNavigation} />);
@@ -129,7 +147,7 @@ describe('<BranchesScreen />', () => {
     });
   });
 
-  test('eas updates empty state', async () => {
+  test('empty branches state', async () => {
     const mockNavigation: any = {
       navigate: jest.fn(),
     };
@@ -150,5 +168,33 @@ describe('<BranchesScreen />', () => {
     });
   });
 
+  test('no compatible branches state', async () => {
+    const mockNavigation: any = {
+      navigate: jest.fn(),
+    };
+
+    const incompatibleBranch: Branch = {
+      id: '2',
+      name: 'Incompatible branch',
+      updates: [{ id: '1', createdAt: '123', message: '321', runtimeVersion: '123' }],
+    };
+
+    mockGraphQLResponse({
+      app: {
+        byId: {
+          updateBranches: [{ ...incompatibleBranch, compatibleUpdates: [] }],
+        },
+      },
+    });
+
+    const { getByText, queryByText } = render(<BranchesScreen navigation={mockNavigation} />);
+
+    await act(async () => {
+      expect(queryByText(/no compatible branches/i)).toBe(null);
+      await waitFor(() => getByText(/no compatible branches/i));
+    });
+  });
+
+  test.todo('recent empty branches are visible in the footer');
   test.todo('eas updates shows error toast');
 });

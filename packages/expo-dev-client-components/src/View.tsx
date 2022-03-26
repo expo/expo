@@ -85,6 +85,7 @@ export const View = create(RNView, {
       default: { borderColor: lightTheme.border.default, borderWidth: 1 },
       hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
       warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
+      error: { borderColor: lightTheme.border.error, borderWidth: 1 },
     },
 
     ...rounded,
