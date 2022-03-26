@@ -54,7 +54,7 @@ The command will perform the following steps:
   - Path to an **.ipa** archive on your local filesystem.
   - URL to the app archive.
 
-  > This step can be skipped if one of the following parameters is provided: `--latest`, `--id`, `--path`, or `--url`.
+  > This step can be skipped if one of the following CLI parameters is provided: `--latest`, `--id`, `--path`, or `--url`.
 
 - A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.
