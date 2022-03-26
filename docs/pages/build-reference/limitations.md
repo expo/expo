@@ -54,7 +54,7 @@ The goal for managed projects with EAS Build is to remove the limitations common
 
 ## Get notified about changes
 
-To be notified as progress is made on these items, you can subscribe to the changelog on [expo.dev/eas](https://expo.dev/eas).
+To be notified as progress is made on these items, you can subscribe to the EAS newsletter on [expo.dev/eas](https://expo.dev/eas).
 
 <br />
 
