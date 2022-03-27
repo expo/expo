@@ -106,6 +106,5 @@
   "react-native-webview": "11.15.0",
   "sentry-expo": "^4.0.0",
   "unimodules-app-loader": "~3.0.0",
-  "unimodules-image-loader-interface": "~6.1.0",
-  "unimodules-task-manager-interface": "~7.1.0"
+  "unimodules-image-loader-interface": "~6.1.0"
 }
