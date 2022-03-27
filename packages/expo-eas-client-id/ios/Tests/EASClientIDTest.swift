@@ -6,10 +6,10 @@ import XCTest
 
 class EASClientIdTests : XCTestCase {
   func testCreatesStableUUID() throws {
-    let easClientId = EASClientID.uuid.uuidString
+    let easClientId = EASClientID.uuid().uuidString
     XCTAssertNotNil(easClientId)
 
-    let easClientId2 = EASClientID.uuid.uuidString
+    let easClientId2 = EASClientID.uuid().uuidString
     XCTAssertEqual(easClientId, easClientId2)
   }
 }
