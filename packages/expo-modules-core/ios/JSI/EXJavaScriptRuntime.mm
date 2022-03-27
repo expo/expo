@@ -1,9 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <jsi/jsi.h>
+#import <jsi/JSCRuntime.h>
 
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
-
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/ExpoModulesProxySpec.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
@@ -12,27 +12,31 @@
 using namespace facebook;
 
 @implementation EXJavaScriptRuntime {
-  jsi::Runtime *_runtime;
+  std::shared_ptr<jsi::Runtime> _runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
-
-  EXJavaScriptObject *_global;
 }
 
-- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+- (nonnull instancetype)init
 {
   if (self = [super init]) {
-    _runtime = &runtime;
-    _jsCallInvoker = callInvoker;
+    _runtime = jsc::makeJSCRuntime();
+    _jsCallInvoker = nil;
+  }
+  return self;
+}
 
-    auto jsGlobalPtr = std::make_shared<jsi::Object>(_runtime->global());
-    _global = [[EXJavaScriptObject alloc] initWith:jsGlobalPtr runtime:self];
+- (nonnull instancetype)initWithRuntime:(std::shared_ptr<jsi::Runtime>)runtime callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+{
+  if (self = [super init]) {
+    _runtime = runtime;
+    _jsCallInvoker = callInvoker;
   }
   return self;
 }
 
 - (nonnull jsi::Runtime *)get
 {
-  return _runtime;
+  return _runtime.get();
 }
 
 - (std::shared_ptr<react::CallInvoker>)callInvoker
@@ -54,7 +58,8 @@ using namespace facebook;
 
 - (nonnull EXJavaScriptObject *)global
 {
-  return _global;
+  auto jsGlobalPtr = std::make_shared<jsi::Object>(_runtime->global());
+  return [[EXJavaScriptObject alloc] initWith:jsGlobalPtr runtime:self];
 }
 
 - (jsi::Function)createSyncFunction:(nonnull NSString *)name
@@ -79,6 +84,15 @@ using namespace facebook;
     };
     return createPromiseAsJSIValue(runtime, promiseSetup);
   }];
+}
+
+#pragma mark - Script evaluation
+
+- (nullable id)evaluateScript:(nonnull NSString *)scriptSource
+{
+  auto scriptBuffer = std::make_shared<jsi::StringBuffer>([[NSString stringWithFormat:@"(%@)", scriptSource] UTF8String]);
+  auto result = _runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>");
+  return expo::convertJSIValueToObjCObject(*_runtime, result, _jsCallInvoker);
 }
 
 #pragma mark - Private
