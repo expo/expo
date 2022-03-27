@@ -1,7 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <jsi/jsi.h>
+
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+#import <reacthermes/HermesExecutorFactory.h>
+#elif __has_include(<hermes/hermes.h>)
+#import <hermes/hermes.h>
+#else
 #import <jsi/JSCRuntime.h>
+#endif
 
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
@@ -19,7 +26,11 @@ using namespace facebook;
 - (nonnull instancetype)init
 {
   if (self = [super init]) {
+#if __has_include(<reacthermes/HermesExecutorFactory.h>) || __has_include(<hermes/hermes.h>)
+    _runtime = hermes::makeHermesRuntime();
+#else
     _runtime = jsc::makeJSCRuntime();
+#endif
     _jsCallInvoker = nil;
   }
   return self;
