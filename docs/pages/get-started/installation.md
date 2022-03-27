@@ -40,7 +40,7 @@ Verify that the installation was successful by running `expo whoami`. You're not
 The fastest way to get up and running is to use the Expo Go app on your iOS or Android device. Expo Go allows you to open up apps that are being served through Expo CLI.
 
 - 🤖 [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater.
-- 🍎 [iOS App Store](https://itunes.com/apps/exponent) - iOS 11 and greater.
+- 🍎 [iOS App Store](https://apps.apple.com/jp/app/expo-go/id982107779) - iOS 11 and greater.
 
 When the Expo Go app is finished installing, open it up. If you created an account with `expo-cli` then you can sign in here on the "Profile" tab. This will make it easier for you to open projects in the client when you have them open in development &mdash; they will appear automatically in the "Projects" tab of the client app.
 
