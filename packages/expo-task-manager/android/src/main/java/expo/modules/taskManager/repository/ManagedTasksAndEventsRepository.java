@@ -3,8 +3,6 @@ package expo.modules.taskManager.repository;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import org.unimodules.interfaces.taskManager.TaskInterface;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
+
+import expo.modules.interfaces.taskManager.TaskInterface;
 
 /**
  * Standard implementation of {@link TasksAndEventsRepository} to be used in managed workflow.

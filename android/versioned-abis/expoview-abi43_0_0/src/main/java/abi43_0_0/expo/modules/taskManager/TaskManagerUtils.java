@@ -13,9 +13,6 @@ import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.util.Log;
 
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,6 +22,9 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
+
+import expo.modules.interfaces.taskManager.TaskInterface;
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
 

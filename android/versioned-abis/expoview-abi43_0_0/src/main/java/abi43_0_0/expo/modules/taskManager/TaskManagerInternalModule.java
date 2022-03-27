@@ -8,9 +8,6 @@ import abi43_0_0.expo.modules.core.interfaces.InternalModule;
 import abi43_0_0.expo.modules.core.interfaces.LifecycleEventListener;
 import abi43_0_0.expo.modules.core.interfaces.services.EventEmitter;
 import abi43_0_0.expo.modules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -19,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import abi43_0_0.expo.modules.interfaces.constants.ConstantsInterface;
+import expo.modules.interfaces.taskManager.TaskConsumerInterface;
+import expo.modules.interfaces.taskManager.TaskManagerInterface;
+import expo.modules.interfaces.taskManager.TaskServiceInterface;
 
 public class TaskManagerInternalModule implements InternalModule, TaskManagerInterface, LifecycleEventListener {
   private UIManager mUIManager;

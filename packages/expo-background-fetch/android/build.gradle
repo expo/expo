@@ -79,7 +79,6 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation project(':unimodules-task-manager-interface')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

@@ -7,8 +7,8 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import expo.modules.interfaces.taskManager.TaskManagerInterface;
+import expo.modules.interfaces.taskManager.TaskServiceInterface;
 
 import java.util.HashMap;
 import java.util.Map;

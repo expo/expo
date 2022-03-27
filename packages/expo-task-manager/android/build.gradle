@@ -79,8 +79,6 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation project(':unimodules-task-manager-interface')
-  implementation project(':expo-modules-core')
   implementation project(':unimodules-app-loader')
 
   api "androidx.core:core:1.0.0"

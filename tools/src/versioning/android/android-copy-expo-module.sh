@@ -22,7 +22,7 @@ do
   PACKAGE_DIR=${PACKAGE//\./\/}
   # $PACKAGE_DIR* catches both:
   # - FQDNs of classes, eg. org.unimodules.core.interfaces.Consumer which becomes org/.../Consumer*. which catches both .java and .kt
-  # - packages, eg. org.unimodules.interfaces.taskManager which becomes a path
+  # - packages, eg. expo.modules.interfaces.taskManager which becomes a path
   find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION/$PACKAGE_DIR* \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 rm -rf
 done < $TOOLS_DIR/android-packages-to-keep.txt
 
