@@ -79,7 +79,6 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation project(':unimodules-task-manager-interface')
 
   api 'com.google.android.gms:play-services-location:16.0.0'
 

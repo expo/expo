@@ -28,7 +28,7 @@ export function getProjectRoot(args: arg.Result<arg.Spec>) {
  * @param argv extra strings
  * @returns processed args object.
  */
-export function assertArgs(schema: arg.Spec, argv: string[]): arg.Result<arg.Spec> {
+export function assertArgs(schema: arg.Spec, argv?: string[]): arg.Result<arg.Spec> {
   return assertWithOptionsArgs(schema, { argv });
 }
 

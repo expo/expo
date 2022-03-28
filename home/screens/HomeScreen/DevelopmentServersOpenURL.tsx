@@ -51,8 +51,10 @@ export function DevelopmentServersOpenURL() {
   return (
     <>
       <Divider />
-      <View padding="medium">
-        <PressableOpacity onPress={() => setShowInput((prevState) => !prevState)}>
+      <View>
+        <PressableOpacity
+          style={{ padding: 16 }}
+          onPress={() => setShowInput((prevState) => !prevState)}>
           <Row align="center">
             <Animated.View
               style={{ transform: [{ rotate: interpolateRotating }], marginRight: spacing[2] }}>
@@ -63,7 +65,7 @@ export function DevelopmentServersOpenURL() {
         </PressableOpacity>
         {showInput ? <Spacer.Vertical size="medium" /> : null}
         {showInput ? (
-          <View>
+          <View padding="medium" style={{ marginTop: -32 }}>
             <TextInput
               onChangeText={(newUrl) => setUrl(newUrl.trim())}
               border="default"

@@ -18,7 +18,7 @@ export class DevelopmentSession {
     /** Project root directory. */
     private projectRoot: string,
     /** Development Server URL. */
-    public url: string
+    public url: string | null
   ) {}
 
   /**
@@ -51,12 +51,14 @@ export class DevelopmentSession {
       return;
     }
 
-    await updateDevelopmentSessionAsync({
-      url: this.url,
-      runtime,
-      exp,
-      deviceIds,
-    });
+    if (this.url) {
+      await updateDevelopmentSessionAsync({
+        url: this.url,
+        runtime,
+        exp,
+        deviceIds,
+      });
+    }
 
     this.stop();
 
@@ -71,7 +73,9 @@ export class DevelopmentSession {
 
   /** Stop notifying the Expo servers that the development session is running. */
   public stop() {
-    clearTimeout(this.timeout);
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
     this.timeout = null;
   }
 }

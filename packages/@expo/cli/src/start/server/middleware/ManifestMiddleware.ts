@@ -28,7 +28,7 @@ export interface ParsedHeaders {
   /** Platform to serve. */
   platform: RuntimePlatform;
   /** Requested host name. */
-  hostname?: string;
+  hostname?: string | null;
 }
 
 /** Project related info. */
@@ -139,7 +139,7 @@ export abstract class ManifestMiddleware extends ExpoMiddleware {
     hostname,
   }: {
     platform: string;
-    hostname?: string;
+    hostname?: string | null;
     mainModuleName: string;
   }): string {
     const queryParams = new URLSearchParams({
@@ -179,7 +179,7 @@ export abstract class ManifestMiddleware extends ExpoMiddleware {
     hostname,
   }: {
     mainModuleName: string;
-    hostname: string | undefined;
+    hostname?: string | null;
   }): ExpoGoConfig {
     return {
       // localhost:19000

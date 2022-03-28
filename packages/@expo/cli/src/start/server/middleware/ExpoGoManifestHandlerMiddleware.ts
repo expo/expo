@@ -1,3 +1,4 @@
+import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import assert from 'assert';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,13 +9,14 @@ import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
+import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ParsedHeaders } from './ManifestMiddleware';
 import {
-  parsePlatformHeader,
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
+  parsePlatformHeader,
 } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
 
@@ -54,6 +56,12 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
       { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
       requestOptions.platform
     );
+    if (!runtimeVersion) {
+      throw new CommandError(
+        'MANIFEST_MIDDLEWARE',
+        `Unable to determine runtime version for platform '${requestOptions.platform}'`
+      );
+    }
 
     const easProjectId = exp.extra?.eas?.projectId;
     const shouldUseAnonymousManifest = await shouldUseAnonymousManifestAsync(easProjectId);
@@ -65,7 +73,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
       ? `@${ANONYMOUS_USERNAME}/${exp.slug}-${userAnonymousIdentifier}`
       : await this.getScopeKeyForProjectIdAsync(easProjectId);
 
-    const expoUpdatesManifest = {
+    const expoUpdatesManifest: ExpoUpdatesManifest = {
       id: uuidv4(),
       createdAt: new Date().toISOString(),
       runtimeVersion,

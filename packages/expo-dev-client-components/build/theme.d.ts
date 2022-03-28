@@ -303,5 +303,33 @@ declare type NavigationTheme = {
 };
 export declare const lightNavigationTheme: NavigationTheme;
 export declare const darkNavigationTheme: NavigationTheme;
+export declare const border: {
+    default: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    warning: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    hairline: {
+        borderColor: string;
+        borderWidth: number;
+    };
+};
+export declare const borderDark: {
+    default: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    warning: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    hairline: {
+        borderColor: string;
+        borderWidth: number;
+    };
+};
 export {};
 //# sourceMappingURL=theme.d.ts.map

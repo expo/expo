@@ -343,8 +343,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:httpManifestUrl resolvingAgainstBaseURL:YES];
     releaseChannel = [EXKernelLinkingManager releaseChannelWithUrlComponents:manifestUrlComponents];
   }
-
-  _config = [EXUpdatesConfig configWithDictionary:@{
+  
+  NSMutableDictionary *updatesConfig = [[NSMutableDictionary alloc] initWithDictionary:@{
     EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
     EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
     EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
@@ -356,6 +356,39 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfigExpectsSignedManifestKey: @YES,
     EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   }];
+  
+  if (!EXEnvironment.sharedEnvironment.isDetached) {
+    // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates
+    // from the multipart manifest response part
+    
+    NSString *expoRootCertPath = [[NSBundle mainBundle] pathForResource:@"expo-root" ofType:@"pem"];
+    if (!expoRootCertPath) {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"No expo-root certificate found in bundle"
+                                   userInfo:@{}];
+    }
+    
+    NSError *error;
+    NSString *expoRootCert = [NSString stringWithContentsOfFile:expoRootCertPath encoding:NSUTF8StringEncoding error:&error];
+    if (error) {
+      expoRootCert = nil;
+    }
+    if (!expoRootCert) {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"Error reading expo-root certificate from bundle"
+                                   userInfo:@{ @"underlyingError": error.localizedDescription }];
+    }
+    
+    updatesConfig[EXUpdatesConfigCodeSigningCertificateKey] = expoRootCert;
+    updatesConfig[EXUpdatesConfigCodeSigningMetadataKey] = @{
+      @"keyid": @"expo-root",
+      @"alg": @"rsa-v1_5-sha256",
+    };
+    updatesConfig[EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
+    updatesConfig[EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
+  }
+
+  _config = [EXUpdatesConfig configWithDictionary:updatesConfig];
 
   if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     [self _launchWithNoDatabaseAndError:nil];

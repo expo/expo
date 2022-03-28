@@ -1,12 +1,19 @@
-query HomeScreenData {
-  viewer {
-    ...CurrentUserData
-    apps(limit: 5, offset: 0, includeUnpublished: true) {
-      ...CommonAppData
+query HomeScreenData($accountName: String!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      isCurrent
+      owner {
+        ...CurrentUserData
+      }
+      apps(limit: 5, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: 5, offset: 0) {
+        ...CommonSnackData
+      }
+      appCount
     }
-    snacks(limit: 5, offset: 0) {
-      ...CommonSnackData
-    }
-    appCount
   }
 }

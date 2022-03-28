@@ -53,9 +53,13 @@ We have taken a lot of care to make sure that all of the functionality that you 
 
 ### Renaming an Account
 
-> ⚠️ This feature is in private beta and supported only if your projects are on SDK 43 or newer, please email secure@expo.dev with the name of the Personal Account or Organization you would like to rename and confirm your SDK version to join the waitlist.
+> ⚠️ This feature is in private beta and supported only if your projects are on SDK 43 or newer. Please upgrade your SDK if necessary and email secure@expo.dev answering the following questions to join the waitlist.
 
-If you aren't happy with the name you originally chose for your account, you may choose a new name a limited number of times. Simply visit [the account settings page](https://expo.dev/accounts/[account]/settings) and follow the prompts under **Rename Account**.
+1. What is the name of the Personal Account or Organization Account you would like to rename?<br/>
+2. Do your project(s) on this account use push notifications?<br/>
+3. Can you confirm that your project(s) are on SDK 43 or newer?<br/>
+
+> 💡 If, after you are granted access to this feature, you aren't happy with the name you chose for your account, you may choose a new name a limited number of times. Simply visit [the account settings page](https://expo.dev/accounts/[account]/settings) and follow the prompts under **Rename Account**.
 
 ### Transferring Projects Between Accounts
 

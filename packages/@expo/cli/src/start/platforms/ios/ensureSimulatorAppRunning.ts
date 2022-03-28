@@ -54,7 +54,7 @@ async function isSimulatorAppRunningAsync(): Promise<boolean> {
     if (zeroMeansNo === '0') {
       return false;
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error.message.includes('Application isn’t running')) {
       return false;
     }
