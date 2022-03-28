@@ -1,20 +1,18 @@
 import { css, Global } from '@emotion/react';
-import { breakpoints, theme } from '@expo/styleguide';
+import { breakpoints, spacing, theme } from '@expo/styleguide';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import { Header } from '~/ui/components/Header';
 import { LayoutScroll } from '~/ui/components/Layout';
 
 type LayoutProps = PropsWithChildren<{
-  /** The content within the top bar that spans the columns */
+  // The content within the top bar that spans the columns
   header?: ReactNode;
-  /** The content within the left column */
+  // The content within the left column
   navigation?: ReactNode;
-  /** The content within the right column */
+  // The content within the right column
   sidebar?: ReactNode;
 }>;
-
-const HEADER_HEIGHT = 60;
 
 export const Layout = ({ header = <Header />, navigation, sidebar, children }: LayoutProps) => (
   <>
@@ -37,6 +35,8 @@ export const Layout = ({ header = <Header />, navigation, sidebar, children }: L
   </>
 );
 
+const HEADER_HEIGHT = 60;
+
 const layoutStyle = css({
   display: 'flex',
   alignItems: 'stretch',
@@ -48,7 +48,7 @@ const layoutStyle = css({
   },
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     // Ditch inner scroll on mobile, which results in weird bugs
-    maxHeight: `none`,
+    maxHeight: 'none',
   },
 });
 
@@ -70,6 +70,7 @@ const navigationStyle = css({
 const innerContentStyle = css({
   margin: '0 auto',
   maxWidth: breakpoints.large,
+  padding: `${spacing['8']}px ${spacing['4']}px`,
 });
 
 const asideStyle = css({
