@@ -6,7 +6,11 @@ import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { Options } from './resolveOptions';
 import { getVersionedPackagesAsync } from './utils/getVersionedPackages';
 
-export async function installAsync(packages: string[], options: Options, extras: string[] = []) {
+export async function installAsync(
+  packages: string[],
+  options: Options,
+  packageManagerArguments: string[] = []
+) {
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
   const projectRoot = findUpProjectRootOrAssert(process.cwd());
@@ -29,7 +33,7 @@ export async function installAsync(packages: string[], options: Options, extras:
   return installPackagesAsync(projectRoot, {
     packageManager,
     packages,
-    extras,
+    packageManagerArguments,
     sdkVersion: exp.sdkVersion!,
   });
 }
@@ -41,7 +45,7 @@ export async function installPackagesAsync(
     packages,
     packageManager,
     sdkVersion,
-    extras,
+    packageManagerArguments,
   }: {
     /**
      * List of packages to version
@@ -59,7 +63,7 @@ export async function installPackagesAsync(
      * Extra parameters to pass to the `packageManager` when installing versioned packages.
      * @example ['--no-save']
      */
-    extras: string[];
+    packageManagerArguments: string[];
   }
 ): Promise<void> {
   const versioning = await getVersionedPackagesAsync(projectRoot, {
@@ -70,7 +74,7 @@ export async function installPackagesAsync(
 
   Log.log(`Installing ${versioning.messages.join(' and ')} using ${packageManager.name}.`);
 
-  await packageManager.addWithParametersAsync(versioning.packages, extras);
+  await packageManager.addWithParametersAsync(versioning.packages, packageManagerArguments);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }

@@ -8,6 +8,8 @@ import { getAutoPlugins } from '@expo/prebuild-config';
 import * as Log from '../../log';
 import { attemptAddingPluginsAsync } from '../../utils/modifyConfigPlugins';
 
+const AUTO_PLUGINS = getAutoPlugins();
+
 /**
  * Resolve if a package has a config plugin.
  * For sanity, we'll only support config plugins that use the `app.config.js` entry file,
@@ -27,6 +29,22 @@ function packageHasConfigPlugin(projectRoot: string, packageName: string) {
   return false;
 }
 
+/**
+ * Get a list of plugins that were are supplied as string module IDs.
+ * @example
+ * ```json
+ * {
+ *   "plugins": [
+ *     "expo-camera",
+ *     ["react-native-firebase", ...]
+ *   ]
+ * }
+ * ```
+ *   ↓ ↓ ↓ ↓ ↓ ↓
+ *
+ * `['expo-camera', 'react-native-firebase']`
+ *
+ */
 export function getNamedPlugins(plugins: NonNullable<ExpoConfig['plugins']>): string[] {
   const namedPlugins: string[] = [];
   for (const plugin of plugins) {
@@ -43,8 +61,7 @@ export function getNamedPlugins(plugins: NonNullable<ExpoConfig['plugins']>): st
   return namedPlugins;
 }
 
-const autoPlugins = getAutoPlugins();
-
+/** Attempts to ensure that non-auto plugins are added to the `app.json` `plugins` array when modules with Expo Config Plugins are installed. */
 export async function autoAddConfigPluginsAsync(
   projectRoot: string,
   exp: Pick<ExpoConfig, 'plugins'>,
@@ -69,7 +86,7 @@ export async function autoAddConfigPluginsAsync(
       `Package "${pkg}" has plugin: ${!!plugin}` + (plugin ? ` (args: ${plugin.length})` : '')
     );
 
-    if (autoPlugins.includes(pkg)) {
+    if (AUTO_PLUGINS.includes(pkg)) {
       Log.debug(`Package "${pkg}" is an auto plugin, skipping...`);
       return false;
     }

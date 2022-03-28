@@ -14,6 +14,7 @@ function resolveOptions(options: Options): Options {
   };
 }
 
+/** Given a list of CLI args, return a sorted set of args based on categories used in a complex command. */
 export function parseVariadicArguments(argv: string[]): {
   variadic: string[];
   extras: string[];
