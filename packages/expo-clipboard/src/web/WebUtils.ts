@@ -38,13 +38,13 @@ export function blobToBase64Async(blob: Blob): Promise<string> {
   });
 }
 
-export function getImageSizeFromBlobAsync(blob: Blob): Promise<[width: number, height: number]> {
+export function getImageSizeFromBlobAsync(blob: Blob): Promise<{ width: number; height: number }> {
   return new Promise((resolve, _) => {
     const blobUrl = URL.createObjectURL(blob);
     const img = document.createElement('img');
     img.src = blobUrl;
     img.onload = function () {
-      resolve([img.width, img.height]);
+      resolve({ width: img.width, height: img.height });
     };
   });
 }

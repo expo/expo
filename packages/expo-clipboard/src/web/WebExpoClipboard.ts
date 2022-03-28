@@ -23,6 +23,10 @@ export default {
     return 'ExpoClipboard';
   },
   async getStringAsync(_options: GetStringOptions): Promise<string> {
+    if (!navigator.clipboard) {
+      throw new ClipboardUnavailableException();
+    }
+
     let text = '';
     try {
       text = await navigator.clipboard.readText();
@@ -36,24 +40,26 @@ export default {
         // Internet Explorer
         // @ts-ignore
         text = window.clipboardData.getData('Text');
-      } catch (e) {
-        return Promise.reject(new Error('Unable to retrieve item from clipboard.'));
+      } catch {
+        return Promise.reject(new Error('Unable to retrieve item from clipboard'));
       }
     }
     return text;
   },
+  // TODO: (barthap) The `setString` was deprecated in SDK 45. Remove this function in a few SDK cycles.
   setString(text: string): boolean {
-    let success = false;
     const textField = document.createElement('textarea');
     textField.textContent = text;
     document.body.appendChild(textField);
     textField.select();
     try {
       document.execCommand('copy');
-      success = true;
-    } catch (e) {}
-    document.body.removeChild(textField);
-    return success;
+      return true;
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(textField);
+    }
   },
   async setStringAsync(text: string, _options: SetStringOptions): Promise<boolean> {
     return this.setString(text);
@@ -73,15 +79,12 @@ export default {
         return null;
       }
 
-      const [data, [width, height]] = await Promise.all([
+      const [data, size] = await Promise.all([
         blobToBase64Async(blob),
         getImageSizeFromBlobAsync(blob),
       ]);
 
-      return {
-        data,
-        size: { width, height },
-      };
+      return { data, size };
     } catch (e) {
       // it might fail, because user denied permission
       if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {

@@ -5,6 +5,9 @@ export default {
         return 'ExpoClipboard';
     },
     async getStringAsync(_options) {
+        if (!navigator.clipboard) {
+            throw new ClipboardUnavailableException();
+        }
         let text = '';
         try {
             text = await navigator.clipboard.readText();
@@ -19,25 +22,28 @@ export default {
                 // @ts-ignore
                 text = window.clipboardData.getData('Text');
             }
-            catch (e) {
-                return Promise.reject(new Error('Unable to retrieve item from clipboard.'));
+            catch {
+                return Promise.reject(new Error('Unable to retrieve item from clipboard'));
             }
         }
         return text;
     },
+    // TODO: (barthap) The `setString` was deprecated in SDK 45. Remove this function in a few SDK cycles.
     setString(text) {
-        let success = false;
         const textField = document.createElement('textarea');
         textField.textContent = text;
         document.body.appendChild(textField);
         textField.select();
         try {
             document.execCommand('copy');
-            success = true;
+            return true;
         }
-        catch (e) { }
-        document.body.removeChild(textField);
-        return success;
+        catch {
+            return false;
+        }
+        finally {
+            document.body.removeChild(textField);
+        }
     },
     async setStringAsync(text, _options) {
         return this.setString(text);
@@ -55,14 +61,11 @@ export default {
             if (!blob) {
                 return null;
             }
-            const [data, [width, height]] = await Promise.all([
+            const [data, size] = await Promise.all([
                 blobToBase64Async(blob),
                 getImageSizeFromBlobAsync(blob),
             ]);
-            return {
-                data,
-                size: { width, height },
-            };
+            return { data, size };
         }
         catch (e) {
             // it might fail, because user denied permission

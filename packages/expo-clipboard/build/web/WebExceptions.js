@@ -1,7 +1,7 @@
 import { CodedError } from 'expo-modules-core';
 export class ClipboardUnavailableException extends CodedError {
     constructor() {
-        super('ERR_CLIPBOARD_UNAVAILABLE', "The 'AsyncClipboard' API is not available on this browser.");
+        super('ERR_CLIPBOARD_UNAVAILABLE', "The 'AsyncClipboard' API is not available on this browser");
     }
 }
 export class CopyFailureException extends CodedError {

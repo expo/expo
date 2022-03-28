@@ -40,7 +40,7 @@ export function getImageSizeFromBlobAsync(blob) {
         const img = document.createElement('img');
         img.src = blobUrl;
         img.onload = function () {
-            resolve([img.width, img.height]);
+            resolve({ width: img.width, height: img.height });
         };
     });
 }
