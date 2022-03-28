@@ -185,17 +185,10 @@ class DevLauncherExpoActivityConfigurator(
       // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
       // design your app to hide the status bar whenever you hide the navigation bar."
       val decorView = activity.window.decorView
-      var flags = decorView.systemUiVisibility
-      when (navBarVisible) {
-        DevLauncherNavigationBarVisibility.LEANBACK ->
-          flags =
-            flags or (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN)
-        DevLauncherNavigationBarVisibility.IMMERSIVE ->
-          flags =
-            flags or (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE)
-        DevLauncherNavigationBarVisibility.STICKY_IMMERSIVE ->
-          flags =
-            flags or (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+      val flags = decorView.systemUiVisibility or when (navBarVisible) {
+        DevLauncherNavigationBarVisibility.LEANBACK -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        DevLauncherNavigationBarVisibility.IMMERSIVE -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE)
+        DevLauncherNavigationBarVisibility.STICKY_IMMERSIVE -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
       }
       decorView.systemUiVisibility = flags
     }
