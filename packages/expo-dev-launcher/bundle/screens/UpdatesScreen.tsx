@@ -22,6 +22,7 @@ import { LoadMoreButton } from '../components/LoadMoreButton';
 import { Toast } from '../components/Toasts';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useChannelsForApp } from '../queries/useChannelsForApp';
 import { Update, useUpdatesForBranch } from '../queries/useUpdatesForBranch';
 import { ExtensionsStackParamList } from './ExtensionsStack';
@@ -165,7 +166,7 @@ type BranchDetailsHeaderProps = {
 };
 
 function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetailsHeaderProps) {
-  const { appId } = useBuildInfo();
+  const { appId } = useUpdatesConfig();
   const { data: channels } = useChannelsForApp(appId);
 
   const availableChannels: string[] = [];

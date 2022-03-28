@@ -6,7 +6,7 @@ import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { FlatList } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
 
@@ -15,7 +15,7 @@ type BranchesScreenProps = {
 };
 
 export function BranchesScreen({ navigation }: BranchesScreenProps) {
-  const { appId } = useBuildInfo();
+  const { appId } = useUpdatesConfig();
   const {
     data: branches,
     emptyBranches,

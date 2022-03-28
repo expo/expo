@@ -20,11 +20,9 @@ import { EASBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
-
-const extensions = ['updates'];
-const hasEASUpdatesInstalled = extensions.includes('updates');
 
 type ExtensionsScreenProps = {
   navigation: StackNavigationProp<ExtensionsStackParamList>;
@@ -34,6 +32,8 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   const { isAuthenticated } = useUser();
   const actions = useUserActions();
 
+  const { isEASUpdates } = useUpdatesConfig();
+
   function onLoginPress() {
     actions.login('login');
   }
@@ -42,39 +42,48 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
     actions.login('signup');
   }
 
+  const compatibleExtensions: string[] = [];
+
+  if (isEASUpdates) {
+    compatibleExtensions.push('EASUpdates');
+  }
+
   return (
     <View>
       <AppHeader navigation={navigation} />
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         <View flex="1">
-          {extensions.length === 0 && (
-            <View bg="default" mx="medium" py="medium" px="medium" rounded="medium">
-              <View align="centered">
-                <ExtensionsIcon />
-              </View>
+          {compatibleExtensions.length === 0 && (
+            <>
               <Spacer.Vertical size="medium" />
-              <View px="small">
-                <Text size="small" align="center">
-                  Extensions allow you to customize your development app with additional
-                  capabilities.
-                </Text>
-              </View>
+              <View bg="default" mx="medium" py="medium" px="medium" rounded="medium">
+                <View align="centered">
+                  <ExtensionsIcon />
+                </View>
+                <Spacer.Vertical size="medium" />
+                <View px="small">
+                  <Text size="small" align="center">
+                    Extensions allow you to customize your development app with additional
+                    capabilities.
+                  </Text>
+                </View>
 
-              <Spacer.Vertical size="small" />
+                <Spacer.Vertical size="small" />
 
-              <View align="centered">
-                <Button.ScaleOnPressContainer bg="ghost" rounded="small">
-                  <View border="default" px="small" py="2" rounded="small">
-                    <Button.Text color="ghost" weight="semibold" size="small">
-                      Learn More
-                    </Button.Text>
-                  </View>
-                </Button.ScaleOnPressContainer>
+                <View align="centered">
+                  <Button.ScaleOnPressContainer bg="ghost" rounded="small">
+                    <View border="default" px="small" py="2" rounded="small">
+                      <Button.Text color="ghost" weight="semibold" size="small">
+                        Learn More
+                      </Button.Text>
+                    </View>
+                  </Button.ScaleOnPressContainer>
+                </View>
               </View>
-            </View>
+            </>
           )}
 
-          {hasEASUpdatesInstalled && isAuthenticated && (
+          {isEASUpdates && isAuthenticated && (
             <>
               <Spacer.Vertical size="medium" />
               <EASUpdatesPreview navigation={navigation} />
@@ -82,11 +91,11 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             </>
           )}
 
-          {!isAuthenticated && (
+          {isEASUpdates && !isAuthenticated && (
             <>
               <Spacer.Vertical size="medium" />
               <View mx="medium" padding="medium" bg="default" rounded="large">
-                <Text color="secondary" size='small'>
+                <Text color="secondary" size="small">
                   Log in or create an account to get started with Extensions
                 </Text>
 
@@ -124,14 +133,19 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             </>
           )}
 
-          <View px="xl">
-            <Text size="small" color="secondary">
-              Extensions allow you to customize your development app with additional capabilities.{' '}
+          {compatibleExtensions.length > 0 && (
+            <>
+            <Spacer.Vertical size="medium" />
+            <View px="xl">
               <Text size="small" color="secondary">
-                Learn more.
+                Extensions allow you to customize your development app with additional capabilities.{' '}
+                <Text size="small" color="secondary">
+                  Learn more.
+                </Text>
               </Text>
-            </Text>
-          </View>
+            </View>
+            </>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -139,7 +153,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 }
 
 function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
-  const { appId } = useBuildInfo();
+  const { appId } = useUpdatesConfig();
   const { isLoading, data: branches, incompatibleBranches } = useBranchesForApp(appId);
 
   function onSeeAllBranchesPress() {

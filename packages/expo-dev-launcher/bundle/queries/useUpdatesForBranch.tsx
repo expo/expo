@@ -5,9 +5,9 @@ import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
 import { Toast } from '../components/Toasts';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { queryClient } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 
 export type Update = {
   id: string;
@@ -57,7 +57,7 @@ function getUpdatesForBranchAsync(appId: string, branchName: string, page: numbe
 }
 
 export function useUpdatesForBranch(branchName: string) {
-  const { appId } = useBuildInfo();
+  const { appId } = useUpdatesConfig();
   const toastStack = useToastStack();
 
   const query = useInfiniteQuery(

@@ -10,6 +10,7 @@ import { StatusBar, useColorScheme } from 'react-native';
 import { UserData } from '../functions/getUserProfileAsync';
 import { BuildInfo, CrashReport } from '../native-modules/DevLauncherInternal';
 import { DevMenuPreferencesType } from '../native-modules/DevMenuPreferences';
+import { EXUpdatesConfig } from '../native-modules/EXUpdates';
 import { DevSession } from '../types';
 import { BuildInfoProvider } from './BuildInfoProvider';
 import { CrashReportProvider } from './CrashReportProvider';
@@ -21,6 +22,7 @@ import { QueryProvider } from './QueryProvider';
 import { RecentApp, RecentlyOpenedAppsProvider } from './RecentlyOpenedAppsProvider';
 import { ToastStackProvider } from './ToastStackProvider';
 import { UserContextProvider } from './UserContextProvider';
+import { UpdatesConfigProvider } from './UpdatesConfigProvider';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
@@ -31,6 +33,7 @@ export type AppProvidersProps = {
   initialPendingDeepLink?: string;
   initialRecentlyOpenedApps?: RecentApp[];
   initialCrashReport?: CrashReport;
+  initialUpdatesConfig?: EXUpdatesConfig;
 };
 
 export function AppProviders({
@@ -42,6 +45,7 @@ export function AppProviders({
   initialPendingDeepLink,
   initialRecentlyOpenedApps,
   initialCrashReport,
+  initialUpdatesConfig,
 }: AppProvidersProps) {
   const theme = useColorScheme();
   const isDark = theme === 'dark';
@@ -56,17 +60,19 @@ export function AppProviders({
               <RecentlyOpenedAppsProvider initialApps={initialRecentlyOpenedApps}>
                 <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
                   <CrashReportProvider initialCrashReport={initialCrashReport}>
-                    <ModalStackProvider>
-                      <ToastStackProvider>
-                        <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
-                          <NavigationContainer
-                            theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
-                            <StatusBar barStyle={statusBarContent} />
-                            {children}
-                          </NavigationContainer>
-                        </PendingDeepLinkProvider>
-                      </ToastStackProvider>
-                    </ModalStackProvider>
+                    <UpdatesConfigProvider initialUpdatesConfig={initialUpdatesConfig}>
+                      <ModalStackProvider>
+                        <ToastStackProvider>
+                          <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
+                            <NavigationContainer
+                              theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
+                              <StatusBar barStyle={statusBarContent} />
+                              {children}
+                            </NavigationContainer>
+                          </PendingDeepLinkProvider>
+                        </ToastStackProvider>
+                      </ModalStackProvider>
+                    </UpdatesConfigProvider>
                   </CrashReportProvider>
                 </BuildInfoProvider>
               </RecentlyOpenedAppsProvider>
