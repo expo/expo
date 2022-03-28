@@ -48,7 +48,7 @@ export function EmptyBranchesMessage({
             <Button.ScaleOnPressContainer bg="tertiary" onPress={onLearnMorePress}>
               <View px="2.5" py="2">
                 <Button.Text weight="medium" color="tertiary">
-                  See Available Builds
+                  See Development Builds
                 </Button.Text>
               </View>
             </Button.ScaleOnPressContainer>

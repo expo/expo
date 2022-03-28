@@ -35,7 +35,7 @@ export function App(props: LauncherAppProps) {
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
         {/* TODO -- remove this when safe area context provider is vendored */}
-        <View style={{ height: props.insets.top }} bg="default" />
+        <View style={{ height: props.insets?.top || 10 }} bg="default" />
         <Stack.Navigator initialRouteName="Main" mode="modal">
           <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 
