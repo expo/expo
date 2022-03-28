@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `expo_patch_react_imports!` not work when the app project is in a folder with spaces.
+
 ### 💡 Others
 
 ## 0.6.0 — 2022-01-26
