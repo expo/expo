@@ -140,14 +140,16 @@ export async function hasImageAsync() {
  * is a no-op on Web.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
- * single argument that is an object with a `content` key.
+ * single argument that is an object containing information about clipboard contents.
  *
  * @example
  * ```typescript
- * addClipboardListener(({ contentTypes }: ClipboardEvent) => {
- *   if (contentTypes.includes("plain-text")) {
- *     getStringAsync().then(content => alert('Copy pasta! Here's the string that was copied: ' + content));
- *   } else if (contentTypes.includes("image")) {
+ * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
+ *     Clipboard.getStringAsync().then(content => {
+ *       alert('Copy pasta! Here's the string that was copied: ' + content)
+ *     });
+ *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
  *     alert('Yay! Clipboard contains an image');
  *   }
  * });
