@@ -40,7 +40,7 @@ extension UIPasteboard {
       self.setItems([item])
     }
   }
-  
+
   var hasHTML: Bool {
     contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String])
   }

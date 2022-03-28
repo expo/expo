@@ -115,15 +115,22 @@ private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
     case .png: return image.pngData()
   }
 }
-        
+
 private func availableContentTypes() -> [String] {
-  let predicateDict = [
+  let predicateDict: [ContentType: Bool] = [
     // if it has HTML, it can be converted to plain text too
-    "plain-text": UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML,
-    "html": UIPasteboard.general.hasHTML,
-    "image": UIPasteboard.general.hasImages,
-    "url": UIPasteboard.general.hasURLs
+    .plainText: UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML,
+    .html: UIPasteboard.general.hasHTML,
+    .image: UIPasteboard.general.hasImages,
+    .url: UIPasteboard.general.hasURLs
   ]
-  let availableTypes = predicateDict.filter { $0.value }.keys
+  let availableTypes = predicateDict.filter { $0.value }.keys.map { $0.rawValue }
   return Array(availableTypes)
+}
+
+private enum ContentType: String {
+  case plainText = "plain-text"
+  case html = "html"
+  case image = "image"
+  case url = "url"
 }

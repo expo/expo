@@ -33,6 +33,12 @@ private val TAG = ClipboardModule::class.java.simpleName
 const val CLIPBOARD_DIRECTORY_NAME = ".clipboard"
 const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
 
+private enum class ContentType(val jsName: String) {
+  PLAIN_TEXT("plain-text"),
+  HTML("html"),
+  IMAGE("image")
+}
+
 class ClipboardModule : Module() {
   override fun definition() = ModuleDefinition {
     name(moduleName)
@@ -180,10 +186,10 @@ class ClipboardModule : Module() {
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
               "contentTypes" to listOfNotNull(
-                "plain-text".takeIf { clip.hasTextContent },
-                "html".takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
-                "image".takeIf { clip.hasMimeType("image/*") }
-              )
+                ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
+                ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
+                ContentType.HTML.takeIf { clip.hasMimeType("image/*") }
+              ).map { it.jsName }
             )
           )
         }
