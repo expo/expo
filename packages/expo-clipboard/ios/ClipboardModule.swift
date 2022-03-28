@@ -2,7 +2,6 @@
 
 import ExpoModulesCore
 import UIKit
-import MobileCoreServices
 
 let onClipboardChanged = "onClipboardChanged"
 
@@ -33,7 +32,7 @@ public class ClipboardModule: Module {
     }
 
     function("hasStringAsync") { () -> Bool in
-      return UIPasteboard.general.hasStrings || UIPasteboard.general.contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String])
+      return UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
 
     // MARK: URLs
@@ -119,8 +118,9 @@ private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
         
 private func availableContentTypes() -> [String] {
   let predicateDict = [
-    "plain-text": UIPasteboard.general.hasStrings,
-    "html": UIPasteboard.general.contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String]),
+    // if it has HTML, it can be converted to plain text too
+    "plain-text": UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML,
+    "html": UIPasteboard.general.hasHTML,
     "image": UIPasteboard.general.hasImages,
     "url": UIPasteboard.general.hasURLs
   ]

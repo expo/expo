@@ -62,10 +62,7 @@ class ClipboardModule : Module() {
     function("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
-        ?.let {
-          it.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
-            it.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
-        }
+        ?.hasTextContent
         ?: false
     }
     // endregion
@@ -183,7 +180,7 @@ class ClipboardModule : Module() {
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
               "contentTypes" to listOfNotNull(
-                "plain-text".takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) },
+                "plain-text".takeIf { clip.hasTextContent },
                 "html".takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
                 "image".takeIf { clip.hasMimeType("image/*") }
               )
@@ -251,3 +248,10 @@ private fun ClipData.Item.coerceToPlainText(context: Context): String =
   } else {
     coerceToText(context).toString()
   }
+
+/**
+ * True if clipboard contains plain text or HTML content
+ */
+private val ClipDescription.hasTextContent: Boolean
+  get() = hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
+    hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
