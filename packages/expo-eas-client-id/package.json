@@ -14,7 +14,12 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "keywords": ["react-native", "expo", "eas-client-id", "EASClientID"],
+  "keywords": [
+    "react-native",
+    "expo",
+    "eas-client-id",
+    "EASClientID"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
