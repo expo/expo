@@ -177,13 +177,16 @@ class ClipboardModule : Module() {
 
     private val listener = ClipboardManager.OnPrimaryClipChangedListener {
       maybeClipboardManager.takeIf { isListening }
-        ?.primaryClip
-        ?.takeIf { it.itemCount >= 1 }
+        ?.primaryClipDescription
         ?.let { clip ->
           this@ClipboardModule.sendEvent(
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
-              "content" to (clip.getItemAt(0).text?.toString() ?: "")
+              "contentTypes" to listOfNotNull(
+                "plain-text".takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) },
+                "html".takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
+                "image".takeIf { clip.hasMimeType("image/*") }
+              )
             )
           )
         }
