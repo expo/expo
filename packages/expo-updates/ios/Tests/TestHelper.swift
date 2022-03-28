@@ -22,6 +22,9 @@ enum TestCertificate : String {
   case chainPathLenViolationRoot = "chainPathLenViolationRoot"
   case chainPathLenViolationIntermediate = "chainPathLenViolationIntermediate"
   case chainPathLenViolationLeaf = "chainPathLenViolationLeaf"
+  case chainExpoProjectInformationViolationRoot = "chainExpoProjectInformationViolationRoot"
+  case chainExpoProjectInformationViolationIntermediate = "chainExpoProjectInformationViolationIntermediate"
+  case chainExpoProjectInformationViolationLeaf = "chainExpoProjectInformationViolationLeaf"
 }
 
 class ForBundle {}

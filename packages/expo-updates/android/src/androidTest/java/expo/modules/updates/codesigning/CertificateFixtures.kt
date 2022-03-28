@@ -18,6 +18,9 @@ enum class TestCertificateType(val certName: String) {
   CHAIN_PATH_LEN_VIOLATION_ROOT("chainPathLenViolationRoot"),
   CHAIN_PATH_LEN_VIOLATION_INTERMEDIATE("chainPathLenViolationIntermediate"),
   CHAIN_PATH_LEN_VIOLATION_LEAF("chainPathLenViolationLeaf"),
+  CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_ROOT("chainExpoProjectInformationViolationRoot"),
+  CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_INTERMEDIATE("chainExpoProjectInformationViolationIntermediate"),
+  CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_LEAF("chainExpoProjectInformationViolationLeaf"),
 }
 
 fun getTestCertificate(testCertificateType: TestCertificateType): String {
