@@ -17,6 +17,7 @@ type ClipboardEvent = {
    * The new content of the user's clipboard.
    */
   content: string;
+  contentTypes: string[];
 };
 
 export { Subscription, EventEmitter, ClipboardEvent };
@@ -180,7 +181,20 @@ export async function hasImageAsync(): Promise<boolean> {
  * ```
  */
 export function addClipboardListener(listener: (event: ClipboardEvent) => void): Subscription {
-  return emitter.addListener<ClipboardEvent>(onClipboardEventName, listener);
+  // TODO: Get rid of this wrapper once we remove deprecated `content` property
+  const listenerWrapper = (event: ClipboardEvent) => {
+    const wrappedEvent: ClipboardEvent = {
+      ...event,
+      get content(): string {
+        console.warn(
+          "The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content"
+        );
+        return '';
+      },
+    };
+    listener(wrappedEvent);
+  };
+  return emitter.addListener<ClipboardEvent>(onClipboardEventName, listenerWrapper);
 }
 
 /**

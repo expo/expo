@@ -5,6 +5,7 @@ declare type ClipboardEvent = {
      * The new content of the user's clipboard.
      */
     content: string;
+    contentTypes: string[];
 };
 export { Subscription, EventEmitter, ClipboardEvent };
 /**
