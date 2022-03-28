@@ -35,7 +35,7 @@ export enum TypeDocKind {
 export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
 
 const getInvalidLinkMessage = (href: string) =>
-  `Using "../" when linking other  packages in doc comments produce broken link! Please use "./" instead. Problematic link:\n\t${href}`;
+  `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
