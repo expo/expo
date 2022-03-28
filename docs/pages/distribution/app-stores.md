@@ -2,7 +2,7 @@
 title: Deploying to App Stores
 ---
 
-This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup.md).
+This guide offers best practices around submitting your Expo app to the Apple App Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup.md).
 
 Although you can share your published project through the Expo Go app and on your [expo.dev](https://expo.dev) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
@@ -30,20 +30,20 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 - Add a great [icon](../guides/app-icons.md). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
 - Customize your [primaryColor](../workflow/configuration.md#primarycolor).
-- Make sure your app has a valid iOS [Bundle Identifier](../workflow/configuration.md#bundleidentifier) and [Android Package](../workflow/configuration.md#package). Take care in choosing these, as you will not be able to change them later.
+- Make sure your app has a valid iOS [Bundle Identifier](../versions/latest/config/app/#bundleidentifier) and [Android Package](../versions/latest/config/app/#package). Take care in choosing these, as you will not be able to change them later.
 
 ## Versioning your App
 
 You'll use the **app.json** file to specify the version of your app, but there are a few different fields each with specific functionality.
 
-- [`version`](../workflow/configuration.md#version) will apply both to iOS and Android. For iOS, this corresponds to `CFBundleShortVersionString`, and for Android this corresponds to `versionName`. This is your user-facing version string for both platforms.
-- [`android.versionCode`](../workflow/configuration.md#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
-- [`ios.buildNumber`](../workflow/configuration.md#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app.
+- [`version`](../versions/latest/config/app/#version) will apply both to iOS and Android. For iOS, this corresponds to `CFBundleShortVersionString`, and for Android this corresponds to `versionName`. This is your user-facing version string for both platforms.
+- [`android.versionCode`](../versions/latest/config/app/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
+- [`ios.buildNumber`](../versions/latest/config/app/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app.
 
-To access these values at runtime, you can use the [Expo Constants API](../versions/latest/sdk/constants.md):
+To access these values at runtime, you can use the [Expo Application API](../versions/latest/sdk/application.md):
 
-- Use [`Constants.nativeAppVersion`](../versions/latest/sdk/constants.md#constantsnativeappversion) to access the `version` value listed above.
-- Use [`Constants.nativeBuildVersion`](../versions/latest/sdk/constants.md#constantsnativebuildversion) to access either `android.versionCode` or `ios.buildNumber` values (depending on the current platform)
+- Use [`Application.nativeApplicationVersion`](../versions/latest/sdk/application/#applicationnativeapplicationversion) to access the `version` value listed above.
+- Use [`Application.nativeBuildVersion`](../versions/latest/sdk/application/#applicationnativebuildversion) to access either `android.versionCode` or `ios.buildNumber` values (depending on the current platform)
 
 ## Privacy Policy
 
@@ -90,7 +90,7 @@ Apple will ask you a series of questions:
 
 ## System permissions dialogs on iOS
 
-If your app asks for [system permissions](../versions/latest/sdk/permissions.md) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera", however these **must** be customized and tailored to your specific use case in order for your app to be accepted by the App Store. To do this, override these values using the [ios.infoPlist](../workflow/configuration.md) key in **app.json**, for example:
+If your app asks for [system permissions](../versions/latest/sdk/permissions.md) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera", however these **must** be customized and tailored to your specific use case in order for your app to be accepted by the App Store. To do this, override these values using the [ios.infoPlist](../versions/latest/config/app/#infoplist) key in **app.json**, for example:
 
 ```
 "infoPlist": {
