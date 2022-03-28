@@ -189,6 +189,7 @@ class DevLauncherExpoActivityConfigurator(
         DevLauncherNavigationBarVisibility.LEANBACK -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN)
         DevLauncherNavigationBarVisibility.IMMERSIVE -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE)
         DevLauncherNavigationBarVisibility.STICKY_IMMERSIVE -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        else -> 0
       }
       decorView.systemUiVisibility = flags
     }
