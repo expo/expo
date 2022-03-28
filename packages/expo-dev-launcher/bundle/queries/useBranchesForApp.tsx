@@ -153,7 +153,7 @@ export function useBranchesForApp(appId: string) {
   // emptyBranches are branches that have no updates and have been created recently
   const emptyBranches = query?.data?.pages[0].branches.filter(
     (branch) => branch.updates.length === 0
-  );
+  ) ?? [];
 
   return {
     ...query,

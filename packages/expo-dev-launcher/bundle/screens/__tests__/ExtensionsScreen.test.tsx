@@ -1,3 +1,4 @@
+import { UserData } from '../../functions/getUserProfileAsync';
 import { queryClient } from '../../providers/QueryProvider';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
@@ -54,6 +55,27 @@ describe('<ExtensionsScreen />', () => {
     await act(async () => {});
   });
 
+  test('unauthenticated user', async () => {
+    const mockNavigation: any = {
+      navigate: jest.fn(),
+    };
+
+    mockGraphQLResponse({
+      app: {
+        byId: {
+          updateBranches: [],
+        },
+      },
+    });
+
+    const { getByA11yLabel } = render(<ExtensionsScreen navigation={mockNavigation} />);
+
+    await act(async () => {
+      await waitFor(() => getByA11yLabel(/log in/i));
+      await waitFor(() => getByA11yLabel(/sign up/i));
+    });
+  });
+
   test('eas update row press', async () => {
     const mockNavigation: any = {
       navigate: jest.fn(),
@@ -72,7 +94,7 @@ describe('<ExtensionsScreen />', () => {
       compatibleUpdates: [testUpdate],
     });
 
-    const { getByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
       await waitFor(() => getByText(/branch: testBranch/i));
@@ -104,7 +126,7 @@ describe('<ExtensionsScreen />', () => {
       compatibleUpdates: [testUpdate],
     });
 
-    const { getByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
       await waitFor(() => getByText(/see all branches/i));
@@ -127,7 +149,7 @@ describe('<ExtensionsScreen />', () => {
       compatibleUpdates: [],
     });
 
-    const { getByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
       await waitFor(() => getByText(/no compatible branches/i));
@@ -147,7 +169,7 @@ describe('<ExtensionsScreen />', () => {
       },
     });
 
-    const { getByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
       await waitFor(() => getByText(/no published branches yet/i));
@@ -157,3 +179,18 @@ describe('<ExtensionsScreen />', () => {
   test.todo('no extensions installed state');
   test.todo('eas updates shows error toast');
 });
+
+function renderAuthenticatedScreen({ mockNavigation }) {
+  const fakeUserProfile: UserData = {
+    id: '123',
+    appCount: 10,
+    username: 'fakeUsername',
+    profilePhoto: '123',
+    email: 'hello@joe.ca',
+    accounts: [],
+  };
+
+  return render(<ExtensionsScreen navigation={mockNavigation} />, {
+    initialAppProviderProps: { initialUserData: fakeUserProfile },
+  });
+}

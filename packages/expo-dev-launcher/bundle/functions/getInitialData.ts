@@ -24,9 +24,11 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
   const initialDevMenuPreferences = await getMenuPreferencesAsync();
   const initialCrashReport = await getCrashReport();
 
-  prefetchBranchesForApp(initialBuildInfo.appId, initialBuildInfo.runtimeVersion).catch((error) =>
-    console.log({ error })
-  );
+  if (isAuthenticated) {
+    prefetchBranchesForApp(initialBuildInfo.appId, initialBuildInfo.runtimeVersion).catch((error) =>
+      console.log({ error })
+    );
+  }
 
   return {
     initialDevSessions,

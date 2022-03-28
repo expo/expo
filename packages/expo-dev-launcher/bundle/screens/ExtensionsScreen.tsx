@@ -19,6 +19,7 @@ import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useUser, useUserActions } from '../providers/UserContextProvider';
 import { useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
 
@@ -30,6 +31,17 @@ type ExtensionsScreenProps = {
 };
 
 export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
+  const { isAuthenticated } = useUser();
+  const actions = useUserActions();
+
+  function onLoginPress() {
+    actions.login('login');
+  }
+
+  function onSignupPress() {
+    actions.login('signup');
+  }
+
   return (
     <View>
       <AppHeader navigation={navigation} />
@@ -62,10 +74,52 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             </View>
           )}
 
-          {hasEASUpdatesInstalled && (
+          {hasEASUpdatesInstalled && isAuthenticated && (
             <>
               <Spacer.Vertical size="medium" />
               <EASUpdatesPreview navigation={navigation} />
+              <Spacer.Vertical size="medium" />
+            </>
+          )}
+
+          {!isAuthenticated && (
+            <>
+              <Spacer.Vertical size="medium" />
+              <View mx="medium" padding="medium" bg="default" rounded="large">
+                <Text color="secondary" size='small'>
+                  Log in or create an account to get started with Extensions
+                </Text>
+
+                <Spacer.Vertical size="large" />
+
+                <View>
+                  <Button.ScaleOnPressContainer
+                    bg="tertiary"
+                    rounded="medium"
+                    onPress={onLoginPress}
+                    accessibilityLabel="Log in">
+                    <View py="small">
+                      <Button.Text color="tertiary" weight="semibold" align="center">
+                        Log In
+                      </Button.Text>
+                    </View>
+                  </Button.ScaleOnPressContainer>
+
+                  <Spacer.Vertical size="small" />
+
+                  <Button.ScaleOnPressContainer
+                    bg="secondary"
+                    rounded="medium"
+                    onPress={onSignupPress}
+                    accessibilityLabel="Sign Up">
+                    <View py="small">
+                      <Button.Text color="secondary" weight="semibold" align="center">
+                        Sign Up
+                      </Button.Text>
+                    </View>
+                  </Button.ScaleOnPressContainer>
+                </View>
+              </View>
               <Spacer.Vertical size="medium" />
             </>
           )}
