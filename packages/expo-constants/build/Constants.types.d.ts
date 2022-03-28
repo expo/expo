@@ -156,7 +156,7 @@ export declare type ExpoClientConfig = ExpoConfig & {
 };
 /**
  * @hidden
- * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ * A classic manifest https://docs.expo.dev/guides/how-expo-works/#expo-manifest
  */
 export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & {
     [key: string]: any;

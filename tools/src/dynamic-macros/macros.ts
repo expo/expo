@@ -19,7 +19,7 @@ interface Manifest {
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
-const dogfoodingHomeUrl = 'exp://expo.io/@expo-dogfooding/home';
+const dogfoodingHomeUrl = 'exp://exp.host/@expo-dogfooding/home';
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 
