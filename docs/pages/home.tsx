@@ -119,7 +119,8 @@ const Home = () => {
       <CellContainer>
         <Row>
           <GridCell
-            md={4}
+            lg={4}
+            md={6}
             style={{ backgroundColor: palette.blue['000'], borderColor: palette.blue['200'] }}>
             <SnackImage />
             <H3 style={{ color: palette.blue['900'], marginBottom: 6 }}>Try Snack</H3>
@@ -136,7 +137,8 @@ const Home = () => {
             </HomeButton>
           </GridCell>
           <GridCell
-            md={4}
+            lg={4}
+            md={6}
             style={{
               backgroundColor: palette.orange['100'],
               borderColor: palette.orange[themeName === 'dark' ? '300' : '200'],
@@ -155,7 +157,8 @@ const Home = () => {
             </HomeButton>
           </GridCell>
           <GridCell
-            md={4}
+            lg={4}
+            md={6}
             style={{ backgroundColor: palette.green['000'], borderColor: palette.green['200'] }}>
             <WhyImage />
             <H3 style={{ color: palette.green['900'], marginBottom: 6 }}>Why and why not Expo?</H3>
@@ -203,7 +206,7 @@ const Home = () => {
       <br />
       <H3>Join the community</H3>
       <Description>See the source code, connect with others, and get connected.</Description>
-      <CellContainer style={{ marginHorizontal: 16 }}>
+      <CellContainer>
         <Row>
           <CommunityGridCell
             title="GitHub"

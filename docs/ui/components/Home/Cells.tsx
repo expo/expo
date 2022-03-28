@@ -13,11 +13,12 @@ export const GridCell = ({
   children,
   sm,
   md,
+  lg,
   xl,
   style,
   css,
 }: PropsWithChildren<GridCellProps>) => (
-  <Col css={[cellWrapperStyle, css]} sm={sm} md={md} xl={xl}>
+  <Col css={[cellWrapperStyle, css]} sm={sm} md={md} lg={lg} xl={xl}>
     <div css={cellStyle} style={style}>
       {children}
     </div>
@@ -40,13 +41,13 @@ export const APIGridCell = ({
   xl = 3,
 }: APIGridCellProps) => (
   <Col css={cellWrapperStyle} md={md} sm={sm} xl={xl}>
-    <div css={[cellStyle, cellAPIStyle, cellAPIHoverStyle]} style={style}>
+    <a href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} style={style}>
       <div css={cellIconWrapperStyle}>{icon}</div>
-      <a href={link} css={cellTitleWrapperStyle}>
+      <div css={cellTitleWrapperStyle}>
         {title}
         <span css={cellTitleArrow}>{'->'}</span>
-      </a>
-    </div>
+      </div>
+    </a>
   </Col>
 );
 
@@ -65,17 +66,15 @@ export const CommunityGridCell = ({
   md = 6,
 }: CommunityGridCellProps) => (
   <Col css={cellWrapperStyle} md={md}>
-    <div css={[cellCommunityStyle]} style={style}>
+    <a href={link} css={[cellStyle, cellCommunityStyle, cellHoverStyle]} style={style}>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
       </div>
       <div>
-        <a href={link} css={cellCommunityTitleStyle}>
-          {title}
-        </a>
+        <span css={cellCommunityTitleStyle}>{title}</span>
         <P css={cellCommunityDescriptionStyle}>{description}</P>
       </div>
-    </div>
+    </a>
   </Col>
 );
 
@@ -84,25 +83,7 @@ const cellWrapperStyle = css`
   padding-right: 0 !important;
 `;
 
-const cellStyle = css({
-  borderRadius: borderRadius.large,
-  margin: 16,
-  padding: 32,
-  minHeight: 200,
-  overflow: 'hidden',
-  position: 'relative',
-  borderWidth: 1,
-  borderStyle: 'solid',
-  borderColor: theme.border.default,
-});
-
-const cellAPIStyle = css({
-  backgroundColor: theme.background.secondary,
-  padding: 0,
-  overflow: 'hidden',
-});
-
-const cellAPIHoverStyle = css`
+const cellHoverStyle = css`
   & {
     transition: box-shadow 200ms;
   }
@@ -111,6 +92,26 @@ const cellAPIHoverStyle = css`
     box-shadow: ${shadows.tiny};
   }
 `;
+
+const cellStyle = css({
+  margin: 16,
+  padding: 32,
+  minHeight: 200,
+  overflow: 'hidden',
+  position: 'relative',
+  borderWidth: 1,
+  borderStyle: 'solid',
+  borderColor: theme.border.default,
+  borderRadius: borderRadius.large,
+});
+
+const cellAPIStyle = css({
+  display: 'block',
+  backgroundColor: theme.background.secondary,
+  padding: 0,
+  overflow: 'hidden',
+  textDecoration: 'none',
+});
 
 const cellIconWrapperStyle = css({
   display: 'flex',
@@ -135,8 +136,11 @@ const cellTitleArrow = css({ float: 'right', fontSize: 18, color: theme.text.sec
 
 const cellCommunityStyle = css({
   display: 'flex',
-  margin: 16,
+  minHeight: 'auto',
+  padding: 16,
+  margin: `12px 16px`,
   flexDirection: 'row',
+  textDecoration: 'none',
 });
 
 const cellCommunityIconWrapperStyle = css({
@@ -147,7 +151,7 @@ const cellCommunityIconWrapperStyle = css({
   justifyContent: 'center',
   alignItems: 'center',
   borderRadius: borderRadius.large,
-  marginRight: 16,
+  marginRight: 12,
 });
 
 const cellCommunityTitleStyle = css({
