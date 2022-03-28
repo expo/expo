@@ -37,9 +37,9 @@ module.exports = {
     },
     'ios.debug': {
       type: 'ios.app',
-      binaryPath: 'ios/build/Build/Products/Debug-iphonesimulator/dev-client-latest-e2e.app',
+      binaryPath: 'ios/build/Build/Products/Debug-iphonesimulator/{{= it.name }}.app',
       build:
-        'xcodebuild -workspace ios/dev-client-latest-e2e.xcworkspace -scheme dev-client-latest-e2e -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build',
+        'xcodebuild -workspace ios/{{= it.name }}.xcworkspace -scheme {{= it.name }} -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build',
     },
   },
   configurations: {

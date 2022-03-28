@@ -27,6 +27,8 @@ jobs:
           bundler-cache: true
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
+      - name: 🤖 Use Java 11
+        run: export JAVA_HOME=$JAVA_HOME_11_X64
       - name: 🤖 Set up android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
