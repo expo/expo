@@ -9,14 +9,14 @@ import {
   CopyFailureException,
   NoPermissionException,
   PasteFailureException,
-} from './WebExceptions';
+} from './Exceptions';
 import {
   base64toBlob,
   blobToBase64Async,
   findImageInClipboardAsync,
   getImageSizeFromBlobAsync,
   isClipboardPermissionDeniedAsync,
-} from './WebUtils';
+} from './Utils';
 
 export default {
   get name(): string {

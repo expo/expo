@@ -1,1 +1,1 @@
-export { default } from './web/WebExpoClipboard';
+export { default } from './web/ClipboardModule';
