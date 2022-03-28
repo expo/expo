@@ -99,11 +99,6 @@ export class HomeScreenView extends React.Component<Props, State> {
   render() {
     const { projects, isRefreshing, data } = this.state;
 
-    // TODO: update to show EAS Updates when we get data for that
-    const recentHistory = this.props.recentHistory.filter(
-      (project) => project.manifest && 'name' in project.manifest
-    );
-
     return (
       <View style={styles.container}>
         <HomeScreenHeader currentUser={data} loading={this.state.loading} />
@@ -144,11 +139,11 @@ export class HomeScreenView extends React.Component<Props, State> {
           ) : (
             <DevelopmentServersPlaceholder />
           )}
-          {recentHistory.count() ? (
+          {this.props.recentHistory.count() ? (
             <>
               <Spacer.Vertical size="medium" />
               <RecentlyOpenedHeader onClearPress={this._handlePressClearHistory} />
-              <RecentlyOpenedSection recentHistory={recentHistory} />
+              <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
             </>
           ) : null}
           {this.props.accountName ? (

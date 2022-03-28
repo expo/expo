@@ -26,11 +26,11 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
                   : undefined
               }
               title={
-                // TODO(wschurman): audit for new manifests
-                project.manifest && 'name' in project.manifest ? project.manifest.name : undefined
+                // EAS Update app names are under the extra.expoClient.name key
+                project.manifest?.extra?.expoClient?.name ??
+                (project.manifest && 'name' in project.manifest ? project.manifest.name : undefined)
               }
               onPress={() => {
-                // TODO(fiberjw): navigate to the project details screen
                 Linking.openURL(project.url);
               }}
             />
