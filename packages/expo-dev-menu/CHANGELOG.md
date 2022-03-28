@@ -17,14 +17,13 @@
 - Fix compatibility with react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
 - Fix Android crash when using Hermes on react-native 0.67. ([#16099](https://github.com/expo/expo/pull/16099) by [@kudo](https://github.com/kudo))
 - Fix backwards compatibility with AppDelegate in existing projects. ([#16497](https://github.com/expo/expo/pull/16497) by [@esamelson](https://github.com/esamelson))
+- Fix gradle buildscript compatibility with flavors.
 
 ### 💡 Others
-
 
 - Move unrelated dev-menu functions into dev-launcher. ([#16124](https://github.com/expo/expo/pull/16124) by [@ajsmth](https://github.com/ajsmth))
 - Simplify dev-launcher / dev-menu relationship on iOS. ([#16067](https://github.com/expo/expo/pull/16067) by [@ajsmth](https://github.com/ajsmth))
 - Simplify dev-launcher / dev-menu relationship on Android. ([#16228](https://github.com/expo/expo/pull/16228) by [@ajsmth](https://github.com/ajsmth))
-
 
 ## 0.9.3 — 2022-02-01
 
@@ -35,6 +34,7 @@
 ## 0.9.2 — 2022-01-18
 
 _This version does not introduce any user-facing changes._
+
 ## 0.9.1 — 2022-01-17
 
 ### 🐛 Bug fixes
