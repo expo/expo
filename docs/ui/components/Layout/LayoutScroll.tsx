@@ -18,24 +18,28 @@ export const LayoutScroll = forwardRef<HTMLDivElement, LayoutScrollProps>(
 );
 
 const scrollStyle = css({
-  height: '100%',
+  flex: 1,
   overflowY: 'auto',
   overflowX: 'hidden',
-  /* width */
+  // Disable Safari Overscroll
+  overscrollBehavior: 'contain',
+  /**
+   * Scrollbar
+   */
   '::-webkit-scrollbar': {
     width: '6px',
   },
-  /* Track */
+  // Track
   '::-webkit-scrollbar-track': {
     backgroundColor: 'transparent',
     cursor: 'pointer',
   },
-  /* Handle */
+  // Handle
   '::-webkit-scrollbar-thumb': {
     backgroundColor: theme.background.tertiary,
     borderRadius: '10px',
   },
-  /* Handle on hover */
+  // Handle on hover
   '::-webkit-scrollbar-thumb:hover': {
     backgroundColor: theme.background.quaternary,
   },
