@@ -63,7 +63,7 @@ jobs:
         run: expo-cli init updates-e2e --yes
       - name: Add local expo-updates and dependencies
         working-directory: ../updates-e2e
-        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-modules-core file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface file:../expo/packages/expo-eas-client-id
+        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-eas-client-id file:../expo/packages/expo-modules-core file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
