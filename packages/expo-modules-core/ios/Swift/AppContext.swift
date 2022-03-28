@@ -3,6 +3,13 @@ import UIKit
  The app context is an interface to a single Expo app.
  */
 public final class AppContext {
+  internal static func create() -> AppContext {
+    let appContext = AppContext()
+
+    appContext.runtime = JavaScriptRuntime()
+    return appContext
+  }
+
   /**
    The module registry for the app context.
    */
