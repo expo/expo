@@ -44,6 +44,8 @@ export interface BundlerStartOptions {
   resetDevServer?: boolean;
   /** Which manifest type to serve. */
   forceManifestType?: 'expo-updates' | 'classic';
+  /** Code signing private key path (defaults to same directory as certificate) */
+  privateKeyPath?: string;
 
   /** Max amount of workers (threads) to use with Metro bundler, defaults to undefined for max workers. */
   maxWorkers?: number;
@@ -106,7 +108,10 @@ export abstract class BundlerDevServer {
 
   /** Get the manifest middleware function. */
   protected async getManifestMiddlewareAsync(
-    options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'forceManifestType'> = {}
+    options: Pick<
+      BundlerStartOptions,
+      'minify' | 'mode' | 'forceManifestType' | 'privateKeyPath'
+    > = {}
   ) {
     const manifestType = options.forceManifestType || 'classic';
     assert(manifestType in MIDDLEWARES, `Manifest middleware for type '${manifestType}' not found`);
@@ -118,6 +123,7 @@ export abstract class BundlerDevServer {
       mode: options.mode,
       minify: options.minify,
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
+      privateKeyPath: options.privateKeyPath,
     });
     return middleware.getHandler();
   }
