@@ -137,7 +137,7 @@ export interface TerminalReporterInterface {
   /**
    * Return a status message that is always consistent with the current state
    * of the application. Having this single function ensures we don't have
-   * different callsites overriding each other status messages.
+   * different call sites overriding each other status messages.
    */
   _getStatusMessage(): string;
 
@@ -145,7 +145,7 @@ export interface TerminalReporterInterface {
 
   /**
    * Single entry point for reporting events. That allows us to implement the
-   * corresponding JSON reporter easily and have a consistent repor∏ting.
+   * corresponding JSON reporter easily and have a consistent reporting.
    */
   update(event: TerminalReportableEvent): void;
 }

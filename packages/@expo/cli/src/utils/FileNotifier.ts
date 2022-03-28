@@ -16,7 +16,7 @@ export class FileNotifier {
   ) {}
 
   /** Get the file in the project. */
-  private resolveFilePath(): string | undefined {
+  private resolveFilePath(): string | null {
     for (const moduleId of this.moduleIds) {
       const filePath = resolveFrom.silent(this.projectRoot, moduleId);
       if (filePath) {

@@ -11,7 +11,7 @@ export function installExitHooks(listener: NodeJS.SignalsListener): () => void {
     for (const signal of killSignals) {
       process.off(signal, listener);
     }
-    // Allow the listener to be GC'd
+    // @ts-expect-error: Allow the listener to be GC'd
     listener = null;
   };
 }

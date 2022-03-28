@@ -70,9 +70,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
       getLocation: ({ runtime }) => {
         if (runtime === 'custom') {
-          return this.urlCreator.constructDevClientUrl();
+          return this.urlCreator?.constructDevClientUrl();
         } else {
-          return this.urlCreator.constructUrl({
+          return this.urlCreator?.constructUrl({
             scheme: 'exp',
           });
         }
@@ -107,7 +107,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     await this.postStartAsync(options);
 
-    return this.instance;
+    return this.instance!;
   }
 
   protected getConfigModuleIds(): string[] {

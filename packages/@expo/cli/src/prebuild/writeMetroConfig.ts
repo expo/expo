@@ -35,10 +35,10 @@ export function writeMetroConfig(
       return;
     }
     updatingMetroConfigStep.succeed('Added Metro config');
-  } catch (e) {
+  } catch (error: any) {
     updatingMetroConfigStep.stopAndPersist({
       symbol: chalk.yellow('›'),
-      text: chalk.yellow(chalk`{bold Metro skipped:} ${e.message}`),
+      text: chalk.yellow(chalk`{bold Metro skipped:} ${error.message}`),
     });
     // Log.log(`\u203A ${e.message}`);
     Log.log(

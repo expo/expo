@@ -112,14 +112,14 @@ export async function resolveManifestAssets(
     assetSchemas.forEach((manifestField, index: number) =>
       set(manifest, `${manifestField}Url`, urls[index])
     );
-  } catch (e) {
-    if (e.localAssetPath) {
+  } catch (error: any) {
+    if (error.localAssetPath) {
       Log.warn(
-        `Unable to resolve asset "${e.localAssetPath}" from "${e.manifestField}" in your app.json or app.config.js`
+        `Unable to resolve asset "${error.localAssetPath}" from "${error.manifestField}" in your app.json or app.config.js`
       );
     } else {
       Log.warn(
-        `Warning: Unable to resolve manifest assets. Icons and fonts might not work. ${e.message}.`
+        `Warning: Unable to resolve manifest assets. Icons and fonts might not work. ${error.message}.`
       );
     }
   }
