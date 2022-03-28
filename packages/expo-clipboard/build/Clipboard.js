@@ -144,8 +144,12 @@ export async function hasImageAsync() {
  *
  * @example
  * ```typescript
- * addClipboardListener(({ content }: ClipboardEvent) => {
- *   alert('Copy pasta! Here's the string that was copied: ' + content);
+ * addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes("plain-text")) {
+ *     getStringAsync().then(content => alert('Copy pasta! Here's the string that was copied: ' + content));
+ *   } else if (contentTypes.includes("image")) {
+ *     alert('Yay! Clipboard contains an image');
+ *   }
  * });
  * ```
  */
