@@ -38,7 +38,7 @@ export function assertWithOptionsArgs(
 ): arg.Result<arg.Spec> {
   try {
     return arg(schema, options);
-  } catch (error) {
+  } catch (error: any) {
     // Ensure unknown options are handled the same way.
     if (error.code === 'ARG_UNKNOWN_OPTION') {
       Log.exit(error.message, 1);
