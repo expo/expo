@@ -31,14 +31,14 @@ export type AppLoadingProps =
 
       /**
        * Whether to hide the native splash screen as soon as you unmount the `AppLoading` component.
-       * Auto-hiding is enabled by default. See [SplashScreen](../splash-screen) module for an example.
+       * Auto-hiding is enabled by default. See [SplashScreen](./splash-screen) module for an example.
        */
       autoHideSplash?: boolean;
     }
   | {
       /**
        * Whether to hide the native splash screen as soon as you unmount the `AppLoading` component.
-       * Auto-hiding is enabled by default. See [SplashScreen](../splash-screen) module for an example.
+       * Auto-hiding is enabled by default. See [SplashScreen](./splash-screen) module for an example.
        */
       autoHideSplash?: boolean;
     };

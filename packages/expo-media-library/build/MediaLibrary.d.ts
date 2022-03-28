@@ -302,7 +302,7 @@ export declare const usePermissions: (options?: PermissionHookOptions<{
  */
 export declare function presentPermissionsPickerAsync(): Promise<void>;
 /**
- * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
+ * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera).
  * This method requires `CAMERA_ROLL` permission.
  *
  * @example
