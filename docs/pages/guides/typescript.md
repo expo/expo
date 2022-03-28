@@ -152,7 +152,7 @@ A good place to start learning TypeScript is the official [TypeScript Handbook](
 
 ### TypeScript and React components
 
-We recommend reading over and referring to the [React TypeScript CheatSheet](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet) to learn how to type your React components in a variety of common situations.
+We recommend reading over and referring to the [React TypeScript CheatSheet](https://github.com/typescript-cheatsheets/react) to learn how to type your React components in a variety of common situations.
 
 ### Advanced types
 
