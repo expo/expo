@@ -3,6 +3,7 @@ title: Release Channels
 ---
 
 import { InlineCode } from '~/components/base/code';
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 ## Introduction
 
