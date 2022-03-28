@@ -36,8 +36,8 @@ export class KeyPressHandler {
     this.isHandlingKeyPress = true;
     try {
       await this.onPress(key);
-    } catch (err) {
-      await logCmdError(err);
+    } catch (error: any) {
+      await logCmdError(error);
     } finally {
       this.isHandlingKeyPress = false;
     }

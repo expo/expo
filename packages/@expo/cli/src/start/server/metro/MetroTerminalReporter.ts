@@ -35,8 +35,8 @@ export class MetroTerminalReporter extends TerminalReporter {
       const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;
 
-      const startTime = this._bundleTimers.get(progress.bundleDetails.buildID);
-      const time = chalk.dim(this._getElapsedTime(startTime) + 'ms');
+      const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
+      const time = startTime != null ? chalk.dim(this._getElapsedTime(startTime) + 'ms') : '';
       // iOS Bundling complete 150ms
       return color(platform + status) + time;
     }
@@ -175,7 +175,7 @@ function maybeAppendCodeFrame(message: string, rawMessage: string): string {
  * In future versions we won't need this.
  * Returns the remaining code frame logs.
  */
-export function stripMetroInfo(errorMessage: string): string {
+export function stripMetroInfo(errorMessage: string): string | null {
   // Newer versions of Metro don't include the list.
   if (!errorMessage.includes('4. Remove the cache')) {
     return null;

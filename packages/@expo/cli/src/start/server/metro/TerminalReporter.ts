@@ -105,11 +105,12 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
     super._updateState(event);
     switch (event.type) {
       case 'bundle_build_done':
-      case 'bundle_build_failed':
-        this.bundleBuildEnded(event, Date.now() - this._bundleTimers.get(event.buildID));
+      case 'bundle_build_failed': {
+        const startTime = this._bundleTimers.get(event.buildID);
+        this.bundleBuildEnded(event, startTime ? Date.now() - startTime : 0);
         this._bundleTimers.delete(event.buildID);
         break;
-
+      }
       case 'bundle_build_started':
         this._bundleDetails.set(event.buildID, event.bundleDetails);
         this._bundleTimers.set(event.buildID, Date.now());

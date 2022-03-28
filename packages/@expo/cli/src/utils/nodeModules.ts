@@ -86,7 +86,7 @@ async function installNodeDependenciesInternalAsync(
       let yamlString = '';
       try {
         yamlString = fs.readFileSync(yarnRc, 'utf8');
-      } catch (error) {
+      } catch (error: any) {
         if (error.code !== 'ENOENT') {
           throw error;
         }

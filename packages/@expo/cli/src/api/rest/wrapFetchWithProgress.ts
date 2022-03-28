@@ -30,7 +30,7 @@ export function wrapFetchWithProgress(fetch: FetchLike): FetchLike {
       const onProgress = () => {
         const progress = length / total;
 
-        init.onProgress({
+        init.onProgress?.({
           progress,
           total,
           loaded: length,

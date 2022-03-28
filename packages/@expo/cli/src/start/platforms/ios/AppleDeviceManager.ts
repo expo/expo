@@ -1,4 +1,5 @@
 import * as osascript from '@expo/osascript';
+import assert from 'assert';
 import chalk from 'chalk';
 
 import { delayAsync, waitForActionAsync } from '../../../utils/delay';
@@ -36,11 +37,19 @@ export async function ensureSimulatorOpenAsync(
     }
 
     // Otherwise, find the best possible simulator from user defaults and continue
-    udid = await getBestUnbootedSimulatorAsync({ osType });
+    const bestUdid = await getBestUnbootedSimulatorAsync({ osType });
+    if (!bestUdid) {
+      throw new CommandError('No simulators found.');
+    }
+    udid = bestUdid;
   }
 
   const bootedDevice = await waitForActionAsync({
-    action: () => SimControl.bootAsync({ udid }),
+    action: () => {
+      // Just for the type check.
+      assert(udid);
+      return SimControl.bootAsync({ udid });
+    },
   });
 
   if (!bootedDevice) {
@@ -103,7 +112,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
       } else {
         throw new CommandError(result.stderr);
       }
-    } catch (error) {
+    } catch (error: any) {
       let errorMessage = `Couldn't open iOS app with ID "${appId}" on device "${this.name}".`;
       if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
         errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
@@ -161,7 +170,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
 
     try {
       await SimControl.openUrlAsync(this.device, { url });
-    } catch (error) {
+    } catch (error: any) {
       // 194 means the device does not conform to a given URL, in this case we'll assume that the desired app is not installed.
       if (error.status === 194) {
         // An error was encountered processing the command (domain=NSOSStatusErrorDomain, code=-10814):

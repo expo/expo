@@ -21,7 +21,7 @@ export async function openInEditorAsync(path: string): Promise<boolean> {
     try {
       await spawnAsync(editor.binary, [path]);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       Log.debug(
         `Failed to auto open path in editor (path: ${path}, binary: ${editor.binary}):`,
         error

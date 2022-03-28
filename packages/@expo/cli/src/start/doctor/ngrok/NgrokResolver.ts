@@ -30,7 +30,7 @@ export interface NgrokInstance {
       configPath: string;
       onStatusChange: (status: string) => void;
     } & NgrokOptions
-  );
+  ): Promise<string>;
   kill(): Promise<void>;
 }
 

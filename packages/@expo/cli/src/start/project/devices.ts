@@ -47,7 +47,7 @@ export async function readDevicesInfoAsync(projectRoot: string): Promise<Devices
 
     return devicesInfo;
   } catch {
-    return await DevicesFile.setAsync(origin, { devices: [] });
+    return await DevicesFile.setAsync(projectRoot, { devices: [] });
   }
 }
 

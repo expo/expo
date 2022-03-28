@@ -1,7 +1,7 @@
 import { certificateFor } from '@expo/devcert';
 import chalk from 'chalk';
 import fs from 'fs/promises';
-import * as path from 'path';
+import path from 'path';
 
 import * as Log from '../../../log';
 import { ensureDirectoryAsync } from '../../../utils/dir';

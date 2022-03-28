@@ -12,7 +12,7 @@ export function wrapFetchWithBaseUrl(fetch: FetchLike, baseUrl: string): FetchLi
       throw new TypeError('Custom fetch function only accepts a string URL as the first parameter');
     }
     const parsed = new URL(url, baseUrl);
-    if (init.searchParams) {
+    if (init?.searchParams) {
       parsed.search = init.searchParams.toString();
     }
     return fetch(parsed.toString(), init);

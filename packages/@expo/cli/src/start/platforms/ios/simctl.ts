@@ -138,7 +138,7 @@ async function openAppIdInternalAsync(
 ): Promise<SpawnResult> {
   try {
     return await simctlAsync(['launch', resolveId(device), options.appId]);
-  } catch (error) {
+  } catch (error: any) {
     if ('status' in error) {
       return error;
     }

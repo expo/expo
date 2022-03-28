@@ -53,8 +53,8 @@ export class ADBServer {
     try {
       await this.runAsync(['kill-server']);
       return true;
-    } catch (e) {
-      Log.error('Failed to stop ADB server: ' + e.message);
+    } catch (error: any) {
+      Log.error('Failed to stop ADB server: ' + error.message);
       return false;
     } finally {
       this.isRunning = false;
@@ -92,18 +92,18 @@ export class ADBServer {
   async resolveAdbPromise<T>(promise: T | Promise<T>): Promise<T> {
     try {
       return await promise;
-    } catch (e) {
+    } catch (error: any) {
       // User pressed ctrl+c to cancel the process...
-      if (e.signal === 'SIGINT') {
+      if (error.signal === 'SIGINT') {
         throw new AbortCommandError();
       }
       // TODO: Support heap corruption for adb 29 (process exits with code -1073740940) (windows and linux)
-      let errorMessage = (e.stderr || e.stdout || e.message).trim();
+      let errorMessage = (error.stderr || error.stdout || error.message).trim();
       if (errorMessage.startsWith(BEGINNING_OF_ADB_ERROR_MESSAGE)) {
         errorMessage = errorMessage.substring(BEGINNING_OF_ADB_ERROR_MESSAGE.length);
       }
-      e.message = errorMessage;
-      throw e;
+      error.message = errorMessage;
+      throw error;
     }
   }
 }

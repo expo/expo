@@ -51,12 +51,12 @@ export async function prebuildAsync(
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
   }
-): Promise<PrebuildResults> {
+): Promise<PrebuildResults | null> {
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git');
     // Clean the project folders...
     if (await maybeBailOnGitStatusAsync()) {
-      return;
+      return null;
     }
     // Clear the native folders before syncing
     await clearNativeFolder(projectRoot, options.platforms);

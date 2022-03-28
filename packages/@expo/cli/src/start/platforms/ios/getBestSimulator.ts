@@ -95,7 +95,7 @@ export async function getSelectableSimulatorsAsync({ osType = 'iOS' }: DeviceCon
  * 2. Last simulator that was opened.
  * 3. First simulator that was opened.
  */
-export async function getBestSimulatorAsync({ osType }: DeviceContext): Promise<string> {
+export async function getBestSimulatorAsync({ osType }: DeviceContext): Promise<string | null> {
   const simulatorOpenedByApp = await getBestBootedSimulatorAsync({ osType });
 
   if (simulatorOpenedByApp) {

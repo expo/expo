@@ -56,7 +56,7 @@ async function promptForBundleIdAsync(projectRoot: string, exp: ExpoConfig): Pro
     {
       type: 'text',
       name: 'bundleIdentifier',
-      initial: await getRecommendedBundleIdAsync(exp),
+      initial: (await getRecommendedBundleIdAsync(exp)) ?? undefined,
       // The Apple helps people know this isn't an EAS feature.
       message: `What would you like your iOS bundle identifier to be?`,
       validate: validateBundleId,
@@ -162,7 +162,7 @@ async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Prom
     {
       type: 'text',
       name: 'packageName',
-      initial: await getRecommendedPackageNameAsync(exp),
+      initial: (await getRecommendedPackageNameAsync(exp)) ?? undefined,
       message: `What would you like your Android package name to be?`,
       validate: validatePackage,
     },

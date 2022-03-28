@@ -27,7 +27,7 @@ export class ExpoGoInstaller<IDevice> {
       return true;
     }
     const version = await this._getExpectedClientVersionAsync();
-    return semver.lt(installedVersion, version);
+    return version ? semver.lt(installedVersion, version) : true;
   }
 
   /** Returns the expected version of Expo Go given the project SDK Version. Exposed for testing. */
@@ -35,7 +35,7 @@ export class ExpoGoInstaller<IDevice> {
     const versions = await getVersionsAsync();
     // Like `sdkVersions['44.0.0']['androidClientVersion'] = '1.0.0'`
     const specificVersion =
-      versions?.sdkVersions?.[this.sdkVersion]?.[`${this.platform}ClientVersion`];
+      versions?.sdkVersions?.[this.sdkVersion!]?.[`${this.platform}ClientVersion`];
     const latestVersion = versions[`${this.platform}Version`];
     return specificVersion ?? latestVersion ?? null;
   }

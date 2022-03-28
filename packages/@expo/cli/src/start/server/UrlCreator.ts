@@ -10,7 +10,7 @@ export interface CreateURLOptions {
   /** Type of dev server host to use. */
   hostType?: 'localhost' | 'lan' | 'tunnel';
   /** Requested hostname. */
-  hostname?: string;
+  hostname?: string | null;
 }
 
 interface UrlComponents {
@@ -21,7 +21,7 @@ interface UrlComponents {
 export class UrlCreator {
   constructor(
     private defaults: CreateURLOptions,
-    private bundlerInfo: { port: number; getTunnelUrl?: () => string }
+    private bundlerInfo: { port: number; getTunnelUrl?: () => string | null }
   ) {}
 
   /**
@@ -35,7 +35,7 @@ export class UrlCreator {
 
   /** Create a URI for launching in a native dev client. Returns `null` when no `scheme` can be resolved. */
   public constructDevClientUrl(options?: CreateURLOptions): null | string {
-    const protocol: string = options?.scheme || this.defaults.scheme;
+    const protocol = options?.scheme || this.defaults.scheme;
 
     if (
       !protocol ||
@@ -60,7 +60,7 @@ export class UrlCreator {
 
   /** Get the URL components from the Ngrok server URL. */
   private getTunnelUrlComponents(options: Pick<CreateURLOptions, 'scheme'>): UrlComponents | null {
-    const tunnelUrl = this.bundlerInfo.getTunnelUrl();
+    const tunnelUrl = this.bundlerInfo.getTunnelUrl?.();
     if (!tunnelUrl) {
       return null;
     }

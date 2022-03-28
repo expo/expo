@@ -13,7 +13,7 @@ import { isPkgMainExpoAppEntry } from './updatePackageJson';
 
 type CopyFilesResults = {
   /** Merge results for the root `.gitignore` file */
-  gitignore: MergeResults;
+  gitignore: MergeResults | null;
   /** List of file paths that were copied from the template into the project. */
   copiedPaths: string[];
   /** List of file paths that were skipped due to a number of factors. */
