@@ -24,7 +24,7 @@ const HAS_X_ASYNC_CONFIG: FunctionDescription = {
     },
     {
       name: 'hasImageAsync',
-      action: withSupportedPlatforms(['android', 'ios'], Clipboard.hasImageAsync),
+      action: Clipboard.hasImageAsync,
     },
     {
       name: 'hasUrlAsync',
@@ -92,7 +92,6 @@ const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
 
 const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
   name: 'setImageAsync',
-  platforms: ['ios', 'android'],
   parameters: [
     {
       name: 'imageBase64Data',
@@ -120,7 +119,6 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
 
 const GET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
   name: 'getImageAsync',
-  platforms: ['ios', 'android'],
   parameters: [
     {
       name: 'options',

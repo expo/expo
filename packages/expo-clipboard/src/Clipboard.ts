@@ -55,7 +55,7 @@ export async function setStringAsync(
 
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext) instead.
+ * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
@@ -124,14 +124,13 @@ export async function hasUrlAsync(): Promise<boolean> {
 }
 
 /**
- * Gets the image from the user's clipboard and returns it in the specified format.
+ * Gets the image from the user's clipboard and returns it in the specified format. Please note that calling
+ * this method on web will prompt the user to grant your app permission to "see text and images copied to the clipboard."
  *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to
  * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
  * Otherwise, it resolves to `null`.
- * @platform Android
- * @platform iOS
  */
 export async function getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null> {
   if (!ExpoClipboard.getImageAsync) {
@@ -144,8 +143,6 @@ export async function getImageAsync(options: GetImageOptions): Promise<Clipboard
  * Sets an image in the user's clipboard.
  *
  * @param base64Image Image encoded as a base64 string, without mime type.
- * @platform Android
- * @platform iOS
  */
 export async function setImageAsync(base64Image: string): Promise<void> {
   if (!ExpoClipboard.setImageAsync) {
@@ -157,9 +154,9 @@ export async function setImageAsync(base64Image: string): Promise<void> {
 /**
  * Returns whether the clipboard has a image content.
  *
+ * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
+ *
  * @returns A promise that fulfills to `true` if clipboard has image content, resolves to `false` otherwise.
- * @platform Android
- * @platform iOS
  */
 export async function hasImageAsync(): Promise<boolean> {
   if (!ExpoClipboard.hasImageAsync) {
