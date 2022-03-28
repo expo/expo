@@ -2,16 +2,6 @@
 
 exports[`renders a complex gradient 1`] = `
 Object {
-  "borderRadii": Array [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
   "colors": Array [
     -65536,
     -16776961,

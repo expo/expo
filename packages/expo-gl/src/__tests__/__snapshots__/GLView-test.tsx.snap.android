@@ -3,10 +3,10 @@
 exports[`renders static 1`] = `
 <View>
   <ViewManagerAdapter_ExponentGLView
+    onSurfaceCreate={[Function]}
     proxiedProperties={
       Object {
         "msaaSamples": undefined,
-        "onSurfaceCreate": [Function],
       }
     }
     style={
