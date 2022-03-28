@@ -256,7 +256,7 @@ export async function parseInitialURLAsync() {
 // @needsAudit
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](../intent-launcher) instead, `sendIntent` is only included in
+ * > Use [IntentLauncher](./intent-launcher) instead, `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
