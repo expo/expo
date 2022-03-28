@@ -277,22 +277,6 @@
 
 - (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
-  if (@available(iOS 14, *)) {
-    // Try to detect if we're trying to open a local network URL so we can preemptively show the
-    // Local Network permission prompt -- otherwise the network request will fail before the user
-    // has time to accept or reject the permission.
-    NSString *host = expoUrl.host;
-    if ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."]) {
-      // We want to trigger the local network permission dialog. However, the iOS API doesn't expose a way to do it.
-      // But we can use system functionality that needs this permission to trigger prompt.
-      // See https://stackoverflow.com/questions/63940427/ios-14-how-to-trigger-local-network-dialog-and-check-user-answer
-      static dispatch_once_t once;
-      dispatch_once(&once, ^{
-        [[NSProcessInfo processInfo] hostName];
-      });
-    }
-  }
-
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
   expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
@@ -328,7 +312,8 @@
   }
 
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl installationID:installationID session:[NSURLSession sharedSession]];
-  [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+  
+  void (^onIsManifestURL)(BOOL) = ^(BOOL isManifestURL) {
     if (!isManifestURL) {
       // assume this is a direct URL to a bundle hosted by metro
       launchReactNativeApp();
@@ -360,8 +345,24 @@
       if (manifest) {
         launchExpoApp(self->_updatesInterface.launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
-    } error:onError];
-  } onError:onError];
+    } error:^(NSError * _Nonnull error) {
+      if (@available(iOS 14, *)) {
+        // Try to retry if the network connection was rejected because of the luck of the lan network permission.
+        static BOOL shouldRetry = true;
+        NSString *host = expoUrl.host;
+
+        if (shouldRetry && ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."])) {
+          shouldRetry = false;
+          [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:onError];
+          return;
+        }
+      }
+      
+      onError(error);
+    }];
+  };
+  
+  [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:onError];
 }
 
 - (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXManifestsManifest * _Nullable)manifest
