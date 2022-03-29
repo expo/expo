@@ -29,7 +29,7 @@ import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper
 
 export function Main() {
   const appInfo = useAppInfo();
-  const bottomSheet = useBottomSheet()
+  const bottomSheet = useBottomSheet();
   const { devSettings, actions } = useDevSettings();
 
   const urlClipboard = useClipboard();
