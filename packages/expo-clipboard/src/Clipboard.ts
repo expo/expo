@@ -19,7 +19,7 @@ type ClipboardEvent = {
   content: string;
 };
 
-export { Subscription, EventEmitter, ClipboardEvent };
+export { Subscription, ClipboardEvent };
 
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
