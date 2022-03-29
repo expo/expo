@@ -91,7 +91,6 @@
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne
-/packages/unimodules-task-manager-interface     @tsapeta @bycedric
 /tools                                          @tsapeta
 /.github/workflows                              @tsapeta
 /.github/workflows/cli.yml                      @EvanBacon @bycedric
