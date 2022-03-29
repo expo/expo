@@ -2,22 +2,45 @@ package expo.modules.updates.codesigning
 
 import androidx.test.platform.app.InstrumentationRegistry
 
+/**
+ * These are generated using scripts from @expo/code-signing-certificates (some with manually addd invalid parameters/signatures/etc).
+ * Commands used to generate them are below.
+ */
 enum class TestCertificateType(val certName: String) {
+  // yarn generate-example-certificates
   CHAIN_INTERMEDIATE("chainIntermediate"),
   CHAIN_LEAF("chainLeaf"),
   CHAIN_ROOT("chainRoot"),
+
+  // yarn generate-example-certificates and then manually change one character in the PEM towards the end of the data block
   INVALID_SIGNATURE_CHAIN_LEAF("invalidSignatureChainLeaf"),
+
+  // yarn generate-example-self-signed after commenting out extended usage extension
   NOT_CODE_SIGNING_EXTENDED_USAGE("noCodeSigningExtendedUsage"),
+
+  // yarn generate-example-self-signed after commenting out key usage extension
   NO_KEY_USAGE("noKeyUsage"),
+
+  // yarn generate-example-self-signed and then manually change one character in the PEM towards the end of the data block
   SINGATURE_INVALID("signatureInvalid"),
+
+  // yarn generate-example-self-signed
   VALID("test"),
+
+  // yarn generate-example-self-signed with manually overridden dates
   VALIDITY_EXPIRED("validityExpired"),
+
+  // yarn generate-example-certificates after commenting out CA extension
   CHAIN_NOT_CA_ROOT("chainNotCARoot"),
   CHAIN_NOT_CA_INTERMEDIATE("chainNotCAIntermediate"),
   CHAIN_NOT_CA_LEAF("chainNotCALeaf"),
+
+  // yarn generate-example-certificates after altering path len to be invalid
   CHAIN_PATH_LEN_VIOLATION_ROOT("chainPathLenViolationRoot"),
   CHAIN_PATH_LEN_VIOLATION_INTERMEDIATE("chainPathLenViolationIntermediate"),
   CHAIN_PATH_LEN_VIOLATION_LEAF("chainPathLenViolationLeaf"),
+
+  // yarn generate-example-certificates after manually adding different project information to intermediate cert
   CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_ROOT("chainExpoProjectInformationViolationRoot"),
   CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_INTERMEDIATE("chainExpoProjectInformationViolationIntermediate"),
   CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_LEAF("chainExpoProjectInformationViolationLeaf"),

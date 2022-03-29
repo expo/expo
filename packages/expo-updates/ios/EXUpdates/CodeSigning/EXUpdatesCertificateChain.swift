@@ -191,7 +191,7 @@ extension Array where Element == Certificate {
       }
       
       var lastExpoProjectInformation = try rootX509Cert.expoProjectInformation()
-      // all certificates between root and leaf (non-inclusive)
+      // all certificates between (root, leaf]
       for i in (0...(count - 2)).reversed() {
         let (_, x509Cert) = self[i]
         let currProjectInformation = try x509Cert.expoProjectInformation()

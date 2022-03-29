@@ -6,22 +6,45 @@ enum TestHelperError : Int, Error {
   case invalidTestCertificate
 }
 
+/**
+ These are generated using scripts from @expo/code-signing-certificates (some with manually addd invalid parameters/signatures/etc).
+ Commands used to generate them are below.
+ */
 enum TestCertificate : String {
+  // yarn generate-example-certificates
   case chainIntermediate = "chainIntermediate"
   case chainLeaf = "chainLeaf"
   case chainRoot = "chainRoot"
+
+  // yarn generate-example-certificates and then manually change one character in the PEM towards the end of the data block
   case invalidSignatureChainLeaf = "invalidSignatureChainLeaf"
+
+  // yarn generate-example-self-signed after commenting out extended usage extension
   case noCodeSigningExtendedUsage = "noCodeSigningExtendedUsage"
+
+  // yarn generate-example-self-signed after commenting out key usage extension
   case noKeyUsage = "noKeyUsage"
+
+  // yarn generate-example-self-signed and then manually change one character in the PEM towards the end of the data block
   case signatureInvalid = "signatureInvalid"
+
+  // yarn generate-example-self-signed
   case test = "test"
+
+  // yarn generate-example-self-signed with manually overridden dates
   case validityExpired = "validityExpired"
+
+  // yarn generate-example-certificates after commenting out CA extension
   case chainNotCARoot = "chainNotCARoot"
   case chainNotCAIntermediate = "chainNotCAIntermediate"
   case chainNotCALeaf = "chainNotCALeaf"
+
+  // yarn generate-example-certificates after altering path len to be invalid
   case chainPathLenViolationRoot = "chainPathLenViolationRoot"
   case chainPathLenViolationIntermediate = "chainPathLenViolationIntermediate"
   case chainPathLenViolationLeaf = "chainPathLenViolationLeaf"
+
+  // yarn generate-example-certificates after manually adding different project information to intermediate cert
   case chainExpoProjectInformationViolationRoot = "chainExpoProjectInformationViolationRoot"
   case chainExpoProjectInformationViolationIntermediate = "chainExpoProjectInformationViolationIntermediate"
   case chainExpoProjectInformationViolationLeaf = "chainExpoProjectInformationViolationLeaf"
