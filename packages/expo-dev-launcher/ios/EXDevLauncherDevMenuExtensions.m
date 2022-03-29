@@ -29,7 +29,9 @@ RCT_EXTERN void RCTRegisterModule(Class);
 RCT_EXPORT_METHOD(navigateToLauncherAsync:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  [[EXDevLauncherController sharedInstance] navigateToLauncher];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[EXDevLauncherController sharedInstance] navigateToLauncher];
+  });
   resolve(nil);
 }
 
