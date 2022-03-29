@@ -4,6 +4,7 @@
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDevLauncherController.h>
+#import <EXupdates/EXUpdatesLauncherSelectionPolicySingleUpdate.h>
 #import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
@@ -105,12 +106,17 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
       return;
     }
     [self _launchUpdate:update withConfiguration:updatesConfiguration success:successBlock error:errorBlock];
-  } error:errorBlock];
+  } error:^(NSError * _Nonnull error) {
+    // reset controller's configuration to what it was before this request
+    [controller setConfigurationInternal:self->_tempConfig];
+    errorBlock(error);
+  }];
 }
 
 - (void)_setDevelopmentSelectionPolicy
 {
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
+  [controller resetSelectionPolicyToDefault];
   EXUpdatesSelectionPolicy *currentSelectionPolicy = controller.selectionPolicy;
   [controller setDefaultSelectionPolicy:[[EXUpdatesSelectionPolicy alloc]
                                          initWithLauncherSelectionPolicy:currentSelectionPolicy.launcherSelectionPolicy
@@ -125,12 +131,20 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
                 error:(EXUpdatesErrorBlock)errorBlock
 {
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
+
+  // ensure that we launch the update we want, even if it isn't the latest one
+  EXUpdatesSelectionPolicy *currentSelectionPolicy = controller.selectionPolicy;
+  [controller setNextSelectionPolicy:[[EXUpdatesSelectionPolicy alloc]
+                                      initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicySingleUpdate alloc] initWithUpdateID:update.updateId]
+                                      loaderSelectionPolicy:currentSelectionPolicy.loaderSelectionPolicy
+                                      reaperSelectionPolicy:currentSelectionPolicy.reaperSelectionPolicy]];
+
   EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:configuration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
   [launcher launchUpdateWithSelectionPolicy:controller.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
     if (!success) {
-      errorBlock(error ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to launch update with an unknown error"}]);
       // reset controller's configuration to what it was before this request
       [controller setConfigurationInternal:self->_tempConfig];
+      errorBlock(error ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to launch update with an unknown error"}]);
       return;
     }
 
