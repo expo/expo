@@ -14,6 +14,10 @@ public class EXUpdatesExpoProjectInformation : NSObject {
     self.projectId = projectId
     self.scopeKey = scopeKey
   }
+  
+  public static func ==(lhs: EXUpdatesExpoProjectInformation, rhs: EXUpdatesExpoProjectInformation) -> Bool {
+    return lhs.projectId == rhs.projectId && lhs.scopeKey == rhs.scopeKey
+  }
 }
 
 /**
@@ -183,6 +187,24 @@ extension Array where Element == Certificate {
     try trust.setAnchorCertificates([anchorSecCert])
     try trust.disableNetwork()
     try trust.evaluate()
+    
+    if (count > 1) {
+      let (_, rootX509Cert) = self.last!
+      if (!rootX509Cert.isCACertificate()) {
+        throw EXUpdatesCodeSigningError.CertificateRootNotCA
+      }
+      
+      var lastExpoProjectInformation = try rootX509Cert.expoProjectInformation()
+      // all certificates between (root, leaf]
+      for i in (0...(count - 2)).reversed() {
+        let (_, x509Cert) = self[i]
+        let currProjectInformation = try x509Cert.expoProjectInformation()
+        if lastExpoProjectInformation != nil && lastExpoProjectInformation != currProjectInformation {
+          throw EXUpdatesCodeSigningError.CertificateProjectInformationChainError
+        }
+        lastExpoProjectInformation = currProjectInformation
+      }
+    }
   }
 }
 
