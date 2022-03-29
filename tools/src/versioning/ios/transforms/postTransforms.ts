@@ -71,6 +71,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /(\(name\.compare\(\d+, \d+, ")([^"]+)(RCT"\))/,
         with: '$1$3',
       },
+      {
+        paths: ['RCTSRWebSocket.h', 'UIView+Private.h'],
+        replace: /@interface (\w+) \((CertificateAdditions|Private)\)/g,
+        with: `@interface $1 (${versionName}$2)`
+      },
 
       // Universal modules
       {
