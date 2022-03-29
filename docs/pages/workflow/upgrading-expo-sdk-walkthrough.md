@@ -24,27 +24,27 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 [Blog Post](https://blog.expo.dev/expo-sdk-41-12cc5232f2ef)
 
-## SDK 40
+## SDK 40 [DEPRECATED]
 
 [Blog Post](https://dev.to/expo/expo-sdk-40-is-now-available-1in0)
 
-## SDK 39
+## SDK 39 [DEPRECATED]
 
 [Blog Post](https://dev.to/expo/expo-sdk-39-is-now-available-1lm8)
 
-## SDK 38
+## SDK 38 [DEPRECATED]
 
 [Blog Post](https://dev.to/expo/expo-sdk-38-is-now-available-5aa0)
 
-## SDK 37
+## SDK 37 [DEPRECATED]
 
 [Blog Post](https://dev.to/expo/expo-sdk-37-is-now-available-69g)
 
-## SDK 36
+## SDK 36 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-36-is-now-available-b91897b437fe)
 
-## SDK 35
+## SDK 35 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-35-is-now-available-beee0dfafbf4)
 
@@ -56,7 +56,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 - There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 34
+## SDK 34 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-34-is-now-available-4f7825239319)
 
@@ -69,7 +69,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 - You'll need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you'll need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
 - There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 33
+## SDK 33 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v33-0-0-is-now-available-52d1c99dfe4c)
 
@@ -93,7 +93,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 - You'll need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you'll need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
 - There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 32
+## SDK 32 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v32-0-0-is-now-available-6b78f92a6c52)
 
@@ -127,7 +127,7 @@ module.exports = function (api) {
 
 - There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 31
+## SDK 31 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v31-0-0-is-now-available-cad6d0463f49)
 
@@ -150,7 +150,7 @@ module.exports = function (api) {
 
 - There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md#3100-partial-changelog) for the full list.
 
-## SDK 30
+## SDK 30 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-30-0-0-is-now-available-e64d8b1db2a7)
 
@@ -173,7 +173,7 @@ module.exports = function (api) {
 
 - `Fingerprint` has been renamed to `LocalAuthentication`
 
-## SDK 29
+## SDK 29 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v29-0-0-is-now-available-f001d77fadf)
 
@@ -196,7 +196,7 @@ module.exports = function (api) {
 
 - Some field names in `Contacts` were changed. See the [documentation](../versions/latest/sdk/contacts.md) for more information.
 
-## SDK 28
+## SDK 28 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v28-0-0-is-now-available-f30e8253b530)
 
@@ -221,7 +221,7 @@ module.exports = function (api) {
 - Android app icons are now coerced into adaptive icons. Be sure to test your app icon and supply an adaptive icon if needed. [Read this blog post](https://blog.expo.dev/adaptive-launcher-icons-coming-to-expo-android-apps-7b9191eea6c1) for all of the necessary information.
 - Print has been moved out of DangerZone; update your imports accordingly.
 
-## SDK 27
+## SDK 27 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v27-0-0-is-now-available-898bf1e5b0e4)
 
@@ -246,7 +246,7 @@ module.exports = function (api) {
 - We changed the format of `Constants.linkingUri` (see Linking changes above), so if your code makes assumptions about this, you should double check that.
 - [Camera roll permissions](../versions/latest/sdk/permissions.md#expopermissionscamera_roll) are now required to use ImagePicker.launchCameraAsync() and ImagePicker.launchImageLibraryAsync(). You can ask for them by calling `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
 
-## SDK 26
+## SDK 26 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v26-0-0-is-now-available-2be6d9805b31)
 

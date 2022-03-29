@@ -84,7 +84,6 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation project(':unimodules-task-manager-interface')
 
   api 'androidx.core:core:1.5.0'
   api 'androidx.lifecycle:lifecycle-runtime:2.2.0'
@@ -93,7 +92,7 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
-  api 'com.google.firebase:firebase-messaging:20.2.4'
+  api 'com.google.firebase:firebase-messaging:21.1.0'
 
   api 'me.leolin:ShortcutBadger:1.1.22@aar'
 }

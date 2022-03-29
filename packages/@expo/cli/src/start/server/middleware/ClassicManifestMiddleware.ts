@@ -103,7 +103,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
   async _fetchComputedManifestStringAsync(props: SignManifestProps): Promise<string> {
     try {
       return await this._getManifestStringAsync(props);
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 'UNAUTHORIZED_ERROR' && props.manifest.owner) {
         // Don't have permissions for siging, warn and enable offline mode.
         this.addSigningDisabledWarning(
@@ -143,7 +143,8 @@ async function createHostInfoAsync(): Promise<HostInfo> {
   return {
     host: await UserSettings.getAnonymousIdentifierAsync(),
     server: 'expo',
-    serverVersion: process.env.__EXPO_VERSION,
+    // Defined in the build step
+    serverVersion: process.env.__EXPO_VERSION!,
     serverDriver: DEVELOPER_TOOL,
     serverOS: os.platform(),
     serverOSVersion: os.release(),

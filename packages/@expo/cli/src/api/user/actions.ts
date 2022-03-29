@@ -50,9 +50,11 @@ export async function showLoginPromptAsync({
         )})`,
       }
     );
-    username = resolved.username ?? options.username;
-    password = resolved.password ?? options.password;
+    username ??= resolved.username;
+    password ??= resolved.password;
   }
+  // This is just for the types.
+  assert(username && password);
 
   try {
     await loginAsync({

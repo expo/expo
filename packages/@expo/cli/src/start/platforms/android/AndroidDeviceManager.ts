@@ -104,7 +104,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
       return await AndroidDebugBridge.launchActivityAsync(this.device, {
         launchActivity,
       });
-    } catch (error) {
+    } catch (error: any) {
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${this.name}".`;
       if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
         errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
