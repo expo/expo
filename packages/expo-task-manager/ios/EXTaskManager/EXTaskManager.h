@@ -4,10 +4,9 @@
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXTaskManagerInterface.h>
 
-#import <UMTaskManagerInterface/UMTaskManagerInterface.h>
-
-@interface EXTaskManager : EXExportedModule <EXInternalModule, EXEventEmitter, EXModuleRegistryConsumer, UMTaskManagerInterface>
+@interface EXTaskManager : EXExportedModule <EXInternalModule, EXEventEmitter, EXModuleRegistryConsumer, EXTaskManagerInterface>
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey NS_DESIGNATED_INITIALIZER;
 

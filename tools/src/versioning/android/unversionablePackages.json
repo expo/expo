@@ -13,6 +13,5 @@
   "expo-module-scripts",
   "expo-module-template",
   "jest-expo",
-  "unimodules-task-manager-interface",
   "unimodules-test-core"
 ]

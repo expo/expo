@@ -1231,7 +1231,6 @@ PODS:
     - ReactCommon
   - EXBackgroundFetch (10.1.0):
     - ExpoModulesCore
-    - UMTaskManagerInterface
   - EXBarCodeScanner (11.2.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -1299,7 +1298,6 @@ PODS:
     - ExpoModulesCore
   - EXLocation (14.1.0):
     - ExpoModulesCore
-    - UMTaskManagerInterface
   - EXMailComposer (11.1.0):
     - ExpoModulesCore
   - EXManifests (0.2.2):
@@ -1382,7 +1380,6 @@ PODS:
   - EXTaskManager (10.1.0):
     - ExpoModulesCore
     - UMAppLoader
-    - UMTaskManagerInterface
   - EXTrackingTransparency (2.1.0):
     - ExpoModulesCore
   - EXUpdates (0.11.2):
@@ -1919,8 +1916,6 @@ PODS:
   - StripeUICore (21.9.1):
     - StripeCore (= 21.9.1)
   - UMAppLoader (3.0.0)
-  - UMTaskManagerInterface (7.1.0):
-    - ExpoModulesCore
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
@@ -2274,7 +2269,6 @@ DEPENDENCIES:
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - "stripe-react-native (from `./vendored/unversioned/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
-  - UMTaskManagerInterface (from `../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../react-native-lab/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -2975,8 +2969,6 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/@stripe/stripe-react-native"
   UMAppLoader:
     :path: "../packages/unimodules-app-loader/ios"
-  UMTaskManagerInterface:
-    :path: "../packages/unimodules-task-manager-interface/ios"
   Yoga:
     :path: "../react-native-lab/react-native/ReactCommon/yoga"
 
@@ -3209,7 +3201,7 @@ SPEC CHECKSUMS:
   EXAppleAuthentication: 27a4f7dc44a1b510f5af945b58643165ee486d89
   EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
   EXAV: 851ef1eacaea082131b77a54d02cc1140257af63
-  EXBackgroundFetch: 12e8a8c522a2d2c5be07168d74af76567841f023
+  EXBackgroundFetch: fc24171e853ea45f2f5885d2b0071637a98ba30d
   EXBarCodeScanner: 0c10fb2bda9e188450b58cc89f7c6177b73f5c25
   EXBattery: 097a76ebb674c57d3df6e1ebcd6e243d569161b5
   EXBlur: 82055865de17cf2cf797ff064c50fb59fcbe703f
@@ -3234,7 +3226,7 @@ SPEC CHECKSUMS:
   EXImageLoader: ad85d98d686b33a2cf3788d1e35c5156d3ffd2e0
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXLocalAuthentication: 4c7166ed3133d2c75586093833936652e7d2c7fc
-  EXLocation: 2d5cf099880b0dc3bc72b64d71007c536e538790
+  EXLocation: 62a5ebabde250c5df9d25ee8d4a737e0a4372566
   EXMailComposer: 644af6884933ff15eb22711d5be5289d1ae902c5
   EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
   EXMediaLibrary: 92ad88fa1904ad703b636ce4818cd6d5c5ba653b
@@ -3268,7 +3260,7 @@ SPEC CHECKSUMS:
   EXSQLite: 5b16cc6b280d3c024b0b1d76829dd2161a26acbe
   EXStoreReview: 6143555fc912a4a194300992cd297c3e5b521a8a
   EXStructuredHeaders: 7469fed1192a7794be7093fb873798bdf10d5f6e
-  EXTaskManager: 53bcb908457ff6282ffb1e31c25c0656e3725161
+  EXTaskManager: cfa107893db172b90564027e507d3e6713ad5ff3
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
   EXUpdates: 2ede0133ed52945daeb3183beccda3cf0fc628ae
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
@@ -3348,7 +3340,6 @@ SPEC CHECKSUMS:
   StripeCore: 91ea038ac0abbb72f11014044dfd1e5d39089714
   StripeUICore: 7edf64b24c9c178bfd97e988f2cffdbb7a7628b0
   UMAppLoader: fd7c70dca4bbb1769564022cb0b3e4ad440da3e6
-  UMTaskManagerInterface: a06f988b2a16a445d55944b090390c76d3be2407
   Yoga: 9b6696970c3289e8dea34b3eda93f23e61fb8121
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 

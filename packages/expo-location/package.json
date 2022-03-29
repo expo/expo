@@ -42,8 +42,7 @@
     "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "@expo/config-plugins": "^4.0.14",
-    "unimodules-task-manager-interface": "~7.1.0"
+    "@expo/config-plugins": "^4.0.14"
   },
   "peerDependencies": {
     "expo": "*"

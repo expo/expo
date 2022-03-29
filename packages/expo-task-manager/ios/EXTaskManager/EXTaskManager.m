@@ -3,12 +3,11 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXEventEmitterService.h>
-
 #import <ExpoModulesCore/EXConstantsInterface.h>
+#import <ExpoModulesCore/EXTaskServiceInterface.h>
 
 #import <EXTaskManager/EXTaskManager.h>
 #import <EXTaskManager/EXTaskService.h>
-#import <UMTaskManagerInterface/UMTaskServiceInterface.h>
 
 NSString * const EXTaskManagerEventName = @"TaskManager.executeTask";
 
@@ -18,7 +17,7 @@ NSString * const EXTaskManagerEventName = @"TaskManager.executeTask";
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *eventsQueue;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXConstantsInterface> constantsService;
-@property (nonatomic, weak) id<UMTaskServiceInterface> taskService;
+@property (nonatomic, weak) id<EXTaskServiceInterface> taskService;
 
 @end
 
@@ -28,7 +27,7 @@ EX_EXPORT_MODULE(ExpoTaskManager);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMTaskManagerInterface)];
+  return @[@protocol(EXTaskManagerInterface)];
 }
 
 - (instancetype)init
@@ -150,7 +149,7 @@ EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
   resolve(nil);
 }
 
-# pragma mark - UMTaskManagerInterface
+# pragma mark - EXTaskManagerInterface
 
 - (BOOL)hasRegisteredTaskWithName:(nonnull NSString *)taskName
 {
