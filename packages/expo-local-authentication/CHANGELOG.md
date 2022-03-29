@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add the ability to set confirmation requirement on Android. ([#16793](https://github.com/expo/expo/pull/16793) by [@fguitton](https://github.com/fguitton))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
