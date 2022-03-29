@@ -1,3 +1,4 @@
+/** Remove ansi characters from a string and return the sanitized results. */
 export function stripAnsi(str?: string) {
   if (!str) {
     return str;

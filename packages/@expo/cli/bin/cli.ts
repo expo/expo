@@ -11,6 +11,10 @@ const commands: { [command: string]: () => Promise<Command> } = {
   start: () => import('../src/start').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../src/config').then((i) => i.expoConfig),
+
+  // Auxiliary commands
+  install: () => import('../src/install').then((i) => i.expoInstall),
+
   // Auth
   login: () => import('../src/login').then((i) => i.expoLogin),
   logout: () => import('../src/logout').then((i) => i.expoLogout),

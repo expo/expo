@@ -26,7 +26,7 @@ export function log(...message: string[]): void {
   console.log(...message);
 }
 
-export function debug(...message: string[]): void {
+export function debug(...message: any[]): void {
   if (require('./utils/env').EXPO_DEBUG) console.log(...message);
 }
 
