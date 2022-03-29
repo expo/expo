@@ -475,7 +475,7 @@ export type PermissionDetailsLocationIOS = {
 // @needsAudit
 export type PermissionDetailsLocationAndroid = {
   /**
-   * @deprecated __Deprecated.__ Use `accuracy` field instead.
+   * @deprecated Use `accuracy` field instead.
    */
   scope: 'fine' | 'coarse' | 'none';
   /**
