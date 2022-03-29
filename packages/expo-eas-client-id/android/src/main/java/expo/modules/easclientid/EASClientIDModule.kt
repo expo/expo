@@ -10,7 +10,7 @@ class EASClientIDModule : Module() {
     }
 
   override fun definition() = ModuleDefinition {
-    name("ExpoEASClientID")
+    name("EASClientID")
 
     constants {
       mapOf("clientID" to EASClientID(context).uuid.toString())

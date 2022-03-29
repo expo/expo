@@ -1,3 +1,2 @@
-import ExpoEASClientID from './ExpoEASClientID';
-
-export const clientID = ExpoEASClientID.clientID;
+import { NativeModulesProxy } from 'expo-modules-core';
+export default NativeModulesProxy.EASClientID || {};

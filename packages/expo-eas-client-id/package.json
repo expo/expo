@@ -2,8 +2,8 @@
   "name": "expo-eas-client-id",
   "version": "0.1.0",
   "description": "Stable client identifier for EAS services",
-  "main": "build/EASClientID.js",
-  "types": "build/EASClientID.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
