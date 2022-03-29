@@ -66,7 +66,7 @@ class CertificateChain(private val certificateStrings: List<String>) {
           it.octets.decodeToString()
         } else null
       }?.let {
-        val components = it.split(',')
+        val components = it.split(',').map { component -> component.trim() }
         if (components.size != 2) {
           throw CertificateException("Invalid Expo project information extension value")
         }

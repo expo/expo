@@ -155,7 +155,11 @@ extension X509Certificate {
       return nil
     }
     
-    let components = (projectInformationExtensionValue as! String).components(separatedBy: ",")
+    let components = (projectInformationExtensionValue as! String)
+      .components(separatedBy: ",")
+      .map { it in
+        it.trimmingCharacters(in: CharacterSet.whitespaces)
+      }
     if (components.count != 2) {
       throw EXUpdatesCodeSigningError.InvalidExpoProjectInformationExtensionValue
     }
