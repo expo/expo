@@ -4,7 +4,7 @@ import ExpoModulesCore
 
 public class EASClientIDModule: Module {
   public func definition() -> ModuleDefinition {
-    name("EASClientID")
+    name("ExpoEASClientID")
     
     constants([
       "clientID": EASClientID.uuid().uuidString
