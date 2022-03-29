@@ -31,7 +31,7 @@ export function EmptyBranchesMessage({
           <Spacer.Vertical size="small" />
           <Text
             color="secondary"
-            size="small">{`However there are ${incompatibleBranches.length} branches that will work with a different runtime version - you might need to update your development build.`}</Text>
+            size="small">{`However, there are ${incompatibleBranches.length} branches that are compatible with a different runtime version. You may need to publish a new update or install a new development build.`}</Text>
           <Spacer.Vertical size="small" />
           <Text
             color="secondary"
