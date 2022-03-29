@@ -16,3 +16,14 @@ object DevLauncherStatusBarStyle {
   const val DARK = "dark-content"
   const val LIGHT = "light-content"
 }
+
+object DevLauncherNavigationBarStyle {
+  const val DARK = "dark-content"
+  const val LIGHT = "light-content"
+}
+
+object DevLauncherNavigationBarVisibility {
+  const val LEANBACK = "leanback"
+  const val IMMERSIVE = "immersive"
+  const val STICKY_IMMERSIVE = "sticky-immersive"
+}
