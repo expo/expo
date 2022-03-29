@@ -2,7 +2,7 @@
 // methods that we need to set up before we override them
 import { AppRegistry } from 'react-native';
 
-AppRegistry; // eslint-disable-line @babel/no-unused-expressions
+AppRegistry; // eslint-disable-line no-unused-expressions
 
 // NOTE(2018-10-29): temporarily filter out cyclic dependency warnings here since they are noisy and
 // each warning symbolicates a stack trace, which is slow when there are many warnings

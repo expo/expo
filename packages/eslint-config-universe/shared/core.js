@@ -1,25 +1,10 @@
 const { jsExtensions } = require('./extensions');
 
 module.exports = {
-  parser: '@babel/eslint-parser',
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 2022,
-    ecmaFeatures: { impliedStrict: true },
-    requireConfigFile: false,
-    babelOptions: {
-      parserOpts: {
-        plugins: [
-          // Languages extensions used in Expo projects and dependencies
-          'flow',
-          'jsx',
-          // Stage 3+ proposals that aren't supported by the base ECMAScript version
-          'classProperties',
-          'classPrivateProperties',
-          'classPrivateMethods',
-        ],
-      },
-    },
+    ecmaFeatures: { impliedStrict: true, jsx: true },
   },
   env: { es2022: true, jest: true },
   globals: {
@@ -29,7 +14,7 @@ module.exports = {
     module: false,
     require: false,
   },
-  plugins: ['@babel', 'import', 'node'],
+  plugins: ['import', 'node'],
   rules: {
     'array-bracket-spacing': ['warn', 'never'],
     'arrow-spacing': ['warn', { before: true, after: true }],
@@ -109,7 +94,7 @@ module.exports = {
     'no-unneeded-ternary': 'warn',
     'no-unreachable': 'warn',
     'no-unsafe-negation': 'warn',
-    'no-unused-expressions': 'off',
+    'no-unused-expressions': ['warn', { allowShortCircuit: true, enforceForJSX: true }],
     'no-unused-labels': 'warn',
     'no-unused-vars': [
       'warn',
@@ -155,8 +140,6 @@ module.exports = {
     'yield-star-spacing': ['warn', 'after'],
     yoda: ['warn', 'never', { exceptRange: true }],
 
-    '@babel/no-unused-expressions': ['warn', { allowShortCircuit: true }],
-
     'import/default': 'off',
     'import/export': 'error',
     'import/first': 'warn',
@@ -178,9 +161,11 @@ module.exports = {
   },
   settings: {
     'import/extensions': jsExtensions,
-    'import/parsers': {
-      '@babel/eslint-parser': jsExtensions,
-    },
+    'import/ignore': [
+      // react-native's main module is Flow, not JavaScript, and raises parse errors. Additionally,
+      // several other react-native-related packages still publish Flow code as their main source.
+      '/node_modules/@?react-native',
+    ],
     'import/resolver': {
       node: { extensions: jsExtensions },
     },
