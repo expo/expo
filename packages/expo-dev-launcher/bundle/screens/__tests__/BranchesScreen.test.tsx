@@ -3,6 +3,7 @@ import { Branch } from '../../queries/useBranchesForApp';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
 import { BranchesScreen, getIncompatibleBranchMessage } from '../BranchesScreen';
+import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
 
 jest.mock('graphql-request', () => {
   return {
@@ -190,8 +191,8 @@ describe('<BranchesScreen />', () => {
     const { getByText, queryByText } = render(<BranchesScreen navigation={mockNavigation} />);
 
     await act(async () => {
-      expect(queryByText(/no compatible branches/i)).toBe(null);
-      await waitFor(() => getByText(/no compatible branches/i));
+      expect(queryByText(getCompatibleBranchMessage(1))).toBe(null);
+      await waitFor(() => getByText(getCompatibleBranchMessage(1)));
     });
   });
 

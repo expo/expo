@@ -11,15 +11,15 @@ import {
   Spacer,
   Text,
   useExpoPalette,
-  WarningIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
+import { Linking } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
-import { Toast } from '../components/Toasts';
+import { Toasts } from '../components/Toasts';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
@@ -51,13 +51,20 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
     (update: Update) => {
       const isCompatible = update.runtimeVersion === runtimeVersion;
 
-      // prevent multiple taps bringing up the toast
-      if (!isCompatible && toastStack.getItems().length === 0) {
-        toastStack.push(() => (
-          <Toast.Warning>
-            {`You are currently running an older development app version than the latest update on the branch "${branchName}". To get the latest update, upgrade this development client app.`}
-          </Toast.Warning>
-        ));
+      if (
+        !isCompatible &&
+        // prevent multiple taps bringing up multiple of the same toast
+        toastStack.getItems().filter((i) => i.status === 'pushing' || i.status === 'settled')
+          .length === 0
+      ) {
+        toastStack.push(
+          () => (
+            <Toasts.Warning>
+              {`To run this update, you need a compatible development build with runtime version ${update.runtimeVersion}.`}
+            </Toasts.Warning>
+          ),
+          { durationMs: 10000 }
+        );
       }
     },
     [runtimeVersion, branchName]
@@ -96,7 +103,11 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
           </Text>
 
           <View py="medium" align="centered">
-            <Button.ScaleOnPressContainer bg="tertiary">
+            <Button.ScaleOnPressContainer
+              bg="tertiary"
+              onPress={() => {
+                Linking.openURL(`https://docs.expo.dev/eas-update/how-eas-update-works/`);
+              }}>
               <View px="2.5" py="2">
                 <Button.Text weight="medium" color="tertiary">
                   Publish an update

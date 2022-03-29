@@ -11,7 +11,7 @@ import {
 } from '../functions/createAsyncStack';
 
 export type ToastOptions = {
-  duration?: number;
+  durationMs?: number;
 };
 
 export type ToastStackItem = {
@@ -99,7 +99,7 @@ function ToastItem(props: StackItem<ToastStackItem>) {
       timerRef.current = setTimeout(() => {
         pop();
         timerRef.current = null;
-      }, toastProps?.duration || 2000);
+      }, toastProps?.durationMs || 2000);
     }
 
     return () => {
@@ -107,7 +107,7 @@ function ToastItem(props: StackItem<ToastStackItem>) {
         clearTimeout(timerRef.current);
       }
     };
-  }, [status, pop, toastProps?.duration]);
+  }, [status, pop, toastProps?.durationMs]);
 
   let distanceFromBottom = defaultDistanceFromBottom;
 

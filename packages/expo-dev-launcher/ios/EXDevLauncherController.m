@@ -37,7 +37,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-// #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
+//  #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -522,21 +522,11 @@
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
   
-  // TODO - this could be moved to the expo-updates repo and installed as a dev extension
-  // url structore for EASUpdates: `http://u.expo.dev/{appId}`
-  // this url field is added to app.json.updates when running `eas update:configure`
-  // the `u.expo.dev` determines that it is the modern manifest protocol
-  NSString *updatesUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
-  NSURL *url = [NSURL URLWithString:updatesUrl];
-  NSString *appId = [[url pathComponents] lastObject];
-  
-  
   [buildInfo setObject:appName forKey:@"appName"];
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
   [buildInfo setObject:runtimeVersion forKey:@"runtimeVersion"];
   [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
-  [buildInfo setObject:appId forKey:@"appId"];
 
   return buildInfo;
 }
@@ -602,5 +592,31 @@
   manager.currentManifest = nil;
   manager.currentManifestURL = nil;
 }
+
+-(NSDictionary *)getUpdatesConfig
+{
+  NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
+  
+  NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
+  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
+  
+  // url structure for EASUpdates: `http://u.expo.dev/{appId}`
+  // this url field is added to app.json.updates when running `eas update:configure`
+  // the `u.expo.dev` determines that it is the modern manifest protocol
+  NSString *updatesUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+  NSURL *url = [NSURL URLWithString:updatesUrl];
+  NSString *appId = [[url pathComponents] lastObject];
+  
+  BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"];
+  BOOL usesEASUpdates = isModernManifestProtocol && appId.length > 0;
+  
+  [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
+  [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
+  [updatesConfig setObject:appId forKey:@"appId"];
+  [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
+    
+  return updatesConfig;
+}
+
 
 @end

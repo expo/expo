@@ -3,11 +3,13 @@ import * as React from 'react';
 
 function ErrorToast({ children }) {
   return (
-    <View mx="medium">
+    <View mx="large">
       <View bg="error" padding="medium" rounded="medium" border="error">
-        <Text color="error" weight="medium">
-          {children}
-        </Text>
+        <View>
+          <Text color="error">
+            {children}
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -30,14 +32,14 @@ function WarningToast({ children }) {
         <Spacer.Vertical size="small" />
 
         <View>
-          <Text size="small">{children}</Text>
+          <Text size="small" color="warning">{children}</Text>
         </View>
       </View>
     </View>
   );
 }
 
-export const Toast = {
+export const Toasts = {
   Error: ErrorToast,
   Warning: WarningToast,
 };

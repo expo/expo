@@ -18,7 +18,6 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
   s.dependency 'EXStructuredHeaders'
-  s.dependency 'expo-dev-menu-interface'
   s.dependency 'EXUpdatesInterface'
   s.dependency 'EXManifests'
   s.dependency 'EASClientID'

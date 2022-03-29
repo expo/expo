@@ -1,21 +1,25 @@
 import { Spacer, View, Text, Button, Heading } from 'expo-dev-client-components';
 import * as React from 'react';
+import { Linking } from 'react-native';
+import { websiteOrigin } from '../apiClient';
 
 import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
+import { useUser } from '../providers/UserContextProvider';
 import { Branch } from '../queries/useBranchesForApp';
 
 type EmptyBranchesMessageProps = {
   branches: Branch[];
   incompatibleBranches: Branch[];
-  onLearnMorePress: () => void;
 };
 
 export function EmptyBranchesMessage({
   branches = [],
   incompatibleBranches = [],
-  onLearnMorePress,
 }: EmptyBranchesMessageProps) {
-  const { runtimeVersion } = useBuildInfo();
+  const { runtimeVersion } = useUpdatesConfig();
+  const { appName } = useBuildInfo();
+  const { selectedAccount } = useUser();
 
   // no compatible branches
   if (branches.length === 0 && incompatibleBranches.length > 0) {
@@ -29,9 +33,9 @@ export function EmptyBranchesMessage({
         <View>
           <Heading>There are no branches compatible with this development build.</Heading>
           <Spacer.Vertical size="small" />
-          <Text
-            color="secondary"
-            size="small">{`However, there are ${incompatibleBranches.length} branches that are compatible with a different runtime version. You may need to publish a new update or install a new development build.`}</Text>
+          <Text color="secondary" size="small">
+            {getCompatibleBranchMessage(incompatibleBranches.length)}
+          </Text>
           <Spacer.Vertical size="small" />
           <Text
             color="secondary"
@@ -45,7 +49,13 @@ export function EmptyBranchesMessage({
           <Spacer.Vertical size="large" />
 
           <View align="centered">
-            <Button.ScaleOnPressContainer bg="tertiary" onPress={onLearnMorePress}>
+            <Button.ScaleOnPressContainer
+              bg="tertiary"
+              onPress={() =>
+                Linking.openURL(
+                  `${websiteOrigin}/accounts/${selectedAccount.name}/projects/${appName}/builds`
+                )
+              }>
               <View px="2.5" py="2">
                 <Button.Text weight="medium" color="tertiary">
                   See Development Builds
@@ -71,7 +81,11 @@ export function EmptyBranchesMessage({
           </Text>
 
           <View py="medium" align="centered">
-            <Button.ScaleOnPressContainer bg="tertiary">
+            <Button.ScaleOnPressContainer
+              bg="tertiary"
+              onPress={() =>
+                Linking.openURL(`https://docs.expo.dev/eas-update/how-eas-update-works/`)
+              }>
               <View px="2.5" py="2">
                 <Button.Text weight="medium" color="tertiary">
                   Create a branch
@@ -83,4 +97,12 @@ export function EmptyBranchesMessage({
       </View>
     </View>
   );
+}
+
+export function getCompatibleBranchMessage(numberOfCompatibleBranches: number) {
+  if (numberOfCompatibleBranches === 1) {
+    return `However, there is a branch that is compatible with a different runtime version. You may need to publish a new update or install a new development build.`;
+  }
+
+  return `However, there are ${numberOfCompatibleBranches} branches that are compatible with a different runtime version. You may need to publish a new update or install a new development build.`;
 }

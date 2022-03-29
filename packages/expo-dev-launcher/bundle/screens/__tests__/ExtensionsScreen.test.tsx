@@ -4,6 +4,22 @@ import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
 import { ExtensionsScreen } from '../ExtensionsScreen';
 
+import * as DevLauncher from '../../native-modules/DevLauncherInternal';
+import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
+
+jest.mock('../../native-modules/DevLauncherInternal', () => {
+  const originalMock = jest.requireActual('../../native-modules/__mocks__/DevLauncherInternal');
+  return {
+    ...originalMock,
+    updatesConfig: {
+      appId: '123',
+      runtimeVersion: '123',
+      sdkVersion: '1',
+      usesEASUpdates: true,
+    },
+  };
+});
+
 jest.mock('graphql-request', () => {
   return {
     GraphQLClient(apiUrl: string) {
@@ -43,6 +59,7 @@ function mockBranchResponse({
 describe('<ExtensionsScreen />', () => {
   beforeEach(() => {
     queryClient.clear();
+    DevLauncher.updatesConfig.usesEASUpdates = true;
   });
 
   test('render', async () => {
@@ -53,6 +70,21 @@ describe('<ExtensionsScreen />', () => {
     render(<ExtensionsScreen navigation={mockNavigation} />);
     // necessary to avoid react update outside of act() warning
     await act(async () => {});
+  });
+
+  test('no extensions are not installed', async () => {
+    const mockNavigation: any = {
+      navigate: jest.fn(),
+    };
+
+    DevLauncher.updatesConfig.usesEASUpdates = false;
+
+    const { getByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
+
+    await act(async () => {
+      await waitFor(() => getByText(/extensions allow you to customize your development build/i));
+      await waitFor(() => getByText(/learn more/i));
+    });
   });
 
   test('unauthenticated user', async () => {
@@ -145,14 +177,21 @@ describe('<ExtensionsScreen />', () => {
 
     mockBranchResponse({
       branchName: 'testBranch',
-      updates: [{ id: '1', message: '123', createdAt: '123', runtimeVersion: '1' }],
+      updates: [
+        {
+          id: '1',
+          message: '123',
+          createdAt: '123',
+          runtimeVersion: '123',
+        },
+      ],
       compatibleUpdates: [],
     });
 
-    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
+    const { getByText, debug } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
-      await waitFor(() => getByText(/no compatible branches/i));
+      await waitFor(() => getByText(getCompatibleBranchMessage(1)));
     });
   });
 
@@ -176,7 +215,6 @@ describe('<ExtensionsScreen />', () => {
     });
   });
 
-  test.todo('no extensions installed state');
   test.todo('eas updates shows error toast');
 });
 

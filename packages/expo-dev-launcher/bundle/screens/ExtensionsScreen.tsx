@@ -18,7 +18,6 @@ import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useBranchesForApp } from '../queries/useBranchesForApp';
@@ -32,7 +31,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   const { isAuthenticated } = useUser();
   const actions = useUserActions();
 
-  const { isEASUpdates } = useUpdatesConfig();
+  const { usesEASUpdates } = useUpdatesConfig();
 
   function onLoginPress() {
     actions.login('login');
@@ -44,7 +43,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 
   const compatibleExtensions: string[] = [];
 
-  if (isEASUpdates) {
+  if (usesEASUpdates) {
     compatibleExtensions.push('EASUpdates');
   }
 
@@ -63,7 +62,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 <Spacer.Vertical size="medium" />
                 <View px="small">
                   <Text size="small" align="center">
-                    Extensions allow you to customize your development app with additional
+                    Extensions allow you to customize your development build with additional
                     capabilities.
                   </Text>
                 </View>
@@ -83,7 +82,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             </>
           )}
 
-          {isEASUpdates && isAuthenticated && (
+          {usesEASUpdates && isAuthenticated && (
             <>
               <Spacer.Vertical size="medium" />
               <EASUpdatesPreview navigation={navigation} />
@@ -91,7 +90,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             </>
           )}
 
-          {isEASUpdates && !isAuthenticated && (
+          {usesEASUpdates && !isAuthenticated && (
             <>
               <Spacer.Vertical size="medium" />
               <View mx="medium" padding="medium" bg="default" rounded="large">
@@ -135,15 +134,16 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 
           {compatibleExtensions.length > 0 && (
             <>
-            <Spacer.Vertical size="medium" />
-            <View px="xl">
-              <Text size="small" color="secondary">
-                Extensions allow you to customize your development app with additional capabilities.{' '}
+              <Spacer.Vertical size="medium" />
+              <View px="xl">
                 <Text size="small" color="secondary">
-                  Learn more.
+                  Extensions allow you to customize your development build with additional
+                  capabilities.{' '}
+                  <Text size="small" color="secondary">
+                    Learn more.
+                  </Text>
                 </Text>
-              </Text>
-            </View>
+              </View>
             </>
           )}
         </View>
@@ -166,7 +166,7 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
 
   if (isLoading) {
     return (
-      <View height="44" align="centered">
+      <View height="44" align="centered" mx="medium" rounded="large" bg="default">
         <ActivityIndicator />
       </View>
     );
@@ -181,12 +181,7 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
           </Heading>
         </View>
         <Spacer.Vertical size="small" />
-        <EmptyBranchesMessage
-          branches={branches}
-          incompatibleBranches={incompatibleBranches}
-          // TODO - link to docs?
-          onLearnMorePress={() => {}}
-        />
+        <EmptyBranchesMessage branches={branches} incompatibleBranches={incompatibleBranches} />
       </View>
     );
   }

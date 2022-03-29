@@ -4,9 +4,9 @@ import {
   getCrashReport,
   installationID,
   isDevice,
+  updatesConfig,
 } from '../native-modules/DevLauncherInternal';
 import { getMenuPreferencesAsync } from '../native-modules/DevMenuPreferences';
-import { getUpdatesConfigAsync } from '../native-modules/EXUpdates';
 import { AppProvidersProps } from '../providers/AppProviders';
 import { prefetchBranchesForApp } from '../queries/useBranchesForApp';
 import { getDevSessionsAsync } from './getDevSessionsAsync';
@@ -26,10 +26,8 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
   const initialDevMenuPreferences = await getMenuPreferencesAsync();
   const initialCrashReport = await getCrashReport();
 
-  let initialUpdatesConfig = await getUpdatesConfigAsync()
-
-  if (isAuthenticated) {
-    prefetchBranchesForApp(initialBuildInfo.appId, initialBuildInfo.runtimeVersion).catch((error) =>
+  if (isAuthenticated && updatesConfig.usesEASUpdates) {
+    prefetchBranchesForApp(updatesConfig.appId, updatesConfig.runtimeVersion).catch((error) =>
       console.log({ error })
     );
   }
@@ -40,6 +38,5 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
     initialBuildInfo,
     initialDevMenuPreferences,
     initialCrashReport,
-    initialUpdatesConfig,
   };
 }

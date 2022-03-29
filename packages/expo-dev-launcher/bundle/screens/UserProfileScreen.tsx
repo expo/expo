@@ -18,12 +18,10 @@ import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
 import { useModalStack } from '../providers/ModalStackProvider';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
-import { useQueryClient } from 'react-query';
 
 export function UserProfileScreen({ navigation }) {
   const { userData, selectedAccount } = useUser();
   const modalStack = useModalStack();
-  const queryClient = useQueryClient();
   const actions = useUserActions();
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -49,7 +47,6 @@ export function UserProfileScreen({ navigation }) {
         onClosePress={() => modalStack.pop()}
         onLogoutPress={async () => {
           await actions.logout();
-          await queryClient.resetQueries(['branches']);
           modalStack.pop();
         }}
       />

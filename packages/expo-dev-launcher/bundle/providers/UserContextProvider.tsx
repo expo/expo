@@ -5,6 +5,7 @@ import { getUserProfileAsync, UserAccount, UserData } from '../functions/getUser
 import { restoreUserAsync } from '../functions/restoreUserAsync';
 import { startAuthSessionAsync } from '../functions/startAuthSessionAsync';
 import { useIsMounted } from '../hooks/useIsMounted';
+import { resetBranchQueries } from '../queries/useBranchesForApp';
 
 type UserContext = {
   userData?: UserData;
@@ -54,7 +55,9 @@ export function UserContextProvider({ children, initialUserData }: UserContextPr
   }
 
   async function logout() {
-    return await clearSession();
+    const result = await clearSession();
+    await resetBranchQueries();
+    return result;
   }
 
   async function restore() {

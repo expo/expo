@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
-import { Toast } from '../components/Toasts';
+import { Toasts } from '../components/Toasts';
 import { useToastStack } from '../providers/ToastStackProvider';
 
 const query = gql`
@@ -55,7 +55,7 @@ export function useChannelsForApp(appId: string) {
   React.useEffect(() => {
     if (query.error && toastStack.getItems().length === 0) {
       toastStack.push(() => (
-        <Toast.Error>Something went wrong trying to find the channels for this branch.</Toast.Error>
+        <Toasts.Error>Something went wrong trying to find the channels for this branch.</Toasts.Error>
       ));
     }
   }, [query.error]);

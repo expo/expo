@@ -4,7 +4,7 @@ import React from 'react';
 import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
-import { Toast } from '../components/Toasts';
+import { Toasts } from '../components/Toasts';
 import { queryClient } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
@@ -80,7 +80,7 @@ export function useUpdatesForBranch(branchName: string) {
   React.useEffect(() => {
     if (query.error) {
       toastStack.push(() => (
-        <Toast.Error>Something went wrong trying to fetch updates for this branch</Toast.Error>
+        <Toasts.Error>Something went wrong trying to fetch updates for this branch</Toasts.Error>
       ));
     }
   }, [query.error]);

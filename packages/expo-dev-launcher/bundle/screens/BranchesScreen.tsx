@@ -67,14 +67,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   }
 
   function EmptyList() {
-    return (
-      <EmptyBranchesMessage
-        branches={branches}
-        incompatibleBranches={incompatibleBranches}
-        // TODO - link to docs?
-        onLearnMorePress={() => {}}
-      />
-    );
+    return <EmptyBranchesMessage branches={branches} incompatibleBranches={incompatibleBranches} />;
   }
 
   function renderBranch({ index, item: branch }: { index: number; item: Branch }) {
@@ -170,8 +163,8 @@ function EmptyBranchesList({ branches, onBranchPress }: EmptyBranchesListProps) 
 
 export function getIncompatibleBranchMessage(numberOfIncompatibleBranches: number) {
   if (numberOfIncompatibleBranches === 1) {
-    return `There is 1 branch that is not compatible with this development app. To preview it, download or build a development client that matches its runtime version.`;
+    return `There is 1 branch that is not compatible with this development build. To preview it, download or build a development client that matches its runtime version.`;
   }
 
-  return `There are ${numberOfIncompatibleBranches} branches that are not compatible with this development app. To preview them, download or build a development client that matches their runtime version.`;
+  return `There are ${numberOfIncompatibleBranches} branches that are not compatible with this development build. To preview them, download or build a development client that matches their runtime version.`;
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { EXUpdatesConfig } from '../native-modules/EXUpdates';
+import { EXUpdatesConfig, updatesConfig } from '../native-modules/DevLauncherInternal';
 
 const Context = React.createContext<EXUpdatesConfig | null>(null);
 export const useUpdatesConfig = () => React.useContext(Context);
@@ -10,20 +10,6 @@ type UpdatesConfigProviderProps = {
   initialUpdatesConfig?: EXUpdatesConfig;
 };
 
-const defaultUpdatesConfig: EXUpdatesConfig = {
-  runtimeVersion: '',
-  sdkVersion: '',
-  appId: '',
-  isEASUpdates: false,
-};
-
-export function UpdatesConfigProvider({
-  children,
-  initialUpdatesConfig = defaultUpdatesConfig,
-}: UpdatesConfigProviderProps) {
-  return (
-    <Context.Provider value={{ ...defaultUpdatesConfig, ...initialUpdatesConfig }}>
-      {children}
-    </Context.Provider>
-  );
+export function UpdatesConfigProvider({ children }: UpdatesConfigProviderProps) {
+  return <Context.Provider value={updatesConfig}>{children}</Context.Provider>;
 }
