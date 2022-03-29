@@ -9,6 +9,8 @@ import Foundation
   case CertificateMissingPublicKeyError
   case CertificateDigitalSignatureNotPresentError
   case CertificateMissingCodeSigningError
+  case CertificateRootNotCA
+  case CertificateProjectInformationChainError
   case KeyIdMismatchError
   case SecurityFrameworkError
   case CertificateEmptyError
@@ -38,6 +40,10 @@ import Foundation
       return "Certificate digital signature not present"
     case .CertificateMissingCodeSigningError:
       return "Certificate missing code signing extended key usage"
+    case .CertificateRootNotCA:
+      return "Root certificate subject must be a Certificate Authority"
+    case .CertificateProjectInformationChainError:
+      return "Expo project information must be a subset or equal of that of parent certificates"
     case .KeyIdMismatchError:
       return "Key with keyid from signature not found in client configuration"
     case .SecurityFrameworkError:

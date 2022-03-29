@@ -93,14 +93,15 @@ class CertificateChain(private val certificateStrings: List<String>) {
       }
       last().verify(last().publicKey)
 
-      // if this is a chain, validate the CA pathLen constraints
+      // if this is a chain, validate the CA pathLen and expoProjectInformation constraints
       if (size > 1) {
         val rootCert = last()
         if (!rootCert.isCACertificate()) {
           throw CertificateException("Root certificate subject must be a Certificate Authority")
         }
-        var maxPathLengthConstraint = last().basicConstraints
 
+        var lastExpoProjectInformation = rootCert.expoProjectInformation()
+        var maxPathLengthConstraint = rootCert.basicConstraints
         // all certificates between root and leaf (non-inclusive)
         for (i in (size - 2) downTo 1) {
           val cert = get(i)
@@ -108,6 +109,15 @@ class CertificateChain(private val certificateStrings: List<String>) {
           if (!cert.isCACertificate()) {
             throw CertificateException("Non-leaf certificate subject must be a Certificate Authority")
           }
+
+          val currProjectInformation = cert.expoProjectInformation()
+          if (lastExpoProjectInformation != null) {
+            if (lastExpoProjectInformation != currProjectInformation) {
+              throw CertificateException("Expo project information must be a subset or equal of that of parent certificates")
+            }
+          }
+          lastExpoProjectInformation = currProjectInformation
+
           if (maxPathLengthConstraint <= 0) {
             throw CertificateException("pathLenConstraint violated by intermediate certificate")
           }
@@ -115,6 +125,13 @@ class CertificateChain(private val certificateStrings: List<String>) {
 
           val currPathLengthConstraint = cert.basicConstraints
           maxPathLengthConstraint = min(currPathLengthConstraint, maxPathLengthConstraint)
+        }
+
+        if (lastExpoProjectInformation != null) {
+          val leafCertificate = first()
+          if (lastExpoProjectInformation != leafCertificate.expoProjectInformation()) {
+            throw CertificateException("Expo project information must be a subset of or equal to that of parent certificates")
+          }
         }
       }
     }

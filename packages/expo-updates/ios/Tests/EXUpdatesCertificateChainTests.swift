@@ -107,4 +107,14 @@ class EXUpdatesCertificateChainTests : XCTestCase {
       XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateChainError)
     }
   }
+  
+  func test_ThrowsWhenExpoProjectInformationViolation() throws {
+    let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainExpoProjectInformationViolationLeaf)
+    let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainExpoProjectInformationViolationIntermediate)
+    let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainExpoProjectInformationViolationRoot)
+    
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateProjectInformationChainError)
+    }
+  }
 }
