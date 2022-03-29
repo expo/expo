@@ -27,7 +27,7 @@ export function EmptyBranchesMessage({
     return (
       <View padding="medium" rounded="large" bg="default">
         <View>
-          <Heading>The runtime version of this app has no compatible branches.</Heading>
+          <Heading>There are no branches compatible with this development build.</Heading>
           <Spacer.Vertical size="small" />
           <Text
             color="secondary"
