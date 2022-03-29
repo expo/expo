@@ -270,7 +270,7 @@ PODS:
   - EXTrackingTransparency (2.1.0):
     - ExpoModulesCore
   - EXUpdatesInterface (0.5.0)
-  - EXVideoThumbnails (6.2.0):
+  - EXVideoThumbnails (6.2.1):
     - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
@@ -1380,7 +1380,7 @@ SPEC CHECKSUMS:
   EXTaskManager: cfa107893db172b90564027e507d3e6713ad5ff3
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
-  EXVideoThumbnails: 847d648d6f4bc0c1afad05caa56a487dc543445e
+  EXVideoThumbnails: d7d1a7c8e240872c580127073b87f740d4f3d8a5
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBLazyVector: 244195e30d63d7f564c55da4410b9a24e8fbceaa
   FBReactNativeSpec: c94002c1d93da3658f4d5119c6994d19961e3d52

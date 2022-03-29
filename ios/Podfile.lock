@@ -1400,7 +1400,7 @@ PODS:
     - OCMockito (~> 6.0)
     - React-Core
   - EXUpdatesInterface (0.5.0)
-  - EXVideoThumbnails (6.2.0):
+  - EXVideoThumbnails (6.2.1):
     - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
@@ -3264,7 +3264,7 @@ SPEC CHECKSUMS:
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
   EXUpdates: 2ede0133ed52945daeb3183beccda3cf0fc628ae
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
-  EXVideoThumbnails: 847d648d6f4bc0c1afad05caa56a487dc543445e
+  EXVideoThumbnails: d7d1a7c8e240872c580127073b87f740d4f3d8a5
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: 244195e30d63d7f564c55da4410b9a24e8fbceaa
