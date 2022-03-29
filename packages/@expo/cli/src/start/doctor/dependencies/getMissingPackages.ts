@@ -1,14 +1,20 @@
 import { ExpoConfig, getConfig } from '@expo/config';
+import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
+import semver from 'semver';
 
 import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
+import * as Log from '../../../log';
 
 export type ResolvedPackage = {
+  /** Module ID pointing to the library `package.json`. */
   file: string;
   /** NPM package name. */
   pkg: string;
-  /** NPM package version. */
+  /** Required version range. */
   version?: string;
+  /** If the dependency should be installed as a `devDependency` */
+  dev?: boolean;
 };
 
 /** Given a set of required packages, this method returns a list of missing packages. */
@@ -25,7 +31,21 @@ export function collectMissingPackages(
     try {
       const resolved = resolveFrom(projectRoot, p.file);
       if (resolved) {
-        resolutions[p.pkg] = resolved;
+        // If the version is specified, check that it satisfies the installed version.
+        if (p.version) {
+          const pkgJson = JsonFile.read(resolved);
+          if (typeof pkgJson.version === 'string' && semver.satisfies(pkgJson.version, p.version)) {
+            resolutions[p.pkg] = pkgJson.version;
+          } else {
+            Log.debug(
+              `Installed package "${p.pkg}" does not satisfy version constraint "${p.version}" (version: "${pkgJson.version}")`
+            );
+            return true;
+          }
+        } else {
+          Log.debug(`Required package "${p.pkg}" found (no version constraint specified).`);
+          resolutions[p.pkg] = resolved;
+        }
       }
       return !resolved;
     } catch {
@@ -87,7 +107,12 @@ export async function mutatePackagesWithKnownVersionsAsync(
   const versions = await getSDKVersionsAsync(exp);
   if (versions?.relatedPackages) {
     for (const pkg of packages) {
-      if (pkg.pkg in versions.relatedPackages) {
+      if (
+        // Only use the SDK versions if the package does not already have a hardcoded version.
+        // We do this because some packages have API coded into the CLI which expects an exact version.
+        !pkg.version &&
+        pkg.pkg in versions.relatedPackages
+      ) {
         pkg.version = versions.relatedPackages[pkg.pkg];
       }
     }

@@ -12,6 +12,7 @@ import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformMa
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
+import { resolveWithTimeout } from '../../utils/delay';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;
@@ -211,22 +212,34 @@ export abstract class BundlerDevServer {
       Log.exception(e);
     });
 
-    return new Promise<void>((resolve, reject) => {
-      // Close the server.
-      if (this.instance?.server) {
-        this.instance.server.close((error) => {
-          this.instance = null;
-          if (error) {
-            reject(error);
+    return resolveWithTimeout(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          // Close the server.
+          Log.debug(`Stopping dev server (bundler: ${this.name})`);
+
+          if (this.instance?.server) {
+            this.instance.server.close((error) => {
+              Log.debug(`Stopped dev server (bundler: ${this.name})`);
+              this.instance = null;
+              if (error) {
+                reject(error);
+              } else {
+                resolve();
+              }
+            });
           } else {
+            Log.debug(`Stopped dev server (bundler: ${this.name})`);
+            this.instance = null;
             resolve();
           }
-        });
-      } else {
-        this.instance = null;
-        resolve();
+        }),
+      {
+        // NOTE(Bacon): Metro dev server doesn't seem to be closing in time.
+        timeout: 1000,
+        errorMessage: `Timeout waiting for '${this.name}' dev server to close`,
       }
-    });
+    );
   }
 
   private getUrlCreator() {

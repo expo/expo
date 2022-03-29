@@ -8,7 +8,7 @@ import { CI, EXPO_DEBUG } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
-import { getMissingPackagesAsync } from './getMissingPackages';
+import { getMissingPackagesAsync, ResolvedPackage } from './getMissingPackages';
 
 export async function ensureDependenciesAsync(
   projectRoot: string,
@@ -23,7 +23,7 @@ export async function ensureDependenciesAsync(
     exp?: ExpoConfig;
     installMessage: string;
     warningMessage: string;
-    requiredPackages: { file: string; pkg: string }[];
+    requiredPackages: ResolvedPackage[];
     skipPrompt?: boolean;
   }
 ): Promise<boolean> {
@@ -33,7 +33,9 @@ export async function ensureDependenciesAsync(
   }
 
   // Prompt to install or bail out...
-  const readableMissingPackages = missing.map((p) => p.pkg).join(', ');
+  const readableMissingPackages = missing
+    .map(({ pkg, version }) => (version ? [pkg, version].join('@') : pkg))
+    .join(', ');
 
   const isYarn = PackageManager.isUsingYarn(projectRoot);
 

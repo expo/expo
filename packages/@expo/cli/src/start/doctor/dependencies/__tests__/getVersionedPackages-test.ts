@@ -1,5 +1,5 @@
-import { getVersionsAsync } from '../../../api/getVersions';
-import { getBundledNativeModulesAsync } from '../../../start/doctor/dependencies/bundledNativeModules';
+import { getVersionsAsync } from '../../../../api/getVersions';
+import { getBundledNativeModulesAsync } from '../bundledNativeModules';
 import {
   getOperationLog,
   getRemoteVersionsForSdkAsync,
@@ -9,11 +9,11 @@ import {
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('../../../api/getVersions', () => ({
+jest.mock('../../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),
 }));
 
-jest.mock('../../../start/doctor/dependencies/bundledNativeModules', () => ({
+jest.mock('../bundledNativeModules', () => ({
   getBundledNativeModulesAsync: jest.fn(),
 }));
 
