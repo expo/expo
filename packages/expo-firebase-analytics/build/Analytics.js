@@ -70,7 +70,7 @@ let hasWarnedAboutSetCurrentScreen = false;
  * Sets the current screen name, which specifies the current visual context in your app. This helps
  * identify the areas in your app where users spend their time and how they interact with your app.
  *
- * @deprecated __Deprecated.__ Use [`logEvent('screen_view', { screen_name: 'MyScreen', ... })`](#logevent)
+ * @deprecated Use [`logEvent('screen_view', { screen_name: 'MyScreen', ... })`](#logevent)
  * instead. This API will be removed in SDK 45.
  *
  * @param screenName The name of the current screen. Should contain 1 to 100 characters. Set to

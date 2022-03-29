@@ -434,7 +434,8 @@ export const CommentTextBlock = ({
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown components={mdInlineComponents}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown
+          components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}

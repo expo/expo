@@ -38,23 +38,23 @@ export interface IOSManifest {
     buildNumber: string | null;
     /**
      * The Apple internal model identifier for this device, e.g. `iPhone1,1`.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.modelId`](./device/#devicemodelid).
+     * @deprecated Use `expo-device`'s [`Device.modelId`](./device/#devicemodelid).
      */
     platform: string;
     /**
      * The human-readable model name of this device, e.g. `"iPhone 7 Plus"` if it can be determined,
      * otherwise will be `null`.
-     * @deprecated Deprecated. Moved to `expo-device` as [`Device.modelName`](./device/#devicemodelname).
+     * @deprecated Moved to `expo-device` as [`Device.modelName`](./device/#devicemodelname).
      */
     model: string | null;
     /**
      * The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.getDeviceTypeAsync()`](./device/#devicegetdevicetypeasync).
+     * @deprecated Use `expo-device`'s [`Device.getDeviceTypeAsync()`](./device/#devicegetdevicetypeasync).
      */
     userInterfaceIdiom: UserInterfaceIdiom;
     /**
      * The version of iOS running on this device, e.g. `10.3`.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.osVersion`](./device/#deviceosversion).
+     * @deprecated Use `expo-device`'s [`Device.osVersion`](./device/#deviceosversion).
      */
     systemVersion: string;
     [key: string]: any;
@@ -63,7 +63,7 @@ export interface AndroidManifest {
     /**
      * The version code set by `android.versionCode` in app.json.
      * The value is set to `null` in case you run your app in Expo Go.
-     * @deprecated Deprecated. Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
+     * @deprecated Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
      */
     versionCode: number;
     [key: string]: any;
@@ -193,7 +193,7 @@ export interface NativeConstants {
     deviceName?: string;
     /**
      * The [device year class](https://github.com/facebook/device-year-class) of this device.
-     * @deprecated Deprecated. Moved to `expo-device` as [`Device.deviceYearClass`](./device/#deviceyearclass).
+     * @deprecated Moved to `expo-device` as [`Device.deviceYearClass`](./device/#deviceyearclass).
      */
     deviceYearClass: number | null;
     executionEnvironment: ExecutionEnvironment;
@@ -215,7 +215,7 @@ export interface NativeConstants {
     installationId: string;
     /**
      * `true` if the app is running on a device, `false` if running in a simulator or emulator.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.isDevice`](./device/#deviceisdevice).
+     * @deprecated Use `expo-device`'s [`Device.isDevice`](./device/#deviceisdevice).
      */
     isDevice: boolean;
     isHeadless: boolean;
@@ -223,14 +223,14 @@ export interface NativeConstants {
     /**
      * The **Info.plist** value for `CFBundleShortVersionString` on iOS and the version name set
      * by `version` in app.json on Android at the time the native app was built.
-     * @deprecated Deprecated. Use `expo-application`'s [`Application.nativeApplicationVersion`](./application/#applicationnativeapplicationversion).
+     * @deprecated Use `expo-application`'s [`Application.nativeApplicationVersion`](./application/#applicationnativeapplicationversion).
      */
     nativeAppVersion: string | null;
     /**
      * The **Info.plist** value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in
      * **app.json** in a standalone app) and the version code set by `android.versionCode` in
      * **app.json** on Android at the time the native app was built.
-     * @deprecated Deprecated. Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
+     * @deprecated Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
      */
     nativeBuildVersion: string | null;
     /**

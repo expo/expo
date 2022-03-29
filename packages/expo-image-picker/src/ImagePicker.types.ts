@@ -20,7 +20,7 @@ export type MediaLibraryPermissionResponse = PermissionResponse & {
 // @needsAudit
 /**
  * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Deprecated. Use `ImagePicker.MediaLibraryPermissionResponse` instead.
+ * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse` instead.
  */
 export type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 
@@ -268,7 +268,7 @@ export type ImagePickerOptions = {
    * Specify preset which will be used to compress selected video.
    * @default ImagePicker.VideoExportPreset.Passthrough
    * @platform ios 11+
-   * @deprecated Deprecated. See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+   * @deprecated See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
    * in Apple documentation.
    */
   videoExportPreset?: VideoExportPreset;
