@@ -4,7 +4,6 @@ import assert from 'assert';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
-import { resolveWithTimeout } from '../../utils/delay';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
@@ -131,17 +130,11 @@ export class DevServerManager {
 
   /** Stop all servers including ADB. */
   async stopAsync(): Promise<void> {
-    await resolveWithTimeout(
-      () =>
-        Promise.allSettled([
-          // Stop all dev servers
-          ...devServers.map((server) => server.stopAsync()),
-          // Stop ADB
-          AndroidDebugBridge.getServer().stopAsync(),
-        ]),
-      {
-        timeout: 3000,
-      }
-    );
+    await Promise.allSettled([
+      // Stop all dev servers
+      ...devServers.map((server) => server.stopAsync()),
+      // Stop ADB
+      AndroidDebugBridge.getServer().stopAsync(),
+    ]);
   }
 }
