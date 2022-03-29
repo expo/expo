@@ -39,8 +39,8 @@ includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plug
 include ':expoview'
 include ':tools'
 include ':ReactAndroid'
-include ':unimodules-test-core'
-project(':unimodules-test-core').projectDir = new File(rootDir, '../packages/unimodules-test-core/android')
+include ':expo-modules-test-core'
+project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
 
 // Include Expo modules that are not unimodules
 include(":expo-random")

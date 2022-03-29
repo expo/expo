@@ -88,7 +88,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
-  if (project.findProject(':unimodules-test-core')) {
-    testImplementation project(':unimodules-test-core')
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
   }
 }

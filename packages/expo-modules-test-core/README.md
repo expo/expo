@@ -1,4 +1,4 @@
-# unimodules-test-core
+# expo-modules-test-core
 
 Goal of this module is to provide utility methods that will help developers easily write unit tests for native code in expo modules.
 

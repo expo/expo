@@ -167,7 +167,7 @@
     "react-navigation-stack": "^2.8.2",
     "regl": "^1.3.0",
     "three": "^0.137.4",
-    "unimodules-test-core": "^0.4.1",
+    "expo-modules-test-core": "^0.7.0",
     "url": "^0.11.0",
     "uuid": "^8.3.0",
     "victory-native": "^30.4.0"

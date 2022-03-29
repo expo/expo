@@ -6,7 +6,7 @@ useExpoModules()
 apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
 applyNativeModulesSettingsGradle(settings)
 
-include(":unimodules-test-core")
-project(":unimodules-test-core").projectDir = new File("../../../packages/unimodules-test-core/android")
+include(":expo-modules-test-core")
+project(":expo-modules-test-core").projectDir = new File("../../../packages/expo-modules-test-core/android")
 
 include ':app'

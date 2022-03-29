@@ -28,7 +28,7 @@ export const EXCLUDED_PACKAGE_SLUGS = [
   'expo-dev-menu',
   'expo-dev-menu-interface',
   'expo-module-template',
-  'unimodules-test-core',
+  'expo-modules-test-core',
   'unimodules-core',
   'unimodules-react-native-adapter',
 ];
