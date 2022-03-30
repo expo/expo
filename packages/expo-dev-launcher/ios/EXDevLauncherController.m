@@ -612,7 +612,11 @@
   
   [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
   [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
-  [updatesConfig setObject:appId forKey:@"appId"];
+  
+  if (usesEASUpdates) {
+    [updatesConfig setObject:appId forKey:@"appId"];
+  }
+  
   [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
     
   return updatesConfig;
