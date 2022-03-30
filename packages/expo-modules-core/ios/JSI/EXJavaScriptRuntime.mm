@@ -12,7 +12,7 @@
 
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
-#import <ExpoModulesCore/ExpoModulesProxySpec.h>
+#import <ExpoModulesCore/EXJSIUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/Swift.h>
 

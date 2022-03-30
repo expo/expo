@@ -414,8 +414,6 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
     [EXJavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
     [_swiftInteropBridge setRuntime:runtime];
-
-    expo::installRuntimeObjects(*jsiRuntime, _bridge.jsCallInvoker, self);
   }
 }
 
