@@ -6,7 +6,7 @@ import { View as RNView, StyleSheet, ViewStyle, Share, Linking } from 'react-nat
 
 import PlatformIcon from '../../../components/PlatformIcon';
 import { PressableOpacity } from '../../../components/PressableOpacity';
-import { ProfileStackRoutes } from '../../../navigation/Navigation.types';
+import { HomeStackRoutes } from '../../../navigation/Navigation.types';
 import * as UrlUtils from '../../../utils/UrlUtils';
 import { AppIcon } from '../AppIcon';
 import { DevelopmentServerSubtitle } from './DevelopmentServerSubtitle';
@@ -52,7 +52,7 @@ export function DevelopmentServerListItem({
   onPressSubtitle,
 }: Props) {
   const theme = useExpoTheme();
-  const navigation = useNavigation<NavigationProp<ProfileStackRoutes>>();
+  const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
 
   const handlePress = () => {
     if (experienceInfo) {

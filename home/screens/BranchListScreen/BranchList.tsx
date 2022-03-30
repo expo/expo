@@ -3,11 +3,11 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import { getSDKMajorVersionForEASUpdateBranch } from 'screens/RedesignedProjectScreen/EASUpdateLaunchSection';
 
 import { AppPlatform, useBranchesForProjectQuery } from '../../graphql/types';
 import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
+import { getSDKMajorVersionForEASUpdateBranch } from '../ProjectScreen/EASUpdateLaunchSection';
 import { BranchListView } from './BranchListView';
 
 function useBranchesQuery({

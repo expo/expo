@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import mapValues from 'lodash/mapValues';
-import { SessionObject } from 'redux/SessionReducer';
 
 import * as Kernel from '../kernel/Kernel';
+import { SessionObject } from '../redux/SessionReducer';
 import { HistoryItem } from '../types';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 

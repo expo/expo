@@ -1,13 +1,13 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { PressableOpacity } from 'components/PressableOpacity';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
-import { CommonAppDataFragment } from 'graphql/types';
-import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React, { Fragment } from 'react';
 
-import { RedesignedProjectsListItem } from '../../components/RedesignedProjectsListItem';
+import { PressableOpacity } from '../../components/PressableOpacity';
+import { ProjectsListItem } from '../../components/ProjectsListItem';
+import { CommonAppDataFragment } from '../../graphql/types';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 type Props = {
   apps: CommonAppDataFragment[];
@@ -20,7 +20,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onSeeAllProjectsPress() {
-    navigation.push('RedesignedProjectsList', { accountName });
+    navigation.push('ProjectsList', { accountName });
   }
 
   return (
@@ -30,7 +30,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
 
         return (
           <Fragment key={project.id}>
-            <RedesignedProjectsListItem
+            <ProjectsListItem
               id={project.id}
               // iconUrl will be an empty string if the project has no icon
               imageURL={project.iconUrl || undefined}
