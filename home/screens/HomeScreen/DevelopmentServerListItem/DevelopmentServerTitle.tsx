@@ -1,6 +1,6 @@
 import { Text } from 'expo-dev-client-components';
 import * as React from 'react';
-import { View as RNView, StyleSheet, Platform } from 'react-native';
+import { View as RNView, StyleSheet } from 'react-native';
 
 import PlatformIcon from '../../../components/PlatformIcon';
 
@@ -15,7 +15,7 @@ export function DevelopmentServerTitle({ title, platform }: DevelopmentServerTit
   return title ? (
     <RNView style={styles.titleContainer}>
       {platform && <PlatformIcon platform={platform} />}
-      <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
+      <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
         {title}
       </Text>
     </RNView>
@@ -27,18 +27,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 2,
-  },
-  titleText: {
-    flex: 1,
-    fontSize: 15,
-    ...Platform.select({
-      ios: {
-        fontWeight: '500',
-      },
-      android: {
-        fontWeight: '400',
-        marginTop: 1,
-      },
-    }),
   },
 });

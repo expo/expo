@@ -28,14 +28,16 @@ export function TrackingSection() {
           }}
           containerProps={{ bg: 'default' }}>
           <View padding="medium">
-            <Text size="medium">Allow access to app-related data for tracking</Text>
+            <Text size="medium" type="InterRegular">
+              Allow access to app-related data for tracking
+            </Text>
           </View>
         </PressableOpacity>
       </View>
 
       <TouchableOpacity onPress={handleLearnMorePress}>
         <View py="small" px="medium">
-          <Text size="small" color="link">
+          <Text size="small" color="link" type="InterRegular">
             Learn more about what data Expo collects and why.
           </Text>
         </View>

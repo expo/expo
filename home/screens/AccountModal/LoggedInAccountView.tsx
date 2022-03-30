@@ -55,7 +55,7 @@ export function LoggedInAccountView({ accounts }: Props) {
                           <>
                             <Text type="InterBold">{account.owner.fullName}</Text>
                             <Spacer.Vertical size="tiny" />
-                            <Text color="secondary" size="small">
+                            <Text color="secondary" type="InterRegular" size="small">
                               {account.owner.username}
                             </Text>
                           </>

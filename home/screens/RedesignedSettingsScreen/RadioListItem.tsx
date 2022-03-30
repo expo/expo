@@ -19,7 +19,9 @@ export function RadioListItem({ onPress, icon, title, checked }: Props) {
         <Row align="center">
           {icon}
           {icon ? <Spacer.Horizontal size="small" /> : null}
-          <Text size="medium">{title}</Text>
+          <Text size="medium" type="InterRegular">
+            {title}
+          </Text>
         </Row>
         <View
           style={{

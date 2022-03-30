@@ -1,7 +1,6 @@
 import { spacing } from '@expo/styleguide-native';
 import { Button, Heading, Row, TerminalIcon, View, Text } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 type DevelopmentServersHeaderProps = {
   onHelpPress: () => void;
@@ -24,15 +23,11 @@ export function DevelopmentServersHeader({ onHelpPress }: DevelopmentServersHead
       </Row>
       <Button.Container onPress={onHelpPress}>
         <Text
+          type="InterSemiBold"
           color="secondary"
           style={{
             fontSize: 11,
             letterSpacing: 0.92,
-            ...Platform.select({
-              ios: {
-                fontWeight: '500',
-              },
-            }),
           }}>
           HELP
         </Text>

@@ -33,7 +33,7 @@ export function DevelopmentServersOpenQR() {
             style={{ marginRight: spacing[2] }}
             color={theme.icon.default}
           />
-          <Text>Scan QR code</Text>
+          <Text type="InterRegular">Scan QR code</Text>
         </Row>
       </PressableOpacity>
     </>

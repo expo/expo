@@ -47,7 +47,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
           <PressableOpacity onPress={onSeeAllSnacksPress}>
             <View padding="medium">
               <Row align="center" justify="between">
-                <Text>See all snacks</Text>
+                <Text type="InterRegular">See all snacks</Text>
                 <ChevronDownIcon
                   style={{ transform: [{ rotate: '-90deg' }] }}
                   color={theme.icon.secondary}

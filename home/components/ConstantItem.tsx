@@ -13,8 +13,8 @@ export function ConstantItem({ title, value, onPress }: Props) {
   return (
     <PressableOpacity onPress={onPress}>
       <Row justify="between" align="center" padding="medium">
-        <Text>{title}</Text>
-        <Text>{value}</Text>
+        <Text type="InterRegular">{title}</Text>
+        <Text type="InterRegular">{value}</Text>
       </Row>
     </PressableOpacity>
   );
