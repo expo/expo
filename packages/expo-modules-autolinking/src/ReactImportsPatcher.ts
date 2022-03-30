@@ -83,9 +83,9 @@ export async function patchFileAsync(headerSet: Set<string>, file: string, dryRu
 
   if (changed) {
     console.log(`Patching imports for file: ${file}`);
-  }
-  if (!dryRun) {
-    await fs.writeFile(file, transformContent);
+    if (!dryRun) {
+      await fs.writeFile(file, transformContent);
+    }
   }
 }
 
