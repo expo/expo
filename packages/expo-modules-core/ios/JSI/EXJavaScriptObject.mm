@@ -3,7 +3,6 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
-#import <ExpoModulesCore/ExpoModulesProxySpec.h>
 
 @implementation EXJavaScriptObject {
   /**

@@ -1,9 +1,10 @@
-// Copyright 2018-present 650 Industries. All rights reserved.
+// Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <React/RCTUtils.h>
-
 #import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/ExpoModulesProxySpec.h>
+#import <ExpoModulesCore/EXJSIUtils.h>
+
+using namespace facebook;
 
 namespace expo {
 
@@ -83,51 +84,6 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
   };
 
   setupBlock(resolveBlock, rejectBlock);
-}
-
-static jsi::Value __hostFunction_ExpoModulesProxySpec_callMethodAsync(jsi::Runtime &runtime, TurboModule &turboModule, const jsi::Value *args, size_t count)
-{
-  auto expoModulesProxy = static_cast<ExpoModulesProxySpec *>(&turboModule);
-
-  // The function that is invoked as a setup of the JS `Promise`.
-  auto promiseSetupFunc = [expoModulesProxy, args](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
-    callPromiseSetupWithBlock(runtime, expoModulesProxy->jsInvoker_, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
-      NSString *moduleName = convertJSIStringToNSString(runtime, args[0].getString(runtime));
-      NSString *methodName = convertJSIStringToNSString(runtime, args[1].getString(runtime));
-      NSArray *arguments = convertJSIArrayToNSArray(runtime, args[2].getObject(runtime).asArray(runtime), expoModulesProxy->jsInvoker_);
-
-      [expoModulesProxy->nativeModulesProxy callMethod:moduleName
-                                       methodNameOrKey:methodName
-                                             arguments:arguments
-                                              resolver:resolver
-                                              rejecter:rejecter];
-    });
-  };
-
-  return createPromiseAsJSIValue(runtime, promiseSetupFunc);
-}
-
-static jsi::Value __hostFunction_ExpoModulesProxySpec_callMethodSync(jsi::Runtime &runtime, TurboModule &turboModule, const jsi::Value *args, size_t count)
-{
-  auto expoModulesProxy = static_cast<ExpoModulesProxySpec *>(&turboModule);
-  NSString *moduleName = convertJSIStringToNSString(runtime, args[0].getString(runtime));
-  NSString *methodName = convertJSIStringToNSString(runtime, args[1].getString(runtime));
-  NSArray *arguments = convertJSIArrayToNSArray(runtime, args[2].getObject(runtime).asArray(runtime), expoModulesProxy->jsInvoker_);
-
-  id result = [expoModulesProxy->nativeModulesProxy callMethodSync:moduleName
-                                                        methodName:methodName
-                                                         arguments:arguments];
-
-  return convertObjCObjectToJSIValue(runtime, result);
-}
-
-ExpoModulesProxySpec::ExpoModulesProxySpec(std::shared_ptr<CallInvoker> callInvoker, EXNativeModulesProxy *nativeModulesProxy) :
-  TurboModule("ExpoModulesProxy", callInvoker),
-  nativeModulesProxy(nativeModulesProxy)
-{
-  methodMap_["callMethodAsync"] = MethodMetadata {3, __hostFunction_ExpoModulesProxySpec_callMethodAsync};
-
-  methodMap_["callMethodSync"] = MethodMetadata {3, __hostFunction_ExpoModulesProxySpec_callMethodSync};
 }
 
 } // namespace expo
