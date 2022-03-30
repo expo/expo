@@ -1,61 +1,23 @@
+import { ViewStyle } from '@expo/html-elements/build/primitives/View';
+import { spacing } from '@expo/styleguide-native';
+import { Heading, Row } from 'expo-dev-client-components';
 import * as React from 'react';
-import { View, ViewStyle, StyleSheet, TouchableOpacity, Text, Platform } from 'react-native';
-
-import Colors from '../constants/Colors';
-import { SectionLabelText } from './Text';
-import { SectionLabelContainer } from './Views';
 
 type Props = {
+  header: string;
   style?: ViewStyle;
-  title: string;
-  buttonLabel?: string;
-  leftContent?: React.ReactNode;
-  onPress?: () => any;
-  onLongPress?: () => any;
 };
 
-export default function SectionHeader({
-  title,
-  buttonLabel,
-  onPress,
-  onLongPress,
-  leftContent,
-}: Props) {
+export function SectionHeader({ header, style }: Props) {
   return (
-    <SectionLabelContainer>
-      <View style={styles.textContainer}>
-        {leftContent}
-        <SectionLabelText>{title.toUpperCase()}</SectionLabelText>
-      </View>
-      {buttonLabel && (
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={onPress}
-          onLongPress={onLongPress}>
-          <Text style={styles.buttonText}>{buttonLabel.toUpperCase()}</Text>
-        </TouchableOpacity>
-      )}
-    </SectionLabelContainer>
+    <Row px="small" py="small" align="center" style={style}>
+      <Heading
+        color="secondary"
+        size="small"
+        style={{ marginRight: spacing[2] }}
+        type="InterSemiBold">
+        {header}
+      </Heading>
+    </Row>
   );
 }
-
-const styles = StyleSheet.create({
-  textContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  buttonContainer: {
-    alignItems: 'flex-end',
-    flex: 1,
-  },
-  buttonText: {
-    color: Colors.light.greyText,
-    fontSize: 11,
-    letterSpacing: 0.92,
-    ...Platform.select({
-      ios: {
-        fontWeight: '500',
-      },
-    }),
-  },
-});

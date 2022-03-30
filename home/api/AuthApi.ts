@@ -1,6 +1,6 @@
 import ApiV2HttpClient from './ApiV2HttpClient';
 
-export async function signOutAsync(sessionSecret: string | null): Promise<void> {
+async function signOutAsync(sessionSecret: string | null): Promise<void> {
   if (!sessionSecret) {
     return;
   }
