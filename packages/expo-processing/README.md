@@ -4,7 +4,7 @@ https://user-images.githubusercontent.com/379606/119428009-fb40c200-bcc0-11eb-83
 
 # expo-processing
 
-Use [Processing.js](http://processingjs.org) on [Expo](https://expo.io)! Just
+Use [Processing.js](http://processingjs.org) on [Expo](https://expo.dev)! Just
 `npm i -S processing-js expo-processing` in your Expo project and import it with
 `import { ProcessingView } from 'expo-processing;`.
 
@@ -31,7 +31,7 @@ OpenProcessing.org.
 
 In
 a
-[new blank Expo project](https://docs.expo.io/versions/v18.0.0/guides/up-and-running.html),
+[new blank Expo project](https://docs.expo.dev/versions/v18.0.0/guides/up-and-running.html),
 run `npm i -S processing-js expo-processing` to install Processing.js and ExpoProcessing. Then replace
 `App.js` with the following:
 

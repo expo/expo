@@ -15,6 +15,6 @@ if (
   Constants?.executionEnvironment !== ExecutionEnvironment.Bare
 ) {
   throw new Error(
-    `Expo native runtime is not available: something went wrong and we aren't sure what it was. Please post more information and get support at https://forums.expo.io.`
+    `Expo native runtime is not available: something went wrong and we aren't sure what it was. Please post more information and get support at https://forums.expo.dev.`
   );
 }
