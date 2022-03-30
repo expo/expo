@@ -23,7 +23,7 @@ export function test(t) {
         hash: '69d77ab5cba970d7934a5f5bcd8fdd11',
       },
       {
-        module: 'https://docs.expo.io/static/images/header-logo.png',
+        module: 'https://docs.expo.dev/static/images/header-logo.png',
         name: '',
         type: 'png',
         hash: null,

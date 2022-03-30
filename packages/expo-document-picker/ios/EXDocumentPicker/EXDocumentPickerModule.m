@@ -39,7 +39,7 @@
 static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 {
   CFStringRef uti;
-  
+
   // UTTypeCreatePreferredIdentifierForTag doesn't work with wildcard mimetypes
   // so support common top level types with wildcards here.
   if ([mimeType isEqualToString:@"*/*"]) {
@@ -56,7 +56,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
     CFStringRef mimeTypeRef = (__bridge CFStringRef)mimeType;
     uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeTypeRef, NULL);
   }
-  
+
   return (__bridge_transfer NSString *)uti;
 }
 
@@ -80,7 +80,7 @@ EX_EXPORT_MODULE(ExpoDocumentPicker);
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  
+
   if (_moduleRegistry != nil) {
     _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
@@ -97,7 +97,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   }
   _resolve = resolve;
   _reject = reject;
-    
+
   NSArray *mimeTypes = options[@"type"] ?: @[@"*/*"];
   if (mimeTypes.count == 0) {
     reject(@"E_DOCUMENT_PICKER", @"type must be a list of strings.", nil);
@@ -136,7 +136,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
 #endif
     }
     @catch (NSException *exception) {
-      reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
+      reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.dev/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
       self->_resolve = nil;
       self->_reject = nil;
       return;
@@ -165,7 +165,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
     _reject = nil;
     return;
   }
-  
+
   NSURL *newUrl = url;
   if (_shouldCopyToCacheDirectory) {
     if (!_fileSystem) {
@@ -183,7 +183,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
       return;
     }
   }
-    
+
   NSString *extension = [url pathExtension];
   NSString *mimeType = [EXDocumentPickerModule getMimeType:extension];
 
@@ -224,17 +224,17 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   if (*error) {
     return 0;
   }
-  
+
   if (fileAttributes.fileType != NSFileTypeDirectory) {
     return fileAttributes.fileSize;
   }
-  
+
   // The path is pointing to the folder
   NSArray *contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:error];
   if (*error) {
     return 0;
   }
-  
+
   NSEnumerator *contentsEnumurator = [contents objectEnumerator];
   NSString *file;
   unsigned long long folderSize = 0;
@@ -244,7 +244,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
       return 0;
     }
   }
-  
+
   return folderSize;
 }
 

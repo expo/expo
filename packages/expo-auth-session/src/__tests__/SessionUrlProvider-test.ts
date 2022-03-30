@@ -22,14 +22,14 @@ afterEach(() => {
 describe('getStartUrl', () => {
   it(`returns the correct start URL from getStartUrl`, () => {
     const authUrl = 'https://signin.com';
-    const returnUrl = 'exp://expo.io/@example/abc+';
+    const returnUrl = 'exp://exp.host/@example/abc+';
     const result = managedSessionUrlProvider.getStartUrl(authUrl, returnUrl);
     expect(result).toEqual(
       Platform.select({
         default:
-          'https://auth.expo.io/@example/abc/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexpo.io%2F%40example%2Fabc%2B',
+          'https://auth.expo.io/@example/abc/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexp.host%2F%40example%2Fabc%2B',
         web: Platform.isDOMAvailable
-          ? 'http://localhost/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexpo.io%2F%40example%2Fabc%2B'
+          ? 'http://localhost/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexp.host%2F%40example%2Fabc%2B'
           : '',
       })
     );

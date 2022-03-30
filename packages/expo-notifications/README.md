@@ -18,7 +18,7 @@ Provides an API to fetch push notification tokens and to present, schedule, rece
 
 # Installation in managed Expo projects
 
-Please refer to the [installation instructions in the Expo documentation](https://docs.expo.io/versions/latest/sdk/notifications/#installation).
+Please refer to the [installation instructions in the Expo documentation](https://docs.expo.dev/versions/latest/sdk/notifications/#installation).
 
 # Installation in bare React Native projects
 
@@ -43,7 +43,7 @@ In order to be able to receive push notifications on the device:
 
 ### Configure for Android
 
-In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
+In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.dev/guides/setup-native-firebase/#bare-workflow-setup).
 
 This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
@@ -117,7 +117,7 @@ This module requires permission to subscribe to device boot. It's used to setup 
 
 ### Config plugin setup (optional)
 
-If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the expo-notifications config plugin ([what's a config plugin?](http://docs.expo.io/guides/config-plugins/)). To setup, just add the config plugin to the plugins array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
+If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the expo-notifications config plugin ([what's a config plugin?](http://docs.expo.dev/guides/config-plugins/)). To setup, just add the config plugin to the plugins array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
 
 ```json
 {
@@ -152,7 +152,7 @@ If you're using EAS Build, you can set your Android notification icon and color 
 
 If you would like to send notifications with Expo servers, the servers will need to have a way to authenticate with APNS/FCM that they are authorized to send notifications on your behalf. To do this:
 
-- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/push-notifications/using-fcm/#uploading-server-credentials)_,
+- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.dev/push-notifications/using-fcm/#uploading-server-credentials)_,
 - for APNS:
   - run `expo credentials:manager` in the root of your application,
   - if you've already uploaded a Push Notifications Key in another project and would like to reuse it in the current project, select _Use existing Push Notifications Key in current project_ (you may need to set `slug` and `ios.bundleIdentifier` fields in `app.json` so that the server knows to which `experienceId` and `bundleIdentifier` the key should be attributed),
@@ -216,7 +216,7 @@ If the device you're experiencing this on hasn't been setup with a SIM card it l
 
 ### Setting custom notification sounds
 
-Custom notification sounds are only supported when using [EAS Build](https://docs.expo.io/build/introduction/), or in the bare workflow.
+Custom notification sounds are only supported when using [EAS Build](https://docs.expo.dev/build/introduction/), or in the bare workflow.
 
 To add custom push notification sounds to your app, add the `expo-notifications` plugin to your `app.json` file:
 
@@ -364,7 +364,7 @@ The following methods are exported by the `expo-notifications` module:
 
 ## Custom notification icon and colors (Android only)
 
-Setting a default icon and color for all of your app's notifications is almost too easy. In the managed workflow, just set your [`notification.icon`](https://docs.expo.io/versions/latest/config/app/#notification) and [`notification.color`](https://docs.expo.io/versions/latest/config/app/#notification) keys in `app.json`, and rebuild your app! In the bare workflow, you'll need to follow [these instructions](https://github.com/expo/expo/tree/main/packages/expo-notifications#configure-for-android).
+Setting a default icon and color for all of your app's notifications is almost too easy. In the managed workflow, just set your [`notification.icon`](https://docs.expo.dev/versions/latest/config/app/#notification) and [`notification.color`](https://docs.expo.dev/versions/latest/config/app/#notification) keys in `app.json`, and rebuild your app! In the bare workflow, you'll need to follow [these instructions](https://github.com/expo/expo/tree/main/packages/expo-notifications#configure-for-android).
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
@@ -390,9 +390,9 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/guides/push-notifications/).
+Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.dev/guides/push-notifications/).
 
-> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://docs.expo.io/push-notifications/push-notifications-setup/#credentials).
+> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://docs.expo.dev/push-notifications/push-notifications-setup/#credentials).
 
 > **Note:** Especially on iOS, `Promise`s returned by this method may take longer periods of time to fulfill. For more information see [Fetching a push token takes a long time on iOS](#fetching-a-push-token-takes-a-long-time-on-ios).
 
@@ -400,10 +400,10 @@ Returns an Expo token that can be used to send a push notification to this devic
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](https://docs.expo.io/versions/latest/config/app/#slug).
+- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](https://docs.expo.dev/versions/latest/config/app/#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
-- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.io/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
-- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.io/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
+- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.dev/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
+- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.dev/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
 
 #### Returns
 
@@ -744,7 +744,7 @@ Notifications.setNotificationHandler({
 
 ### `registerTaskAsync(taskName: string): void`
 
-When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](https://docs.expo.io/versions/latest/sdk/task-manager/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
+When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](https://docs.expo.dev/versions/latest/sdk/task-manager/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
 
 The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive the following arguments:
 

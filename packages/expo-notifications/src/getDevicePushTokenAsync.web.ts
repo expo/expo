@@ -39,7 +39,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   if (!vapidPublicKey) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
-      'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.'
+      'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.dev/versions/latest/guides/using-vapid/.'
     );
   }
 

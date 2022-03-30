@@ -150,7 +150,7 @@ async function action(options: ActionOptions): Promise<void> {
   const expoHomeHash = await HashDirectory.hashDirectoryWithVersionsAsync(EXPO_HOME_PATH);
   const appJsonFilePath = path.join(EXPO_HOME_PATH, 'app.json');
   const slug = `expo-home-dev-${expoHomeHash}`;
-  const url = `exp://expo.io/@${EXPO_HOME_DEV_ACCOUNT_USERNAME!}/${slug}`;
+  const url = `exp://exp.host/@${EXPO_HOME_DEV_ACCOUNT_USERNAME!}/${slug}`;
   const appJsonFile = new JsonFile<AppConfig>(appJsonFilePath);
   const appJson = await appJsonFile.readAsync();
 

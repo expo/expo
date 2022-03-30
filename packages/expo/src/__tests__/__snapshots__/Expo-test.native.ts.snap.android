@@ -1,3 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`importing Expo throws a clear error in bare React Native 1`] = `"Expo native runtime is not available: something went wrong and we aren't sure what it was. Please post more information and get support at https://forums.expo.io."`;
+exports[`importing Expo throws a clear error in bare React Native 1`] = `"Expo native runtime is not available: something went wrong and we aren't sure what it was. Please post more information and get support at https://forums.expo.dev."`;
