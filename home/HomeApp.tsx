@@ -11,7 +11,6 @@ import * as React from 'react';
 import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-native';
 import url from 'url';
 
-import FeatureFlags from './FeatureFlags';
 import ApolloClient from './api/ApolloClient';
 import { ColorTheme } from './constants/Colors';
 import {
@@ -220,9 +219,7 @@ export default function HomeApp() {
     theme = 'light';
   }
 
-  const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
-
-  const redesignedBackgroundColor =
+  const backgroundColor =
     theme === 'dark' ? darkTheme.background.default : lightTheme.background.default;
 
   return (
@@ -231,9 +228,7 @@ export default function HomeApp() {
         style={[
           styles.container,
           {
-            backgroundColor: FeatureFlags.ENABLE_2022_NAVIGATION_REDESIGN
-              ? redesignedBackgroundColor
-              : backgroundColor,
+            backgroundColor,
           },
         ]}>
         <ActionSheetProvider>

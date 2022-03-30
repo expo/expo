@@ -4,11 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import { Text, View, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
-import { useSelector } from 'redux/Hooks';
-import isUserAuthenticated from 'utils/isUserAuthenticated';
 
 import { PressableOpacity } from '../../components/PressableOpacity';
 import { useHome_CurrentUserQuery } from '../../graphql/types';
+import { useSelector } from '../../redux/Hooks';
+import isUserAuthenticated from '../../utils/isUserAuthenticated';
 import { LoggedInAccountView } from './LoggedInAccountView';
 import { LoggedOutAccountView } from './LoggedOutAccountView';
 import { ModalHeader } from './ModalHeader';

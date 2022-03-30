@@ -2,11 +2,11 @@ import { borderRadius, CheckIcon, iconSize, spacing, UsersIcon } from '@expo/sty
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
 import { FlatList } from 'react-native';
-import { useDispatch } from 'redux/Hooks';
-import SessionActions from 'redux/SessionActions';
 
 import { PressableOpacity } from '../../components/PressableOpacity';
 import { Home_CurrentUserQuery } from '../../graphql/types';
+import { useDispatch } from '../../redux/Hooks';
+import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
 
 type Props = {

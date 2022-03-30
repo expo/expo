@@ -5,7 +5,7 @@ import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, FlatList } from 'react-native';
 
-import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
+import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
 import { BranchDetailsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -51,7 +51,7 @@ export function BranchDetailsView({ loading, error, data }: Props) {
           manifestPermalink={data.app.byId.updateBranchByName.updates[0].manifestPermalink}
         />
         <View padding="medium">
-          <RedesignedSectionHeader header="Updates" style={{ paddingTop: 0 }} />
+          <SectionHeader header="Updates" style={{ paddingTop: 0 }} />
 
           <View bg="default" rounded="large" border="hairline" overflow="hidden">
             <FlatList<typeof data.app.byId.updateBranchByName.updates[number]>

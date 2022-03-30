@@ -1,13 +1,13 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { PressableOpacity } from 'components/PressableOpacity';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
-import { CommonSnackDataFragment } from 'graphql/types';
-import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React, { Fragment } from 'react';
 
-import { RedesignedSnacksListItem } from '../../components/RedesignedSnacksListItem';
+import { PressableOpacity } from '../../components/PressableOpacity';
+import { SnacksListItem } from '../../components/SnacksListItem';
+import { CommonSnackDataFragment } from '../../graphql/types';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 type Props = {
   snacks: CommonSnackDataFragment[];
@@ -21,7 +21,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onSeeAllSnacksPress() {
-    navigation.push('RedesignedSnacksList', { accountName });
+    navigation.push('SnacksList', { accountName });
   }
 
   return (
@@ -31,7 +31,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
 
         return (
           <Fragment key={snack.id}>
-            <RedesignedSnacksListItem
+            <SnacksListItem
               name={snack.name}
               description={snack.description}
               isDraft={snack.isDraft}

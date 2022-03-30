@@ -6,8 +6,8 @@ import * as React from 'react';
 
 import { PressableOpacity } from '../../components/PressableOpacity';
 
-const NO_UPDATES_TEXT = dedent`
-This branch has no updates.
+const NO_PUBLISHES_TEXT = dedent`
+This project has not yet been published.
 `;
 
 export function EmptySection() {
@@ -15,13 +15,11 @@ export function EmptySection() {
 
   return (
     <View bg="default" border="hairline" rounded="medium" padding="medium">
-      <Text type="InterRegular">{NO_UPDATES_TEXT}</Text>
+      <Text type="InterRegular">{NO_PUBLISHES_TEXT}</Text>
       <Spacer.Vertical size="medium" />
       <PressableOpacity
         onPress={() => {
-          WebBrowser.openBrowserAsync(
-            'https://docs.expo.dev/eas-update/getting-started/#publish-an-update'
-          );
+          WebBrowser.openBrowserAsync('https://docs.expo.dev/workflow/publishing/');
         }}
         containerProps={{
           style: {

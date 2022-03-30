@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Camera } from '../components/Camera';
 import QRFooterButton from '../components/QRFooterButton';
 import QRIndicator from '../components/QRIndicator';
-import { AllStackRoutes } from '../navigation/Navigation.types';
+import { ModalStackRoutes } from '../navigation/Navigation.types';
 
 type State = {
   isVisible: boolean;
@@ -19,9 +19,7 @@ type State = {
 
 const initialState: State = { isVisible: Platform.OS === 'ios', url: null };
 
-export default function BarCodeScreen(
-  props: StackScreenProps<AllStackRoutes, 'Diagnostics'> & State
-) {
+export default function BarCodeScreen(props: StackScreenProps<ModalStackRoutes, 'QRCode'> & State) {
   const [state, setState] = React.useReducer(
     (props: State, state: Partial<State>): State => ({ ...props, ...state }),
     initialState

@@ -7,7 +7,7 @@ import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
 let isInitialized = false;
 const apiKey = Constants.manifest?.extra?.amplitudeApiKey;
 
-export const events = {
+const events = {
   USER_LOGGED_IN: 'USER_LOGGED_IN',
   USER_LOGGED_OUT: 'USER_LOGGED_OUT',
   USER_CREATED_ACCOUNT: 'USER_CREATED_ACCOUNT',
@@ -15,7 +15,7 @@ export const events = {
 
 const canUseAmplitude = Environment.isProduction && apiKey;
 
-export async function initialize(): Promise<void> {
+async function initialize(): Promise<void> {
   if (isInitialized || !canUseAmplitude) {
     return;
   }
@@ -24,7 +24,7 @@ export async function initialize(): Promise<void> {
   isInitialized = true;
 }
 
-export async function identify(id: string | null, options?: TrackingOptions): Promise<void> {
+async function identify(id: string | null, options?: TrackingOptions): Promise<void> {
   initialize();
   const properties = normalizeTrackingOptions(options);
 
@@ -39,7 +39,7 @@ export async function identify(id: string | null, options?: TrackingOptions): Pr
   }
 }
 
-export async function track(event: string, options?: TrackingOptions): Promise<void> {
+async function track(event: string, options?: TrackingOptions): Promise<void> {
   initialize();
   const properties = normalizeTrackingOptions(options);
 

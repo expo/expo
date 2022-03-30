@@ -8,8 +8,4 @@ export default {
   ENABLE_QR_CODE_BUTTON: Constants.isDevice && !Environment.IsIOSRestrictedBuild,
   // Disable the clipboard button in the App Store client.
   ENABLE_CLIPBOARD_BUTTON: !Environment.IsIOSRestrictedBuild,
-
-  // Flags for the 2022 Expo Go redesign
-  ENABLE_2022_NAVIGATION_REDESIGN: true,
-  ENABLE_2022_DIAGNOSTICS_REDESIGN: true,
 };

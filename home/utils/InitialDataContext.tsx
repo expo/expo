@@ -1,5 +1,6 @@
-import { HomeScreenDataQuery, Home_CurrentUserQuery } from 'graphql/types';
 import React, { useState, createContext, useContext } from 'react';
+
+import { HomeScreenDataQuery, Home_CurrentUserQuery } from '../graphql/types';
 
 type ContextValue = {
   homeScreenData?: HomeScreenDataQuery;
