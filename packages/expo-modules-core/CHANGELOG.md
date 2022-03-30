@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- Removed the opt-in feature to use the turbo module implementation of `NativeModulesProxy` in favor of another solution introduced in [#15847](https://github.com/expo/expo/pull/15847). ([#16825](https://github.com/expo/expo/pull/16825) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.7.0 — 2022-01-26
 
 ### 🎉 New features
