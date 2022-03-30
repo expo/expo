@@ -86,6 +86,10 @@ export declare class SQLError {
 }
 export interface WebSQLDatabase extends Database {
     exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+    /**
+     * Close the database.
+     */
+    close(): void;
 }
 export declare type Query = {
     sql: string;
