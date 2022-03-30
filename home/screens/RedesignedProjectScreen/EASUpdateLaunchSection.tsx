@@ -70,7 +70,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
           <PressableOpacity onPress={onSeeAllBranchesPress}>
             <View padding="medium">
               <Row align="center" justify="between">
-                <Text>See all branches</Text>
+                <Text type="InterRegular">See all branches</Text>
                 <ChevronDownIcon
                   style={{ transform: [{ rotate: '-90deg' }] }}
                   color={theme.icon.secondary}

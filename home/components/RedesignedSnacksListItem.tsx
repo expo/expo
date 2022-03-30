@@ -2,7 +2,7 @@ import { ChevronDownIcon } from '@expo/styleguide-native';
 import { PressableOpacity } from 'components/PressableOpacity';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
-import { Linking, Platform, Share, StyleSheet } from 'react-native';
+import { Linking, Share } from 'react-native';
 
 import * as UrlUtils from '../utils/UrlUtils';
 
@@ -45,13 +45,13 @@ export function RedesignedSnacksListItem({ description, isDraft, name, url }: Pr
       <View padding="medium">
         <Row align="center" justify="between">
           <View align="start">
-            <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
+            <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
               {name}
             </Text>
             {normalizedDescription && (
               <>
                 <Spacer.Vertical size="tiny" />
-                <Text style={styles.titleText} size="small" ellipsizeMode="tail" numberOfLines={1}>
+                <Text type="InterSemiBold" size="small" ellipsizeMode="tail" numberOfLines={1}>
                   {normalizedDescription}
                 </Text>
               </>
@@ -60,7 +60,9 @@ export function RedesignedSnacksListItem({ description, isDraft, name, url }: Pr
               <>
                 <Spacer.Vertical size="tiny" />
                 <View bg="secondary" rounded="medium" flex="0" padding="tiny" border="default">
-                  <Text size="small">Draft</Text>
+                  <Text size="small" type="InterRegular">
+                    Draft
+                  </Text>
                 </View>
               </>
             )}
@@ -74,18 +76,3 @@ export function RedesignedSnacksListItem({ description, isDraft, name, url }: Pr
     </PressableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  titleText: {
-    fontSize: 15,
-    ...Platform.select({
-      ios: {
-        fontWeight: '500',
-      },
-      android: {
-        fontWeight: '400',
-        marginTop: 1,
-      },
-    }),
-  },
-});

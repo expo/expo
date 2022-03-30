@@ -49,7 +49,7 @@ export function ThemeSection() {
         />
       </View>
       <View py="small" px="medium">
-        <Text size="small" color="secondary">
+        <Text size="small" color="secondary" type="InterRegular">
           Automatic is only supported on operating systems that allow you to control the system-wide
           color scheme.
         </Text>

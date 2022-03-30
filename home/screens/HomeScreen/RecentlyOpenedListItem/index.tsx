@@ -1,7 +1,7 @@
 import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
 import { Text, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-import { View as RNView, StyleSheet, ViewStyle, Share, Platform } from 'react-native';
+import { View as RNView, StyleSheet, ViewStyle, Share } from 'react-native';
 
 import { PressableOpacity } from '../../../components/PressableOpacity';
 import * as UrlUtils from '../../../utils/UrlUtils';
@@ -38,21 +38,7 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
       disabled={disabled}>
       <AppIcon image={image} />
       <RNView style={[styles.contentContainer]}>
-        <Text
-          style={{
-            flex: 1,
-            fontSize: 15,
-            ...Platform.select({
-              ios: {
-                fontWeight: '500',
-              },
-              android: {
-                fontWeight: '400',
-              },
-            }),
-          }}
-          ellipsizeMode="tail"
-          numberOfLines={1}>
+        <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
           {title}
         </Text>
         <RNView style={styles.chevronRightContainer}>

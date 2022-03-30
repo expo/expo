@@ -40,13 +40,22 @@ export function RedesignedProjectsListItem({ imageURL, name, subtitle, sdkVersio
           <Row align="center">
             <AppIcon image={imageURL} />
             <View>
-              <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
+              <Text
+                type="InterSemiBold"
+                style={styles.titleText}
+                ellipsizeMode="tail"
+                numberOfLines={1}>
                 {name}
               </Text>
               {subtitle ? (
                 <>
                   <Spacer.Vertical size="tiny" />
-                  <Text size="small" color="secondary" ellipsizeMode="tail" numberOfLines={1}>
+                  <Text
+                    type="InterRegular"
+                    size="small"
+                    color="secondary"
+                    ellipsizeMode="tail"
+                    numberOfLines={1}>
                     {subtitle}
                   </Text>
                 </>
@@ -54,7 +63,12 @@ export function RedesignedProjectsListItem({ imageURL, name, subtitle, sdkVersio
               {sdkVersionNumber ? (
                 <>
                   <Spacer.Vertical size="tiny" />
-                  <Text size="small" color="secondary" ellipsizeMode="tail" numberOfLines={1}>
+                  <Text
+                    type="InterRegular"
+                    size="small"
+                    color="secondary"
+                    ellipsizeMode="tail"
+                    numberOfLines={1}>
                     SDK {sdkVersionNumber}
                     {isExpired ? ': Not supported' : ''}
                   </Text>
