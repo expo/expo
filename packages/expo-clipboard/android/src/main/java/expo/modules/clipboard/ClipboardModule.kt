@@ -38,7 +38,7 @@ class ClipboardModule : Module() {
     name(moduleName)
 
     // region Strings
-    asyncFunction("getStringAsync") { options: GetStringOptions ->
+    function("getStringAsync") { options: GetStringOptions ->
       val item = clipboardManager.firstItem
       when (options.preferredFormat) {
         StringFormat.PLAIN -> item?.coerceToPlainText(context)
@@ -46,7 +46,7 @@ class ClipboardModule : Module() {
       } ?: ""
     }
 
-    asyncFunction("setStringAsync") { content: String, options: SetStringOptions ->
+    function("setStringAsync") { content: String, options: SetStringOptions ->
       val clip = when (options.inputFormat) {
         StringFormat.PLAIN -> ClipData.newPlainText(null, content)
         StringFormat.HTML -> {
@@ -56,10 +56,10 @@ class ClipboardModule : Module() {
         }
       }
       clipboardManager.setPrimaryClip(clip)
-      return@asyncFunction true
+      return@function true
     }
 
-    asyncFunction("hasStringAsync") {
+    function("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
         ?.let {
@@ -71,14 +71,14 @@ class ClipboardModule : Module() {
     // endregion
 
     // region Images
-    asyncFunction("getImageAsync") { options: GetImageOptions, promise: Promise ->
+    function("getImageAsync") { options: GetImageOptions, promise: Promise ->
       val imageUri = clipboardManager
         .takeIf { clipboardHasItemWithType("image/*") }
         ?.firstItem
         ?.uri
         .ifNull {
           promise.resolve(null)
-          return@asyncFunction
+          return@function
         }
 
       val exceptionHandler = CoroutineExceptionHandler { _, err ->
@@ -97,7 +97,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    asyncFunction("setImageAsync") { imageData: String, promise: Promise ->
+    function("setImageAsync") { imageData: String, promise: Promise ->
       val exceptionHandler = CoroutineExceptionHandler { _, err ->
         err.printStackTrace()
         val rejectionCause = when (err) {
@@ -114,7 +114,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    asyncFunction("hasImageAsync") {
+    function("hasImageAsync") {
       clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
     }
     //endregion
