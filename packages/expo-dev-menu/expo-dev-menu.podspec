@@ -47,7 +47,8 @@ Pod::Spec.new do |s|
     'ios/assets',
     'assets/*.ios.js',
     'assets/dev-menu-packager-host',
-    'assets/*.ttf'
+    'assets/*.ttf',
+    'assets/*.otf'
   ]}
 
   s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED' }

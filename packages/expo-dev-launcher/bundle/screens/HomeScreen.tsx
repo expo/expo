@@ -187,8 +187,10 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
       bg="default"
       rounded="none">
       <Row align="center" padding="medium" bg="default">
-        <PulseIndicator isActive={isFetching} color={backgroundColor} />
-        <Spacer.Horizontal size="small" />
+        <View width="6">
+          <PulseIndicator isActive={isFetching} color={backgroundColor} />
+        </View>
+
         <Button.Text color="default">
           {isFetching ? 'Searching for development servers...' : 'Fetch development servers'}
         </Button.Text>

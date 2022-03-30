@@ -10,6 +10,8 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
+@import EXDevMenu;
+
 NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 @implementation EXDevLauncherInternal
@@ -140,4 +142,10 @@ RCT_EXPORT_METHOD(copyToClipboard:(NSString *)content
   resolve(nil);
 }
 
+RCT_EXPORT_METHOD(loadFontsAsync:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[DevMenuManager shared] loadFonts];
+  resolve(nil);
+}
 @end
