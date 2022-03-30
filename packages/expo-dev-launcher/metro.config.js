@@ -9,7 +9,16 @@ config.server = {
       const platform = url.searchParams.get('platform');
 
       // When an asset is imported outside the project root, it has wrong path on Android
-      // So we fix the path to correct one
+      // This happens in react-navigation and expo-dev-client-components
+
+      // The back button in stack is required by the launcher, so we fix the path to correct one
+      const rnNavigationAssets = '/node_modules/@react-navigation/stack/src/views/assets';
+
+      if (platform === 'android' && req.url.startsWith(rnNavigationAssets)) {
+        req.url = req.url.replace(rnNavigationAssets, `/assets/../..${rnNavigationAssets}`);
+      }
+
+      // The icons in dev-client-components
       if (platform === 'android' && /\/assets\/.+\.png\?.+$/.test(req.url)) {
         req.url = `/assets/../${req.url}`;
       }

@@ -240,5 +240,6 @@ export const border = {
 export const borderDark = {
   default: { borderColor: darkTheme.border.default, borderWidth: 1 },
   warning: { borderColor: darkTheme.border.warning, borderWidth: 1 },
+  error: { borderColor: darkTheme.border.error, borderWidth: 1 },
   hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
 };

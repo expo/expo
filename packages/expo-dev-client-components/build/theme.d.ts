@@ -326,6 +326,10 @@ export declare const borderDark: {
         borderColor: string;
         borderWidth: number;
     };
+    error: {
+        borderColor: string;
+        borderWidth: number;
+    };
     hairline: {
         borderColor: string;
         borderWidth: number;

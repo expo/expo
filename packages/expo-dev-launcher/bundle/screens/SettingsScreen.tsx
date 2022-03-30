@@ -74,7 +74,9 @@ export function SettingsScreen() {
 
   return (
     <ScrollView testID="DevLauncherSettingsScreen">
-      <Spacer.Vertical size="large" />
+      <View px="medium" mt="8">
+        <Heading size="large">Settings</Heading>
+      </View>
 
       <View py="large" px="medium">
         <View bg="default" rounded="large">
