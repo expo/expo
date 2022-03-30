@@ -158,6 +158,10 @@ jobs:
     env:
       NDK_ABI_FILTERS: x86_64
     steps:
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17'
       - name: 👀 Checkout
         uses: actions/checkout@v2
         with:
