@@ -15,10 +15,13 @@ import { BuildInfoProvider } from './BuildInfoProvider';
 import { CrashReportProvider } from './CrashReportProvider';
 import { DevMenuPreferencesProvider } from './DevMenuPreferencesProvider';
 import { DevSessionsProvider } from './DevSessionsProvider';
-import { ModalProvider } from './ModalStackProvider';
+import { ModalStackProvider } from './ModalStackProvider';
 import { PendingDeepLinkProvider } from './PendingDeepLinkProvider';
+import { QueryProvider } from './QueryProvider';
 import { RecentApp, RecentlyOpenedAppsProvider } from './RecentlyOpenedAppsProvider';
+import { ToastStackProvider } from './ToastStackProvider';
 import { UserContextProvider } from './UserContextProvider';
+import { UpdatesConfigProvider } from './UpdatesConfigProvider';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
@@ -46,28 +49,34 @@ export function AppProviders({
   const statusBarContent = isDark ? 'light-content' : 'dark-content';
 
   return (
-    <ThemeProvider themePreference="no-preference">
-      <UserContextProvider initialUserData={initialUserData}>
-        <DevMenuPreferencesProvider initialPreferences={initialDevMenuPreferences}>
-          <DevSessionsProvider initialDevSessions={initialDevSessions}>
-            <RecentlyOpenedAppsProvider initialApps={initialRecentlyOpenedApps}>
-              <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
-                <CrashReportProvider initialCrashReport={initialCrashReport}>
-                  <ModalProvider>
-                    <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
-                      <NavigationContainer
-                        theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
-                        <StatusBar barStyle={statusBarContent} />
-                        {children}
-                      </NavigationContainer>
-                    </PendingDeepLinkProvider>
-                  </ModalProvider>
-                </CrashReportProvider>
-              </BuildInfoProvider>
-            </RecentlyOpenedAppsProvider>
-          </DevSessionsProvider>
-        </DevMenuPreferencesProvider>
-      </UserContextProvider>
-    </ThemeProvider>
+    <QueryProvider>
+      <ThemeProvider themePreference="no-preference">
+        <UserContextProvider initialUserData={initialUserData}>
+          <DevMenuPreferencesProvider initialPreferences={initialDevMenuPreferences}>
+            <DevSessionsProvider initialDevSessions={initialDevSessions}>
+              <RecentlyOpenedAppsProvider initialApps={initialRecentlyOpenedApps}>
+                <BuildInfoProvider initialBuildInfo={initialBuildInfo}>
+                  <CrashReportProvider initialCrashReport={initialCrashReport}>
+                    <UpdatesConfigProvider>
+                      <ModalStackProvider>
+                        <ToastStackProvider>
+                          <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
+                            <NavigationContainer
+                              theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
+                              <StatusBar barStyle={statusBarContent} />
+                              {children}
+                            </NavigationContainer>
+                          </PendingDeepLinkProvider>
+                        </ToastStackProvider>
+                      </ModalStackProvider>
+                    </UpdatesConfigProvider>
+                  </CrashReportProvider>
+                </BuildInfoProvider>
+              </RecentlyOpenedAppsProvider>
+            </DevSessionsProvider>
+          </DevMenuPreferencesProvider>
+        </UserContextProvider>
+      </ThemeProvider>
+    </QueryProvider>
   );
 }

@@ -9,6 +9,7 @@ export * from './ExtensionsFilledIcon';
 export * from './HomeFilledIcon';
 export * from './InfoIcon';
 export * from './InspectElementIcon';
+export * from './LoadingIndicatorIcon';
 export * from './PerformanceIcon';
 export * from './QuestionMarkIcon';
 export * from './RefreshIcon';
@@ -21,5 +22,6 @@ export * from './ThreeFingerPressIcon';
 export * from './ToolbarOverlayIcon';
 export * from './UpdateIcon';
 export * from './UserIcon';
+export * from './WarningIcon';
 export * from './XIcon';
 //# sourceMappingURL=index.js.map

@@ -72,7 +72,8 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   return @{
     @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null],
     @"installationID": [EXDevLauncherController.sharedInstance.installationIDHelper getOrCreateInstallationID] ?: [NSNull null],
-    @"isDevice": @(isDevice)
+    @"isDevice": @(isDevice),
+    @"updatesConfig": [[EXDevLauncherController sharedInstance] getUpdatesConfig],
   };
 }
 

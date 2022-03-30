@@ -77,9 +77,7 @@ function PackagersList() {
 
   const onPackagerPress = ({ url }: { url: string }) => {
     loadApp(url).catch((error) => {
-      modalStack.push({
-        element: <LoadAppErrorModal message={error.message} />,
-      });
+      modalStack.push(() => <LoadAppErrorModal message={error.message} />);
     });
   };
 
