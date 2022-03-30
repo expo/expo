@@ -60,7 +60,7 @@ export function DevelopmentServersOpenURL() {
               style={{ transform: [{ rotate: interpolateRotating }], marginRight: spacing[2] }}>
               <ChevronRightIcon size="small" style={{ tintColor: theme.icon.default }} />
             </Animated.View>
-            <Text>Enter URL manually</Text>
+            <Text type="InterRegular">Enter URL manually</Text>
           </Row>
         </PressableOpacity>
         {showInput ? <Spacer.Vertical size="medium" /> : null}
@@ -79,6 +79,7 @@ export function DevelopmentServersOpenURL() {
               style={{ backgroundColor: theme.background.default }}
               px="4"
               py="3"
+              type="InterRegular"
               placeholder="exp://"
               placeholderTextColor={theme.text.secondary}
             />
@@ -95,7 +96,7 @@ export function DevelopmentServersOpenURL() {
                   alignItems: 'center',
                 },
               ]}>
-              <Button.Text color="tertiary" weight="semibold">
+              <Button.Text color="tertiary" type="InterSemiBold">
                 Connect
               </Button.Text>
             </PressableOpacity>

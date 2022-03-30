@@ -48,7 +48,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
           <PressableOpacity onPress={onSeeAllProjectsPress}>
             <View padding="medium">
               <Row align="center" justify="between">
-                <Text>See all projects</Text>
+                <Text type="InterRegular">See all projects</Text>
                 <ChevronDownIcon
                   style={{ transform: [{ rotate: '-90deg' }] }}
                   color={theme.icon.secondary}

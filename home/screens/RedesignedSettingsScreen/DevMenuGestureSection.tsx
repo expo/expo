@@ -56,7 +56,7 @@ export function DevMenuGestureSection() {
         />
       </View>
       <View py="small" px="medium">
-        <Text size="small" color="secondary">
+        <Text size="small" color="secondary" type="InterRegular">
           Selected gestures will toggle the developer menu while inside an experience. The menu
           allows you to reload or return to home in a published experience, and exposes developer
           tools in development mode.
