@@ -93,7 +93,7 @@ export function test(t) {
               resolve
             );
           });
-          db._db.close();
+          db.close();
         },
         30000
       );

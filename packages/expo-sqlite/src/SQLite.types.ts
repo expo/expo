@@ -138,6 +138,11 @@ export declare class SQLError {
 // @docsMissing
 export interface WebSQLDatabase extends Database {
   exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+
+  /**
+   * Close the database.
+   */
+  close(): void;
 }
 
 // @docsMissing
