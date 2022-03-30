@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `close` and `DeleteAsync` methods. ([#16831](https://github.com/expo/expo/pull/16831) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
