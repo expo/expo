@@ -24,7 +24,7 @@
     "android:detox:build:debug": "detox build -c android.emu.debug",
     "android:detox:build:release": "detox build -c android.emu.release",
     "android:detox:test:debug": "detox test -c android.emu.debug --loglevel warn",
-    "android:detox:test:release": "watchman watch-del-all; detox test -c android.emu.release -l verbose --cleanup",
+    "android:detox:test:release": "watchman watch-del-all; detox test -c android.emu.release -l verbose --cleanup --take-screenshots failing",
     "ios:detox:build:debug": "detox build -c ios.sim.debug",
     "ios:detox:build:release": "detox build -c ios.sim.release",
     "ios:detox:test:debug": "detox test -c ios.sim.debug --loglevel warn --take-screenshots failing",
