@@ -100,6 +100,37 @@ EX_EXPORT_METHOD_AS(close,
   }
 }
 
+EX_EXPORT_METHOD_AS(delete,
+                    deleteDbName:(NSString *)dbName
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  NSString *errorCode = @"E_SQLITE_DELETE_DATABASE";
+
+  @synchronized(self) {
+    if ([cachedDatabases objectForKey:dbName]) {
+      reject(errorCode, @"Unable to delete an opening database", nil);
+      return;
+    }
+  }
+
+  NSString *path = [self pathForDatabaseName:dbName];
+  if (!path) {
+    reject(errorCode, @"No FileSystem module.", nil);
+    return;
+  }
+  if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    reject(errorCode, @"Database not found", nil);
+    return;
+  }
+  NSError *error;
+  if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
+    reject(errorCode, @"Unable to delete the database file", error);
+    return;
+  }
+  resolve(nil);
+}
+
 - (id)getSqlValueForColumnType:(int)columnType withStatement:(sqlite3_stmt*)statement withIndex:(int)i
 {
   switch (columnType) {

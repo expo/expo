@@ -44,6 +44,14 @@ class SQLiteDatabase {
     this._closed = true;
     ExponentSQLite.close(this._name);
   }
+
+  deleteAsync(): Promise<void> {
+    if (!this._closed) {
+      throw new Error('Unable to delete an opening database');
+    }
+
+    return ExponentSQLite.delete(this._name);
+  }
 }
 
 function _serializeQuery(query: Query): [string, unknown[]] {
@@ -105,7 +113,7 @@ export function openDatabase(
     throw new TypeError(`The database name must not be undefined`);
   }
   const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
-  const extendedMethods = ['exec', 'close'];
+  const extendedMethods = ['exec', 'close', 'deleteAsync'];
   const dbWithExtendedMethods = extendedMethods.reduce((curr, methodName) => {
     curr[methodName] = curr._db[methodName].bind(curr._db);
     return curr;
