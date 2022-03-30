@@ -50,7 +50,7 @@
     "eslint-plugin-react-hooks": "^4.3.0"
   },
   "peerDependencies": {
-    "eslint": ">=7.28",
+    "eslint": ">=8.10",
     "prettier": ">=2.4"
   },
   "peerDependenciesMeta": {
