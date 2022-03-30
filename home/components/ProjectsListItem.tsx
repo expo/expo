@@ -37,9 +37,9 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id }: P
     <PressableOpacity onPress={onPress}>
       <View padding="medium">
         <Row align="center" justify="between">
-          <Row align="center">
+          <Row align="center" flex="1">
             <AppIcon image={imageURL} />
-            <View>
+            <View flex="1">
               <Text
                 type="InterSemiBold"
                 style={styles.titleText}
