@@ -90,6 +90,10 @@ export interface WebSQLDatabase extends Database {
      * Close the database.
      */
     close(): void;
+    /**
+     * Delete the database file.
+     */
+    deleteAsync(): Promise<void>;
 }
 export declare type Query = {
     sql: string;
