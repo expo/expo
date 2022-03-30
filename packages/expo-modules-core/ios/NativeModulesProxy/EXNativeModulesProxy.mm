@@ -210,7 +210,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
 #pragma mark - Statics
 
-+ (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
++ (ModulesProvider *)getExpoModulesProvider
 {
   // Dynamically gets the modules provider class.
   // NOTE: This needs to be versioned in Expo Go.
