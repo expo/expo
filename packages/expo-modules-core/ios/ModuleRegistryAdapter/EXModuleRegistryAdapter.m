@@ -13,7 +13,7 @@
 
 @property (nonatomic, strong) EXModuleRegistryProvider *moduleRegistryProvider;
 @property (nonatomic, strong) EXViewManagerAdapterClassesRegistry *viewManagersClassesRegistry;
-@property (nonatomic, strong, nullable) id<ModulesProviderObjCProtocol> swiftModulesProvider;
+@property (nonatomic, strong, nullable) ModulesProvider *swiftModulesProvider;
 
 @end
 
@@ -24,16 +24,6 @@
   if (self = [super init]) {
     _moduleRegistryProvider = moduleRegistryProvider;
     _viewManagersClassesRegistry = [[EXViewManagerAdapterClassesRegistry alloc] init];
-  }
-  return self;
-}
-
-- (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass
-{
-  if (self = [self initWithModuleRegistryProvider:moduleRegistryProvider]) {
-    if ([swiftModulesProviderClass conformsToProtocol:@protocol(ModulesProviderObjCProtocol)]) {
-      _swiftModulesProvider = [swiftModulesProviderClass new];
-    }
   }
   return self;
 }
