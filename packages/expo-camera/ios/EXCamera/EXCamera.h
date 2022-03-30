@@ -73,7 +73,6 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, strong) AVCaptureMovieFileOutput *movieFileOutput;
 @property (nonatomic, strong) id runtimeErrorHandlingObserver;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
-@property (nonatomic, strong) NSDictionary *defaultRecordOptions;
 
 @property (nonatomic, assign) NSInteger presetCamera;
 @property (nonatomic, assign) EXCameraFlashMode flashMode;
@@ -83,6 +82,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) NSInteger whiteBalance;
 @property (assign, nonatomic) AVCaptureSessionPreset pictureSize;
 @property (nonatomic, assign) AVCaptureVideoStabilizationMode videoStabilizationMode;
+@property (nonatomic, strong) NSDictionary *defaultRecordOptions;
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
@@ -96,7 +96,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)updateZoom;
 - (void)updateWhiteBalance;
 - (void)updatePictureSize;
-- (void)updateSessionWithOptions:(NSDictionary *)options onReject:(EXPromiseRejectBlock)reject;
+- (void)updateSessionWithOptions:(NSDictionary *)options;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
 - (void)setBarCodeScannerSettings:(NSDictionary *)settings;
 - (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
