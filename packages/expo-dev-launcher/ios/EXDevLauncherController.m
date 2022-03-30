@@ -345,24 +345,24 @@
       if (manifest) {
         launchExpoApp(self->_updatesInterface.launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
-    } error:^(NSError * _Nonnull error) {
-      if (@available(iOS 14, *)) {
-        // Try to retry if the network connection was rejected because of the luck of the lan network permission.
-        static BOOL shouldRetry = true;
-        NSString *host = expoUrl.host;
-
-        if (shouldRetry && ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."])) {
-          shouldRetry = false;
-          [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:onError];
-          return;
-        }
-      }
-      
-      onError(error);
-    }];
+    } error:onError];
   };
   
-  [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:onError];
+  [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:^(NSError * _Nonnull error) {
+    if (@available(iOS 14, *)) {
+      // Try to retry if the network connection was rejected because of the luck of the lan network permission.
+      static BOOL shouldRetry = true;
+      NSString *host = expoUrl.host;
+
+      if (shouldRetry && ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."])) {
+        shouldRetry = false;
+        [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:onError];
+        return;
+      }
+    }
+    
+    onError(error);
+  }];
 }
 
 - (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXManifestsManifest * _Nullable)manifest
