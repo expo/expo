@@ -16,7 +16,14 @@ add_library(
         src/main/cpp/JAVManager.cpp
 )
 
-file(GLOB LIBRN_DIR "${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}")
+# Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
+file(GLOB LIBRN_DIR "${RN_SO_DIR}/${ANDROID_ABI}")
+if (NOT LIBRN_DIR)
+    # If /${ANDROID_ABI} dir not found, then ${RN_SO_DIR} is probably:
+    # ReactAndroid/build/react-ndk/exported
+    file(GLOB LIBRN_DIR "${RN_SO_DIR}")
+endif()
+
 file(GLOB libfbjni_include_DIRS "${BUILD_DIR}/fbjni-*-headers.jar/")
 
 # includes

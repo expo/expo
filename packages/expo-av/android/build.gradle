@@ -6,6 +6,9 @@ group = 'host.exp.exponent'
 version = '11.1.0'
 
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+def RN_SO_DIR = findProject(":ReactAndroid")
+    ? Paths.get(findProject(":ReactAndroid").getProjectDir(), "build", "react-ndk", "exported")
+    : "${buildDir}/react-native-0*/jni"
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -79,7 +82,8 @@ android {
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
         arguments "-DANDROID_STL=c++_shared",
-            "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}"
+            "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+            "-DRN_SO_DIR=${RN_SO_DIR}"
       }
     }
   }
@@ -149,10 +153,7 @@ dependencies {
     def rnAAR = rnAARs.singleFile
     extractJNI(files(rnAAR))
   } else {
-    // there is no prebuilt react-native.aar, we must be building from source. directly include the headers
-    def rnAndroid = fileTree("${REACT_NATIVE_DIR}/ReactAndroid")
-    // TODO: Build from ReactAndroid/ and React/ headers source?
-    logger.error("node_modules/react-native/android does not contain a *.aar file! Cannot build expo-av. TODO: Build from ReactAndroid/ source?")
+    // there is no prebuilt react-native.aar, this is most likely Expo Go
   }
 
   api 'com.google.android.exoplayer:exoplayer:2.13.3'
@@ -194,7 +195,7 @@ task extractJNIFiles {
 }
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild')) {
+  if (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake')) {
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
   }
