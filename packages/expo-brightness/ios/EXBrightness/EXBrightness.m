@@ -9,6 +9,8 @@
 @interface EXBrightness ()
 
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
+@property (nonatomic, assign) BOOL hasListeners;
+@property (nonatomic, weak) id <EXEventEmitterService> eventEmitter;
 
 @end
 
@@ -20,6 +22,28 @@ EX_EXPORT_MODULE(ExpoBrightness);
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXSystemBrightnessPermissionRequester new]] withPermissionsManager:_permissionsManager];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"Expo.brightnessDidChange"];
+}
+
+- (void)startObserving
+{
+  _hasListeners = YES;
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(brightnessDidChange:)
+                                               name:UIScreenBrightnessDidChangeNotification
+                                             object:nil];
+}
+
+- (void)stopObserving
+{
+  _hasListeners = NO;
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:UIScreenBrightnessDidChangeNotification
+                                                object:nil];
 }
 
 EX_EXPORT_METHOD_AS(getPermissionsAsync,
@@ -62,6 +86,18 @@ EX_EXPORT_METHOD_AS(getBrightnessAsync,
     result = [UIScreen mainScreen].brightness;
   }];
   resolve(@(result));
+}
+
+- (void)brightnessDidChange:(NSNotification *)notification
+{
+  if (!_hasListeners) {
+    return;
+  }
+   __block float result = 0;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    result = [UIScreen mainScreen].brightness;
+  }];
+  [_eventEmitter sendEventWithName:@"Expo.brightnessDidChange" body:@{@"brightness": @(result)}];
 }
 
 EX_EXPORT_METHOD_AS(getSystemBrightnessAsync,
