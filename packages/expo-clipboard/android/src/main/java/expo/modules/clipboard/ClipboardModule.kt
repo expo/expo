@@ -33,6 +33,12 @@ private val TAG = ClipboardModule::class.java.simpleName
 const val CLIPBOARD_DIRECTORY_NAME = ".clipboard"
 const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
 
+private enum class ContentType(val jsName: String) {
+  PLAIN_TEXT("plain-text"),
+  HTML("html"),
+  IMAGE("image")
+}
+
 class ClipboardModule : Module() {
   override fun definition() = ModuleDefinition {
     name(moduleName)
@@ -62,10 +68,7 @@ class ClipboardModule : Module() {
     function("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
-        ?.let {
-          it.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
-            it.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
-        }
+        ?.hasTextContent
         ?: false
     }
     // endregion
@@ -177,13 +180,16 @@ class ClipboardModule : Module() {
 
     private val listener = ClipboardManager.OnPrimaryClipChangedListener {
       maybeClipboardManager.takeIf { isListening }
-        ?.primaryClip
-        ?.takeIf { it.itemCount >= 1 }
+        ?.primaryClipDescription
         ?.let { clip ->
           this@ClipboardModule.sendEvent(
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
-              "content" to (clip.getItemAt(0).text?.toString() ?: "")
+              "contentTypes" to listOfNotNull(
+                ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
+                ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
+                ContentType.HTML.takeIf { clip.hasMimeType("image/*") }
+              ).map { it.jsName }
             )
           )
         }
@@ -248,3 +254,10 @@ private fun ClipData.Item.coerceToPlainText(context: Context): String =
   } else {
     coerceToText(context).toString()
   }
+
+/**
+ * True if clipboard contains plain text or HTML content
+ */
+private val ClipDescription.hasTextContent: Boolean
+  get() = hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
+    hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)

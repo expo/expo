@@ -2,7 +2,6 @@
 
 import ExpoModulesCore
 import UIKit
-import MobileCoreServices
 
 let onClipboardChanged = "onClipboardChanged"
 
@@ -33,7 +32,7 @@ public class ClipboardModule: Module {
     }
 
     function("hasStringAsync") { () -> Bool in
-      return UIPasteboard.general.hasStrings || UIPasteboard.general.contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String])
+      return UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
 
     // MARK: URLs
@@ -105,7 +104,7 @@ public class ClipboardModule: Module {
   @objc
   func clipboardChangedListener() {
     sendEvent(onClipboardChanged, [
-      "content": UIPasteboard.general.string ?? ""
+      "contentTypes": availableContentTypes()
     ])
   }
 }
@@ -115,4 +114,23 @@ private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
     case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
     case .png: return image.pngData()
   }
+}
+
+private func availableContentTypes() -> [String] {
+  let predicateDict: [ContentType: Bool] = [
+    // if it has HTML, it can be converted to plain text too
+    .plainText: UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML,
+    .html: UIPasteboard.general.hasHTML,
+    .image: UIPasteboard.general.hasImages,
+    .url: UIPasteboard.general.hasURLs
+  ]
+  let availableTypes = predicateDict.filter { $0.value }.keys.map { $0.rawValue }
+  return Array(availableTypes)
+}
+
+private enum ContentType: String {
+  case plainText = "plain-text"
+  case html = "html"
+  case image = "image"
+  case url = "url"
 }

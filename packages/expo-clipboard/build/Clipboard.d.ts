@@ -1,10 +1,14 @@
 import { Subscription } from 'expo-modules-core';
-import { ClipboardImage, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 declare type ClipboardEvent = {
     /**
-     * The new content of the user's clipboard.
+     * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
      */
     content: string;
+    /**
+     * An array of content types that are available on the clipboard.
+     */
+    contentTypes: ContentType[];
 };
 export { Subscription, ClipboardEvent };
 /**
@@ -90,12 +94,18 @@ export declare function hasImageAsync(): Promise<boolean>;
  * is a no-op on Web.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
- * single argument that is an object with a `content` key.
+ * single argument that is an object containing information about clipboard contents.
  *
  * @example
  * ```typescript
- * addClipboardListener(({ content }: ClipboardEvent) => {
- *   alert('Copy pasta! Here's the string that was copied: ' + content);
+ * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
+ *     Clipboard.getStringAsync().then(content => {
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
+ *     });
+ *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
+ *     alert('Yay! Clipboard contains an image');
+ *   }
  * });
  * ```
  */
