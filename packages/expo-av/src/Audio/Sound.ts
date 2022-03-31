@@ -116,7 +116,7 @@ export class Sound implements Playback {
 
   private _updateAudioSampleReceivedCallback() {
     if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
         throw new Error(
           'Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.'
         );
