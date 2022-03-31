@@ -141,6 +141,7 @@ class MediaPlayerData extends PlayerData implements
 
   @Override
   public synchronized void release() {
+    super.release();
     stopUpdatingProgressIfNecessary();
     if (mMediaPlayer != null) {
       mMediaPlayer.setOnBufferingUpdateListener(null);
@@ -151,6 +152,11 @@ class MediaPlayerData extends PlayerData implements
       mMediaPlayer.release();
       mMediaPlayer = null;
     }
+  }
+
+  @Override
+  protected double getCurrentPositionSeconds() {
+    return (double)mMediaPlayer.getCurrentPosition() / 1000.0;
   }
 
   @Override
