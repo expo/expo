@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -115,6 +116,14 @@ public class UIManagerModuleWrapper implements
     }
   }
 
+  public void runOnNativeModulesQueueThread(Runnable runnable) {
+    if (mReactContext.isOnNativeModulesQueueThread()) {
+      runnable.run();
+    } else {
+      mReactContext.runOnNativeModulesQueueThread(runnable);
+    }
+  }
+
 
   @Override
   public void registerLifecycleEventListener(final LifecycleEventListener listener) {
@@ -186,6 +195,10 @@ public class UIManagerModuleWrapper implements
 
   public long getJavaScriptContextRef() {
     return mReactContext.getJavaScriptContextHolder().get();
+  }
+
+  public CallInvokerHolderImpl getJSCallInvokerHolder() {
+    return (CallInvokerHolderImpl) mReactContext.getCatalystInstance().getJSCallInvokerHolder();
   }
 
   @Override
