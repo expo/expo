@@ -5,10 +5,14 @@ import {
   PermissionResponse,
   PermissionStatus,
   UnavailabilityError,
+  Subscription,
+  EventEmitter,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoBrightness from './ExpoBrightness';
+
+const BrightnessEventEmitter = new EventEmitter(ExpoBrightness);
 
 // @needsAudit
 export enum BrightnessMode {
@@ -26,6 +30,14 @@ export enum BrightnessMode {
    */
   MANUAL = 2,
 }
+
+// @needsAudit
+export type BrightnessEvent = {
+  /**
+   * A number between `0` and `1`, inclusive, representing the current screen brightness.
+   */
+  brightness: number;
+};
 
 export { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus };
 
@@ -200,3 +212,18 @@ export const usePermissions = createPermissionHook({
   getMethod: getPermissionsAsync,
   requestMethod: requestPermissionsAsync,
 });
+
+// @needsAudit
+/**
+ * Subscribe to brightness (iOS) updates. The event fires whenever
+ * the power mode is toggled.
+ *
+ * On web and android the event never fires.
+ * @param listener A callback that is invoked when brightness (iOS) changes.
+ * The callback is provided a single argument that is an object with a `brightness` key.
+ * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
+ * @platform ios
+ */
+export function addBrightnessListener(listener: (event: BrightnessEvent) => void): Subscription {
+  return BrightnessEventEmitter.addListener('Expo.brightnessDidChange', listener);
+}

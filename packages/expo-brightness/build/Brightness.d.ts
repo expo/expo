@@ -1,4 +1,4 @@
-import { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
 export declare enum BrightnessMode {
     /**
      * Means that the current brightness mode cannot be determined.
@@ -14,6 +14,12 @@ export declare enum BrightnessMode {
      */
     MANUAL = 2
 }
+export declare type BrightnessEvent = {
+    /**
+     * A number between `0` and `1`, inclusive, representing the current screen brightness.
+     */
+    brightness: number;
+};
 export { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus };
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
@@ -106,4 +112,15 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+/**
+ * Subscribe to brightness (iOS) updates. The event fires whenever
+ * the power mode is toggled.
+ *
+ * On web and android the event never fires.
+ * @param listener A callback that is invoked when brightness (iOS) changes.
+ * The callback is provided a single argument that is an object with a `brightness` key.
+ * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
+ * @platform ios
+ */
+export declare function addBrightnessListener(listener: (event: BrightnessEvent) => void): Subscription;
 //# sourceMappingURL=Brightness.d.ts.map
