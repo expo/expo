@@ -204,10 +204,8 @@ tasks.whenTaskAdded { task ->
     if (RN_BUILD_FROM_SOURCE) {
       task.dependsOn(":ReactAndroid:packageReactNdkLibs")
     }
-  } else if (task.name.startsWith('generateJsonModel')) {
-    if (RN_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:packageReactNdkLibs")
-    }
+  } else if (task.name.startsWith('generateJsonModel') && RN_BUILD_FROM_SOURCE) {
+    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
   }
 
 }
