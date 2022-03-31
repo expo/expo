@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from 'expo-modules-core';
+import { Subscription } from 'expo-modules-core';
 import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 declare type ClipboardEvent = {
     /**
@@ -10,7 +10,7 @@ declare type ClipboardEvent = {
      */
     contentTypes: ContentType[];
 };
-export { Subscription, EventEmitter, ClipboardEvent };
+export { Subscription, ClipboardEvent };
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -30,7 +30,7 @@ export declare function getStringAsync(options?: GetStringOptions): Promise<stri
 export declare function setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext-options) instead.
+ * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.

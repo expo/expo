@@ -2,11 +2,6 @@ import { borderRadius, spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import { View, Divider, Spacer, Text } from 'expo-dev-client-components';
-import {
-  HomeScreenDataDocument,
-  HomeScreenDataQuery,
-  HomeScreenDataQueryVariables,
-} from 'graphql/types';
 import * as React from 'react';
 import { Alert, AppState, NativeEventSubscription, Platform, StyleSheet } from 'react-native';
 
@@ -14,12 +9,16 @@ import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
-import { HomeScreenHeader } from '../../components/HomeScreenHeader';
 import ScrollView from '../../components/NavigationScrollView';
 import { PressableOpacity } from '../../components/PressableOpacity';
-import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import RefreshControl from '../../components/RefreshControl';
+import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
+import {
+  HomeScreenDataDocument,
+  HomeScreenDataQuery,
+  HomeScreenDataQueryVariables,
+} from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import HistoryActions from '../../redux/HistoryActions';
 import { DevSession, HistoryList } from '../../types';
@@ -30,6 +29,7 @@ import { DevelopmentServersHeader } from './DevelopmentServersHeader';
 import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
 import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
+import { HomeScreenHeader } from './HomeScreenHeader';
 import { ProjectsSection } from './ProjectsSection';
 import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
 import { RecentlyOpenedSection } from './RecentlyOpenedSection';
@@ -99,11 +99,6 @@ export class HomeScreenView extends React.Component<Props, State> {
   render() {
     const { projects, isRefreshing, data } = this.state;
 
-    // TODO: update to show EAS Updates when we get data for that
-    const recentHistory = this.props.recentHistory.filter(
-      (project) => project.manifest && 'name' in project.manifest
-    );
-
     return (
       <View style={styles.container}>
         <HomeScreenHeader currentUser={data} loading={this.state.loading} />
@@ -144,18 +139,18 @@ export class HomeScreenView extends React.Component<Props, State> {
           ) : (
             <DevelopmentServersPlaceholder />
           )}
-          {recentHistory.count() ? (
+          {this.props.recentHistory.count() ? (
             <>
               <Spacer.Vertical size="medium" />
               <RecentlyOpenedHeader onClearPress={this._handlePressClearHistory} />
-              <RecentlyOpenedSection recentHistory={recentHistory} />
+              <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
             </>
           ) : null}
           {this.props.accountName ? (
             data?.apps.length && this.props.accountName ? (
               <>
                 <Spacer.Vertical size="medium" />
-                <RedesignedSectionHeader header="Projects" />
+                <SectionHeader header="Projects" />
                 <ProjectsSection
                   accountName={this.props.accountName}
                   apps={data.apps.slice(0, 3)}
@@ -166,7 +161,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           ) : (
             <>
               <Spacer.Vertical size="medium" />
-              <RedesignedSectionHeader header="Projects" />
+              <SectionHeader header="Projects" />
               <PressableOpacity
                 onPress={() => this.props.navigation.navigate('Account')}
                 hitSlop={16}
@@ -185,7 +180,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           {data?.snacks.length && this.props.accountName ? (
             <>
               <Spacer.Vertical size="medium" />
-              <RedesignedSectionHeader header="Snacks" />
+              <SectionHeader header="Snacks" />
               <SnacksSection
                 accountName={this.props.accountName}
                 snacks={data.snacks.slice(0, 3)}

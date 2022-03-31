@@ -38,8 +38,8 @@ export class SimulatorAppPrerequisite extends Prerequisite {
     try {
       // make sure we can run simctl
       await spawnAsync('xcrun', ['simctl', 'help']);
-    } catch (e) {
-      Log.warn(`Unable to run simctl:\n${e.toString()}`);
+    } catch (error: any) {
+      Log.warn(`Unable to run simctl:\n${error.toString()}`);
       throw new PrerequisiteCommandError(
         'SIMCTL',
         'xcrun is not configured correctly. Ensure `sudo xcode-select --reset` works before running this command again.'

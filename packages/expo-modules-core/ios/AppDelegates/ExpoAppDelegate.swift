@@ -263,11 +263,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Statics
 
   @objc
-  public static func registerSubscribersFrom(modulesProvider: ModulesProviderObjCProtocol) {
-    guard let provider = modulesProvider as? ModulesProviderProtocol else {
-      fatalError("Expo modules provider must implement `ModulesProviderProtocol`.")
-    }
-    provider.getAppDelegateSubscribers().forEach { subscriberType in
+  public static func registerSubscribersFrom(modulesProvider: ModulesProvider) {
+    modulesProvider.getAppDelegateSubscribers().forEach { subscriberType in
       registerSubscriber(subscriberType.init())
     }
   }
@@ -286,11 +283,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   @objc
-  public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProviderObjCProtocol) {
-    guard let provider = modulesProvider as? ModulesProviderProtocol else {
-      fatalError("Expo modules provider must implement `ModulesProviderProtocol`.")
-    }
-    provider.getReactDelegateHandlers()
+  public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProvider) {
+    modulesProvider.getReactDelegateHandlers()
       .sorted { tuple1, tuple2 -> Bool in
         return ModulePriorities.get(tuple1.packageName) > ModulePriorities.get(tuple2.packageName)
       }

@@ -2,7 +2,6 @@ import { EventEmitter, UnavailabilityError, Platform } from 'expo-modules-core';
 import ExpoClipboard from './ExpoClipboard';
 const emitter = new EventEmitter(ExpoClipboard);
 const onClipboardEventName = 'onClipboardChanged';
-export { EventEmitter };
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -32,7 +31,7 @@ export async function setStringAsync(text, options = {}) {
 }
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext-options) instead.
+ * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.

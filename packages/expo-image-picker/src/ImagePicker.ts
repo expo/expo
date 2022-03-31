@@ -68,7 +68,7 @@ export async function getCameraPermissionsAsync(): Promise<CameraPermissionRespo
 }
 
 /**
- * @deprecated Deprecated. Use `getMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Use `getMediaLibraryPermissionsAsync()` instead.
  */
 export async function getCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse> {
   console.warn(
@@ -100,7 +100,7 @@ export async function requestCameraPermissionsAsync(): Promise<CameraPermissionR
 }
 
 /**
- * @deprecated Deprecated. Use `requestMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Use `requestMediaLibraryPermissionsAsync()` instead.
  */
 export async function requestCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse> {
   console.warn(

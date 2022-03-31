@@ -68,7 +68,7 @@ def getCurrentFlavor() {
   Matcher matcher = pattern.matcher(taskRequestName)
 
   if (matcher.find()) {
-    return matcher.group(1).toLowerCase()
+    return matcher.group(1)
   }
   return ""
 }
@@ -96,26 +96,26 @@ rootProject.getSubprojects().forEach({ project ->
       if (!projectProperties.get("reanimated")
           || (projectProperties.get("reanimated") && projectProperties.get("reanimated").get("enablePackagingOptions"))
       ) {
-        def flavorString = getCurrentFlavor()
+        def flavorNameCapitalized = getCurrentFlavor()
         replaceSoTask.appName = project.getProperties().path
         replaceSoTask.buildDir = project.getProperties().buildDir
         def appName = project.getProperties().path
 
         def tasks = project.getTasks()
         replaceSoTaskDebug.dependsOn(
-            tasks.getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
-            tasks.getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
+            tasks.getByPath("${appName}:merge${flavorNameCapitalized}DebugNativeLibs"),
+            tasks.getByPath("${appName}:strip${flavorNameCapitalized}DebugDebugSymbols")
         )
-        tasks.getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
+        tasks.getByPath("${appName}:package${flavorNameCapitalized}Debug").dependsOn(replaceSoTaskDebug)
 
-        if (tasks.findByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs")
-            && tasks.findByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
-            && tasks.findByPath("${appName}:package${flavorString}ReleaseWithDevMenu")) {
+        if (tasks.findByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs")
+            && tasks.findByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
+            && tasks.findByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu")) {
           replaceSoTaskReleaseWithDevMenu.dependsOn(
-              task.getByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs"),
-              task.getByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
+              task.getByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs"),
+              task.getByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
           )
-          tasks.getByPath("${appName}:package${flavorString}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
+          tasks.getByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
         }
       }
     }

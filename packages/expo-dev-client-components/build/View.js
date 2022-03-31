@@ -31,7 +31,39 @@ export const View = create(RNView, {
             '0': { flexGrow: 0 },
         },
         bg,
-        border,
+        opacity: {
+            '1': { opacity: 1 },
+            '0.5': { opacity: 0.5 },
+            '0.75': { opacity: 0.75 },
+            '0': { opacity: 0 },
+        },
+        absolute: {
+            top: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+            },
+            bottom: {
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+            },
+            all: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+            },
+        },
+        border: {
+            default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+            hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+            warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
+            error: { borderColor: lightTheme.border.error, borderWidth: 1 },
+        },
         ...rounded,
         shadow: {
             micro: shadows.micro,

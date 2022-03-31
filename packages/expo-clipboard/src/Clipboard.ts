@@ -24,7 +24,7 @@ type ClipboardEvent = {
   contentTypes: ContentType[];
 };
 
-export { Subscription, EventEmitter, ClipboardEvent };
+export { Subscription, ClipboardEvent };
 
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
@@ -60,7 +60,7 @@ export async function setStringAsync(
 
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext-options) instead.
+ * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.

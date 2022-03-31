@@ -88,7 +88,7 @@
   "expo-task-manager": "~10.1.0",
   "expo-tracking-transparency": "~2.1.0",
   "expo-updates": "~0.11.2",
-  "expo-video-thumbnails": "~6.2.0",
+  "expo-video-thumbnails": "~6.2.1",
   "expo-web-browser": "~10.1.0",
   "lottie-react-native": "5.0.1",
   "react-native-branch": "5.0.0",
@@ -106,6 +106,5 @@
   "react-native-webview": "11.15.0",
   "sentry-expo": "^4.0.0",
   "unimodules-app-loader": "~3.0.0",
-  "unimodules-image-loader-interface": "~6.1.0",
-  "unimodules-task-manager-interface": "~7.1.0"
+  "unimodules-image-loader-interface": "~6.1.0"
 }

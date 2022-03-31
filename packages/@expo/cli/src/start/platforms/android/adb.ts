@@ -309,9 +309,9 @@ export async function getPropertyDataForDeviceAsync(
       };
     }
     return parseAdbDeviceProperties(results);
-  } catch (error) {
+  } catch (error: any) {
     // TODO: Ensure error has message and not stderr
-    throw new Error(`Failed to get properties for device (${device.pid}): ${error.message}`);
+    throw new CommandError(`Failed to get properties for device (${device.pid}): ${error.message}`);
   }
 }
 
