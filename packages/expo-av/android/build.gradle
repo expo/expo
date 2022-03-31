@@ -9,7 +9,7 @@ version = '11.1.0'
 
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def RN_SO_DIR = findProject(":ReactAndroid")
-    ? Paths.get(findProject(":ReactAndroid").getProjectDir(), "build", "react-ndk", "exported")
+    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "react-ndk", "exported")
     : "${buildDir}/react-native-0*/jni"
 
 buildscript {
