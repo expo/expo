@@ -22,7 +22,7 @@ export interface HostInfo {
 }
 
 /** Parsed values from the supported request headers. */
-export interface ParsedHeaders {
+export interface ManifestRequestInfo {
   /** Should return the signed manifest. */
   acceptSignature: boolean;
   /** Platform to serve. */
@@ -42,7 +42,9 @@ export type ResponseProjectSettings = {
 export const DEVELOPER_TOOL = 'expo-cli';
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
-export abstract class ManifestMiddleware extends ExpoMiddleware {
+export abstract class ManifestMiddleware<
+  TManifestRequestInfo extends ManifestRequestInfo
+> extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: {
@@ -63,15 +65,11 @@ export abstract class ManifestMiddleware extends ExpoMiddleware {
     );
   }
 
-  protected getDefaultResponseHeaders(): Map<string, any> {
-    return new Map<string, any>();
-  }
-
   /** Exposed for testing. */
   public async _resolveProjectSettingsAsync({
     platform,
     hostname,
-  }: Pick<ParsedHeaders, 'hostname' | 'platform'>): Promise<ResponseProjectSettings> {
+  }: Pick<TManifestRequestInfo, 'hostname' | 'platform'>): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
 
@@ -120,7 +118,7 @@ export abstract class ManifestMiddleware extends ExpoMiddleware {
   }
 
   /** Parse request headers into options. */
-  public abstract getParsedHeaders(req: ServerRequest): ParsedHeaders;
+  public abstract getParsedHeaders(req: ServerRequest): TManifestRequestInfo;
 
   /** Store device IDs that were sent in the request headers. */
   private async saveDevicesAsync(req: ServerRequest) {
@@ -168,7 +166,7 @@ export abstract class ManifestMiddleware extends ExpoMiddleware {
   protected abstract trackManifest(version?: string): void;
 
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
-  public abstract _getManifestResponseAsync(options: ParsedHeaders): Promise<{
+  public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<{
     body: string;
     version: string;
     headers: ServerHeaders;

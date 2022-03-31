@@ -1,8 +1,13 @@
+import Dicer from 'dicer';
+import nullthrows from 'nullthrows';
+import { Stream } from 'stream';
+import { parseItem } from 'structured-headers';
+
 import { getProjectAsync } from '../../../../api/getProject';
 import { APISettings } from '../../../../api/settings';
 import { getUserAsync } from '../../../../api/user/user';
 import { ExpoGoManifestHandlerMiddleware } from '../ExpoGoManifestHandlerMiddleware';
-import { ServerRequest } from '../server.types';
+import { ServerHeaders, ServerRequest } from '../server.types';
 
 jest.mock('../../../../api/user/user');
 jest.mock('../../../../log');
@@ -48,6 +53,77 @@ const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
+type MultipartPart = { headers: Map<string, string>; body: string };
+
+function isManifestMultipartPart(multipartPart: MultipartPart): boolean {
+  const [, parameters] = parseItem(nullthrows(multipartPart.headers.get('content-disposition')));
+  const partName = parameters.get('name');
+  return partName === 'manifest';
+}
+
+export async function getManifestBodyAsync(response: {
+  body: string;
+  headers: ServerHeaders;
+}): Promise<string | null> {
+  const multipartParts = await parseMultipartMixedResponseAsync(response);
+  const manifestPart = multipartParts.find(isManifestMultipartPart);
+  return manifestPart?.body ?? null;
+}
+
+async function parseMultipartMixedResponseAsync({
+  body,
+  headers,
+}: {
+  body: string;
+  headers: ServerHeaders;
+}): Promise<MultipartPart[]> {
+  const contentType = headers.get('content-type');
+  if (!contentType || typeof contentType != 'string') {
+    throw new Error('The multipart manifest response is missing the content-type header');
+  }
+
+  const boundaryRegex = /^multipart\/.+?; boundary=(?:"([^"]+)"|([^\s;]+))/i;
+  const matches = boundaryRegex.exec(contentType);
+  if (!matches) {
+    throw new Error('The content-type header in the HTTP response is not a multipart media type');
+  }
+  const boundary = matches[1] ?? matches[2];
+
+  const bufferStream = new Stream.PassThrough();
+  bufferStream.end(body);
+
+  return await new Promise((resolve, reject) => {
+    const parts: MultipartPart[] = [];
+    bufferStream.pipe(
+      new Dicer({ boundary })
+        .on('part', (p) => {
+          const part: MultipartPart = {
+            body: '',
+            headers: new Map(),
+          };
+
+          p.on('header', (headers) => {
+            for (const h in headers) {
+              part.headers.set(h, (headers as { [key: string]: string[] })[h][0]);
+            }
+          });
+          p.on('data', (data) => {
+            part.body += data.toString();
+          });
+          p.on('end', () => {
+            parts.push(part);
+          });
+        })
+        .on('finish', () => {
+          resolve(parts);
+        })
+        .on('error', (error) => {
+          reject(error);
+        })
+    );
+  });
+}
+
 describe('getParsedHeaders', () => {
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
@@ -69,6 +145,7 @@ describe('getParsedHeaders', () => {
         asReq({ url: 'http://localhost:3000', headers: { 'expo-platform': 'android' } })
       )
     ).toEqual({
+      explicitlyPrefersMultipartMixed: false,
       acceptSignature: false,
       hostname: null,
       platform: 'android',
@@ -81,6 +158,7 @@ describe('getParsedHeaders', () => {
         asReq({
           url: 'http://localhost:3000',
           headers: {
+            accept: 'multipart/mixed',
             host: 'localhost:8081',
             'expo-platform': 'ios',
             // This is different to the classic manifest middleware.
@@ -89,6 +167,7 @@ describe('getParsedHeaders', () => {
         })
       )
     ).toEqual({
+      explicitlyPrefersMultipartMixed: true,
       acceptSignature: true,
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
@@ -130,6 +209,7 @@ describe('_getManifestResponseAsync', () => {
     const middleware = createMiddleware();
     APISettings.isOffline = true;
     const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
       platform: 'android',
       acceptSignature: true,
       hostname: 'localhost',
@@ -142,12 +222,13 @@ describe('_getManifestResponseAsync', () => {
           'expo-protocol-version': 0,
           'expo-sfv-version': 0,
           'cache-control': 'private, max-age=0',
-          'content-type': 'application/json',
+          'content-type': expect.stringContaining('multipart/mixed'),
         })
       )
     );
 
-    expect(JSON.parse(results.body)).toEqual({
+    const body = await getManifestBodyAsync(results);
+    expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -181,6 +262,7 @@ describe('_getManifestResponseAsync', () => {
     const middleware = createMiddleware();
 
     const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
       platform: 'android',
       acceptSignature: true,
       hostname: 'localhost',
@@ -188,7 +270,8 @@ describe('_getManifestResponseAsync', () => {
     expect(results.version).toBe('45.0.0');
     expect(results.headers.get('expo-manifest-signature')).toEqual(expect.any(String));
 
-    expect(JSON.parse(results.body)).toEqual({
+    const body = await getManifestBodyAsync(results);
+    expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       runtimeVersion: '45.0.0',
@@ -212,11 +295,35 @@ describe('_getManifestResponseAsync', () => {
 
     // Test memoization on API calls...
     await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
       platform: 'android',
       acceptSignature: true,
       hostname: 'localhost',
     });
 
     expect(getProjectAsync).toBeCalledTimes(1);
+  });
+
+  it('returns text/plain when explicitlyPrefersMultipartMixed is false', async () => {
+    const middleware = createMiddleware();
+    APISettings.isOffline = true;
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: false,
+      platform: 'android',
+      acceptSignature: true,
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    expect(results.headers).toEqual(
+      new Map(
+        Object.entries({
+          'expo-protocol-version': 0,
+          'expo-sfv-version': 0,
+          'cache-control': 'private, max-age=0',
+          'content-type': 'text/plain',
+        })
+      )
+    );
   });
 });
