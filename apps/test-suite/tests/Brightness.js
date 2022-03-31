@@ -79,6 +79,18 @@ export async function test(t) {
       });
     });
 
+    if (Platform.OS === 'ios') {
+      describe(`Event listeners`, () => {
+        it(`addBrightnessListener() registers`, () => {
+          const listener = Brightness.addBrightnessListener(({ brightness }) => {
+            console.log('brightness changed!', brightness);
+          });
+          expect(listener).toBeDefined();
+          listener.remove();
+        });
+      });
+    }
+
     if (Platform.OS === 'android') {
       describeWithPermissions(
         `Brightness.getSystemBrightnessAsync(), Brightness.setSystemBrightnessAsync()`,
