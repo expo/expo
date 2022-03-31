@@ -1360,7 +1360,7 @@ SPEC CHECKSUMS:
   EXPermissions: f4c65fa770489cbf16ea17c3013a670671525014
   Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
-  expo-dev-launcher: 293c5980a4c5591208fd9f91ff1e9bddd0ef83b0
+  expo-dev-launcher: 05d6b8cbf5748921d8c1d78e9f473b6cf6b30810
   expo-dev-menu: 3316cf965c37414660dd1e93c52cd1a1bb6d7424
   expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
@@ -1372,7 +1372,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
   ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
+  ExpoModulesCore: 4e131282faea03d7be99908814a53c1b4fd2a9b2
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: f34afad3de669780144508e4a5860fb1a5939832
   ExpoWebBrowser: 860eff8b9f413111bba517fedaa642b745af99d4
