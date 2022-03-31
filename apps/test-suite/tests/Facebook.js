@@ -28,6 +28,7 @@ export async function test(
     beforeAll(async () => {
       await Facebook.initializeAsync({
         appId: '1696089354000816',
+        appName: 'Expo APIs',
         version: Platform.select({
           web: 'v5.0',
         }),
