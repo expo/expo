@@ -297,6 +297,7 @@
   expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
+                                                                                          projectURL:expoUrl
                                                                                       installationID:installationID];
 
   void (^launchReactNativeApp)(void) = ^{
