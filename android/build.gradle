@@ -56,7 +56,6 @@ allprojects {
         excludeGroup "com.facebook.react"
       }
     }
-    jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
       url "$rootDir/../node_modules/jsc-android/dist"

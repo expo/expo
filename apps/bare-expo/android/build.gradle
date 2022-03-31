@@ -84,7 +84,6 @@ allprojects {
                 excludeGroup "com.facebook.react"
             }
         }
-        jcenter()
         maven { url 'https://jitpack.io' }
     }
 }

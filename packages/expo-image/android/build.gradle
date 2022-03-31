@@ -38,7 +38,6 @@ buildscript {
   if (project == rootProject) {
     repositories {
       google()
-      jcenter()
     }
     dependencies {
       classpath 'com.android.tools.build:gradle:4.2.2'
