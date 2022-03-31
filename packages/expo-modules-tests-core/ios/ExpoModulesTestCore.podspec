@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'UMTestCore'
+  s.name           = 'ExpoModulesTestCore'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-  s.source_files   = 'UMTestCore/**/*.{h,m}'
-  s.preserve_paths = 'UMTestCore/**/*.{h,m}'
+  s.source_files   = 'ExpoModulesTestCore/**/*.{h,m}'
+  s.preserve_paths = 'ExpoModulesTestCore/**/*.{h,m}'
   s.requires_arc   = true
 
   s.dependency 'ExpoModulesCore'
