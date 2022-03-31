@@ -20,7 +20,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments);
 
-- (nonnull instancetype)initWithRuntime:(std::shared_ptr<jsi::Runtime>)runtime
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 
 /**

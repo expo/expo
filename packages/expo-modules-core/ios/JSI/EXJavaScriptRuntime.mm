@@ -36,10 +36,13 @@ using namespace facebook;
   return self;
 }
 
-- (nonnull instancetype)initWithRuntime:(std::shared_ptr<jsi::Runtime>)runtime callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime *)runtime callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
 {
   if (self = [super init]) {
-    _runtime = runtime;
+    // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
+    // In this code flow, the runtime should be owned by something else like the RCTBridge.
+    // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
+    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
     _jsCallInvoker = callInvoker;
   }
   return self;

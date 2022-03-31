@@ -410,8 +410,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   facebook::jsi::Runtime *jsiRuntime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : nullptr;
 
   if (jsiRuntime) {
-    std::shared_ptr<jsi::Runtime> jsiRuntimePtr(jsiRuntime);
-    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:jsiRuntimePtr callInvoker:_bridge.jsCallInvoker];
+    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:jsiRuntime callInvoker:_bridge.jsCallInvoker];
 
     [EXJavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
     [_swiftInteropBridge setRuntime:runtime];
