@@ -8,7 +8,8 @@ group = 'host.exp.exponent'
 version = '11.1.0'
 
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
-def RN_SO_DIR = findProject(":ReactAndroid")
+def RN_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
+def RN_SO_DIR = RN_BUILD_FROM_SOURCE
     ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "react-ndk", "exported")
     : "${buildDir}/react-native-0*/jni"
 
@@ -82,7 +83,7 @@ android {
     externalNativeBuild {
       cmake {
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
-        abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+        abiFilters (*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
         arguments "-DANDROID_STL=c++_shared",
             "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
             "-DRN_SO_DIR=${RN_SO_DIR}"
@@ -200,5 +201,13 @@ tasks.whenTaskAdded { task ->
   if (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake')) {
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
+    if (RN_BUILD_FROM_SOURCE) {
+      task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    }
+  } else if (task.name.startsWith('generateJsonModel')) {
+    if (RN_BUILD_FROM_SOURCE) {
+      task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    }
   }
+
 }
