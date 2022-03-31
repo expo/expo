@@ -20,3 +20,6 @@ if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true")
   include(":ReactAndroid")
   project(":ReactAndroid").projectDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../ReactAndroid");
 }
+
+include ':detox'
+project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')

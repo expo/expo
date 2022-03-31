@@ -151,6 +151,7 @@ android {
         }
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        missingDimensionStrategy 'detox', 'full'
 
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
@@ -291,11 +292,7 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
-    androidTestImplementation('com.wix:detox:+') {
-        // Fix detox + react-native-screens error
-        // https://github.com/wix/Detox/issues/2848#issuecomment-874803711
-        exclude group: 'com.google.android.material'
-    }
+    androidTestImplementation(project(":detox"))
 
     // LeakCanary 2 dependency
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
