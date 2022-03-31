@@ -2,7 +2,7 @@ import { Subscription } from 'expo-modules-core';
 import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 declare type ClipboardEvent = {
     /**
-     * @deprecated Deprecated. Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
+     * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
      */
     content: string;
     /**
@@ -101,7 +101,7 @@ export declare function hasImageAsync(): Promise<boolean>;
  * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
  *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
  *     Clipboard.getStringAsync().then(content => {
- *       alert('Copy pasta! Here's the string that was copied: ' + content)
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
  *     });
  *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
  *     alert('Yay! Clipboard contains an image');

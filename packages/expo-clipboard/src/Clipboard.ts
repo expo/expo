@@ -15,7 +15,7 @@ const onClipboardEventName = 'onClipboardChanged';
 
 type ClipboardEvent = {
   /**
-   * @deprecated Deprecated. Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
+   * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
    */
   content: string;
   /**
@@ -182,7 +182,7 @@ export async function hasImageAsync(): Promise<boolean> {
  * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
  *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
  *     Clipboard.getStringAsync().then(content => {
- *       alert('Copy pasta! Here's the string that was copied: ' + content)
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
  *     });
  *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
  *     alert('Yay! Clipboard contains an image');
@@ -191,7 +191,7 @@ export async function hasImageAsync(): Promise<boolean> {
  * ```
  */
 export function addClipboardListener(listener: (event: ClipboardEvent) => void): Subscription {
-  // TODO: Get rid of this wrapper once we remove deprecated `content` property
+  // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
   const listenerWrapper = (event: ClipboardEvent) => {
     const wrappedEvent: ClipboardEvent = {
       ...event,

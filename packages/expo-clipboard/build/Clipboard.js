@@ -146,7 +146,7 @@ export async function hasImageAsync() {
  * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
  *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
  *     Clipboard.getStringAsync().then(content => {
- *       alert('Copy pasta! Here's the string that was copied: ' + content)
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
  *     });
  *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
  *     alert('Yay! Clipboard contains an image');
@@ -155,7 +155,7 @@ export async function hasImageAsync() {
  * ```
  */
 export function addClipboardListener(listener) {
-    // TODO: Get rid of this wrapper once we remove deprecated `content` property
+    // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
     const listenerWrapper = (event) => {
         const wrappedEvent = {
             ...event,
