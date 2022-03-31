@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- The `content` property of the clipboard event listener is now deprecated and always returns empty string and logs a warning message to the console. Use `getStringAsync()` instead.
+
 ### 🎉 New features
 
 - Native module on Android is now written in Kotlin using the new API. ([#16269](https://github.com/expo/expo/pull/16269) by [@barthap](https://github.com/barthap))
@@ -11,6 +13,7 @@
 - On iOS added support for setting and getting URLs (`setUrlAsync`, `hasUrlAsync`, `getUrlAsync`). ([#16391](https://github.com/expo/expo/pull/16391) by [@graszka22](https://github.com/graszka22), [@barthap](https://github.com/barthap))
 - Added new method `hasStringAsync` that checks whether clipboard has text content. ([#16524](https://github.com/expo/expo/pull/16524) by [@barthap](https://github.com/barthap))
 - Added support for HTML content in `getStringAsync` and `setStringAsync`. ([#16551](https://github.com/expo/expo/pull/16551) by [@barthap](https://github.com/barthap))
+- Added new property `contentTypes` to the clipboard event listener describing contents of the clipboard. ([#16787](https://github.com/expo/expo/pull/16787) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 

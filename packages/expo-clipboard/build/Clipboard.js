@@ -139,17 +139,34 @@ export async function hasImageAsync() {
  * is a no-op on Web.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
- * single argument that is an object with a `content` key.
+ * single argument that is an object containing information about clipboard contents.
  *
  * @example
  * ```typescript
- * addClipboardListener(({ content }: ClipboardEvent) => {
- *   alert('Copy pasta! Here's the string that was copied: ' + content);
+ * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
+ *     Clipboard.getStringAsync().then(content => {
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
+ *     });
+ *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
+ *     alert('Yay! Clipboard contains an image');
+ *   }
  * });
  * ```
  */
 export function addClipboardListener(listener) {
-    return emitter.addListener(onClipboardEventName, listener);
+    // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
+    const listenerWrapper = (event) => {
+        const wrappedEvent = {
+            ...event,
+            get content() {
+                console.warn("The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content");
+                return '';
+            },
+        };
+        listener(wrappedEvent);
+    };
+    return emitter.addListener(onClipboardEventName, listenerWrapper);
 }
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.

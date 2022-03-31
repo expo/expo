@@ -129,7 +129,7 @@ class ClipboardModuleTest {
       eventEmitter.emit(
         CLIPBOARD_CHANGED_EVENT_NAME,
         match {
-          it.getString("content") == "severus snape"
+          it.getStringArrayList("contentTypes")?.contains("plain-text") == true
         }
       )
     }
