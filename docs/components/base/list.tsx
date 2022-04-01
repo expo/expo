@@ -10,13 +10,24 @@ const attributes = {
 };
 
 const STYLES_UNORDERED_LIST = css`
-  ${paragraph}
-  list-style: disc;
-  margin-left: 1rem;
-  margin-bottom: 1rem;
+  & {
+    ${paragraph}
+    list-style: disc;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
 
-  .anchor-icon {
-    display: none;
+    .anchor-icon {
+      display: none;
+    }
+  }
+
+  table & {
+    margin: 0.5rem 1rem;
+    line-height: 125%;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 

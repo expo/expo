@@ -26,8 +26,9 @@ export declare type SpeechOptions = {
      */
     onDone?: () => void | SpeechEventCallback;
     /**
-     * __(Android only).__ A callback that is invoked when an error occurred while speaking.
+     * A callback that is invoked when an error occurred while speaking.
      * @param error
+     * @platform android
      */
     onError?: (error: Error) => void | SpeechEventCallback;
     volume?: number;

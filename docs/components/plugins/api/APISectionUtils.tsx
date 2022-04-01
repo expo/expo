@@ -483,13 +483,19 @@ export const STYLES_SECONDARY = css`
 `;
 
 export const STYLES_PLATFORM = css`
-  display: inline-block;
-  background-color: ${theme.background.tertiary};
-  color: ${theme.text.default};
-  font-size: 90%;
-  font-weight: 700;
-  padding: 6px 12px;
-  margin-bottom: 8px;
-  margin-right: 8px;
-  border-radius: 4px;
+  & {
+    display: inline-block;
+    background-color: ${theme.background.tertiary};
+    color: ${theme.text.default};
+    font-size: 90%;
+    font-weight: 700;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+
+  table & {
+    margin-bottom: 1rem;
+  }
 `;
