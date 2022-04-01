@@ -24,10 +24,10 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v2
@@ -76,5 +76,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          arch: x86_64
-          script: bin/expotools android-native-unit-tests --type instrumented
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
+          script: |
+            # wait for emulator to be fully boot up
+            sleep 60
+            bin/expotools android-native-unit-tests --type instrumented
