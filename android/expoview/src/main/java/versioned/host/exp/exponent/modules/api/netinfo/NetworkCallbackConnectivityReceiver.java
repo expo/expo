@@ -13,8 +13,9 @@ import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.net.NetworkRequest;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import versioned.host.exp.exponent.modules.api.netinfo.types.CellularGeneration;
@@ -27,7 +28,20 @@ import versioned.host.exp.exponent.modules.api.netinfo.types.ConnectionType;
  */
 @TargetApi(Build.VERSION_CODES.N)
 public class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
+    private static final int DELAY_MS = 250;
     private final ConnectivityNetworkCallback mNetworkCallback;
+
+    // from the docs:
+    // "Do NOT call ConnectivityManager.getNetworkCapabilities(android.net.Network)
+    // or ConnectivityManager.getLinkProperties(android.net.Network) or other
+    // synchronous ConnectivityManager methods in this callback as this is
+    // prone to race conditions ; calling these methods while in a callback
+    // may return an outdated or even a null object."
+    // https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback
+    // For this reason, we will fetch these values when not provided by the callback
+    // on an asynchronous thread.
+    private Network mNetwork = null;
+    private NetworkCapabilities mCapabilities = null;
 
     public NetworkCallbackConnectivityReceiver(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -38,8 +52,14 @@ public class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
     @SuppressLint("MissingPermission")
     public void register() {
         try {
-            NetworkRequest.Builder builder = new NetworkRequest.Builder();
-            getConnectivityManager().registerNetworkCallback(builder.build(), mNetworkCallback);
+            // Similar to BroadcastReceiver implementation, we need to force
+            // an initial callback call in order to get the current network state,
+            // otherwise, an app started without any network connection will
+            // always be reported as "unknown".
+            mNetwork = getConnectivityManager().getActiveNetwork();
+            asyncUpdateAndSend(0);
+
+            getConnectivityManager().registerDefaultNetworkCallback(mNetworkCallback);
         } catch (SecurityException e) {
             // TODO: Display a yellow box about this
         }
@@ -58,13 +78,14 @@ public class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
 
     @SuppressLint("MissingPermission")
     void updateAndSend() {
-        Network network = getConnectivityManager().getActiveNetwork();
-        NetworkCapabilities capabilities = getConnectivityManager().getNetworkCapabilities(network);
         ConnectionType connectionType = ConnectionType.UNKNOWN;
         CellularGeneration cellularGeneration = null;
         NetworkInfo networkInfo = null;
         boolean isInternetReachable = false;
         boolean isInternetSuspended = false;
+
+        final Network network = mNetwork;
+        final NetworkCapabilities capabilities = mCapabilities;
 
         if (capabilities != null) {
             // Get the connection type
@@ -115,36 +136,55 @@ public class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
         updateConnectivity(connectionType, cellularGeneration, isInternetReachable);
     }
 
+    private void asyncUpdateAndSend(int delay) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            mCapabilities = getConnectivityManager().getNetworkCapabilities(mNetwork);
+            updateAndSend();
+
+        }, delay);
+    }
+
     private class ConnectivityNetworkCallback extends ConnectivityManager.NetworkCallback {
         @Override
         public void onAvailable(Network network) {
-            updateAndSend();
+            mNetwork = network;
+            asyncUpdateAndSend(DELAY_MS);
         }
 
         @Override
         public void onLosing(Network network, int maxMsToLive) {
+            mNetwork = network;
             updateAndSend();
         }
 
         @Override
         public void onLost(Network network) {
+            mNetwork = null;
+            mCapabilities = null;
             updateAndSend();
         }
 
         @Override
         public void onUnavailable() {
+            mNetwork = null;
+            mCapabilities = null;
             updateAndSend();
         }
 
         @Override
         public void onCapabilitiesChanged(
                 Network network, NetworkCapabilities networkCapabilities) {
+            mNetwork = network;
+            mCapabilities = networkCapabilities;
             updateAndSend();
         }
 
         @Override
         public void onLinkPropertiesChanged(Network network, LinkProperties linkProperties) {
-            updateAndSend();
+            if (mNetwork != null) {
+                mNetwork = network;
+            }
+            asyncUpdateAndSend(DELAY_MS);
         }
     }
 }
