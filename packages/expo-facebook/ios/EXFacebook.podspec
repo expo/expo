@@ -15,8 +15,13 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.2.0'
-  s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.2.0'
+  if $FacebookSDKVersion && Pod::Version.new($FacebookSDKVersion) >= Pod::Version.new('12.1.0')
+    s.dependency 'FBSDKCoreKit', $FacebookSDKVersion
+    s.dependency 'FBSDKLoginKit', $FacebookSDKVersion
+  else
+    s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.2.0'
+    s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.2.0'
+  end
 
   # FacebookSDK is written in Swift, so must use this flag to import from it.
   s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }
