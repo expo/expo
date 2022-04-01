@@ -52,7 +52,6 @@ const SET_STRING_ASYNC_CONFIG: FunctionDescription = {
         {
           name: 'inputFormat',
           type: 'enum',
-          platforms: ['ios', 'android'],
           values: [
             { name: 'StringFormat.PLAIN_TEXT', value: Clipboard.StringFormat.PLAIN_TEXT },
             { name: 'StringFormat.HTML', value: Clipboard.StringFormat.HTML },
@@ -75,7 +74,6 @@ const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
         {
           name: 'preferredFormat',
           type: 'enum',
-          platforms: ['ios', 'android'],
           values: [
             { name: 'StringFormat.PLAIN_TEXT', value: Clipboard.StringFormat.PLAIN_TEXT },
             { name: 'StringFormat.HTML', value: Clipboard.StringFormat.HTML },
