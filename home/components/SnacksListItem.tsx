@@ -44,7 +44,7 @@ export function SnacksListItem({ description, isDraft, name, url }: Props) {
     <PressableOpacity onPress={handlePressProject} onLongPress={handleLongPressProject}>
       <View padding="medium">
         <Row align="center" justify="between">
-          <View align="start">
+          <View align="start" flex="1">
             <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
               {name}
             </Text>

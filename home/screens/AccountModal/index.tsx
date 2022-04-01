@@ -37,7 +37,7 @@ export function AccountModal() {
 
   if (loading) {
     return (
-      <View flex="1">
+      <View flex="1" style={{ backgroundColor: theme.background.screen }}>
         {Platform.OS === 'ios' && <ModalHeader />}
         <View flex="1" padding="medium" align="centered">
           <ActivityIndicator color={theme.highlight.accent} />
@@ -50,7 +50,7 @@ export function AccountModal() {
     console.error(error);
 
     return (
-      <View flex="1">
+      <View flex="1" style={{ backgroundColor: theme.background.screen }}>
         {Platform.OS === 'ios' && <ModalHeader />}
         <View padding="medium">
           <View

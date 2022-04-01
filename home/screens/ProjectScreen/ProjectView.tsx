@@ -53,7 +53,7 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
     const app = data.app.byId;
 
     contents = (
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
+      <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
           {(appHasLegacyUpdate(app) || appHasEASUpdates(app)) && (

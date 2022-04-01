@@ -1,4 +1,5 @@
 import { borderRadius, CheckIcon, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
 import { FlatList } from 'react-native';
@@ -15,9 +16,8 @@ type Props = {
 
 export function LoggedInAccountView({ accounts }: Props) {
   const { accountName, setAccountName } = useAccountName();
-
+  const navigation = useNavigation();
   const theme = useExpoTheme();
-
   const dispatch = useDispatch();
 
   const onSignOutPress = React.useCallback(() => {
@@ -26,56 +26,63 @@ export function LoggedInAccountView({ accounts }: Props) {
 
   return (
     <View flex="1" padding="medium">
-      <View bg="default" border="hairline" overflow="hidden" rounded="large">
-        <FlatList<typeof accounts[number]>
-          data={accounts}
-          keyExtractor={(account) => account.id}
-          renderItem={({ item: account }) => (
-            <PressableOpacity
-              key={account.id}
-              style={{ padding: 16 }}
-              containerProps={{ bg: 'default' }}
-              onPress={() => {
-                setAccountName(account.name);
-              }}>
-              <Row justify="between">
-                <Row align={!account.owner?.fullName ? 'center' : 'start'}>
-                  {account?.owner?.profilePhoto ? (
-                    <Image size="xl" rounded="full" source={{ uri: account.owner.profilePhoto }} />
-                  ) : (
-                    <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
-                      <UsersIcon color={theme.icon.default} size={iconSize.small} />
-                    </View>
-                  )}
-                  <Spacer.Horizontal size="small" />
-                  <View>
-                    {account.owner ? (
-                      <>
-                        {account.owner.fullName ? (
-                          <>
-                            <Text type="InterBold">{account.owner.fullName}</Text>
-                            <Spacer.Vertical size="tiny" />
-                            <Text color="secondary" type="InterRegular" size="small">
-                              {account.owner.username}
-                            </Text>
-                          </>
-                        ) : (
-                          <Text type="InterBold">{account.owner.username}</Text>
-                        )}
-                      </>
+      <View flex="1">
+        <View bg="default" border="hairline" overflow="hidden" rounded="large">
+          <FlatList<typeof accounts[number]>
+            data={accounts}
+            keyExtractor={(account) => account.id}
+            renderItem={({ item: account }) => (
+              <PressableOpacity
+                key={account.id}
+                style={{ padding: 16 }}
+                containerProps={{ bg: 'default' }}
+                onPress={() => {
+                  setAccountName(account.name);
+                  navigation.goBack();
+                }}>
+                <Row justify="between">
+                  <Row align={!account.owner?.fullName ? 'center' : 'start'}>
+                    {account?.owner?.profilePhoto ? (
+                      <Image
+                        size="xl"
+                        rounded="full"
+                        source={{ uri: account.owner.profilePhoto }}
+                      />
                     ) : (
-                      <Text type="InterBold">{account.name}</Text>
+                      <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
+                        <UsersIcon color={theme.icon.default} size={iconSize.small} />
+                      </View>
                     )}
-                  </View>
+                    <Spacer.Horizontal size="small" />
+                    <View>
+                      {account.owner ? (
+                        <>
+                          {account.owner.fullName ? (
+                            <>
+                              <Text type="InterBold">{account.owner.fullName}</Text>
+                              <Spacer.Vertical size="tiny" />
+                              <Text color="secondary" type="InterRegular" size="small">
+                                {account.owner.username}
+                              </Text>
+                            </>
+                          ) : (
+                            <Text type="InterBold">{account.owner.username}</Text>
+                          )}
+                        </>
+                      ) : (
+                        <Text type="InterBold">{account.name}</Text>
+                      )}
+                    </View>
+                  </Row>
+                  {accountName === account.name && (
+                    <CheckIcon color={theme.icon.default} size={iconSize.large} />
+                  )}
                 </Row>
-                {accountName === account.name && (
-                  <CheckIcon color={theme.icon.default} size={iconSize.large} />
-                )}
-              </Row>
-            </PressableOpacity>
-          )}
-          ItemSeparatorComponent={Divider}
-        />
+              </PressableOpacity>
+            )}
+            ItemSeparatorComponent={Divider}
+          />
+        </View>
       </View>
       <Spacer.Vertical size="large" />
       <PressableOpacity

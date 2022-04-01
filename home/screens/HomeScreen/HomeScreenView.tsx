@@ -311,7 +311,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: spacing[4],
-    paddingBottom: 80,
   },
   projectImageStyle: {
     borderWidth: 1,
