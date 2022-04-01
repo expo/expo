@@ -1208,9 +1208,9 @@ PODS:
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
   - DoubleConversion (1.1.6)
-  - EASClientID (0.1.0):
+  - EASClient (0.1.0):
     - ExpoModulesCore
-  - EASClientID/Tests (0.1.0):
+  - EASClient/Tests (0.1.0):
     - ExpoModulesCore
   - EXAdsAdMob (12.0.0):
     - ExpoModulesCore
@@ -1387,7 +1387,7 @@ PODS:
     - ExpoModulesCore
   - EXUpdates (0.11.2):
     - ASN1Decoder (~> 1.8)
-    - EASClientID
+    - EASClient
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -1395,7 +1395,7 @@ PODS:
     - React-Core
   - EXUpdates/Tests (0.11.2):
     - ASN1Decoder (~> 1.8)
-    - EASClientID
+    - EASClient
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -2150,8 +2150,8 @@ DEPENDENCIES:
   - boost (from `../react-native-lab/react-native/third-party-podspecs/boost.podspec`)
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - EASClientID (from `../packages/expo-eas-client-id/ios`)
-  - EASClientID/Tests (from `../packages/expo-eas-client-id/ios`)
+  - EASClient (from `../packages/expo-eas-client/ios`)
+  - EASClient/Tests (from `../packages/expo-eas-client/ios`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
@@ -2751,8 +2751,8 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
-  EASClientID:
-    :path: "../packages/expo-eas-client-id/ios"
+  EASClient:
+    :path: "../packages/expo-eas-client/ios"
   EXAdsAdMob:
     :path: "../packages/expo-ads-admob/ios"
   EXAdsFacebook:
@@ -3200,7 +3200,7 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
-  EASClientID: 9f46987df9df116baaea1322d974e6975c4cc97c
+  EASClient: de64fdec460b68d1a1eeb16eb99f82566264d2de
   EXAdsAdMob: ac13d1a8fd689e3ac74b63100b13d24f3ea0ff1f
   EXAdsFacebook: 9697b91f55d254ebe4c3a1ddba9c76dfa8302775
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
@@ -3269,7 +3269,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 7469fed1192a7794be7093fb873798bdf10d5f6e
   EXTaskManager: cfa107893db172b90564027e507d3e6713ad5ff3
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
-  EXUpdates: 2ede0133ed52945daeb3183beccda3cf0fc628ae
+  EXUpdates: 87bc765cb8c986edbac25e19af4c07d6199c0149
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: d7d1a7c8e240872c580127073b87f740d4f3d8a5
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
@@ -3350,6 +3350,6 @@ SPEC CHECKSUMS:
   Yoga: 9b6696970c3289e8dea34b3eda93f23e61fb8121
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 82fa83f34eafe70bdfcf23e2469ed2e2e3286c34
+PODFILE CHECKSUM: 6f48b96badd9e37dc5c4ef6084c664c1c45121bb
 
 COCOAPODS: 1.11.2
