@@ -1,4 +1,4 @@
-import { Divider, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, FlatList, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
@@ -13,6 +13,7 @@ type Props = {
 
 export function SnackListView(props: Props) {
   const [isReady, setReady] = React.useState(false);
+  const theme = useExpoTheme();
 
   React.useEffect(() => {
     const _readyTimer = setTimeout(() => {
@@ -25,14 +26,20 @@ export function SnackListView(props: Props) {
 
   if (!isReady) {
     return (
-      <RNView style={{ flex: 1, padding: 30, alignItems: 'center' }}>
+      <RNView
+        style={{
+          flex: 1,
+          padding: 30,
+          alignItems: 'center',
+          backgroundColor: theme.background.screen,
+        }}>
         <ActivityIndicator />
       </RNView>
     );
   }
 
   if (!props.data?.length) {
-    return <RNView style={{ flex: 1 }} />;
+    return <RNView style={{ flex: 1, backgroundColor: theme.background.screen }} />;
   }
 
   return <SnackList {...props} />;
@@ -41,6 +48,7 @@ export function SnackListView(props: Props) {
 function SnackList({ data, loadMoreAsync }: Props) {
   const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
+  const theme = useExpoTheme();
 
   const extractKey = React.useCallback((item) => item.slug, []);
 
@@ -84,7 +92,12 @@ function SnackList({ data, loadMoreAsync }: Props) {
   }, []);
 
   return (
-    <View flex="1" padding="medium">
+    <View
+      flex="1"
+      padding="medium"
+      style={{
+        backgroundColor: theme.background.screen,
+      }}>
       <View overflow="hidden" bg="default" border="hairline" rounded="large">
         <FlatList
           data={data}

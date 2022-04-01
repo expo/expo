@@ -48,9 +48,7 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator
       initialRouteName="Home"
-      screenOptions={{
-        ...defaultNavigationOptions(themeName),
-      }}>
+      screenOptions={defaultNavigationOptions(themeName)}>
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}
