@@ -390,6 +390,9 @@ dependencies {
 
   // react-native-webview
   implementation "androidx.webkit:webkit:1.4.0"
+
+  // react-native-maps
+  implementation "androidx.work:work-runtime:2.5.0"
 }
 
 
