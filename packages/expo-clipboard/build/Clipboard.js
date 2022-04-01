@@ -2,7 +2,6 @@ import { EventEmitter, UnavailabilityError, Platform } from 'expo-modules-core';
 import ExpoClipboard from './ExpoClipboard';
 const emitter = new EventEmitter(ExpoClipboard);
 const onClipboardEventName = 'onClipboardChanged';
-export { EventEmitter };
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -32,7 +31,7 @@ export async function setStringAsync(text, options = {}) {
 }
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext-options) instead.
+ * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
@@ -140,17 +139,34 @@ export async function hasImageAsync() {
  * is a no-op on Web.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
- * single argument that is an object with a `content` key.
+ * single argument that is an object containing information about clipboard contents.
  *
  * @example
  * ```typescript
- * addClipboardListener(({ content }: ClipboardEvent) => {
- *   alert('Copy pasta! Here's the string that was copied: ' + content);
+ * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
+ *     Clipboard.getStringAsync().then(content => {
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
+ *     });
+ *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
+ *     alert('Yay! Clipboard contains an image');
+ *   }
  * });
  * ```
  */
 export function addClipboardListener(listener) {
-    return emitter.addListener(onClipboardEventName, listener);
+    // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
+    const listenerWrapper = (event) => {
+        const wrappedEvent = {
+            ...event,
+            get content() {
+                console.warn("The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content");
+                return '';
+            },
+        };
+        listener(wrappedEvent);
+    };
+    return emitter.addListener(onClipboardEventName, listenerWrapper);
 }
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.

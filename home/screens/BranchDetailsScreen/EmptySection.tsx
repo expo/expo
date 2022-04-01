@@ -1,9 +1,10 @@
 import { spacing } from '@expo/styleguide-native';
-import { PressableOpacity } from 'components/PressableOpacity';
 import dedent from 'dedent';
 import { useExpoTheme, Text, Spacer, View } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
+
+import { PressableOpacity } from '../../components/PressableOpacity';
 
 const NO_UPDATES_TEXT = dedent`
 This branch has no updates.

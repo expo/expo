@@ -3,7 +3,6 @@ package expo.modules.clipboard
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.kotlin.exception.CodedException
@@ -13,7 +12,6 @@ import expo.modules.test.core.ModuleMockHolder
 import io.mockk.confirmVerified
 import io.mockk.verify
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -94,30 +92,31 @@ class ClipboardModuleTest {
 //    assertEquals("<p>hello</p>", clipboardManager.primaryClip!!.getItemAt(0).htmlText)
 //  }
 
-  @Test
-  fun `hasStringAsync should return correct values`() = withClipboardMock {
-    // plain text
-    clipboardManager.setPrimaryClip(ClipData.newPlainText(null, "hello world"))
-    var result = module.hasStringAsync()
-    assertTrue("hasStringAsync returns false for plain text (should be true)", result)
+  // TODO (barthap): Uncomment this once fixed transient "React Application Context is null"
+  // @Test
+  // fun `hasStringAsync should return correct values`() = withClipboardMock {
+  //   // plain text
+  //   clipboardManager.setPrimaryClip(ClipData.newPlainText(null, "hello world"))
+  //   var result = module.hasStringAsync()
+  //   assertTrue("hasStringAsync returns false for plain text (should be true)", result)
 
-    // html
-    clipboardManager.setPrimaryClip(
-      ClipData.newHtmlText(null, "hello world", "<p>hello world</p>")
-    )
-    result = module.hasStringAsync()
-    assertTrue("hasStringAsync returns false for plain text (should be true)", result)
+  //   // html
+  //   clipboardManager.setPrimaryClip(
+  //     ClipData.newHtmlText(null, "hello world", "<p>hello world</p>")
+  //   )
+  //   result = module.hasStringAsync()
+  //   assertTrue("hasStringAsync returns false for plain text (should be true)", result)
 
-    // non-text content type
-    clipboardManager.setPrimaryClip(ClipData.newRawUri(null, Uri.EMPTY))
-    result = module.hasStringAsync()
-    assertFalse("hasStringAsync returns true for non-text (should be false)", result)
+  //   // non-text content type
+  //   clipboardManager.setPrimaryClip(ClipData.newRawUri(null, Uri.EMPTY))
+  //   result = module.hasStringAsync()
+  //   assertFalse("hasStringAsync returns true for non-text (should be false)", result)
 
-    // empty clipboard
-    clipboardManager.clearPrimaryClip()
-    result = module.hasStringAsync()
-    assertFalse("hasStringAsync returns true for empty clipboard (should be false)", result)
-  }
+  //   // empty clipboard
+  //   clipboardManager.clearPrimaryClip()
+  //   result = module.hasStringAsync()
+  //   assertFalse("hasStringAsync returns true for empty clipboard (should be false)", result)
+  // }
 
   @Test
   fun `should emit events when clipboard changes`() = withClipboardMock {
@@ -130,7 +129,7 @@ class ClipboardModuleTest {
       eventEmitter.emit(
         CLIPBOARD_CHANGED_EVENT_NAME,
         match {
-          it.getString("content") == "severus snape"
+          it.getStringArrayList("contentTypes")?.contains("plain-text") == true
         }
       )
     }

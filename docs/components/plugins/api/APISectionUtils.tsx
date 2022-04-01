@@ -18,6 +18,8 @@ import {
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export enum TypeDocKind {
   LegacyEnum = 4,
   Enum = 8,
@@ -32,6 +34,9 @@ export enum TypeDocKind {
 
 export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
 
+const getInvalidLinkMessage = (href: string) =>
+  `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
+
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
     <Quote>
@@ -44,7 +49,20 @@ export const mdComponents: MDComponents = {
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
   li: ({ children }) => <LI>{children}</LI>,
-  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  a: ({ href, children }) => {
+    if (
+      href?.startsWith('../') &&
+      !href?.startsWith('../..') &&
+      !href?.startsWith('../react-native')
+    ) {
+      if (isDev) {
+        throw new Error(getInvalidLinkMessage(href));
+      } else {
+        console.warn(getInvalidLinkMessage(href));
+      }
+    }
+    return <Link href={href}>{children}</Link>;
+  },
   p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
@@ -416,7 +434,8 @@ export const CommentTextBlock = ({
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown components={mdInlineComponents}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown
+          components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}

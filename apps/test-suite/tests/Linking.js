@@ -5,9 +5,9 @@ import { LogBox, Platform } from 'react-native';
 
 import { waitFor } from './helpers';
 
-const validHttpUrl = 'http://expo.io/';
-const validHttpsUrl = 'https://expo.io/';
-const validExpUrl = 'exp://expo.io/@community/native-component-list';
+const validHttpUrl = 'http://exp.host/';
+const validHttpsUrl = 'https://exp.host/';
+const validExpUrl = 'exp://exp.host/@community/native-component-list';
 const redirectingBackendUrl = 'https://backend-xxswjknyfi.now.sh/?linkingUri=';
 
 // Because the root navigator of test-suite doesn't have a matching screen for URL, it will warn.

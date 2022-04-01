@@ -119,11 +119,11 @@ export class ExternalModule<TModule> {
           await packageManager.addDevAsync(packageName);
         }
         Log.log(`Installed ${packageName}`);
-      } catch (e) {
-        e.message = `Failed to install ${packageName} ${
+      } catch (error: any) {
+        error.message = `Failed to install ${packageName} ${
           shouldGloballyInstall ? 'globally' : 'locally'
-        }: ${e.message}`;
-        throw e;
+        }: ${error.message}`;
+        throw error;
       }
       return await this.resolveAsync({ shouldPrompt: false });
     }
@@ -187,13 +187,13 @@ export class ExternalModule<TModule> {
           !isLocal
         );
       }
-    } catch (e) {
-      if (e instanceof CommandError) {
-        throw e;
-      } else if (e.code !== 'MODULE_NOT_FOUND') {
-        Log.debug('[External Module] Failed to resolve module', e.message);
+    } catch (error: any) {
+      if (error instanceof CommandError) {
+        throw error;
+      } else if (error.code !== 'MODULE_NOT_FOUND') {
+        Log.debug('[External Module] Failed to resolve module', error.message);
       }
-      return null;
     }
+    return null;
   }
 }

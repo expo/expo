@@ -57,7 +57,7 @@ In the example above, we defined exactly the same Android application id and iOS
 
 There are no additional steps for bare workflow projects.
 
-#### 5. Next steps
+#### 4. Next steps
 
 That's all there is to configuring a project to be compatible with EAS Build.
 There is one final step if you set `cli.requireCommit` to `true` in your **eas.json** — you'll be prompted to commit all the changes we made for you. You can choose to review them before committing, and you can either specify the git commit message or use a default message.

@@ -5,7 +5,12 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
-import { assertRuntimePlatform, parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
+import {
+  assertMissingRuntimePlatform,
+  assertRuntimePlatform,
+  parsePlatformHeader,
+  RuntimePlatform,
+} from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
 
 export const LoadingEndpoint = '/_expo/loading';
@@ -38,8 +43,8 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
       path.resolve(__dirname, '../../../../../static/loading-page/index.html');
     let content = (await readFile(templatePath)).toString('utf-8');
 
-    content = content.replace(/{{\s*AppName\s*}}/, appName ?? 'App');
-    content = content.replace(/{{\s*RuntimeVersion\s*}}/, runtimeVersion);
+    content = content.replace(/{{\s*AppName\s*}}/, appName);
+    content = content.replace(/{{\s*RuntimeVersion\s*}}/, runtimeVersion ?? '');
     content = content.replace(/{{\s*Path\s*}}/, this.projectRoot);
 
     return content;
@@ -57,7 +62,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     const runtimeVersion = getRuntimeVersion(exp, platform);
 
     return {
-      appName,
+      appName: appName ?? 'App',
       runtimeVersion,
     };
   }
@@ -67,6 +72,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     res.setHeader('Content-Type', 'text/html');
 
     const platform = parsePlatformHeader(req);
+    assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
 
     const { appName, runtimeVersion } = this._getProjectOptions(platform);

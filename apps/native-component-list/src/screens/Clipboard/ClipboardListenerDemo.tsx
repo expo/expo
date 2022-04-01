@@ -1,12 +1,15 @@
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, LogBox } from 'react-native';
 
 import { isCurrentPlatformSupported } from '../../components/FunctionDemo/utils';
 import HeadingText from '../../components/HeadingText';
 import MonoTextWithCountdown from '../../components/MonoTextWithCountdown';
 
 const STRING_TRIM_THRESHOLD = 100;
+
+// TODO: (barthap): Remove this once we removed the listener wrapper from `Clipboard.ts`
+LogBox.ignoreLogs([/The 'content' property of the clipboard event is deprecated/]);
 
 export default function ClipboardListenerDemo() {
   const isSupported = useMemo(() => isCurrentPlatformSupported(['ios', 'android']), []);
@@ -42,9 +45,12 @@ function ClipboardListenerContent() {
   }, []);
 
   return value !== undefined ? (
-    <MonoTextWithCountdown timeout={30 * 1000} onCountdownEnded={() => setValue(undefined)}>
-      {value}
-    </MonoTextWithCountdown>
+    <>
+      <MonoTextWithCountdown timeout={30 * 1000} onCountdownEnded={() => setValue(undefined)}>
+        {value}
+      </MonoTextWithCountdown>
+      <Text>The 'content' property should be empty</Text>
+    </>
   ) : (
     <Text>No recent changes. Copy something to trigger event</Text>
   );

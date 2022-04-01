@@ -19,6 +19,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix `androidNavigationBar` app.json config settings having no effect at runtime ([#15030](https://github.com/expo/expo/issues/15030)). ([#16711](https://github.com/expo/expo/pull/16711) by [@esamelson](https://github.com/esamelson))
+- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Move unrelated dev-menu functions into dev-launcher. ([#16124](https://github.com/expo/expo/pull/16124) by [@ajsmth](https://github.com/ajsmth))

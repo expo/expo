@@ -9,17 +9,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
-import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import com.facebook.jni.HybridData;
+
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.DoNotStrip;
 import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
@@ -41,12 +44,17 @@ import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
 import expo.modules.interfaces.permissions.Permissions;
+import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
-import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
 public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule {
+  static {
+    System.loadLibrary("expo-av");
+  }
+
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
   private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
@@ -66,6 +74,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String RECORDING_INPUT_TYPE_KEY = "type";
   private static final String RECORDING_INPUT_UID_KEY = "uid";
 
+  @DoNotStrip
+  private final HybridData mHybridData;
+
   private boolean mShouldRouteThroughEarpiece = false;
 
   private enum AudioInterruptionMode {
@@ -73,7 +84,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     DUCK_OTHERS,
   }
 
-  private final ReactApplicationContext mContext;
+  private final Context mContext;
 
   private boolean mEnabled = true;
 
@@ -105,7 +116,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private ModuleRegistry mModuleRegistry;
 
   public AVManager(final Context reactContext) {
-    mContext = (ReactApplicationContext) reactContext;
+    mContext = reactContext;
 
     mAudioManager = (AudioManager) reactContext.getSystemService(Context.AUDIO_SERVICE);
     // Implemented because of the suggestion here:
@@ -114,7 +125,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       @Override
       public void onReceive(Context context, Intent intent) {
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-          mContext.runOnNativeModulesQueueThread(new Runnable() {
+          getUIManager().runOnNativeModulesQueueThread(new Runnable() {
             @Override
             public void run() {
               abandonAudioFocus();
@@ -126,6 +137,26 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
       new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
     mIsRegistered = true;
+
+
+    mHybridData = initHybrid();
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    mHybridData.resetNative();
+  }
+
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native HybridData initHybrid();
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native void installJSIBindings(long jsRuntimePointer, CallInvokerHolderImpl jsCallInvokerHolder);
+
+  @SuppressWarnings("unused")
+  @DoNotStrip
+  private PlayerData getMediaPlayerById(int id) {
+    return mSoundMap.get(id);
   }
 
   @Override
@@ -133,14 +164,24 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     return mModuleRegistry;
   }
 
+  private UIManager getUIManager() {
+    return mModuleRegistry.getModule(UIManager.class);
+  }
+
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     if (mModuleRegistry != null) {
-      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+      getUIManager().unregisterLifecycleEventListener(this);
     }
     mModuleRegistry = moduleRegistry;
     if (mModuleRegistry != null) {
-      mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+      final UIManager uiManager = getUIManager();
+
+      uiManager.registerLifecycleEventListener(this);
+      uiManager.runOnClientCodeQueueThread(() -> {
+        final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
+        installJSIBindings(jsContextProvider.getJavaScriptContextRef(), jsContextProvider.getJSCallInvokerHolder());
+      });
     }
   }
 
@@ -167,18 +208,15 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void onHostResume() {
-    mContext.runOnNativeModulesQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mAppIsPaused) {
-          mAppIsPaused = false;
-          if (!mStaysActiveInBackground) {
-            for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-              handler.onResume();
-            }
-            if (mShouldRouteThroughEarpiece) {
-              updatePlaySoundThroughEarpiece(true);
-            }
+    getUIManager().runOnNativeModulesQueueThread(() -> {
+      if (mAppIsPaused) {
+        mAppIsPaused = false;
+        if (!mStaysActiveInBackground) {
+          for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+            handler.onResume();
+          }
+          if (mShouldRouteThroughEarpiece) {
+            updatePlaySoundThroughEarpiece(true);
           }
         }
       }
@@ -187,20 +225,17 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void onHostPause() {
-    mContext.runOnNativeModulesQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        if (!mAppIsPaused) {
-          mAppIsPaused = true;
-          if (!mStaysActiveInBackground) {
-            for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-              handler.onPause();
-            }
-            abandonAudioFocus();
+    getUIManager().runOnNativeModulesQueueThread(() -> {
+      if (!mAppIsPaused) {
+        mAppIsPaused = true;
+        if (!mStaysActiveInBackground) {
+          for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+            handler.onPause();
+          }
+          abandonAudioFocus();
 
-            if (mShouldRouteThroughEarpiece) {
-              updatePlaySoundThroughEarpiece(false);
-            }
+          if (mShouldRouteThroughEarpiece) {
+            updatePlaySoundThroughEarpiece(false);
           }
         }
       }
@@ -214,26 +249,23 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       mIsRegistered = false;
     }
 
-    mContext.runOnNativeModulesQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        // remove all remaining sounds
-        Iterator<PlayerData> iter = mSoundMap.values().iterator();
-        while (iter.hasNext()) {
-          final PlayerData data = iter.next();
-          iter.remove();
-          if (data != null) {
-            data.release();
-          }
+    getUIManager().runOnNativeModulesQueueThread(() -> {
+      // remove all remaining sounds
+      Iterator<PlayerData> iter = mSoundMap.values().iterator();
+      while (iter.hasNext()) {
+        final PlayerData data = iter.next();
+        iter.remove();
+        if (data != null) {
+          data.release();
         }
-
-        for (final VideoView videoView : mVideoViewSet) {
-          videoView.unloadPlayerAndMediaController();
-        }
-
-        removeAudioRecorder();
-        abandonAudioFocus();
       }
+
+      for (final VideoView videoView : mVideoViewSet) {
+        videoView.unloadPlayerAndMediaController();
+      }
+
+      removeAudioRecorder();
+      abandonAudioFocus();
     });
   }
 
@@ -472,7 +504,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   // Rejects the promise if the VideoView is not found, otherwise executes the callback.
   private void tryRunWithVideoView(final Integer tag, final VideoViewCallback callback, final Promise promise) {
     if (mModuleRegistry != null) {
-      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+      UIManager uiManager = getUIManager();
       if (uiManager != null) {
         uiManager.addUIBlock(tag, new UIManager.UIBlock<VideoViewWrapper>() {
           @Override
@@ -543,8 +575,16 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   // Recording API
 
+  public boolean hasAudioPermission() {
+    return mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
+  }
+
+  public void requestAudioPermission(PermissionsResponseListener permissionsResponseListener) {
+    mModuleRegistry.getModule(Permissions.class).askForPermissions(permissionsResponseListener, Manifest.permission.RECORD_AUDIO);
+  }
+
   private boolean isMissingAudioRecordingPermissions() {
-    return !mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
+    return !hasAudioPermission();
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.

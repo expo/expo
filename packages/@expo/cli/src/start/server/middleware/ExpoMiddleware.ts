@@ -12,13 +12,16 @@ export abstract class ExpoMiddleware {
    * Exposed for testing.
    */
   _shouldHandleRequest(req: ServerRequest): boolean {
-    return (
-      !!req.url &&
-      this.supportedPaths.includes(
-        // Strip the query params
-        parse(req.url).pathname
-      )
-    );
+    if (!req.url) {
+      return false;
+    }
+    const parsed = parse(req.url);
+    // Strip the query params
+    if (!parsed.pathname) {
+      return false;
+    }
+
+    return this.supportedPaths.includes(parsed.pathname);
   }
 
   abstract handleRequestAsync(
@@ -40,18 +43,18 @@ export abstract class ExpoMiddleware {
 
       try {
         return await this.handleRequestAsync(req, res, next);
-      } catch (e) {
-        Log.exception(e);
+      } catch (error: any) {
+        Log.exception(error);
         // 5xx = Server Error HTTP code
         res.statusCode = 500;
-        if (typeof e === 'object' && e !== null) {
+        if (typeof error === 'object' && error !== null) {
           res.end(
             JSON.stringify({
-              error: e.toString(),
+              error: error.toString(),
             })
           );
         } else {
-          res.end(`Unexpected error: ${e}`);
+          res.end(`Unexpected error: ${error}`);
         }
       }
     };

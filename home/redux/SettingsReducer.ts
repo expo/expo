@@ -3,7 +3,7 @@ import { Appearance } from 'react-native';
 
 type ColorSchemeName = Appearance.AppearancePreferences['colorScheme'];
 
-export type SettingsObject = {
+type SettingsObject = {
   preferredAppearance: null | ColorSchemeName;
   devMenuSettings: null | {
     motionGestureEnabled?: boolean;

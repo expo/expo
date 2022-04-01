@@ -2,6 +2,7 @@ import { EventEmitter, Subscription, UnavailabilityError, Platform } from 'expo-
 
 import {
   ClipboardImage,
+  ContentType,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
@@ -14,12 +15,16 @@ const onClipboardEventName = 'onClipboardChanged';
 
 type ClipboardEvent = {
   /**
-   * The new content of the user's clipboard.
+   * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
    */
   content: string;
+  /**
+   * An array of content types that are available on the clipboard.
+   */
+  contentTypes: ContentType[];
 };
 
-export { Subscription, EventEmitter, ClipboardEvent };
+export { Subscription, ClipboardEvent };
 
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
@@ -55,7 +60,7 @@ export async function setStringAsync(
 
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext-options) instead.
+ * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
@@ -170,17 +175,36 @@ export async function hasImageAsync(): Promise<boolean> {
  * is a no-op on Web.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
- * single argument that is an object with a `content` key.
+ * single argument that is an object containing information about clipboard contents.
  *
  * @example
  * ```typescript
- * addClipboardListener(({ content }: ClipboardEvent) => {
- *   alert('Copy pasta! Here's the string that was copied: ' + content);
+ * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
+ *     Clipboard.getStringAsync().then(content => {
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
+ *     });
+ *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
+ *     alert('Yay! Clipboard contains an image');
+ *   }
  * });
  * ```
  */
 export function addClipboardListener(listener: (event: ClipboardEvent) => void): Subscription {
-  return emitter.addListener<ClipboardEvent>(onClipboardEventName, listener);
+  // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
+  const listenerWrapper = (event: ClipboardEvent) => {
+    const wrappedEvent: ClipboardEvent = {
+      ...event,
+      get content(): string {
+        console.warn(
+          "The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content"
+        );
+        return '';
+      },
+    };
+    listener(wrappedEvent);
+  };
+  return emitter.addListener<ClipboardEvent>(onClipboardEventName, listenerWrapper);
 }
 
 /**

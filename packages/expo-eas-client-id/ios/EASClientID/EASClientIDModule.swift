@@ -6,8 +6,8 @@ public class EASClientIDModule: Module {
   public func definition() -> ModuleDefinition {
     name("EASClientID")
     
-    asyncFunction("getClientIDAsync") {
-      return EASClientID.uuid().uuidString
-    }
+    constants([
+      "clientID": EASClientID.uuid().uuidString
+    ])
   }
 }

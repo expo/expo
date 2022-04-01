@@ -16,7 +16,7 @@ module Expo
         'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
         'patch-react-imports',
         '--pods-root',
-        Shellwords.escape(File.expand_path(@root)),
+        File.expand_path(@root),
       ]
 
       if @options[:dry_run]
@@ -24,9 +24,9 @@ module Expo
       end
 
       @module_dirs.each do |dir|
-        args.append(Shellwords.escape(File.expand_path(dir)))
+        args.append(File.expand_path(dir))
       end
-      Pod::UI.message "Executing ReactImportsPatcher node command: #{args.join(' ')}"
+      Pod::UI.message "Executing ReactImportsPatcher node command: #{Shellwords.join(args)}"
 
       time_begin = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       system(*args)

@@ -1,9 +1,9 @@
 import { BranchIcon, iconSize, spacing } from '@expo/styleguide-native';
-import { PressableOpacity } from 'components/PressableOpacity';
 import { Row, useExpoTheme, View, Text, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Linking } from 'react-native';
 
+import { PressableOpacity } from '../../components/PressableOpacity';
 import * as UrlUtils from '../../utils/UrlUtils';
 
 type Props = {

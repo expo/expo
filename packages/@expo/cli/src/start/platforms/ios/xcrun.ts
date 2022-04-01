@@ -7,7 +7,7 @@ import { CommandError } from '../../../utils/errors';
 export async function xcrunAsync(args: (string | undefined)[], options?: SpawnOptions) {
   Log.debug('Running: xcrun ' + args.join(' '));
   try {
-    return await spawnAsync('xcrun', args.filter(Boolean), options);
+    return await spawnAsync('xcrun', args.filter(Boolean) as string[], options);
   } catch (e) {
     throwXcrunError(e);
   }

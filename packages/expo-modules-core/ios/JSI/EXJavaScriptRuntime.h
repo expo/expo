@@ -12,10 +12,15 @@ namespace react = facebook::react;
 NS_SWIFT_NAME(JavaScriptRuntime)
 @interface EXJavaScriptRuntime : NSObject
 
+/**
+ Creates a new JavaScript runtime.
+ */
+- (nonnull instancetype)init;
+
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments);
 
-- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 
 /**
@@ -51,5 +56,12 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
  Creates a new object for use in Swift.
  */
 - (nonnull EXJavaScriptObject *)createObject;
+
+#pragma mark - Script evaluation
+
+/**
+ Evaluates given JavaScript source code.
+ */
+- (nullable id)evaluateScript:(nonnull NSString *)scriptSource;
 
 @end

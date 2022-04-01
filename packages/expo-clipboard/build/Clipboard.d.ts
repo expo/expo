@@ -1,12 +1,16 @@
-import { EventEmitter, Subscription } from 'expo-modules-core';
-import { ClipboardImage, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import { Subscription } from 'expo-modules-core';
+import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 declare type ClipboardEvent = {
     /**
-     * The new content of the user's clipboard.
+     * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
      */
     content: string;
+    /**
+     * An array of content types that are available on the clipboard.
+     */
+    contentTypes: ContentType[];
 };
-export { Subscription, EventEmitter, ClipboardEvent };
+export { Subscription, ClipboardEvent };
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -26,7 +30,7 @@ export declare function getStringAsync(options?: GetStringOptions): Promise<stri
 export declare function setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext-options) instead.
+ * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
@@ -90,12 +94,18 @@ export declare function hasImageAsync(): Promise<boolean>;
  * is a no-op on Web.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
- * single argument that is an object with a `content` key.
+ * single argument that is an object containing information about clipboard contents.
  *
  * @example
  * ```typescript
- * addClipboardListener(({ content }: ClipboardEvent) => {
- *   alert('Copy pasta! Here's the string that was copied: ' + content);
+ * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
+ *     Clipboard.getStringAsync().then(content => {
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
+ *     });
+ *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
+ *     alert('Yay! Clipboard contains an image');
+ *   }
  * });
  * ```
  */

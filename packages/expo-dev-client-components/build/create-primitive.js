@@ -52,10 +52,10 @@ function stylesForSelectors(props, selectors = {}, state = {}) {
         if (selectors[state.theme] != null) {
             const variants = selectors[state.theme];
             const variantStyles = stylesForVariants(props, variants);
-            styles.push(variantStyles);
             if (variants.base != null) {
                 styles.push(variants.base);
             }
+            styles.push(variantStyles);
         }
     }
     return StyleSheet.flatten(styles);

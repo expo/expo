@@ -1827,7 +1827,7 @@ export async function test(t) {
 // In this test app we contact the Expo push service directly. You *never*
 // should do this in a real app. You should always store the push tokens on your
 // own server or use the local notification API if you want to notify this user.
-const PUSH_ENDPOINT = 'https://expo.io/--/api/v2/push/send';
+const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 
 async function sendTestPushNotification(expoPushToken, notificationOverrides) {
   // POST the token to the Expo push server

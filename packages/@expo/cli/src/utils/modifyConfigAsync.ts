@@ -28,7 +28,7 @@ function logNoConfig() {
   );
 }
 
-function warnAboutConfigAndThrow(type: string, message: string, edits: Partial<ExpoConfig>) {
+export function warnAboutConfigAndThrow(type: string, message: string, edits: Partial<ExpoConfig>) {
   Log.log();
   if (type === 'warn') {
     // The project is using a dynamic config, give the user a helpful log and bail out.

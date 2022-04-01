@@ -40,6 +40,19 @@ export interface ClipboardImage {
 }
 
 /**
+ * Type used to define what type of data is stored in the clipboard.
+ */
+export enum ContentType {
+  PLAIN_TEXT = 'plain-text',
+  HTML = 'html',
+  IMAGE = 'image',
+  /**
+   * @platform iOS
+   */
+  URL = 'url',
+}
+
+/**
  * Type used to determine string format stored in the clipboard.
  */
 export enum StringFormat {

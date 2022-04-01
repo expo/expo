@@ -18,6 +18,7 @@ import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorRegistry
+import expo.modules.devmenu.DevMenuAppInfo
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
@@ -171,8 +172,18 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
     var appIcon = getApplicationIconUri()
 
+    // TODO - the logic related to getting the appId could be moved into the expo-updates package and used inside the dev launcher JS
+    var updatesUrl = getMetadataValue("expo.modules.updates.EXPO_UPDATE_URL")
+    var appId = ""
+
+    if (updatesUrl.isNotEmpty()) {
+      var uri = Uri.parse(updatesUrl)
+      appId = uri.lastPathSegment ?: ""
+    }
+
     map.apply {
       putString("appVersion", packageInfo.versionName)
+      putString("appId", appId)
       putString("appName", appName)
       putString("appIcon", appIcon)
       putString("runtimeVersion", runtimeVersion)
