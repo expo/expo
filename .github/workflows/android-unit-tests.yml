@@ -71,14 +71,10 @@ jobs:
             ${{ runner.os }}-gradle-
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: Run Spotless lint check
-        env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
         working-directory: android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
         timeout-minutes: 30
-        env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
         run: expotools native-unit-tests --platform android
       - name: 🎸 Run instrumented unit tests
         timeout-minutes: 40
