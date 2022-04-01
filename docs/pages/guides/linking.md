@@ -74,7 +74,8 @@ Update: "WebBrowser" is in a separate package so first install `expo-web-browser
 
 ```js
 import React, { Component } from 'react';
-import { Button, Linking, View, StyleSheet } from 'react-native';
+import { Button, View, StyleSheet } from 'react-native';
+import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
 
