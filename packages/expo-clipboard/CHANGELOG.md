@@ -12,7 +12,7 @@
 - Added support for setting and getting images (`setImageAsync`, `hasImageAsync`, `getImageAsync`). ([#16391](https://github.com/expo/expo/pull/16391), [#16413](https://github.com/expo/expo/pull/16413), [#16481](https://github.com/expo/expo/pull/16481) by [@barthap](https://github.com/barthap))
 - On iOS added support for setting and getting URLs (`setUrlAsync`, `hasUrlAsync`, `getUrlAsync`). ([#16391](https://github.com/expo/expo/pull/16391) by [@graszka22](https://github.com/graszka22), [@barthap](https://github.com/barthap))
 - Added new method `hasStringAsync` that checks whether clipboard has text content. ([#16524](https://github.com/expo/expo/pull/16524) by [@barthap](https://github.com/barthap))
-- Added support for HTML content in `getStringAsync` and `setStringAsync`. ([#16551](https://github.com/expo/expo/pull/16551) by [@barthap](https://github.com/barthap))
+- Added support for HTML content in `getStringAsync` and `setStringAsync`. ([#16551](https://github.com/expo/expo/pull/16551), [#16687](https://github.com/expo/expo/pull/16687) by [@barthap](https://github.com/barthap))
 - Added new property `contentTypes` to the clipboard event listener describing contents of the clipboard. ([#16787](https://github.com/expo/expo/pull/16787) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes

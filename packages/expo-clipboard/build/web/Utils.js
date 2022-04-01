@@ -34,6 +34,11 @@ export function blobToBase64Async(blob) {
         reader.readAsDataURL(blob);
     });
 }
+export function htmlToPlainText(html) {
+    const tempDivElement = document.createElement('div');
+    tempDivElement.innerHTML = html;
+    return tempDivElement.textContent || tempDivElement.innerText || '';
+}
 export function getImageSizeFromBlobAsync(blob) {
     return new Promise((resolve, _) => {
         const blobUrl = URL.createObjectURL(blob);
@@ -54,6 +59,14 @@ export async function findImageInClipboardAsync(items) {
         // NOTE: Currently, this is not supported by browsers yet. They only support PNG now
         if (clipboardItem.types.some((type) => type === 'image/jpeg')) {
             return await clipboardItem.getType('image/jpeg');
+        }
+    }
+    return null;
+}
+export async function findHtmlInClipboardAsync(items) {
+    for (const clipboardItem of items) {
+        if (clipboardItem.types.some((type) => type === 'text/html')) {
+            return await clipboardItem.getType('text/html');
         }
     }
     return null;
