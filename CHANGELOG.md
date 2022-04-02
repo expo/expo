@@ -8,6 +8,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 📚 3rd party library updates
 
 - Removed `react-native-appearance` that is deprecated since SDK 43. Migrate to [`Appearance` API](https://reactnative.dev/docs/appearance). ([#16436](https://github.com/expo/expo/pull/16436) by [@kudo](https://github.com/kudo))
+- Updated `react-native-pager-view`` from `5.4.9` to `5.4.15`.
 
 ### 🛠 Breaking changes
 
