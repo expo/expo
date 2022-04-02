@@ -18,9 +18,9 @@ An [example to do list app](https://github.com/expo/examples/tree/master/with-sq
 
 ### Importing an existing database
 
-In order to open a new SQLite database using an existing `.db` file you already have, you need to do three things:
+In order to open a new SQLite database using an existing `.db` file you already have, you need to do the following:
 
-- `expo install expo-file-system expo-asset`
+- `expo install expo-sqlite expo-file-system expo-asset`
 - create a **metro.config.js** file in the root of your project with the following contents ([curious why? read here](../../../guides/customizing-metro.md#adding-more-file-extensions-to--assetexts)):
 
 ```ts
@@ -33,7 +33,7 @@ defaultConfig.resolver.assetExts.push('db');
 module.exports = defaultConfig;
 ```
 
-- Use the following function (or similar) to open your database:
+- Use the following function (or similar) to open your database for Expo Builds:
 
 ```ts
 async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
@@ -46,6 +46,37 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDa
   );
   return SQLite.openDatabase('myDatabaseName.db');
 }
+```
+
+- When using EAS Build, a bundled asset needs to be referenced in your code directly. You can use `expo-asset` and its hook `useAssets`. Use the following React `useEffect` (or similar) to open your database for EAS Builds:
+
+```ts
+const [assets, assetsError] = useAssets([require(pathToDatabaseFile)]);
+
+useEffect((): void => {
+  const getDatabase = async ((databaseAsset: Asset)): Promise<SQLite.WebSQLDatabase> => {
+    if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
+      await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
+    }
+    await FileSystem.copyAsync({
+      from: databaseAsset.localUri,
+      to: FileSystem.documentDirectory + 'SQLite/myDatabaseName.db',
+    });
+    return SQLite.openDatabase('myDatabaseName.db');
+  });
+
+  if(assets && assets[0] && !assetsError){
+    const databaseAsset = assets[0];
+
+    getDatabase(databaseAsset)
+      .then((database: SQLite.WebSQLDatabase) => {
+        // Use the database
+      })
+      .catch((err: any) => {
+        // Handle error
+      })
+  }
+}, [assets]);
 ```
 
 ### Executing statements outside of a transaction
