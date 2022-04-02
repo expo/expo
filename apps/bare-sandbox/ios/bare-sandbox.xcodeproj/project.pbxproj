@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		244F53E7B4B640CD0EA734A4 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA7899EDE361789A8F814B2 /* ExpoModulesProvider.swift */; };
 		B2B49E552657B30A0039AEA8 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2B49E4B2657B30A0039AEA8 /* LaunchScreen.xib */; };
-		B2B49E562657B30A0039AEA8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B49E4D2657B30A0039AEA8 /* AppDelegate.m */; };
+		B2B49E562657B30A0039AEA8 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2B49E4D2657B30A0039AEA8 /* AppDelegate.mm */; };
 		B2B49E572657B30A0039AEA8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2B49E4E2657B30A0039AEA8 /* Images.xcassets */; };
 		B2B49E582657B30A0039AEA8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B49E4F2657B30A0039AEA8 /* main.m */; };
 		B2B49E592657B30A0039AEA8 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B49E502657B30A0039AEA8 /* noop-file.swift */; };
@@ -20,8 +21,9 @@
 		017B3F100B99D52013EC27ED /* Pods-bare-sandbox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-bare-sandbox.release.xcconfig"; path = "Target Support Files/Pods-bare-sandbox/Pods-bare-sandbox.release.xcconfig"; sourceTree = "<group>"; };
 		106B1897A158E1F2CDB6E544 /* libPods-bare-sandbox.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-bare-sandbox.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* bare-sandbox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bare-sandbox.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AFA7899EDE361789A8F814B2 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-bare-sandbox/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		B2B49E4C2657B30A0039AEA8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = LaunchScreen.xib; sourceTree = "<group>"; };
-		B2B49E4D2657B30A0039AEA8 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = "bare-sandbox/AppDelegate.m"; sourceTree = "<group>"; };
+		B2B49E4D2657B30A0039AEA8 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = "bare-sandbox/AppDelegate.mm"; sourceTree = "<group>"; };
 		B2B49E4E2657B30A0039AEA8 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "bare-sandbox/Images.xcassets"; sourceTree = "<group>"; };
 		B2B49E4F2657B30A0039AEA8 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "bare-sandbox/main.m"; sourceTree = "<group>"; };
 		B2B49E502657B30A0039AEA8 /* noop-file.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "bare-sandbox/noop-file.swift"; sourceTree = "<group>"; };
@@ -51,7 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				B2B49E532657B30A0039AEA8 /* AppDelegate.h */,
-				B2B49E4D2657B30A0039AEA8 /* AppDelegate.m */,
+				B2B49E4D2657B30A0039AEA8 /* AppDelegate.mm */,
 				B2B49E4A2657B30A0039AEA8 /* Base.lproj */,
 				B2B49E512657B30A0039AEA8 /* devclient.entitlements */,
 				B2B49E4E2657B30A0039AEA8 /* Images.xcassets */,
@@ -89,6 +91,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				D65327D7A22EEC0BE12398D9 /* Pods */,
+				E5BF8A567DC0B55198530A96 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -119,6 +122,22 @@
 				017B3F100B99D52013EC27ED /* Pods-bare-sandbox.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D91EA885E17816819176389C /* bare-sandbox */ = {
+			isa = PBXGroup;
+			children = (
+				AFA7899EDE361789A8F814B2 /* ExpoModulesProvider.swift */,
+			);
+			name = "bare-sandbox";
+			sourceTree = "<group>";
+		};
+		E5BF8A567DC0B55198530A96 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				D91EA885E17816819176389C /* bare-sandbox */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,12 +229,14 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-bare-sandbox/Pods-bare-sandbox-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevMenu.bundle",
@@ -256,7 +277,8 @@
 			files = (
 				B2B49E592657B30A0039AEA8 /* noop-file.swift in Sources */,
 				B2B49E582657B30A0039AEA8 /* main.m in Sources */,
-				B2B49E562657B30A0039AEA8 /* AppDelegate.m in Sources */,
+				B2B49E562657B30A0039AEA8 /* AppDelegate.mm in Sources */,
+				244F53E7B4B640CD0EA734A4 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,7 +357,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -363,6 +385,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -381,8 +404,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -396,7 +419,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -424,6 +447,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -435,8 +459,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
-					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;

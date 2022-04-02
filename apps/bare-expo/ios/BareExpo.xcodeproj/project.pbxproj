@@ -11,15 +11,17 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		31B5C869245847DF0086F49B /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 31B5C868245847DF0086F49B /* notification.wav */; };
 		49C50F1E66EDBBEC90D1C931 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332BD73A6A3EF9EF1F36CCF4 /* ExpoModulesProvider.swift */; };
+		8382ED3427CD0E660031628E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8382ED3327CD0E660031628E /* main.m */; };
+		8382ED3527CD0E660031628E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8382ED3327CD0E660031628E /* main.m */; };
+		8382ED3727CD0E910031628E /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8382ED3627CD0E910031628E /* AppDelegate.mm */; };
+		8382ED3827CD0E910031628E /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8382ED3627CD0E910031628E /* AppDelegate.mm */; };
 		87370DBBF5BCA545337EC29A /* libPods-BareExpoMain-BareExpoDetox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF3C1527733737A89B6E8A9B /* libPods-BareExpoMain-BareExpoDetox.a */; };
-		B2C0264E256BDB3E008FD925 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD59639B247F2EFA0030EECA /* AppDelegate.swift */; };
 		B2C0264F256BDB3E008FD925 /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDB247B24802C4C00F6E7AC /* Dispatch.swift */; };
 		B2C02651256BDB3E008FD925 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
 		B2C02654256BDB3E008FD925 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		B2C02655256BDB3E008FD925 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		B2C02656256BDB3E008FD925 /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 31B5C868245847DF0086F49B /* notification.wav */; };
 		BC7AD480BBBCE096A210A214 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469027E32657212526A60DF7 /* ExpoModulesProvider.swift */; };
-		CD59639C247F2EFA0030EECA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD59639B247F2EFA0030EECA /* AppDelegate.swift */; };
 		CD6B041323091F4B002044FF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
 		CDDB247C24802C4C00F6E7AC /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDB247B24802C4C00F6E7AC /* Dispatch.swift */; };
 		D7A899C4C2519DF9680ACF4D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4181CD42FEE5745FEE71F23C /* ExpoModulesProvider.swift */; };
@@ -63,11 +65,12 @@
 		469027E32657212526A60DF7 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		70C90FD1B0DC892D98AB56FC /* Pods-BareExpoMain-BareExpo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpo.release.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpo/Pods-BareExpoMain-BareExpo.release.xcconfig"; sourceTree = "<group>"; };
 		7AE0764661EA2FD069C93AB0 /* Pods-BareExpoMain-BareExpoDetox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoDetox.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoDetox/Pods-BareExpoMain-BareExpoDetox.debug.xcconfig"; sourceTree = "<group>"; };
+		835C3EFE27CCACB90002A5A0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BareExpo/AppDelegate.h; sourceTree = "<group>"; };
+		8382ED3327CD0E660031628E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BareExpo/main.m; sourceTree = "<group>"; };
+		8382ED3627CD0E910031628E /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = BareExpo/AppDelegate.mm; sourceTree = "<group>"; };
 		8CF07B7F9B02987266CD440F /* Pods-BareExpoMain-BareExpo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpo.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpo/Pods-BareExpoMain-BareExpo.debug.xcconfig"; sourceTree = "<group>"; };
 		AF3C1527733737A89B6E8A9B /* libPods-BareExpoMain-BareExpoDetox.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpoDetox.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2C0265D256BDB3E008FD925 /* BareExpoDetox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BareExpoDetox.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CD59639A247F2EF90030EECA /* BareExpo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BareExpo-Bridging-Header.h"; sourceTree = "<group>"; };
-		CD59639B247F2EFA0030EECA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BareExpo/AppDelegate.swift; sourceTree = "<group>"; };
 		CD6B041223091F4B002044FF /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CDDB247B24802C4C00F6E7AC /* Dispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Dispatch.swift; path = BareExpo/Dispatch.swift; sourceTree = "<group>"; };
 		D00D8FE5AC779F2201D69D6F /* Pods-BareExpoMain-BareExpoDetox.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoDetox.release.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoDetox/Pods-BareExpoMain-BareExpoDetox.release.xcconfig"; sourceTree = "<group>"; };
@@ -116,7 +119,8 @@
 		13B07FAE1A68108700A75B9A /* BareExpo */ = {
 			isa = PBXGroup;
 			children = (
-				CD59639B247F2EFA0030EECA /* AppDelegate.swift */,
+				835C3EFE27CCACB90002A5A0 /* AppDelegate.h */,
+				8382ED3627CD0E910031628E /* AppDelegate.mm */,
 				CDDB247B24802C4C00F6E7AC /* Dispatch.swift */,
 				31B7D64323A904E900CE18C0 /* Bare Expo.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -124,7 +128,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				31B5C868245847DF0086F49B /* notification.wav */,
-				CD59639A247F2EF90030EECA /* BareExpo-Bridging-Header.h */,
+				8382ED3327CD0E660031628E /* main.m */,
 			);
 			name = BareExpo;
 			sourceTree = "<group>";
@@ -678,8 +682,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD59639C247F2EFA0030EECA /* AppDelegate.swift in Sources */,
 				CDDB247C24802C4C00F6E7AC /* Dispatch.swift in Sources */,
+				8382ED3427CD0E660031628E /* main.m in Sources */,
+				8382ED3727CD0E910031628E /* AppDelegate.mm in Sources */,
 				49C50F1E66EDBBEC90D1C931 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -688,8 +693,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2C0264E256BDB3E008FD925 /* AppDelegate.swift in Sources */,
 				B2C0264F256BDB3E008FD925 /* Dispatch.swift in Sources */,
+				8382ED3527CD0E660031628E /* main.m in Sources */,
+				8382ED3827CD0E910031628E /* AppDelegate.mm in Sources */,
 				D7A899C4C2519DF9680ACF4D /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -802,7 +808,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -DDEBUG -DFB_SONARKIT_ENABLED -DEX_DEV_LAUNCHER_ENABLED -DEX_DEV_MENU_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = "Bare Expo";
-				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -834,7 +839,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = "Bare Expo";
-				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -845,7 +849,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -872,7 +876,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -900,7 +904,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -927,7 +931,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
@@ -969,7 +973,6 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1001,7 +1004,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

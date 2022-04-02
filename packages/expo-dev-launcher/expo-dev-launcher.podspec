@@ -34,6 +34,9 @@ Pod::Spec.new do |s|
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",
+  }
   
   s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"

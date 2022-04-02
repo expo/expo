@@ -26,6 +26,12 @@ static BOOL _loaded = NO;
   return [_storage[@"APP_RCT_DEV"] boolValue];
 }
 
++ (BOOL)APP_NEW_ARCH_ENABLED
+{
+  [self throwIfNotLoaded];
+  return [_storage[@"APP_NEW_ARCH_ENABLED"] boolValue];
+}
+
 + (NSDictionary *)getAllDefines
 {
   return _storage;
