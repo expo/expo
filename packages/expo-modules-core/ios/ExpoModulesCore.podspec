@@ -23,6 +23,9 @@ Pod::Spec.new do |s|
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
   }
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header\"",
+  }
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'

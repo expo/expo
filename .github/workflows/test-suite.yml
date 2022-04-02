@@ -157,11 +157,21 @@ jobs:
     runs-on: macos-11
     env:
       NDK_ABI_FILTERS: x86_64
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     steps:
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17'
       - name: 👀 Checkout
         uses: actions/checkout@v2
         with:
           submodules: true
+      - name: 🔨 Use JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
       - name: 🍺 Install required tools
         run: |
           brew install watchman

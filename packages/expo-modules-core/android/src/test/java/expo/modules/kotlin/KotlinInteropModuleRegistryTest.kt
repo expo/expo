@@ -146,7 +146,7 @@ class KotlinInteropModuleRegistryTest {
       ) to """
         Call to function 'test-2.f2' has been rejected.
         → Caused by: Argument at index '0' couldn't be casted to type 'kotlin.Int' (received 'String').
-        → Caused by: java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Number
+        → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
       """.trimIndent(),
       Triple(
         "test-2",
@@ -165,7 +165,7 @@ class KotlinInteropModuleRegistryTest {
         → Caused by: Argument at index '0' couldn't be casted to type 'expo.modules.kotlin.TestRecord' (received 'Map').
         → Caused by: Cannot create a record of the type: 'expo.modules.kotlin.TestRecord'.
         → Caused by: Cannot cast 'Number' for field 'string' ('kotlin.String').
-        → Caused by: java.lang.ClassCastException: java.lang.Double cannot be cast to java.lang.String
+        → Caused by: java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
       """.trimIndent()
     )
 
@@ -177,7 +177,7 @@ class KotlinInteropModuleRegistryTest {
       interopModuleRegistry.callMethod(callValues.first, callValues.second, callValues.third, promise)
 
       Truth.assertThat(promise.state).isEqualTo(PromiseState.REJECTED)
-      Truth.assertThat(promise.rejectMessage).isEqualTo(expected)
+      Truth.assertThat(promise.rejectMessage).contains(expected)
     }
   }
 }
