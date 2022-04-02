@@ -2,8 +2,9 @@
   "name": "expo-dev-client-components",
   "version": "1.0.0",
   "description": "Shared JS components and configuration for expo-dev-client",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "scripts": {
+    "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest .",
