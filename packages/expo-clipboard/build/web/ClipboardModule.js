@@ -1,16 +1,38 @@
+import { StringFormat, } from '../Clipboard.types';
 import { ClipboardUnavailableException, CopyFailureException, NoPermissionException, PasteFailureException, } from './Exceptions';
-import { base64toBlob, blobToBase64Async, findImageInClipboardAsync, getImageSizeFromBlobAsync, isClipboardPermissionDeniedAsync, } from './Utils';
+import { base64toBlob, blobToBase64Async, findHtmlInClipboardAsync, findImageInClipboardAsync, getImageSizeFromBlobAsync, htmlToPlainText, isClipboardPermissionDeniedAsync, } from './Utils';
 export default {
     get name() {
         return 'ExpoClipboard';
     },
-    async getStringAsync(_options) {
+    async getStringAsync(options) {
         if (!navigator.clipboard) {
             throw new ClipboardUnavailableException();
         }
-        let text = '';
         try {
-            text = await navigator.clipboard.readText();
+            switch (options.preferredFormat) {
+                case StringFormat.HTML: {
+                    // Try reading HTML first
+                    const clipboardItems = await navigator.clipboard.read();
+                    const blob = await findHtmlInClipboardAsync(clipboardItems);
+                    if (!blob) {
+                        // Fall back to plain text
+                        return await navigator.clipboard.readText();
+                    }
+                    return await new Response(blob).text();
+                }
+                default: {
+                    let text = await navigator.clipboard.readText();
+                    if (!text || text === '') {
+                        // If there's no direct plain text, try reading HTML
+                        const clipboardItems = await navigator.clipboard.read();
+                        const blob = await findHtmlInClipboardAsync(clipboardItems);
+                        const blobText = await blob?.text();
+                        text = htmlToPlainText(blobText ?? '');
+                    }
+                    return text;
+                }
+            }
         }
         catch (e) {
             // it might fail, because user denied permission
@@ -20,13 +42,12 @@ export default {
             try {
                 // Internet Explorer
                 // @ts-ignore
-                text = window.clipboardData.getData('Text');
+                return window.clipboardData.getData('Text');
             }
             catch {
                 return Promise.reject(new Error('Unable to retrieve item from clipboard'));
             }
         }
-        return text;
     },
     // TODO: (barthap) The `setString` was deprecated in SDK 45. Remove this function in a few SDK cycles.
     setString(text) {
@@ -45,11 +66,31 @@ export default {
             document.body.removeChild(textField);
         }
     },
-    async setStringAsync(text, _options) {
-        return this.setString(text);
+    async setStringAsync(text, options) {
+        switch (options.inputFormat) {
+            case StringFormat.HTML: {
+                if (!navigator.clipboard) {
+                    throw new ClipboardUnavailableException();
+                }
+                try {
+                    const clipboardItemInput = createHtmlClipboardItem(text);
+                    await navigator.clipboard.write([clipboardItemInput]);
+                    return true;
+                }
+                catch (e) {
+                    // it might fail, because user denied permission
+                    if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+                        throw new NoPermissionException();
+                    }
+                    throw new CopyFailureException(e.message);
+                }
+            }
+            default:
+                return this.setString(text);
+        }
     },
     async hasStringAsync() {
-        return this.getStringAsync({}).then((text) => text.length > 0);
+        return await clipboardHasTypesAsync(['text/plain', 'text/html']);
     },
     async getImageAsync(_options) {
         if (!navigator.clipboard) {
@@ -99,24 +140,38 @@ export default {
         }
     },
     async hasImageAsync() {
-        if (!navigator.clipboard) {
-            throw new ClipboardUnavailableException();
-        }
-        try {
-            const clipboardItems = await navigator.clipboard.read();
-            return clipboardItems
-                .flatMap((item) => item.types)
-                .some((type) => type === 'image/png' || type === 'image/jpeg');
-        }
-        catch (e) {
-            // it might fail, because user denied permission
-            if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
-                throw new NoPermissionException();
-            }
-            throw e;
-        }
+        return await clipboardHasTypesAsync(['image/png', 'image/jpeg']);
     },
     addClipboardListener() { },
     removeClipboardListener() { },
 };
+/**
+ * Resolves to true if clipboard has one of provided {@link types}.
+ * @throws `ClipboardUnavailableException` if AsyncClipboard API is not available
+ * @throws `NoPermissionException` if user denied permission
+ */
+async function clipboardHasTypesAsync(types) {
+    if (!navigator.clipboard) {
+        throw new ClipboardUnavailableException();
+    }
+    try {
+        const clipboardItems = await navigator.clipboard.read();
+        return clipboardItems.flatMap((item) => item.types).some((type) => types.includes(type));
+    }
+    catch (e) {
+        // it might fail, because user denied permission
+        if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+            throw new NoPermissionException();
+        }
+        throw e;
+    }
+}
+function createHtmlClipboardItem(htmlString) {
+    return new ClipboardItem({
+        // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ
+        'text/html': new Blob([text], { type: 'text/html' }),
+        // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ
+        'text/plain': new Blob([htmlToPlainText(text)], { type: 'text/plain' }),
+    });
+}
 //# sourceMappingURL=ClipboardModule.js.map

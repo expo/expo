@@ -125,6 +125,7 @@ subprojects {
     }
     kotlin {
       target(ktlintTarget)
+      targetExclude("**/versioned/host/exp/exponent/modules/api/**/*.kt")
       ktlint("0.41.0").userData([
         "disabled_rules"           : "no-wildcard-imports,import-ordering",
         "charset"                  : "utf-8",

@@ -45,7 +45,7 @@ export function BranchDetailsView({ loading, error, data }: Props) {
     );
   } else {
     contents = (
-      <View style={{ flex: 1, paddingBottom: 20 }}>
+      <View style={{ flex: 1, paddingBottom: 20, backgroundColor: theme.background.screen }}>
         <BranchHeader
           name={data.app.byId.updateBranchByName.name}
           manifestPermalink={data.app.byId.updateBranchByName.updates[0].manifestPermalink}
