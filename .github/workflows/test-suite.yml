@@ -157,6 +157,7 @@ jobs:
     runs-on: macos-11
     env:
       NDK_ABI_FILTERS: x86_64
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v2
