@@ -10,7 +10,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Removed `react-native-appearance` that is deprecated since SDK 43. Migrate to [`Appearance` API](https://reactnative.dev/docs/appearance). ([#16436](https://github.com/expo/expo/pull/16436) by [@kudo](https://github.com/kudo))
 - Updated `react-native-shared-element` from `0.8.3` to `0.8.4`. ([#16866](https://github.com/expo/expo/pull/16866) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-pager-view` from `5.4.9` to `5.4.15`. ([#16890](https://github.com/expo/expo/pull/16890) by [@brentvatne](https://github.com/brentvatne))
-- Updated `react-native-webview` from `11.15.0` to `11.18.0`. ([#16826](https://github.com/expo/expo/pull/16826) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-webview` from `11.15.0` to `11.18.1`. ([#16826](https://github.com/expo/expo/pull/16826) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 
