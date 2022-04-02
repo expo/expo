@@ -161,7 +161,7 @@
     "react-native-svg": "^12.1.1",
     "react-native-view-shot": "3.1.2",
     "react-native-web": "~0.17.1",
-    "react-native-webview": "11.15.0",
+    "react-native-webview": "11.18.1",
     "react-navigation": "^4.4.0",
     "react-navigation-shared-element": "^3.1.2",
     "react-navigation-stack": "^2.8.2",
