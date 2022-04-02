@@ -10,7 +10,7 @@ version = '11.1.0'
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def RN_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def RN_SO_DIR = RN_BUILD_FROM_SOURCE
-    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "react-ndk", "exported")
+    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
     : "${buildDir}/react-native-0*/jni"
 
 buildscript {
@@ -198,14 +198,16 @@ task extractJNIFiles {
 }
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake')) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
     if (RN_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
     }
   } else if (task.name.startsWith('generateJsonModel') && RN_BUILD_FROM_SOURCE) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 
 }
