@@ -1,5 +1,6 @@
 name: "\U0001F41B CLI Bug Report"
 description: 'You want to report an issue with Expo CLI, our command line tool'
+labels: ['stale', 'pending closure']
 body:
   - type: markdown
     attributes:
