@@ -44,6 +44,8 @@ abstract_target 'Expo Go' do
     }
   })
 
+  pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-tests-core/ios"
+
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
