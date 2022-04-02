@@ -42,7 +42,7 @@
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.8.0",
     "@react-native-async-storage/async-storage": "~1.15.0",
-    "@react-native-community/datetimepicker": "4.0.0",
+    "@react-native-community/datetimepicker": "6.1.1",
     "@react-native-community/netinfo": "8.2.0",
     "@react-native-community/slider": "4.2.1",
     "@react-native-masked-view/masked-view": "0.2.6",

@@ -1403,7 +1403,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 476ee3e89abb49e07f822b48323c51c57124b572
+  glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
@@ -1425,7 +1425,7 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 3724efa50cb2846d7ccebc8691c574e85fd74471
   Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
-  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
+  RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
   RCTRequired: bab4a7c3d7eb9553b13773ee190f279712efd1fc
   RCTTypeSafety: efbeb6e450ff6cef8e19c2cb5314c6d8bfeeef77
   React: 28e4d45839b7d0fd9512af899e0379a17a5172ec
