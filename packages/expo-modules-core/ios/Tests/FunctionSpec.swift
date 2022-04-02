@@ -1,9 +1,8 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class FunctionSpec: QuickSpec {
+class FunctionSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext()
     let functionName = "test function name"
