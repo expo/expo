@@ -2,13 +2,13 @@ import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
 import { ChevronDownIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { SectionHeader } from '../../components/SectionHeader';
 import { Divider, Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import semver from 'semver';
 
 import { BranchListItem } from '../../components/BranchListItem';
 import { PressableOpacity } from '../../components/PressableOpacity';
+import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 

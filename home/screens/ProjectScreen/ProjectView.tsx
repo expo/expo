@@ -7,7 +7,6 @@ import { ActivityIndicator } from 'react-native';
 
 import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
-import { SectionHeader } from '../../components/SectionHeader';
 import ShareProjectButton from '../../components/ShareProjectButton';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
