@@ -12,6 +12,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-pager-view` from `5.4.9` to `5.4.15`. ([#16890](https://github.com/expo/expo/pull/16890) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-webview` from `11.15.0` to `11.18.1`. ([#16826](https://github.com/expo/expo/pull/16826) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-picker/picker` from `2.2.1` to `2.4.0`. ([#16876](https://github.com/expo/expo/pull/16876) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/slider` from `4.1.12` to `4.2.1`.
 
 ### 🛠 Breaking changes
 
