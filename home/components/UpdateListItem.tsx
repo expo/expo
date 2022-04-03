@@ -23,7 +23,13 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
   };
 
   return (
-    <PressableOpacity onPress={handlePress}>
+    <PressableOpacity
+      containerProps={{
+        bg: 'default',
+        border: 'default',
+        rounded: 'large',
+      }}
+      onPress={handlePress}>
       <View padding="medium">
         <Row align="center" justify="between">
           <View align="start" flex="1">
