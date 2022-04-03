@@ -32,16 +32,17 @@ defaultConfig.resolver.assetExts.push('db');
 
 module.exports = defaultConfig;
 ```
+Create a folder in the root of your project, called `asset`. Put your files in there. Once your files are in there, you can `require()` them. Make sure, that the `path` you are passing to `require()` is the correct *relative* path from where you require the file. For more information on the `Asstest` module, please refere to the documentation: https://docs.expo.dev/versions/latest/sdk/asset/
 
 - Use the following function (or similar) to open your database:
 
 ```ts
-async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
+async function openDatabase(realtivePathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
   if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
     await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
   }
   await FileSystem.downloadAsync(
-    Asset.fromModule(require(pathToDatabaseFile)).uri,
+    Asset.fromModule(require(realtivePathToDatabaseFile)).uri,
     FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
   );
   return SQLite.openDatabase('myDatabaseName.db');
