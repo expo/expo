@@ -1,12 +1,12 @@
-import { iconSize, OpenInternalIcon, spacing } from '@expo/styleguide-native';
-import { SectionHeader } from '../../components/SectionHeader';
-import { View, Text, Spacer, Row, useExpoTheme, Divider } from 'expo-dev-client-components';
+import { iconSize, OpenInternalIcon } from '@expo/styleguide-native';
+import { View, Text, Spacer, Row, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import { Linking, Platform } from 'react-native';
 import semver from 'semver';
 
 import { PressableOpacity } from '../../components/PressableOpacity';
+import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import Environment from '../../utils/Environment';
 import * as UrlUtils from '../../utils/UrlUtils';
@@ -71,12 +71,11 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
               <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
             </Row>
           </PressableOpacity>
-          <Divider />
-          <View padding="medium">
-            <Text size="small" color="secondary" type="InterRegular">
-              {moreLegacyBranchesText}
-            </Text>
-          </View>
+        </View>
+        <View padding="medium">
+          <Text size="small" color="secondary" type="InterRegular">
+            {moreLegacyBranchesText}
+          </Text>
         </View>
         <Spacer.Vertical size="medium" />
       </View>

@@ -59,7 +59,7 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
           {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
           {appHasEASUpdates(app) && <EASUpdateLaunchSection app={app} />}
           {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}
-          <Spacer.Vertical size="medium" />
+          <Spacer.Vertical size="xl" />
           <View bg="default" border="hairline" overflow="hidden" rounded="large">
             <ConstantItem title="Owner" value={app.username} />
             <Divider />
