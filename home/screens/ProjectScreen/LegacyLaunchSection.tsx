@@ -70,13 +70,11 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
           </Row>
         </PressableOpacity>
       </View>
-      <Spacer.Vertical size="medium" />
-      <Text
-        size="small"
-        type="InterRegular"
-        style={{ marginBottom: spacing[4], marginHorizontal: spacing[4] }}>
+      <Spacer.Vertical size="small" />
+      <Text size="small" type="InterRegular" style={{ marginHorizontal: spacing[4] }}>
         {moreLegacyBranchesText}
       </Text>
+      <Spacer.Vertical size="medium" />
       {warning}
     </View>
   );
