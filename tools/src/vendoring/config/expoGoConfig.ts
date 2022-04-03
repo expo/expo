@@ -251,6 +251,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
+      packageJsonPath: 'src/package.json',
     },
   },
 };
