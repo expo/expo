@@ -64,8 +64,6 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
             <ConstantItem title="Owner" value={app.username} />
             <Divider />
             <ConstantItem title="SDK Version" value={app.sdkVersion} />
-            <Divider />
-            <ConstantItem title="Privacy" value={app.privacy} />
           </View>
         </View>
       </ScrollView>
