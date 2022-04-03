@@ -1,5 +1,6 @@
 import { iconSize, OpenInternalIcon, spacing } from '@expo/styleguide-native';
-import { View, Text, Spacer, Row, useExpoTheme } from 'expo-dev-client-components';
+import { SectionHeader } from '../../components/SectionHeader';
+import { View, Text, Spacer, Row, useExpoTheme, Divider } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import { Linking, Platform } from 'react-native';
@@ -47,7 +48,6 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
       <WarningBox
         title="Unsupported SDK version"
         message={`This project's SDK version (${legacyUpdatesSDKMajorVersion}) is no longer supported.`}
-        showLearnMore={false}
       />
     );
   }
@@ -56,6 +56,7 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
 
   return (
     <View>
+      <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
       <View bg="default" overflow="hidden" rounded="large" border="hairline">
         <PressableOpacity
           onPress={() => {
@@ -64,16 +65,19 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
           containerProps={{ bg: 'default' }}>
           <Row padding="medium" justify="between" align="center">
             <Text size="medium" type="InterRegular">
-              Use Classic Updates
+              default
             </Text>
             <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
           </Row>
         </PressableOpacity>
+        <Divider />
+        <View padding="medium">
+          <Text size="small" color="secondary" type="InterRegular">
+            {moreLegacyBranchesText}
+          </Text>
+        </View>
       </View>
-      <Spacer.Vertical size="small" />
-      <Text size="small" type="InterRegular" style={{ marginHorizontal: spacing[4] }}>
-        {moreLegacyBranchesText}
-      </Text>
+
       <Spacer.Vertical size="medium" />
       {warning}
     </View>

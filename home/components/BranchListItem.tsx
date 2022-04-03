@@ -59,7 +59,7 @@ export function BranchListItem({ name, appId, latestUpdate: { message, createdAt
                       size="small"
                       ellipsizeMode="middle"
                       numberOfLines={1}>
-                      Update: "{message}"
+                      "{message}"
                     </Text>
                     <Spacer.Vertical size="tiny" />
                     <Text

@@ -56,9 +56,6 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
-          {(appHasLegacyUpdate(app) || appHasEASUpdates(app)) && (
-            <SectionHeader header="Launch project" style={{ paddingTop: 0 }} />
-          )}
           {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
           {appHasEASUpdates(app) && <EASUpdateLaunchSection app={app} />}
           {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}

@@ -37,7 +37,7 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
                   size="small"
                   ellipsizeMode="middle"
                   numberOfLines={1}>
-                  Update: {message ? `"${message}"` : id}
+                  {message ? `"${message}"` : id}
                 </Text>
                 <Spacer.Vertical size="tiny" />
                 <Text

@@ -2,6 +2,7 @@ import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
 import { ChevronDownIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { SectionHeader } from '../../components/SectionHeader';
 import { Divider, Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import semver from 'semver';
@@ -55,31 +56,38 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
   }
 
   return (
-    <View bg="default" rounded="large" border="hairline" overflow="hidden">
-      {branchManifests.map((branch, i) => {
-        return (
-          <Fragment key={branch.id}>
-            <BranchListItem appId={app.id} name={branch.name} latestUpdate={branch.latestUpdate} />
-            {i < branchManifests.length - 1 && <Divider />}
-          </Fragment>
-        );
-      })}
-      {branchesToRender.length > 3 && (
-        <>
-          <Divider />
-          <PressableOpacity onPress={onSeeAllBranchesPress}>
-            <View padding="medium">
-              <Row align="center" justify="between">
-                <Text type="InterRegular">See all branches</Text>
-                <ChevronDownIcon
-                  style={{ transform: [{ rotate: '-90deg' }] }}
-                  color={theme.icon.secondary}
-                />
-              </Row>
-            </View>
-          </PressableOpacity>
-        </>
-      )}
+    <View>
+      <SectionHeader header="Branches" style={{ paddingTop: 0 }} />
+      <View bg="default" rounded="large" border="hairline" overflow="hidden">
+        {branchManifests.map((branch, i) => {
+          return (
+            <Fragment key={branch.id}>
+              <BranchListItem
+                appId={app.id}
+                name={branch.name}
+                latestUpdate={branch.latestUpdate}
+              />
+              {i < branchManifests.length - 1 && <Divider />}
+            </Fragment>
+          );
+        })}
+        {branchesToRender.length > 3 && (
+          <>
+            <Divider />
+            <PressableOpacity onPress={onSeeAllBranchesPress}>
+              <View padding="medium">
+                <Row align="center" justify="between">
+                  <Text type="InterRegular">See all branches</Text>
+                  <ChevronDownIcon
+                    style={{ transform: [{ rotate: '-90deg' }] }}
+                    color={theme.icon.secondary}
+                  />
+                </Row>
+              </View>
+            </PressableOpacity>
+          </>
+        )}
+      </View>
     </View>
   );
 }
