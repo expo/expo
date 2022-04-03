@@ -55,31 +55,31 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   const theme = useExpoTheme();
 
   return (
-    <View>
-      <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
-      <View bg="default" overflow="hidden" rounded="large" border="hairline">
-        <PressableOpacity
-          onPress={() => {
-            Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-          }}
-          containerProps={{ bg: 'default' }}>
-          <Row padding="medium" justify="between" align="center">
-            <Text size="medium" type="InterRegular">
-              default
+    warning ?? (
+      <View>
+        <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
+        <View bg="default" overflow="hidden" rounded="large" border="hairline">
+          <PressableOpacity
+            onPress={() => {
+              Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
+            }}
+            containerProps={{ bg: 'default' }}>
+            <Row padding="medium" justify="between" align="center">
+              <Text size="medium" type="InterRegular">
+                default
+              </Text>
+              <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
+            </Row>
+          </PressableOpacity>
+          <Divider />
+          <View padding="medium">
+            <Text size="small" color="secondary" type="InterRegular">
+              {moreLegacyBranchesText}
             </Text>
-            <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
-          </Row>
-        </PressableOpacity>
-        <Divider />
-        <View padding="medium">
-          <Text size="small" color="secondary" type="InterRegular">
-            {moreLegacyBranchesText}
-          </Text>
+          </View>
         </View>
+        <Spacer.Vertical size="medium" />
       </View>
-
-      <Spacer.Vertical size="medium" />
-      {warning}
-    </View>
+    )
   );
 }
