@@ -60,7 +60,7 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
             borderColor: theme.button.ghost.border,
           }}>
           <Button.Text type="InterSemiBold" color="ghost" size="small">
-            Log in
+            Log In
           </Button.Text>
         </PressableOpacity>
       );
