@@ -26,7 +26,7 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
     <PressableOpacity
       containerProps={{
         bg: 'default',
-        border: 'default',
+        border: 'hairline',
         rounded: 'large',
       }}
       onPress={handlePress}>

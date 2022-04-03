@@ -53,9 +53,9 @@ export function BranchDetailsView({ loading, error, data }: Props) {
         />
         <FlatList<typeof data.app.byId.updateBranchByName.updates[number]>
           data={data.app.byId.updateBranchByName.updates}
-          contentContainerStyle={{ padding: spacing[4] }}
           ListHeaderComponent={<SectionHeader header="Updates" style={{ paddingTop: 0 }} />}
           keyExtractor={(update) => update.id}
+          contentContainerStyle={{ padding: spacing[4] }}
           ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
           renderItem={({ item: update }) => (
             <UpdateListItem
