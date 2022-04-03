@@ -136,7 +136,8 @@ async function action(options: ActionOptions) {
 
     // Update dependency versions only for Expo Go target.
     if (options.updateDependencies !== false && target === EXPO_GO_TARGET) {
-      const packageJson = require(path.join(sourceDirectory, 'package.json')) as PackageJson;
+      const packageJsonPath = path.join(sourceDirectory, moduleConfig.packageJsonPath ?? 'package.json');
+      const packageJson = require(packageJsonPath) as PackageJson;
       const semverPrefix =
         (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
       const newVersionRange = `${semverPrefix}${packageJson.version}`;

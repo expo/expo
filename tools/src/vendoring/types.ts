@@ -8,6 +8,7 @@ export type VendoringModulePlatformConfig<T = {}> = T & {
 export type VendoringModuleConfig = {
   source: string;
   semverPrefix?: string;
+  packageJsonPath?: string;
   ios?: VendoringModulePlatformConfig<{
     // this hook can do some transformation before running `pod ipc spec ...`.
     // use this hook as a workaround for some podspecs showing errors and violating json format.
