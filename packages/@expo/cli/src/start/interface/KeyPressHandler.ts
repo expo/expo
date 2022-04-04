@@ -1,6 +1,8 @@
 import * as Log from '../../log';
 import { logCmdError } from '../../utils/errors';
 
+const CTRL_C = '\u0003';
+
 /** An abstract key stroke interceptor. */
 export class KeyPressHandler {
   private isInterceptingKeyStrokes = false;
@@ -30,7 +32,7 @@ export class KeyPressHandler {
 
   private handleKeypress = async (key: string) => {
     // Prevent sending another event until the previous event has finished.
-    if (this.isHandlingKeyPress) {
+    if (this.isHandlingKeyPress && key !== CTRL_C) {
       return;
     }
     this.isHandlingKeyPress = true;
