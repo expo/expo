@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {
   ExtensionsFilledIcon,
   HomeFilledIcon,
+  InfoIcon,
   SettingsFilledIcon,
   View,
 } from 'expo-dev-client-components';
@@ -14,6 +15,7 @@ import { AppProviders } from './providers/AppProviders';
 import { CrashReportScreen } from './screens/CrashReportScreen';
 import { ExtensionsStack } from './screens/ExtensionsStack';
 import { HomeScreen } from './screens/HomeScreen';
+import { KitchenSinkScreen } from './screens/KitchenSinkScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
 
@@ -81,6 +83,16 @@ const Main = () => {
           tabBarIcon: ({ focused }) => <SettingsFilledIcon focused={focused} />,
         }}
       />
+      {__DEV__ && (
+        <Tab.Screen
+          name="Kitchen Sink"
+          component={KitchenSinkScreen}
+          options={{
+            header: () => null,
+            tabBarIcon: () => <InfoIcon />,
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 };
