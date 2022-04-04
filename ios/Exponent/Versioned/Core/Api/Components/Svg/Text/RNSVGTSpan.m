@@ -65,31 +65,24 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     if (self.content) {
         RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
         if (self.inlineSize != nil && self.inlineSize.value != 0) {
-            CGColorRef color;
             if (self.fill) {
                 if (self.fill.class == RNSVGBrush.class) {
-                    color = [self.tintColor CGColor];
+                    CGColorRef color = [self.tintColor CGColor];
                     [self drawWrappedText:context gc:gc rect:rect color:color];
                 } else {
-                    color = [self.fill getColorWithOpacity:self.fillOpacity];
+                    CGColorRef color = [self.fill getColorWithOpacity:self.fillOpacity];
                     [self drawWrappedText:context gc:gc rect:rect color:color];
-                }
-                if (color) {
                     CGColorRelease(color);
-                    color = nil;
                 }
             }
             if (self.stroke) {
                 if (self.stroke.class == RNSVGBrush.class) {
-                    color = [self.tintColor CGColor];
+                    CGColorRef color = [self.tintColor CGColor];
                     [self drawWrappedText:context gc:gc rect:rect color:color];
                 } else {
-                    color = [self.stroke getColorWithOpacity:self.strokeOpacity];
+                    CGColorRef color = [self.stroke getColorWithOpacity:self.strokeOpacity];
                     [self drawWrappedText:context gc:gc rect:rect color:color];
-                }
-                if (color) {
                     CGColorRelease(color);
-                    color = nil;
                 }
             }
         } else {

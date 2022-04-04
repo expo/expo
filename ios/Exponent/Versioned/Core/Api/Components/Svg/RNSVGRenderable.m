@@ -202,18 +202,27 @@ UInt32 saturate(CGFloat value) {
         CGSize boundsSize = bounds.size;
         CGFloat height = boundsSize.height;
         CGFloat width = boundsSize.width;
+#if TARGET_OS_OSX
+        CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+#else
+        CGFloat scale = [[UIScreen mainScreen] scale];
+#endif
         NSUInteger iheight = (NSUInteger)height;
         NSUInteger iwidth = (NSUInteger)width;
-        NSUInteger npixels = iheight * iwidth;
+        NSUInteger iscale = (NSUInteger)scale;
+        NSUInteger scaledHeight = iheight * iscale;
+        NSUInteger scaledWidth = iwidth * iscale;
+        NSUInteger npixels = scaledHeight * scaledWidth;
         CGRect drawBounds = CGRectMake(0, 0, width, height);
 
         // Allocate pixel buffer and bitmap context for mask
         NSUInteger bytesPerPixel = 4;
         NSUInteger bitsPerComponent = 8;
-        NSUInteger bytesPerRow = bytesPerPixel * iwidth;
+        NSUInteger bytesPerRow = bytesPerPixel * scaledWidth;
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         UInt32 * pixels = (UInt32 *) calloc(npixels, sizeof(UInt32));
-        CGContextRef bcontext = CGBitmapContextCreate(pixels, iwidth, iheight, bitsPerComponent, bytesPerRow, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+        CGContextRef bcontext = CGBitmapContextCreate(pixels, scaledWidth, scaledHeight, bitsPerComponent, bytesPerRow, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+        CGContextScaleCTM(bcontext, iscale, iscale);
 
         // Clip to mask bounds and render the mask
         CGFloat x = [self relativeOn:[_maskNode x]
