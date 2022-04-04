@@ -40,16 +40,16 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)tapHandler:(UITapGestureRecognizer *)gesture {
-  // Ignore this tap if in the middle of a slide.
-  if (_isSliding) {
-    return;
-  }
-
-  // Bail out if the source view of the gesture isn't an RNCSlider.
   if ([gesture.view class] != [RNCSlider class]) {
     return;
   }
   RNCSlider *slider = (RNCSlider *)gesture.view;
+  slider.isSliding = _isSliding;
+
+  // Ignore this tap if in the middle of a slide.
+  if (_isSliding) {
+    return;
+  }
 
   if (!slider.tapToSeek) {
     return;
@@ -62,7 +62,6 @@ RCT_EXPORT_MODULE()
   float value = slider.minimumValue + (rangeWidth * sliderPercent);
 
   [slider setValue:discreteValue(slider, value) animated: YES];
-
 
   if (slider.onRNCSliderSlidingStart) {
     slider.onRNCSliderSlidingStart(@{
@@ -122,7 +121,9 @@ static void RNCSendSliderEvent(RNCSlider *sender, BOOL continuous, BOOL isSlidin
 {
   float value = discreteValue(sender, sender.value);
 
-  [sender setValue:value animated:NO];
+  if(!sender.isSliding) {
+    [sender setValue:value animated:NO];
+  }
 
   if (continuous) {
     if (sender.onRNCSliderValueChange && sender.lastValue != value) {
@@ -155,15 +156,22 @@ static void RNCSendSliderEvent(RNCSlider *sender, BOOL continuous, BOOL isSlidin
 {
   RNCSendSliderEvent(sender, NO, YES);
   _isSliding = YES;
+  sender.isSliding = YES;
 }
 
 - (void)sliderTouchEnd:(RNCSlider *)sender
 {
   RNCSendSliderEvent(sender, NO, NO);
   _isSliding = NO;
+  sender.isSliding = NO;
 }
 
-RCT_EXPORT_VIEW_PROPERTY(value, float);
+RCT_CUSTOM_VIEW_PROPERTY(value, float, RNCSlider)
+{
+  if (!view.isSliding) {
+    view.value = [RCTConvert float:json];
+  }
+}
 RCT_EXPORT_VIEW_PROPERTY(step, float);
 RCT_EXPORT_VIEW_PROPERTY(trackImage, UIImage);
 RCT_EXPORT_VIEW_PROPERTY(minimumTrackImage, UIImage);

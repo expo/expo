@@ -17,6 +17,7 @@
 
 @property (nonatomic, assign) float step;
 @property (nonatomic, assign) float lastValue;
+@property (nonatomic, assign) bool isSliding;
 
 @property (nonatomic, strong) UIImage *trackImage;
 @property (nonatomic, strong) UIImage *minimumTrackImage;
