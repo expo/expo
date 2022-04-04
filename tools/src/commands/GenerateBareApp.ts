@@ -13,17 +13,24 @@ type GenerateBareAppOptions = {
   outDir?: string;
 };
 
-async function action(packageNames: string[], options: GenerateBareAppOptions) {
+async function action(
+  packageNames: string[],
+  {
+    name: appName = 'my-generated-bare-app',
+    outDir = 'bare-apps',
+    template = 'expo-template-bare-minimum',
+    clean = false,
+  }: GenerateBareAppOptions
+) {
   // TODO:
   // if appName === ''
   // if packageNames.length === 0
 
-
   const workspaceDir = path.resolve(process.cwd(), outDir);
-  const projectDir = path.resolve(process.cwd(), projectsDir, appName);
-  const packagesToSymlink = await getPackagesToSymlink({ packageNames, projectsDir });
+  const projectDir = path.resolve(process.cwd(), workspaceDir, appName);
+  const packagesToSymlink = await getPackagesToSymlink({ packageNames, workspaceDir });
 
-  await createProjectDirectory({ clean, projectDir, projectsDir, appName, template });
+  await createProjectDirectory({ clean, projectDir, workspaceDir, appName, template });
   await modifyPackageJson({ packagesToSymlink, projectDir });
   await yarnInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
@@ -42,13 +49,13 @@ async function createProjectDirectory({
   workspaceDir,
   projectDir,
   appName,
-  template
+  template,
 }: {
-  clean: boolean,
-  workspaceDir: string,
-  projectDir: string,
-  appName: string,
-  template: string,
+  clean: boolean;
+  workspaceDir: string;
+  projectDir: string;
+  appName: string;
+  template: string;
 }) {
   console.log('Creating project');
 
@@ -61,22 +68,19 @@ async function createProjectDirectory({
   }
 
   return await runExpoCliAsync('init', [appName, '--no-install', '--template', template], {
-    cwd: projectsDir,
+    cwd: workspaceDir,
     stdio: 'ignore',
   });
 }
 
 function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string }) {
-  const defaultPackagesToSymlink: string[] = [
-    "expo",
-    "expo-modules-autolinking",
-  ];
+  const defaultPackagesToSymlink: string[] = ['expo', 'expo-modules-autolinking'];
 
-  const isInExpoRepo = projectsDir.startsWith(EXPO_DIR)
+  const isInExpoRepo = workspaceDir.startsWith(EXPO_DIR);
 
   if (isInExpoRepo) {
     // these packages are picked up by prebuild since they are symlinks in the mono repo
-    // config plugins are applied so we include these packages to be safe 
+    // config plugins are applied so we include these packages to be safe
     defaultPackagesToSymlink.concat([
       'expo-asset',
       'expo-application',
@@ -93,17 +97,22 @@ function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string })
       'expo-dev-launcher',
       'expo-dev-menu',
       'expo-dev-menu-interface',
-    ])
+    ]);
   }
-  
-  return defaultPackagesToSymlink
+
+  return defaultPackagesToSymlink;
 }
 
-
-async function getPackagesToSymlink({ packageNames, projectsDir }: { packagesNames: string[], projectsDir: string }) {
+async function getPackagesToSymlink({
+  packageNames,
+  workspaceDir,
+}: {
+  packageNames: string[];
+  workspaceDir: string;
+}) {
   const packagesToSymlink = new Set<string>();
 
-  const defaultPackages = getDefaultPackagesToSymlink({ projectsDir })
+  const defaultPackages = getDefaultPackagesToSymlink({ workspaceDir });
   defaultPackages.forEach((packageName) => packagesToSymlink.add(packageName));
 
   for (const packageName of packageNames) {
@@ -136,7 +145,13 @@ function getPackageDependencies(packageName: string) {
   return Array.from(dependencies);
 }
 
-async function modifyPackageJson({ packagesToSymlink, projectDir }: { packagesToSymlink: string[], projectDir: string }) {
+async function modifyPackageJson({
+  packagesToSymlink,
+  projectDir,
+}: {
+  packagesToSymlink: string[];
+  projectDir: string;
+}) {
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
 
@@ -153,7 +168,13 @@ async function yarnInstall({ projectDir }: { projectDir: string }) {
   return await spawnAsync('yarn', [], { cwd: projectDir, stdio: 'ignore' });
 }
 
-async function symlinkPackages({ packagesToSymlink, projectDir }: { packagesToSymlink: string[], projectDir: string }) {
+async function symlinkPackages({
+  packagesToSymlink,
+  projectDir,
+}: {
+  packagesToSymlink: string[];
+  projectDir: string;
+}) {
   for (const packageName of packagesToSymlink) {
     const projectPackagePath = path.resolve(projectDir, 'node_modules', packageName);
     const expoPackagePath = path.resolve(PACKAGES_DIR, packageName);
@@ -183,7 +204,13 @@ async function runExpoPrebuild({ projectDir }: { projectDir: string }) {
   return await runExpoCliAsync('prebuild', ['--no-install'], { cwd: projectDir });
 }
 
-async function createMetroConfig({ workspaceRoot, projectRoot }: { workspaceRoot: string, projectRoot: string }) {
+async function createMetroConfig({
+  workspaceRoot,
+  projectRoot,
+}: {
+  workspaceRoot: string;
+  projectRoot: string;
+}) {
   console.log('Adding metro.config.js for project');
 
   const template = `// Learn more https://docs.expo.io/guides/customizing-metro
