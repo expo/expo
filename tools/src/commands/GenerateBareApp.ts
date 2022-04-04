@@ -13,19 +13,13 @@ type GenerateBareAppOptions = {
   outDir?: string;
 };
 
-async function action(packageNames: string[], options: GenerateBareAppOptions, ...rest) {
+async function action(packageNames: string[], options: GenerateBareAppOptions) {
   // TODO:
   // if appName === ''
   // if packageNames.length === 0
 
-  const {
-    clean = false,
-    outDir = 'bare-apps',
-    template = 'expo-template-bare-minimum',
-    name: appName = 'test-app',
-  } = options;
 
-  const projectsDir = path.resolve(process.cwd(), outDir);
+  const workspaceDir = path.resolve(process.cwd(), outDir);
   const projectDir = path.resolve(process.cwd(), projectsDir, appName);
   const packagesToSymlink = await getPackagesToSymlink({ packageNames, projectsDir });
 
@@ -43,11 +37,23 @@ async function action(packageNames: string[], options: GenerateBareAppOptions, .
   console.log(`Project created in ${projectDir}!`);
 }
 
-async function createProjectDirectory({ clean, projectsDir, projectDir, appName, template }) {
+async function createProjectDirectory({
+  clean,
+  workspaceDir,
+  projectDir,
+  appName,
+  template
+}: {
+  clean: boolean,
+  workspaceDir: string,
+  projectDir: string,
+  appName: string,
+  template: string,
+}) {
   console.log('Creating project');
 
-  if (!fs.existsSync(projectsDir)) {
-    fs.mkdirSync(projectsDir);
+  if (!fs.existsSync(workspaceDir)) {
+    fs.mkdirSync(workspaceDir);
   }
 
   if (clean) {
@@ -60,7 +66,7 @@ async function createProjectDirectory({ clean, projectsDir, projectDir, appName,
   });
 }
 
-function getDefaultPackagesToSymlink({ projectsDir }) {
+function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string }) {
   const defaultPackagesToSymlink: string[] = [
     "expo",
     "expo-modules-autolinking",
@@ -94,7 +100,7 @@ function getDefaultPackagesToSymlink({ projectsDir }) {
 }
 
 
-async function getPackagesToSymlink({ packageNames, projectsDir }) {
+async function getPackagesToSymlink({ packageNames, projectsDir }: { packagesNames: string[], projectsDir: string }) {
   const packagesToSymlink = new Set<string>();
 
   const defaultPackages = getDefaultPackagesToSymlink({ projectsDir })
@@ -130,7 +136,7 @@ function getPackageDependencies(packageName: string) {
   return Array.from(dependencies);
 }
 
-async function modifyPackageJson({ packagesToSymlink, projectDir }) {
+async function modifyPackageJson({ packagesToSymlink, projectDir }: { packagesToSymlink: string[], projectDir: string }) {
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
 
@@ -142,12 +148,12 @@ async function modifyPackageJson({ packagesToSymlink, projectDir }) {
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
 }
 
-async function yarnInstall({ projectDir }) {
+async function yarnInstall({ projectDir }: { projectDir: string }) {
   console.log('Yarning');
   return await spawnAsync('yarn', [], { cwd: projectDir, stdio: 'ignore' });
 }
 
-async function symlinkPackages({ packagesToSymlink, projectDir }) {
+async function symlinkPackages({ packagesToSymlink, projectDir }: { packagesToSymlink: string[], projectDir: string }) {
   for (const packageName of packagesToSymlink) {
     const projectPackagePath = path.resolve(projectDir, 'node_modules', packageName);
     const expoPackagePath = path.resolve(PACKAGES_DIR, packageName);
@@ -160,7 +166,7 @@ async function symlinkPackages({ packagesToSymlink, projectDir }) {
   }
 }
 
-async function updateRNVersion({ projectDir }) {
+async function updateRNVersion({ projectDir }: { projectDir: string }) {
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
 
@@ -172,12 +178,12 @@ async function updateRNVersion({ projectDir }) {
   await spawnAsync('yarn', [], { cwd: projectDir });
 }
 
-async function runExpoPrebuild({ projectDir }) {
+async function runExpoPrebuild({ projectDir }: { projectDir: string }) {
   console.log('Applying config plugins');
   return await runExpoCliAsync('prebuild', ['--no-install'], { cwd: projectDir });
 }
 
-async function createMetroConfig({ workspaceRoot, projectRoot }) {
+async function createMetroConfig({ workspaceRoot, projectRoot }: { workspaceRoot: string, projectRoot: string }) {
   console.log('Adding metro.config.js for project');
 
   const template = `// Learn more https://docs.expo.io/guides/customizing-metro
@@ -213,7 +219,7 @@ module.exports = config;
   });
 }
 
-async function applyGradleFlipperFixtures({ projectDir }) {
+async function applyGradleFlipperFixtures({ projectDir }: { projectDir: string }) {
   // prebuild is updating the gradle.properties FLIPPER_VERSION which causes SoLoader crash on launch
   const gradlePropertiesPath = path.resolve(projectDir, 'android', 'gradle.properties');
   const gradleProperties = await fs.readFile(gradlePropertiesPath, { encoding: 'utf-8' });
