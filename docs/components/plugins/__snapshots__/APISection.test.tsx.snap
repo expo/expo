@@ -233,7 +233,7 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -333,7 +333,7 @@ for more details.
     <br />
     <div>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -881,7 +881,7 @@ in here.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -1061,7 +1061,7 @@ in here.
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1106,7 +1106,7 @@ This should come from the user field of an
     
 
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -1195,7 +1195,7 @@ This should come from the user field of an
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -1361,7 +1361,7 @@ value depending on the state of the credential.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -1515,7 +1515,7 @@ value depending on the state of the credential.
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1616,7 +1616,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -1782,7 +1782,7 @@ refresh operation.
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1922,7 +1922,7 @@ the user, since this remains the same for apps released by the same developer.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -2088,7 +2088,7 @@ sign-in operation.
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -2219,7 +2219,7 @@ from using
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -2435,7 +2435,7 @@ sign-out operation.
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -2511,7 +2511,7 @@ sign-out operation.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -2681,7 +2681,7 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -3302,7 +3302,7 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -3550,7 +3550,7 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -3815,7 +3815,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4156,7 +4156,7 @@ OAuth 2.0 protocol
       .
     </p>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4328,7 +4328,7 @@ OAuth 2.0 protocol
       .
     </p>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4503,7 +4503,7 @@ OAuth 2.0 protocol
       .
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4546,7 +4546,7 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4716,7 +4716,7 @@ for more details.
       </div>
     </h3>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4907,7 +4907,7 @@ for more details.
       .
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4939,7 +4939,7 @@ You will still need to handle null values for any fields you request.
       </div>
     </blockquote>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4982,7 +4982,7 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -5104,7 +5104,7 @@ for more details.
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -5147,7 +5147,7 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -5441,7 +5441,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     <br />
     <div>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -5662,7 +5662,7 @@ provided with an
           
 
           <blockquote
-            class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+            class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
             data-text="true"
           >
             <div>
@@ -5904,7 +5904,7 @@ Same as
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -6084,7 +6084,7 @@ Same as
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -6176,7 +6176,7 @@ This can be used to quickly create specific permission hooks in every module.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -6402,7 +6402,7 @@ This can be used to quickly create specific permission hooks in every module.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -6586,7 +6586,7 @@ This can be used to quickly create specific permission hooks in every module.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -6745,7 +6745,7 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -6791,7 +6791,7 @@ the platform.
         
 
         <blockquote
-          class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+          class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
           data-text="true"
         >
           <div>
@@ -6888,7 +6888,7 @@ the platform.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -7574,7 +7574,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -7659,7 +7659,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </div>
     </h3>
     <blockquote
-      class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -8372,7 +8372,7 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -8624,7 +8624,7 @@ exports[`APISection expo-pedometer 1`] = `
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -8765,7 +8765,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -8881,7 +8881,7 @@ exports[`APISection expo-pedometer 1`] = `
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -8946,7 +8946,7 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <blockquote
-        class="css-uvndx9-paragraph-STYLES_BLOCKQUOTE"
+        class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
         data-text="true"
       >
         <div>
@@ -9096,7 +9096,7 @@ a start date that is more than seven days in the past returns only the available
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -9246,7 +9246,7 @@ available on this device.
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -9387,7 +9387,7 @@ available on this device.
       </div>
     </h4>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9488,7 +9488,7 @@ provided with a single argument that is
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -9790,7 +9790,7 @@ provided with a single argument that is
         </div>
       </h4>
       <ul
-        class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -10318,7 +10318,7 @@ provided with a single argument that is
       </div>
     </h3>
     <ul
-      class="css-166lgi8-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li

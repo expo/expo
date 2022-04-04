@@ -45,8 +45,11 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
         {signatureComment && (
           <>
             <br />
-            <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
-            {renderDefaultValue(defaultValue)}
+            <CommentTextBlock
+              comment={signatureComment}
+              components={mdInlineComponents}
+              afterContent={renderDefaultValue(defaultValue)}
+            />
           </>
         )}
       </>
@@ -54,10 +57,11 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
   } else {
     const defaultValue = getTagData('default', comment);
     return comment ? (
-      <>
-        <CommentTextBlock comment={comment} components={mdInlineComponents} />
-        {renderDefaultValue(defaultValue)}
-      </>
+      <CommentTextBlock
+        comment={comment}
+        components={mdInlineComponents}
+        afterContent={renderDefaultValue(defaultValue)}
+      />
     ) : (
       '-'
     );

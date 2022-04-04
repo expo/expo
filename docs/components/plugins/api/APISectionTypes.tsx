@@ -55,6 +55,16 @@ const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): J
   </table>
 );
 
+const renderDefaultValue = (initValue?: string) =>
+  initValue ? (
+    <>
+      <br />
+      <br />
+      <B>Default: </B>
+      <InlineCode>{initValue}</InlineCode>
+    </>
+  ) : null;
+
 const renderTypePropertyRow = ({
   name,
   flags,
@@ -74,18 +84,14 @@ const renderTypePropertyRow = ({
       <td>{renderTypeOrSignatureType(type, signatures)}</td>
       <td>
         {commentData ? (
-          <CommentTextBlock comment={commentData} components={mdInlineComponents} />
+          <CommentTextBlock
+            comment={commentData}
+            components={mdInlineComponents}
+            afterContent={renderDefaultValue(initValue)}
+          />
         ) : (
           '-'
         )}
-        {initValue ? (
-          <>
-            <br />
-            <br />
-            <B>Default: </B>
-            <InlineCode>{initValue}</InlineCode>
-          </>
-        ) : null}
       </td>
     </tr>
   );
