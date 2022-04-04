@@ -1,4 +1,4 @@
-import { AVPlaybackSource, AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet, PitchCorrectionQuality } from './AV.types';
+import { AVPlaybackSource, AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet, PitchCorrectionQuality, AVPlaybackTolerance } from './AV.types';
 export declare const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number;
 export declare const _DEFAULT_INITIAL_PLAYBACK_STATUS: AVPlaybackStatusToSet;
 export declare function getNativeSourceFromSource(source?: AVPlaybackSource | null): AVPlaybackNativeSource | null;
@@ -16,17 +16,11 @@ export interface Playback extends AV {
     playAsync(): Promise<AVPlaybackStatus>;
     loadAsync(source: AVPlaybackSource, initialStatus: AVPlaybackStatusToSet, downloadAsync: boolean): Promise<AVPlaybackStatus>;
     unloadAsync(): Promise<AVPlaybackStatus>;
-    playFromPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }): Promise<AVPlaybackStatus>;
+    playFromPositionAsync(positionMillis: number, tolerances?: AVPlaybackTolerance): Promise<AVPlaybackStatus>;
     pauseAsync(): Promise<AVPlaybackStatus>;
     stopAsync(): Promise<AVPlaybackStatus>;
     replayAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
-    setPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }): Promise<AVPlaybackStatus>;
+    setPositionAsync(positionMillis: number, tolerances?: AVPlaybackTolerance): Promise<AVPlaybackStatus>;
     setRateAsync(rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<AVPlaybackStatus>;
     setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
     setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus>;
@@ -39,16 +33,10 @@ export interface Playback extends AV {
  */
 export declare const PlaybackMixin: {
     playAsync(): Promise<AVPlaybackStatus>;
-    playFromPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }): Promise<AVPlaybackStatus>;
+    playFromPositionAsync(positionMillis: number, tolerances?: AVPlaybackTolerance): Promise<AVPlaybackStatus>;
     pauseAsync(): Promise<AVPlaybackStatus>;
     stopAsync(): Promise<AVPlaybackStatus>;
-    setPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }): Promise<AVPlaybackStatus>;
+    setPositionAsync(positionMillis: number, tolerances?: AVPlaybackTolerance): Promise<AVPlaybackStatus>;
     setRateAsync(rate: number, shouldCorrectPitch?: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<AVPlaybackStatus>;
     setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
     setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus>;

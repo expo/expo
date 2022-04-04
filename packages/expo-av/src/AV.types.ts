@@ -8,14 +8,7 @@ export enum PitchCorrectionQuality {
   High = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.High,
 }
 
-export type AVPlaybackSource =
-  | number
-  | {
-      uri: string;
-      overrideFileExtensionAndroid?: string;
-      headers?: { [fieldName: string]: string };
-    }
-  | Asset;
+export type AVPlaybackSource = number | AVPlaybackNativeSourceAndroid | Asset;
 
 export type AVPlaybackNativeSource = {
   uri: string;
@@ -23,41 +16,49 @@ export type AVPlaybackNativeSource = {
   headers?: { [fieldName: string]: string };
 };
 
+export type AVPlaybackNativeSourceAndroid = {
+  uri: string;
+  overrideFileExtensionAndroid?: string;
+  headers?: { [fieldName: string]: string };
+};
+
 export type AVMetadata = {
   title?: string;
 };
 
-export type AVPlaybackStatus =
-  | {
-      isLoaded: false;
-      androidImplementation?: string;
-      error?: string; // populated exactly once when an error forces the object to unload
-    }
-  | {
-      isLoaded: true;
-      androidImplementation?: string;
+export type AVPlaybackStatus = AVPlaybackStatusError | AVPlaybackStatusSuccess;
 
-      uri: string;
+export type AVPlaybackStatusError = {
+  isLoaded: false;
+  androidImplementation?: string;
+  error?: string; // populated exactly once when an error forces the object to unload
+};
 
-      progressUpdateIntervalMillis: number;
-      durationMillis?: number;
-      positionMillis: number;
-      playableDurationMillis?: number;
-      seekMillisToleranceBefore?: number;
-      seekMillisToleranceAfter?: number;
+export type AVPlaybackStatusSuccess = {
+  isLoaded: true;
+  androidImplementation?: string;
 
-      shouldPlay: boolean;
-      isPlaying: boolean;
-      isBuffering: boolean;
+  uri: string;
 
-      rate: number;
-      shouldCorrectPitch: boolean;
-      volume: number;
-      isMuted: boolean;
-      isLooping: boolean;
+  progressUpdateIntervalMillis: number;
+  durationMillis?: number;
+  positionMillis: number;
+  playableDurationMillis?: number;
+  seekMillisToleranceBefore?: number;
+  seekMillisToleranceAfter?: number;
 
-      didJustFinish: boolean; // true exactly once when the track plays to finish
-    };
+  shouldPlay: boolean;
+  isPlaying: boolean;
+  isBuffering: boolean;
+
+  rate: number;
+  shouldCorrectPitch: boolean;
+  volume: number;
+  isMuted: boolean;
+  isLooping: boolean;
+
+  didJustFinish: boolean; // true exactly once when the track plays to finish
+};
 
 export type AVPlaybackStatusToSet = {
   androidImplementation?: string;
@@ -73,3 +74,5 @@ export type AVPlaybackStatusToSet = {
   isLooping?: boolean;
   pitchCorrectionQuality?: PitchCorrectionQuality;
 };
+
+export type AVPlaybackTolerance = { toleranceMillisBefore?: number; toleranceMillisAfter?: number };
