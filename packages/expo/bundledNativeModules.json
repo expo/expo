@@ -8,7 +8,7 @@
   "@react-native-community/viewpager": "5.0.11",
   "@react-native-picker/picker": "2.4.0",
   "@react-native-segmented-control/segmented-control": "2.4.0",
-  "@stripe/stripe-react-native": "0.2.3",
+  "@stripe/stripe-react-native": "0.6.0",
   "@unimodules/core": "~7.2.0",
   "@unimodules/react-native-adapter": "~6.5.0",
   "expo-ads-admob": "~12.0.0",

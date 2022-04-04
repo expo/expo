@@ -16,9 +16,8 @@ import com.stripe.android.model.Address
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.CardFormView
 import com.stripe.android.view.CardInputListener
-import host.exp.expoview.R
 
-class CardFormView(private val context: ThemedReactContext) : FrameLayout(context) {
+class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
   private var cardForm: CardFormView = CardFormView(context, null, R.style.StripeCardFormView_Borderless)
   private var mEventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
   private var dangerouslyGetFullCardDetails: Boolean = false
@@ -31,7 +30,6 @@ class CardFormView(private val context: ThemedReactContext) : FrameLayout(contex
   init {
     cardFormViewBinding.cardMultilineWidgetContainer.isFocusable = true
     cardFormViewBinding.cardMultilineWidgetContainer.isFocusableInTouchMode = true
-    cardFormViewBinding.cardMultilineWidgetContainer.requestFocus()
 
     addView(cardForm)
     setListeners()
@@ -47,27 +45,28 @@ class CardFormView(private val context: ThemedReactContext) : FrameLayout(contex
     cardFormView.postalCodeContainer.visibility = visibility
   }
 
-  fun setPlaceHolders(value: ReadableMap) {
-    val cardFormView = StripeCardFormViewBinding.bind(cardForm)
-
-    val numberPlaceholder = getValOr(value, "number", null)
-    val expirationPlaceholder = getValOr(value, "expiration", null)
-    val cvcPlaceholder = getValOr(value, "cvc", null)
-    val postalCodePlaceholder = getValOr(value, "postalCode", null)
-
-    numberPlaceholder?.let {
-//      multilineWidgetBinding.tlCardNumber.hint = it
-    }
-    expirationPlaceholder?.let {
-      multilineWidgetBinding.tlExpiry.hint = it
-    }
-    cvcPlaceholder?.let {
-      multilineWidgetBinding.tlCvc.hint = it
-    }
-    postalCodePlaceholder?.let {
-      cardFormView.postalCodeContainer.hint = it
-    }
-  }
+  // TODO: uncomment when ios-sdk allows for this
+  //  fun setPlaceHolders(value: ReadableMap) {
+  //    val cardFormView = StripeCardFormViewBinding.bind(cardForm)
+  //
+  //    val numberPlaceholder = getValOr(value, "number", null)
+  //    val expirationPlaceholder = getValOr(value, "expiration", null)
+  //    val cvcPlaceholder = getValOr(value, "cvc", null)
+  //    val postalCodePlaceholder = getValOr(value, "postalCode", null)
+  //
+  //    numberPlaceholder?.let {
+  ////      multilineWidgetBinding.tlCardNumber.hint = it
+  //    }
+  //    expirationPlaceholder?.let {
+  //      multilineWidgetBinding.tlExpiry.hint = it
+  //    }
+  //    cvcPlaceholder?.let {
+  //      multilineWidgetBinding.tlCvc.hint = it
+  //    }
+  //    postalCodePlaceholder?.let {
+  //      cardFormView.postalCodeContainer.hint = it
+  //    }
+  //  }
 
   fun setAutofocus(value: Boolean) {
     if (value) {
@@ -98,8 +97,7 @@ class CardFormView(private val context: ThemedReactContext) : FrameLayout(contex
 
   private fun onChangeFocus() {
     mEventDispatcher?.dispatchEvent(
-      CardFocusEvent(id, currentFocusedField)
-    )
+      CardFocusEvent(id, currentFocusedField))
   }
 
   fun setCardStyle(value: ReadableMap) {
@@ -137,8 +135,7 @@ class CardFormView(private val context: ThemedReactContext) : FrameLayout(contex
           }
 
           mEventDispatcher?.dispatchEvent(
-            CardFormCompleteEvent(id, cardDetails, isValid, dangerouslyGetFullCardDetails)
-          )
+            CardFormCompleteEvent(id, cardDetails, isValid, dangerouslyGetFullCardDetails))
 
           cardAddress = Address.Builder()
             .setPostalCode(it.address?.postalCode)
@@ -152,8 +149,7 @@ class CardFormView(private val context: ThemedReactContext) : FrameLayout(contex
         cardParams = null
         cardAddress = null
         mEventDispatcher?.dispatchEvent(
-          CardFormCompleteEvent(id, null, isValid, dangerouslyGetFullCardDetails)
-        )
+          CardFormCompleteEvent(id, null, isValid, dangerouslyGetFullCardDetails))
       }
     }
 
@@ -163,19 +159,19 @@ class CardFormView(private val context: ThemedReactContext) : FrameLayout(contex
     val postalCodeEditText = cardFormViewBinding.postalCode
 
     cardNumberEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.CardNumber.toString() else null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.CardNumber.toString() else  null
       onChangeFocus()
     }
     cvcEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.Cvc.toString() else null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.Cvc.toString() else  null
       onChangeFocus()
     }
     expiryEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.ExpiryDate.toString() else null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.ExpiryDate.toString() else  null
       onChangeFocus()
     }
     postalCodeEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.PostalCode.toString() else null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.PostalCode.toString() else  null
       onChangeFocus()
     }
   }
@@ -188,8 +184,7 @@ class CardFormView(private val context: ThemedReactContext) : FrameLayout(contex
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
-    )
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY))
     layout(left, top, right, bottom)
   }
 }

@@ -586,7 +586,7 @@ PODS:
     - ABI43_0_0React-RCTImage
   - ABI43_0_0stripe-react-native (0.2.2):
     - ABI43_0_0React
-    - Stripe (~> 21.9.0)
+    - Stripe (~> 22.0.0)
   - ABI43_0_0UMAppLoader (3.0.0)
   - ABI43_0_0UMTaskManagerInterface (7.0.0):
     - ABI43_0_0ExpoModulesCore
@@ -1189,18 +1189,19 @@ PODS:
     - ABI44_0_0React-RCTImage
   - ABI44_0_0stripe-react-native (0.2.3):
     - ABI44_0_0React-Core
-    - Stripe (~> 21.9.0)
+    - Stripe (~> 22.0.0)
   - ABI44_0_0UMAppLoader (3.0.0)
   - ABI44_0_0UMTaskManagerInterface (7.1.0):
     - ABI44_0_0ExpoModulesCore
   - ABI44_0_0Yoga (1.14.0)
   - Amplitude (6.0.0)
   - Analytics (4.0.4)
-  - AppAuth (1.4.0):
-    - AppAuth/Core (= 1.4.0)
-    - AppAuth/ExternalUserAgent (= 1.4.0)
-  - AppAuth/Core (1.4.0)
-  - AppAuth/ExternalUserAgent (1.4.0)
+  - AppAuth (1.5.0):
+    - AppAuth/Core (= 1.5.0)
+    - AppAuth/ExternalUserAgent (= 1.5.0)
+  - AppAuth/Core (1.5.0)
+  - AppAuth/ExternalUserAgent (1.5.0):
+    - AppAuth/Core
   - ASN1Decoder (1.8.0)
   - boost (1.76.0)
   - Branch (0.35.0)
@@ -1532,10 +1533,10 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilitiesComponents (1.1.0):
     - GoogleUtilities/Logger
-  - GTMAppAuth (1.2.2):
+  - GTMAppAuth (1.2.3):
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
-  - GTMSessionFetcher/Core (1.7.0)
+  - GTMSessionFetcher/Core (1.7.1)
   - JKBigInteger (0.0.6)
   - lottie-ios (3.2.3)
   - lottie-react-native (5.0.1):
@@ -1570,7 +1571,7 @@ PODS:
   - OCMockito (6.0.0):
     - OCHamcrest (~> 8.0)
   - PromisesObjC (1.2.12)
-  - Protobuf (3.19.4)
+  - Protobuf (3.20.0)
   - Quick (4.0.0)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
@@ -1914,19 +1915,27 @@ PODS:
   - RNScreens (3.11.1):
     - React-Core
     - React-RCTImage
-  - Stripe (21.9.1):
-    - Stripe/Stripe3DS2 (= 21.9.1)
-    - StripeCore (= 21.9.1)
-    - StripeUICore (= 21.9.1)
-  - stripe-react-native (0.2.3):
+  - Stripe (22.0.0):
+    - Stripe/Stripe3DS2 (= 22.0.0)
+    - StripeApplePay (= 22.0.0)
+    - StripeCore (= 22.0.0)
+    - StripeUICore (= 22.0.0)
+  - stripe-react-native (0.6.0):
     - React-Core
-    - Stripe (~> 21.9.0)
-  - Stripe/Stripe3DS2 (21.9.1):
-    - StripeCore (= 21.9.1)
-    - StripeUICore (= 21.9.1)
-  - StripeCore (21.9.1)
-  - StripeUICore (21.9.1):
-    - StripeCore (= 21.9.1)
+    - Stripe (~> 22.0.0)
+    - StripeConnections (~> 22.0.0)
+  - Stripe/Stripe3DS2 (22.0.0):
+    - StripeApplePay (= 22.0.0)
+    - StripeCore (= 22.0.0)
+    - StripeUICore (= 22.0.0)
+  - StripeApplePay (22.0.0):
+    - StripeCore (= 22.0.0)
+  - StripeConnections (22.0.0):
+    - StripeCore (= 22.0.0)
+    - StripeUICore (= 22.0.0)
+  - StripeCore (22.0.0)
+  - StripeUICore (22.0.0):
+    - StripeCore (= 22.0.0)
   - UMAppLoader (3.0.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -2326,6 +2335,8 @@ SPEC REPOS:
     - PromisesObjC
     - Protobuf
     - Stripe
+    - StripeApplePay
+    - StripeConnections
     - StripeCore
     - StripeUICore
     - ZXingObjC
@@ -3093,7 +3104,7 @@ SPEC CHECKSUMS:
   ABI43_0_0ReactCommon: bfa3173903969ba34ab2930eeb4cb2b4225eb914
   ABI43_0_0RNReanimated: c08a0d8e39fa8cd455c2c685e69aa0e84c820ea4
   ABI43_0_0RNScreens: d8e359af1191871e37501d5efd6b72b38c573e90
-  ABI43_0_0stripe-react-native: e2d9c45776c547095508a9b8b5173e8a34bb962a
+  ABI43_0_0stripe-react-native: 027f44a53c41389f9e81ea1fcb79dbe1b2174c0b
   ABI43_0_0UMAppLoader: ac4c403f59e691af683873f22b44a023155bac55
   ABI43_0_0UMTaskManagerInterface: af977f83f0ab2c68d8023174a7d542a8cf465351
   ABI43_0_0Yoga: b4a69fd97272b10eb433c11dd8bb2e571e311e36
@@ -3200,13 +3211,13 @@ SPEC CHECKSUMS:
   ABI44_0_0RNGestureHandler: 0ebf658b94a2583f265cd1fc02a50adf7db6f611
   ABI44_0_0RNReanimated: 5a9c79f77d68cc558867f38dbd78efe7c6e328ec
   ABI44_0_0RNScreens: 7a62e5f04bfaf607a3927152dbf4efd3fcf2dc8a
-  ABI44_0_0stripe-react-native: a28782c19ddabd9a3c901d9b2eb964e8d8ab7d68
+  ABI44_0_0stripe-react-native: 6e5c2bd6eae2d8c8ce4709f153e813fdb95dd34f
   ABI44_0_0UMAppLoader: d00dfac0be21e65771e9c30abf4c2fefe0afa06f
   ABI44_0_0UMTaskManagerInterface: 8f5418a6ec14ed0eecc7c296ded84e9da8571ed1
   ABI44_0_0Yoga: 9fa3e0557a149f21b07fa12422fa051ed12f1437
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
-  AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
+  AppAuth: 80317d99ac7ff2801a2f18ff86b48cd315ed465d
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
@@ -3307,8 +3318,8 @@ SPEC CHECKSUMS:
   GoogleUserMessagingPlatform: b168e8c46cd8f92aa3e34b584c4ca78a411ce367
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
-  GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
-  GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
+  GTMAppAuth: 987526d41b07efb1bedda5e936fe0cb718a03113
+  GTMSessionFetcher: 4577a4cc914a5a07c40a8a0ad0acc22080418c2d
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
   lottie-react-native: 1ae63e64711b10eaf181d1bf70819d9a216834cf
@@ -3321,7 +3332,7 @@ SPEC CHECKSUMS:
   OCHamcrest: a613690381f1dac7637c18962c10dbe8feca4bb5
   OCMockito: 780f04370226f81a9d972c97d1203864ef609f5b
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: 235750e4696ff59fb07d949a9dbbc92b3c0700fe
+  Protobuf: 66e2f3b26a35e4cc379831f4ced538274ee4b923
   Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: bab4a7c3d7eb9553b13773ee190f279712efd1fc
@@ -3355,10 +3366,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: bf572f552ea324acd5b5464b8d30755b2d8c1de6
   RNReanimated: 1326679461fa5d2399d54c18ca1432ba3e816b9e
   RNScreens: 4d83613b50b74ed277026375dc0810893b0c347f
-  Stripe: 22c1b8da5ee20a1aaf40fd198160efa72e71644a
-  stripe-react-native: a5fcf07b49f1208bdc939e31a07320b35a88209f
-  StripeCore: 91ea038ac0abbb72f11014044dfd1e5d39089714
-  StripeUICore: 7edf64b24c9c178bfd97e988f2cffdbb7a7628b0
+  Stripe: ee32e594fa4dee4bdf2a8a3039f7fb07a21075dc
+  stripe-react-native: bd992665f71c5233d62719c4031351f3f3b769fe
+  StripeApplePay: e09964f3e2c6b318e53a05c12f3cb7efc592484d
+  StripeConnections: d3068bf688679a51932abb94d956d8a73c213bd7
+  StripeCore: 689b9605ccb78e507f59ddc5e677615e0af16583
+  StripeUICore: f5fe5ad283e132b40077b5eb85b625ebf7de034a
   UMAppLoader: fd7c70dca4bbb1769564022cb0b3e4ad440da3e6
   Yoga: 6671cf077f614314c22fd09ddf87d7abeee64e96
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
