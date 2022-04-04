@@ -25,6 +25,10 @@ const STYLES_UNORDERED_LIST = css`
     margin: 0.5rem 1rem;
     line-height: 125%;
 
+    &:first-child {
+      margin-top: 0;
+    }
+
     &:last-child {
       margin-bottom: 0;
     }
