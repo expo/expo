@@ -19,7 +19,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label='Clipboard' dependencies={['expo-clipboard']} platforms={['ios', 'android']}>
+<SnackInline label='Clipboard' dependencies={['expo-clipboard']} platforms={['ios', 'android', 'web']}>
 
 ```jsx
 import * as React from 'react';
@@ -29,12 +29,14 @@ import * as Clipboard from 'expo-clipboard';
 export default function App() {
   const [copiedText, setCopiedText] = React.useState('');
 
-  const copyToClipboard = () => {
-    /* @info */ Clipboard.setString('hello world'); /* @end */
+  const copyToClipboard = async () => {
+    /* @info Copy the text to the clipboard */
+    await Clipboard.setStringAsync('hello world');
+    /* @end */
   };
 
   const fetchCopiedText = async () => {
-    const text = /* @info */ await Clipboard.getStringAsync();
+    const text = /* @info Paste the text from the clipboard */ await Clipboard.getStringAsync();
     /* @end */
     setCopiedText(text);
   };
