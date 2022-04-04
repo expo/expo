@@ -27,7 +27,10 @@ export async function ensureDependenciesAsync(
     skipPrompt?: boolean;
   }
 ): Promise<boolean> {
-  const { missing } = await getMissingPackagesAsync(projectRoot, { exp, requiredPackages });
+  const { missing } = await getMissingPackagesAsync(projectRoot, {
+    sdkVersion: exp.sdkVersion,
+    requiredPackages,
+  });
   if (!missing.length) {
     return true;
   }

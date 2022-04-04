@@ -1,4 +1,4 @@
-import { getVersionsAsync } from '../../../../api/getVersions';
+import { getReleasedVersionsAsync } from '../../../../api/getVersions';
 import { getBundledNativeModulesAsync } from '../bundledNativeModules';
 import {
   getOperationLog,
@@ -11,6 +11,7 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 
 jest.mock('../../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),
+  getReleasedVersionsAsync: jest.fn(),
 }));
 
 jest.mock('../bundledNativeModules', () => ({
@@ -20,7 +21,7 @@ jest.mock('../bundledNativeModules', () => ({
 describe(getVersionedPackagesAsync, () => {
   it('should return versioned packages', async () => {
     asMock(getBundledNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    asMock(getReleasedVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
@@ -77,7 +78,7 @@ describe(getOperationLog, () => {
 
 describe(getRemoteVersionsForSdkAsync, () => {
   it('returns an empty object when the SDK version is not supported', async () => {
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    asMock(getReleasedVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {},
     } as any);
 
@@ -85,7 +86,7 @@ describe(getRemoteVersionsForSdkAsync, () => {
   });
 
   it('returns versions for SDK with Facebook overrides', async () => {
-    asMock(getVersionsAsync).mockResolvedValueOnce({
+    asMock(getReleasedVersionsAsync).mockResolvedValueOnce({
       sdkVersions: {
         '1.0.0': {
           relatedPackages: {
