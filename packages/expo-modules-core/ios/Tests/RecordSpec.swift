@@ -1,9 +1,8 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class RecordSpec: QuickSpec {
+class RecordSpec: ExpoSpec {
   override func spec() {
     it("initializes with empty dictionary") {
       struct TestRecord: Record { }

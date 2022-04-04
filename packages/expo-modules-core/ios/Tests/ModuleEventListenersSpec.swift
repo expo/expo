@@ -1,5 +1,4 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
@@ -11,7 +10,7 @@ import Nimble
 
  NOTE: Each test registers the module because only registered modules can capture events.
  */
-class ModuleEventListenersSpec: QuickSpec {
+class ModuleEventListenersSpec: ExpoSpec {
   override func spec() {
     var appContext: AppContext!
 

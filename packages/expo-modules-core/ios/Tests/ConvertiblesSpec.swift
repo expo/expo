@@ -1,12 +1,11 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import CoreGraphics
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class ConvertiblesSpec: QuickSpec {
+class ConvertiblesSpec: ExpoSpec {
   override func spec() {
     describe("URL") {
       it("converts from remote url") {
