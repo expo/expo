@@ -1,11 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class ArgumentTypeSpec: QuickSpec {
+class ArgumentTypeSpec: ExpoSpec {
   override func spec() {
     it("casts primitives") {
       let type = ArgumentType(Int.self)

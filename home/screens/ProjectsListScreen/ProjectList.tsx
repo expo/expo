@@ -51,7 +51,13 @@ export function ProjectList(props: Props) {
 
   if (!isReady) {
     return (
-      <RNView style={{ flex: 1, padding: 30, alignItems: 'center' }}>
+      <RNView
+        style={{
+          flex: 1,
+          padding: 30,
+          alignItems: 'center',
+          backgroundColor: theme.background.screen,
+        }}>
         <ActivityIndicator color={theme.highlight.accent} />
       </RNView>
     );
@@ -77,7 +83,13 @@ export function ProjectList(props: Props) {
       };
 
       return (
-        <RNView style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+        <RNView
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            paddingTop: 30,
+            backgroundColor: theme.background.screen,
+          }}>
           <StyledText
             style={SharedStyles.noticeDescriptionText}
             lightColor="rgba(36, 44, 58, 0.7)"
@@ -92,7 +104,7 @@ export function ProjectList(props: Props) {
       );
     }
 
-    return <RNView style={{ flex: 1 }} />;
+    return <RNView style={{ flex: 1, backgroundColor: theme.background.screen }} />;
   }
 
   return <ProjectListView {...props} />;
@@ -100,7 +112,7 @@ export function ProjectList(props: Props) {
 
 function ProjectListView({ data, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
-
+  const theme = useExpoTheme();
   const extractKey = React.useCallback((item) => item.id, []);
 
   const handleLoadMoreAsync = async () => {
@@ -134,7 +146,12 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
   };
 
   return (
-    <View flex="1" padding="medium">
+    <View
+      flex="1"
+      padding="medium"
+      style={{
+        backgroundColor: theme.background.screen,
+      }}>
       <View overflow="hidden" bg="default" border="hairline" rounded="large">
         <FlatList
           data={data.apps}

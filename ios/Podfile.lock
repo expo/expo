@@ -1338,10 +1338,13 @@ PODS:
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoModulesCore/Tests (0.7.0):
-    - Nimble
-    - Quick
+    - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
+  - ExpoModulesTestCore (0.7.0):
+    - ExpoModulesCore
+    - Nimble
+    - Quick
   - ExpoRandom (12.1.0):
     - ExpoModulesCore
   - ExpoSystemUI (1.1.0):
@@ -1769,11 +1772,11 @@ PODS:
     - glog
   - react-native-netinfo (7.1.3):
     - React-Core
-  - react-native-pager-view (5.4.9):
+  - react-native-pager-view (5.4.15):
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-webview (11.15.0):
+  - react-native-webview (11.18.1):
     - React-Core
   - React-perflogger (0.67.2)
   - React-RCTActionSheet (0.67.2):
@@ -2201,6 +2204,7 @@ DEPENDENCIES:
   - ExpoLocalization (from `../packages/expo-localization/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
+  - ExpoModulesTestCore (from `../packages/expo-modules-tests-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
@@ -2847,6 +2851,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-localization/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
+  ExpoModulesTestCore:
+    :path: "../packages/expo-modules-tests-core/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
   ExpoSystemUI:
@@ -3243,7 +3249,8 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
   ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
+  ExpoModulesCore: e2234a290dcd0b32b5365063b44b1b18cf0a53db
+  ExpoModulesTestCore: 5a4cb6f81d9644c49d43e5438fc0a6ecac730066
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: f34afad3de669780144508e4a5860fb1a5939832
   ExpoWebBrowser: 860eff8b9f413111bba517fedaa642b745af99d4
@@ -3317,9 +3324,9 @@ SPEC CHECKSUMS:
   React-jsinspector: 595f76eba2176ebd8817a1fffd47b84fbdab9383
   React-logger: 23de8ea0f44fa00ee77e96060273225607fd4d78
   react-native-netinfo: 42c0965fca99069b92e3f7360ab2d425985e5104
-  react-native-pager-view: 3ee7d4c7697fb3ef788346e834a60cca97ed8540
+  react-native-pager-view: b1914469643f40042e65d78cbf3d3dfebd6fb0d9
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-webview: e89bf2dba26a04cda967814df3ed1be99f291233
+  react-native-webview: 0b7bd2bffced115aefd393e1841babd9b9a557b1
   React-perflogger: 3c9bb7372493e49036f07a82c44c8cf65cbe88db
   React-RCTActionSheet: 052606483045a408693aa7e864410b4a052f541a
   React-RCTAnimation: 08d4cac13222bb1348c687a0158dfd3b577cdb63
@@ -3343,6 +3350,6 @@ SPEC CHECKSUMS:
   Yoga: 9b6696970c3289e8dea34b3eda93f23e61fb8121
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 2a0ea483716d01c96381c9063c927ffc3f3cbd7f
+PODFILE CHECKSUM: 82fa83f34eafe70bdfcf23e2469ed2e2e3286c34
 
 COCOAPODS: 1.11.2

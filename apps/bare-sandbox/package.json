@@ -17,9 +17,9 @@
     "expo-system-ui": "1.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-native": "0.67.2",
+    "react-native": "0.68.0",
     "react-native-gesture-handler": "~2.1.0",
-    "react-native-reanimated": "~2.3.1",
+    "react-native-reanimated": "~2.4.1",
     "react-native-screens": "~3.10.1",
     "react-native-web": "~0.17.1"
   },
@@ -33,7 +33,8 @@
   "expo-yarn-workspaces": {
     "symlinks": [
       "expo-constants",
-      "expo-modules-core"
+      "expo-modules-core",
+      "expo-updates"
     ]
   },
   "expo": {
