@@ -8,6 +8,7 @@ import semver from 'semver';
 
 import { BranchListItem } from '../../components/BranchListItem';
 import { PressableOpacity } from '../../components/PressableOpacity';
+import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
@@ -55,31 +56,38 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
   }
 
   return (
-    <View bg="default" rounded="large" border="hairline" overflow="hidden">
-      {branchManifests.map((branch, i) => {
-        return (
-          <Fragment key={branch.id}>
-            <BranchListItem appId={app.id} name={branch.name} latestUpdate={branch.latestUpdate} />
-            {i < branchManifests.length - 1 && <Divider />}
-          </Fragment>
-        );
-      })}
-      {branchesToRender.length > 3 && (
-        <>
-          <Divider />
-          <PressableOpacity onPress={onSeeAllBranchesPress}>
-            <View padding="medium">
-              <Row align="center" justify="between">
-                <Text type="InterRegular">See all branches</Text>
-                <ChevronDownIcon
-                  style={{ transform: [{ rotate: '-90deg' }] }}
-                  color={theme.icon.secondary}
-                />
-              </Row>
-            </View>
-          </PressableOpacity>
-        </>
-      )}
+    <View>
+      <SectionHeader header="Branches" style={{ paddingTop: 0 }} />
+      <View bg="default" rounded="large" border="hairline" overflow="hidden">
+        {branchManifests.map((branch, i) => {
+          return (
+            <Fragment key={branch.id}>
+              <BranchListItem
+                appId={app.id}
+                name={branch.name}
+                latestUpdate={branch.latestUpdate}
+              />
+              {i < branchManifests.length - 1 && <Divider />}
+            </Fragment>
+          );
+        })}
+        {branchesToRender.length > 3 && (
+          <>
+            <Divider />
+            <PressableOpacity onPress={onSeeAllBranchesPress}>
+              <View padding="medium">
+                <Row align="center" justify="between">
+                  <Text type="InterRegular">See all branches</Text>
+                  <ChevronDownIcon
+                    style={{ transform: [{ rotate: '-90deg' }] }}
+                    color={theme.icon.secondary}
+                  />
+                </Row>
+              </View>
+            </PressableOpacity>
+          </>
+        )}
+      </View>
     </View>
   );
 }

@@ -74,7 +74,6 @@ export function DevelopmentServerListItem({
   return (
     <PressableOpacity
       accessibilityRole="button"
-      android_disableSound
       onPress={handlePress}
       onLongPress={handleLongPress}
       style={[styles.container, style, disabled && styles.disabled]}

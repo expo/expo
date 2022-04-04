@@ -52,7 +52,7 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
         <PressableOpacity
           borderRadius={borderRadius.small}
           onPress={onAccountButtonPress}
-          hitSlop={8}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={{
             padding: spacing[2],
             backgroundColor: theme.button.ghost.background,
@@ -60,7 +60,7 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
             borderColor: theme.button.ghost.border,
           }}>
           <Button.Text type="InterSemiBold" color="ghost" size="small">
-            Log in
+            Log In
           </Button.Text>
         </PressableOpacity>
       );

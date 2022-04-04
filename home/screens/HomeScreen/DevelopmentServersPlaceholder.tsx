@@ -24,7 +24,7 @@ export function DevelopmentServersPlaceholder() {
           </Text>
         </View>
         <Text size="small" type="InterRegular">
-          Then, select the local server when it appears here.
+          Select the local server when it appears here.
         </Text>
       </View>
       {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_CLIPBOARD_BUTTON ? (

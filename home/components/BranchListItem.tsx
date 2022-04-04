@@ -17,6 +17,7 @@ type Props = {
   name: string;
   latestUpdate: Update;
   appId: string;
+  inFlatList?: boolean;
 };
 
 /**
@@ -24,7 +25,12 @@ type Props = {
  * the branches list page for an app.
  */
 
-export function BranchListItem({ name, appId, latestUpdate: { message, createdAt } }: Props) {
+export function BranchListItem({
+  name,
+  appId,
+  latestUpdate: { message, createdAt },
+  inFlatList,
+}: Props) {
   const theme = useExpoTheme();
 
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
@@ -34,7 +40,11 @@ export function BranchListItem({ name, appId, latestUpdate: { message, createdAt
   };
 
   return (
-    <PressableOpacity onPress={handlePressBranch}>
+    <PressableOpacity
+      onPress={handlePressBranch}
+      containerProps={
+        inFlatList ? { bg: 'default', border: 'hairline', rounded: 'large' } : undefined
+      }>
       <View padding="medium">
         <Row align="center" justify="between">
           <View align="start" flex="1">
@@ -59,7 +69,7 @@ export function BranchListItem({ name, appId, latestUpdate: { message, createdAt
                       size="small"
                       ellipsizeMode="middle"
                       numberOfLines={1}>
-                      Update: "{message}"
+                      "{message}"
                     </Text>
                     <Spacer.Vertical size="tiny" />
                     <Text

@@ -7,7 +7,6 @@ import { ActivityIndicator } from 'react-native';
 
 import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
-import { SectionHeader } from '../../components/SectionHeader';
 import ShareProjectButton from '../../components/ShareProjectButton';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -56,19 +55,14 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
-          {(appHasLegacyUpdate(app) || appHasEASUpdates(app)) && (
-            <SectionHeader header="Launch project" style={{ paddingTop: 0 }} />
-          )}
           {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
           {appHasEASUpdates(app) && <EASUpdateLaunchSection app={app} />}
           {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}
-          <Spacer.Vertical size="medium" />
+          <Spacer.Vertical size="xl" />
           <View bg="default" border="hairline" overflow="hidden" rounded="large">
             <ConstantItem title="Owner" value={app.username} />
             <Divider />
             <ConstantItem title="SDK Version" value={app.sdkVersion} />
-            <Divider />
-            <ConstantItem title="Privacy" value={app.privacy} />
           </View>
         </View>
       </ScrollView>

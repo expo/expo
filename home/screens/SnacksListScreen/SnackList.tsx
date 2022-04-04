@@ -1,4 +1,5 @@
-import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
+import { spacing } from '@expo/styleguide-native';
+import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, FlatList, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
@@ -87,6 +88,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
         name={snack.name}
         description={snack.description}
         isDraft={snack.isDraft}
+        inFlatList
       />
     );
   }, []);
@@ -94,23 +96,21 @@ function SnackList({ data, loadMoreAsync }: Props) {
   return (
     <View
       flex="1"
-      padding="medium"
       style={{
         backgroundColor: theme.background.screen,
       }}>
-      <View overflow="hidden" bg="default" border="hairline" rounded="large">
-        <FlatList
-          data={data}
-          keyExtractor={extractKey}
-          renderItem={renderItem}
-          // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-          renderLoadingIndicator={() => <RNView />}
-          renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
-          ItemSeparatorComponent={Divider}
-          canLoadMore={canLoadMore()}
-          onLoadMoreAsync={handleLoadMoreAsync}
-        />
-      </View>
+      <FlatList
+        data={data}
+        keyExtractor={extractKey}
+        renderItem={renderItem}
+        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
+        renderLoadingIndicator={() => <RNView />}
+        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
+        contentContainerStyle={{ padding: spacing[4] }}
+        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        canLoadMore={canLoadMore()}
+        onLoadMoreAsync={handleLoadMoreAsync}
+      />
     </View>
   );
 }

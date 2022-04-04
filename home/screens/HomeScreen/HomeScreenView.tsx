@@ -164,7 +164,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               <SectionHeader header="Projects" />
               <PressableOpacity
                 onPress={() => this.props.navigation.navigate('Account')}
-                hitSlop={16}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 style={{
                   padding: spacing[4],
                 }}

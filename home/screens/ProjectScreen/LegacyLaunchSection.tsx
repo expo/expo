@@ -1,4 +1,4 @@
-import { iconSize, OpenInternalIcon, spacing } from '@expo/styleguide-native';
+import { iconSize, OpenInternalIcon } from '@expo/styleguide-native';
 import { View, Text, Spacer, Row, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
@@ -6,6 +6,7 @@ import { Linking, Platform } from 'react-native';
 import semver from 'semver';
 
 import { PressableOpacity } from '../../components/PressableOpacity';
+import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import Environment from '../../utils/Environment';
 import * as UrlUtils from '../../utils/UrlUtils';
@@ -47,7 +48,6 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
       <WarningBox
         title="Unsupported SDK version"
         message={`This project's SDK version (${legacyUpdatesSDKMajorVersion}) is no longer supported.`}
-        showLearnMore={false}
       />
     );
   }
@@ -55,29 +55,30 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   const theme = useExpoTheme();
 
   return (
-    <View>
-      <View bg="default" overflow="hidden" rounded="large" border="hairline">
-        <PressableOpacity
-          onPress={() => {
-            Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-          }}
-          containerProps={{ bg: 'default' }}>
-          <Row padding="medium" justify="between" align="center">
-            <Text size="medium" type="InterRegular">
-              Use Classic Updates
-            </Text>
-            <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
-          </Row>
-        </PressableOpacity>
+    warning ?? (
+      <View>
+        <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
+        <View bg="default" overflow="hidden" rounded="large" border="hairline">
+          <PressableOpacity
+            onPress={() => {
+              Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
+            }}
+            containerProps={{ bg: 'default' }}>
+            <Row padding="medium" justify="between" align="center">
+              <Text size="medium" type="InterRegular">
+                default
+              </Text>
+              <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
+            </Row>
+          </PressableOpacity>
+        </View>
+        <View padding="medium">
+          <Text size="small" color="secondary" type="InterRegular">
+            {moreLegacyBranchesText}
+          </Text>
+        </View>
+        <Spacer.Vertical size="medium" />
       </View>
-      <Spacer.Vertical size="medium" />
-      <Text
-        size="small"
-        type="InterRegular"
-        style={{ marginBottom: spacing[4], marginHorizontal: spacing[4] }}>
-        {moreLegacyBranchesText}
-      </Text>
-      {warning}
-    </View>
+    )
   );
 }
