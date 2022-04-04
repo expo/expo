@@ -1,13 +1,8 @@
+import { spacing } from '@expo/styleguide-native';
 import dedent from 'dedent';
-import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
+import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  ListRenderItem,
-  ScrollView,
-  View as RNView,
-} from 'react-native';
+import { ActivityIndicator, FlatList, ListRenderItem, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import PrimaryButton from '../../components/PrimaryButton';
@@ -135,6 +130,7 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
   const renderItem: ListRenderItem<CommonAppDataFragment> = ({ item: app }) => {
     return (
       <ProjectsListItem
+        inFlatList
         key={app.id}
         id={app.id}
         name={app.name}
@@ -148,36 +144,20 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
   return (
     <View
       flex="1"
-      padding="medium"
       style={{
         backgroundColor: theme.background.screen,
       }}>
-      <View overflow="hidden" bg="default" border="hairline" rounded="large">
-        <FlatList
-          data={data.apps}
-          keyExtractor={extractKey}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Divider}
-          renderScrollComponent={(props: React.ComponentProps<typeof InfiniteScrollView>) => {
-            // note(brent): renderScrollComponent is passed on to
-            // InfiniteScrollView so it renders itself again and the result is two
-            // loading indicators. So we need to detect if we're in
-            // InfiniteScrollView by checking for a prop that is passed in to it,
-            // in this case we'll just check for props.renderLoadingIndicator.
-            // This should be fixed upstream in InfiniteScrollView, so if InfiniteScrollView
-            // is itself the scroll component being rendered it doesn't once again render
-            // the scroll component.
-            if (props.renderLoadingIndicator) {
-              return <ScrollView {...props} />;
-            } else {
-              return <InfiniteScrollView {...props} />;
-            }
-          }}
-          // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-          canLoadMore={canLoadMore}
-          onLoadMoreAsync={handleLoadMoreAsync}
-        />
-      </View>
+      <FlatList
+        data={data.apps}
+        keyExtractor={extractKey}
+        renderItem={renderItem}
+        contentContainerStyle={{ padding: spacing[4] }}
+        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
+        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
+        canLoadMore={canLoadMore}
+        onLoadMoreAsync={handleLoadMoreAsync}
+      />
     </View>
   );
 }

@@ -11,7 +11,7 @@ type Props = {
 
 export function ConstantItem({ title, value, onPress }: Props) {
   return (
-    <PressableOpacity onPress={onPress}>
+    <PressableOpacity disabled={!onPress} onPress={onPress}>
       <Row justify="between" align="center" padding="medium">
         <Text type="InterRegular">{title}</Text>
         <Text type="InterRegular">{value}</Text>

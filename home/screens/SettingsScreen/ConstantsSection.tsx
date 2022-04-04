@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { View, Divider } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Clipboard } from 'react-native';
+import { Clipboard, Alert } from 'react-native';
 
 import { ConstantItem } from '../../components/ConstantItem';
 import Environment from '../../utils/Environment';
@@ -12,16 +12,16 @@ export function ConstantsSection() {
     Clipboard.setString(getSnackId());
 
     // Should have some integrated alert banner
-    alert('The device ID has been copied to your clipboard');
+    Alert.alert('Clipboard', 'The device ID has been copied to your clipboard');
   };
 
   const copyClientVersionToClipboard = () => {
     if (Constants.expoVersion) {
       Clipboard.setString(Constants.expoVersion);
-      alert(`The app's version has been copied to your clipboard.`);
+      Alert.alert('Clipboard', `The app's version has been copied to your clipboard.`);
     } else {
       // this should not ever happen
-      alert(`Something went wrong - the app's version is not available.`);
+      Alert.alert('Clipboard', `Something went wrong - the app's version is not available.`);
     }
   };
 

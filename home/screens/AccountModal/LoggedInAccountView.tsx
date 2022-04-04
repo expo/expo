@@ -1,6 +1,7 @@
 import { borderRadius, CheckIcon, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
-import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
+import { SectionHeader } from 'components/SectionHeader';
+import { Text, View, Image, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
 import React from 'react';
 import { FlatList } from 'react-native';
 
@@ -25,79 +26,80 @@ export function LoggedInAccountView({ accounts }: Props) {
   }, [dispatch]);
 
   return (
-    <View flex="1" padding="medium">
+    <View flex="1">
       <View flex="1">
-        <View bg="default" border="hairline" overflow="hidden" rounded="large">
-          <FlatList<typeof accounts[number]>
-            data={accounts}
-            keyExtractor={(account) => account.id}
-            renderItem={({ item: account }) => (
+        <FlatList<typeof accounts[number]>
+          data={accounts}
+          contentContainerStyle={{ padding: spacing[4] }}
+          ListHeaderComponent={() => (
+            <>
+              <SectionHeader header="Log Out" style={{ paddingTop: 0 }} />
               <PressableOpacity
-                key={account.id}
-                style={{ padding: 16 }}
-                containerProps={{ bg: 'default' }}
-                onPress={() => {
-                  setAccountName(account.name);
-                  navigation.goBack();
-                }}>
-                <Row justify="between">
-                  <Row align={!account.owner?.fullName ? 'center' : 'start'}>
-                    {account?.owner?.profilePhoto ? (
-                      <Image
-                        size="xl"
-                        rounded="full"
-                        source={{ uri: account.owner.profilePhoto }}
-                      />
-                    ) : (
-                      <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
-                        <UsersIcon color={theme.icon.default} size={iconSize.small} />
-                      </View>
-                    )}
-                    <Spacer.Horizontal size="small" />
-                    <View>
-                      {account.owner ? (
-                        <>
-                          {account.owner.fullName ? (
-                            <>
-                              <Text type="InterBold">{account.owner.fullName}</Text>
-                              <Spacer.Vertical size="tiny" />
-                              <Text color="secondary" type="InterRegular" size="small">
-                                {account.owner.username}
-                              </Text>
-                            </>
-                          ) : (
-                            <Text type="InterBold">{account.owner.username}</Text>
-                          )}
-                        </>
-                      ) : (
-                        <Text type="InterBold">{account.name}</Text>
-                      )}
-                    </View>
-                  </Row>
-                  {accountName === account.name && (
-                    <CheckIcon color={theme.icon.default} size={iconSize.large} />
-                  )}
-                </Row>
+                onPress={onSignOutPress}
+                style={{
+                  backgroundColor: theme.button.tertiary.background,
+                  padding: spacing[3],
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                borderRadius={borderRadius.medium}>
+                <Text style={{ color: theme.button.tertiary.foreground }} type="InterSemiBold">
+                  Log Out
+                </Text>
               </PressableOpacity>
-            )}
-            ItemSeparatorComponent={Divider}
-          />
-        </View>
+              <Spacer.Vertical size="large" />
+              <SectionHeader header="Switch Account" style={{ paddingTop: 0 }} />
+            </>
+          )}
+          keyExtractor={(account) => account.id}
+          renderItem={({ item: account }) => (
+            <PressableOpacity
+              key={account.id}
+              style={{ padding: 16 }}
+              containerProps={{ bg: 'default', border: 'hairline', rounded: 'large' }}
+              onPress={() => {
+                setAccountName(account.name);
+                navigation.goBack();
+              }}>
+              <Row justify="between">
+                <Row align={!account.owner?.fullName ? 'center' : 'start'}>
+                  {account?.owner?.profilePhoto ? (
+                    <Image size="xl" rounded="full" source={{ uri: account.owner.profilePhoto }} />
+                  ) : (
+                    <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
+                      <UsersIcon color={theme.icon.default} size={iconSize.small} />
+                    </View>
+                  )}
+                  <Spacer.Horizontal size="small" />
+                  <View>
+                    {account.owner ? (
+                      <>
+                        {account.owner.fullName ? (
+                          <>
+                            <Text type="InterBold">{account.owner.fullName}</Text>
+                            <Spacer.Vertical size="tiny" />
+                            <Text color="secondary" type="InterRegular" size="small">
+                              {account.owner.username}
+                            </Text>
+                          </>
+                        ) : (
+                          <Text type="InterBold">{account.owner.username}</Text>
+                        )}
+                      </>
+                    ) : (
+                      <Text type="InterBold">{account.name}</Text>
+                    )}
+                  </View>
+                </Row>
+                {accountName === account.name && (
+                  <CheckIcon color={theme.icon.default} size={iconSize.large} />
+                )}
+              </Row>
+            </PressableOpacity>
+          )}
+          ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        />
       </View>
-      <Spacer.Vertical size="large" />
-      <PressableOpacity
-        onPress={onSignOutPress}
-        style={{
-          backgroundColor: theme.button.tertiary.background,
-          padding: spacing[3],
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        borderRadius={borderRadius.medium}>
-        <Text style={{ color: theme.button.tertiary.foreground }} type="InterSemiBold">
-          Log Out
-        </Text>
-      </PressableOpacity>
     </View>
   );
 }

@@ -31,7 +31,6 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
   return (
     <PressableOpacity
       accessibilityRole="button"
-      android_disableSound
       onPress={onPress}
       onLongPress={handleLongPress}
       style={[styles.container, style, disabled && styles.disabled]}
@@ -62,19 +61,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     padding: spacing[4],
-    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   disabled: {
     opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.8,
   },
   contentContainer: {
     backgroundColor: 'transparent',
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   textContainer: {
     flex: 1,

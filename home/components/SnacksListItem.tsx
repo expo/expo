@@ -11,6 +11,7 @@ type Props = {
   name: string;
   description?: string;
   isDraft: boolean;
+  inFlatList?: boolean;
 };
 
 function normalizeDescription(description?: string): string | undefined {
@@ -22,7 +23,7 @@ function normalizeDescription(description?: string): string | undefined {
  * the snacks list page for an account.
  */
 
-export function SnacksListItem({ description, isDraft, name, url }: Props) {
+export function SnacksListItem({ description, isDraft, name, url, inFlatList }: Props) {
   const theme = useExpoTheme();
 
   const handlePressProject = () => {
@@ -41,7 +42,12 @@ export function SnacksListItem({ description, isDraft, name, url }: Props) {
   const normalizedDescription = normalizeDescription(description);
 
   return (
-    <PressableOpacity onPress={handlePressProject} onLongPress={handleLongPressProject}>
+    <PressableOpacity
+      onPress={handlePressProject}
+      onLongPress={handleLongPressProject}
+      containerProps={
+        inFlatList ? { bg: 'default', border: 'hairline', rounded: 'large' } : undefined
+      }>
       <View padding="medium">
         <Row align="center" justify="between">
           <View align="start" flex="1">

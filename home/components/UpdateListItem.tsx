@@ -23,7 +23,13 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
   };
 
   return (
-    <PressableOpacity onPress={handlePress}>
+    <PressableOpacity
+      containerProps={{
+        bg: 'default',
+        border: 'hairline',
+        rounded: 'large',
+      }}
+      onPress={handlePress}>
       <View padding="medium">
         <Row align="center" justify="between">
           <View align="start" flex="1">
@@ -37,7 +43,7 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
                   size="small"
                   ellipsizeMode="middle"
                   numberOfLines={1}>
-                  Update: {message ? `"${message}"` : id}
+                  {message ? `"${message}"` : id}
                 </Text>
                 <Spacer.Vertical size="tiny" />
                 <Text
