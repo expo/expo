@@ -2,7 +2,7 @@
 
 import XCTest
 
-@testable import EASClientID
+@testable import EASClient
 
 class EASClientIdTests : XCTestCase {
   func testCreatesStableUUID() throws {
