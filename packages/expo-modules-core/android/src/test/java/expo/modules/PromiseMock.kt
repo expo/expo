@@ -1,4 +1,4 @@
-// copied from `unimodules-test-core`
+// copied from `expo-modules-tests-core`
 package expo.modules
 
 import expo.modules.kotlin.Promise

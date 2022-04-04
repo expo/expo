@@ -361,7 +361,8 @@ export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
   withDash?: boolean;
-  beforeContent?: JSX.Element;
+  beforeContent?: JSX.Element | null;
+  afterContent?: JSX.Element | null;
   includePlatforms?: boolean;
 };
 
@@ -409,6 +410,7 @@ export const CommentTextBlock = ({
   components = mdComponents,
   withDash,
   beforeContent,
+  afterContent,
   includePlatforms = true,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
@@ -424,8 +426,14 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <React.Fragment key={'Example-' + index}>
-      <H4>Example</H4>
+    <React.Fragment key={'example-' + index}>
+      {components !== mdComponents ? (
+        <div css={STYLES_EXAMPLE_IN_TABLE}>
+          <B>Example</B>
+        </div>
+      ) : (
+        <H4>Example</H4>
+      )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </React.Fragment>
   ));
@@ -458,6 +466,7 @@ export const CommentTextBlock = ({
       {includePlatforms && getPlatformTags(comment, !withDash)}
       {shortText}
       {text}
+      {afterContent}
       {seeText}
       {exampleText}
     </>
@@ -483,13 +492,23 @@ export const STYLES_SECONDARY = css`
 `;
 
 export const STYLES_PLATFORM = css`
-  display: inline-block;
-  background-color: ${theme.background.tertiary};
-  color: ${theme.text.default};
-  font-size: 90%;
-  font-weight: 700;
-  padding: 6px 12px;
-  margin-bottom: 8px;
-  margin-right: 8px;
-  border-radius: 4px;
+  & {
+    display: inline-block;
+    background-color: ${theme.background.tertiary};
+    color: ${theme.text.default};
+    font-size: 90%;
+    font-weight: 700;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+
+  table & {
+    margin-bottom: 1rem;
+  }
+`;
+
+const STYLES_EXAMPLE_IN_TABLE = css`
+  margin: 8px 0;
 `;

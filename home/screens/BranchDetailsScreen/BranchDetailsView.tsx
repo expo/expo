@@ -1,11 +1,11 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, FlatList } from 'react-native';
 
-import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
+import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
 import { BranchDetailsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -27,6 +27,7 @@ export function BranchDetailsView({ loading, error, data }: Props) {
   const theme = useExpoTheme();
 
   let contents;
+
   if (error && !data?.app?.byId.updateBranchByName) {
     console.error(error);
     contents = (
@@ -45,31 +46,27 @@ export function BranchDetailsView({ loading, error, data }: Props) {
     );
   } else {
     contents = (
-      <View style={{ flex: 1, paddingBottom: 20 }}>
+      <View style={{ flex: 1, backgroundColor: theme.background.screen }}>
         <BranchHeader
           name={data.app.byId.updateBranchByName.name}
           manifestPermalink={data.app.byId.updateBranchByName.updates[0].manifestPermalink}
         />
-        <View padding="medium">
-          <RedesignedSectionHeader header="Updates" style={{ paddingTop: 0 }} />
-
-          <View bg="default" rounded="large" border="hairline" overflow="hidden">
-            <FlatList<typeof data.app.byId.updateBranchByName.updates[number]>
-              data={data.app.byId.updateBranchByName.updates}
-              keyExtractor={(update) => update.id}
-              ItemSeparatorComponent={Divider}
-              renderItem={({ item: update }) => (
-                <UpdateListItem
-                  id={update.id}
-                  message={update.message ?? undefined}
-                  manifestPermalink={update.manifestPermalink}
-                  createdAt={update.createdAt}
-                />
-              )}
+        <FlatList<typeof data.app.byId.updateBranchByName.updates[number]>
+          data={data.app.byId.updateBranchByName.updates}
+          ListHeaderComponent={<SectionHeader header="Updates" style={{ paddingTop: 0 }} />}
+          keyExtractor={(update) => update.id}
+          contentContainerStyle={{ padding: spacing[4] }}
+          ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+          renderItem={({ item: update }) => (
+            <UpdateListItem
+              id={update.id}
+              message={update.message ?? undefined}
+              manifestPermalink={update.manifestPermalink}
+              createdAt={update.createdAt}
             />
-          </View>
-          {!data.app.byId.updateBranchByName!.updates.length && <EmptySection />}
-        </View>
+          )}
+        />
+        {!data.app.byId.updateBranchByName!.updates.length && <EmptySection />}
       </View>
     );
   }

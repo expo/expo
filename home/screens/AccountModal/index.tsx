@@ -4,11 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import { Text, View, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
-import { useSelector } from 'redux/Hooks';
-import isUserAuthenticated from 'utils/isUserAuthenticated';
 
 import { PressableOpacity } from '../../components/PressableOpacity';
 import { useHome_CurrentUserQuery } from '../../graphql/types';
+import { useSelector } from '../../redux/Hooks';
+import isUserAuthenticated from '../../utils/isUserAuthenticated';
 import { LoggedInAccountView } from './LoggedInAccountView';
 import { LoggedOutAccountView } from './LoggedOutAccountView';
 import { ModalHeader } from './ModalHeader';
@@ -37,7 +37,7 @@ export function AccountModal() {
 
   if (loading) {
     return (
-      <View flex="1">
+      <View flex="1" style={{ backgroundColor: theme.background.screen }}>
         {Platform.OS === 'ios' && <ModalHeader />}
         <View flex="1" padding="medium" align="centered">
           <ActivityIndicator color={theme.highlight.accent} />
@@ -50,7 +50,7 @@ export function AccountModal() {
     console.error(error);
 
     return (
-      <View flex="1">
+      <View flex="1" style={{ backgroundColor: theme.background.screen }}>
         {Platform.OS === 'ios' && <ModalHeader />}
         <View padding="medium">
           <View

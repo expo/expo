@@ -4,6 +4,7 @@ import {
   ExtensionsFilledIcon,
   HomeFilledIcon,
   SettingsFilledIcon,
+  View,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 
@@ -11,7 +12,7 @@ import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
 import { AppProviders } from './providers/AppProviders';
 import { CrashReportScreen } from './screens/CrashReportScreen';
-import { ExtensionsScreen } from './screens/ExtensionsScreen';
+import { ExtensionsStack } from './screens/ExtensionsStack';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
@@ -21,12 +22,20 @@ const Stack = createStackNavigator();
 
 type LauncherAppProps = {
   isSimulator?: boolean;
+  insets: {
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+  };
 };
 
 export function App(props: LauncherAppProps) {
   return (
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
+        {/* TODO -- remove this when safe area context provider is vendored */}
+        <View style={{ height: props.insets?.top || 10 }} bg="default" />
         <Stack.Navigator initialRouteName="Main" mode="modal">
           <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 
@@ -57,7 +66,7 @@ const Main = () => {
       {__DEV__ && (
         <Tab.Screen
           name="Extensions"
-          component={ExtensionsScreen}
+          component={ExtensionsStack}
           options={{
             header: () => null,
             tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,

@@ -33,12 +33,18 @@ private val TAG = ClipboardModule::class.java.simpleName
 const val CLIPBOARD_DIRECTORY_NAME = ".clipboard"
 const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
 
+private enum class ContentType(val jsName: String) {
+  PLAIN_TEXT("plain-text"),
+  HTML("html"),
+  IMAGE("image")
+}
+
 class ClipboardModule : Module() {
   override fun definition() = ModuleDefinition {
     name(moduleName)
 
     // region Strings
-    asyncFunction("getStringAsync") { options: GetStringOptions ->
+    function("getStringAsync") { options: GetStringOptions ->
       val item = clipboardManager.firstItem
       when (options.preferredFormat) {
         StringFormat.PLAIN -> item?.coerceToPlainText(context)
@@ -46,7 +52,7 @@ class ClipboardModule : Module() {
       } ?: ""
     }
 
-    asyncFunction("setStringAsync") { content: String, options: SetStringOptions ->
+    function("setStringAsync") { content: String, options: SetStringOptions ->
       val clip = when (options.inputFormat) {
         StringFormat.PLAIN -> ClipData.newPlainText(null, content)
         StringFormat.HTML -> {
@@ -56,29 +62,26 @@ class ClipboardModule : Module() {
         }
       }
       clipboardManager.setPrimaryClip(clip)
-      return@asyncFunction true
+      return@function true
     }
 
-    asyncFunction("hasStringAsync") {
+    function("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
-        ?.let {
-          it.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
-            it.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
-        }
+        ?.hasTextContent
         ?: false
     }
     // endregion
 
     // region Images
-    asyncFunction("getImageAsync") { options: GetImageOptions, promise: Promise ->
+    function("getImageAsync") { options: GetImageOptions, promise: Promise ->
       val imageUri = clipboardManager
         .takeIf { clipboardHasItemWithType("image/*") }
         ?.firstItem
         ?.uri
         .ifNull {
           promise.resolve(null)
-          return@asyncFunction
+          return@function
         }
 
       val exceptionHandler = CoroutineExceptionHandler { _, err ->
@@ -97,7 +100,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    asyncFunction("setImageAsync") { imageData: String, promise: Promise ->
+    function("setImageAsync") { imageData: String, promise: Promise ->
       val exceptionHandler = CoroutineExceptionHandler { _, err ->
         err.printStackTrace()
         val rejectionCause = when (err) {
@@ -114,7 +117,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    asyncFunction("hasImageAsync") {
+    function("hasImageAsync") {
       clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
     }
     //endregion
@@ -177,13 +180,16 @@ class ClipboardModule : Module() {
 
     private val listener = ClipboardManager.OnPrimaryClipChangedListener {
       maybeClipboardManager.takeIf { isListening }
-        ?.primaryClip
-        ?.takeIf { it.itemCount >= 1 }
+        ?.primaryClipDescription
         ?.let { clip ->
           this@ClipboardModule.sendEvent(
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
-              "content" to (clip.getItemAt(0).text?.toString() ?: "")
+              "contentTypes" to listOfNotNull(
+                ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
+                ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
+                ContentType.HTML.takeIf { clip.hasMimeType("image/*") }
+              ).map { it.jsName }
             )
           )
         }
@@ -248,3 +254,10 @@ private fun ClipData.Item.coerceToPlainText(context: Context): String =
   } else {
     coerceToText(context).toString()
   }
+
+/**
+ * True if clipboard contains plain text or HTML content
+ */
+private val ClipDescription.hasTextContent: Boolean
+  get() = hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
+    hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)

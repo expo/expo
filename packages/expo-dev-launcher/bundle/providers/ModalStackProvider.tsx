@@ -2,29 +2,25 @@ import { Button } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Animated, StyleSheet, useWindowDimensions, Pressable } from 'react-native';
 
-import { createAsyncStack, StackItem, useStackItems } from '../functions/createAsyncStack';
+import {
+  createAsyncStack,
+  StackItem,
+  StackItemComponent,
+  useStackItems,
+} from '../functions/createAsyncStack';
 
-export type ModalProps = {
-  element: React.ReactElement<any>;
+type ModalStackContextProps = {
+  push: (element: StackItemComponent) => StackItem;
+  pop: (amount?: number) => StackItem[];
 };
 
-const ModalContext = React.createContext(createAsyncStack<ModalProps>());
-export const useModalStack = () => React.useContext(ModalContext);
+const ModalStackContext = React.createContext<ModalStackContextProps | null>(null);
+export const useModalStack = () => React.useContext(ModalStackContext);
+const defaultModalStack = createAsyncStack();
 
-export function ModalProvider({ children }) {
-  const modalStack = React.useRef(createAsyncStack<ModalProps>());
-
-  return (
-    <ModalContext.Provider value={modalStack.current}>
-      {children}
-      <ModalStackContainer />
-    </ModalContext.Provider>
-  );
-}
-
-function ModalStackContainer() {
-  const modalStack = useModalStack();
+export function ModalStackProvider({ children, modalStack = defaultModalStack }) {
   const modals = useStackItems(modalStack);
+
   const animatedValue = React.useRef(new Animated.Value(0));
 
   const hasModal = modals.some((m) => m.status === 'settled' || m.status === 'pushing');
@@ -48,36 +44,48 @@ function ModalStackContainer() {
     outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)'],
   });
 
+  function push(element: StackItemComponent) {
+    return modalStack.push({ element });
+  }
+
+  function pop(amount: number = 1) {
+    return modalStack.pop(amount);
+  }
+
   return (
-    <Animated.View
-      style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
-      pointerEvents={hasModal ? 'auto' : 'none'}>
-      <Pressable
-        onPress={() => {
-          modalStack.pop();
-        }}
-        style={[StyleSheet.absoluteFillObject]}>
-        {modals.map((item) => (
-          <ModalScreen
-            key={item.key}
-            {...item}
-            onClose={() => modalStack.pop()}
-            onPopEnd={() => modalStack.onPopEnd(item.key)}
-            onPushEnd={() => modalStack.onPushEnd(item.key)}
-          />
-        ))}
-      </Pressable>
-    </Animated.View>
+    <ModalStackContext.Provider value={{ push, pop }}>
+      {children}
+      <Animated.View
+        style={[StyleSheet.absoluteFillObject, { backgroundColor }]}
+        pointerEvents={hasModal ? 'box-none' : 'none'}>
+        <Pressable
+          onPress={() => {
+            modalStack.pop();
+          }}
+          style={[StyleSheet.absoluteFillObject]}>
+          {modals.map((item) => (
+            <ModalScreen
+              key={item.key}
+              {...item}
+              onClose={item.pop}
+              onPopEnd={item.onPopEnd}
+              onPushEnd={item.onPushEnd}
+            />
+          ))}
+        </Pressable>
+      </Animated.View>
+    </ModalStackContext.Provider>
   );
 }
 
-type ModalScreenProps = StackItem<ModalProps> & {
+type ModalScreenProps = StackItem & {
   onPushEnd: () => void;
   onPopEnd: () => void;
   onClose: () => void;
 };
 
-function ModalScreen({ status, element, onPopEnd, onPushEnd }: ModalScreenProps) {
+function ModalScreen({ status, data, onPopEnd, onPushEnd }: ModalScreenProps) {
+  const { element } = data;
   const { height } = useWindowDimensions();
 
   const animatedValue = React.useRef(new Animated.Value(status === 'settled' ? 1 : 0));

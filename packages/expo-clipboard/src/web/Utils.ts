@@ -38,6 +38,12 @@ export function blobToBase64Async(blob: Blob): Promise<string> {
   });
 }
 
+export function htmlToPlainText(html: string) {
+  const tempDivElement = document.createElement('div');
+  tempDivElement.innerHTML = html;
+  return tempDivElement.textContent || tempDivElement.innerText || '';
+}
+
 export function getImageSizeFromBlobAsync(blob: Blob): Promise<{ width: number; height: number }> {
   return new Promise((resolve, _) => {
     const blobUrl = URL.createObjectURL(blob);
@@ -60,6 +66,15 @@ export async function findImageInClipboardAsync(items: ClipboardItems): Promise<
     // NOTE: Currently, this is not supported by browsers yet. They only support PNG now
     if (clipboardItem.types.some((type) => type === 'image/jpeg')) {
       return await clipboardItem.getType('image/jpeg');
+    }
+  }
+  return null;
+}
+
+export async function findHtmlInClipboardAsync(items: ClipboardItems): Promise<Blob | null> {
+  for (const clipboardItem of items) {
+    if (clipboardItem.types.some((type) => type === 'text/html')) {
+      return await clipboardItem.getType('text/html');
     }
   }
   return null;

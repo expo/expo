@@ -1,6 +1,8 @@
 import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
+import accepts from 'accepts';
 import assert from 'assert';
+import FormData from 'form-data';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getProjectAsync } from '../../../api/getProject';
@@ -12,7 +14,7 @@ import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
-import { ManifestMiddleware, ParsedHeaders } from './ManifestMiddleware';
+import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
@@ -20,30 +22,42 @@ import {
 } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
 
-export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
-  public getParsedHeaders(req: ServerRequest): ParsedHeaders {
+interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
+  explicitlyPrefersMultipartMixed: boolean;
+}
+
+export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
+  public getParsedHeaders(req: ServerRequest): ExpoGoManifestRequestInfo {
     const platform = parsePlatformHeader(req);
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
 
+    // Expo Updates clients explicitly accept "multipart/mixed" responses while browsers implicitly
+    // accept them with "accept: */*". To make it easier to debug manifest responses by visiting their
+    // URLs in a browser, we denote the response as "text/plain" if the user agent appears not to be
+    // an Expo Updates client.
+    const accept = accepts(req);
+    const explicitlyPrefersMultipartMixed =
+      accept.types(['unknown/unknown', 'multipart/mixed']) === 'multipart/mixed';
+
     return {
+      explicitlyPrefersMultipartMixed,
       platform,
       acceptSignature: !!req.headers['expo-accept-signature'],
       hostname: stripPort(req.headers['host']),
     };
   }
 
-  protected getDefaultResponseHeaders(): Map<string, any> {
-    const headers = new Map<string, any>();
+  private getDefaultResponseHeaders(): ServerHeaders {
+    const headers = new Map<string, number | string | readonly string[]>();
     // set required headers for Expo Updates manifest specification
     headers.set('expo-protocol-version', 0);
     headers.set('expo-sfv-version', 0);
     headers.set('cache-control', 'private, max-age=0');
-    headers.set('content-type', 'application/json');
     return headers;
   }
 
-  public async _getManifestResponseAsync(requestOptions: ParsedHeaders): Promise<{
+  public async _getManifestResponseAsync(requestOptions: ExpoGoManifestRequestInfo): Promise<{
     body: string;
     version: string;
     headers: ServerHeaders;
@@ -103,11 +117,30 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware {
       headers.set('expo-manifest-signature', manifestSignature);
     }
 
+    const form = this.getFormData({
+      stringifiedManifest: JSON.stringify(expoUpdatesManifest),
+    });
+
+    headers.set(
+      'content-type',
+      requestOptions.explicitlyPrefersMultipartMixed
+        ? `multipart/mixed; boundary=${form.getBoundary()}`
+        : 'text/plain'
+    );
+
     return {
-      body: JSON.stringify(expoUpdatesManifest),
+      body: form.getBuffer().toString(),
       version: runtimeVersion,
       headers,
     };
+  }
+
+  private getFormData({ stringifiedManifest }: { stringifiedManifest: string }): FormData {
+    const form = new FormData();
+    form.append('manifest', stringifiedManifest, {
+      contentType: 'application/json',
+    });
+    return form;
   }
 
   protected trackManifest(version?: string) {

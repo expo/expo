@@ -5,7 +5,7 @@
 ## API documentation
 
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/updates.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/)
 
 Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020.
 
@@ -23,11 +23,11 @@ If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/).
 
 # Installation in bare React Native projects
 
-Learn how to install expo-updates in your project in the [Installing expo-updates documentation page](https://docs.expo.io/bare/installing-updates/).
+Learn how to install expo-updates in your project in the [Installing expo-updates documentation page](https://docs.expo.dev/bare/installing-updates/).
 
 ## Embedded Assets
 

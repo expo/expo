@@ -1,4 +1,5 @@
-import { Divider, View } from 'expo-dev-client-components';
+import { spacing } from '@expo/styleguide-native';
+import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, FlatList, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
@@ -22,6 +23,8 @@ type Props = {
 export function BranchListView(props: Props) {
   const [isReady, setReady] = React.useState(false);
 
+  const theme = useExpoTheme();
+
   React.useEffect(() => {
     const _readyTimer = setTimeout(() => {
       setReady(true);
@@ -33,14 +36,20 @@ export function BranchListView(props: Props) {
 
   if (!isReady) {
     return (
-      <RNView style={{ flex: 1, padding: 30, alignItems: 'center' }}>
+      <RNView
+        style={{
+          flex: 1,
+          padding: 30,
+          alignItems: 'center',
+          backgroundColor: theme.background.screen,
+        }}>
         <ActivityIndicator />
       </RNView>
     );
   }
 
   if (!props.data?.length) {
-    return <RNView style={{ flex: 1 }} />;
+    return <RNView style={{ flex: 1, backgroundColor: theme.background.screen }} />;
   }
 
   return <BranchList {...props} />;
@@ -49,6 +58,7 @@ export function BranchListView(props: Props) {
 function BranchList({ data, appId, loadMoreAsync }: Props) {
   const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
+  const theme = useExpoTheme();
 
   const extractKey = React.useCallback((item) => item.id, []);
 
@@ -82,25 +92,29 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
         appId={appId}
         name={branch.name}
         latestUpdate={branch.latestUpdate}
+        inFlatList
       />
     );
   }, []);
 
   return (
-    <View flex="1" padding="medium">
-      <View bg="default" border="hairline" rounded="large" overflow="hidden">
-        <FlatList
-          data={data}
-          keyExtractor={extractKey}
-          renderItem={renderItem}
-          // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-          renderLoadingIndicator={() => <RNView />}
-          renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
-          ItemSeparatorComponent={Divider}
-          canLoadMore={canLoadMore()}
-          onLoadMoreAsync={handleLoadMoreAsync}
-        />
-      </View>
+    <View
+      flex="1"
+      style={{
+        backgroundColor: theme.background.screen,
+      }}>
+      <FlatList
+        data={data}
+        keyExtractor={extractKey}
+        renderItem={renderItem}
+        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
+        renderLoadingIndicator={() => <RNView />}
+        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
+        contentContainerStyle={{ padding: spacing[4] }}
+        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        canLoadMore={canLoadMore()}
+        onLoadMoreAsync={handleLoadMoreAsync}
+      />
     </View>
   );
 }

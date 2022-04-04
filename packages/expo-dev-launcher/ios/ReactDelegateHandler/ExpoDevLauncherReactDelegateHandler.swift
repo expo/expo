@@ -4,8 +4,10 @@ import ExpoModulesCore
 import EXDevMenu
 import EXUpdatesInterface
 
+@objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
-  public static var enableAutoSetup: Bool?
+  @objc
+  public static var enableAutoSetup: Bool = true
 
   private weak var reactDelegate: ExpoReactDelegate?
   private var bridgeDelegate: RCTBridgeDelegate?
@@ -15,8 +17,8 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   private var rootViewInitialProperties: [AnyHashable : Any]?
   static var shouldEnableAutoSetup: Bool = {
     // if someone else has set this explicitly, use that value
-    if enableAutoSetup != nil {
-      return enableAutoSetup!
+    if !enableAutoSetup {
+      return false
     }
 
     if !EXAppDefines.APP_DEBUG {

@@ -125,7 +125,7 @@ open class FacebookModule(
       }
       options.getString("appName")?.let {
         appName = it
-        FacebookSdk.setApplicationId(appName)
+        FacebookSdk.setApplicationName(appName)
       }
       options.getString("version")?.let {
         FacebookSdk.setGraphApiVersion(it)

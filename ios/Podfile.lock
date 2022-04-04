@@ -1208,9 +1208,9 @@ PODS:
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
   - DoubleConversion (1.1.6)
-  - EASClientID (0.1.0):
+  - EASClient (0.1.0):
     - ExpoModulesCore
-  - EASClientID/Tests (0.1.0):
+  - EASClient/Tests (0.1.0):
     - ExpoModulesCore
   - EXAdsAdMob (12.0.0):
     - ExpoModulesCore
@@ -1338,10 +1338,13 @@ PODS:
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoModulesCore/Tests (0.7.0):
-    - Nimble
-    - Quick
+    - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
+  - ExpoModulesTestCore (0.7.0):
+    - ExpoModulesCore
+    - Nimble
+    - Quick
   - ExpoRandom (12.1.0):
     - ExpoModulesCore
   - ExpoSystemUI (1.1.0):
@@ -1384,7 +1387,7 @@ PODS:
     - ExpoModulesCore
   - EXUpdates (0.11.2):
     - ASN1Decoder (~> 1.8)
-    - EASClientID
+    - EASClient
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -1392,7 +1395,7 @@ PODS:
     - React-Core
   - EXUpdates/Tests (0.11.2):
     - ASN1Decoder (~> 1.8)
-    - EASClientID
+    - EASClient
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -1769,11 +1772,11 @@ PODS:
     - glog
   - react-native-netinfo (7.1.3):
     - React-Core
-  - react-native-pager-view (5.4.9):
+  - react-native-pager-view (5.4.15):
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-webview (11.15.0):
+  - react-native-webview (11.18.1):
     - React-Core
   - React-perflogger (0.67.2)
   - React-RCTActionSheet (0.67.2):
@@ -2147,8 +2150,8 @@ DEPENDENCIES:
   - boost (from `../react-native-lab/react-native/third-party-podspecs/boost.podspec`)
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - EASClientID (from `../packages/expo-eas-client-id/ios`)
-  - EASClientID/Tests (from `../packages/expo-eas-client-id/ios`)
+  - EASClient (from `../packages/expo-eas-client/ios`)
+  - EASClient/Tests (from `../packages/expo-eas-client/ios`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
@@ -2201,6 +2204,7 @@ DEPENDENCIES:
   - ExpoLocalization (from `../packages/expo-localization/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
+  - ExpoModulesTestCore (from `../packages/expo-modules-tests-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
@@ -2747,8 +2751,8 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
-  EASClientID:
-    :path: "../packages/expo-eas-client-id/ios"
+  EASClient:
+    :path: "../packages/expo-eas-client/ios"
   EXAdsAdMob:
     :path: "../packages/expo-ads-admob/ios"
   EXAdsFacebook:
@@ -2847,6 +2851,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-localization/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
+  ExpoModulesTestCore:
+    :path: "../packages/expo-modules-tests-core/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
   ExpoSystemUI:
@@ -3194,7 +3200,7 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
-  EASClientID: 9f46987df9df116baaea1322d974e6975c4cc97c
+  EASClient: de64fdec460b68d1a1eeb16eb99f82566264d2de
   EXAdsAdMob: ac13d1a8fd689e3ac74b63100b13d24f3ea0ff1f
   EXAdsFacebook: 9697b91f55d254ebe4c3a1ddba9c76dfa8302775
   EXAmplitude: f346f64108b628046524182a8cc30df407643dc9
@@ -3243,9 +3249,10 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: b063bab565e7640124e37d1700831c4b723a7bc7
   ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
-  ExpoModulesCore: 5ee50e40092c569518fe06977be5e747228c652a
+  ExpoModulesCore: e2234a290dcd0b32b5365063b44b1b18cf0a53db
+  ExpoModulesTestCore: 5a4cb6f81d9644c49d43e5438fc0a6ecac730066
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
-  ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
+  ExpoSystemUI: f34afad3de669780144508e4a5860fb1a5939832
   ExpoWebBrowser: 860eff8b9f413111bba517fedaa642b745af99d4
   EXPrint: 9fb70fda9501c41d4d2421f414f6e38f957d9d44
   EXScreenCapture: 0146fdf6ca4c3402a1cf62b2ddb739a840e08c94
@@ -3262,7 +3269,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 7469fed1192a7794be7093fb873798bdf10d5f6e
   EXTaskManager: cfa107893db172b90564027e507d3e6713ad5ff3
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
-  EXUpdates: 2ede0133ed52945daeb3183beccda3cf0fc628ae
+  EXUpdates: 87bc765cb8c986edbac25e19af4c07d6199c0149
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXVideoThumbnails: d7d1a7c8e240872c580127073b87f740d4f3d8a5
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
@@ -3317,9 +3324,9 @@ SPEC CHECKSUMS:
   React-jsinspector: 595f76eba2176ebd8817a1fffd47b84fbdab9383
   React-logger: 23de8ea0f44fa00ee77e96060273225607fd4d78
   react-native-netinfo: 42c0965fca99069b92e3f7360ab2d425985e5104
-  react-native-pager-view: 3ee7d4c7697fb3ef788346e834a60cca97ed8540
+  react-native-pager-view: b1914469643f40042e65d78cbf3d3dfebd6fb0d9
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-webview: e89bf2dba26a04cda967814df3ed1be99f291233
+  react-native-webview: 0b7bd2bffced115aefd393e1841babd9b9a557b1
   React-perflogger: 3c9bb7372493e49036f07a82c44c8cf65cbe88db
   React-RCTActionSheet: 052606483045a408693aa7e864410b4a052f541a
   React-RCTAnimation: 08d4cac13222bb1348c687a0158dfd3b577cdb63
@@ -3343,6 +3350,6 @@ SPEC CHECKSUMS:
   Yoga: 9b6696970c3289e8dea34b3eda93f23e61fb8121
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 2a0ea483716d01c96381c9063c927ffc3f3cbd7f
+PODFILE CHECKSUM: 6f48b96badd9e37dc5c4ef6084c664c1c45121bb
 
 COCOAPODS: 1.11.2

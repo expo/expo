@@ -16,7 +16,7 @@ export function ModalHeader() {
       </View>
       <Row>
         <PressableOpacity
-          hitSlop={16}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           borderRadius={100}
           style={{ padding: spacing[2] }}
           onPress={() => navigation.goBack()}>

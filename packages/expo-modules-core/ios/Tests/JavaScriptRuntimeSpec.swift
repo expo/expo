@@ -1,9 +1,8 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class JavaScriptRuntimeSpec: QuickSpec {
+class JavaScriptRuntimeSpec: ExpoSpec {
   override func spec() {
     let runtime = JavaScriptRuntime()
 

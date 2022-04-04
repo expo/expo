@@ -3,7 +3,8 @@ import { TextStyle, Platform, StyleSheet } from 'react-native';
 
 type SpacingKey = `${keyof typeof spacing}`;
 type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' | 'xl';
-type Scale = Record<SpacingKey | DescriptiveScale, number>;
+type ScaleKey = SpacingKey | DescriptiveScale;
+type Scale = Record<ScaleKey, number>;
 
 export const scale: Scale = {
   micro: spacing[0.5],
@@ -16,14 +17,14 @@ export const scale: Scale = {
 };
 
 function fullSpacingScaleForAttributes(attributes: string[]) {
-  const obj = {};
+  const obj: { [scaleKey: string]: any } = {};
 
   Object.keys(scale).forEach((key) => {
     key = `${key}`;
-    const value = {};
+    const value: { [attribute: string]: number } = {};
 
     attributes.forEach((attribute) => {
-      value[attribute] = scale[key];
+      value[attribute] = scale[key as ScaleKey];
     });
 
     obj[key] = value;
@@ -240,5 +241,6 @@ export const border = {
 export const borderDark = {
   default: { borderColor: darkTheme.border.default, borderWidth: 1 },
   warning: { borderColor: darkTheme.border.warning, borderWidth: 1 },
+  error: { borderColor: darkTheme.border.error, borderWidth: 1 },
   hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
 };

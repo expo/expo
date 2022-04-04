@@ -1,14 +1,17 @@
-import { useExpoTheme, View } from 'expo-dev-client-components';
+import { View } from 'expo-dev-client-components';
 import React, { PropsWithChildren, ComponentProps } from 'react';
-import { PressableProps, Pressable, Platform } from 'react-native';
+import { TouchableOpacityProps } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { GenericTouchableProps } from 'react-native-gesture-handler/lib/typescript/components/touchables/GenericTouchable';
 
 type DCCViewProps = ComponentProps<typeof View>;
 
-type Props = PressableProps & {
-  activeOpacity?: number;
-  borderRadius?: number;
-  containerProps?: DCCViewProps;
-};
+type Props = TouchableOpacityProps &
+  GenericTouchableProps & {
+    activeOpacity?: number;
+    borderRadius?: number;
+    containerProps?: DCCViewProps;
+  };
 
 export function PressableOpacity({
   activeOpacity,
@@ -17,29 +20,9 @@ export function PressableOpacity({
   containerProps,
   ...rest
 }: Props) {
-  const theme = useExpoTheme();
-
   return (
     <BorderRadiusContainer borderRadius={borderRadius} {...containerProps}>
-      <Pressable
-        style={({ pressed }) => {
-          const pressedStyles = typeof style === 'function' ? style({ pressed }) : style;
-
-          const pressedOpacity = Platform.OS !== 'android' ? activeOpacity ?? 0.2 : 1;
-
-          const nativeStyle = {
-            opacity: pressed ? pressedOpacity : 1,
-            borderRadius,
-          };
-
-          if (Array.isArray(pressedStyles)) {
-            return [nativeStyle, ...pressedStyles];
-          }
-          return [nativeStyle, pressedStyles];
-        }}
-        android_ripple={{ color: theme.text.default, borderless: false }}
-        {...rest}
-      />
+      <TouchableOpacity style={style} {...rest} />
     </BorderRadiusContainer>
   );
 }
