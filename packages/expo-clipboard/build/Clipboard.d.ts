@@ -37,24 +37,24 @@ export declare function setStringAsync(text: string, options?: SetStringOptions)
  */
 export declare function setString(text: string): void;
 /**
- * Returns whether the clipboard has text content.
+ * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).
  *
  * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
  *
- * @returns A promise that fulfills to `true` if clipboard has plain text content, resolves to `false` otherwise.
+ * @returns A promise that fulfills to `true` if clipboard has text content, resolves to `false` otherwise.
  */
 export declare function hasStringAsync(): Promise<boolean>;
 /**
- * Gets the url from the user's clipboard.
+ * Gets the URL from the user's clipboard.
  *
- * @returns A promise that fulfills to the url in the clipboard.
+ * @returns A promise that fulfills to the URL in the clipboard.
  * @platform iOS
  */
 export declare function getUrlAsync(): Promise<string | null>;
 /**
- * Sets a url in the user's clipboard.
+ * Sets a URL in the user's clipboard.
  *
- * @param url The url to save to the clipboard.
+ * @param url The URL to save to the clipboard.
  * @platform iOS
  */
 export declare function setUrlAsync(url: string): Promise<void>;
@@ -73,12 +73,28 @@ export declare function hasUrlAsync(): Promise<boolean>;
  * @returns If there was an image in the clipboard, the promise resolves to
  * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
  * Otherwise, it resolves to `null`.
+ *
+ * @example
+ * ```tsx
+ * const img = await Clipboard.getImageAsync({ format: 'png' });
+ * // ...
+ * <Image source={{ uri: img?.data }} style={{ width: 200, height: 200 }} />
+ * ```
  */
 export declare function getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null>;
 /**
  * Sets an image in the user's clipboard.
  *
- * @param base64Image Image encoded as a base64 string, without mime type.
+ * @param base64Image Image encoded as a base64 string, without MIME type.
+ *
+ * @example
+ * ```tsx
+ * const result = await ImagePicker.launchImageLibraryAsync({
+ *   mediaTypes: ImagePicker.MediaTypeOptions.Images,
+ *   base64: true,
+ * });
+ * await Clipboard.setImageAsync(result.base64);
+ * ```
  */
 export declare function setImageAsync(base64Image: string): Promise<void>;
 /**
