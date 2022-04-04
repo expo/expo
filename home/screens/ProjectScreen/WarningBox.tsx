@@ -2,9 +2,9 @@ import { spacing } from '@expo/styleguide-native';
 import { useExpoTheme, Text, Spacer, Row, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Platform } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Ionicons } from '../../components/Icons';
-import { PressableOpacity } from '../../components/PressableOpacity';
 
 export function WarningBox({
   title,
@@ -22,20 +22,18 @@ export function WarningBox({
   const learnMoreButton = showLearnMore ? (
     <>
       <Spacer.Vertical size="small" />
-      <PressableOpacity
+      <TouchableOpacity
         onPress={onLearnMorePress}
-        containerProps={{
-          style: {
-            padding: spacing[2],
-            alignSelf: 'flex-start',
-            backgroundColor: theme.button.tertiary.background,
-          },
-          rounded: 'small',
+        style={{
+          padding: spacing[2],
+          alignSelf: 'flex-start',
+          backgroundColor: theme.button.tertiary.background,
+          borderRadius: 4,
         }}>
         <Text type="InterSemiBold" style={{ color: theme.button.tertiary.foreground }} size="small">
           Learn more
         </Text>
-      </PressableOpacity>
+      </TouchableOpacity>
     </>
   ) : null;
   return (

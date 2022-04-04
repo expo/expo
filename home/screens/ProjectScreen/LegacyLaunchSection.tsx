@@ -3,9 +3,9 @@ import { View, Text, Spacer, Row, useExpoTheme } from 'expo-dev-client-component
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import { Linking, Platform } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import semver from 'semver';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import Environment from '../../utils/Environment';
@@ -59,18 +59,17 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
       <View>
         <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
         <View bg="default" overflow="hidden" rounded="large" border="hairline">
-          <PressableOpacity
+          <TouchableOpacity
             onPress={() => {
               Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-            }}
-            containerProps={{ bg: 'default' }}>
-            <Row padding="medium" justify="between" align="center">
+            }}>
+            <Row padding="medium" justify="between" align="center" bg="default">
               <Text size="medium" type="InterRegular">
                 default
               </Text>
               <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
             </Row>
-          </PressableOpacity>
+          </TouchableOpacity>
         </View>
         <View padding="medium">
           <Text size="small" color="secondary" type="InterRegular">

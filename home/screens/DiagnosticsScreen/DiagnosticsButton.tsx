@@ -1,8 +1,6 @@
-import { borderRadius } from '@expo/styleguide-native';
 import { ChevronRightIcon, Row, Spacer, Text, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-
-import { PressableOpacity } from '../../components/PressableOpacity';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   title: string;
@@ -14,11 +12,14 @@ export function DiagnosticButton({ title, description, onPress }: Props) {
   const theme = useExpoTheme();
 
   return (
-    <PressableOpacity
-      borderRadius={borderRadius.large}
-      onPress={onPress}
-      containerProps={{ border: 'hairline', bg: 'default', padding: 'medium' }}>
-      <Row justify="between" align="center">
+    <TouchableOpacity onPress={onPress}>
+      <Row
+        rounded="large"
+        justify="between"
+        align="center"
+        border="hairline"
+        bg="default"
+        padding="medium">
         <Text
           type="InterSemiBold"
           style={{
@@ -37,6 +38,6 @@ export function DiagnosticButton({ title, description, onPress }: Props) {
         size="small">
         {description}
       </Text>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }
