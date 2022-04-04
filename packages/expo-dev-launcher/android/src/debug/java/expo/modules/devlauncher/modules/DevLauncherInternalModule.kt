@@ -55,8 +55,34 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     val isRunningOnStockEmulator = Build.FINGERPRINT.contains("generic")
     return mapOf(
       "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
-      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator)
+      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
+      "updatesConfig" to getUpdatesConfig(),
     )
+  }
+
+  private fun getUpdatesConfig(): WritableMap {
+    val map = Arguments.createMap()
+
+    val runtimeVersion = getMetadataValue("expo.modules.updates.EXPO_RUNTIME_VERSION")
+    val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
+    var updatesUrl = getMetadataValue("expo.modules.updates.EXPO_UPDATE_URL")
+
+    var appId = ""
+
+    if (updatesUrl.isNotEmpty()) {
+      var uri = Uri.parse(updatesUrl)
+      appId = uri.lastPathSegment ?: ""
+    }
+
+    var isModernManifestProtocol = Uri.parse(updatesUrl).host.equals("u.expo.dev")
+    var usesEASUpdates = isModernManifestProtocol && appId.isNotEmpty()
+
+    return map.apply {
+      putString("appId", appId)
+      putString("runtimeVersion", runtimeVersion)
+      putString("sdkVersion", sdkVersion)
+      putBoolean("usesEASUpdates", usesEASUpdates)
+    }
   }
 
   @ReactMethod

@@ -16,6 +16,11 @@ object DevMenuDevSettings {
         putBoolean("isElementInspectorShown", devSettings.isElementInspectorEnabled)
         putBoolean("isHotLoadingEnabled", devSettings.isHotModuleReplacementEnabled)
         putBoolean("isPerfMonitorShown", devSettings.isFpsDebugEnabled)
+        // TODO -- is this correct:
+        putBoolean("isRemoteDebuggingAvailable", devSettings.isJSDevModeEnabled)
+        putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
+        putBoolean("isHotLoadingAvailable", devSettings.isJSDevModeEnabled)
+        putBoolean("isPerfMonitorAvailable", devSettings.isJSDevModeEnabled)
       }
     }
 
@@ -24,6 +29,10 @@ object DevMenuDevSettings {
       putBoolean("isElementInspectorShown", false)
       putBoolean("isHotLoadingEnabled", false)
       putBoolean("isPerfMonitorShown", false)
+      putBoolean("isRemoteDebuggingAvailable", false)
+      putBoolean("isElementInspectorAvailable", false)
+      putBoolean("isHotLoadingAvailable", false)
+      putBoolean("isPerfMonitorAvailable", false)
     }
   }
 }
