@@ -84,7 +84,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
           script: |
             # wait for emulator to be fully boot up
-            sleep 60
+            sleep 180
             bin/expotools android-native-unit-tests --type instrumented
       - name: 💿 Save test results
         if: always()
