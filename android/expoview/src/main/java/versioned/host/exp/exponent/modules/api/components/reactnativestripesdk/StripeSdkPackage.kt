@@ -11,6 +11,6 @@ class StripeSdkPackage : ReactPackage {
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-      return listOf<ViewManager<*, *>>(CardFieldViewManager(), AuBECSDebitFormViewManager(), StripeContainerManager(), CardFormViewManager(), GooglePayButtonManager())
+      return listOf<ViewManager<*, *>>(CardFieldViewManager(), AuBECSDebitFormViewManager(), StripeContainerManager(), CardFormViewManager())
     }
 }
