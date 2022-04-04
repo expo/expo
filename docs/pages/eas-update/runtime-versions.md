@@ -63,7 +63,7 @@ The `"nativeVersion"` policy will set the runtime version to the projects curren
       "buildNumber": "1"
     },
     "android": {
-      "versionCode": "1"
+      "versionCode": 1
     }
   }
 }
