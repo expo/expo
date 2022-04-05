@@ -16,9 +16,9 @@
 
 ### ⚠ Notices
 
-- Deleted the `UIImagePickerPresentationStyle.BlurOverFullScreen` option.
-- Deprecated all `PascalCase` values of the `UIImagePickerPresentationStyle` enum. Use their `SNAKE_UPPERCASE` counterparts instead.
-- Underlying values of the `UIImagePickerPresentationStyle` are now strings. They were integers before.
+- Deleted the `UIImagePickerPresentationStyle.BlurOverFullScreen` option as it does not work on iOS. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Deprecated all `PascalCase` values of the `UIImagePickerPresentationStyle` enum. Use their `SNAKE_UPPERCASE` counterparts instead. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Underlying values of the `UIImagePickerPresentationStyle` are now strings. They were integers before. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
