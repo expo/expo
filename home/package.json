@@ -56,7 +56,7 @@
     "react": "17.0.2",
     "react-native": "0.68.0",
     "react-native-fade-in-image": "^1.6.1",
-    "react-native-gesture-handler": "~2.1.0",
+    "react-native-gesture-handler": "~2.2.0",
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-native-maps": "0.29.4",
     "react-native-paper": "^4.0.1",
