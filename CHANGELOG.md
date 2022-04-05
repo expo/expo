@@ -14,6 +14,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-picker/picker` from `2.2.1` to `2.4.0`. ([#16876](https://github.com/expo/expo/pull/16876) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-community/slider` from `4.1.12` to `4.2.1`. ([#16901](https://github.com/expo/expo/pull/16901) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-svg` from `12.1.1` to `12.3.0`. ([#16874](https://github.com/expo/expo/pull/16874) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-screens` from `3.10.1` to `3.11.1`. ([#16913](https://github.com/expo/expo/pull/16913) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🛠 Breaking changes
 
