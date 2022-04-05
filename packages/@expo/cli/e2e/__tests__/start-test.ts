@@ -1,8 +1,9 @@
 /* eslint-env jest */
-import fs from 'fs-extra';
-import path from 'path';
 import execa from 'execa';
+import fs from 'fs-extra';
 import fetch from 'node-fetch';
+import path from 'path';
+
 import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -56,7 +57,7 @@ it('runs `npx expo start --help`', async () => {
         -c, --clear                            Clear the bundler cache
         --max-workers <num>                    Maximum number of tasks to allow Metro to spawn
         --no-dev                               Bundle in production mode
-        --minify                               Minify JavaScript    
+        --minify                               Minify JavaScript
 
         -m, --host <mode>                      lan, tunnel, localhost. Dev server hosting type. Default: lan.
                                                - lan: Use the local network
@@ -73,6 +74,7 @@ it('runs `npx expo start --help`', async () => {
 
         --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
         --force-manifest-type <manifest-type>  Override auto detection of manifest type
+        --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
         -h, --help                             output usage information
     "
   `);

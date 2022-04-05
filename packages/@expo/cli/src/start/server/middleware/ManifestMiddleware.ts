@@ -41,21 +41,21 @@ export type ResponseProjectSettings = {
 
 export const DEVELOPER_TOOL = 'expo-cli';
 
+export type ManifestMiddlewareOptions = {
+  /** Should start the dev servers in development mode (minify). */
+  mode?: 'development' | 'production';
+  /** Should instruct the bundler to create minified bundles. */
+  minify?: boolean;
+  constructUrl: UrlCreator['constructUrl'];
+  isNativeWebpack?: boolean;
+  privateKeyPath?: string;
+};
+
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
 export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo
 > extends ExpoMiddleware {
-  constructor(
-    protected projectRoot: string,
-    protected options: {
-      /** Should start the dev servers in development mode (minify). */
-      mode?: 'development' | 'production';
-      /** Should instruct the bundler to create minified bundles. */
-      minify?: boolean;
-      constructUrl: UrlCreator['constructUrl'];
-      isNativeWebpack?: boolean;
-    }
-  ) {
+  constructor(protected projectRoot: string, protected options: ManifestMiddlewareOptions) {
     super(
       projectRoot,
       /**

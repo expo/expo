@@ -24,7 +24,7 @@ export async function getProjectAsync(projectId: string): Promise<Project> {
   await ensureLoggedInAsync();
   const response = await fetchAsync(`projects/${encodeURIComponent(projectId)}`);
   if (!response.ok) {
-    throw new CommandError('API', `Unexpected from Expo servers: ${response.statusText}.`);
+    throw new CommandError('API', `Unexpected error from Expo servers: ${response.statusText}.`);
   }
   const { data } = await response.json();
   return data;

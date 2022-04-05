@@ -5,6 +5,7 @@ import { resolvePortAsync } from '../utils/port';
 
 export type Options = {
   forceManifestType: 'classic' | 'expo-updates';
+  privateKeyPath: string | null;
   android: boolean;
   web: boolean;
   ios: boolean;
@@ -41,6 +42,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
   return {
     forceManifestType,
+    privateKeyPath: args['private-key-path'] ?? null,
 
     android: !!args['--android'],
     web: !!args['--web'],

@@ -3,6 +3,7 @@ import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import assert from 'assert';
 import FormData from 'form-data';
+import { serializeDictionary, Dictionary } from 'structured-headers';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getProjectAsync } from '../../../api/getProject';
@@ -11,6 +12,11 @@ import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import { logEvent } from '../../../utils/analytics/rudderstackClient';
+import {
+  CodeSigningInfo,
+  getCodeSigningInfoAsync,
+  signManifestString,
+} from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
@@ -24,6 +30,7 @@ import { ServerHeaders, ServerRequest } from './server.types';
 
 interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
   explicitlyPrefersMultipartMixed: boolean;
+  expectSignature: string | null;
 }
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
@@ -40,10 +47,13 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     const explicitlyPrefersMultipartMixed =
       accept.types(['unknown/unknown', 'multipart/mixed']) === 'multipart/mixed';
 
+    const expectSignature = req.headers['expo-expect-signature'];
+
     return {
       explicitlyPrefersMultipartMixed,
       platform,
       acceptSignature: !!req.headers['expo-accept-signature'],
+      expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
     };
   }
@@ -77,8 +87,17 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       );
     }
 
+    const codeSigningInfo = await getCodeSigningInfoAsync(
+      exp,
+      requestOptions.expectSignature,
+      this.options.privateKeyPath
+    );
+
     const easProjectId = exp.extra?.eas?.projectId;
-    const shouldUseAnonymousManifest = await shouldUseAnonymousManifestAsync(easProjectId);
+    const shouldUseAnonymousManifest = await shouldUseAnonymousManifestAsync(
+      easProjectId,
+      codeSigningInfo
+    );
     const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
     if (!shouldUseAnonymousManifest) {
       assert(easProjectId);
@@ -117,8 +136,28 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       headers.set('expo-manifest-signature', manifestSignature);
     }
 
+    const stringifiedManifest = JSON.stringify(expoUpdatesManifest);
+
+    let manifestPartHeaders: { 'expo-signature': string } | null = null;
+    let certificateChainBody: string | null = null;
+    if (codeSigningInfo) {
+      const signature = signManifestString(stringifiedManifest, codeSigningInfo);
+      manifestPartHeaders = {
+        'expo-signature': serializeDictionary(
+          convertToDictionaryItemsRepresentation({
+            keyid: 'expo-go',
+            sig: signature,
+            alg: 'rsa-v1_5-sha256',
+          })
+        ),
+      };
+      certificateChainBody = codeSigningInfo.certificateChainForResponse.join('\n');
+    }
+
     const form = this.getFormData({
-      stringifiedManifest: JSON.stringify(expoUpdatesManifest),
+      stringifiedManifest,
+      manifestPartHeaders,
+      certificateChainBody,
     });
 
     headers.set(
@@ -135,11 +174,27 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     };
   }
 
-  private getFormData({ stringifiedManifest }: { stringifiedManifest: string }): FormData {
+  private getFormData({
+    stringifiedManifest,
+    manifestPartHeaders,
+    certificateChainBody,
+  }: {
+    stringifiedManifest: string;
+    manifestPartHeaders: { 'expo-signature': string } | null;
+    certificateChainBody: string | null;
+  }): FormData {
     const form = new FormData();
     form.append('manifest', stringifiedManifest, {
       contentType: 'application/json',
+      header: {
+        ...manifestPartHeaders,
+      },
     });
+    if (certificateChainBody && certificateChainBody.length > 0) {
+      form.append('certificate_chain', certificateChainBody, {
+        contentType: 'application/x-pem-file',
+      });
+    }
     return form;
   }
 
@@ -155,15 +210,16 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 }
 
 /**
- * Whether an anonymous scope key should be used. It should be used when:
- * 1. Offline
- * 2. Not logged-in
- * 3. No EAS project ID in config
+ * 1. No EAS project ID in config, then use anonymous scope key
+ * 2. When offline or not logged in
+ *   a. If code signing not accepted by client (only legacy manifest signing is supported), then use anonymous scope key
+ *   b. If code signing accepted by client and no development code signing certificate is cached, then use anonymous scope key
  */
 async function shouldUseAnonymousManifestAsync(
-  easProjectId: string | undefined | null
+  easProjectId: string | undefined | null,
+  codeSigningInfo: CodeSigningInfo | null
 ): Promise<boolean> {
-  if (!easProjectId || APISettings.isOffline) {
+  if (!easProjectId || (APISettings.isOffline && codeSigningInfo === null)) {
     return true;
   }
 
@@ -173,4 +229,12 @@ async function shouldUseAnonymousManifestAsync(
 async function getScopeKeyForProjectIdAsync(projectId: string): Promise<string> {
   const project = await getProjectAsync(projectId);
   return project.scopeKey;
+}
+
+function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {
+  return new Map(
+    Object.entries(obj).map(([k, v]) => {
+      return [k, [v, new Map()]];
+    })
+  );
 }
