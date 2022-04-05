@@ -112,7 +112,11 @@ export var UIImagePickerControllerQualityType;
      */
     UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["IFrame960x540"] = 5] = "IFrame960x540";
 })(UIImagePickerControllerQualityType || (UIImagePickerControllerQualityType = {}));
-// @docsMissing
+/**
+ * Picker presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
 export var UIImagePickerPresentationStyle;
 (function (UIImagePickerPresentationStyle) {
     /**

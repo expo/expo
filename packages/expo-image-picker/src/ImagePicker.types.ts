@@ -138,7 +138,11 @@ export enum UIImagePickerControllerQualityType {
   IFrame960x540 = 5,
 }
 
-// @docsMissing
+/**
+ * Picker presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
 export enum UIImagePickerPresentationStyle {
   /**
    * A presentation style in which the presented picker covers the screen.
