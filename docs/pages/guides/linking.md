@@ -334,7 +334,7 @@ At this point, opening a link on your mobile device should now open your app! If
 
 ### Deep links on Android
 
-Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](../versions/latest/config/app/#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](/versions/latest/config/app/#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
 ```
 "intentFilters": [
