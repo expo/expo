@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 
 #ifdef __cplusplus
@@ -20,7 +21,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments);
 
-- (nonnull instancetype)initWithRuntime:(jsi::Runtime *)runtime
+- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 
 /**
@@ -62,6 +63,6 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
 /**
  Evaluates given JavaScript source code.
  */
-- (nullable id)evaluateScript:(nonnull NSString *)scriptSource;
+- (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource;
 
 @end
