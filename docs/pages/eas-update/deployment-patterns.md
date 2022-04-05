@@ -4,29 +4,29 @@ title: Deployment patterns
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-Once we've created features and fixed bugs, we want to get our changes out to our users as soon as we can, as safely as we can. Often "safe" and "fast" are opposing forces when delivering code to our users. We could push our code directly to production, which would be fast, but it would also be unsafe since we never tested our code. On the other hand, we could make test builds, share them with a QA team, and release periodically. That would be safer, but also slower to deliver changes to our users.
+Once we've created features and fixed bugs in our app, we want to deliver those features and bug fixes out to our users as quickly and safely as we can. Often "safe" and "fast" are opposing forces when delivering code to our users. We could push our code directly to production, which would be fast yet less safe since we never tested our code. On the other hand, we could make test builds, share them with a QA team, and release periodically, which would be safer but slower to deliver changes to our users.
 
 Depending on your project, you'll have some tolerance for how "fast" and how "safe" you'll need to be when delivering updates to your users.
 
-There are three parts that make up a successful deployment process that we'll need to consider:
+There are three parts to consider when designing a EAS Update deployment process:
 
 1. Creating builds
-   a. We can create builds for production use only.
-   b. We can create builds for production use and separate builds for testing use.
+    a. We can create builds for production use only.
+    b. We can create builds for production use and separate builds for pre-production change testing.
 2. Testing changes
-   a. We can test changes with TestFlight and Play Store Internal Track.
-   b. We can test changes with an internal distribution build.
-   c. We can test changes with Expo Go or a development app.
+    a. We can test changes with TestFlight and Play Store Internal Track.
+    b. We can test changes with an internal distribution build.
+    c. We can test changes with Expo Go or a development app.
 3. Publishing updates
-   a. We can publish updates to a single branch.
-   b. We can create update branches that are environment-based, like "production" and "staging".
-   c. We can create update branches that are version-based, like "version-1.0", which enables us to promote updates from one channel to another.
+    a. We can publish updates to a single branch.
+    b. We can create update branches that are environment-based, like "production" and "staging".
+    c. We can create update branches that are version-based, like "version-1.0", which enables us to promote updates from one channel to another.
 
-We can mix and match the parts above to create a process that is fast enough for our project, and safe enough for our users.
+We can mix and match the parts above to create a process that is the right balance of cadence and safety for our team and users.
 
 Another trade-off to consider is the amount of bookkeeping of versions/names/environments we'll have to do throughout the process. The less bookkeeping we have to do will make it easier to follow a consistent process. It'll also make it easier to communicate with our colleagues. If we need fine-grained control, bookkeeping will be required to get the exact process we want.
 
-Below, we've outlined four patterns on how to deploy a project with Expo and EAS. We found that successful Expo projects often use one of these patterns or a variation of them.
+Below, we've outlined four common patterns on how to deploy a project with Expo and EAS.
 
 ## Two-command flow
 
@@ -55,13 +55,13 @@ Advantages of this flow:
 
 Disadvantages of this flow:
 
-- There are no pre-production checks to make sure the code will function as we want. We can test with Expo Go or a development app, but this is less safe than having a dedicated testing environment.
+- There are no pre-production checks to make sure the code will function as intended. We can test with Expo Go or a development app, but this is less safe than having a dedicated test environment.
 
 ## Branch promotion flow
 
 This flow is great for managing versioned releases. Here are the parts of the deployment process above that make up this flow:
 
-Creating builds: (b) Create builds for production use and separate builds for testing use.
+Creating builds: (b) Create builds for production and separate builds for testing.
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
@@ -96,7 +96,7 @@ Disadvantages of this flow:
 
 This flow is like an un-versioned variant of the "branch promotion flow". We do not track release versions with branches. Instead, we'll have persistent "staging" and "production" branches that we can merge into forever. Here are the parts of the deployment process above that make up this flow:
 
-Creating builds: (b) Create builds for production use and separate builds for testing use.
+Creating builds: (b) Create builds for production and separate builds for testing.
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
@@ -128,7 +128,7 @@ Disadvantages of this flow:
 
 This flow is for projects that need to build and update their Android and iOS apps separately all the time. It will result in separate commands for delivering updates to the Android and iOS apps. Here are the parts of the deployment process above that make up this flow:
 
-Creating builds: (a) Create builds for production use only, or (b) create builds for production use and separate builds for testing use.
+Creating builds: (a) Create builds for production only, or (b) create builds for production and separate builds for testing.
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
