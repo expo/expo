@@ -1,6 +1,8 @@
 package expo.modules.kotlin
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableNativeArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
@@ -8,11 +10,17 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.types.JSTypeConverter
 
 class ModuleHolder(val module: Module) {
   val definition = module.definition()
   val name get() = definition.name
+
+  val jsObject by lazy {
+    JavaScriptModuleObject(this)
+  }
 
   fun call(methodName: String, args: ReadableArray, promise: Promise) = exceptionDecorator({
     FunctionCallException(methodName, definition.name, it)
@@ -20,7 +28,27 @@ class ModuleHolder(val module: Module) {
     val method = definition.methods[methodName]
       ?: throw MethodNotFoundException()
 
+    // TODO(@lukmccall): handle sync call
+    if (method.isSync) {
+      throw MethodNotFoundException()
+    }
+
     method.call(this, args, promise)
+  }
+
+  fun callSync(methodName: String, args: ReadableArray): ReadableNativeArray {
+    val method = definition.methods[methodName]
+      ?: throw MethodNotFoundException()
+
+    // TODO(@lukmccall): handle async call
+    if (!method.isSync) {
+      throw MethodNotFoundException()
+    }
+
+    val result = method.callSync(this, args)
+    val convertedResult = JSTypeConverter.convertToJSValue(result)
+
+    return Arguments.fromJavaArgs(arrayOf(convertedResult))
   }
 
   fun post(eventName: EventName) {

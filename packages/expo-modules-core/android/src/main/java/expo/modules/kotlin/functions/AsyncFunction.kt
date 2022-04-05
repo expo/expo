@@ -9,6 +9,10 @@ class AsyncFunction(
   argsType: Array<AnyType>,
   private val body: (args: Array<out Any?>) -> Any?
 ) : AnyFunction(name, argsType) {
+  override fun callSyncImplementation(holder: ModuleHolder, args: Array<out Any?>): Any? {
+    return body(args)
+  }
+
   override fun callImplementation(holder: ModuleHolder, args: Array<out Any?>, promise: Promise) {
     promise.resolve(body(args))
   }
