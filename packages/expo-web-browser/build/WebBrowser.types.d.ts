@@ -62,6 +62,13 @@ export declare type WebBrowserOpenOptions = {
      */
     readerMode?: boolean;
     /**
+     * The [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc)
+     * of the browser window.
+     * @default WebBrowser.WebBrowserPresentationStyle.OverFullScreen
+     * @platform ios
+     */
+    presentationStyle?: WebBrowserPresentationStyle;
+    /**
      * Name to assign to the popup window.
      * @platform web
      */
@@ -113,6 +120,16 @@ export declare enum WebBrowserResultType {
      */
     OPENED = "opened",
     LOCKED = "locked"
+}
+export declare enum WebBrowserPresentationStyle {
+    FullScreen = 0,
+    PageSheet = 1,
+    FormSheet = 2,
+    CurrentContext = 3,
+    OverFullScreen = 5,
+    OverCurrentContext = 6,
+    Popover = 7,
+    Automatic = -2
 }
 export declare type WebBrowserResult = {
     /**
