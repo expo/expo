@@ -4,17 +4,17 @@ export declare enum PitchCorrectionQuality {
     Medium,
     High
 }
-export declare type AVPlaybackSource = number | AVPlaybackNativeSourceAndroid | Asset;
-export declare type AVPlaybackNativeSource = {
+export declare type AVPlaybackSource = number | AVPlaybackSourceObject | Asset;
+export declare type AVPlaybackSourceObject = {
     uri: string;
-    overridingExtension?: string | null;
+    overrideFileExtensionAndroid?: string;
     headers?: {
         [fieldName: string]: string;
     };
 };
-export declare type AVPlaybackNativeSourceAndroid = {
+export declare type AVPlaybackNativeSource = {
     uri: string;
-    overrideFileExtensionAndroid?: string;
+    overridingExtension?: string | null;
     headers?: {
         [fieldName: string]: string;
     };

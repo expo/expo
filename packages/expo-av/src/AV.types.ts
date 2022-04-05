@@ -8,17 +8,17 @@ export enum PitchCorrectionQuality {
   High = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.High,
 }
 
-export type AVPlaybackSource = number | AVPlaybackNativeSourceAndroid | Asset;
+export type AVPlaybackSource = number | AVPlaybackSourceObject | Asset;
+
+export type AVPlaybackSourceObject = {
+  uri: string;
+  overrideFileExtensionAndroid?: string;
+  headers?: { [fieldName: string]: string };
+};
 
 export type AVPlaybackNativeSource = {
   uri: string;
   overridingExtension?: string | null;
-  headers?: { [fieldName: string]: string };
-};
-
-export type AVPlaybackNativeSourceAndroid = {
-  uri: string;
-  overrideFileExtensionAndroid?: string;
   headers?: { [fieldName: string]: string };
 };
 

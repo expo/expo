@@ -36,7 +36,7 @@ export function getNativeSourceFromSource(
 ): AVPlaybackNativeSource | null {
   let uri: string | null = null;
   let overridingExtension: string | null = null;
-  let headers: { [fieldName: string]: string } | undefined;
+  let headers: AVPlaybackNativeSource['headers'];
 
   if (typeof source === 'string' && Platform.OS === 'web') {
     return {
