@@ -70,7 +70,7 @@ const navigationStyle = css({
 const innerContentStyle = css({
   margin: '0 auto',
   maxWidth: breakpoints.large,
-  padding: `${spacing['8']}px ${spacing['4']}px`,
+  padding: `${spacing[8]}px ${spacing[4]}px`,
 });
 
 const asideStyle = css({
