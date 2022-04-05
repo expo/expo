@@ -1,5 +1,5 @@
 import { EventEmitter } from 'expo-modules-core';
-import { Playback, AVPlaybackSource, AVMetadata, AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
+import { Playback, AVPlaybackSource, AVMetadata, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 export declare type AudioChannel = {
     /**
@@ -82,16 +82,10 @@ export declare class Sound implements Playback {
     setStatusAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
     replayAsync(status?: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
     playAsync: () => Promise<AVPlaybackStatus>;
-    playFromPositionAsync: (positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }) => Promise<AVPlaybackStatus>;
+    playFromPositionAsync: (positionMillis: number, tolerances?: AVPlaybackTolerance) => Promise<AVPlaybackStatus>;
     pauseAsync: () => Promise<AVPlaybackStatus>;
     stopAsync: () => Promise<AVPlaybackStatus>;
-    setPositionAsync: (positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }) => Promise<AVPlaybackStatus>;
+    setPositionAsync: (positionMillis: number, tolerances?: AVPlaybackTolerance) => Promise<AVPlaybackStatus>;
     setRateAsync: (rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality) => Promise<AVPlaybackStatus>;
     setVolumeAsync: (volume: number) => Promise<AVPlaybackStatus>;
     setIsMutedAsync: (isMuted: boolean) => Promise<AVPlaybackStatus>;

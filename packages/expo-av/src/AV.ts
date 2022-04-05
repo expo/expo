@@ -7,6 +7,7 @@ import {
   AVPlaybackStatus,
   AVPlaybackStatusToSet,
   PitchCorrectionQuality,
+  AVPlaybackTolerance,
 } from './AV.types';
 
 // TODO add:
@@ -35,7 +36,7 @@ export function getNativeSourceFromSource(
 ): AVPlaybackNativeSource | null {
   let uri: string | null = null;
   let overridingExtension: string | null = null;
-  let headers: { [fieldName: string]: string } | undefined;
+  let headers: AVPlaybackNativeSource['headers'];
 
   if (typeof source === 'string' && Platform.OS === 'web') {
     return {
@@ -176,14 +177,14 @@ export interface Playback extends AV {
   unloadAsync(): Promise<AVPlaybackStatus>;
   playFromPositionAsync(
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ): Promise<AVPlaybackStatus>;
   pauseAsync(): Promise<AVPlaybackStatus>;
   stopAsync(): Promise<AVPlaybackStatus>;
   replayAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
   setPositionAsync(
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ): Promise<AVPlaybackStatus>;
   setRateAsync(
     rate: number,
@@ -207,7 +208,7 @@ export const PlaybackMixin = {
 
   async playFromPositionAsync(
     positionMillis: number,
-    tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
+    tolerances: AVPlaybackTolerance = {}
   ): Promise<AVPlaybackStatus> {
     return (this as any as Playback).setStatusAsync({
       positionMillis,
@@ -227,7 +228,7 @@ export const PlaybackMixin = {
 
   async setPositionAsync(
     positionMillis: number,
-    tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
+    tolerances: AVPlaybackTolerance = {}
   ): Promise<AVPlaybackStatus> {
     return (this as any as Playback).setStatusAsync({
       positionMillis,

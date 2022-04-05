@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { NativeMethods } from 'react-native';
-import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackNativeSource } from './AV';
-import { ExponentVideoComponent, VideoFullscreenUpdate, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState } from './Video.types';
-export { ExponentVideoComponent, VideoFullscreenUpdate, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackNativeSource, };
+import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance } from './AV';
+import { VideoFullscreenUpdateEvent, VideoNativeProps, VideoProps, VideoReadyForDisplayEvent, VideoState } from './Video.types';
 declare class Video extends React.Component<VideoProps, VideoState> implements Playback {
     _nativeRef: React.RefObject<React.Component<VideoNativeProps, any, any> & NativeMethods>;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
@@ -36,7 +35,7 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
      */
     loadAsync: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, downloadFirst?: boolean) => Promise<AVPlaybackStatus>;
     /**
-     * Equivalent to setting URI to null.
+     * Equivalent to setting URI to `null`.
      * @hidden
      */
     unloadAsync: () => Promise<AVPlaybackStatus>;
@@ -54,16 +53,10 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
      */
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null): void;
     playAsync: () => Promise<AVPlaybackStatus>;
-    playFromPositionAsync: (positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }) => Promise<AVPlaybackStatus>;
+    playFromPositionAsync: (positionMillis: number, tolerances?: AVPlaybackTolerance) => Promise<AVPlaybackStatus>;
     pauseAsync: () => Promise<AVPlaybackStatus>;
     stopAsync: () => Promise<AVPlaybackStatus>;
-    setPositionAsync: (positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number;
-        toleranceMillisAfter?: number;
-    }) => Promise<AVPlaybackStatus>;
+    setPositionAsync: (positionMillis: number, tolerances?: AVPlaybackTolerance) => Promise<AVPlaybackStatus>;
     setRateAsync: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
     setVolumeAsync: (volume: number) => Promise<AVPlaybackStatus>;
     setIsMutedAsync: (isMuted: boolean) => Promise<AVPlaybackStatus>;

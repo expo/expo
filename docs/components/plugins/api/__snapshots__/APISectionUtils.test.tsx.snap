@@ -414,7 +414,7 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
     <span>
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-        href="/react-native/view-style-props"
+        href="/versions/latest/react-native/view-style-props"
       >
         ViewStyle
       </a>

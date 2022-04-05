@@ -11,37 +11,20 @@ import {
   AVPlaybackSource,
   AVPlaybackStatus,
   AVPlaybackStatusToSet,
-  AVPlaybackNativeSource,
+  AVPlaybackTolerance,
 } from './AV';
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
 import {
   ExponentVideoComponent,
-  VideoFullscreenUpdate,
   VideoFullscreenUpdateEvent,
   VideoNativeProps,
-  VideoNaturalSize,
   VideoProps,
   VideoReadyForDisplayEvent,
   ResizeMode,
   VideoState,
 } from './Video.types';
-
-export {
-  ExponentVideoComponent,
-  VideoFullscreenUpdate,
-  VideoFullscreenUpdateEvent,
-  VideoNativeProps,
-  VideoNaturalSize,
-  VideoProps,
-  VideoReadyForDisplayEvent,
-  ResizeMode,
-  VideoState,
-  AVPlaybackStatus,
-  AVPlaybackStatusToSet,
-  AVPlaybackNativeSource,
-};
 
 const _STYLES = StyleSheet.create({
   base: {
@@ -177,7 +160,7 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
   };
 
   /**
-   * Equivalent to setting URI to null.
+   * Equivalent to setting URI to `null`.
    * @hidden
    */
   unloadAsync = async (): Promise<AVPlaybackStatus> => {
@@ -226,13 +209,13 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
   playAsync!: () => Promise<AVPlaybackStatus>;
   playFromPositionAsync!: (
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
   pauseAsync!: () => Promise<AVPlaybackStatus>;
   stopAsync!: () => Promise<AVPlaybackStatus>;
   setPositionAsync!: (
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
   setRateAsync!: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
   setVolumeAsync!: (volume: number) => Promise<AVPlaybackStatus>;
