@@ -62,7 +62,7 @@ export declare type WebBrowserOpenOptions = {
      */
     readerMode?: boolean;
     /**
-     * The [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc)
+     * The [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle)
      * of the browser window.
      * @default WebBrowser.WebBrowserPresentationStyle.OverFullScreen
      * @platform ios
@@ -121,15 +121,45 @@ export declare enum WebBrowserResultType {
     OPENED = "opened",
     LOCKED = "locked"
 }
+/**
+ * A browser presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
 export declare enum WebBrowserPresentationStyle {
-    FullScreen = 0,
-    PageSheet = 1,
-    FormSheet = 2,
-    CurrentContext = 3,
-    OverFullScreen = 5,
-    OverCurrentContext = 6,
-    Popover = 7,
-    Automatic = -2
+    /**
+     * A presentation style in which the presented browser covers the screen.
+     */
+    FULL_SCREEN = "fullScreen",
+    /**
+     * A presentation style that partially covers the underlying content.
+     */
+    PAGE_SHEET = "pageSheet",
+    /**
+     * A presentation style that displays the browser centered in the screen.
+     */
+    FORM_SHEET = "formSheet",
+    /**
+     * A presentation style where the browser is displayed over the app's content.
+     */
+    CURRENT_CONTEXT = "currentContext",
+    /**
+     * A presentation style in which the browser view covers the screen.
+     */
+    OVER_FULL_SCREEN = "overFullScreen",
+    /**
+     * A presentation style where the browser is displayed over the app's content.
+     */
+    OVER_CURRENT_CONTEXT = "overCurrentContext",
+    /**
+     * A presentation style where the browser is displayed in a popover view.
+     */
+    POPOVER = "popover",
+    /**
+     * **iOS 13+:** The default presentation style chosen by the system.
+     * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+     */
+    AUTOMATIC = "automatic"
 }
 export declare type WebBrowserResult = {
     /**

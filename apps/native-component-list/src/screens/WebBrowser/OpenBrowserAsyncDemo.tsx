@@ -93,36 +93,36 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
           platforms: ['ios'],
           values: [
             {
-              name: 'WebBrowserPresentationStyle.FullScreen',
-              value: WebBrowser.WebBrowserPresentationStyle.FullScreen,
+              name: 'WebBrowserPresentationStyle.OVER_FULL_SCREEN',
+              value: WebBrowser.WebBrowserPresentationStyle.OVER_FULL_SCREEN,
             },
             {
-              name: 'WebBrowserPresentationStyle.PageSheet',
-              value: WebBrowser.WebBrowserPresentationStyle.PageSheet,
+              name: 'WebBrowserPresentationStyle.FULL_SCREEN',
+              value: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
             },
             {
-              name: 'WebBrowserPresentationStyle.FormSheet',
-              value: WebBrowser.WebBrowserPresentationStyle.FormSheet,
+              name: 'WebBrowserPresentationStyle.PAGE_SHEET',
+              value: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
             },
             {
-              name: 'WebBrowserPresentationStyle.CurrentContext',
-              value: WebBrowser.WebBrowserPresentationStyle.CurrentContext,
+              name: 'WebBrowserPresentationStyle.FORM_SHEET',
+              value: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
             },
             {
-              name: 'WebBrowserPresentationStyle.OverFullScreen',
-              value: WebBrowser.WebBrowserPresentationStyle.OverFullScreen,
+              name: 'WebBrowserPresentationStyle.CURRENT_CONTEXT',
+              value: WebBrowser.WebBrowserPresentationStyle.CURRENT_CONTEXT,
             },
             {
-              name: 'WebBrowserPresentationStyle.OverCurrentContext',
-              value: WebBrowser.WebBrowserPresentationStyle.OverCurrentContext,
+              name: 'WebBrowserPresentationStyle.OVER_CURRENT_CONTEXT',
+              value: WebBrowser.WebBrowserPresentationStyle.OVER_CURRENT_CONTEXT,
             },
             {
-              name: 'WebBrowserPresentationStyle.Popover',
-              value: WebBrowser.WebBrowserPresentationStyle.Popover,
+              name: 'WebBrowserPresentationStyle.POPOVER',
+              value: WebBrowser.WebBrowserPresentationStyle.POPOVER,
             },
             {
-              name: 'WebBrowserPresentationStyle.Automatic',
-              value: WebBrowser.WebBrowserPresentationStyle.Automatic,
+              name: 'WebBrowserPresentationStyle.AUTOMATIC',
+              value: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
             },
           ],
         },
