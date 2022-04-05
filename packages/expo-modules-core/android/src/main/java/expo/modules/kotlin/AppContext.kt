@@ -15,11 +15,8 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
-import expo.modules.kotlin.events.EventEmitter
-import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.events.KEventEmitterWrapper
-import expo.modules.kotlin.events.KModuleEventEmitterWrapper
-import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.events.*
+import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
 import java.lang.ref.WeakReference
 
@@ -33,6 +30,7 @@ class AppContext(
     register(modulesProvider)
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
+  private val jsiInterop = JSIInteropModuleRegistry(this)
 
   init {
     requireNotNull(reactContextHolder.get()) {
@@ -41,6 +39,10 @@ class AppContext(
       addLifecycleEventListener(reactLifecycleDelegate)
       addActivityEventListener(reactLifecycleDelegate)
     }
+  }
+
+  fun onPostCreate() {
+    jsiInterop.installJSI(reactContextHolder.get()!!.javaScriptContextHolder.get())
   }
 
   /**
