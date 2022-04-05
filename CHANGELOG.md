@@ -15,6 +15,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/slider` from `4.1.12` to `4.2.1`. ([#16901](https://github.com/expo/expo/pull/16901) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-svg` from `12.1.1` to `12.3.0`. ([#16874](https://github.com/expo/expo/pull/16874) by [@bbarthec](https://github.com/bbarthec))
 - Updated `react-native-screens` from `3.10.1` to `3.11.1`. ([#16913](https://github.com/expo/expo/pull/16913) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-gesture-handler` from `2.1.0` to `2.2.0`. ([#16922](https://github.com/expo/expo/pull/16922) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🛠 Breaking changes
 

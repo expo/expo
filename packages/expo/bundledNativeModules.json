@@ -92,7 +92,7 @@
   "expo-web-browser": "~10.1.0",
   "lottie-react-native": "5.0.1",
   "react-native-branch": "5.0.0",
-  "react-native-gesture-handler": "~2.1.0",
+  "react-native-gesture-handler": "~2.2.0",
   "react-native-get-random-values": "~1.7.0",
   "react-native-maps": "0.29.4",
   "react-native-pager-view": "5.4.15",

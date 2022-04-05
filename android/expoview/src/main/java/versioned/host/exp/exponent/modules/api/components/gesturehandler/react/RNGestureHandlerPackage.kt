@@ -13,6 +13,5 @@ class RNGestureHandlerPackage : ReactPackage {
   override fun createViewManagers(reactContext: ReactApplicationContext) =
     listOf<ViewManager<*, *>>(
       RNGestureHandlerRootViewManager(),
-      RNGestureHandlerButtonViewManager()
-    )
+      RNGestureHandlerButtonViewManager())
 }

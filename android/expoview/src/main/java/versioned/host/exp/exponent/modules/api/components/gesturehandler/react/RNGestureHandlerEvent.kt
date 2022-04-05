@@ -47,13 +47,13 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
         init(handler, dataExtractor)
       }
 
-    fun <T : GestureHandler<T>> createEventData(
+    fun <T: GestureHandler<T>> createEventData(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?
     ): WritableMap = Arguments.createMap().apply {
-      dataExtractor?.extractEventData(handler, this)
-      putInt("handlerTag", handler.tag)
-      putInt("state", handler.state)
-    }
+        dataExtractor?.extractEventData(handler, this)
+        putInt("handlerTag", handler.tag)
+        putInt("state", handler.state)
+      }
   }
 }

@@ -253,7 +253,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
       {
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/common',
+        sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
