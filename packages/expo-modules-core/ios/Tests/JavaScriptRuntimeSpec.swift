@@ -82,6 +82,13 @@ class JavaScriptRuntimeSpec: ExpoSpec {
         expect(symbol.isSymbol()) == true
         expect(symbol.kind) == .symbol
       }
+
+      it("throws evaluation exception") {
+        expect({ try runtime.eval("foo") }).to(throwError { error in
+          expect(error).to(beAKindOf(JavaScriptEvalException.self))
+          expect((error as! JavaScriptEvalException).reason).to(contain("Can't find variable: foo"))
+        })
+      }
     }
   }
 }

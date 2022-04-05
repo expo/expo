@@ -106,7 +106,19 @@ using namespace facebook;
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
 {
   std::shared_ptr<jsi::StringBuffer> scriptBuffer = std::make_shared<jsi::StringBuffer>([[NSString stringWithFormat:@"(%@)", scriptSource] UTF8String]);
-  std::shared_ptr<jsi::Value> result = std::make_shared<jsi::Value>(_runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"));
+  std::shared_ptr<jsi::Value> result;
+
+  try {
+    result = std::make_shared<jsi::Value>(_runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"));
+  } catch (jsi::JSError &error) {
+    NSString *reason = [NSString stringWithUTF8String:error.getMessage().c_str()];
+    NSString *stack = [NSString stringWithUTF8String:error.getStack().c_str()];
+
+    @throw [NSException exceptionWithName:@"ScriptEvaluationException" reason:reason userInfo:@{
+      @"message": reason,
+      @"stack": stack,
+    }];
+  }
   return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
 }
 
