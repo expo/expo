@@ -16,6 +16,7 @@ import {
   WebBrowserResultType,
   WebBrowserWarmUpResult,
   WebBrowserWindowFeatures,
+  WebBrowserPresentationStyle,
 } from './WebBrowser.types';
 
 export {
@@ -31,6 +32,7 @@ export {
   WebBrowserResultType,
   WebBrowserWarmUpResult,
   WebBrowserWindowFeatures,
+  WebBrowserPresentationStyle,
 };
 
 const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {
