@@ -74,6 +74,6 @@ it('runs `npx expo login` and throws due to invalid credentials', async () => {
   try {
     console.log(await execute('login', '--username', 'bacon', '--password', 'invalid'));
   } catch (e) {
-    expect(e.stderr).toMatch(/Invalid username\/password. Please try again/);
+    expect(e.stderr).toMatch(/Your username, email, or password was incorrect/);
   }
 });
