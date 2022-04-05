@@ -247,7 +247,7 @@ Another example of using `WebBrowser` for authentication can be found at [exampl
 
 It is often desirable for regular HTTPS links (without a custom URL scheme) to directly open your app on mobile devices. This allows you to send notification emails with links that work as expected in a web browser on desktop, while opening the content in your app on mobile. iOS refers to this concept as "universal links" while Android calls it "deep links" (but in this section, we are specifically discussing deep links that do not use a custom URL scheme).
 
-> For apps using the Bare Workflow, see the notes on the relevant [configuration keys](../versions/latest/config/app)
+> For apps using the Bare Workflow, see the notes on the relevant [configuration keys](/versions/latest/config/app)
 > mentioned below for instructions on implementing universal links in the app. Verification steps remain the same.
 
 ### Universal links on iOS
