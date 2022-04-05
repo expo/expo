@@ -67,11 +67,10 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
     var updatesUrl = getMetadataValue("expo.modules.updates.EXPO_UPDATE_URL")
 
-    var appId = ""
-
-    if (updatesUrl.isNotEmpty()) {
-      var uri = Uri.parse(updatesUrl)
-      appId = uri.lastPathSegment ?: ""
+    val appId = if (updatesUrl.isNotEmpty()) {
+      Uri.parse(updatesUrl).lastPathSegment ?: ""
+    } else {
+      ""
     }
 
     var isModernManifestProtocol = Uri.parse(updatesUrl).host.equals("u.expo.dev")
