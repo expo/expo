@@ -254,6 +254,7 @@ async function applyGradleFlipperFixtures({ projectDir }: { projectDir: string }
     `FLIPPER_VERSION=0.54.0`,
     `FLIPPER_VERSION=0.99.0`
   );
+  console.log(`Overriding the gradle.properties to FLIPPER_VERSION=0.99.0`)
   await fs.outputFile(gradlePropertiesPath, updatedGradleProperies);
 }
 
