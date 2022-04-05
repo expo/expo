@@ -96,6 +96,23 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-screens.git',
       semverPrefix: '~',
       ios: {},
+      // TODO: Uncomment once the new vendoring scripts supports Android
+      // android: {
+      //   transforms: {
+      //     content: [
+      //       {
+      //         paths: 'ScreenStack.kt',
+      //         find: /(?=^class ScreenStack\()/m,
+      //         replaceWith: `import host.exp.expoview.R\n\n`,
+      //       },
+      //       {
+      //         paths: 'ScreenStackHeaderConfig.kt',
+      //         find: /(?=^class ScreenStackHeaderConfig\()/m,
+      //         replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
+      //       },
+      //     ],
+      //   },
+      // },
     },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
