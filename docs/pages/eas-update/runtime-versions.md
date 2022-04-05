@@ -16,7 +16,7 @@ Since updates must be compatible with a build's native code, any time native cod
 
 ## Setting `"runtimeVersion"`
 
-To make managing the `"runtimeVerison"` property easier between builds and updates, we've created runtime version policies that will update automatically based on other fields inside the app config (**app.json**/**app.config.js**). If these policies do not match the development flow of a project, there's also an option to set the `"runtimeVersion"` manually.
+To make managing the `"runtimeVersion"` property easier between builds and updates, we've created runtime version policies that will update automatically based on other fields inside the app config (**app.json**/**app.config.js**). If these policies do not match the development flow of a project, there's also an option to set the `"runtimeVersion"` manually.
 
 ### `"sdkVersion"` runtime version policy
 
