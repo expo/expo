@@ -59,7 +59,8 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  // compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion 31 // TODO: migrate to the commented syntax in the whole project
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
