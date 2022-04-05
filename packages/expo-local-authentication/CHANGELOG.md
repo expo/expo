@@ -10,9 +10,12 @@
 
 ### 🐛 Bug fixes
 
+- On Android fixed `BiometricPrompt.ERROR_CANCELED` returned when fallbacking to PIN/Pattern/Password authentication method.
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated `androix.biometric.biometric` from `1.1.0` to `1.2.0-alphas04`.
 
 ## 12.1.1 - 2022-02-01
 
