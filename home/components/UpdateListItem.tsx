@@ -3,10 +3,10 @@ import format from 'date-fns/format';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
 import { Linking } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { DateFormats } from '../constants/DateFormats';
 import * as UrlUtils from '../utils/UrlUtils';
-import { PressableOpacity } from './PressableOpacity';
 
 type Props = {
   id: string;
@@ -23,26 +23,15 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
   };
 
   return (
-    <PressableOpacity
-      containerProps={{
-        bg: 'default',
-        border: 'hairline',
-        rounded: 'large',
-      }}
-      onPress={handlePress}>
-      <View padding="medium">
+    <TouchableOpacity onPress={handlePress}>
+      <View padding="medium" bg="default" border="hairline" rounded="large">
         <Row align="center" justify="between">
           <View align="start" flex="1">
             <Row flex="1">
-              <UpdateIcon color={theme.icon.secondary} size={iconSize.small} />
+              <UpdateIcon color={theme.icon.default} size={iconSize.small} />
               <Spacer.Horizontal size="tiny" />
               <View flex="1">
-                <Text
-                  type="InterSemiBold"
-                  color="secondary"
-                  size="small"
-                  ellipsizeMode="middle"
-                  numberOfLines={1}>
+                <Text type="InterSemiBold" size="small" ellipsizeMode="middle" numberOfLines={1}>
                   {message ? `"${message}"` : id}
                 </Text>
                 <Spacer.Vertical size="tiny" />
@@ -64,6 +53,6 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
           />
         </Row>
       </View>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }

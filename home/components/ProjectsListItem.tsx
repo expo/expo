@@ -4,11 +4,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { HomeStackRoutes } from '../navigation/Navigation.types';
 import { AppIcon } from '../screens/HomeScreen/AppIcon';
 import { useSDKExpired } from '../utils/useSDKExpired';
-import { PressableOpacity } from './PressableOpacity';
 
 type Props = {
   imageURL?: string;
@@ -35,12 +35,10 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, inF
   }
 
   return (
-    <PressableOpacity
-      onPress={onPress}
-      containerProps={
-        inFlatList ? { bg: 'default', border: 'hairline', rounded: 'large' } : undefined
-      }>
-      <View padding="medium">
+    <TouchableOpacity onPress={onPress}>
+      <View
+        padding="medium"
+        {...(inFlatList && { bg: 'default', border: 'hairline', rounded: 'large' })}>
         <Row align="center" justify="between">
           <Row align="center" flex="1">
             <AppIcon image={imageURL} />
@@ -87,7 +85,7 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, inF
           />
         </Row>
       </View>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }
 

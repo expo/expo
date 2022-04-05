@@ -1,8 +1,7 @@
 import { CheckIcon, iconSize } from '@expo/styleguide-native';
 import { Row, Spacer, Text, useExpoTheme } from 'expo-dev-client-components';
 import React, { ReactNode } from 'react';
-
-import { PressableOpacity } from '../../components/PressableOpacity';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   onPress: () => void;
@@ -15,8 +14,8 @@ export function CheckListItem({ onPress, icon, title, checked }: Props) {
   const theme = useExpoTheme();
 
   return (
-    <PressableOpacity onPress={onPress} containerProps={{ bg: 'default' }}>
-      <Row align="center" justify="between" padding="medium">
+    <TouchableOpacity onPress={onPress}>
+      <Row align="center" justify="between" padding="medium" bg="default">
         <Row align="center">
           {icon}
           {icon ? <Spacer.Horizontal size="small" /> : null}
@@ -26,6 +25,6 @@ export function CheckListItem({ onPress, icon, title, checked }: Props) {
         </Row>
         {checked ? <CheckIcon size={iconSize.regular} color={theme.icon.default} /> : null}
       </Row>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }
