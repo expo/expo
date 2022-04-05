@@ -2,6 +2,13 @@
 #import "RNSScreen.h"
 #import "RNSScreenStack.h"
 
+// proportions to default transition duration
+static const float RNSSlideOpenTransitionDurationProportion = 1;
+static const float RNSFadeOpenTransitionDurationProportion = 0.2 / 0.35;
+static const float RNSSlideCloseTransitionDurationProportion = 0.25 / 0.35;
+static const float RNSFadeCloseTransitionDurationProportion = 0.15 / 0.35;
+static const float RNSFadeCloseDelayTransitionDurationProportion = 0.1 / 0.35;
+
 @implementation RNSScreenStackAnimator {
   UINavigationControllerOperation _operation;
   NSTimeInterval _transitionDuration;
@@ -11,7 +18,7 @@
 {
   if (self = [super init]) {
     _operation = operation;
-    _transitionDuration = 0.35; // default duration
+    _transitionDuration = 0.35; // default duration in seconds
   }
   return self;
 }
@@ -32,6 +39,12 @@
   if (screen != nil && screen.stackAnimation == RNSScreenStackAnimationNone) {
     return 0;
   }
+
+  if (screen != nil && screen.transitionDuration != nil && [screen.transitionDuration floatValue] >= 0) {
+    float durationInSeconds = [screen.transitionDuration floatValue] / 1000.0;
+    return durationInSeconds;
+  }
+
   return _transitionDuration;
 }
 
@@ -184,14 +197,30 @@
   } else if (_operation == UINavigationControllerOperationPop) {
     toViewController.view.transform = CGAffineTransformIdentity;
     [[transitionContext containerView] insertSubview:toViewController.view belowSubview:fromViewController.view];
-    [UIView animateWithDuration:[self transitionDuration:transitionContext]
-        animations:^{
-          toViewController.view.transform = CGAffineTransformIdentity;
-          fromViewController.view.transform = topBottomTransform;
-        }
-        completion:^(BOOL finished) {
-          [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
-        }];
+
+    void (^animationBlock)(void) = ^{
+      toViewController.view.transform = CGAffineTransformIdentity;
+      fromViewController.view.transform = topBottomTransform;
+    };
+    void (^completionBlock)(BOOL) = ^(BOOL finished) {
+      if (transitionContext.transitionWasCancelled) {
+        toViewController.view.transform = CGAffineTransformIdentity;
+      }
+      [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
+    };
+
+    if (!transitionContext.isInteractive) {
+      [UIView animateWithDuration:[self transitionDuration:transitionContext]
+                       animations:animationBlock
+                       completion:completionBlock];
+    } else {
+      // we don't want the EaseInOut option when swiping to dismiss the view, it is the same in default animation option
+      [UIView animateWithDuration:[self transitionDuration:transitionContext]
+                            delay:0.0
+                          options:UIViewAnimationOptionCurveLinear
+                       animations:animationBlock
+                       completion:completionBlock];
+    }
   }
 }
 
@@ -202,6 +231,8 @@
   CGAffineTransform topBottomTransform =
       CGAffineTransformMakeTranslation(0, 0.08 * transitionContext.containerView.bounds.size.height);
 
+  const float transitionDuration = [self transitionDuration:transitionContext];
+
   if (_operation == UINavigationControllerOperationPush) {
     toViewController.view.transform = topBottomTransform;
     toViewController.view.alpha = 0.0;
@@ -209,7 +240,7 @@
 
     // Android Nougat open animation
     // http://aosp.opersys.com/xref/android-7.1.2_r37/xref/frameworks/base/core/res/res/anim/activity_open_enter.xml
-    [UIView animateWithDuration:0.35
+    [UIView animateWithDuration:transitionDuration * RNSSlideOpenTransitionDurationProportion // defaults to 0.35 s
         delay:0
         options:UIViewAnimationOptionCurveEaseOut
         animations:^{
@@ -220,7 +251,7 @@
           fromViewController.view.transform = CGAffineTransformIdentity;
           [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
         }];
-    [UIView animateWithDuration:0.2
+    [UIView animateWithDuration:transitionDuration * RNSFadeOpenTransitionDurationProportion // defaults to 0.2 s
                           delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
@@ -234,7 +265,7 @@
 
     // Android Nougat exit animation
     // http://aosp.opersys.com/xref/android-7.1.2_r37/xref/frameworks/base/core/res/res/anim/activity_close_exit.xml
-    [UIView animateWithDuration:0.25
+    [UIView animateWithDuration:transitionDuration * RNSSlideCloseTransitionDurationProportion // defaults to 0.25 s
         delay:0
         options:UIViewAnimationOptionCurveEaseIn
         animations:^{
@@ -244,8 +275,8 @@
         completion:^(BOOL finished) {
           [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
         }];
-    [UIView animateWithDuration:0.15
-                          delay:0.1
+    [UIView animateWithDuration:transitionDuration * RNSFadeCloseTransitionDurationProportion // defaults to 0.15 s
+                          delay:transitionDuration * RNSFadeCloseDelayTransitionDurationProportion // defaults to 0.1 s
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
                        fromViewController.view.alpha = 0.0;

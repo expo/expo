@@ -34,6 +34,7 @@
     _hasStatusBarAnimationSet = NO;
     _hasStatusBarHiddenSet = NO;
     _hasOrientationSet = NO;
+    _hasHomeIndicatorHiddenSet = NO;
   }
 
   return self;
@@ -205,6 +206,13 @@
   _hasOrientationSet = YES;
   _screenOrientation = screenOrientation;
   [RNSScreenWindowTraits enforceDesiredDeviceOrientation];
+}
+
+- (void)setHomeIndicatorHidden:(BOOL)homeIndicatorHidden
+{
+  _hasHomeIndicatorHiddenSet = YES;
+  _homeIndicatorHidden = homeIndicatorHidden;
+  [RNSScreenWindowTraits updateHomeIndicatorAutoHidden];
 }
 #endif
 
@@ -436,6 +444,17 @@
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+- (UIViewController *)childViewControllerForHomeIndicatorAutoHidden
+{
+  UIViewController *vc = [self findChildVCForConfigAndTrait:RNSWindowTraitHomeIndicatorHidden includingModals:YES];
+  return vc == self ? nil : vc;
+}
+
+- (BOOL)prefersHomeIndicatorAutoHidden
+{
+  return ((RNSScreenView *)self.view).homeIndicatorHidden;
+}
+
 // if the returned vc is a child, it means that it can provide config;
 // if the returned vc is self, it means that there is no child for config and self has config to provide,
 // so we return self which results in asking self for preferredStatusBarStyle/Animation etc.;
@@ -494,6 +513,9 @@
     }
     case RNSWindowTraitOrientation: {
       return ((RNSScreenView *)self.view).hasOrientationSet;
+    }
+    case RNSWindowTraitHomeIndicatorHidden: {
+      return ((RNSScreenView *)self.view).hasHomeIndicatorHiddenSet;
     }
     default: {
       RCTLogError(@"Unknown trait passed: %d", (int)trait);
@@ -771,6 +793,8 @@ RCT_EXPORT_VIEW_PROPERTY(preventNativeDismiss, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(replaceAnimation, RNSScreenReplaceAnimation)
 RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)
 RCT_EXPORT_VIEW_PROPERTY(stackAnimation, RNSScreenStackAnimation)
+RCT_EXPORT_VIEW_PROPERTY(swipeDirection, RNSScreenSwipeDirection)
+RCT_EXPORT_VIEW_PROPERTY(transitionDuration, NSNumber)
 
 RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onDisappear, RCTDirectEventBlock);
@@ -785,6 +809,7 @@ RCT_EXPORT_VIEW_PROPERTY(screenOrientation, UIInterfaceOrientationMask)
 RCT_EXPORT_VIEW_PROPERTY(statusBarAnimation, UIStatusBarAnimation)
 RCT_EXPORT_VIEW_PROPERTY(statusBarHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(statusBarStyle, RNSStatusBarStyle)
+RCT_EXPORT_VIEW_PROPERTY(homeIndicatorHidden, BOOL)
 #endif
 
 - (UIView *)view
@@ -833,6 +858,15 @@ RCT_ENUM_CONVERTER(
       @"pop" : @(RNSScreenReplaceAnimationPop),
     }),
     RNSScreenReplaceAnimationPop,
+    integerValue)
+
+RCT_ENUM_CONVERTER(
+    RNSScreenSwipeDirection,
+    (@{
+      @"vertical" : @(RNSScreenSwipeDirectionVertical),
+      @"horizontal" : @(RNSScreenSwipeDirectionHorizontal),
+    }),
+    RNSScreenSwipeDirectionHorizontal,
     integerValue)
 
 #if !TARGET_OS_TV
