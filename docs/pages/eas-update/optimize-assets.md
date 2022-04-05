@@ -24,7 +24,7 @@ Users will have to download any new images or other assets when they detect a ne
 expo export --experimental-bundle
 ```
 
-To optimize all the images in an app at once, we can use the [expo-optimize library](https://www.npmjs.com/package/expo-optimize). `expo-optimize` uses `sharp-cli` to optmize all image assets.
+To optimize all the images in an app at once, we can use the [expo-optimize library](https://www.npmjs.com/package/expo-optimize). `expo-optimize` uses `sharp-cli` to optimize all image assets.
 
 ```bash
 npx expo-optimize
