@@ -12,6 +12,10 @@ def RN_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def RN_SO_DIR = RN_BUILD_FROM_SOURCE
     ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
     : "${buildDir}/react-native-0*/jni"
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -83,7 +87,7 @@ android {
     externalNativeBuild {
       cmake {
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
-        abiFilters (*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
+        abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
             "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
             "-DRN_SO_DIR=${RN_SO_DIR}"
