@@ -29,3 +29,5 @@
 - Allow bailing out of Terminal UI during long processes. ([#16818](https://github.com/expo/expo/pull/16818) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
+
+- Improve contributing.
