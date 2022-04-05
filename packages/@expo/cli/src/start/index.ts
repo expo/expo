@@ -17,6 +17,7 @@ export const expoStart: Command = async (argv) => {
       '--minify': Boolean,
       '--https': Boolean,
       '--force-manifest-type': String,
+      '--private-key-path': String,
       '--port': Number,
       '--dev-client': Boolean,
       '--scheme': String,
@@ -60,7 +61,7 @@ export const expoStart: Command = async (argv) => {
     -c, --clear                            Clear the bundler cache
     --max-workers <num>                    Maximum number of tasks to allow Metro to spawn
     --no-dev                               Bundle in production mode
-    --minify                               Minify JavaScript    
+    --minify                               Minify JavaScript
 
     -m, --host <mode>                      lan, tunnel, localhost. Dev server hosting type. Default: lan.
                                            - lan: Use the local network
@@ -77,6 +78,7 @@ export const expoStart: Command = async (argv) => {
 
     --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
     --force-manifest-type <manifest-type>  Override auto detection of manifest type
+    --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
     -h, --help                             output usage information
 `,
       0
