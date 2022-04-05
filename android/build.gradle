@@ -125,7 +125,9 @@ subprojects {
     }
     kotlin {
       target(ktlintTarget)
-      targetExclude("**/versioned/host/exp/exponent/modules/api/**/*.kt")
+      // TODO: (barthap) Replace this with raw string when dropped shell app macros
+      // The star "*" signs interferes with slash "/" and treated wildcard path as comment ¯\_(ツ)_/¯
+      targetExclude(["**", "versioned/host/exp/exponent/modules/api", "**", "*.kt"].join("/"))
       ktlint("0.41.0").userData([
         "disabled_rules"           : "no-wildcard-imports,import-ordering",
         "charset"                  : "utf-8",
