@@ -45,6 +45,11 @@
 {
   return [self topViewController].supportedInterfaceOrientations;
 }
+
+- (UIViewController *)childViewControllerForHomeIndicatorAutoHidden
+{
+  return [self topViewController];
+}
 #endif
 
 @end
@@ -645,13 +650,23 @@
 
 - (void)handleSwipe:(UIPanGestureRecognizer *)gestureRecognizer
 {
-  float translation = [gestureRecognizer translationInView:gestureRecognizer.view].x;
-  float velocity = [gestureRecognizer velocityInView:gestureRecognizer.view].x;
-  float distance = gestureRecognizer.view.bounds.size.width;
-  BOOL isRTL = _controller.view.semanticContentAttribute == UISemanticContentAttributeForceRightToLeft;
-  if (isRTL) {
-    translation = -translation;
-    velocity = -velocity;
+  RNSScreenView *topScreen = (RNSScreenView *)_controller.viewControllers.lastObject.view;
+  float translation;
+  float velocity;
+  float distance;
+  if (topScreen.swipeDirection == RNSScreenSwipeDirectionVertical) {
+    translation = [gestureRecognizer translationInView:gestureRecognizer.view].y;
+    velocity = [gestureRecognizer velocityInView:gestureRecognizer.view].y;
+    distance = gestureRecognizer.view.bounds.size.height;
+  } else {
+    translation = [gestureRecognizer translationInView:gestureRecognizer.view].x;
+    velocity = [gestureRecognizer velocityInView:gestureRecognizer.view].x;
+    distance = gestureRecognizer.view.bounds.size.width;
+    BOOL isRTL = _controller.view.semanticContentAttribute == UISemanticContentAttributeForceRightToLeft;
+    if (isRTL) {
+      translation = -translation;
+      velocity = -velocity;
+    }
   }
 
   float transitionProgress = (translation / distance);

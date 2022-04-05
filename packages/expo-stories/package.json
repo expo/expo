@@ -33,7 +33,7 @@
     "fs-extra": "^9.1.0",
     "glob": "^7.1.7",
     "react-native-safe-area-context": "3.3.2",
-    "react-native-screens": "~3.10.1",
+    "react-native-screens": "~3.11.1",
     "react-native-svg": "12.3.0",
     "sane": "^5.0.1"
   }
