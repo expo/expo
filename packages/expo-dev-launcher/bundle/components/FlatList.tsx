@@ -1,6 +1,10 @@
 import { scale, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { RefreshControl, FlatListProps as RNFlatListProps, FlatList as RNFlatList } from 'react-native';
+import {
+  RefreshControl,
+  FlatListProps as RNFlatListProps,
+  FlatList as RNFlatList,
+} from 'react-native';
 
 import { useThrottle } from '../hooks/useDebounce';
 import { ActivityIndicator } from './ActivityIndicator';
@@ -11,6 +15,14 @@ type FlatListProps<T> = RNFlatListProps<T> & {
   onRefresh: () => void;
 };
 
+export function FlatListLoader() {
+  return (
+    <View margin="medium" height="44" align="centered" bg="default" rounded="large">
+      <ActivityIndicator />
+    </View>
+  );
+}
+
 export function FlatList<T>({
   isLoading,
   isRefreshing,
@@ -20,17 +32,13 @@ export function FlatList<T>({
   const throttledRefresh = useThrottle(isRefreshing, 800);
 
   if (isLoading) {
-    return (
-      <View margin="medium" height="44" align="centered" bg="default" rounded="large">
-        <ActivityIndicator />
-      </View>
-    );
+    return <FlatListLoader />;
   }
 
   return (
     <View flex="1">
       <RNFlatList
-        style={{ flex: 1  }}
+        style={{ flex: 1 }}
         refreshing={throttledRefresh}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: scale[24] }}
