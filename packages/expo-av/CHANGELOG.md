@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Extract `tolerances` param type definition, used across the package methods, to the separate type `AVPlaybackTolerance`. ([#16905](https://github.com/expo/expo/pull/16905) by [@Simek](https://github.com/Simek))
+
 ## 11.1.0 — 2022-03-10
 
 ### 🐛 Bug fixes
