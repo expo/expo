@@ -156,9 +156,10 @@ export declare enum WebBrowserPresentationStyle {
      */
     POPOVER = "popover",
     /**
-     * @platform iOS 13+
      * The default presentation style chosen by the system.
      * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+     *
+     * @platform ios 13+
      */
     AUTOMATIC = "automatic"
 }
