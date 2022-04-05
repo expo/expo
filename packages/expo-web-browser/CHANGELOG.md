@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Native module on iOS is now written in Swift using the new API. ([#16201](https://github.com/expo/expo/pull/16201) by [@tsapeta](https://github.com/tsapeta))
+- Add `presentationStyle` option to customize browser window appearance on iOS.
 
 ### 🐛 Bug fixes
 
