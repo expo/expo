@@ -15,7 +15,7 @@ export function DevelopmentServerTitle({ title, platform }: DevelopmentServerTit
   return title ? (
     <RNView style={styles.titleContainer}>
       {platform && <PlatformIcon platform={platform} />}
-      <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
+      <Text style={{ flex: 1 }} type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
         {title}
       </Text>
     </RNView>
