@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Text, View, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { useHome_CurrentUserQuery } from '../../graphql/types';
 import { useSelector } from '../../redux/Hooks';
 import isUserAuthenticated from '../../utils/isUserAuthenticated';
@@ -77,23 +77,22 @@ export function AccountModal() {
               {error.message}
             </Text>
             <Spacer.Vertical size="small" />
-            <PressableOpacity
-              onPress={() => refetch()}
-              containerProps={{
-                style: {
+            <TouchableOpacity onPress={() => refetch()}>
+              <View
+                style={{
                   padding: spacing[2],
                   alignSelf: 'flex-start',
                   backgroundColor: theme.button.tertiary.background,
-                },
-                rounded: 'small',
-              }}>
-              <Text
-                type="InterSemiBold"
-                style={{ color: theme.button.tertiary.foreground }}
-                size="small">
-                Try again
-              </Text>
-            </PressableOpacity>
+                }}
+                rounded="small">
+                <Text
+                  type="InterSemiBold"
+                  style={{ color: theme.button.tertiary.foreground }}
+                  size="small">
+                  Try again
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

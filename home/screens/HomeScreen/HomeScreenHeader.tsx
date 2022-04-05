@@ -4,8 +4,8 @@ import { Button, View, Row, Image, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { HomeScreenDataQuery } from '../../graphql/types';
 import { useTheme } from '../../utils/useTheme';
 
@@ -49,11 +49,11 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
     } else {
       // when user is logged out, show log in button
       rightContent = (
-        <PressableOpacity
-          borderRadius={borderRadius.small}
+        <TouchableOpacity
           onPress={onAccountButtonPress}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={{
+            borderRadius: borderRadius.small,
             padding: spacing[2],
             backgroundColor: theme.button.ghost.background,
             borderWidth: 1,
@@ -62,7 +62,7 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
           <Button.Text type="InterSemiBold" color="ghost" size="small">
             Log In
           </Button.Text>
-        </PressableOpacity>
+        </TouchableOpacity>
       );
     }
   }

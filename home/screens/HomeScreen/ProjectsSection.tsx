@@ -3,8 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { ProjectsListItem } from '../../components/ProjectsListItem';
 import { CommonAppDataFragment } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -45,7 +45,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
       {showMore && (
         <>
           <Divider />
-          <PressableOpacity onPress={onSeeAllProjectsPress}>
+          <TouchableOpacity onPress={onSeeAllProjectsPress}>
             <View padding="medium">
               <Row align="center" justify="between">
                 <Text type="InterRegular">See all projects</Text>
@@ -55,7 +55,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
                 />
               </Row>
             </View>
-          </PressableOpacity>
+          </TouchableOpacity>
         </>
       )}
     </View>

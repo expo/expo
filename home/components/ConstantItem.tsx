@@ -1,7 +1,6 @@
 import { Text, Row } from 'expo-dev-client-components';
 import * as React from 'react';
-
-import { PressableOpacity } from './PressableOpacity';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   title: string;
@@ -11,11 +10,11 @@ type Props = {
 
 export function ConstantItem({ title, value, onPress }: Props) {
   return (
-    <PressableOpacity disabled={!onPress} onPress={onPress}>
+    <TouchableOpacity disabled={!onPress} onPress={onPress}>
       <Row justify="between" align="center" padding="medium">
         <Text type="InterRegular">{title}</Text>
         <Text type="InterRegular">{value}</Text>
       </Row>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }

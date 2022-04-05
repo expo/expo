@@ -12,8 +12,8 @@ import {
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Animated, Linking } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import * as UrlUtils from '../../utils/UrlUtils';
 
 export function DevelopmentServersOpenURL() {
@@ -52,7 +52,7 @@ export function DevelopmentServersOpenURL() {
     <>
       <Divider />
       <View>
-        <PressableOpacity
+        <TouchableOpacity
           style={{ padding: 16 }}
           onPress={() => setShowInput((prevState) => !prevState)}>
           <Row align="center">
@@ -62,7 +62,7 @@ export function DevelopmentServersOpenURL() {
             </Animated.View>
             <Text type="InterRegular">Enter URL manually</Text>
           </Row>
-        </PressableOpacity>
+        </TouchableOpacity>
         {showInput ? <Spacer.Vertical size="medium" /> : null}
         {showInput ? (
           <View padding="medium" style={{ marginTop: -32 }}>
@@ -84,7 +84,7 @@ export function DevelopmentServersOpenURL() {
               placeholderTextColor={theme.text.secondary}
             />
             <Spacer.Vertical size="small" />
-            <PressableOpacity
+            <TouchableOpacity
               onPress={openURL}
               disabled={!url}
               style={[
@@ -99,7 +99,7 @@ export function DevelopmentServersOpenURL() {
               <Button.Text color="tertiary" type="InterSemiBold">
                 Connect
               </Button.Text>
-            </PressableOpacity>
+            </TouchableOpacity>
           </View>
         ) : null}
       </View>

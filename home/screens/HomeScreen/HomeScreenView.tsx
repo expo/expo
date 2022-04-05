@@ -1,16 +1,16 @@
-import { borderRadius, spacing } from '@expo/styleguide-native';
+import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import { View, Divider, Spacer, Text } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Alert, AppState, NativeEventSubscription, Platform, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
-import { PressableOpacity } from '../../components/PressableOpacity';
 import RefreshControl from '../../components/RefreshControl';
 import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
@@ -162,18 +162,15 @@ export class HomeScreenView extends React.Component<Props, State> {
             <>
               <Spacer.Vertical size="medium" />
               <SectionHeader header="Projects" />
-              <PressableOpacity
+              <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Account')}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                style={{
-                  padding: spacing[4],
-                }}
-                containerProps={{ bg: 'default', border: 'hairline' }}
-                borderRadius={borderRadius.large}>
-                <Text type="InterRegular" style={{ lineHeight: 20 }}>
-                  Log in or create an Expo account to view your projects.
-                </Text>
-              </PressableOpacity>
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <View bg="default" padding="medium" border="hairline" rounded="large">
+                  <Text type="InterRegular" style={{ lineHeight: 20 }}>
+                    Log in or create an Expo account to view your projects.
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </>
           )}
 

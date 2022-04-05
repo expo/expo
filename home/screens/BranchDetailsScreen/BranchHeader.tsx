@@ -2,8 +2,8 @@ import { BranchIcon, iconSize, spacing } from '@expo/styleguide-native';
 import { Row, useExpoTheme, View, Text, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Linking } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import * as UrlUtils from '../../utils/UrlUtils';
 
 type Props = {
@@ -30,22 +30,20 @@ export function BranchHeader(props: Props) {
             {props.name}
           </Text>
         </Row>
-        <PressableOpacity
+        <TouchableOpacity
           onPress={() => {
             Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(props.manifestPermalink)));
           }}
-          borderRadius={4}
-          containerProps={{
-            style: {
-              backgroundColor: theme.button.tertiary.background,
-              paddingHorizontal: spacing[4],
-              paddingVertical: spacing[2],
-            },
+          style={{
+            backgroundColor: theme.button.tertiary.background,
+            paddingHorizontal: spacing[4],
+            paddingVertical: spacing[2],
+            borderRadius: 4,
           }}>
           <Text type="InterSemiBold" style={{ color: theme.button.tertiary.foreground }}>
             Open
           </Text>
-        </PressableOpacity>
+        </TouchableOpacity>
       </Row>
     </View>
   );

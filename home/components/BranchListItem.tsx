@@ -5,10 +5,10 @@ import format from 'date-fns/format';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { DateFormats } from '../constants/DateFormats';
 import { WebContainerProjectPage_Query } from '../graphql/types';
-import { PressableOpacity } from './PressableOpacity';
 
 type Update =
   WebContainerProjectPage_Query['app']['byId']['updateBranches'][number]['updates'][number];
@@ -40,12 +40,10 @@ export function BranchListItem({
   };
 
   return (
-    <PressableOpacity
-      onPress={handlePressBranch}
-      containerProps={
-        inFlatList ? { bg: 'default', border: 'hairline', rounded: 'large' } : undefined
-      }>
-      <View padding="medium">
+    <TouchableOpacity onPress={handlePressBranch}>
+      <View
+        padding="medium"
+        {...(inFlatList && { bg: 'default', border: 'hairline', rounded: 'large' })}>
         <Row align="center" justify="between">
           <View align="start" flex="1">
             <Row align="center">
@@ -92,6 +90,6 @@ export function BranchListItem({
           />
         </Row>
       </View>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }

@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Clipboard, Alert } from 'react-native';
 
 import { ConstantItem } from '../../components/ConstantItem';
+import { SectionHeader } from '../../components/SectionHeader';
 import Environment from '../../utils/Environment';
 import getSnackId from '../../utils/getSnackId';
 
@@ -26,20 +27,23 @@ export function ConstantsSection() {
   };
 
   return (
-    <View bg="default" border="hairline" overflow="hidden" rounded="large">
-      <ConstantItem title="Device ID" value={getSnackId()} onPress={copySnackIdToClipboard} />
-      <Divider />
-      {Constants.expoVersion ? (
-        <>
-          <ConstantItem
-            title="Client version"
-            value={Constants.expoVersion}
-            onPress={copyClientVersionToClipboard}
-          />
-          <Divider />
-        </>
-      ) : null}
-      <ConstantItem title="Supported SDKs" value={Environment.supportedSdksString} />
+    <View>
+      <SectionHeader header="App Info" />
+      <View bg="default" border="hairline" overflow="hidden" rounded="large">
+        <ConstantItem title="Device ID" value={getSnackId()} onPress={copySnackIdToClipboard} />
+        <Divider />
+        {Constants.expoVersion ? (
+          <>
+            <ConstantItem
+              title="Client version"
+              value={Constants.expoVersion}
+              onPress={copyClientVersionToClipboard}
+            />
+            <Divider />
+          </>
+        ) : null}
+        <ConstantItem title="Supported SDKs" value={Environment.supportedSdksString} />
+      </View>
     </View>
   );
 }

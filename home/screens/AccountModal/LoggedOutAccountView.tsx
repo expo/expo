@@ -2,12 +2,12 @@ import { borderRadius, spacing } from '@expo/styleguide-native';
 import { View, Text, Spacer, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import url from 'url';
 
 import Analytics from '../../api/Analytics';
 import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 
@@ -98,35 +98,35 @@ export function LoggedOutAccountView() {
       </Text>
       <Spacer.Vertical size="medium" />
 
-      <PressableOpacity
+      <TouchableOpacity
         onPress={_handleSignInPress}
         style={{
           backgroundColor: theme.button.tertiary.background,
           padding: spacing[3],
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-        borderRadius={borderRadius.medium}>
+          borderRadius: borderRadius.medium,
+        }}>
         <Text style={{ color: theme.button.tertiary.foreground }} type="InterSemiBold">
           Log In
         </Text>
-      </PressableOpacity>
+      </TouchableOpacity>
 
       <Spacer.Vertical size="small" />
 
-      <PressableOpacity
+      <TouchableOpacity
         onPress={_handleSignUpPress}
         style={{
           backgroundColor: theme.button.secondary.background,
           padding: spacing[3],
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-        borderRadius={borderRadius.medium}>
+          borderRadius: borderRadius.medium,
+        }}>
         <Text style={{ color: theme.button.secondary.foreground }} type="InterSemiBold">
           Sign Up
         </Text>
-      </PressableOpacity>
+      </TouchableOpacity>
 
       {authenticationError && (
         <>
