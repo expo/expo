@@ -145,15 +145,11 @@
       return AVMetadataObjectTypeCode39Code;
     case kBarcodeFormatCodabar:
 #ifdef __IPHONE_15_4
-      // available in iOS 15.4+
       if (@available(iOS 15.4, *)) {
         return AVMetadataObjectTypeCodabarCode;
-      } else {
-        return @"unknown";
       }
-#else
-      return @"unknown"
 #endif
+      return @"unknown";
     default:
       return @"unknown";
   }
