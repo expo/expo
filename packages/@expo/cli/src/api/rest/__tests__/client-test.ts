@@ -51,7 +51,7 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
       errors: [
         {
           code: 'AUTHENTICATION_ERROR',
-          message: 'Invalid username/password. Please try again.',
+          message: 'Your username, email, or password was incorrect.',
           isTransient: false,
         },
       ],
@@ -66,7 +66,7 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
   } catch (error: any) {
     assert(error instanceof ApiV2Error);
 
-    expect(error.message).toEqual('Invalid username/password. Please try again.');
+    expect(error.message).toEqual('Your username, email, or password was incorrect.');
     expect(error.expoApiV2ErrorCode).toEqual('AUTHENTICATION_ERROR');
   }
   expect(scope.isDone()).toBe(true);

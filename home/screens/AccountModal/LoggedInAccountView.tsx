@@ -4,8 +4,8 @@ import { SectionHeader } from 'components/SectionHeader';
 import { Text, View, Image, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
 import React from 'react';
 import { FlatList } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { Home_CurrentUserQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
@@ -34,34 +34,37 @@ export function LoggedInAccountView({ accounts }: Props) {
           ListHeaderComponent={() => (
             <>
               <SectionHeader header="Log Out" style={{ paddingTop: 0 }} />
-              <PressableOpacity
+              <TouchableOpacity
                 onPress={onSignOutPress}
                 style={{
                   backgroundColor: theme.button.tertiary.background,
                   padding: spacing[3],
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}
-                borderRadius={borderRadius.medium}>
+                  borderRadius: borderRadius.medium,
+                }}>
                 <Text style={{ color: theme.button.tertiary.foreground }} type="InterSemiBold">
                   Log Out
                 </Text>
-              </PressableOpacity>
+              </TouchableOpacity>
               <Spacer.Vertical size="large" />
               <SectionHeader header="Switch Account" style={{ paddingTop: 0 }} />
             </>
           )}
           keyExtractor={(account) => account.id}
           renderItem={({ item: account }) => (
-            <PressableOpacity
+            <TouchableOpacity
               key={account.id}
-              style={{ padding: 16 }}
-              containerProps={{ bg: 'default', border: 'hairline', rounded: 'large' }}
               onPress={() => {
                 setAccountName(account.name);
                 navigation.goBack();
               }}>
-              <Row justify="between">
+              <Row
+                justify="between"
+                padding="medium"
+                bg="default"
+                border="hairline"
+                rounded="large">
                 <Row align={!account.owner?.fullName ? 'center' : 'start'}>
                   {account?.owner?.profilePhoto ? (
                     <Image size="xl" rounded="full" source={{ uri: account.owner.profilePhoto }} />
@@ -95,7 +98,7 @@ export function LoggedInAccountView({ accounts }: Props) {
                   <CheckIcon color={theme.icon.default} size={iconSize.large} />
                 )}
               </Row>
-            </PressableOpacity>
+            </TouchableOpacity>
           )}
           ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
         />

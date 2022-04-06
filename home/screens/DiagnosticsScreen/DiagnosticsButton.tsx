@@ -1,8 +1,13 @@
-import { borderRadius } from '@expo/styleguide-native';
-import { ChevronRightIcon, Row, Spacer, Text, useExpoTheme } from 'expo-dev-client-components';
+import {
+  ChevronRightIcon,
+  Row,
+  Spacer,
+  Text,
+  useExpoTheme,
+  View,
+} from 'expo-dev-client-components';
 import * as React from 'react';
-
-import { PressableOpacity } from '../../components/PressableOpacity';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   title: string;
@@ -14,29 +19,28 @@ export function DiagnosticButton({ title, description, onPress }: Props) {
   const theme = useExpoTheme();
 
   return (
-    <PressableOpacity
-      borderRadius={borderRadius.large}
-      onPress={onPress}
-      containerProps={{ border: 'hairline', bg: 'default', padding: 'medium' }}>
-      <Row justify="between" align="center">
+    <TouchableOpacity onPress={onPress}>
+      <View rounded="large" border="hairline" bg="default" padding="medium">
+        <Row justify="between" align="center">
+          <Text
+            type="InterSemiBold"
+            style={{
+              fontSize: 14,
+              lineHeight: 14 * 1.5,
+            }}>
+            {title}
+          </Text>
+          <ChevronRightIcon size="small" style={{ tintColor: theme.icon.secondary }} />
+        </Row>
+        <Spacer.Vertical size="tiny" />
         <Text
-          type="InterSemiBold"
-          style={{
-            fontSize: 14,
-            lineHeight: 14 * 1.5,
-          }}>
-          {title}
+          style={{ fontSize: 14, lineHeight: 14 * 1.5 }}
+          type="InterRegular"
+          color="secondary"
+          size="small">
+          {description}
         </Text>
-        <ChevronRightIcon size="small" style={{ tintColor: theme.icon.secondary }} />
-      </Row>
-      <Spacer.Vertical size="tiny" />
-      <Text
-        style={{ fontSize: 14, lineHeight: 14 * 1.5 }}
-        type="InterRegular"
-        color="secondary"
-        size="small">
-        {description}
-      </Text>
-    </PressableOpacity>
+      </View>
+    </TouchableOpacity>
   );
 }

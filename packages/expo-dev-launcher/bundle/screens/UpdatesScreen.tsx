@@ -16,6 +16,7 @@ import * as React from 'react';
 import { Linking } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { BasicButton } from '../components/BasicButton';
 import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
@@ -202,17 +203,7 @@ function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetails
         </View>
 
         <Spacer.Horizontal />
-        {hasUpdates && (
-          <View>
-            <Button.ScaleOnPressContainer bg="tertiary" onPress={onOpenPress}>
-              <View px="2" py="1.5">
-                <Button.Text size="small" weight="medium" color="tertiary">
-                  Open Latest
-                </Button.Text>
-              </View>
-            </Button.ScaleOnPressContainer>
-          </View>
-        )}
+        {hasUpdates && <BasicButton label="Open Latest" onPress={onOpenPress} py="1.5" px="2" />}
       </Row>
       {availableChannels.length > 0 && (
         <>
