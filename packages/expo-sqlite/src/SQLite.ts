@@ -114,7 +114,7 @@ export function openDatabase(
   }
   const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
   db.exec = db._db.exec.bind(db._db);
-  db.closeAsync = db._db.close.bind(db_.db);
+  db.closeAsync = db._db.close.bind(db._db);
   db.deleteAsync = db._db.deleteAsync.bind(db._db);
   return db;
 }
