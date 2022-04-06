@@ -36,8 +36,12 @@ android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   buildFeatures {
@@ -55,7 +59,6 @@ android {
 
   }
 
-
   buildTypes {
     release {
       minifyEnabled false
@@ -66,15 +69,6 @@ android {
 
   // use `versionedRelease` configuration when publishing to maven
   defaultPublishConfig "versionedRelease"
-
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-  }
-
-  kotlinOptions {
-    jvmTarget = '1.8'
-  }
 }
 
 
