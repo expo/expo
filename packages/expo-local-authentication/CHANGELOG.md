@@ -18,6 +18,9 @@
 - Updated `androix.biometric.biometric` from `1.1.0` to `1.2.0-alphas04`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
 - Bumped `compileSdkVersion` from `30` to `31`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
 
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 12.1.1 - 2022-02-01
 
