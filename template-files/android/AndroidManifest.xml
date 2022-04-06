@@ -130,15 +130,17 @@
 
     <activity
       android:name=".experience.ExperienceActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:exported="true"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:theme="@style/Theme.Exponent.Light"
       android:windowSoftInputMode="adjustResize">
     </activity>
 
     <activity
       android:name=".MainActivity"
+      android:exported="true"
       android:launchMode="singleTask"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD DETACH SCHEME HERE -->
@@ -148,7 +150,8 @@
 
     <activity
       android:name=".experience.HomeActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:exported="true"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:label="${appLabel}"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
@@ -181,6 +184,7 @@
 
     <activity
       android:name=".experience.TvActivity"
+      android:exported="true"
       android:label="${appLabel}"
       android:theme="@style/Theme.Exponent.Light"
       android:screenOrientation="landscape">
@@ -205,6 +209,7 @@
 
     <activity
         android:name="net.openid.appauth.RedirectUriReceiverActivity"
+        android:exported="true"
         tools:node="replace">
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
@@ -278,7 +283,8 @@
 
     <!-- FCM -->
     <service
-      android:name=".fcm.ExpoFcmMessagingService">
+      android:name=".fcm.ExpoFcmMessagingService"
+      android:exported="true">
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>

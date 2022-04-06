@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,7 @@ class MockSurfaceHandler : public SurfaceHandler {
   MockSurfaceHandler() : SurfaceHandler("moduleName", 0){};
 
   MOCK_QUALIFIED_METHOD1(setDisplayMode, const noexcept, void(DisplayMode));
+  MOCK_QUALIFIED_METHOD0(getSurfaceId, const noexcept, SurfaceId());
 };
 
 } // namespace react

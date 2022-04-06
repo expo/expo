@@ -137,5 +137,6 @@ docs/pages/versions/*/react-native/*.diff
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
 
-# Pods
+# iOS
 /ios/Pods
+/ios/build

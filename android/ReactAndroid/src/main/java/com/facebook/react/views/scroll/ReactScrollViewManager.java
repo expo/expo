@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
@@ -30,6 +31,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -335,7 +337,12 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return createExportedCustomDirectEventTypeConstants();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(createExportedCustomDirectEventTypeConstants());
+    return eventTypeConstants;
   }
 
   public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {
@@ -356,5 +363,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
             ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_END),
             MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
+  }
+
+  @ReactProp(name = ViewProps.POINTER_EVENTS)
+  public void setPointerEvents(ReactScrollView view, @Nullable String pointerEventsStr) {
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 }
