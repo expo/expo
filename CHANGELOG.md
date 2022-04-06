@@ -17,6 +17,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-screens` from `3.10.1` to `3.11.1`. ([#16913](https://github.com/expo/expo/pull/16913) by [@bbarthec](https://github.com/bbarthec))
 - Updated `react-native-gesture-handler` from `2.1.0` to `2.2.0`. ([#16922](https://github.com/expo/expo/pull/16922) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@react-native-community/netinfo` from `7.1.3` to `8.2.0`. ([#16883](https://github.com/expo/expo/pull/16883) by [@bycedric](https://github.com/bycedric))
+- Updated `@react-native-community/react-native-datetimepicker` from `4.0.0` to `6.1.1`
 
 ### 🛠 Breaking changes
 
