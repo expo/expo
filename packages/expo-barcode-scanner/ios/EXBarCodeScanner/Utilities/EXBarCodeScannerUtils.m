@@ -23,9 +23,11 @@
       @"itf14" : AVMetadataObjectTypeITF14Code,
       @"datamatrix" : AVMetadataObjectTypeDataMatrixCode,
     } mutableCopy];
+#ifdef __IPHONE_15_4
     if (@available(iOS 15.4, *)) {
       validTypes[@"codabar"] = AVMetadataObjectTypeCodabarCode;
     }
+#endif
     return validTypes;
 }
 
@@ -142,12 +144,12 @@
     case kBarcodeFormatCode39:
       return AVMetadataObjectTypeCode39Code;
     case kBarcodeFormatCodabar:
-      // available in iOS 15.4+
+#ifdef __IPHONE_15_4
       if (@available(iOS 15.4, *)) {
         return AVMetadataObjectTypeCodabarCode;
-      } else {
-        return @"unknown";
       }
+#endif
+      return @"unknown";
     default:
       return @"unknown";
   }

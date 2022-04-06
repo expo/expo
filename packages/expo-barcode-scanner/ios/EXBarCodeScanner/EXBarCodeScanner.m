@@ -41,10 +41,12 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
       // Code39 - built-in Code39 reader doesn't read non-ideal (slightly rotated) images like this - https://github.com/expo/expo/pull/5976#issuecomment-545001008
       AVMetadataObjectTypeCode39Code: [ZXCode39Reader new],
     } mutableCopy];
+#ifdef __IPHONE_15_4
     // Codabar - available in iOS 15.4+
     if (@available(iOS 15.4, *)) {
       _zxingBarcodeReaders[AVMetadataObjectTypeCodabarCode] = [ZXCodaBarReader new];
     }
+#endif
     _zxingFPSProcessed = 6;
     _zxingCaptureQueue = dispatch_queue_create("com.zxing.captureQueue", NULL);
     _zxingEnabled = YES;
@@ -314,12 +316,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     case kBarcodeFormatCode39:
       return AVMetadataObjectTypeCode39Code;
     case kBarcodeFormatCodabar:
-      // available in iOS 15.4+
+#ifdef __IPHONE_15_4
       if (@available(iOS 15.4, *)) {
         return AVMetadataObjectTypeCodabarCode;
-      } else {
-        return @"unknown";
       }
+#endif
+      return @"unknown";
     default:
       return @"unknown";
   }
