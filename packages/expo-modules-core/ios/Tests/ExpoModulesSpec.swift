@@ -24,7 +24,7 @@ class ExpoModulesSpec: ExpoSpec {
 
         constants(constantsDict)
 
-        function(testFunctionName) {}
+        function(testFunctionName) { Double.pi }
           .runSynchronously()
       })
     }
@@ -66,6 +66,10 @@ class ExpoModulesSpec: ExpoSpec {
       it("has function") {
         expect(try! runtime?.eval("typeof ExpoModules.TestModule.\(testFunctionName)").asString()) == "function"
         expect(try! runtime?.eval("ExpoModules.TestModule.\(testFunctionName)").isFunction()) == true
+      }
+
+      it("calls function") {
+        expect(try! runtime?.eval("ExpoModules.TestModule.\(testFunctionName)()").asDouble()) == Double.pi
       }
     }
   }
