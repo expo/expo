@@ -113,7 +113,7 @@ If you plan on shipping your app to different countries, regions, or just want i
       }
     },
     "locales": {
-      "ru": "./languages/russian.json"
+      "ja": "./languages/japanese.json"
     }
   }
 ```
@@ -121,11 +121,11 @@ If you plan on shipping your app to different countries, regions, or just want i
 The keys provided to `locales` should be the [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, and the value should point to a JSON file that looks something like this:
 
 ```json
-// russian.json
+// japanese.json
 {
-  "CFBundleDisplayName": "Привет",
-  "NSContactsUsageDescription": "Эти слова по русски"
+  "CFBundleDisplayName": "こんにちは",
+  "NSContactsUsageDescription": "日本語のこれらの言葉"
 }
 ```
 
-Now, iOS knows to set the display name of your app to `Привет` whenever it's installed on a device with the language set to Russian.
+Now, iOS knows to set the display name of your app to `こんにちは` whenever it's installed on a device with the language set to Japanese.
