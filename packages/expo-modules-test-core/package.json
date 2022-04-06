@@ -1,5 +1,5 @@
 {
-  "name": "expo-modules-tests-core",
+  "name": "expo-modules-test-core",
   "version": "0.7.0",
   "main": "./app.plugin.js",
   "description": "Module providing native testing utilities for testing Expo modules",
@@ -8,17 +8,17 @@
     "expo",
     "expo-modules",
     "expo-modules-core",
-    "expo-modules-tests-core"
+    "expo-modules-test-core"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-modules-tests-core"
+    "directory": "packages/expo-modules-test-core"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-tests-core"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core"
 }
