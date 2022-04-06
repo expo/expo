@@ -42,7 +42,7 @@ class SQLiteDatabase {
 
   close() {
     this._closed = true;
-    ExponentSQLite.close(this._name);
+    return ExponentSQLite.close(this._name);
   }
 
   deleteAsync(): Promise<void> {
