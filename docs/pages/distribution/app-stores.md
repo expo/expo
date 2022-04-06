@@ -123,9 +123,9 @@ The keys provided to `locales` should be the [2-letter language code](https://ww
 ```json
 // japanese.json
 {
-  "CFBundleDisplayName": "おい",
+  "CFBundleDisplayName": "こんにちは",
   "NSContactsUsageDescription": "日本語のこれらの言葉"
 }
 ```
 
-Now, iOS knows to set the display name of your app to `おい` whenever it's installed on a device with the language set to Japanese.
+Now, iOS knows to set the display name of your app to `こんにちは` whenever it's installed on a device with the language set to Japanese.
