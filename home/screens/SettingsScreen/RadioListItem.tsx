@@ -1,7 +1,6 @@
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React, { ReactNode } from 'react';
-
-import { PressableOpacity } from '../../components/PressableOpacity';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   onPress: () => void;
@@ -14,8 +13,8 @@ export function RadioListItem({ onPress, icon, title, checked }: Props) {
   const theme = useExpoTheme();
 
   return (
-    <PressableOpacity onPress={onPress} containerProps={{ bg: 'default' }}>
-      <Row align="center" justify="between" padding="medium">
+    <TouchableOpacity onPress={onPress}>
+      <Row align="center" justify="between" bg="default" padding="medium">
         <Row align="center">
           {icon}
           {icon ? <Spacer.Horizontal size="small" /> : null}
@@ -44,6 +43,6 @@ export function RadioListItem({ onPress, icon, title, checked }: Props) {
           ) : null}
         </View>
       </Row>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }

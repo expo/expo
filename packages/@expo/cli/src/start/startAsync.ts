@@ -25,6 +25,7 @@ async function getMultiBundlerStartOptions(
     mode: options.dev ? 'development' : 'production',
     devClient: options.devClient,
     forceManifestType,
+    privateKeyPath: options.privateKeyPath ?? undefined,
     https: options.https,
     maxWorkers: options.maxWorkers,
     resetDevServer: options.clear,

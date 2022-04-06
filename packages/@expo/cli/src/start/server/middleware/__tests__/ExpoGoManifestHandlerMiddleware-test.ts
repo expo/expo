@@ -1,4 +1,6 @@
+import { ExpoConfig } from '@expo/config';
 import Dicer from 'dicer';
+import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 import { Stream } from 'stream';
 import { parseItem } from 'structured-headers';
@@ -6,7 +8,12 @@ import { parseItem } from 'structured-headers';
 import { getProjectAsync } from '../../../../api/getProject';
 import { APISettings } from '../../../../api/settings';
 import { getUserAsync } from '../../../../api/user/user';
+import {
+  mockExpoRootChain,
+  mockSelfSigned,
+} from '../../../../utils/__tests__/fixtures/certificates';
 import { ExpoGoManifestHandlerMiddleware } from '../ExpoGoManifestHandlerMiddleware';
+import { ManifestMiddlewareOptions } from '../ManifestMiddleware';
 import { ServerHeaders, ServerRequest } from '../server.types';
 
 jest.mock('../../../../api/user/user');
@@ -15,6 +22,29 @@ jest.mock('../../../../api/getProject', () => ({
   getProjectAsync: jest.fn(() => ({
     scopeKey: 'scope-key',
   })),
+}));
+jest.mock('@expo/code-signing-certificates', () => ({
+  ...(jest.requireActual(
+    '@expo/code-signing-certificates'
+  ) as typeof import('@expo/code-signing-certificates')),
+  generateKeyPair: jest.fn(() =>
+    (
+      jest.requireActual(
+        '@expo/code-signing-certificates'
+      ) as typeof import('@expo/code-signing-certificates')
+    ).convertKeyPairPEMToKeyPair({
+      publicKeyPEM: mockExpoRootChain.publicKeyPEM,
+      privateKeyPEM: mockExpoRootChain.privateKeyPEM,
+    })
+  ),
+}));
+jest.mock('../../../../api/getProjectDevelopmentCertificate', () => ({
+  getProjectDevelopmentCertificateAsync: jest.fn(() => mockExpoRootChain.developmentCertificate),
+}));
+jest.mock('../../../../api/getExpoGoIntermediateCertificate', () => ({
+  getExpoGoIntermediateCertificateAsync: jest.fn(
+    () => mockExpoRootChain.expoGoIntermediateCertificate
+  ),
 }));
 jest.mock('@expo/config-plugins', () => ({
   Updates: {
@@ -55,19 +85,22 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 
 type MultipartPart = { headers: Map<string, string>; body: string };
 
-function isManifestMultipartPart(multipartPart: MultipartPart): boolean {
+function isPart(name: string, multipartPart: MultipartPart): boolean {
   const [, parameters] = parseItem(nullthrows(multipartPart.headers.get('content-disposition')));
   const partName = parameters.get('name');
-  return partName === 'manifest';
+  return partName === name;
 }
 
-export async function getManifestBodyAsync(response: {
-  body: string;
-  headers: ServerHeaders;
-}): Promise<string | null> {
+async function getMultipartPartAsync(
+  partName: string,
+  response: {
+    body: string;
+    headers: ServerHeaders;
+  }
+): Promise<MultipartPart | null> {
   const multipartParts = await parseMultipartMixedResponseAsync(response);
-  const manifestPart = multipartParts.find(isManifestMultipartPart);
-  return manifestPart?.body ?? null;
+  const part = multipartParts.find((part) => isPart(partName, part));
+  return part ?? null;
 }
 
 async function parseMultipartMixedResponseAsync({
@@ -124,6 +157,10 @@ async function parseMultipartMixedResponseAsync({
   });
 }
 
+beforeEach(() => {
+  vol.reset();
+});
+
 describe('getParsedHeaders', () => {
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
@@ -147,6 +184,7 @@ describe('getParsedHeaders', () => {
     ).toEqual({
       explicitlyPrefersMultipartMixed: false,
       acceptSignature: false,
+      expectSignature: null,
       hostname: null,
       platform: 'android',
     });
@@ -163,12 +201,14 @@ describe('getParsedHeaders', () => {
             'expo-platform': 'ios',
             // This is different to the classic manifest middleware.
             'expo-accept-signature': 'true',
+            'expo-expect-signature': 'wat',
           },
         })
       )
     ).toEqual({
       explicitlyPrefersMultipartMixed: true,
       acceptSignature: true,
+      expectSignature: 'wat',
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
       platform: 'ios',
@@ -182,8 +222,11 @@ describe('_getManifestResponseAsync', () => {
     asMock(getUserAsync).mockImplementation(async () => ({} as any));
   });
 
-  function createMiddleware() {
-    const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
+  function createMiddleware(
+    extraExpFields?: Partial<ExpoConfig>,
+    options: Partial<ManifestMiddlewareOptions> = {}
+  ) {
+    const middleware = new ExpoGoManifestHandlerMiddleware('/', options as any);
 
     middleware._resolveProjectSettingsAsync = jest.fn(
       async () =>
@@ -198,6 +241,7 @@ describe('_getManifestResponseAsync', () => {
                 projectId: 'projectId',
               },
             },
+            ...extraExpFields,
           },
         } as any)
     );
@@ -212,6 +256,7 @@ describe('_getManifestResponseAsync', () => {
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
       acceptSignature: true,
+      expectSignature: null,
       hostname: 'localhost',
     });
     expect(results.version).toBe('45.0.0');
@@ -227,7 +272,7 @@ describe('_getManifestResponseAsync', () => {
       )
     );
 
-    const body = await getManifestBodyAsync(results);
+    const { body } = await getMultipartPartAsync('manifest', results);
     expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
@@ -265,12 +310,13 @@ describe('_getManifestResponseAsync', () => {
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
       acceptSignature: true,
+      expectSignature: null,
       hostname: 'localhost',
     });
     expect(results.version).toBe('45.0.0');
     expect(results.headers.get('expo-manifest-signature')).toEqual(expect.any(String));
 
-    const body = await getManifestBodyAsync(results);
+    const { body } = await getMultipartPartAsync('manifest', results);
     expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
@@ -298,10 +344,168 @@ describe('_getManifestResponseAsync', () => {
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
       acceptSignature: true,
+      expectSignature: null,
       hostname: 'localhost',
     });
 
     expect(getProjectAsync).toBeCalledTimes(1);
+  });
+
+  it('returns a code signed manifest with developers own key when requested', async () => {
+    vol.fromJSON({
+      'keys/cert.pem': mockSelfSigned.certificate,
+      'keys/private-key.pem': mockSelfSigned.privateKey,
+    });
+
+    const middleware = createMiddleware({
+      updates: {
+        codeSigningCertificate: 'keys/cert.pem',
+        codeSigningMetadata: {
+          keyid: 'testkeyid',
+          alg: 'rsa-v1_5-sha256',
+        },
+      },
+    });
+
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
+      platform: 'android',
+      acceptSignature: false,
+      expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    const { body, headers } = await getMultipartPartAsync('manifest', results);
+    expect(headers.get('expo-signature')).toContain('keyid="expo-go"');
+
+    expect(JSON.parse(body)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.not.stringMatching(/@anonymous\/.*/),
+      },
+    });
+
+    const certificateChainMultipartPart = await getMultipartPartAsync('certificate_chain', results);
+    expect(certificateChainMultipartPart).toBeNull();
+  });
+
+  it('returns a code signed manifest with developers own key when requested and private-key-path arg is supplied', async () => {
+    vol.fromJSON({
+      'keys/cert.pem': mockSelfSigned.certificate,
+      'custom/private/key/path/private-key.pem': mockSelfSigned.privateKey,
+    });
+
+    const middleware = createMiddleware(
+      {
+        updates: {
+          codeSigningCertificate: 'keys/cert.pem',
+          codeSigningMetadata: {
+            keyid: 'testkeyid',
+            alg: 'rsa-v1_5-sha256',
+          },
+        },
+      },
+      {
+        privateKeyPath: 'custom/private/key/path/private-key.pem',
+      }
+    );
+
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
+      platform: 'android',
+      acceptSignature: false,
+      expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    const { body, headers } = await getMultipartPartAsync('manifest', results);
+    expect(headers.get('expo-signature')).toContain('keyid="expo-go"');
+
+    expect(JSON.parse(body)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.not.stringMatching(/@anonymous\/.*/),
+      },
+    });
+
+    const certificateChainMultipartPart = await getMultipartPartAsync('certificate_chain', results);
+    expect(certificateChainMultipartPart).toBeNull();
+  });
+
+  it('returns a code signed manifest with expo-root chain when requested', async () => {
+    const middleware = createMiddleware();
+
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
+      platform: 'android',
+      acceptSignature: false,
+      expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    const { body: manifestPartBody, headers: manifestPartHeaders } = await getMultipartPartAsync(
+      'manifest',
+      results
+    );
+    expect(manifestPartHeaders.get('expo-signature')).toContain('keyid="expo-go"');
+
+    expect(JSON.parse(manifestPartBody)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.not.stringMatching(/@anonymous\/.*/),
+      },
+    });
+
+    const { body: certificateChainPartBody } = await getMultipartPartAsync(
+      'certificate_chain',
+      results
+    );
+    expect(certificateChainPartBody).toMatchSnapshot();
   });
 
   it('returns text/plain when explicitlyPrefersMultipartMixed is false', async () => {
@@ -311,6 +515,7 @@ describe('_getManifestResponseAsync', () => {
       explicitlyPrefersMultipartMixed: false,
       platform: 'android',
       acceptSignature: true,
+      expectSignature: null,
       hostname: 'localhost',
     });
     expect(results.version).toBe('45.0.0');

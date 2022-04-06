@@ -36,7 +36,8 @@ using namespace facebook;
   return self;
 }
 
-- (nonnull instancetype)initWithRuntime:(jsi::Runtime *)runtime callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
+                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
 {
   if (self = [super init]) {
     // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
@@ -102,11 +103,23 @@ using namespace facebook;
 
 #pragma mark - Script evaluation
 
-- (nullable id)evaluateScript:(nonnull NSString *)scriptSource
+- (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
 {
-  auto scriptBuffer = std::make_shared<jsi::StringBuffer>([[NSString stringWithFormat:@"(%@)", scriptSource] UTF8String]);
-  auto result = _runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>");
-  return expo::convertJSIValueToObjCObject(*_runtime, result, _jsCallInvoker);
+  std::shared_ptr<jsi::StringBuffer> scriptBuffer = std::make_shared<jsi::StringBuffer>([[NSString stringWithFormat:@"(%@)", scriptSource] UTF8String]);
+  std::shared_ptr<jsi::Value> result;
+
+  try {
+    result = std::make_shared<jsi::Value>(_runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"));
+  } catch (jsi::JSError &error) {
+    NSString *reason = [NSString stringWithUTF8String:error.getMessage().c_str()];
+    NSString *stack = [NSString stringWithUTF8String:error.getStack().c_str()];
+
+    @throw [NSException exceptionWithName:@"ScriptEvaluationException" reason:reason userInfo:@{
+      @"message": reason,
+      @"stack": stack,
+    }];
+  }
+  return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
 }
 
 #pragma mark - Private

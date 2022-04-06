@@ -2,9 +2,9 @@ import { ChevronDownIcon } from '@expo/styleguide-native';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
 import { Linking, Share } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import * as UrlUtils from '../utils/UrlUtils';
-import { PressableOpacity } from './PressableOpacity';
 
 type Props = {
   url: string;
@@ -42,13 +42,10 @@ export function SnacksListItem({ description, isDraft, name, url, inFlatList }: 
   const normalizedDescription = normalizeDescription(description);
 
   return (
-    <PressableOpacity
-      onPress={handlePressProject}
-      onLongPress={handleLongPressProject}
-      containerProps={
-        inFlatList ? { bg: 'default', border: 'hairline', rounded: 'large' } : undefined
-      }>
-      <View padding="medium">
+    <TouchableOpacity onPress={handlePressProject} onLongPress={handleLongPressProject}>
+      <View
+        padding="medium"
+        {...(inFlatList && { bg: 'default', border: 'hairline', rounded: 'large' })}>
         <Row align="center" justify="between">
           <View align="start" flex="1">
             <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
@@ -79,6 +76,6 @@ export function SnacksListItem({ description, isDraft, name, url, inFlatList }: 
           />
         </Row>
       </View>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }

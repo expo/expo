@@ -87,6 +87,45 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
           platforms: ['android'],
           initial: false,
         },
+        {
+          name: 'presentationStyle',
+          type: 'enum',
+          platforms: ['ios'],
+          values: [
+            {
+              name: 'WebBrowserPresentationStyle.OVER_FULL_SCREEN',
+              value: WebBrowser.WebBrowserPresentationStyle.OVER_FULL_SCREEN,
+            },
+            {
+              name: 'WebBrowserPresentationStyle.FULL_SCREEN',
+              value: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+            },
+            {
+              name: 'WebBrowserPresentationStyle.PAGE_SHEET',
+              value: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+            },
+            {
+              name: 'WebBrowserPresentationStyle.FORM_SHEET',
+              value: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
+            },
+            {
+              name: 'WebBrowserPresentationStyle.CURRENT_CONTEXT',
+              value: WebBrowser.WebBrowserPresentationStyle.CURRENT_CONTEXT,
+            },
+            {
+              name: 'WebBrowserPresentationStyle.OVER_CURRENT_CONTEXT',
+              value: WebBrowser.WebBrowserPresentationStyle.OVER_CURRENT_CONTEXT,
+            },
+            {
+              name: 'WebBrowserPresentationStyle.POPOVER',
+              value: WebBrowser.WebBrowserPresentationStyle.POPOVER,
+            },
+            {
+              name: 'WebBrowserPresentationStyle.AUTOMATIC',
+              value: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
+            },
+          ],
+        },
       ],
     },
   ],

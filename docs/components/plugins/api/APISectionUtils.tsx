@@ -114,9 +114,9 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
-  AVPlaybackSource: '../av/#playback-api',
-  AVPlaybackStatus: '../av/#playback-status',
-  AVPlaybackStatusToSet: '../av/#default-initial--avplaybackstatustoset',
+  AVPlaybackSource: '/versions/latest/sdk/av/#playback-api',
+  AVPlaybackStatus: '/versions/latest/sdk/av/#playback-status',
+  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#default-initial--avplaybackstatustoset',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
@@ -127,9 +127,9 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '../../react-native/view',
-  ViewProps: '../../react-native/view#props',
-  ViewStyle: '../../react-native/view-style-props/',
+  View: '/versions/latest/react-native/view',
+  ViewProps: '/versions/latest/react-native/view#props',
+  ViewStyle: '/versions/latest/react-native/view-style-props',
 };
 
 const renderWithLink = (name: string, type?: string) => {

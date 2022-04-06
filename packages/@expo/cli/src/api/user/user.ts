@@ -1,7 +1,9 @@
+import { promises as fs } from 'fs';
 import gql from 'graphql-tag';
 
 import * as Log from '../../log';
 import * as Analytics from '../../utils/analytics/rudderstackClient';
+import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { graphqlClient } from '../graphql/client';
 import { CurrentUserQuery } from '../graphql/generated';
 import { UserQuery } from '../graphql/queries/UserQuery';
@@ -91,6 +93,9 @@ export async function loginAsync(json: {
 
 export async function logoutAsync(): Promise<void> {
   currentUser = undefined;
-  await UserSettings.setSessionAsync(undefined);
+  await Promise.all([
+    fs.rm(getDevelopmentCodeSigningDirectory(), { recursive: true, force: true }),
+    UserSettings.setSessionAsync(undefined),
+  ]);
   Log.log('Logged out');
 }

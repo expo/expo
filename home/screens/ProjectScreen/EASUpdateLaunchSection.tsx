@@ -4,10 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Divider, Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import semver from 'semver';
 
 import { BranchListItem } from '../../components/BranchListItem';
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -74,7 +74,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
         {branchesToRender.length > 3 && (
           <>
             <Divider />
-            <PressableOpacity onPress={onSeeAllBranchesPress}>
+            <TouchableOpacity onPress={onSeeAllBranchesPress}>
               <View padding="medium">
                 <Row align="center" justify="between">
                   <Text type="InterRegular">See all branches</Text>
@@ -84,7 +84,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
                   />
                 </Row>
               </View>
-            </PressableOpacity>
+            </TouchableOpacity>
           </>
         )}
       </View>

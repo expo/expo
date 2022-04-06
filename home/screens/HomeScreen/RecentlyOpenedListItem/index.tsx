@@ -2,8 +2,8 @@ import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
 import { Text, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { View as RNView, StyleSheet, ViewStyle, Share } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../../components/PressableOpacity';
 import * as UrlUtils from '../../../utils/UrlUtils';
 import { AppIcon } from '../AppIcon';
 
@@ -29,7 +29,7 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
   };
 
   return (
-    <PressableOpacity
+    <TouchableOpacity
       accessibilityRole="button"
       onPress={onPress}
       onLongPress={handleLongPress}
@@ -47,7 +47,7 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
           />
         </RNView>
       </RNView>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }
 

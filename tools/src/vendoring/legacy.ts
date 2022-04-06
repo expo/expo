@@ -253,7 +253,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
       {
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/common',
+        sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
@@ -320,7 +320,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
       )} will not be updated -- you'll need to add these to expoview manually!`,
-      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to 
+      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to
       ${chalk.magenta('""')}`,
     ],
   },
@@ -336,6 +336,31 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/screens',
         sourceAndroidPackage: 'com.swmansion.rnscreens',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+        onDidVendorAndroidFile: async (file: string) => {
+          const filename = path.basename(file);
+          const CHANGES = {
+            'ScreenStack.kt': {
+              find: /(?=^class ScreenStack\()/m,
+              replaceWith: `import host.exp.expoview.R\n\n`,
+            },
+            'ScreenStackHeaderConfig.kt': {
+              find: /(?=^class ScreenStackHeaderConfig\()/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
+            },
+          };
+
+          const fileConfig = CHANGES[filename];
+          if (!fileConfig) {
+            return;
+          }
+
+          const originalFileContent = await fs.readFile(file, 'utf8');
+          const newFileContent = originalFileContent.replace(
+            fileConfig.find,
+            fileConfig.replaceWith
+          );
+          await fs.writeFile(file, newFileContent, 'utf8');
+        },
       },
     ],
   },

@@ -3,8 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { SnacksListItem } from '../../components/SnacksListItem';
 import { CommonSnackDataFragment } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -44,7 +44,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
       {showMore && (
         <>
           <Divider />
-          <PressableOpacity onPress={onSeeAllSnacksPress}>
+          <TouchableOpacity onPress={onSeeAllSnacksPress}>
             <View padding="medium">
               <Row align="center" justify="between">
                 <Text type="InterRegular">See all snacks</Text>
@@ -54,7 +54,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
                 />
               </Row>
             </View>
-          </PressableOpacity>
+          </TouchableOpacity>
         </>
       )}
     </View>

@@ -62,6 +62,13 @@ export declare type WebBrowserOpenOptions = {
      */
     readerMode?: boolean;
     /**
+     * The [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle)
+     * of the browser window.
+     * @default WebBrowser.WebBrowserPresentationStyle.OverFullScreen
+     * @platform ios
+     */
+    presentationStyle?: WebBrowserPresentationStyle;
+    /**
      * Name to assign to the popup window.
      * @platform web
      */
@@ -113,6 +120,48 @@ export declare enum WebBrowserResultType {
      */
     OPENED = "opened",
     LOCKED = "locked"
+}
+/**
+ * A browser presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
+export declare enum WebBrowserPresentationStyle {
+    /**
+     * A presentation style in which the presented browser covers the screen.
+     */
+    FULL_SCREEN = "fullScreen",
+    /**
+     * A presentation style that partially covers the underlying content.
+     */
+    PAGE_SHEET = "pageSheet",
+    /**
+     * A presentation style that displays the browser centered in the screen.
+     */
+    FORM_SHEET = "formSheet",
+    /**
+     * A presentation style where the browser is displayed over the app's content.
+     */
+    CURRENT_CONTEXT = "currentContext",
+    /**
+     * A presentation style in which the browser view covers the screen.
+     */
+    OVER_FULL_SCREEN = "overFullScreen",
+    /**
+     * A presentation style where the browser is displayed over the app's content.
+     */
+    OVER_CURRENT_CONTEXT = "overCurrentContext",
+    /**
+     * A presentation style where the browser is displayed in a popover view.
+     */
+    POPOVER = "popover",
+    /**
+     * The default presentation style chosen by the system.
+     * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+     *
+     * @platform ios 13+
+     */
+    AUTOMATIC = "automatic"
 }
 export declare type WebBrowserResult = {
     /**

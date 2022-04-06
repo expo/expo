@@ -2,7 +2,9 @@ import { LoadingIndicatorIcon } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Animated, Easing } from 'react-native';
 
-export function ActivityIndicator() {
+type ActivityIndicatorProps = Partial<React.ComponentProps<typeof LoadingIndicatorIcon>>;
+
+export function ActivityIndicator(props: ActivityIndicatorProps) {
   const animatedValue = React.useRef(new Animated.Value(0));
 
   React.useEffect(() => {
@@ -25,7 +27,7 @@ export function ActivityIndicator() {
 
   return (
     <Animated.View style={{ position: 'absolute', transform: [{ rotateZ: rotate }] }}>
-      <LoadingIndicatorIcon />
+      <LoadingIndicatorIcon {...props} />
     </Animated.View>
   );
 }
