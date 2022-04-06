@@ -594,6 +594,9 @@
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FE8D4A1FC2BDC25C8D4684F8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */; };
+		7C04FEADEBFD4F26A0ED0918 /* RNCSafeAreaContext.mm in Resources */ = {isa = PBXBuildFile; fileRef = 110908DD81CA4BDB8FD5B6D2 /* RNCSafeAreaContext.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3998ABE10A3041A68A6344F0 /* RNCSafeAreaUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C9DD6A9837B042EE8364DB87 /* RNCSafeAreaUtils.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		DB3F49E49342470CA04D34C0 /* SafeAreaContextSpec-generated.mm in Resources */ = {isa = PBXBuildFile; fileRef = ABF2A96A40E3466F89CDD1E0 /* SafeAreaContextSpec-generated.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1273,6 +1276,12 @@
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FCF6D37125B34BC200808BF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3EBE535C0D814664BEF368FD /* RNCSafeAreaContext.h */ = {isa = PBXFileReference; name = "RNCSafeAreaContext.h"; path = "RNCSafeAreaContext.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		110908DD81CA4BDB8FD5B6D2 /* RNCSafeAreaContext.mm */ = {isa = PBXFileReference; name = "RNCSafeAreaContext.mm"; path = "RNCSafeAreaContext.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0493A3758A084342982ECFC1 /* RNCSafeAreaUtils.h */ = {isa = PBXFileReference; name = "RNCSafeAreaUtils.h"; path = "RNCSafeAreaUtils.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		C9DD6A9837B042EE8364DB87 /* RNCSafeAreaUtils.m */ = {isa = PBXFileReference; name = "RNCSafeAreaUtils.m"; path = "RNCSafeAreaUtils.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		ABF2A96A40E3466F89CDD1E0 /* SafeAreaContextSpec-generated.mm */ = {isa = PBXFileReference; name = "SafeAreaContextSpec-generated.mm"; path = "SafeAreaContextSpec-generated.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5F5805ED503D489A86A8F21F /* SafeAreaContextSpec.h */ = {isa = PBXFileReference; name = "SafeAreaContextSpec.h"; path = "SafeAreaContextSpec.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2431,6 +2440,12 @@
 				BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */,
 				C5E293DD722E4378A24299D9 /* RNCSafeAreaViewMode.h */,
 				6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */,
+				3EBE535C0D814664BEF368FD /* RNCSafeAreaContext.h */,
+				110908DD81CA4BDB8FD5B6D2 /* RNCSafeAreaContext.mm */,
+				0493A3758A084342982ECFC1 /* RNCSafeAreaUtils.h */,
+				C9DD6A9837B042EE8364DB87 /* RNCSafeAreaUtils.m */,
+				ABF2A96A40E3466F89CDD1E0 /* SafeAreaContextSpec-generated.mm */,
+				5F5805ED503D489A86A8F21F /* SafeAreaContextSpec.h */,
 			);
 			path = SafeAreaContext;
 			sourceTree = "<group>";
@@ -3283,6 +3298,9 @@
 				2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */,
 				C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */,
 				FBCC5A97F536402C98688A94 /* RNCPickerManager.m in Sources */,
+				7C04FEADEBFD4F26A0ED0918 /* RNCSafeAreaContext.mm in Resources */,
+				3998ABE10A3041A68A6344F0 /* RNCSafeAreaUtils.m in Sources */,
+				DB3F49E49342470CA04D34C0 /* SafeAreaContextSpec-generated.mm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
