@@ -3,7 +3,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
 import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, FlatList } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
