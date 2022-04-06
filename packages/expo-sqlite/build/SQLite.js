@@ -29,13 +29,13 @@ class SQLiteDatabase {
     }
     close() {
         this._closed = true;
-        ExponentSQLite.close(this._name);
+        return ExponentSQLite.close(this._name);
     }
     deleteAsync() {
         if (!this._closed) {
             throw new Error('Unable to delete an opening database');
         }
-        return ExponentSQLite.delete(this._name);
+        return ExponentSQLite.deleteAsync(this._name);
     }
 }
 function _serializeQuery(query) {
@@ -87,11 +87,9 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
         throw new TypeError(`The database name must not be undefined`);
     }
     const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
-    const extendedMethods = ['exec', 'close', 'deleteAsync'];
-    const dbWithExtendedMethods = extendedMethods.reduce((curr, methodName) => {
-        curr[methodName] = curr._db[methodName].bind(curr._db);
-        return curr;
-    }, db);
-    return dbWithExtendedMethods;
+    db.exec = db._db.exec.bind(db._db);
+    db.closeAsync = db._db.close.bind(db._db);
+    db.deleteAsync = db._db.deleteAsync.bind(db._db);
+    return db;
 }
 //# sourceMappingURL=SQLite.js.map
