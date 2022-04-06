@@ -41,16 +41,16 @@ internal struct ImagePickerOptions: Record {
   var cameraType: CameraType = .back
 }
 
-internal enum PresentationStyle: Int, EnumArgument {
-  case fullScreen = 0
-  case pageSheet = 1
-  case formSheet = 2
-  case currentContext = 3
-  case overFullScreen = 5
-  case overCurrentContext = 6
-  case popover = 7
-  case none = -1
-  case automatic = -2
+internal enum PresentationStyle: String, EnumArgument {
+  case fullScreen
+  case pageSheet
+  case formSheet
+  case currentContext
+  case overFullScreen
+  case overCurrentContext
+  case popover
+  case none
+  case automatic
 
   func toPresentationStyle() -> UIModalPresentationStyle {
     switch self {
