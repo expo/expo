@@ -2213,7 +2213,7 @@ DEPENDENCIES:
   - ExpoLocalization (from `../packages/expo-localization/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
-  - ExpoModulesTestCore (from `../packages/expo-modules-tests-core/ios`)
+  - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
@@ -2862,7 +2862,7 @@ EXTERNAL SOURCES:
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
   ExpoModulesTestCore:
-    :path: "../packages/expo-modules-tests-core/ios"
+    :path: "../packages/expo-modules-test-core/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
   ExpoSystemUI:
