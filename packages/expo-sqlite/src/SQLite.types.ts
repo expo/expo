@@ -142,7 +142,7 @@ export interface WebSQLDatabase extends Database {
   /**
    * Close the database.
    */
-  close(): void;
+  closeAsync(): void;
 
   /**
    * Delete the database file.

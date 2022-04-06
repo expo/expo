@@ -93,7 +93,7 @@ export function test(t) {
               resolve
             );
           });
-          db.close();
+          db.closeAsync();
         },
         30000
       );
@@ -448,7 +448,7 @@ export function test(t) {
         let fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(fileInfo.exists).toBeTruthy();
 
-        db.close();
+        await db.closeAsync();
         await db.deleteAsync();
         fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(fileInfo.exists).toBeFalsy();

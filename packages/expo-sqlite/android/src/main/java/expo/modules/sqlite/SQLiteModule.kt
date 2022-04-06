@@ -59,10 +59,10 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
   }
 
   @ExpoMethod
-  fun delete(dbName: String, promise: Promise) {
+  fun deleteAsync(dbName: String, promise: Promise) {
     val errorCode = "SQLiteError"
     if (DATABASES.containsKey(dbName)) {
-      promise.reject(errorCode, "Unable to delete an opening database")
+      promise.reject(errorCode, "Unable to delete opened database '$dbName'")
     }
     val dbFile = File(pathForDatabaseName(dbName))
     if (!dbFile.exists()) {
