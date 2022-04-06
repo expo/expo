@@ -73,8 +73,6 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  ndkVersion safeExtGet("ndkVersion", "21.4.7075529")
-
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
     targetCompatibility JavaVersion.VERSION_11

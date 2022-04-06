@@ -100,7 +100,6 @@ repositories {
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
-  ndkVersion safeExtGet("ndkVersion", "21.4.7075529")
 
   // Used to override the NDK path & version on internal CI
   if (System.getenv("ANDROID_NDK_HOME") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
