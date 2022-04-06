@@ -1,9 +1,9 @@
+import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
 import { queryClient } from '../../providers/QueryProvider';
 import { Branch } from '../../queries/useBranchesForApp';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
 import { BranchesScreen, getIncompatibleBranchMessage } from '../BranchesScreen';
-import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
 
 jest.mock('graphql-request', () => {
   return {

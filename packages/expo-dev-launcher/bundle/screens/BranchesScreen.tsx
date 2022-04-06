@@ -33,13 +33,17 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   }
 
   function Header() {
-    return (
-      <View py="small" px="small">
-        <Heading size="small" color="secondary">
-          Recently updated branches
-        </Heading>
-      </View>
-    );
+    if (branches.length > 0) {
+      return (
+        <View py="small" px="small">
+          <Heading size="small" color="secondary">
+            Recently updated branches
+          </Heading>
+        </View>
+      );
+    }
+
+    return null;
   }
 
   function Footer() {
@@ -67,7 +71,13 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   }
 
   function EmptyList() {
-    return <EmptyBranchesMessage branches={branches} incompatibleBranches={incompatibleBranches} />;
+    if (emptyBranches.length === 0) {
+      return (
+        <EmptyBranchesMessage branches={branches} incompatibleBranches={incompatibleBranches} />
+      );
+    }
+
+    return null;
   }
 
   function renderBranch({ index, item: branch }: { index: number; item: Branch }) {

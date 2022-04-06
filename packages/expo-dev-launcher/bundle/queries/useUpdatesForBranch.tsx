@@ -5,7 +5,7 @@ import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
 import { Toasts } from '../components/Toasts';
-import { queryClient } from '../providers/QueryProvider';
+import { queryClient, useQueryOptions } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 
@@ -33,11 +33,14 @@ const query = gql`
   }
 `;
 
-export const updatesPageSize = 10;
-
-function getUpdatesForBranchAsync(appId: string, branchName: string, page: number) {
-  const offset = (page - 1) * updatesPageSize;
-  const variables = { appId, branchName, offset, limit: updatesPageSize };
+function getUpdatesForBranchAsync(
+  appId: string,
+  branchName: string,
+  page: number,
+  pageSize: number
+) {
+  const offset = (page - 1) * pageSize;
+  const variables = { appId, branchName, offset, limit: pageSize };
 
   return apiClient.request(query, variables).then((response) => {
     const updateBranch = response.app.byId.updateBranchByName;
@@ -59,14 +62,16 @@ function getUpdatesForBranchAsync(appId: string, branchName: string, page: numbe
 export function useUpdatesForBranch(branchName: string) {
   const { appId } = useUpdatesConfig();
   const toastStack = useToastStack();
+  const { queryOptions } = useQueryOptions();
 
   const query = useInfiniteQuery(
-    ['updates', appId, branchName],
-    ({ pageParam = 1 }) => getUpdatesForBranchAsync(appId, branchName, pageParam),
+    ['updates', appId, branchName, queryOptions.pageSize],
+    ({ pageParam = 1 }) =>
+      getUpdatesForBranchAsync(appId, branchName, pageParam, queryOptions.pageSize),
     {
       refetchOnMount: false,
       getNextPageParam: (previousPage) => {
-        if (previousPage.updates.length < updatesPageSize) {
+        if (previousPage.updates.length < queryOptions.pageSize) {
           return undefined;
         }
 

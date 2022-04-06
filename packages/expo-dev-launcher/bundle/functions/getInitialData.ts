@@ -1,4 +1,3 @@
-import { NativeModules } from 'react-native';
 import {
   getBuildInfoAsync,
   getCrashReport,
@@ -8,6 +7,7 @@ import {
 } from '../native-modules/DevLauncherInternal';
 import { getMenuPreferencesAsync } from '../native-modules/DevMenuPreferences';
 import { AppProvidersProps } from '../providers/AppProviders';
+import { defaultQueryOptions } from '../providers/QueryProvider';
 import { prefetchBranchesForApp } from '../queries/useBranchesForApp';
 import { getDevSessionsAsync } from './getDevSessionsAsync';
 import { restoreUserAsync } from './restoreUserAsync';
@@ -27,9 +27,11 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
   const initialCrashReport = await getCrashReport();
 
   if (isAuthenticated && updatesConfig.usesEASUpdates) {
-    prefetchBranchesForApp(updatesConfig.appId, updatesConfig.runtimeVersion).catch((error) =>
-      console.log({ error })
-    );
+    prefetchBranchesForApp(
+      updatesConfig.appId,
+      updatesConfig.runtimeVersion,
+      defaultQueryOptions.pageSize
+    ).catch((error) => console.log({ error }));
   }
 
   return {
