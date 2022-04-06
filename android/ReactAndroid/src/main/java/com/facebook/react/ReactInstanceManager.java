@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -138,15 +138,17 @@ import java.util.Set;
 public class ReactInstanceManager {
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
-  /** Listener interface for react instance events. */
-  public interface ReactInstanceEventListener {
 
-    /**
-     * Called when the react context is initialized (all modules registered). Always called on the
-     * UI thread.
-     */
-    void onReactContextInitialized(ReactContext context);
-  }
+  /**
+   * Listener interface for react instance events. This class extends {@Link
+   * com.facebook.react.ReactInstanceEventListener} as a mitigation for both bridgeless and OSS
+   * compatibility: We create a separate ReactInstanceEventListener class to remove dependency on
+   * ReactInstanceManager which is a bridge-specific class, but in the mean time we have to keep
+   * ReactInstanceManager.ReactInstanceEventListener so OSS won't break.
+   */
+  @Deprecated
+  public interface ReactInstanceEventListener
+      extends com.facebook.react.ReactInstanceEventListener {}
 
   private final Set<ReactRoot> mAttachedReactRoots =
       Collections.synchronizedSet(new HashSet<ReactRoot>());
@@ -173,8 +175,10 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
-  private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      Collections.synchronizedList(new ArrayList<ReactInstanceEventListener>());
+  private final Collection<com.facebook.react.ReactInstanceEventListener>
+      mReactInstanceEventListeners =
+          Collections.synchronizedList(
+              new ArrayList<com.facebook.react.ReactInstanceEventListener>());
   // Identifies whether the instance manager is or soon will be initialized (on background thread)
   private volatile boolean mHasStartedCreatingInitialContext = false;
   // Identifies whether the instance manager destroy function is in process,
@@ -332,7 +336,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          rootView.setIsFabric(ReactFeatureFlags.enableFabricInLogBox);
+          rootView.setIsFabric(ReactFeatureFlags.enableFabricRenderer);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
           return rootView;
         }
@@ -1001,12 +1005,14 @@ public class ReactInstanceManager {
   }
 
   /** Add a listener to be notified of react instance events. */
-  public void addReactInstanceEventListener(ReactInstanceEventListener listener) {
+  public void addReactInstanceEventListener(
+      com.facebook.react.ReactInstanceEventListener listener) {
     mReactInstanceEventListeners.add(listener);
   }
 
   /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
-  public void removeReactInstanceEventListener(ReactInstanceEventListener listener) {
+  public void removeReactInstanceEventListener(
+      com.facebook.react.ReactInstanceEventListener listener) {
     mReactInstanceEventListeners.remove(listener);
   }
 
@@ -1097,14 +1103,22 @@ public class ReactInstanceManager {
                 // create
                 mHasStartedCreatingInitialContext = true;
 
+                final ReactApplicationContext reactApplicationContext;
                 try {
                   Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
                   ReactMarker.logMarker(VM_INIT);
-                  final ReactApplicationContext reactApplicationContext =
+                  reactApplicationContext =
                       createReactContext(
                           initParams.getJsExecutorFactory().create(),
                           initParams.getJsBundleLoader());
-
+                } catch (Exception e) {
+                  // Reset state and bail out. This lets us try again later.
+                  mHasStartedCreatingInitialContext = false;
+                  mCreateReactContextThread = null;
+                  mDevSupportManager.handleException(e);
+                  return;
+                }
+                try {
                   mCreateReactContextThread = null;
                   ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
                   final Runnable maybeRecreateReactContextRunnable =
@@ -1177,16 +1191,16 @@ public class ReactInstanceManager {
 
     // There is a race condition here - `finalListeners` can contain null entries
     // See usage below for more details.
-    ReactInstanceEventListener[] listeners =
-        new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
-    final ReactInstanceEventListener[] finalListeners =
+    com.facebook.react.ReactInstanceEventListener[] listeners =
+        new com.facebook.react.ReactInstanceEventListener[mReactInstanceEventListeners.size()];
+    final com.facebook.react.ReactInstanceEventListener[] finalListeners =
         mReactInstanceEventListeners.toArray(listeners);
 
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-            for (ReactInstanceEventListener listener : finalListeners) {
+            for (com.facebook.react.ReactInstanceEventListener listener : finalListeners) {
               // Sometimes this listener is null - probably due to race
               // condition between allocating listeners with a certain
               // size, and getting a `final` version of the array on
@@ -1376,7 +1390,7 @@ public class ReactInstanceManager {
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-    if (ReactFeatureFlags.eagerInitializeFabric) {
+    if (ReactFeatureFlags.enableFabricRenderer) {
       catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {

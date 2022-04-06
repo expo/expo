@@ -95,8 +95,8 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
   androidTestImplementation 'org.amshove.kluent:kluent-android:1.68'
-  androidTestImplementation 'androidx.test:runner:1.1.0'
-  androidTestImplementation 'androidx.test:core:1.0.0'
-  androidTestImplementation 'androidx.test:rules:1.1.0'
+  androidTestImplementation 'androidx.test:runner:1.4.0'
+  androidTestImplementation 'androidx.test:core:1.4.0'
+  androidTestImplementation 'androidx.test:rules:1.4.0'
   androidTestImplementation 'io.mockk:mockk-android:1.12.3'
 }

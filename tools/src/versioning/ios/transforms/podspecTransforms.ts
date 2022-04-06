@@ -77,12 +77,6 @@ export function podspecTransforms(versionName: string): TransformPipeline {
 
       // FBReactNativeSpec
       {
-        // source_files from versioned code
-        paths: 'FBReactNativeSpec.podspec',
-        replace: /(s\.source_files\s+=\s+"\*\*\/)(FBReactNativeSpec\*)/g,
-        with: `$1${versionName}$2`,
-      },
-      {
         // Remove codegen from build phase script
         paths: 'FBReactNativeSpec.podspec',
         replace: /\n  use_react_native_codegen!\((.|\n)+?\n  }\)\n/mg,

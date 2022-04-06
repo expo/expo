@@ -48,7 +48,7 @@ export async function updateVersionedReactNativeAsync(
       replaceWith: '/* $1 */',
     },
     {
-      find: /(\bdependsOn\("generateCodegenArtifactsFromSchema"\))/,
+      find: /(\bpreBuild\.dependsOn\("generateCodegenArtifactsFromSchema"\))/,
       replaceWith: '// $1',
     },
   ]);
@@ -79,10 +79,15 @@ async function runReactNativeCodegenAndroidAsync(
   await spawnAsync('yarn', [
     'node',
     genCodeScript,
+    '--platform',
     'android',
+    '--schemaPath',
     schemaOutputPath,
+    '--outputDir',
     codegenOutputRoot,
+    '--libraryName', 
     'rncore',
+    '--javaPackageName',
     'com.facebook.fbreact.specs',
   ]);
 }

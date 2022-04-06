@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -213,7 +213,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
     String moduleName = reactRootView.getJSModuleName();
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
@@ -271,7 +271,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
 
     // If startSurface is executed in the UIThread then, it uses the ViewportOffset from the View,
     // Otherwise Fabric relies on calling {@link Binding#setConstraints} method to update the
@@ -295,18 +295,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-  public void startSurface(final SurfaceHandler surfaceHandler, final @Nullable View rootView) {
+  public void startSurface(
+      final SurfaceHandler surfaceHandler, final Context context, final @Nullable View rootView) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
 
-    if (rootView == null) {
-      mMountingManager.startSurface(rootTag);
-    } else {
-      Context context = rootView.getContext();
-      ThemedReactContext reactContext =
-          new ThemedReactContext(
-              mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
-      mMountingManager.startSurface(rootTag, rootView, reactContext);
-    }
+    ThemedReactContext reactContext =
+        new ThemedReactContext(
+            mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
 
     surfaceHandler.setSurfaceId(rootTag);
     if (surfaceHandler instanceof SurfaceHandlerBinding) {
@@ -559,6 +555,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData");
     ThemedReactContext themedReactContext = surfaceMountingManager.getContext();
+
+    if (themedReactContext == null) {
+      FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
+      return false;
+    }
     float[] defaultTextInputPaddingForTheme =
         UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
     defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];
@@ -715,6 +716,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
+    long scheduleMountItemStartTime = SystemClock.uptimeMillis();
     boolean isBatchMountItem = mountItem instanceof IntBufferBatchMountItem;
     boolean shouldSchedule =
         (isBatchMountItem && ((IntBufferBatchMountItem) mountItem).shouldSchedule())
@@ -730,7 +732,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mCommitStartTime = commitStartTime;
       mLayoutTime = layoutEndTime - layoutStartTime;
       mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
-      mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
+      mFinishTransactionTime = scheduleMountItemStartTime - finishTransactionStartTime;
       mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     }
 
@@ -765,6 +767,23 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
       ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
+
+      if (ENABLE_FABRIC_LOGS) {
+        FLog.i(
+            TAG,
+            "Statistic of Fabric commit #: "
+                + commitNumber
+                + "\n - Total commit time: "
+                + (finishTransactionEndTime - commitStartTime)
+                + " ms.\n - Layout: "
+                + mLayoutTime
+                + " ms.\n - Diffing: "
+                + (diffEndTime - diffStartTime)
+                + " ms.\n"
+                + " - FinishTransaction (Diffing + Processing + Serialization of MountingInstructions): "
+                + mFinishTransactionCPPTime
+                + " ms.");
+      }
     }
   }
 

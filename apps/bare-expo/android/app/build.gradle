@@ -146,9 +146,6 @@ android {
             // [Custom]: Required for expo-app-auth
             appAuthRedirectScheme: "dev.expo.payments"
         ]
-        ndk {
-            abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
-        }
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         missingDimensionStrategy 'detox', 'full'

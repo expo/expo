@@ -2,9 +2,12 @@ import fs from 'fs-extra';
 import path from 'path';
 import spawnAsync from '@expo/spawn-async';
 
+import { IOS_DIR } from '../../Constants';
+
 export async function runReactNativeCodegenAsync(
   reactNativeRoot: string,
-  versionedReactNativeRoot: string
+  versionedReactNativeRoot: string,
+  versionedName: string
 ): Promise<void> {
   // generate schema.json from js & flow types
   const genSchemaScript = path.join(
@@ -18,10 +21,12 @@ export async function runReactNativeCodegenAsync(
   );
   const schemaOutputPath = path.join(versionedReactNativeRoot, 'codegen', 'schema.json');
   const codegenOutputDir = path.join(
-    versionedReactNativeRoot,
-    'React',
-    'FBReactNativeSpec',
-    'FBReactNativeSpec'
+    IOS_DIR,
+    'build',
+    versionedName,
+    'generated',
+    'ios',
+    `${versionedName}FBReactNativeSpec`
   );
   const jsSourceRoot = path.join(reactNativeRoot, 'Libraries');
   await fs.ensureDir(path.dirname(schemaOutputPath));
@@ -32,9 +37,15 @@ export async function runReactNativeCodegenAsync(
   await spawnAsync('yarn', [
     'node',
     genCodeScript,
+    '--platform',
     'ios',
+    '--schemaPath',
     schemaOutputPath,
+    '--outputDir',
     codegenOutputDir,
+    '--libraryName',
     'FBReactNativeSpec',
+    '--libraryType',
+    'modules',
   ]);
 }

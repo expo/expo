@@ -3,14 +3,14 @@
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 30
-    compileSdkVersion = 30
+    targetSdkVersion = 31
+    compileSdkVersion = 31
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '30.0.2'
+    buildToolsVersion = '31.0.0'
     kotlinVersion = '1.6.10'
-    gradlePluginVersion = '4.2.2'
-    gradleDownloadTaskVersion = '3.4.3'
+    gradlePluginVersion = '7.0.4'
+    gradleDownloadTaskVersion = '4.1.2'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }
   repositories {
@@ -22,6 +22,7 @@ buildscript {
     classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath "com.facebook.react:react-native-gradle-plugin"
   }
 }
 
@@ -75,13 +76,6 @@ allprojects {
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()
-  }
-
-  // used to override ndk path/version from env variables on CI
-  ext["ANDROID_NDK_PATH"] = null
-  if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-    setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
-    ext["ANDROID_NDK_PATH"] =  System.getenv("ANDROID_NDK")
   }
 
   configurations.all {

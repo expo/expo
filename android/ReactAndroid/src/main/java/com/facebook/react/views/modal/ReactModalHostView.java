@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -528,8 +528,18 @@ public class ReactModalHostView extends ViewGroup
     }
 
     @Override
-    public void onChildStartedNativeGesture(MotionEvent androidEvent) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, mEventDispatcher);
+    public void onChildStartedNativeGesture(MotionEvent ev) {
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
+    }
+
+    @Override
+    public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
+    }
+
+    @Override
+    public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
+      mJSTouchDispatcher.onChildEndedNativeGesture(ev, mEventDispatcher);
     }
 
     @Override
