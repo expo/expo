@@ -6,13 +6,13 @@ import resolveFrom from 'resolve-from';
 import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
+import { resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { resolveWithTimeout } from '../../utils/delay';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;

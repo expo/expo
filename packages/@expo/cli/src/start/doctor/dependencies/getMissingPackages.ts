@@ -1,4 +1,3 @@
-import { ExpoConfig, getConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
