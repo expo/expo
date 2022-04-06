@@ -18,6 +18,7 @@
 - Fix Android crash when using Hermes on react-native 0.67. ([#16099](https://github.com/expo/expo/pull/16099) by [@kudo](https://github.com/kudo))
 - Fix backwards compatibility with AppDelegate in existing projects. ([#16497](https://github.com/expo/expo/pull/16497) by [@esamelson](https://github.com/esamelson))
 - Fix gradle buildscript compatibility with flavors ([#16686](https://github.com/expo/expo/issues/16686)). ([#16799](https://github.com/expo/expo/pull/16799) by [@esamelson](https://github.com/esamelson))
+- Fix gradle buildscript compatibility for flavors using bundle keyword ([#16686](https://github.com/expo/expo/issues/16686#issuecomment-1088282480)). ([#16936](https://github.com/expo/expo/pull/16936) by [@dogfootruler-kr](https://github.com/dogfootruler-kr))
 
 ### 💡 Others
 

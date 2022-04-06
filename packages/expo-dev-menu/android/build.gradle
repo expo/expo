@@ -62,6 +62,8 @@ def getCurrentFlavor() {
 
   if (taskRequestName.contains("assemble")) {
     pattern = Pattern.compile("assemble(\\w+)(Release|Debug)")
+  } else if (taskRequestName.contains("bundle")) {
+    pattern = Pattern.compile("bundle(\\w+)(Release|Debug)")
   } else {
     pattern = Pattern.compile("generate(\\w+)(Release|Debug)")
   }
