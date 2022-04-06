@@ -152,7 +152,7 @@
     "react-native-maps": "0.29.4",
     "react-native-pager-view": "5.4.15",
     "react-native-paper": "^4.0.1",
-    "react-native-reanimated": "~2.4.1",
+    "react-native-reanimated": "~2.6.0",
     "react-native-redash": "^14.1.1",
     "react-native-safe-area-context": "3.3.2",
     "react-native-safe-area-view": "^0.14.8",
