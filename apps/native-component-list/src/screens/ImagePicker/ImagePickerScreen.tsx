@@ -126,40 +126,36 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         platforms: ['ios'],
         values: [
           {
-            name: 'UIImagePickerPresentationStyle.FullScreen',
-            value: ImagePicker.UIImagePickerPresentationStyle.FullScreen,
+            name: 'UIImagePickerPresentationStyle.FULL_SCREEN',
+            value: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
           },
           {
-            name: 'UIImagePickerPresentationStyle.PageSheet',
-            value: ImagePicker.UIImagePickerPresentationStyle.PageSheet,
+            name: 'UIImagePickerPresentationStyle.PAGE_SHEET',
+            value: ImagePicker.UIImagePickerPresentationStyle.PAGE_SHEET,
           },
           {
-            name: 'UIImagePickerPresentationStyle.FormSheet',
-            value: ImagePicker.UIImagePickerPresentationStyle.FormSheet,
+            name: 'UIImagePickerPresentationStyle.FORM_SHEET',
+            value: ImagePicker.UIImagePickerPresentationStyle.FORM_SHEET,
           },
           {
-            name: 'UIImagePickerPresentationStyle.CurrentContext',
-            value: ImagePicker.UIImagePickerPresentationStyle.CurrentContext,
+            name: 'UIImagePickerPresentationStyle.CURRENT_CONTEXT',
+            value: ImagePicker.UIImagePickerPresentationStyle.CURRENT_CONTEXT,
           },
           {
-            name: 'UIImagePickerPresentationStyle.OverFullScreen',
-            value: ImagePicker.UIImagePickerPresentationStyle.OverFullScreen,
+            name: 'UIImagePickerPresentationStyle.OVER_FULL_SCREEN',
+            value: ImagePicker.UIImagePickerPresentationStyle.OVER_FULL_SCREEN,
           },
           {
-            name: 'UIImagePickerPresentationStyle.OverCurrentContext',
-            value: ImagePicker.UIImagePickerPresentationStyle.OverCurrentContext,
+            name: 'UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT',
+            value: ImagePicker.UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT,
           },
           {
-            name: 'UIImagePickerPresentationStyle.Popover',
-            value: ImagePicker.UIImagePickerPresentationStyle.Popover,
+            name: 'UIImagePickerPresentationStyle.POPOVER',
+            value: ImagePicker.UIImagePickerPresentationStyle.POPOVER,
           },
           {
-            name: 'UIImagePickerPresentationStyle.BlurOverFullScreen',
-            value: ImagePicker.UIImagePickerPresentationStyle.BlurOverFullScreen,
-          },
-          {
-            name: 'UIImagePickerPresentationStyle.Automatic',
-            value: ImagePicker.UIImagePickerPresentationStyle.Automatic,
+            name: 'UIImagePickerPresentationStyle.AUTOMATIC',
+            value: ImagePicker.UIImagePickerPresentationStyle.AUTOMATIC,
           },
         ],
       },

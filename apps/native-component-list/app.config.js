@@ -26,8 +26,8 @@ export default ({ config }) => {
 
     // Android plugins
 
-    // expo-modules-tests-core requires kotlin, so additional setup must be executed.
-    'expo-modules-tests-core',
+    // expo-modules-test-core requires kotlin, so additional setup must be executed.
+    'expo-modules-test-core',
     [
       './plugins/withGradleProperties',
       {
@@ -37,11 +37,11 @@ export default ({ config }) => {
       },
     ],
     [
-      // expo-modules-tests-core must be added manually.
+      // expo-modules-test-core must be added manually.
       './plugins/withSettingsImport',
       {
-        packageName: 'expo-modules-tests-core',
-        packagePath: '../../../packages/expo-modules-tests-core/android',
+        packageName: 'expo-modules-test-core',
+        packagePath: '../../../packages/expo-modules-test-core/android',
       },
     ],
   ];

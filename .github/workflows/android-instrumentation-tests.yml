@@ -27,7 +27,7 @@ jobs:
     runs-on: macos-11
     timeout-minutes: 60
     env:
-      NDK_ABI_FILTERS: x86_64
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v2
@@ -71,9 +71,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: 💿 Patch react-native to support single abi
-        run: sed -i '' 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
-        working-directory: react-native-lab/react-native
       - name: 🎸 Run instrumented unit tests
         timeout-minutes: 40
         uses: reactivecircus/android-emulator-runner@v2

@@ -4,7 +4,6 @@
   "expo-dev-launcher",
   "expo-dev-menu",
   "expo-dev-menu-interface",
-  "expo-eas-client",
   "expo-gl-cpp",
   "expo-image",
   "expo-in-app-purchases",
@@ -13,5 +12,5 @@
   "expo-module-scripts",
   "expo-module-template",
   "jest-expo",
-  "expo-modules-tests-core"
+  "expo-modules-test-core"
 ]

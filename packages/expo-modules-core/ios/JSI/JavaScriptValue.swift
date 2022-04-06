@@ -72,7 +72,7 @@ public extension JavaScriptValue {
     throw JavaScriptValueConversionException((kind: kind, target: "Array"))
   }
 
-  func asDict() throws -> [String: Any?] {
+  func asDict() throws -> [String: Any] {
     if isObject() {
       return getDictionary()
     }

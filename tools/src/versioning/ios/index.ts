@@ -220,7 +220,7 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   await Promise.all(jsFiles.map((jsFile) => fs.remove(jsFile)));
 
   console.log('Running react-native-codegen');
-  await runReactNativeCodegenAsync(path.join(EXPO_DIR, RELATIVE_RN_PATH), versionedReactNativePath);
+  await runReactNativeCodegenAsync(path.join(EXPO_DIR, RELATIVE_RN_PATH), versionedReactNativePath, versionName);
 
   console.log(
     `Copying cpp libraries from ${chalk.magenta(path.join(RELATIVE_RN_PATH, 'ReactCommon'))} ...`
@@ -284,19 +284,43 @@ async function generateReactNativePodScriptAsync(
   versionedReactNativePath: string,
   versionName: string
 ): Promise<void> {
-  const targetAutolinkPath = path.join(versionedReactNativePath, 'scripts', 'react_native_pods.rb');
-
   await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts', 'react_native_pods.rb'),
-    targetAutolinkPath
+    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts'),
+    path.join(versionedReactNativePath, 'scripts'),
   );
 
-  const targetSource = (await fs.readFile(targetAutolinkPath, 'utf8'))
+  const targetAutolinkPath = path.join(versionedReactNativePath, 'scripts', 'react_native_pods.rb');
+  let targetSource = (await fs.readFile(targetAutolinkPath, 'utf8'))
     .replace('def use_react_native!', `def use_react_native_${versionName}!`)
     .replace('def use_react_native_codegen!', `def use_react_native_codegen_${versionName}!`)
     .replace(/(\bpod\s+([^\n]+)\/third-party-podspecs\/([^\n]+))/g, '# $1')
     .replace(/\bpod\s+'([^\']+)'/g, `pod '${versionName}$1'`)
-    .replace(/(:path => "[^"]+")/g, `$1, :project_name => '${versionName}'`);
+    .replace(/(:path => "[^"]+")/g, `$1, :project_name => '${versionName}'`)
+    // Removes duplicated constants
+    .replace("DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'", '')
+    .replace("NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'", '')
+    ;
+
+  // Since `React-Codegen.podspec` is generated during `pod install`, versioning should be done in the pod script.
+  const reactCodegenDependencies = [
+    'FBReactNativeSpec',
+    'React-jsiexecutor',
+    'RCTRequired',
+    'RCTTypeSafety',
+    'React-Core',
+    'React-jsi',
+    'ReactCommon/turbomodule/core',
+    'React-graphics',
+    'React-rncore',
+  ];
+  const reactCodegenDependenciesRegExp = new RegExp(`["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`, 'g');
+  targetSource = targetSource
+    .replace("$CODEGEN_OUTPUT_DIR = 'build/generated/ios'", `$CODEGEN_OUTPUT_DIR = 'build/${versionName}/generated/ios'`)
+    .replace(/\$(CODEGEN_OUTPUT_DIR)\b/g, `$${versionName}$1`)
+    .replace(/\b(React-Codegen)\b/g, `${versionName}$1`)
+    .replace(/(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, `$1${versionName}React-`)
+    .replace(reactCodegenDependenciesRegExp, `"${versionName}$1":$2`)
+    ;
 
   await fs.writeFile(targetAutolinkPath, targetSource);
 }
@@ -864,6 +888,7 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
   // Namespace the new React clone
   console.log('Namespacing/transforming files...');
   await transformReactNativeAsync(newVersionPath, versionName, versionedPodNames);
+  await transformReactNativeAsync(path.join(IOS_DIR, 'build', versionName, 'generated', 'ios'), versionName, versionedPodNames);
 
   // Generate Ruby scripts with versioned dependencies and postinstall actions that will be evaluated in the Expo client's Podfile.
   console.log('Adding dependency to root Podfile...');
@@ -895,7 +920,10 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
   console.log('Removing any `filename--` files from the new pod ...');
 
   try {
-    const minusMinusFiles = await glob(path.join(newVersionPath, '**', '*--'));
+    const minusMinusFiles = [
+      ...await glob(path.join(newVersionPath, '**', '*--')),
+      ...await glob(path.join(IOS_DIR, 'build', versionName, 'generated', 'ios', '**', '*--')),
+    ];
     for (const minusMinusFile of minusMinusFiles) {
       await fs.remove(minusMinusFile);
     }
