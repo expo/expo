@@ -6,7 +6,6 @@ import path from 'path';
 
 import { EXPO_DIR, ANDROID_DIR } from '../Constants';
 import { getReactNativeSubmoduleDir } from '../Directories';
-import logger from '../Logger';
 import { getNextSDKVersionAsync } from '../ProjectVersions';
 import { transformFileAsync } from '../Transforms';
 
