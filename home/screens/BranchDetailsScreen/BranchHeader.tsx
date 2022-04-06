@@ -33,7 +33,7 @@ export function BranchHeader(props: Props) {
         {props.manifestPermalink && (
           <TouchableOpacity
             onPress={() => {
-              Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(props.manifestPermalink)));
+              Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(props.manifestPermalink!)));
             }}
             style={{
               backgroundColor: theme.button.tertiary.background,

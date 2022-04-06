@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import { BorderlessButton, ScrollView } from 'react-native-gesture-handler';
 
 import { StyledText } from '../components/Text';
 import Colors from '../constants/Colors';

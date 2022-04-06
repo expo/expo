@@ -11,6 +11,7 @@ import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
 import { BranchDetailsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
+import { useThrottle } from '../../utils/useThrottle';
 import { BranchHeader } from './BranchHeader';
 import { EmptySection } from './EmptySection';
 
@@ -28,17 +29,10 @@ type Props = {
   refetch: () => Promise<unknown>;
 } & StackScreenProps<HomeStackRoutes, 'BranchDetails'>;
 
-export function BranchDetailsView({
-  loading,
-  error,
-  data,
-  refetch,
-  branchName,
-  networkStatus,
-}: Props) {
+export function BranchDetailsView({ error, data, refetch, branchName, networkStatus }: Props) {
   const theme = useExpoTheme();
 
-  const refetching = networkStatus === NetworkStatus.refetch;
+  const refetching = useThrottle(networkStatus === NetworkStatus.refetch, 800);
 
   if (error && !data?.app?.byId.updateBranchByName) {
     console.error(error);
@@ -54,7 +48,7 @@ export function BranchDetailsView({
     );
   }
 
-  if ((!refetching && loading) || !data?.app?.byId.updateBranchByName) {
+  if (networkStatus === NetworkStatus.loading || !data?.app?.byId.updateBranchByName) {
     return (
       <View flex="1" align="centered">
         <ActivityIndicator size="large" color={theme.highlight.accent} />
