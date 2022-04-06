@@ -19,7 +19,7 @@ final internal class WebAuthSession {
   // It must be initialized before hand as `ASWebAuthenticationSession` holds it as a weak property
   private var presentationContextProvider = PresentationContextProvider()
 
-  init(authUrl: URL, redirectUrl: URL) {
+  init(authUrl: URL, redirectUrl: URL, options: AuthSessionOptions) {
     self.authSession = ASWebAuthenticationSession(
       url: authUrl,
       callbackURLScheme: redirectUrl.scheme,
@@ -31,6 +31,9 @@ final internal class WebAuthSession {
         ])
       }
     )
+    if #available(iOS 13.0, *) {
+      self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
+    }
   }
 
   func open(_ promise: Promise) {
