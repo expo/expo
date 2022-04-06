@@ -8,7 +8,7 @@ import * as UrlUtils from '../../utils/UrlUtils';
 
 type Props = {
   name: string;
-  manifestPermalink?: string;
+  manifestPermalink: string;
 };
 
 export function BranchHeader(props: Props) {
@@ -30,22 +30,20 @@ export function BranchHeader(props: Props) {
             {props.name}
           </Text>
         </Row>
-        {props.manifestPermalink && (
-          <TouchableOpacity
-            onPress={() => {
-              Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(props.manifestPermalink!)));
-            }}
-            style={{
-              backgroundColor: theme.button.tertiary.background,
-              paddingHorizontal: spacing[4],
-              paddingVertical: spacing[2],
-              borderRadius: 4,
-            }}>
-            <Text type="InterSemiBold" style={{ color: theme.button.tertiary.foreground }}>
-              Open
-            </Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          onPress={() => {
+            Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(props.manifestPermalink)));
+          }}
+          style={{
+            backgroundColor: theme.button.tertiary.background,
+            paddingHorizontal: spacing[4],
+            paddingVertical: spacing[2],
+            borderRadius: 4,
+          }}>
+          <Text type="InterSemiBold" style={{ color: theme.button.tertiary.foreground }}>
+            Open
+          </Text>
+        </TouchableOpacity>
       </Row>
     </View>
   );

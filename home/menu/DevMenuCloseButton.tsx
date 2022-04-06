@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import {

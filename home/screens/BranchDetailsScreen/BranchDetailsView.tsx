@@ -1,17 +1,14 @@
-import { NetworkStatus } from '@apollo/client';
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
 import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, RefreshControl } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { ActivityIndicator, FlatList } from 'react-native';
 
 import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
 import { BranchDetailsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { useThrottle } from '../../utils/useThrottle';
 import { BranchHeader } from './BranchHeader';
 import { EmptySection } from './EmptySection';
 
@@ -24,61 +21,55 @@ type Props = {
   loading: boolean;
   error?: Error;
   data?: BranchDetailsQuery;
-  branchName: string;
-  networkStatus: number;
-  refetch: () => Promise<unknown>;
 } & StackScreenProps<HomeStackRoutes, 'BranchDetails'>;
 
-export function BranchDetailsView({ error, data, refetch, branchName, networkStatus }: Props) {
+export function BranchDetailsView({ loading, error, data }: Props) {
   const theme = useExpoTheme();
 
-  const refetching = useThrottle(networkStatus === NetworkStatus.refetch, 800);
+  let contents;
 
   if (error && !data?.app?.byId.updateBranchByName) {
     console.error(error);
-    return (
-      <View flex="1" align="centered">
-        <Text
-          align="center"
-          style={{ marginVertical: spacing[4], marginHorizontal: spacing[4] }}
-          type="InterRegular">
-          {ERROR_TEXT}
-        </Text>
-      </View>
+    contents = (
+      <Text
+        align="center"
+        style={{ marginVertical: spacing[4], marginHorizontal: spacing[4] }}
+        type="InterRegular">
+        {ERROR_TEXT}
+      </Text>
     );
-  }
-
-  if (networkStatus === NetworkStatus.loading || !data?.app?.byId.updateBranchByName) {
-    return (
+  } else if (loading || !data?.app?.byId.updateBranchByName) {
+    contents = (
       <View flex="1" align="centered">
         <ActivityIndicator size="large" color={theme.highlight.accent} />
       </View>
     );
+  } else {
+    contents = (
+      <View style={{ flex: 1, backgroundColor: theme.background.screen }}>
+        <BranchHeader
+          name={data.app.byId.updateBranchByName.name}
+          manifestPermalink={data.app.byId.updateBranchByName.updates[0].manifestPermalink}
+        />
+        <FlatList<typeof data.app.byId.updateBranchByName.updates[number]>
+          data={data.app.byId.updateBranchByName.updates}
+          ListHeaderComponent={<SectionHeader header="Updates" style={{ paddingTop: 0 }} />}
+          keyExtractor={(update) => update.id}
+          contentContainerStyle={{ padding: spacing[4] }}
+          ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+          renderItem={({ item: update }) => (
+            <UpdateListItem
+              id={update.id}
+              message={update.message ?? undefined}
+              manifestPermalink={update.manifestPermalink}
+              createdAt={update.createdAt}
+            />
+          )}
+        />
+        {!data.app.byId.updateBranchByName!.updates.length && <EmptySection />}
+      </View>
+    );
   }
 
-  return (
-    <View style={{ flex: 1, backgroundColor: theme.background.screen }}>
-      <BranchHeader
-        name={branchName}
-        manifestPermalink={data.app.byId.updateBranchByName.updates[0].manifestPermalink}
-      />
-      <FlatList
-        data={data.app.byId.updateBranchByName.updates}
-        refreshControl={<RefreshControl onRefresh={refetch} refreshing={refetching} />}
-        ListHeaderComponent={<SectionHeader header="Updates" style={{ paddingTop: 0 }} />}
-        keyExtractor={(update) => update.id}
-        contentContainerStyle={{ padding: spacing[4] }}
-        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
-        ListEmptyComponent={() => <EmptySection />}
-        renderItem={({ item: update }) => (
-          <UpdateListItem
-            id={update.id}
-            message={update.message ?? undefined}
-            manifestPermalink={update.manifestPermalink}
-            createdAt={update.createdAt}
-          />
-        )}
-      />
-    </View>
-  );
+  return <View flex="1">{contents}</View>;
 }

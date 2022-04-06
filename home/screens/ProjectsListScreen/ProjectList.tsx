@@ -2,8 +2,7 @@ import { spacing } from '@expo/styleguide-native';
 import dedent from 'dedent';
 import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { ActivityIndicator, FlatList, ListRenderItem, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import PrimaryButton from '../../components/PrimaryButton';

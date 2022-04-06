@@ -1,8 +1,7 @@
 import { spacing } from '@expo/styleguide-native';
 import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, View as RNView } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { ActivityIndicator, FlatList, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import { SnacksListItem } from '../../components/SnacksListItem';

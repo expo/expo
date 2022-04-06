@@ -1,5 +1,4 @@
-import FontAwesome from '@expo/vector-icons/build/FontAwesome';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';

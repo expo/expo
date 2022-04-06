@@ -1,7 +1,6 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { darkTheme, lightTheme } from '@expo/styleguide-native';
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
