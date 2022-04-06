@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
 import com.android.build.OutputFile
 
 /**
@@ -135,6 +136,7 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
