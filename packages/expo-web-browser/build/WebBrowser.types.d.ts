@@ -79,6 +79,21 @@ export declare type WebBrowserOpenOptions = {
      */
     windowFeatures?: string | WebBrowserWindowFeatures;
 };
+/**
+ * If there is no native AuthSession implementation available (which is the case on Android) the params inherited from
+ * [`WebBrowserOpenOptions`](#webbrowseropenoptions) will be used in the browser polyfill. Otherwise, the browser parameters will be ignored.
+ */
+export declare type AuthSessionOpenOptions = WebBrowserOpenOptions & {
+    /**
+     * Determines whether the session should ask the browser for a private authentication session.
+     * Set this to `true` to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session.
+     * Whether the request is honored depends on the user’s default web browser.
+     *
+     * @default false
+     * @platform ios 13+
+     */
+    preferEphemeralSession?: boolean;
+};
 export declare type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
 export declare type WebBrowserCustomTabsResults = {
     /**
