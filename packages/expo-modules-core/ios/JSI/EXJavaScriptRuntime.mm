@@ -105,7 +105,7 @@ using namespace facebook;
 
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
 {
-  std::shared_ptr<jsi::StringBuffer> scriptBuffer = std::make_shared<jsi::StringBuffer>([[NSString stringWithFormat:@"(%@)", scriptSource] UTF8String]);
+  std::shared_ptr<jsi::StringBuffer> scriptBuffer = std::make_shared<jsi::StringBuffer>([scriptSource UTF8String]);
   std::shared_ptr<jsi::Value> result;
 
   try {

@@ -53,15 +53,15 @@ class JavaScriptRuntimeSpec: ExpoSpec {
       }
 
       it("returns array") {
-        let array = try! runtime.eval("['foo', 'bar']")
+        let array = try! runtime.eval("(['foo', 'bar'])")
         expect(array.isObject()) == true
         expect(array.kind) == .object
         expect(try! array.asArray().map { try $0?.asString() }) == ["foo", "bar"]
       }
 
       it("returns dict") {
-        let dict1 = try! runtime.eval("{ 'foo': 123 }")
-        let dict2 = try! runtime.eval("{ 'foo': 'bar' }")
+        let dict1 = try! runtime.eval("({ 'foo': 123 })")
+        let dict2 = try! runtime.eval("({ 'foo': 'bar' })")
         expect(dict1.isObject()) == true
         expect(dict2.isObject()) == true
         expect(dict1.kind) == .object
@@ -71,7 +71,7 @@ class JavaScriptRuntimeSpec: ExpoSpec {
       }
 
       it("returns function") {
-        let function = try! runtime.eval("function() {}")
+        let function = try! runtime.eval("(function() {})")
         expect(function.isObject()) == true
         expect(function.isFunction()) == true
         expect(function.kind) == .function
