@@ -16,6 +16,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-svg` from `12.1.1` to `12.3.0`. ([#16874](https://github.com/expo/expo/pull/16874) by [@bbarthec](https://github.com/bbarthec))
 - Updated `react-native-screens` from `3.10.1` to `3.11.1`. ([#16913](https://github.com/expo/expo/pull/16913) by [@bbarthec](https://github.com/bbarthec))
 - Updated `react-native-gesture-handler` from `2.1.0` to `2.2.0`. ([#16922](https://github.com/expo/expo/pull/16922) by [@bbarthec](https://github.com/bbarthec))
+- Updated `@stripe/stripe-react-native` from `0.2.3` to `0.6.0`. ([#16938](https://github.com/expo/expo/pull/16938) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
