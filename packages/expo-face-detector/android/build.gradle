@@ -77,10 +77,6 @@ android {
     versionName "11.1.1"
   }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
-  }
-
   lintOptions {
     abortOnError false
   }

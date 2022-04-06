@@ -110,9 +110,6 @@ android {
   lintOptions {
     abortOnError false
   }
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
-  }
   testOptions {
     unitTests.includeAndroidResources = true
   }
