@@ -10,9 +10,14 @@
 
 ### 🐛 Bug fixes
 
+- On Android fixed `BiometricPrompt.ERROR_CANCELED` returned when fallbacking to PIN/Pattern/Password authentication method. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated `androix.biometric.biometric` from `1.1.0` to `1.2.0-alphas04`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+- Bumped `compileSdkVersion` from `30` to `31`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+
 
 ## 12.1.1 - 2022-02-01
 
