@@ -1,5 +1,4 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BranchesScreen } from './BranchesScreen';
 import { ExtensionsScreen } from './ExtensionsScreen';
@@ -16,8 +15,6 @@ export type ExtensionsStackParamList = {
 const Extensions = createStackNavigator<ExtensionsStackParamList>();
 
 export function ExtensionsStack() {
-  const safeAreaInsets = useSafeAreaInsets();
-
   return (
     <Extensions.Navigator headerMode="float">
       <Extensions.Screen
@@ -27,12 +24,12 @@ export function ExtensionsStack() {
       />
       <Extensions.Screen
         name="Branches"
-        options={{ headerTitle: 'EAS Update', headerStatusBarHeight: safeAreaInsets.top }}
+        options={{ headerTitle: 'EAS Update' }}
         component={BranchesScreen}
       />
       <Extensions.Screen
         name="Updates"
-        options={{ headerTitle: 'Branch', headerStatusBarHeight: safeAreaInsets.top }}
+        options={{ headerTitle: 'Branch' }}
         component={UpdatesScreen}
       />
     </Extensions.Navigator>

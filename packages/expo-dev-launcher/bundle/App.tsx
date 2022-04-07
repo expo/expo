@@ -31,12 +31,12 @@ export function App(props: LauncherAppProps) {
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
         <Stack.Navigator initialRouteName="Main" mode="modal">
-          <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
+          <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
 
           <Stack.Screen
             name="User Profile"
             component={UserProfileScreen}
-            options={{ header: () => null }}
+            options={{ headerShown: false }}
           />
 
           <Stack.Screen name="Crash Report" component={CrashReportScreen} />
@@ -56,7 +56,7 @@ const Main = () => {
         name="Home"
         component={HomeScreen}
         options={{
-          header: () => null,
+          headerShown: false,
           tabBarIcon: ({ focused }) => <HomeFilledIcon focused={focused} />,
         }}
       />
