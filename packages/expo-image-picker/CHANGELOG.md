@@ -14,6 +14,12 @@
 
 - Fix failure on Android when `allowsEditing` is `true` and non-jpeg file picked. ([#16615](https://github.com/expo/expo/pull/16615) by [@mnightingale](https://github.com/mnightingale))
 
+### ⚠ Notices
+
+- Deleted the `UIImagePickerPresentationStyle.BlurOverFullScreen` option as it does not work on iOS. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Deprecated all `PascalCase` values of the `UIImagePickerPresentationStyle` enum. Use their `SNAKE_UPPERCASE` counterparts instead. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Underlying values of the `UIImagePickerPresentationStyle` are now strings. They were integers before. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))

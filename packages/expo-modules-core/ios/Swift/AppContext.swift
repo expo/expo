@@ -143,6 +143,12 @@ public final class AppContext {
 
   // MARK: - Runtime
 
+  internal func installExpoModulesHostObject(_ interopBridge: SwiftInteropBridge) throws {
+    guard let runtime = runtime else {
+      throw UndefinedRuntimeException()
+    }
+    EXJavaScriptRuntimeManager.installExpoModules(to: runtime, withSwiftInterop: interopBridge)
+  }
   /**
    Unsets runtime objects that we hold for each module.
    */
@@ -166,7 +172,13 @@ public final class AppContext {
 
   class DeallocatedAppContextException: Exception {
     override var reason: String {
-      "The app context has been deallocated"
+      "The AppContext has been deallocated"
+    }
+  }
+
+  class UndefinedRuntimeException: Exception {
+    override var reason: String {
+      "The AppContext has undefined runtime"
     }
   }
 }

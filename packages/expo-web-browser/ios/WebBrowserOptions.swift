@@ -24,6 +24,11 @@ struct WebBrowserOptions: Record {
   var presentationStyle: PresentationStyle = .overFullScreen
 }
 
+struct AuthSessionOptions: Record {
+  @Field
+  var preferEphemeralSession: Bool = false
+}
+
 enum DismissButtonStyle: String, EnumArgument {
   case done
   case close

@@ -211,8 +211,8 @@ export function postTransforms(versionName: string): TransformPipeline {
       // react-native-safe-area-context
       {
         paths: [
-          'RCTView+SafeAreaCompat.h',
-          'RCTView+SafeAreaCompat.m',
+          'RNCSafeAreaUtils.h',
+          'RNCSafeAreaUtils.m',
           'RNCSafeAreaProvider.m',
           'RNCSafeAreaView.m',
         ],

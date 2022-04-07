@@ -16,7 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
-import { EASBranchRow } from '../components/EASUpdatesRows';
+import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
@@ -154,7 +154,12 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 
 function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
   const { appId } = useUpdatesConfig();
-  const { isLoading, data: branches, incompatibleBranches } = useBranchesForApp(appId);
+  const {
+    isLoading,
+    data: branches,
+    emptyBranches,
+    incompatibleBranches,
+  } = useBranchesForApp(appId);
 
   function onSeeAllBranchesPress() {
     navigation.navigate('Branches');
@@ -168,6 +173,56 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
     return (
       <View height="44" align="centered" mx="medium" rounded="large" bg="default">
         <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (branches.length === 0 && emptyBranches.length > 0) {
+    return (
+      <View mx="medium">
+        <View py="small" px="small">
+          <Heading size="small" color="secondary">
+            EAS Update
+          </Heading>
+        </View>
+
+        {emptyBranches.slice(0, 3).map((branch, index, arr) => {
+          const isFirst = index === 0;
+          const isLast = index === arr?.length - 1;
+
+          return (
+            <View key={branch.id}>
+              <Button.ScaleOnPressContainer
+                bg="default"
+                onPress={() => onBranchPress(branch.name)}
+                roundedBottom="none"
+                roundedTop={isFirst ? 'large' : 'none'}>
+                <View
+                  bg="default"
+                  roundedTop={isFirst ? 'large' : 'none'}
+                  roundedBottom={isLast ? 'large' : 'none'}
+                  py="small"
+                  px="small">
+                  <EASEmptyBranchRow branch={branch} />
+                </View>
+              </Button.ScaleOnPressContainer>
+              <Divider />
+            </View>
+          );
+        })}
+        <Button.ScaleOnPressContainer
+          onPress={onSeeAllBranchesPress}
+          bg="default"
+          roundedTop="none"
+          roundedBottom="large">
+          <View bg="default" py="small" px="small" roundedTop="none" roundedBottom="large">
+            <Row>
+              <Text size="medium">See all branches</Text>
+              <Spacer.Horizontal />
+              <ChevronRightIcon />
+            </Row>
+          </View>
+        </Button.ScaleOnPressContainer>
       </View>
     );
   }

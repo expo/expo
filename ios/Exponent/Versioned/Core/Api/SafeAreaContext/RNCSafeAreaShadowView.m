@@ -3,9 +3,9 @@
 #import <React/RCTAssert.h>
 #include <math.h>
 
+#import "RNCSafeAreaViewEdges.h"
 #import "RNCSafeAreaViewLocalData.h"
 #import "RNCSafeAreaViewMode.h"
-#import "RNCSafeAreaViewEdges.h"
 
 // From RCTShadowView.m
 typedef NS_ENUM(unsigned int, meta_prop_t) {
@@ -39,7 +39,11 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   return self;
 }
 
-- (void)extractEdges:(YGValue[])_metaProps top:(CGFloat *)top right:(CGFloat *)right bottom:(CGFloat *)bottom left:(CGFloat *)left
+- (void)extractEdges:(YGValue[])_metaProps
+                 top:(CGFloat *)top
+               right:(CGFloat *)right
+              bottom:(CGFloat *)bottom
+                left:(CGFloat *)left
 {
   if (_metaProps[META_PROP_ALL].unit == YGUnitPoint) {
     *top = _metaProps[META_PROP_ALL].value;
@@ -61,7 +65,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   if (_metaProps[META_PROP_TOP].unit == YGUnitPoint) {
     *top = _metaProps[META_PROP_TOP].value;
   }
-    
+
   if (_metaProps[META_PROP_RIGHT].unit == YGUnitPoint) {
     *right = _metaProps[META_PROP_RIGHT].value;
   }
@@ -75,7 +79,8 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   }
 }
 
-- (void)resetInsetsForMode:(RNCSafeAreaViewMode)mode {
+- (void)resetInsetsForMode:(RNCSafeAreaViewMode)mode
+{
   if (mode == RNCSafeAreaViewModePadding) {
     super.paddingTop = _paddingMetaProps[META_PROP_TOP];
     super.paddingRight = _paddingMetaProps[META_PROP_RIGHT];
@@ -136,38 +141,37 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 - (void)setLocalData:(RNCSafeAreaViewLocalData *)localData
 {
   RCTAssert(
-    [localData isKindOfClass:[RNCSafeAreaViewLocalData class]],
-    @"Local data object for `RCTRNCSafeAreaShadowView` must be `RCTRNCSafeAreaViewLocalData` instance."
-  );
+      [localData isKindOfClass:[RNCSafeAreaViewLocalData class]],
+      @"Local data object for `RCTRNCSafeAreaShadowView` must be `RCTRNCSafeAreaViewLocalData` instance.");
 
   if (_localData != nil && _localData.mode != localData.mode) {
     [self resetInsetsForMode:_localData.mode];
   }
-  
+
   _localData = localData;
   _needsUpdate = false;
   [self updateInsets];
-  
+
   if (_localData.mode == RNCSafeAreaViewModePadding) {
-    [super didSetProps:@[@"paddingTop", @"paddingRight", @"paddingBottom", @"paddingLeft"]];
+    [super didSetProps:@[ @"paddingTop", @"paddingRight", @"paddingBottom", @"paddingLeft" ]];
   } else {
-    [super didSetProps:@[@"marginTop", @"marginRight", @"marginBottom", @"marginLeft"]];
+    [super didSetProps:@[ @"marginTop", @"marginRight", @"marginBottom", @"marginLeft" ]];
   }
 }
 
 #define SHADOW_VIEW_MARGIN_PADDING_PROP(edge, metaProp) \
-- (void)setPadding##edge:(YGValue)value                 \
-{                                                       \
-  [super setPadding##edge:value];                       \
-  _needsUpdate = true;                                  \
-  _paddingMetaProps[META_PROP_##metaProp] = value;      \
-}                                                       \
-- (void)setMargin##edge:(YGValue)value                  \
-{                                                       \
-  [super setMargin##edge:value];                        \
-  _needsUpdate = true;                                  \
-  _marginMetaProps[META_PROP_##metaProp] = value;       \
-}
+  -(void)setPadding##edge : (YGValue)value              \
+  {                                                     \
+    [super setPadding##edge:value];                     \
+    _needsUpdate = true;                                \
+    _paddingMetaProps[META_PROP_##metaProp] = value;    \
+  }                                                     \
+  -(void)setMargin##edge : (YGValue)value               \
+  {                                                     \
+    [super setMargin##edge:value];                      \
+    _needsUpdate = true;                                \
+    _marginMetaProps[META_PROP_##metaProp] = value;     \
+  }
 
 SHADOW_VIEW_MARGIN_PADDING_PROP(, ALL);
 SHADOW_VIEW_MARGIN_PADDING_PROP(Vertical, VERTICAL);
