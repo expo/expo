@@ -151,6 +151,7 @@ android {
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false")
     // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
   }
 

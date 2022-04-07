@@ -17,6 +17,12 @@ const PACKAGES_DIR = Directories.getPackagesDir();
  */
 let cachedPackages: Package[] | null = null;
 
+export interface CodegenConfigLibrary {
+  name: string;
+  type: 'modules' | 'components';
+  jsSrcsDir: string;
+}
+
 /**
  * An object representing `package.json` structure.
  */
@@ -25,6 +31,9 @@ export type PackageJson = {
   version: string;
   scripts: Record<string, string>;
   gitHead?: string;
+  codegenConfig?: {
+    libraries: CodegenConfigLibrary[];
+  };
   [key: string]: unknown;
 };
 
