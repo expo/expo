@@ -11,6 +11,7 @@ import { getListOfPackagesAsync } from '../../Packages';
 import { transformFileAsync as transformFileMultiReplacerAsync } from '../../Transforms';
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
 import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
+import { versionCxxExpoModulesAsync } from './versionCxx';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
@@ -618,59 +619,63 @@ async function exportReactNdksIfNeeded() {
 export async function addVersionAsync(version: string) {
   await ensureToolsInstalledAsync();
 
-  console.log(' 🛠   1/11: Updating android/versioned-react-native...');
+  console.log(' 🛠   1/12: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync(
     Directories.getReactNativeSubmoduleDir(),
     ANDROID_DIR,
     path.join(ANDROID_DIR, 'versioned-react-native')
   );
-  console.log(' ✅  1/11: Finished\n\n');
+  console.log(' ✅  1/12: Finished\n\n');
 
-  console.log(' 🛠   2/11: Creating versioned expoview package...');
+  console.log(' 🛠   2/12: Creating versioned expoview package...');
   await spawnAsync('./android-copy-expoview.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
   });
 
-  console.log(' ✅  2/11: Finished\n\n');
+  console.log(' ✅  2/12: Finished\n\n');
 
-  console.log(' 🛠   3/11: Renaming JNI libs in android/versioned-react-native and Reanimated...');
+  console.log(' 🛠   3/12: Renaming JNI libs in android/versioned-react-native and Reanimated...');
   await renameJniLibsAsync(version);
-  console.log(' ✅  3/11: Finished\n\n');
+  console.log(' ✅  3/12: Finished\n\n');
 
-  console.log(' 🛠   4/11: Renaming libhermes.so...');
+  console.log(' 🛠   4/12: Renaming libhermes.so...');
   await renameHermesEngine(versionedReactAndroidPath, version);
-  console.log(' ✅  4/11: Finished\n\n');
+  console.log(' ✅  4/12: Finished\n\n');
 
-  console.log(' 🛠   5/11: Building versioned ReactAndroid AAR...');
+  console.log(' 🛠   5/12: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',
   });
-  console.log(' ✅  5/11: Finished\n\n');
+  console.log(' ✅  5/12: Finished\n\n');
 
-  console.log(' 🛠   6/11: Exporting react ndks if needed...');
+  console.log(' 🛠   6/12: Exporting react ndks if needed...');
   await exportReactNdksIfNeeded();
-  console.log(' ✅  6/11: Finished\n\n');
+  console.log(' ✅  6/12: Finished\n\n');
 
-  console.log(' 🛠   7/11: prepare versioned Reanimated...');
+  console.log(' 🛠   7/12: prepare versioned Reanimated...');
   await prepareReanimatedAsync(version);
-  console.log(' ✅  7/11: Finished\n\n');
+  console.log(' ✅  7/12: Finished\n\n');
 
-  console.log(' 🛠   8/11: Creating versioned expo-modules packages...');
+  console.log(' 🛠   8/12: Creating versioned expo-modules packages...');
   await copyExpoModulesAsync(version);
-  console.log(' ✅  8/11: Finished\n\n');
+  console.log(' ✅  8/12: Finished\n\n');
 
-  console.log(' 🛠   9/11: Adding extra versioned activites to AndroidManifest...');
+  console.log(' 🛠   9/12: Versoning c++ libraries for expo-modules...');
+  await versionCxxExpoModulesAsync(version);
+  console.log(' ✅  9/12: Finished\n\n');
+
+  console.log(' 🛠   10/12: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  9/11: Finished\n\n');
+  console.log(' ✅  10/12: Finished\n\n');
 
-  console.log(' 🛠   10/11: Registering new version under sdkVersions config...');
+  console.log(' 🛠   11/12: Registering new version under sdkVersions config...');
   await registerNewVersionUnderSdkVersions(version);
-  console.log(' ✅  10/11: Finished\n\n');
+  console.log(' ✅  11/12: Finished\n\n');
 
-  console.log(' 🛠   11/11: Misc cleanup...');
+  console.log(' 🛠   12/12: Misc cleanup...');
   await cleanUpAsync(version);
-  console.log(' ✅  11/11: Finished');
+  console.log(' ✅  12/12: Finished');
 }
