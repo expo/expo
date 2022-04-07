@@ -1,9 +1,10 @@
 import { ExpoConfig } from '@expo/config';
-import Dicer from 'dicer';
+import {
+  isMultipartPartWithName,
+  parseMultipartMixedResponseAsync,
+  MultipartPart,
+} from '@expo/multipart-body-parser';
 import { vol } from 'memfs';
-import nullthrows from 'nullthrows';
-import { Stream } from 'stream';
-import { parseItem } from 'structured-headers';
 
 import { getProjectAsync } from '../../../../api/getProject';
 import { APISettings } from '../../../../api/settings';
@@ -83,14 +84,6 @@ const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-type MultipartPart = { headers: Map<string, string>; body: string };
-
-function isPart(name: string, multipartPart: MultipartPart): boolean {
-  const [, parameters] = parseItem(nullthrows(multipartPart.headers.get('content-disposition')));
-  const partName = parameters.get('name');
-  return partName === name;
-}
-
 async function getMultipartPartAsync(
   partName: string,
   response: {
@@ -98,63 +91,12 @@ async function getMultipartPartAsync(
     headers: ServerHeaders;
   }
 ): Promise<MultipartPart | null> {
-  const multipartParts = await parseMultipartMixedResponseAsync(response);
-  const part = multipartParts.find((part) => isPart(partName, part));
+  const multipartParts = await parseMultipartMixedResponseAsync(
+    response.headers.get('content-type') as string,
+    Buffer.from(response.body)
+  );
+  const part = multipartParts.find((part) => isMultipartPartWithName(part, partName));
   return part ?? null;
-}
-
-async function parseMultipartMixedResponseAsync({
-  body,
-  headers,
-}: {
-  body: string;
-  headers: ServerHeaders;
-}): Promise<MultipartPart[]> {
-  const contentType = headers.get('content-type');
-  if (!contentType || typeof contentType != 'string') {
-    throw new Error('The multipart manifest response is missing the content-type header');
-  }
-
-  const boundaryRegex = /^multipart\/.+?; boundary=(?:"([^"]+)"|([^\s;]+))/i;
-  const matches = boundaryRegex.exec(contentType);
-  if (!matches) {
-    throw new Error('The content-type header in the HTTP response is not a multipart media type');
-  }
-  const boundary = matches[1] ?? matches[2];
-
-  const bufferStream = new Stream.PassThrough();
-  bufferStream.end(body);
-
-  return await new Promise((resolve, reject) => {
-    const parts: MultipartPart[] = [];
-    bufferStream.pipe(
-      new Dicer({ boundary })
-        .on('part', (p) => {
-          const part: MultipartPart = {
-            body: '',
-            headers: new Map(),
-          };
-
-          p.on('header', (headers) => {
-            for (const h in headers) {
-              part.headers.set(h, (headers as { [key: string]: string[] })[h][0]);
-            }
-          });
-          p.on('data', (data) => {
-            part.body += data.toString();
-          });
-          p.on('end', () => {
-            parts.push(part);
-          });
-        })
-        .on('finish', () => {
-          resolve(parts);
-        })
-        .on('error', (error) => {
-          reject(error);
-        })
-    );
-  });
 }
 
 beforeEach(() => {
