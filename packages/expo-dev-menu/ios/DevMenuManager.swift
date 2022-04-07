@@ -2,6 +2,8 @@
 
 import EXDevMenuInterface
 import EXManifests
+import CoreGraphics
+import CoreMedia
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -423,9 +425,11 @@ open class DevMenuManager: NSObject {
       let path = DevMenuUtils.resourcesBundle()?.path(forResource: font, ofType: "otf")
       let data = FileManager.default.contents(atPath: path!)
       let provider = CGDataProvider(data: data! as CFData)
-      let cgFont = CGFont(provider!)
+      let font = CGFont(provider!)
+      var error: Unmanaged<CFError>?
+      CTFontManagerRegisterGraphicsFont(font!, &error)
     }
-
+    
     DevMenuManager.fontsWereLoaded = true
     return
   }
