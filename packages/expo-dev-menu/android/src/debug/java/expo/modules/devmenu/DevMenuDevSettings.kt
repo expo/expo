@@ -10,14 +10,15 @@ object DevMenuDevSettings {
     val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactInstanceManager)
     val devSettings = devDelegate.devSettings as? DevInternalSettings
 
+    val jsBundleURL = reactInstanceManager.devSupportManager.jsBundleURLForRemoteDebugging
+
     if (devSettings != null) {
       return Bundle().apply {
         putBoolean("isDebuggingRemotely", devSettings.isRemoteJSDebugEnabled)
         putBoolean("isElementInspectorShown", devSettings.isElementInspectorEnabled)
         putBoolean("isHotLoadingEnabled", devSettings.isHotModuleReplacementEnabled)
         putBoolean("isPerfMonitorShown", devSettings.isFpsDebugEnabled)
-        // TODO -- is this correct:
-        putBoolean("isRemoteDebuggingAvailable", devSettings.isJSDevModeEnabled)
+        putBoolean("isRemoteDebuggingAvailable", jsBundleURL.isNotEmpty())
         putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isHotLoadingAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isPerfMonitorAvailable", devSettings.isJSDevModeEnabled)
