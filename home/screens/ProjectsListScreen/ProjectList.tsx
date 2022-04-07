@@ -1,6 +1,6 @@
 import { spacing } from '@expo/styleguide-native';
 import dedent from 'dedent';
-import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
@@ -128,16 +128,17 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
   const totalAppCount = data.appCount ?? 0;
   const canLoadMore = currentAppCount < totalAppCount;
 
-  const renderItem: ListRenderItem<CommonAppDataFragment> = ({ item: app }) => {
+  const renderItem: ListRenderItem<CommonAppDataFragment> = ({ item: app, index }) => {
     return (
       <ProjectsListItem
-        inFlatList
         key={app.id}
         id={app.id}
         name={app.name}
         imageURL={app.iconUrl || undefined}
         subtitle={app.packageName || app.fullName}
         sdkVersion={app.sdkVersion}
+        first={index === 0}
+        last={index === (data.apps ?? []).length - 1}
       />
     );
   };
@@ -153,7 +154,7 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
         keyExtractor={extractKey}
         renderItem={renderItem}
         contentContainerStyle={{ padding: spacing[4] }}
-        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
         renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
         canLoadMore={canLoadMore}

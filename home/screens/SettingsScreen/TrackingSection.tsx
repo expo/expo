@@ -19,7 +19,7 @@ export function TrackingSection() {
     <View>
       <SectionHeader header="Tracking" />
 
-      <View bg="default" overflow="hidden" rounded="large" border="hairline">
+      <View bg="default" overflow="hidden" rounded="large" border="default">
         <TouchableOpacity
           onPress={async () => {
             const { status } = await Tracking.requestTrackingPermissionsAsync();

@@ -110,7 +110,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           contentContainerStyle={[styles.contentContainer]}>
           <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
           {projects?.length ? (
-            <View bg="default" rounded="large" border="hairline" overflow="hidden">
+            <View bg="default" rounded="large" border="default" overflow="hidden">
               {projects.map((project, i) => (
                 <React.Fragment key={project.url}>
                   <DevelopmentServerListItem
@@ -125,7 +125,9 @@ export class HomeScreenView extends React.Component<Props, State> {
                     platform={project.platform}
                     subtitle={project.url}
                   />
-                  {projects.length > 1 && i !== projects.length - 1 ? <Divider /> : null}
+                  {projects.length > 1 && i !== projects.length - 1 ? (
+                    <Divider style={{ height: 1 }} />
+                  ) : null}
                 </React.Fragment>
               ))}
               {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (

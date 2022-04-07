@@ -2,7 +2,7 @@ import { NetworkStatus } from '@apollo/client';
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
@@ -68,14 +68,16 @@ export function BranchDetailsView({ error, data, refetch, branchName, networkSta
         ListHeaderComponent={<SectionHeader header="Updates" style={{ paddingTop: 0 }} />}
         keyExtractor={(update) => update.id}
         contentContainerStyle={{ padding: spacing[4] }}
-        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
         ListEmptyComponent={() => <EmptySection />}
-        renderItem={({ item: update }) => (
+        renderItem={({ item: update, index }) => (
           <UpdateListItem
             id={update.id}
             message={update.message ?? undefined}
             manifestPermalink={update.manifestPermalink}
             createdAt={update.createdAt}
+            first={index === 0}
+            last={index === (data.app.byId.updateBranchByName?.updates ?? []).length - 1}
           />
         )}
       />

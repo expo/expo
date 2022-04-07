@@ -20,7 +20,7 @@ export function DiagnosticButton({ title, description, onPress }: Props) {
 
   return (
     <TouchableOpacity onPress={onPress}>
-      <View rounded="large" border="hairline" bg="default" padding="medium">
+      <View rounded="large" border="default" bg="default" padding="medium">
         <Row justify="between" align="center">
           <Text
             type="InterSemiBold"

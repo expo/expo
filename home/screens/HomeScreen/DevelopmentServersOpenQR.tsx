@@ -25,7 +25,7 @@ export function DevelopmentServersOpenQR() {
 
   return (
     <>
-      <Divider />
+      <Divider style={{ height: 1 }} />
       <TouchableOpacity onPress={handleQRPressAsync}>
         <Row padding="medium" align="center">
           <QrCodeIcon

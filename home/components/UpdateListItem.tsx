@@ -13,9 +13,11 @@ type Props = {
   message?: string;
   createdAt: string;
   manifestPermalink: string;
+  first: boolean;
+  last: boolean;
 };
 
-export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Props) {
+export function UpdateListItem({ id, message, createdAt, manifestPermalink, first, last }: Props) {
   const theme = useExpoTheme();
 
   const handlePress = () => {
@@ -24,14 +26,23 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink }: Pr
 
   return (
     <TouchableOpacity onPress={handlePress}>
-      <View padding="medium" bg="default" border="hairline" rounded="large">
+      <View
+        padding="medium"
+        bg="default"
+        border="default"
+        roundedTop={first ? 'large' : undefined}
+        roundedBottom={last ? 'large' : undefined}
+        style={{
+          borderBottomWidth: last ? 1 : 0,
+          borderTopWidth: first ? 1 : 0,
+        }}>
         <Row align="center" justify="between">
           <View align="start" flex="1">
             <Row flex="1">
-              <UpdateIcon color={theme.icon.default} size={iconSize.small} />
+              <UpdateIcon color={theme.icon.default} size={iconSize.tiny} />
               <Spacer.Horizontal size="tiny" />
               <View flex="1">
-                <Text type="InterSemiBold" size="small" ellipsizeMode="middle" numberOfLines={1}>
+                <Text type="InterSemiBold" ellipsizeMode="middle" numberOfLines={1}>
                   {message ? `"${message}"` : id}
                 </Text>
                 <Spacer.Vertical size="tiny" />
