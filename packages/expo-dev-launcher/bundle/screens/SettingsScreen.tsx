@@ -14,6 +14,7 @@ import {
 import * as React from 'react';
 import { ScrollView, Switch } from 'react-native';
 import { useQueryClient } from 'react-query';
+import { SafeAreaTop } from '../components/SafeAreaTop';
 
 import { Toasts } from '../components/Toasts';
 import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
@@ -80,7 +81,8 @@ export function SettingsScreen() {
 
   return (
     <ScrollView testID="DevLauncherSettingsScreen" showsVerticalScrollIndicator={false}>
-      <View px="medium" mt="8">
+      <SafeAreaTop />
+      <View px="medium">
         <Heading size="large">Settings</Heading>
       </View>
 
