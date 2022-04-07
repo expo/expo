@@ -2,82 +2,65 @@ import { css } from '@emotion/react';
 import { theme, breakpoints, iconSize, SearchIcon } from '@expo/styleguide';
 import Router from 'next/router';
 import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
 import { LATEST_VERSION } from '~/constants/versions';
 import { SlashShortcutIcon } from '~/ui/foundations/icons';
 
-type Props = {
+type SearchProps = {
   version: string;
   mobile?: boolean;
 };
 
-// TODO(simek): ensure that processUrl is still needed
-const processUrl = (url: string) => {
-  // Update URLs for new doc URLs
-  const routes = url.split('/');
-  routes[routes.length - 1] = routes[routes.length - 1].replace('.html', '');
-  return routes.join('/');
-};
+export const Search = ({ version, mobile }: SearchProps) => {
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setFocused] = useState(false);
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
 
-export class Search extends React.Component<Props> {
-  private searchRef = React.createRef<HTMLInputElement>();
-  private docsearch: any;
-  private hotshot: any;
-
-  state = {
-    isFocused: false,
-    isDropdownVisible: false,
+  const focusSearchInput = () => {
+    if (searchRef.current) {
+      searchRef.current.focus();
+    }
   };
 
-  private focusSearchInput() {
-    const { current } = this.searchRef;
-    if (current) {
-      current.focus();
+  const onChange = () => {
+    if (searchRef.current) {
+      setDropdownVisible(
+        searchRef.current.value.length
+          ? searchRef.current.getAttribute('aria-expanded') !== null
+          : false
+      );
     }
-  }
+  };
 
-  private onChange() {
-    const { current } = this.searchRef;
-    if (current) {
-      this.setState({
-        isDropdownVisible: current.value.length && current.getAttribute('aria-expanded'),
-      });
-    }
-  }
-
-  private onResultSelected(input: any, suggestion: any, isLatestVersion: boolean) {
+  const onResultSelected = (input: any, suggestion: any, isLatestVersion: boolean) => {
     input.setVal('');
 
     const url = new URL(suggestion.url);
-    const route = processUrl(url.pathname + url.hash);
+    const route = url.pathname + url.hash;
 
     if (Utilities.isVersionedUrl(suggestion.url) && isLatestVersion) {
-      const asPath = processUrl(Utilities.replaceVersionInUrl(route, 'latest'));
+      const asPath = Utilities.replaceVersionInUrl(route, 'latest');
       Router.push(route, asPath);
     } else {
       Router.push(route);
     }
 
-    const docSearchEl = document.getElementById('docsearch');
-    if (docSearchEl) {
-      docSearchEl.blur();
-    }
-  }
+    setFocused(false);
+  };
 
-  componentDidMount() {
+  useEffect(() => {
     const docsearch = require('docsearch.js');
     const Hotshot = require('hotshot');
 
-    const { version, mobile } = this.props;
-    const isLatestVersion = version === 'latest';
-
     // latest is indexed in algolia, but we try to match the exact version instead
     // latest is also filtered using the facetFilters, and should not be returned in the search results
+    const isLatestVersion = version === 'latest';
     const currentVersion = isLatestVersion ? LATEST_VERSION : version;
 
-    this.docsearch = docsearch({
+    docsearch({
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
       indexName: 'expo',
       inputSelector: mobile ? '#algolia-search-box' : '#algolia-search-box-mobile',
@@ -87,55 +70,52 @@ export class Search extends React.Component<Props> {
         facetFilters: [['version:none', `version:${currentVersion}`]],
       },
       handleSelected: (input: any, _: any, suggestion: any) =>
-        this.onResultSelected(input, suggestion, isLatestVersion),
+        onResultSelected(input, suggestion, isLatestVersion),
     });
 
     if (!mobile) {
-      // add keyboard shortcut for desktop
-      this.hotshot = new Hotshot({
+      // eslint-disable-next-line no-new
+      new Hotshot({
+        // add keyboard shortcut for desktop
         combos: [
           {
             keyCodes: [191], // open search by pressing `/` key
-            callback: () => setTimeout(() => this.focusSearchInput(), 0),
+            callback: () => setTimeout(() => focusSearchInput(), 0),
           },
         ],
       });
     } else {
       // auto-focuses on mobile
-      this.focusSearchInput();
+      focusSearchInput();
     }
-  }
+  }, []);
 
-  render() {
-    const { isFocused, isDropdownVisible } = this.state;
-    const { mobile } = this.props;
-    return (
-      <div css={[searchContainerStyle, mobile && mobileSearchContainerStyle]}>
-        <div className="search">
-          <SearchIcon size={iconSize.small} />
-        </div>
-        <input
-          onFocus={() => this.setState({ isFocused: true })}
-          onBlur={() => this.setState({ isFocused: false })}
-          onChange={() => this.onChange()}
-          id={mobile ? 'algolia-search-box' : 'algolia-search-box-mobile'}
-          className={isDropdownVisible ? 'algolia-search-box-autocomplete-on' : undefined}
-          type="text"
-          placeholder="Search"
-          autoComplete="off"
-          spellCheck="false"
-          dir="auto"
-          ref={this.searchRef}
-        />
-        {!mobile && !isFocused ? (
-          <div className="shortcut-hint">
-            <SlashShortcutIcon />
-          </div>
-        ) : null}
+  return (
+    <div css={[searchContainerStyle, mobile && mobileSearchContainerStyle]}>
+      <div className="search">
+        <SearchIcon size={iconSize.small} />
       </div>
-    );
-  }
-}
+      <input
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onChange={onChange}
+        id={mobile ? 'algolia-search-box' : 'algolia-search-box-mobile'}
+        className={isDropdownVisible ? 'algolia-search-box-autocomplete-on' : undefined}
+        type="text"
+        placeholder="Search"
+        autoComplete="off"
+        spellCheck="false"
+        dir="auto"
+        ref={searchRef}
+      />
+      {!mobile && !isFocused && (
+        <div className="shortcut-hint">
+          <SlashShortcutIcon />
+        </div>
+      )}
+    </div>
+  );
+};
 
 const searchContainerStyle = css`
   display: flex;

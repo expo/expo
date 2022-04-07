@@ -8,6 +8,9 @@ import {
   ThemeLightIcon,
   iconSize,
   shadows,
+  spacing,
+  typography,
+  borderRadius,
 } from '@expo/styleguide';
 import React, { useEffect, useState } from 'react';
 
@@ -55,19 +58,19 @@ const containerStyle = css`
 `;
 
 const selectStyle = css`
-  font-size: 14px;
+  ${typography.fontSizes[14]}
   display: flex;
   align-items: center;
   justify-content: center;
   height: 40px;
   color: ${theme.text.default};
   line-height: 1.3;
-  padding: 0px 36px 0px 36px;
+  padding: 0 ${spacing[9]}px;
   width: 100%;
   margin: 0;
   border: 1px solid ${theme.border.default};
   box-shadow: ${shadows.input};
-  border-radius: 4px;
+  border-radius: ${borderRadius.small}px;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;

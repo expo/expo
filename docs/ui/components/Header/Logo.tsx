@@ -1,5 +1,12 @@
 import { css } from '@emotion/react';
-import { breakpoints, theme, iconSize, ChevronDownIcon } from '@expo/styleguide';
+import {
+  breakpoints,
+  theme,
+  iconSize,
+  spacing,
+  typography,
+  ChevronDownIcon,
+} from '@expo/styleguide';
 import React from 'react';
 
 import { BOLD, LinkBase } from '~/ui/components/Text';
@@ -8,10 +15,10 @@ import { ExpoLogoIcon } from '~/ui/foundations/icons';
 export const Logo = () => (
   <LinkBase css={linkStyle} href="/">
     <div css={logoStyle}>
-      <ExpoLogoIcon />
+      <ExpoLogoIcon fill={theme.text.default} />
     </div>
     <BOLD css={titleStyle}>Expo</BOLD>
-    <ChevronDownIcon size={iconSize.small} css={chevronStyle} color={theme.icon.secondary} />
+    <ChevronDownIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
     <span css={subtitleStyle}>Docs</span>
   </LinkBase>
 );
@@ -25,21 +32,20 @@ const linkStyle = css`
 
 const logoStyle = css`
   float: left;
-  margin: 2px 8px 0 0;
+  margin-right: ${spacing[2]}px;
 `;
 
 const chevronStyle = css`
   transform: rotate(-90deg);
-  color: ${theme.icon.secondary};
-  margin: 0 8px;
+  margin: 0 ${spacing[2]}px;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
-    margin-left: 2px;
+    margin-left: ${spacing[0.5]}px;
   }
 `;
 
 const titleStyle = css`
-  font-size: 1.25rem;
+  ${typography.fontSizes[20]}
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     display: none;
@@ -47,6 +53,6 @@ const titleStyle = css`
 `;
 
 const subtitleStyle = css`
-  font-size: 1.1rem;
   color: ${theme.text.default};
+  ${typography.fontSizes[18]}
 `;

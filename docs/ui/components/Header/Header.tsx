@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, SearchIcon, iconSize } from '@expo/styleguide';
+import { theme, breakpoints, SearchIcon, iconSize, spacing } from '@expo/styleguide';
 import React, { useState } from 'react';
 
 import { Logo } from './Logo';
@@ -71,7 +71,7 @@ const containerStyle = css`
   background-color: ${theme.background.default};
   z-index: 2;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 ${spacing[4]}px;
   height: 60px;
   box-sizing: border-box;
   border-bottom: 1px solid ${theme.border.default};
@@ -119,8 +119,8 @@ const hideOnMobileStyle = css`
 `;
 
 const mobileButtonStyle = css`
-  padding: 0 12px;
-  margin-left: 8px;
+  padding: 0 ${spacing[1.5]}px;
+  margin-left: ${spacing[2]}px;
 
   &:hover {
     background-color: ${theme.background.tertiary};
