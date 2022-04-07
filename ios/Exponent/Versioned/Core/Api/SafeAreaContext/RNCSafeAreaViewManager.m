@@ -2,8 +2,8 @@
 
 #import "RNCSafeAreaShadowView.h"
 #import "RNCSafeAreaView.h"
-#import "RNCSafeAreaViewMode.h"
 #import "RNCSafeAreaViewEdges.h"
+#import "RNCSafeAreaViewMode.h"
 
 @implementation RNCSafeAreaViewManager
 

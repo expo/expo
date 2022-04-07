@@ -109,6 +109,7 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
+		3998ABE10A3041A68A6344F0 /* RNCSafeAreaUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C9DD6A9837B042EE8364DB87 /* RNCSafeAreaUtils.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4E3532555D7C4B0392A6AE9D /* RNSVGContextBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = C349E74BFFF643C38858FD6F /* RNSVGContextBrush.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A7DA8E798407CA5410CF6 /* RNSVGPathMeasure.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -175,9 +176,11 @@
 		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		7C04FEADEBFD4F26A0ED0918 /* RNCSafeAreaContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 110908DD81CA4BDB8FD5B6D2 /* RNCSafeAreaContext.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 		827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */; };
 		8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
 		8353B821277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
+		83EA576427FDF2F800348BBF /* RNCSafeAreaUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C9DD6A9837B042EE8364DB87 /* RNCSafeAreaUtils.m */; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
 		8764788E270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
@@ -287,7 +290,6 @@
 		BBB83C672479C3B50004FF8E /* RNCSafeAreaProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C5A2479C3B50004FF8E /* RNCSafeAreaProvider.m */; };
 		BBB83C682479C3B50004FF8E /* RNCSafeAreaShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C5B2479C3B50004FF8E /* RNCSafeAreaShadowView.m */; };
 		BBB83C692479C3B50004FF8E /* RNCSafeAreaViewLocalData.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C5F2479C3B50004FF8E /* RNCSafeAreaViewLocalData.m */; };
-		BBB83C6A2479C3B50004FF8E /* RCTView+SafeAreaCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		BBE4333C268BE5AE000D016A /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
 		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
@@ -298,6 +300,7 @@
 		C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		DB3F49E49342470CA04D34C0 /* SafeAreaContextSpec-generated.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABF2A96A40E3466F89CDD1E0 /* SafeAreaContextSpec-generated.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
 		F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */; };
@@ -510,7 +513,6 @@
 		F14218CC262CB68600BB97E6 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F14218CD262CB68600BB97E6 /* AIRGoogleMapPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99AC2285B50D00F19090 /* AIRGoogleMapPolygon.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218CE262CB68600BB97E6 /* EXUpdatesDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */; };
-		F14218CF262CB68600BB97E6 /* RCTView+SafeAreaCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */; };
 		F14218D0262CB68600BB97E6 /* AIRGoogleMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D52285B51100F19090 /* AIRGoogleMapPolylineManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218D1262CB68600BB97E6 /* RNSVGTSpan.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF712283303800272D74 /* RNSVGTSpan.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218D2262CB68600BB97E6 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
@@ -653,6 +655,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0493A3758A084342982ECFC1 /* RNCSafeAreaUtils.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaUtils.h; sourceTree = "<group>"; };
 		0726F0572007E438004992E7 /* EXKernelAppRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRecord.h; sourceTree = "<group>"; };
 		0726F0582007E438004992E7 /* EXKernelAppRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRecord.m; sourceTree = "<group>"; };
 		0726F05A2007E446004992E7 /* EXKernelAppRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRegistry.h; sourceTree = "<group>"; };
@@ -672,6 +675,7 @@
 		0CC6F95F225F5C7700322635 /* ExpoKitAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoKitAppDelegate.h; sourceTree = "<group>"; };
 		0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpoKitAppDelegate.m; sourceTree = "<group>"; };
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
+		110908DD81CA4BDB8FD5B6D2 /* RNCSafeAreaContext.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = RNCSafeAreaContext.mm; sourceTree = "<group>"; };
 		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerManager.h; sourceTree = "<group>"; };
 		143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionManager.h; sourceTree = "<group>"; };
 		17D40143FCE844F89ABD4B05 /* RNSVGUIKit.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGUIKit.h; sourceTree = "<group>"; };
@@ -854,6 +858,7 @@
 		391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementStyle.m; sourceTree = "<group>"; };
 		392A1C280CD79A1B518C51DB /* Pods-Expo Go-Expo Go (unversioned).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Expo Go (unversioned).release.xcconfig"; path = "Target Support Files/Pods-Expo Go-Expo Go (unversioned)/Pods-Expo Go-Expo Go (unversioned).release.xcconfig"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
+		3EBE535C0D814664BEF368FD /* RNCSafeAreaContext.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaContext.h; sourceTree = "<group>"; };
 		417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerPosition.m; sourceTree = "<group>"; };
 		476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedViewManager.h; sourceTree = "<group>"; };
 		522580D8EA8D0267870DC600 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Expo Go (versioned)/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -863,6 +868,7 @@
 		5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
 		5E8A7DA8E798407CA5410CF6 /* RNSVGPathMeasure.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGPathMeasure.m; sourceTree = "<group>"; };
+		5F5805ED503D489A86A8F21F /* SafeAreaContextSpec.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = SafeAreaContextSpec.h; sourceTree = "<group>"; };
 		626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNode.h; sourceTree = "<group>"; };
 		65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmap.m; sourceTree = "<group>"; };
 		6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewMode.m; sourceTree = "<group>"; };
@@ -1027,6 +1033,7 @@
 		A1C33FE32667F6E70091644A /* EXSplashScreenHUDButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenHUDButton.h; sourceTree = "<group>"; };
 		A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmapManager.m; sourceTree = "<group>"; };
 		A60CC11587F645D0BF1C832F /* RNCPicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPicker.m; sourceTree = "<group>"; };
+		ABF2A96A40E3466F89CDD1E0 /* SafeAreaContextSpec-generated.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = "SafeAreaContextSpec-generated.mm"; sourceTree = "<group>"; };
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
 		B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationBuilder.h; sourceTree = "<group>"; };
 		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
@@ -1200,7 +1207,6 @@
 		BBB83C552479C3B50004FF8E /* RNCSafeAreaViewEdges.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewEdges.m; sourceTree = "<group>"; };
 		BBB83C562479C3B50004FF8E /* RNCSafeAreaProviderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaProviderManager.m; sourceTree = "<group>"; };
 		BBB83C572479C3B50004FF8E /* RNCSafeAreaView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaView.m; sourceTree = "<group>"; };
-		BBB83C582479C3B50004FF8E /* RCTView+SafeAreaCompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTView+SafeAreaCompat.h"; sourceTree = "<group>"; };
 		BBB83C592479C3B50004FF8E /* RNCSafeAreaViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewManager.m; sourceTree = "<group>"; };
 		BBB83C5A2479C3B50004FF8E /* RNCSafeAreaProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaProvider.m; sourceTree = "<group>"; };
 		BBB83C5B2479C3B50004FF8E /* RNCSafeAreaShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaShadowView.m; sourceTree = "<group>"; };
@@ -1210,7 +1216,6 @@
 		BBB83C5F2479C3B50004FF8E /* RNCSafeAreaViewLocalData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewLocalData.m; sourceTree = "<group>"; };
 		BBB83C602479C3B50004FF8E /* RNCSafeAreaProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaProvider.h; sourceTree = "<group>"; };
 		BBB83C612479C3B50004FF8E /* RNCSafeAreaViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewManager.h; sourceTree = "<group>"; };
-		BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTView+SafeAreaCompat.m"; sourceTree = "<group>"; };
 		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
 		BBE8539222B98828001FF9C2 /* EXScopedFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFontLoader.h; sourceTree = "<group>"; };
@@ -1221,6 +1226,7 @@
 		C6C45542575546F8AAC2AE50 /* RNSharedElementNodeManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNodeManager.h; sourceTree = "<group>"; };
 		C81E8BFA54234873A380A1F9 /* RNCPickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCPickerManager.h; sourceTree = "<group>"; };
 		C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransition.m; sourceTree = "<group>"; };
+		C9DD6A9837B042EE8364DB87 /* RNCSafeAreaUtils.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaUtils.m; sourceTree = "<group>"; };
 		CB140B5293CF4E4B9FA74E62 /* RNSVGForeignObjectManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObjectManager.h; sourceTree = "<group>"; };
 		CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTypes.h; sourceTree = "<group>"; };
 		CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSliderManager.m; sourceTree = "<group>"; };
@@ -2418,7 +2424,6 @@
 				BBB83C552479C3B50004FF8E /* RNCSafeAreaViewEdges.m */,
 				BBB83C562479C3B50004FF8E /* RNCSafeAreaProviderManager.m */,
 				BBB83C572479C3B50004FF8E /* RNCSafeAreaView.m */,
-				BBB83C582479C3B50004FF8E /* RCTView+SafeAreaCompat.h */,
 				BBB83C592479C3B50004FF8E /* RNCSafeAreaViewManager.m */,
 				BBB83C5A2479C3B50004FF8E /* RNCSafeAreaProvider.m */,
 				BBB83C5B2479C3B50004FF8E /* RNCSafeAreaShadowView.m */,
@@ -2428,9 +2433,14 @@
 				BBB83C5F2479C3B50004FF8E /* RNCSafeAreaViewLocalData.m */,
 				BBB83C602479C3B50004FF8E /* RNCSafeAreaProvider.h */,
 				BBB83C612479C3B50004FF8E /* RNCSafeAreaViewManager.h */,
-				BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */,
 				C5E293DD722E4378A24299D9 /* RNCSafeAreaViewMode.h */,
 				6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */,
+				3EBE535C0D814664BEF368FD /* RNCSafeAreaContext.h */,
+				110908DD81CA4BDB8FD5B6D2 /* RNCSafeAreaContext.mm */,
+				0493A3758A084342982ECFC1 /* RNCSafeAreaUtils.h */,
+				C9DD6A9837B042EE8364DB87 /* RNCSafeAreaUtils.m */,
+				ABF2A96A40E3466F89CDD1E0 /* SafeAreaContextSpec-generated.mm */,
+				5F5805ED503D489A86A8F21F /* SafeAreaContextSpec.h */,
 			);
 			path = SafeAreaContext;
 			sourceTree = "<group>";
@@ -3223,7 +3233,6 @@
 				F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */,
 				31AD99DC2285B51100F19090 /* AIRGoogleMapPolygon.m in Sources */,
 				0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */,
-				BBB83C6A2479C3B50004FF8E /* RCTView+SafeAreaCompat.m in Sources */,
 				31AD99F12285B51100F19090 /* AIRGoogleMapPolylineManager.m in Sources */,
 				7043DFAB2283303800272D74 /* RNSVGTSpan.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
@@ -3283,6 +3292,9 @@
 				2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */,
 				C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */,
 				FBCC5A97F536402C98688A94 /* RNCPickerManager.m in Sources */,
+				7C04FEADEBFD4F26A0ED0918 /* RNCSafeAreaContext.mm in Sources */,
+				3998ABE10A3041A68A6344F0 /* RNCSafeAreaUtils.m in Sources */,
+				DB3F49E49342470CA04D34C0 /* SafeAreaContextSpec-generated.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3530,7 +3542,6 @@
 				F14218CC262CB68600BB97E6 /* EXUtilService.m in Sources */,
 				F14218CD262CB68600BB97E6 /* AIRGoogleMapPolygon.m in Sources */,
 				F14218CE262CB68600BB97E6 /* EXUpdatesDatabaseManager.m in Sources */,
-				F14218CF262CB68600BB97E6 /* RCTView+SafeAreaCompat.m in Sources */,
 				F14218D0262CB68600BB97E6 /* AIRGoogleMapPolylineManager.m in Sources */,
 				F14218D1262CB68600BB97E6 /* RNSVGTSpan.m in Sources */,
 				F14218D2262CB68600BB97E6 /* EXReactAppExceptionHandler.m in Sources */,
@@ -3540,6 +3551,7 @@
 				F14218D7262CB68600BB97E6 /* RNSVGEllipse.m in Sources */,
 				F14218D9262CB68600BB97E6 /* AIRMapWMSTileManager.m in Sources */,
 				F14218DA262CB68600BB97E6 /* AIRMapLocalTileManager.m in Sources */,
+				83EA576427FDF2F800348BBF /* RNCSafeAreaUtils.m in Sources */,
 				BBE4333C268BE5AE000D016A /* EXManagedAppSplashScreenViewController.m in Sources */,
 				F14218DC262CB68600BB97E6 /* EXApiUtil.m in Sources */,
 				F14218DD262CB68600BB97E6 /* RNSVGLength.m in Sources */,

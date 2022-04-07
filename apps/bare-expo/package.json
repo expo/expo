@@ -114,7 +114,7 @@
     "react-native": "0.68.0",
     "react-native-gesture-handler": "~2.2.0",
     "react-native-reanimated": "~2.4.1",
-    "react-native-safe-area-context": "3.3.2",
+    "react-native-safe-area-context": "4.2.4",
     "react-native-screens": "~3.11.1",
     "react-native-shared-element": "0.8.4",
     "react-native-svg": "12.3.0",
