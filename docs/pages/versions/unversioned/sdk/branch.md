@@ -6,9 +6,9 @@ packageName: 'expo-branch'
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> ⚠️ **This module only works in standalone apps on the classic build service (`expo build`)**. For **EAS Build**, you should use the official [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) with [@config-plugins/react-native-branch](https://github.com/expo/config-plugins/tree/master/packages/react-native-branch) instead.
+> **Deprecated.** This module will be removed in SDK 46. There will be no replacement that works with the classic build service (`expo build`) because [the classic build service has been superseded by **EAS Build**](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60). With **EAS Build**, you should use the official [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) library with [@config-plugins/react-native-branch](https://github.com/expo/config-plugins/tree/master/packages/react-native-branch) instead.
 
-**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referrals and attribution with deep links.
+**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referrals and attribution with deep links. **This module only works in standalone apps on the classic build service (`expo build`)**. For **EAS Build**, you should use the official [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) library with [@config-plugins/react-native-branch](https://github.com/expo/config-plugins/tree/master/packages/react-native-branch) instead.
 
 <PlatformsSection android emulator ios simulator />
 
