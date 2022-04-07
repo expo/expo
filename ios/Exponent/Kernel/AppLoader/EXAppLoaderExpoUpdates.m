@@ -27,6 +27,7 @@
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <EXManifests/EXManifestsManifestFactory.h>
 #import <EXManifests/EXManifestsLegacyManifest.h>
+#import <EXManifests/EXManifestsNewManifest.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
 
@@ -536,6 +537,19 @@ NS_ASSUME_NONNULL_BEGIN
     // scope key, automatically verify it
     if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest])) {
       mutableManifest[@"isVerified"] = @(YES);
+    }
+    
+    // when the manifest is not verified at this point, make the scope key and id a random value
+    if (![mutableManifest[@"isVerified"] boolValue]) {
+      NSString *randomValue = [[NSUUID UUID] UUIDString];
+      if ([manifest isKindOfClass:EXManifestsNewManifest.class]) {
+        NSMutableDictionary *mutableExtra = [mutableManifest[@"extra"] mutableCopy];
+        mutableExtra[@"scopeKey"] = randomValue;
+        mutableManifest[@"extra"] = mutableExtra;
+      } else {
+        mutableManifest[@"scopeKey"] = randomValue;
+        mutableManifest[@"id"] = randomValue;
+      }
     }
 
     return [EXManifestsManifestFactory manifestForManifestJSON:[mutableManifest copy]];
