@@ -39,7 +39,7 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink, firs
         <Row align="center" justify="between">
           <View align="start" flex="1">
             <Row flex="1">
-              <UpdateIcon color={theme.icon.default} size={iconSize.tiny} />
+              <UpdateIcon color={theme.icon.default} size={iconSize.small} />
               <Spacer.Horizontal size="tiny" />
               <View flex="1">
                 <Text type="InterSemiBold" ellipsizeMode="middle" numberOfLines={1}>
