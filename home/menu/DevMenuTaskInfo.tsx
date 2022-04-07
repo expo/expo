@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   taskIconColumn: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

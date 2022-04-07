@@ -1,6 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollViewProps, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import Colors, { ColorTheme } from '../constants/Colors';
 
@@ -12,7 +13,6 @@ interface Props extends ViewProps {
   darkBorderColor?: string;
 }
 
-type ScrollViewProps = ScrollView['props'];
 interface StyledScrollViewProps extends ScrollViewProps {
   lightBackgroundColor?: string;
   darkBackgroundColor?: string;

@@ -1,5 +1,5 @@
 import { spacing } from '@expo/styleguide-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { Text, View, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
 import React, { useEffect } from 'react';

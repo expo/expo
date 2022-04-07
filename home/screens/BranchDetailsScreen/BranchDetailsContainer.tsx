@@ -13,6 +13,7 @@ export function BranchDetailsContainer(
 ) {
   const query = useBranchDetailsQuery({
     fetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
     variables: {
       appId: props.appId,
       name: props.branchName,

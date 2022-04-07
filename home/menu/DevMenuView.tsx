@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import React from 'react';
 import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
 

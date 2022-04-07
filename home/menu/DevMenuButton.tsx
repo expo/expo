@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity as TouchableOpacityRN, View } from 'react-native';
 import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';

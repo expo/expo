@@ -101,12 +101,6 @@ export function DevelopmentServerListItem({
 }
 
 const styles = StyleSheet.create({
-  infoText: {
-    marginTop: spacing[2],
-  },
-  releaseChannel: {
-    marginTop: spacing[2],
-  },
   container: {
     flexDirection: 'row',
     padding: spacing[4],
