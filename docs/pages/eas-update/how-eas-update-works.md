@@ -78,17 +78,15 @@ eas channel:edit staging --branch version-3.0
 
 ## Practical overview
 
-Now that we're familiar with the core concepts of EAS Update, let's talk about how this process occurs. When an Expo project with the `expo-updates` library is built, we include native Android and iOS code that will check for new updates on launch. By the way, when the modules checks for an update and when it downloads it is [configurable](../../versions/latest/config/app.md#updates).
+Now that we're familiar with the core concepts of EAS Update, let's talk about how this process occurs.
 
-By default, the app will check for an update when it's opened according to the [Expo Update Protocol](/technical-specs/expo-updates-0/). If the app finds an update that is newer than the current update inside the app, it will download it and run it. If the app does not find a newer update, it will instead run the update that was embedded inside the app at build time.
+When an Expo project that includes `expo-updates` is built the included native Android and iOS code is responsible for managing, fetching, parsing, and validating updates.
 
-The app downloads an update in two phases. First, it downloads the most recent update _manifest_. A manifest contains information about the update, including a list of assets that are required to run the update. Assets are things like images, JavaScript, font files, etc...
+When the library checks for updates and when it downloads them is [configurable](../../versions/latest/config/app.md#updates). By default the library will check for an update when it is opened. If an update newer than the current running update is found, it will download and run the newer update. If the library does not find a newer update, it will instead run the newest downloaded update, falling back to the update that was embedded inside the app at build time if none have been downloaded.
 
-The second phase of the update is when the app downloads the assets needed to run the update. For instance, if your update contains a new image, the app will download the new image asset before running the update. To help users get updates quickly and reliably, it's important to keep our updates as small as possible.
+`expo-updates` downloads updates in two phases. First, it downloads the most recent update _manifest_, which contains information about the update including a list of assets (images, JavaScript bundles, font files, etc...) that are required to run the update. Second, the library downloads the assets specified in the manifest that is has not yet downloaded from prior updates. For instance, if an update contains a new image, the library will download the new image asset before running the update. To help end-users get updates quickly and reliably, updates should be kept as small as possible.
 
-To help in the second phase of this process, the `expo-updates` module will also only download assets that the app does not currently contain, so users will only download new assets.
-
-If the app is able to download the manifest (phase 1) and all the required assets (phase 2) before the `fallbackToCacheTimeout` setting, then the app will run the new update immediately on launch. If the app is not able to get the manifest and assets in time, the app will continue to download the new update in the background. Then on the next launch of the app, assuming the update was fully downloaded successfully, the new update will run.
+If the library is able to download the manifest (phase 1) and all the required assets (phase 2) before the `fallbackToCacheTimeout` setting, then the new update will run immediately upon launch. If the library is not able to fetch the manifest and assets within `fallbackToCacheTimeout`, it will continue to download the new update in the background and will run it upon the next launch.
 
 <ImageSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" />
 
