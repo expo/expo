@@ -17,7 +17,8 @@ type Props = {
   name: string;
   latestUpdate: Update;
   appId: string;
-  inFlatList?: boolean;
+  first: boolean;
+  last: boolean;
 };
 
 /**
@@ -29,7 +30,8 @@ export function BranchListItem({
   name,
   appId,
   latestUpdate: { message, createdAt },
-  inFlatList,
+  first,
+  last,
 }: Props) {
   const theme = useExpoTheme();
 
@@ -43,7 +45,14 @@ export function BranchListItem({
     <TouchableOpacity onPress={handlePressBranch}>
       <View
         padding="medium"
-        {...(inFlatList && { bg: 'default', border: 'hairline', rounded: 'large' })}>
+        bg="default"
+        border="default"
+        roundedTop={first ? 'large' : undefined}
+        roundedBottom={last ? 'large' : undefined}
+        style={{
+          borderBottomWidth: last ? 1 : 0,
+          borderTopWidth: first ? 1 : 0,
+        }}>
         <Row align="center" justify="between">
           <View align="start" flex="1">
             <Row align="center">

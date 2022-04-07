@@ -50,7 +50,7 @@ export function DevelopmentServersOpenURL() {
 
   return (
     <>
-      <Divider />
+      <Divider style={{ height: 1 }} />
       <View>
         <TouchableOpacity
           style={{ padding: 16 }}

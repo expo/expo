@@ -25,7 +25,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
   }
 
   return (
-    <View bg="default" rounded="large" border="hairline" overflow="hidden">
+    <View>
       {snacks.map((snack, i) => {
         if (!snack) return null;
 
@@ -36,26 +36,25 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
               description={snack.description}
               isDraft={snack.isDraft}
               url={snack.fullName}
+              first={i === 0}
+              last={i === snacks.length - 1 && !showMore}
             />
-            {i < snacks.length - 1 && <Divider />}
+            {i < snacks.length - 1 && <Divider style={{ height: 1 }} />}
           </Fragment>
         );
       })}
       {showMore && (
-        <>
-          <Divider />
-          <TouchableOpacity onPress={onSeeAllSnacksPress}>
-            <View padding="medium">
-              <Row align="center" justify="between">
-                <Text type="InterRegular">See all snacks</Text>
-                <ChevronDownIcon
-                  style={{ transform: [{ rotate: '-90deg' }] }}
-                  color={theme.icon.secondary}
-                />
-              </Row>
-            </View>
-          </TouchableOpacity>
-        </>
+        <TouchableOpacity onPress={onSeeAllSnacksPress}>
+          <View padding="medium" bg="default" border="default" roundedBottom="large">
+            <Row align="center" justify="between">
+              <Text type="InterRegular">See all snacks</Text>
+              <ChevronDownIcon
+                style={{ transform: [{ rotate: '-90deg' }] }}
+                color={theme.icon.secondary}
+              />
+            </Row>
+          </View>
+        </TouchableOpacity>
       )}
     </View>
   );

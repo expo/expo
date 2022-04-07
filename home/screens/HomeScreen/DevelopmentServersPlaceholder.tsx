@@ -16,7 +16,7 @@ export function DevelopmentServersPlaceholder({ isAuthenticated }: Props) {
   const navigation = useNavigation();
 
   return (
-    <View bg="default" rounded="large" border="hairline" overflow="hidden">
+    <View bg="default" rounded="large" border="default" overflow="hidden">
       {isAuthenticated ? (
         <>
           <View padding="medium">
@@ -48,7 +48,7 @@ export function DevelopmentServersPlaceholder({ isAuthenticated }: Props) {
         <TouchableOpacity
           onPress={() => navigation.navigate('Account')}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <View bg="default" padding="medium" border="hairline" rounded="large">
+          <View bg="default" padding="medium" border="default" rounded="large">
             <Text type="InterRegular" style={{ lineHeight: 20 }}>
               Sign in to your Expo account to see the projects you have recently been working on.
             </Text>
