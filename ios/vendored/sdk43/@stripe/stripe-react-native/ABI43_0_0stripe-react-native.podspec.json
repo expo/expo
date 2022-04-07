@@ -18,6 +18,6 @@
   },
   "dependencies": {
     "ABI43_0_0React": [],
-    "Stripe": ["~> 21.9.0"]
+    "Stripe": ["~> 22.0.0"]
   }
 }

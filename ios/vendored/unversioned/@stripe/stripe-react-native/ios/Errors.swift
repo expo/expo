@@ -1,35 +1,9 @@
 import Stripe
 
-enum ConfirmPaymentErrorType: String {
-    case Failed, Canceled, Unknown
-}
-
-enum ApplePayErrorType: String {
-    case Failed, Canceled, Unknown
-}
-
-enum NextPaymentActionErrorType: String {
-    case Failed, Canceled, Unknown
-}
-
-enum ConfirmSetupIntentErrorType: String {
-    case Failed, Canceled, Unknown
-}
-
-enum RetrievePaymentIntentErrorType: String {
-    case Unknown
-}
-
-enum RetrieveSetupIntentErrorType: String {
-    case Unknown
-}
-
-enum PaymentSheetErrorType: String {
-    case Failed, Canceled
-}
-
-enum CreateTokenErrorType: String {
-    case Failed
+enum ErrorType {
+    static let Failed = "Failed"
+    static let Canceled = "Canceled"
+    static let Unknown = "Unknown"
 }
 
 class Errors {
@@ -76,11 +50,11 @@ class Errors {
     class func createError (_ code: String, _ error: NSError?) -> NSDictionary {
         let value: NSDictionary = [
             "code": code,
-            "message": error?.userInfo["com.stripe.lib:ErrorMessageKey"] ?? error?.userInfo["NSLocalizedDescription"] ?? NSNull(),
-            "localizedMessage": error?.userInfo["NSLocalizedDescription"] ?? NSNull(),
-            "declineCode": error?.userInfo["com.stripe.lib:DeclineCodeKey"] ?? NSNull(),
-            "stripeErrorCode": error?.userInfo["com.stripe.lib:StripeErrorCodeKey"] ?? NSNull(),
-            "type": error?.userInfo["com.stripe.lib:StripeErrorTypeKey"] ?? NSNull(),
+            "message": error?.userInfo[STPError.errorMessageKey] ?? NSNull(),
+            "localizedMessage": error?.localizedDescription ?? NSNull(),
+            "declineCode": error?.userInfo[STPError.stripeDeclineCodeKey] ?? NSNull(),
+            "stripeErrorCode": error?.userInfo[STPError.stripeErrorCodeKey] ?? NSNull(),
+            "type": error?.userInfo[STPError.stripeErrorTypeKey] ?? NSNull(),
         ]
         
         return ["error": value]

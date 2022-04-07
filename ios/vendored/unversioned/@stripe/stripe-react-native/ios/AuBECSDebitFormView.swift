@@ -43,6 +43,21 @@ class AuBECSDebitFormView: UIView, STPAUBECSDebitFormViewDelegate {
         if let backgroundColor = formStyle["backgroundColor"] as? String {
             auBecsFormView?.formBackgroundColor = UIColor(hexString: backgroundColor)
         }
+        if let placeholderColor = formStyle["placeholderColor"] as? String {
+            auBecsFormView?.formPlaceholderColor = UIColor(hexString: placeholderColor)
+        }
+        if let textErrorColor = formStyle["textErrorColor"] as? String {
+            auBecsFormView?.formTextErrorColor = UIColor(hexString: textErrorColor)
+        }
+        if let borderColor = formStyle["borderColor"] as? String {
+            auBecsFormView?.layer.borderColor = UIColor(hexString: borderColor).cgColor
+        }
+        if let borderRadius = formStyle["borderRadius"] as? CGFloat {
+            auBecsFormView?.layer.cornerRadius = borderRadius
+        }
+        if let borderWidth = formStyle["borderWidth"] as? CGFloat {
+            auBecsFormView?.layer.borderWidth = borderWidth
+        }
     }
     
     func auBECSDebitForm(_ form: STPAUBECSDebitFormView, didChangeToStateComplete complete: Bool) {
