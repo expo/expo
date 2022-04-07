@@ -4,10 +4,19 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import moment from 'moment';
 import React, { useState } from 'react';
-import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
+import {
+  Button,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
-const ThemedText = props => {
+const ThemedText = (props) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const textColorByMode = { color: isDarkMode ? Colors.white : Colors.black };
@@ -50,12 +59,15 @@ const MINUTE_INTERVALS = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30];
 // Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
 
 const DateTimePickerScreen = () => {
-  const [date, setDate] = useState(new Date(1598051730000));
+  const unixTime = 1598051730000;
+  const [date, setDate] = useState(new Date(unixTime));
   const [mode, setMode] = useState(MODE_VALUES[0]);
   const [show, setShow] = useState(false);
   const [color, setColor] = useState();
   const [display, setDisplay] = useState(DISPLAY_VALUES[0]);
   const [interval, setMinInterval] = useState(1);
+  const [minimumDate, setMinimumDate] = useState();
+  const [maximumDate, setMaximumDate] = useState();
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -68,6 +80,19 @@ const DateTimePickerScreen = () => {
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.dark : Colors.lighter,
+  };
+
+  const toggleMinMaxDate = (enable) => {
+    if (!enable) {
+      setMinimumDate(undefined);
+      setMaximumDate(undefined);
+      return;
+    }
+
+    const startOfTodayUTC = moment(unixTime).utc().startOf('day').toDate();
+    setMinimumDate(maximumDate ? undefined : startOfTodayUTC);
+    const endOfTomorrowUTC = moment(unixTime).utc().endOf('day').add(1, 'day').toDate();
+    setMaximumDate(minimumDate ? undefined : endOfTomorrowUTC);
   };
 
   return (
@@ -91,7 +116,7 @@ const DateTimePickerScreen = () => {
         <SegmentedControl
           values={MODE_VALUES}
           selectedIndex={MODE_VALUES.indexOf(mode)}
-          onChange={event => {
+          onChange={(event) => {
             setMode(MODE_VALUES[event.nativeEvent.selectedSegmentIndex]);
           }}
         />
@@ -99,7 +124,7 @@ const DateTimePickerScreen = () => {
         <SegmentedControl
           values={DISPLAY_VALUES}
           selectedIndex={DISPLAY_VALUES.indexOf(display)}
-          onChange={event => {
+          onChange={(event) => {
             setDisplay(DISPLAY_VALUES[event.nativeEvent.selectedSegmentIndex]);
           }}
         />
@@ -107,7 +132,7 @@ const DateTimePickerScreen = () => {
         <SegmentedControl
           values={MINUTE_INTERVALS.map(String)}
           selectedIndex={MINUTE_INTERVALS.indexOf(interval)}
-          onChange={event => {
+          onChange={(event) => {
             setMinInterval(MINUTE_INTERVALS[event.nativeEvent.selectedSegmentIndex]);
           }}
         />
@@ -116,7 +141,7 @@ const DateTimePickerScreen = () => {
           <TextInput
             value={color}
             style={{ height: 60, flex: 1 }}
-            onChangeText={text => {
+            onChangeText={(text) => {
               setColor(text.toLowerCase());
             }}
             placeholder="color"
@@ -126,39 +151,51 @@ const DateTimePickerScreen = () => {
           <Button
             testID="showPickerButton"
             onPress={() => {
+              toggleMinMaxDate(false);
               setShow(true);
             }}
-            title="Show picker!"
+            title="Show picker"
           />
+        </View>
+
+        <View style={styles.button}>
+          <Button
+            testID="toggleMinMaxDate"
+            onPress={() => {
+              toggleMinMaxDate(true);
+              setShow(true);
+            }}
+            title="Show picker with min and max date"
+          />
+        </View>
+
+        <View style={styles.button}>
+          <Button testID="hidePicker" onPress={() => setShow(false)} title="Hide picker" />
         </View>
 
         <View style={styles.header}>
           <ThemedText testID="dateText" style={styles.dateTimeText}>
-            {moment.utc(date).format('MM/DD/YYYY')}
+            Selected: {moment.utc(date).format('MM/DD/YYYY')}
           </ThemedText>
           <Text> </Text>
           <ThemedText testID="timeText" style={styles.dateTimeText}>
             {moment.utc(date).format('HH:mm')}
           </ThemedText>
-          <Button testID="hidePicker" onPress={() => setShow(false)} title="hide picker" />
         </View>
-        {Platform.OS === 'android' && (
-          <Text style={{ padding: 8, textAlign: 'center', color: 'grey' }}>
-            Please ensure that each of the displays are distinct. If not, it's likely that this
-            change must be applied: expo/expo PR #12563
-          </Text>
-        )}
+
         {show && (
           <DateTimePicker
             testID="dateTimePicker"
             timeZoneOffsetInMinutes={0}
             minuteInterval={interval}
+            maximumDate={maximumDate}
+            minimumDate={minimumDate}
             value={date}
             mode={mode}
             is24Hour
             display={display}
             onChange={onChange}
-            style={styles.iOsPicker}
+            style={styles.pickerIOS}
             textColor={color || undefined}
           />
         )}
@@ -203,6 +240,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+    paddingBottom: 10,
   },
   button: {
     alignItems: 'center',
@@ -219,7 +257,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'normal',
   },
-  iOsPicker: {
+  pickerIOS: {
     flex: 1,
   },
   windowsPicker: {
