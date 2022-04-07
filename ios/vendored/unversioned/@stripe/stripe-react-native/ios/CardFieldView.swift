@@ -127,12 +127,18 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     func paymentCardTextFieldDidChange(_ textField: STPPaymentCardTextField) {
         if onCardChange != nil {
             let brand = STPCardValidator.brand(forNumber: textField.cardParams.number ?? "")
+            let validExpiryDate = STPCardValidator.validationState(forExpirationYear: textField.cardParams.expYear?.stringValue ?? "", inMonth: textField.cardParams.expMonth?.stringValue ?? "")
+            let validCVC = STPCardValidator.validationState(forCVC: textField.cardParams.cvc ?? "", cardBrand: brand)
+            let validNumber = STPCardValidator.validationState(forNumber: textField.cardParams.number ?? "", validatingCardBrand: true)
             var cardData: [String: Any?] = [
                 "expiryMonth": textField.cardParams.expMonth ?? NSNull(),
                 "expiryYear": textField.cardParams.expYear ?? NSNull(),
                 "complete": textField.isValid,
                 "brand": Mappers.mapCardBrand(brand) ?? NSNull(),
-                "last4": textField.cardParams.last4 ?? ""
+                "last4": textField.cardParams.last4 ?? "",
+                "validExpiryDate": Mappers.mapFromCardValidationState(state: validExpiryDate),
+                "validCVC": Mappers.mapFromCardValidationState(state: validCVC),
+                "validNumber": Mappers.mapFromCardValidationState(state: validNumber)
             ]
             if (cardField.postalCodeEntryEnabled) {
                 cardData["postalCode"] = textField.postalCode ?? ""

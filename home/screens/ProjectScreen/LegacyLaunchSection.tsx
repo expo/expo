@@ -58,7 +58,7 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
     warning ?? (
       <View>
         <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
-        <View bg="default" overflow="hidden" rounded="large" border="hairline">
+        <View bg="default" overflow="hidden" rounded="large" border="default">
           <TouchableOpacity
             onPress={() => {
               Linking.openURL(UrlUtils.normalizeUrl(app.fullName));

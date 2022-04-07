@@ -1,10 +1,9 @@
 import { borderRadius, CheckIcon, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { SectionHeader } from 'components/SectionHeader';
-import { Text, View, Image, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
+import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
-import { FlatList } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 
 import { Home_CurrentUserQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
@@ -52,7 +51,7 @@ export function LoggedInAccountView({ accounts }: Props) {
             </>
           )}
           keyExtractor={(account) => account.id}
-          renderItem={({ item: account }) => (
+          renderItem={({ item: account, index }) => (
             <TouchableOpacity
               key={account.id}
               onPress={() => {
@@ -63,8 +62,13 @@ export function LoggedInAccountView({ accounts }: Props) {
                 justify="between"
                 padding="medium"
                 bg="default"
-                border="hairline"
-                rounded="large">
+                border="default"
+                roundedTop={index === 0 ? 'large' : undefined}
+                roundedBottom={index === accounts.length - 1 ? 'large' : undefined}
+                style={{
+                  borderBottomWidth: index === accounts.length - 1 ? 1 : 0,
+                  borderTopWidth: index === 0 ? 1 : 0,
+                }}>
                 <Row align={!account.owner?.fullName ? 'center' : 'start'}>
                   {account?.owner?.profilePhoto ? (
                     <Image size="xl" rounded="full" source={{ uri: account.owner.profilePhoto }} />
@@ -100,7 +104,7 @@ export function LoggedInAccountView({ accounts }: Props) {
               </Row>
             </TouchableOpacity>
           )}
-          ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+          ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
         />
       </View>
     </View>

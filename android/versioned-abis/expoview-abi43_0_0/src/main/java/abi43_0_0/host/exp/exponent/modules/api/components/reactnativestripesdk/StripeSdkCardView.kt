@@ -213,6 +213,9 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
           )
         }
       }
+
+      override fun onPostalCodeComplete() {
+      }
     })
 
     mCardWidget.setExpiryDateTextWatcher(object : TextWatcher {

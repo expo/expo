@@ -1,7 +1,8 @@
 import { spacing } from '@expo/styleguide-native';
-import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, View as RNView } from 'react-native';
+import { ActivityIndicator, View as RNView } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import { SnacksListItem } from '../../components/SnacksListItem';
@@ -88,7 +89,8 @@ function SnackList({ data, loadMoreAsync }: Props) {
         name={snack.name}
         description={snack.description}
         isDraft={snack.isDraft}
-        inFlatList
+        first={index === 0}
+        last={index === data.length - 1}
       />
     );
   }, []);
@@ -107,7 +109,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
         renderLoadingIndicator={() => <RNView />}
         renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         contentContainerStyle={{ padding: spacing[4] }}
-        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
         canLoadMore={canLoadMore()}
         onLoadMoreAsync={handleLoadMoreAsync}
       />

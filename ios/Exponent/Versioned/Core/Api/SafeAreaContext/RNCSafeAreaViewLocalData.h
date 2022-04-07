@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 
-#import "RNCSafeAreaViewMode.h"
 #import "RNCSafeAreaViewEdges.h"
+#import "RNCSafeAreaViewMode.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -58,36 +58,41 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
   return (
     <View>
       <SectionHeader header="Branches" style={{ paddingTop: 0 }} />
-      <View bg="default" rounded="large" border="hairline" overflow="hidden">
-        {branchManifests.map((branch, i) => {
-          return (
-            <Fragment key={branch.id}>
-              <BranchListItem
-                appId={app.id}
-                name={branch.name}
-                latestUpdate={branch.latestUpdate}
-              />
-              {i < branchManifests.length - 1 && <Divider />}
-            </Fragment>
-          );
-        })}
-        {branchesToRender.length > 3 && (
-          <>
-            <Divider />
-            <TouchableOpacity onPress={onSeeAllBranchesPress}>
-              <View padding="medium">
-                <Row align="center" justify="between">
-                  <Text type="InterRegular">See all branches</Text>
-                  <ChevronDownIcon
-                    style={{ transform: [{ rotate: '-90deg' }] }}
-                    color={theme.icon.secondary}
-                  />
-                </Row>
-              </View>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+      {branchManifests.map((branch, i) => {
+        return (
+          <Fragment key={branch.id}>
+            <BranchListItem
+              first={i === 0}
+              last={i === 2 && branchesToRender.length <= 3}
+              appId={app.id}
+              name={branch.name}
+              latestUpdate={branch.latestUpdate}
+            />
+            {i < branchManifests.length - 1 && <Divider style={{ height: 1 }} />}
+          </Fragment>
+        );
+      })}
+      {branchesToRender.length > 3 && (
+        <>
+          <Divider style={{ height: 1 }} />
+          <TouchableOpacity onPress={onSeeAllBranchesPress}>
+            <View
+              padding="medium"
+              border="default"
+              bg="default"
+              style={{ borderTopWidth: 0 }}
+              roundedBottom="large">
+              <Row align="center" justify="between">
+                <Text type="InterRegular">See all branches</Text>
+                <ChevronDownIcon
+                  style={{ transform: [{ rotate: '-90deg' }] }}
+                  color={theme.icon.secondary}
+                />
+              </Row>
+            </View>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
