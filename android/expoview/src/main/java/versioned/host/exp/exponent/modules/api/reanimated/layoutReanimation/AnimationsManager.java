@@ -61,10 +61,10 @@ public class AnimationsManager implements ViewHierarchyObserver {
   }
 
   public enum ViewState {
+    Inactive,
     Appearing,
     Disappearing,
     Layout,
-    Inactive,
     ToRemove;
   }
 
@@ -107,11 +107,11 @@ public class AnimationsManager implements ViewHierarchyObserver {
     HashMap<String, Object> currentValues = before.toCurrentMap();
     ViewState state = mStates.get(view.getId());
 
-    if (state == null || state == ViewState.Disappearing || state == ViewState.ToRemove) {
+    if (state == ViewState.Disappearing || state == ViewState.ToRemove) {
       return;
     }
     mCallbacks.put(tag, callback);
-    if (state == ViewState.Inactive) {
+    if (state == ViewState.Inactive || state == null) {
       if (currentValues != null) {
         mStates.put(view.getId(), ViewState.ToRemove);
         mToRemove.add(view.getId());
@@ -232,6 +232,14 @@ public class AnimationsManager implements ViewHierarchyObserver {
     // go through ready to remove from bottom to top
     for (int tag : mToRemove) {
       View view = mViewForTag.get(tag);
+      if (view == null) {
+        try {
+          view = mUIManager.resolveView(tag);
+          mViewForTag.put(tag, view);
+        } catch (IllegalViewOperationException ignored) {
+          continue;
+        }
+      }
       findRoot(view, roots);
     }
     for (int tag : roots) {
@@ -504,6 +512,6 @@ public class AnimationsManager implements ViewHierarchyObserver {
   }
 
   public boolean isLayoutAnimationEnabled() {
-    return mNativeMethodsHolder.isLayoutAnimationEnabled();
+    return mNativeMethodsHolder != null && mNativeMethodsHolder.isLayoutAnimationEnabled();
   }
 }

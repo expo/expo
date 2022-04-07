@@ -5,10 +5,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, ViewState) {
+  Inactive,
   Appearing,
   Disappearing,
   Layout,
-  Inactive,
   ToRemove,
 };
 
