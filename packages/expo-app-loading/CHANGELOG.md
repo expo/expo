@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Deprecate the library in favor of expo-splash-screen.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
