@@ -31,7 +31,6 @@ export function SettingsScreen() {
           </>
         )}
         <ConstantsSection />
-        <Spacer.Vertical size="medium" />
       </View>
     </ScrollView>
   );
