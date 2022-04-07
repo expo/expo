@@ -44,7 +44,7 @@ export const Header = () => {
           </Button>
         </div>
       </nav>
-      {isMobileMenuVisible ? (
+      {isMobileMenuVisible && (
         <nav css={[containerStyle, showOnMobileStyle]}>
           <div css={[columnStyle, leftColumnStyle]}>
             <BOLD>Theme</BOLD>
@@ -53,12 +53,12 @@ export const Header = () => {
             <ThemeSelector />
           </div>
         </nav>
-      ) : null}
-      {isMobileSearchVisible ? (
+      )}
+      {isMobileSearchVisible && (
         <nav css={[containerStyle, showOnMobileStyle]}>
           <Search mobile version="latest" css={mobileSearchInputStyle} />
         </nav>
-      ) : null}
+      )}
     </>
   );
 };
@@ -119,7 +119,7 @@ const hideOnMobileStyle = css`
 `;
 
 const mobileButtonStyle = css`
-  padding: 0 ${spacing[1.5]}px;
+  padding: 0 ${spacing[3]}px;
   margin-left: ${spacing[2]}px;
 
   &:hover {

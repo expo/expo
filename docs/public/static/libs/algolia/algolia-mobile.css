@@ -19,7 +19,6 @@
   }
 
   .algolia-autocomplete [class^='ds-dataset-'] {
-    width: 100vw !important;
     border-style: hidden !important;
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -50,8 +49,7 @@
   }
 
   .algolia-docsearch-footer {
-    position: absolute;
-    bottom: 0;
+    border-bottom: 1px solid var(--expo-theme-border-default);
   }
 
   /* neccessary to prevent mobile Safari from zooming in */
