@@ -13,7 +13,7 @@ export function EmptySection() {
   const theme = useExpoTheme();
 
   return (
-    <View bg="default" border="hairline" rounded="medium" padding="medium">
+    <View bg="default" border="default" rounded="medium" padding="medium">
       <Text type="InterRegular">{NO_PUBLISHES_TEXT}</Text>
       <Spacer.Vertical size="medium" />
       <TouchableOpacity

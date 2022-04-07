@@ -40,14 +40,14 @@ export function DevMenuGestureSection() {
   return (
     <View>
       <SectionHeader header="Developer Menu Gestures" />
-      <View bg="default" overflow="hidden" rounded="large" border="hairline">
+      <View bg="default" overflow="hidden" rounded="large" border="default">
         <CheckListItem
           icon={<ShakeDeviceIcon color={theme.icon.default} size={iconSize.regular} />}
           title="Shake device"
           checked={devMenuSettings.motionGestureEnabled}
           onPress={onToggleMotionGesture}
         />
-        <Divider />
+        <Divider style={{ height: 1 }} />
         <CheckListItem
           icon={<ThreeFingerPressIcon color={theme.icon.default} size={iconSize.regular} />}
           title="Three-finger long press"

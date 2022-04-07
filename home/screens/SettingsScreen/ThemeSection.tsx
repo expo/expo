@@ -26,21 +26,21 @@ export function ThemeSection() {
   return (
     <View>
       <SectionHeader header="Theme" />
-      <View bg="default" overflow="hidden" rounded="large" border="hairline">
+      <View bg="default" overflow="hidden" rounded="large" border="default">
         <RadioListItem
           icon={<ThemeAutoIcon color={theme.icon.default} size={iconSize.regular} />}
           title="Automatic"
           checked={preferredAppearance === undefined}
           onPress={() => onSelectAppearance(undefined)}
         />
-        <Divider />
+        <Divider style={{ height: 1 }} />
         <RadioListItem
           icon={<ThemeLightIcon color={theme.icon.default} size={iconSize.regular} />}
           title="Light"
           checked={preferredAppearance === 'light'}
           onPress={() => onSelectAppearance('light')}
         />
-        <Divider />
+        <Divider style={{ height: 1 }} />
         <RadioListItem
           icon={<ThemeDarkIcon color={theme.icon.default} size={iconSize.regular} />}
           title="Dark"

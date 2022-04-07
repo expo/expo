@@ -11,7 +11,7 @@ type Props = {
 
 export function RecentlyOpenedSection({ recentHistory }: Props) {
   return (
-    <View border="hairline" bg="default" overflow="hidden" rounded="large">
+    <View border="default" bg="default" overflow="hidden" rounded="large">
       {recentHistory.map((project, i) => {
         if (!project) return null;
 
@@ -34,7 +34,7 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
                 Linking.openURL(project.url);
               }}
             />
-            {i < recentHistory.count() - 1 && <Divider />}
+            {i < recentHistory.count() - 1 && <Divider style={{ height: 1 }} />}
           </Fragment>
         );
       })}

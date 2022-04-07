@@ -29,9 +29,9 @@ export function ConstantsSection() {
   return (
     <View>
       <SectionHeader header="App Info" />
-      <View bg="default" border="hairline" overflow="hidden" rounded="large">
+      <View bg="default" border="default" overflow="hidden" rounded="large">
         <ConstantItem title="Device ID" value={getSnackId()} onPress={copySnackIdToClipboard} />
-        <Divider />
+        <Divider style={{ height: 1 }} />
         {Constants.expoVersion ? (
           <>
             <ConstantItem
@@ -39,7 +39,7 @@ export function ConstantsSection() {
               value={Constants.expoVersion}
               onPress={copyClientVersionToClipboard}
             />
-            <Divider />
+            <Divider style={{ height: 1 }} />
           </>
         ) : null}
         <ConstantItem title="Supported SDKs" value={Environment.supportedSdksString} />
