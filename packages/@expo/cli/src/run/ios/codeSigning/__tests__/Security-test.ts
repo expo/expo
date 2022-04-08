@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 
-import { CommandError } from '../../../utils/errors';
+import { CommandError } from '../../../../utils/errors';
 import {
   extractCodeSigningInfo,
   extractSigningId,
@@ -11,7 +11,7 @@ import {
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('../../../start/doctor/SecurityBinPrerequisite', () => ({
+jest.mock('../../../../start/doctor/SecurityBinPrerequisite', () => ({
   SecurityBinPrerequisite: {
     instance: {
       assertAsync: jest.fn(),

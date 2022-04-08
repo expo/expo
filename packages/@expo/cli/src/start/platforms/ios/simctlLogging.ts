@@ -4,6 +4,7 @@ import path from 'path';
 import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../../log';
+import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { Device, getContainerPathAsync } from './simctl';
 
@@ -100,7 +101,7 @@ export class SimulatorLogStreamer {
     return !!this.childProcess;
   }
 
-  resolvePidAsync() {
+  async resolvePidAsync() {
     if ('pid' in this.resolver) {
       return this.resolver.pid;
     }
@@ -111,6 +112,11 @@ export class SimulatorLogStreamer {
     await this.detachAsync();
 
     const pid = await this.resolvePidAsync();
+
+    if (!pid) {
+      throw new CommandError(`Could not find pid for ${this.device.udid}`);
+    }
+
     // xcrun simctl spawn booted log stream --process --style json
     this.childProcess = spawn('xcrun', [
       'simctl',
@@ -147,21 +153,24 @@ export class SimulatorLogStreamer {
       Log.debug('[simctl error]:', message);
     });
 
-    this.off = installExitHooks(() => this.detachAsync.bind(this));
+    this.off = installExitHooks(() => {
+      this.detachAsync.bind(this);
+    });
   }
 
-  private off: () => void | null = null;
+  private off: (() => void) | null = null;
 
   detachAsync() {
     this.off?.();
     this.off = null;
     if (this.childProcess) {
       return new Promise<void>((resolve) => {
-        this.childProcess.on('close', resolve);
-        this.childProcess.kill();
+        this.childProcess?.on('close', resolve);
+        this.childProcess?.kill();
         this.childProcess = null;
       });
     }
+    return Promise.resolve();
   }
 }
 

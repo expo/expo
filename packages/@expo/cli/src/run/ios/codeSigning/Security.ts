@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import forge from 'node-forge';
 
-import { SecurityBinPrerequisite } from '../../start/doctor/SecurityBinPrerequisite';
-import { CommandError } from '../../utils/errors';
+import { SecurityBinPrerequisite } from '../../../start/doctor/SecurityBinPrerequisite';
+import { CommandError } from '../../../utils/errors';
 
 export type CertificateSigningInfo = {
   /**

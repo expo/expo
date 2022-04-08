@@ -286,27 +286,47 @@ export async function buildAsync(props: BuildProps): Promise<string> {
     // Determine if the logger found any errors;
     const wasErrorPresented = !!formatter.errors.length;
 
-    const errorTitle = `Failed to build iOS project. "xcodebuild" exited with error code ${code}.`;
-
     if (wasErrorPresented) {
       // This has a flaw, if the user is missing a file, and there is a script error, only the missing file error will be shown.
       // They will only see the script error if they fix the missing file and rerun.
       // The flaw can be fixed by catching script errors in the custom logger.
-      throw new CommandError(errorTitle);
+      throw new CommandError(
+        `Failed to build iOS project. "xcodebuild" exited with error code ${code}.`
+      );
     }
 
-    // Show all the log info because often times the error is coming from a shell script,
-    // that invoked a node script, that started metro, which threw an error.
-
-    throw new CommandError(
-      `${errorTitle}\nTo view more error logs, try building the app with Xcode directly, by opening ${xcodeProject.name}.\n\n` +
-        results +
-        '\n\n' +
-        error +
-        `Build logs written to ${chalk.underline(logFilePath)}`
-    );
+    _assertXcodeBuildResults(code, results, error, xcodeProject, logFilePath);
   }
   return results;
+}
+
+// Exposed for testing.
+export function _assertXcodeBuildResults(
+  code: number | null,
+  results: string,
+  error: string,
+  xcodeProject: { name: string },
+  logFilePath: string
+): void {
+  const errorTitle = `Failed to build iOS project. "xcodebuild" exited with error code ${code}.`;
+
+  const throwWithMessage = (message: string): never => {
+    throw new CommandError(
+      `${errorTitle}\nTo view more error logs, try building the app with Xcode directly, by opening ${xcodeProject.name}.\n\n` +
+        message +
+        `Build logs written to ${chalk.underline(logFilePath)}`
+    );
+  };
+
+  const localizedError = error.match(/NSLocalizedFailure = "(.*)"/)?.[1];
+
+  if (localizedError) {
+    throwWithMessage(chalk.bold(localizedError) + '\n\n');
+  }
+  // Show all the log info because often times the error is coming from a shell script,
+  // that invoked a node script, that started metro, which threw an error.
+
+  throwWithMessage(results + '\n\n' + error);
 }
 
 function writeBuildLogs(projectRoot: string, buildOutput: string, errorOutput: string) {

@@ -40,7 +40,16 @@ describe('launchApplicationIdAsync', () => {
     asMock(openAppIdAsync).mockImplementationOnce(() => {
       throw new CommandError('APP_NOT_INSTALLED', '...');
     });
-    await expect(device.launchApplicationIdAsync('host.exp.Exponent')).rejects.toThrow(/run:ios/);
+    await expect(device.launchApplicationIdAsync('host.exp.foobar')).rejects.toThrow(/run:ios/);
+  });
+  it(`asserts that the Expo Go app is not installed`, async () => {
+    const device = createDevice();
+    asMock(openAppIdAsync).mockImplementationOnce(() => {
+      throw new CommandError('APP_NOT_INSTALLED', '...');
+    });
+    await expect(device.launchApplicationIdAsync('host.exp.Exponent')).rejects.toThrow(
+      /Couldn't open Expo Go app on device/
+    );
   });
   it(`asserts unknown error`, async () => {
     const device = createDevice();

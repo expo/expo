@@ -1,19 +1,33 @@
 import chalk from 'chalk';
 
-import * as Log from '../../log';
+import * as Log from '../../../log';
 import {
   AppleDeviceManager,
   ensureSimulatorOpenAsync,
-} from '../../start/platforms/ios/AppleDeviceManager';
-import { assertSystemRequirementsAsync } from '../../start/platforms/ios/assertSystemRequirements';
-import { sortDefaultDeviceToBeginningAsync } from '../../start/platforms/ios/promptAppleDevice';
-import { OSType } from '../../start/platforms/ios/simctl';
-import * as SimControl from '../../start/platforms/ios/simctl';
-import { listDevicesAsync, XCTraceDevice } from '../../start/platforms/ios/xctrace';
-import { CommandError } from '../../utils/errors';
-import { ora } from '../../utils/ora';
-import { profile } from '../../utils/profile';
-import prompt from '../../utils/prompts';
+} from '../../../start/platforms/ios/AppleDeviceManager';
+import { assertSystemRequirementsAsync } from '../../../start/platforms/ios/assertSystemRequirements';
+import { sortDefaultDeviceToBeginningAsync } from '../../../start/platforms/ios/promptAppleDevice';
+import { OSType } from '../../../start/platforms/ios/simctl';
+import * as SimControl from '../../../start/platforms/ios/simctl';
+import { XCTraceDevice } from '../../../start/platforms/ios/xctrace';
+import { CommandError } from '../../../utils/errors';
+import { ora } from '../../../utils/ora';
+import { profile } from '../../../utils/profile';
+import prompt from '../../../utils/prompts';
+import * as AppleDevice from '../appleDevice/AppleDevice';
+
+async function listDevicesAsync() {
+  const results = await AppleDevice.getConnectedDevices();
+  // TODO: Add support for osType (ipad, watchos, etc)
+  return results.map((device) => ({
+    // TODO: Better name
+    name: device.DeviceName ?? device.ProductType ?? 'unknown ios device',
+    model: device.ProductType,
+    osVersion: device.ProductVersion,
+    deviceType: 'device',
+    udid: device.UniqueDeviceID,
+  }));
+}
 
 /** Get a list of devices (called destinations) that are connected to the host machine. */
 async function getBuildDestinationsAsync({ osType }: { osType?: OSType } = {}) {
@@ -31,7 +45,7 @@ async function getBuildDestinationsAsync({ osType }: { osType?: OSType } = {}) {
 async function resolveFirstDeviceAsync(osType?: OSType) {
   const manager = await AppleDeviceManager.resolveAsync({
     device: {
-      osType,
+      osType: osType,
     },
   });
 
@@ -62,6 +76,13 @@ export async function resolveDeviceAsync(
         findDeviceFromSearchValue(devices, device.toLowerCase());
 
   return ensureBootedAsync(resolved);
+}
+
+export function isDeviceASimulator(device: SimControl.Device | XCTraceDevice): boolean {
+  return (
+    !('deviceType' in device) ||
+    device.deviceType.startsWith('com.apple.CoreSimulator.SimDeviceType.')
+  );
 }
 
 /** Get a list of connected devices, filtered by `osType` if defined. */
@@ -123,7 +144,9 @@ function isDeviceSimulator(device: SimControl.Device | XCTraceDevice): boolean {
 }
 
 /** Prompt to select a device from a searchable list of devices. */
-async function promptDeviceAsync(devices: (SimControl.Device | XCTraceDevice)[]) {
+async function promptDeviceAsync(
+  devices: (SimControl.Device | XCTraceDevice)[]
+): Promise<SimControl.Device | XCTraceDevice> {
   // --device with no props after
   const { value } = await prompt({
     type: 'autocomplete',
@@ -151,7 +174,10 @@ async function promptDeviceAsync(devices: (SimControl.Device | XCTraceDevice)[])
 }
 
 /** @returns a list of devices, filtered by the provided `osType`. */
-function filterDevicesForOsType(devices: (SimControl.Device | XCTraceDevice)[], osType: OSType) {
+function filterDevicesForOsType(
+  devices: (SimControl.Device | XCTraceDevice)[],
+  osType: OSType
+): (SimControl.Device | XCTraceDevice)[] {
   return devices.filter((device) => {
     // connected device
     if (!('osType' in device)) {

@@ -50,7 +50,7 @@
     "@expo/prebuild-config": "^3.1.0",
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
-    "@expo/xcpretty": "^4.1.0",
+    "@expo/xcpretty": "^4.1.1",
     "@urql/core": "2.3.6",
     "@urql/exchange-retry": "0.3.0",
     "accepts": "^1.3.8",

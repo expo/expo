@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import * as Log from '../../../log';
-import * as Security from '../Security';
+import * as Security from './Security';
 import { resolveCertificateSigningIdentityAsync } from './resolveCertificateSigningIdentity';
 import { getCodeSigningInfoForPbxproj, setAutoCodeSigningInfoForPbxproj } from './xcodeCodeSigning';
 

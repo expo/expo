@@ -1,21 +1,22 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
-import * as path from 'path';
+import path from 'path';
 
 import * as Log from '../../log';
 import { promptToClearMalformedNativeProjectsAsync } from '../../prebuild/clearNativeFolder';
 import { prebuildAsync } from '../../prebuild/prebuildAsync';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
+import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
+import { CI } from '../../utils/env';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
-import { getAppDeltaDirectory, installOnDeviceAsync } from './installOnDeviceAsync';
-import * as IOSDeploy from './IOSDeploy';
-import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
-import { Options, resolveOptionsAsync } from './resolveOptionsAsync';
-import { startBundlerAsync } from './startBundlerAsync';
 import * as XcodeBuild from './XcodeBuild';
+import { Options } from './XcodeBuild.types';
+import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
+import { resolveOptionsAsync } from './options/resolveOptionsAsync';
+import { startBundlerAsync } from './startBundlerAsync';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   assertPlatform();
@@ -29,11 +30,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   await ensureNativeProjectAsync(projectRoot, options.install);
 
   const props = await resolveOptionsAsync(projectRoot, options);
-  if (!props.isSimulator) {
-    // TODO: Replace with JS...
-    // Assert as early as possible
-    await IOSDeploy.assertInstalledAsync();
-  }
 
   const buildOutput = await profile(XcodeBuild.buildAsync, 'XcodeBuild.buildAsync')(props);
 
@@ -45,7 +41,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     headless: !props.shouldStartBundler,
-    platforms: exp.platforms,
+    platforms: exp.platforms ?? [],
   });
 
   const appId = await profile(getBundleIdentifierForBinaryAsync)(binaryPath);
@@ -78,7 +74,11 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   if (props.shouldStartBundler) {
-    Log.log(`\nLogs for your project will appear below. ${chalk.dim(`Press Ctrl+C to exit.`)}`);
+    Log.log(
+      chalk`Logs for your project will appear below.${
+        CI ? '' : chalk.dim(` Press Ctrl+C to exit.`)
+      }`
+    );
   }
 }
 
@@ -92,7 +92,7 @@ async function ensureNativeProjectAsync(projectRoot: string, install?: boolean) 
   // If the project doesn't have native code, prebuild it...
   if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
     await prebuildAsync(projectRoot, {
-      install,
+      install: !!install,
       platforms: ['ios'],
     });
   } else if (install) {

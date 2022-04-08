@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`assertDuplicateArgs asserts duplicate arguments 1`] = `"Can only provide one instance of --device or -d"`;

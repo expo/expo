@@ -1,13 +1,14 @@
 import path from 'path';
+import { ensureDeviceIsCodeSignedForDeploymentAsync } from '../codeSigning/configureCodeSigning';
 
-import { ensureDeviceIsCodeSignedForDeploymentAsync } from '../developmentCodeSigning';
 import {
   extractEnvVariableFromBuild,
   getProcessOptions,
   getXcodeBuildArgsAsync,
+  _assertXcodeBuildResults,
 } from '../XcodeBuild';
 
-jest.mock('../developmentCodeSigning');
+jest.mock('../codeSigning/configureCodeSigning');
 
 const fs = jest.requireActual('fs') as typeof import('fs');
 
@@ -107,5 +108,21 @@ xdescribe(getProcessOptions, () => {
     ).toEqual({
       env: {},
     });
+  });
+});
+
+describe(_assertXcodeBuildResults, () => {
+  it(`asserts invalid Xcode version`, () => {
+    expect(() =>
+      _assertXcodeBuildResults(
+        70,
+        'foobar',
+        fs.readFileSync(path.resolve(__dirname, './fixtures/outdated-xcode-error.log'), 'utf8'),
+        { name: 'name' },
+        './output.log'
+      )
+    ).toThrow(
+      'This operation can fail if the version of the OS on the device is newer than the version of Xcode that is running.'
+    );
   });
 });

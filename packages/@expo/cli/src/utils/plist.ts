@@ -1,5 +1,4 @@
 import plist from '@expo/plist';
-// @ts-ignore
 import binaryPlist from 'bplist-parser';
 import fs from 'fs/promises';
 
@@ -23,6 +22,7 @@ export function parsePlistBuffer(contents: Buffer) {
     if (Array.isArray(info)) return info[0];
     return info;
   } else if (contents[0] === CHAR_B_LOWER) {
+    // @ts-expect-error
     const info = binaryPlist.parseBuffer(contents);
     if (Array.isArray(info)) return info[0];
     return info;

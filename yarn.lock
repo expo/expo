@@ -1652,6 +1652,16 @@
   resolved "https://registry.yarnpkg.com/@expo/xcodegen/-/xcodegen-2.18.0-patch.1.tgz#40514e973ee6769e5abd5d1c16d40dbe85c1d9aa"
   integrity sha512-Caz2ChzVe/U3GkaK+DKlXqYorARzLZ1yM6D03LHvasnyA4T+pW6DGXHPy7cfK5AlbsV6Fi5ZtZ9gqW4jGWIFwQ==
 
+"@expo/xcpretty@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@expo/xcpretty/-/xcpretty-4.1.1.tgz#9a15e015169bb4247a74c0d45dbcee60dd418d3f"
+  integrity sha512-2ssiyKGjgRUn61MSdSQyptV5lq1BtaT1DX80OjnCLvg+tXxIp2MVLZASSNqYqo8gQotghv35EpVrWBmOxMFuoQ==
+  dependencies:
+    "@babel/code-frame" "7.10.4"
+    chalk "^4.1.0"
+    find-up "^5.0.0"
+    js-yaml "^4.1.0"
+
 "@firebase/analytics-compat@0.1.8":
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/@firebase/analytics-compat/-/analytics-compat-0.1.8.tgz#37a96ad8609c5492c9e21040359efdafd5bb6503"
@@ -5987,7 +5997,7 @@ bplist-creator@0.1.0:
   dependencies:
     stream-buffers "2.2.x"
 
-bplist-parser@0.3.1, bplist-parser@^0.3.0:
+bplist-parser@0.3.1, bplist-parser@^0.3.0, bplist-parser@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/bplist-parser/-/bplist-parser-0.3.1.tgz#e1c90b2ca2a9f9474cc72f6862bbf3fee8341fd1"
   integrity sha512-PyJxiNtA5T2PlLIeBot4lbp7rj4OadzjnMZD/G5zuBNt8ei/yCU7+wW0h2bag9vr8c+/WuRWmSxbqAl9hL1rBA==

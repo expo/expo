@@ -5,7 +5,7 @@ import { CI } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
 import { selectAsync } from '../../../utils/prompts';
-import * as Security from '../Security';
+import * as Security from './Security';
 import { getLastDeveloperCodeSigningIdAsync, setLastDeveloperCodeSigningIdAsync } from './settings';
 
 /**
@@ -13,7 +13,7 @@ import { getLastDeveloperCodeSigningIdAsync, setLastDeveloperCodeSigningIdAsync 
  */
 export async function sortDefaultIdToBeginningAsync(
   identities: Security.CertificateSigningInfo[]
-): Promise<[Security.CertificateSigningInfo[], string | undefined]> {
+): Promise<[Security.CertificateSigningInfo[], string | null]> {
   const lastSelected = await getLastDeveloperCodeSigningIdAsync();
 
   if (lastSelected) {
@@ -81,7 +81,7 @@ export async function resolveCertificateSigningIdentityAsync(
 /** Prompt the user to select a development team, highlighting the preferred value based on the user history. */
 export async function selectDevelopmentTeamAsync(
   identities: Security.CertificateSigningInfo[],
-  preferredId: string
+  preferredId: string | null
 ): Promise<Security.CertificateSigningInfo> {
   const index = await selectAsync(
     'Development team for signing the app',
