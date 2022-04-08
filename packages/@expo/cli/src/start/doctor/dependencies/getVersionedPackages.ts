@@ -1,6 +1,6 @@
 import npmPackageArg from 'npm-package-arg';
 
-import { getReleasedVersionsAsync } from '../../../api/getVersions';
+import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import * as Log from '../../../log';
 import { getBundledNativeModulesAsync } from './bundledNativeModules';
 
@@ -19,8 +19,14 @@ export async function getRemoteVersionsForSdkAsync(sdkVersion?: string): Promise
     return {};
   }
 
+  const version = sdkVersions[sdkVersion as keyof typeof sdkVersions] as unknown as SDKVersion;
+
+  if (!version) {
+    return {};
+  }
+
   const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } =
-    sdkVersions[sdkVersion];
+    version as SDKVersion;
 
   const reactVersion = facebookReactVersion
     ? {
