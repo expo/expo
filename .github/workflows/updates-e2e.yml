@@ -32,10 +32,14 @@ concurrency:
 
 jobs:
   android:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     env:
       UPDATES_PORT: 4747
     steps:
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17'
       - name: Check out repository
         uses: actions/checkout@v2
         with:
@@ -97,10 +101,10 @@ jobs:
       - name: Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
-        timeout-minutes: 10
+        timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          arch: x86_64
+          api-level: 29
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
           script: yarn test --config e2e/jest.config.js
           working-directory: packages/expo-updates

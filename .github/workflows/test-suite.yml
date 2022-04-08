@@ -157,7 +157,7 @@ jobs:
     runs-on: macos-11
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
-      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v2
