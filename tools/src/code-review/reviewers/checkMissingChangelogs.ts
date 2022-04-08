@@ -9,7 +9,7 @@ import logger from "../../Logger";
 
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput | null> {
   if (!pullRequest.head) {
-    logger.warn('Detached PR, we cannot asses the needed changelog entries!', pullRequest)
+    logger.warn('Detached PR, we cannot asses the needed changelog entries!', pullRequest);
     return null;
   }
 
@@ -43,5 +43,5 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
 
 function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
   const relativePath = path.relative(EXPO_DIR, pkg.changelogPath);
-  return `[\`${relativePath}\`](${head?.repo?.html_url}/blob/${head.ref}/${relativePath})`;
+  return `[\`${relativePath}\`](${head.repo?.html_url}/blob/${head.ref}/${relativePath})`;
 }

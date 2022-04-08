@@ -13,7 +13,7 @@ const IGNORED_PATHS = ['android/versioned-abis/**/*.aar'];
 
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput | null> {
   if (!pullRequest.head) {
-    logger.warn('Detached PR, we cannot asses the state of files!', pullRequest)
+    logger.warn('Detached PR, we cannot asses the state of files!', pullRequest);
     return null;
   }
 
