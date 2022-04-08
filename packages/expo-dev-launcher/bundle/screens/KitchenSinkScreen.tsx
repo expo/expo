@@ -5,6 +5,7 @@ import { ScrollView } from 'react-native';
 import { BasicButton } from '../components/BasicButton';
 import { FlatListLoader } from '../components/FlatList';
 import { LoadMoreButton } from '../components/LoadMoreButton';
+import { SafeAreaTop } from '../components/SafeAreaTop';
 import { Toasts } from '../components/Toasts';
 import { useToastStack } from '../providers/ToastStackProvider';
 
@@ -31,6 +32,7 @@ export function KitchenSinkScreen() {
 
   return (
     <ScrollView>
+      <SafeAreaTop />
       <View padding="medium">
         <Heading size="large">Kitchen Sink</Heading>
 
