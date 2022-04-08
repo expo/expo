@@ -47,6 +47,20 @@ export function Main() {
 
   const hasCopiedAppInfoContent = Boolean(appInfoClipboard.clipboardContent);
 
+  const {
+    isElementInspectorAvailable,
+    isHotLoadingAvailable,
+    isPerfMonitorAvailable,
+    isRemoteDebuggingAvailable,
+  } = devSettings;
+  const hasDisabledDevSettingOption =
+    [
+      isElementInspectorAvailable,
+      isHotLoadingAvailable,
+      isPerfMonitorAvailable,
+      isRemoteDebuggingAvailable,
+    ].filter((value) => value === false).length > 0;
+
   return (
     <View flex="1" bg="secondary">
       <View padding="medium" bg="default">
@@ -187,6 +201,15 @@ export function Main() {
           />
         </View>
       </View>
+
+      {!hasDisabledDevSettingOption && (
+        <>
+          <Spacer.Vertical size="large" />
+          <Text size="small" color="secondary" align="center">
+            Some settings are unavailable for this development build.
+          </Text>
+        </>
+      )}
 
       <Spacer.Vertical size="large" />
 
@@ -342,7 +365,7 @@ function SettingsRowSwitch({
           <Switch
             testID={testID}
             disabled={disabled}
-            value={isEnabled}
+            value={isEnabled && !disabled}
             onValueChange={() => setIsEnabled(!isEnabled)}
           />
         </View>
