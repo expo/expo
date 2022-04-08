@@ -211,7 +211,9 @@ async function getProjectCodeSigningCertificateAsync(
   }
 
   if (!privateKeyPath) {
-    privateKeyPath = path.join(path.dirname(codeSigningCertificatePath), 'private-key.pem');
+    throw new CommandError(
+      'Must specify --private-key-path argument to sign development manifest for requested code signing key'
+    );
   }
 
   const codeSigningMetadata = exp.updates?.codeSigningMetadata;
