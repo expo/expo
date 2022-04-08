@@ -11,6 +11,7 @@ import {
 } from 'expo-dev-client-components';
 import * as React from 'react';
 
+import { SafeAreaTop } from '../components/SafeAreaTop';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useUser } from '../providers/UserContextProvider';
 
@@ -29,6 +30,7 @@ export function AppHeader({ navigation }) {
 
   return (
     <View bg="default">
+      <SafeAreaTop />
       <Row align="center" pb="small">
         <Spacer.Horizontal size="medium" />
         <View flex="1" shrink="1">
