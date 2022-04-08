@@ -10,6 +10,7 @@ import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
+import { useAccountName } from '../../utils/AccountNameContext';
 
 export function LoggedOutAccountView() {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ export function LoggedOutAccountView() {
   const [authenticationError, setAuthenticationError] = React.useState<string | null>(null);
   const mounted = React.useRef<boolean | null>(true);
   const theme = useExpoTheme();
+  const { setAccountName } = useAccountName();
 
   React.useEffect(() => {
     mounted.current = true;
@@ -62,6 +64,7 @@ export function LoggedOutAccountView() {
       if (result.type === 'success') {
         const resultURL = url.parse(result.url, true);
         const sessionSecret = resultURL.query['session_secret'] as string;
+        // usernameOrEmail is always the username https://github.com/expo/universe/blob/d3332f3b48964853191c5035fceae37aeebb1e64/server/website/scenes/_app/helpers.tsx#L119
         const usernameOrEmail = resultURL.query['username_or_email'] as string;
 
         if (!sessionSecret) {
@@ -80,6 +83,7 @@ export function LoggedOutAccountView() {
             sessionSecret: decodeURIComponent(sessionSecret),
           })
         );
+        setAccountName(usernameOrEmail);
       }
     } catch (e) {
       // TODO(wschurman): Put this into Sentry
