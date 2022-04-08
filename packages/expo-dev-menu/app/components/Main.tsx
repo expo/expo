@@ -206,7 +206,7 @@ export function Main() {
         <>
           <Spacer.Vertical size="large" />
           <Text size="small" color="secondary" align="center">
-            Some development settings are unavailable for this build.
+            Some development settings are unavailable for this development build.
           </Text>
         </>
       )}
