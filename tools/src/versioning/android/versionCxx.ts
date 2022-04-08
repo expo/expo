@@ -8,62 +8,55 @@ import { ANDROID_DIR, PACKAGES_DIR } from '../../Constants';
 import { transformFileAsync } from '../../Transforms';
 
 export async function versionCxxExpoModulesAsync(version: string) {
-  await new VersionerExpoAv(version).process();
+  await versionExpoAvAsync(version);
 }
 
-class VersionerExpoAv {
-  readonly srcRoot: string;
-  readonly abiName: string;
+async function versionExpoAvAsync(version: string) {
+  const srcRoot = path.join(PACKAGES_DIR, 'expo-av', 'android');
+  const abiName = `abi${version.replace(/\./g, '_')}`;
 
-  constructor(version: string) {
-    this.srcRoot = path.join(PACKAGES_DIR, 'expo-av', 'android');
-    this.abiName = `abi${version.replace(/\./g, '_')}`;
+  try {
+    await patchCMake();
+    await patchGradle();
+    await patchCxxFilesForJavaDescriptor();
+
+    await spawnAsync('./gradlew', [':expo-av:copyReleaseJniLibsProjectOnly'], {
+      cwd: ANDROID_DIR,
+    });
+    const versionedAbiRoot = path.join(
+      ANDROID_DIR,
+      'versioned-abis',
+      `expoview-${abiName}`,
+      'src',
+      'main'
+    );
+    await copySoPrebuiltLibs(versionedAbiRoot);
+    await rewriteSystemLoadLibs(versionedAbiRoot);
+  } catch (e) {
+    throw e;
+  } finally {
+    await resetPatches();
   }
 
-  async process() {
-    try {
-      await this._patchCMake();
-      await this._patchGradle();
-      await this._patchCxxFilesForJavaDescriptor();
-
-      await spawnAsync('./gradlew', [':expo-av:copyReleaseJniLibsProjectOnly'], {
-        cwd: ANDROID_DIR,
-      });
-      const versionedAbiRoot = path.join(
-        ANDROID_DIR,
-        'versioned-abis',
-        `expoview-${this.abiName}`,
-        'src',
-        'main'
-      );
-      await this._copySoPrebuiltLibs(versionedAbiRoot);
-      await this._rewriteSystemLoadLibs(versionedAbiRoot);
-    } catch (e) {
-      throw e;
-    } finally {
-      await this._resetPatches();
-    }
-  }
-
-  async _patchCMake() {
-    const file = path.join(this.srcRoot, 'CMakeLists.txt');
+  async function patchCMake() {
+    const file = path.join(srcRoot, 'CMakeLists.txt');
     await fs.copyFile(file, `${file}.bak`);
 
     await transformFileAsync(file, [
       {
         find: /\b(expo-av)\b/g,
-        replaceWith: `$1_${this.abiName}`,
+        replaceWith: `$1_${abiName}`,
       },
       {
         // Patches linked libs in `find_library()`
         find: /(\s)(jsi|reactnativejni)(\s)/g,
-        replaceWith: `$1$2_${this.abiName}$3`,
+        replaceWith: `$1$2_${abiName}$3`,
       },
     ]);
   }
 
-  async _patchGradle() {
-    const file = path.join(this.srcRoot, 'build.gradle');
+  async function patchGradle() {
+    const file = path.join(srcRoot, 'build.gradle');
     await fs.copyFile(file, `${file}.bak`);
 
     let contents = await fs.readFile(file, 'utf8');
@@ -86,16 +79,16 @@ def RN_AAR_DIR =.+
     const overrideContents = `\
 REACT_NATIVE_DIR = "\${rootDir}/versioned-react-native"
 RN_BUILD_FROM_SOURCE = false
-RN_SO_DIR = "\${buildDir}/reactandroid-${this.abiName}-*/jni"
-RN_AAR_DIR = "\${rootDir}/versioned-abis/expoview-${this.abiName}/maven"
+RN_SO_DIR = "\${buildDir}/reactandroid-${abiName}-*/jni"
+RN_AAR_DIR = "\${rootDir}/versioned-abis/expoview-${abiName}/maven"
 `;
     contents = contents.replace(searchAnchor, `$1${overrideContents}`);
     await fs.writeFile(file, contents);
   }
 
-  async _patchCxxFilesForJavaDescriptor() {
+  async function patchCxxFilesForJavaDescriptor() {
     const files = ['JAVManager.h', 'JPlayerData.h'].map((filename) =>
-      path.join(this.srcRoot, 'src', 'main', 'cpp', filename)
+      path.join(srcRoot, 'src', 'main', 'cpp', filename)
     );
     await Promise.all(
       files.map(async (file) => {
@@ -103,27 +96,27 @@ RN_AAR_DIR = "\${rootDir}/versioned-abis/expoview-${this.abiName}/maven"
         await transformFileAsync(file, [
           {
             find: /\b(static auto constexpr kJavaDescriptor = "L)(expo\/modules\/av\/)/g,
-            replaceWith: `$1${this.abiName}/$2`,
+            replaceWith: `$1${abiName}/$2`,
           },
         ]);
       })
     );
   }
 
-  async _resetPatches() {
-    const backupFiles = await glob('**/*.bak', { cwd: this.srcRoot, absolute: true });
+  async function resetPatches() {
+    const backupFiles = await glob('**/*.bak', { cwd: srcRoot, absolute: true });
     return Promise.all(
       backupFiles.map((backupFile) => fs.rename(backupFile, backupFile.replace(/\.bak$/, '')))
     );
   }
 
-  async _copySoPrebuiltLibs(versionedAbiRoot: string) {
+  async function copySoPrebuiltLibs(versionedAbiRoot: string) {
     const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
-    const soFilename = `libexpo-av_${this.abiName}.so`;
+    const soFilename = `libexpo-av_${abiName}.so`;
     await Promise.all(
       archs.map((arch) => {
         const srcSoFile = path.join(
-          this.srcRoot,
+          srcRoot,
           'build',
           'intermediates',
           'library_jni',
@@ -138,11 +131,11 @@ RN_AAR_DIR = "\${rootDir}/versioned-abis/expoview-${this.abiName}/maven"
     );
   }
 
-  async _rewriteSystemLoadLibs(versionedAbiRoot: string) {
+  async function rewriteSystemLoadLibs(versionedAbiRoot: string) {
     const loadLibFile = path.join(
       versionedAbiRoot,
       'java',
-      this.abiName,
+      abiName,
       'expo',
       'modules',
       'av',
@@ -151,7 +144,7 @@ RN_AAR_DIR = "\${rootDir}/versioned-abis/expoview-${this.abiName}/maven"
     await transformFileAsync(loadLibFile, [
       {
         find: /\bSystem\.loadLibrary\("expo-av"\);/g,
-        replaceWith: `System.loadLibrary("expo-av_${this.abiName}");`,
+        replaceWith: `System.loadLibrary("expo-av_${abiName}");`,
       },
     ]);
   }
