@@ -241,7 +241,7 @@ function AvailableChannelsList({ channels }) {
                     mx="0.5"
                     py="1"
                     style={{ backgroundColor: palette.orange['000'] }}>
-                    <Text size="small" color="secondary">{`Channel: ${channelName}`}</Text>
+                    <Text size="small">{`Channel: ${channelName}`}</Text>
                   </View>
                 </View>
               );

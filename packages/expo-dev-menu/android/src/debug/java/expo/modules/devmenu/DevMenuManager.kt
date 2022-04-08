@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.*
+import com.facebook.react.views.text.ReactFontManager
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
@@ -48,6 +50,7 @@ import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
+  private var fontsWereLoaded = false
 
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
@@ -251,6 +254,33 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
 
     return Bundle.EMPTY
+  }
+
+  fun loadFonts(applicationContext: ReactApplicationContext) {
+    if (fontsWereLoaded) {
+      return
+    }
+
+    val fonts = arrayOf(
+      "Inter-Black",
+      "Inter-ExtraBold",
+      "Inter-Bold",
+      "Inter-SemiBold",
+      "Inter-Medium",
+      "Inter-Regular",
+      "Inter-Light",
+      "Inter-ExtraLight",
+      "Inter-Thin"
+    )
+
+    val assets = applicationContext.assets
+
+    fonts.map { familyName ->
+      val font = Typeface.createFromAsset(assets, "$familyName.otf")
+      ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
+    }
+
+    fontsWereLoaded = true
   }
 
   //endregion
