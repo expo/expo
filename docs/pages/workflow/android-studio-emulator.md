@@ -39,6 +39,8 @@ echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/`[[ $SHE
 source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
 
+- Finally, make sure that you can run `adb --version` from your terminal.
+
 ## Step 2: Set up a virtual device
 
 - On the Android Studio main screen, click "Configure", then "AVD Manager" in the dropdown.
