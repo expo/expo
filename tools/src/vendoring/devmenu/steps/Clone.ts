@@ -1,7 +1,8 @@
-import { Task } from './Task';
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+
+import { Task } from './Task';
 
 type CloneSettings =
   | {
@@ -13,7 +14,7 @@ type CloneSettings =
   | {
       commit: string;
     }
-  | {};
+  | object;
 
 export type CloneRepoSettings = {
   url: string;

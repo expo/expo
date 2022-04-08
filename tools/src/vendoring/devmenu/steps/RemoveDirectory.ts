@@ -1,6 +1,7 @@
-import { Task } from './Task';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+
+import { Task } from './Task';
 
 export type RemoveDirectorySettings = {
   target?: string;

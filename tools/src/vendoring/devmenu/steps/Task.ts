@@ -2,8 +2,8 @@ import logger from '../../../Logger';
 import { toRepoPath } from '../utils';
 
 /**
- * An base class for all task.
- * It provides a simple task luncher, log utils and path to working directory.
+ * A base class for all task.
+ * It provides a simple task launcher, log utils and path to working directory.
  */
 export abstract class Task {
   private workingDirectory?: string;
@@ -35,7 +35,7 @@ export abstract class Task {
    * @returns the override working directory for task.
    */
   protected overrideWorkingDirectory(): string | undefined {
-    return;
+    return undefined;
   }
 
   /**
@@ -71,7 +71,6 @@ export abstract class Task {
       await this.execute();
     } catch (e) {
       logger.error(e);
-      return;
     }
   }
 }

@@ -85,7 +85,7 @@ async function runReactNativeCodegenAndroidAsync(
     schemaOutputPath,
     '--outputDir',
     codegenOutputRoot,
-    '--libraryName', 
+    '--libraryName',
     'rncore',
     '--javaPackageName',
     'com.facebook.fbreact.specs',

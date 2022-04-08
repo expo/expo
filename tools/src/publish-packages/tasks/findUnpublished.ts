@@ -5,8 +5,8 @@ import { GitDirectory, GitFileLog, GitFileStatus } from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { filterAsync } from '../../Utils';
-import { prepareParcels } from './prepareParcels';
 import { CommandOptions, Parcel, PackageGitLogs, TaskArgs, ReleaseType } from '../types';
+import { prepareParcels } from './prepareParcels';
 
 /**
  * An array of directories treated as containing native code.

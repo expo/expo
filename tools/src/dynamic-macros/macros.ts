@@ -64,14 +64,14 @@ export default {
       return process.env.TEST_SUITE_URI;
     } else {
       try {
-        let testSuitePath = path.join(__dirname, '..', '..', '..', 'apps', 'test-suite');
-        let status = await Project.currentStatus(testSuitePath);
+        const testSuitePath = path.join(__dirname, '..', '..', '..', 'apps', 'test-suite');
+        const status = await Project.currentStatus(testSuitePath);
         if (status === 'running') {
           return await UrlUtils.constructManifestUrlAsync(testSuitePath);
         } else {
           return '';
         }
-      } catch (e) {
+      } catch {
         return '';
       }
     }
@@ -89,9 +89,9 @@ export default {
     let url = 'TODO';
 
     try {
-      let lanAddress = ip.address();
-      let localServerUrl = `http://${lanAddress}:3013`;
-      let result = await request.get({
+      const lanAddress = ip.address();
+      const localServerUrl = `http://${lanAddress}:3013`;
+      const result = await request.get({
         url: `${localServerUrl}/expo-test-server-status`,
         timeout: 500, // ms
         resolveWithFullResponse: true,
@@ -99,7 +99,7 @@ export default {
       if (result.body === 'running!') {
         url = localServerUrl;
       }
-    } catch (e) {}
+    } catch {}
 
     return url;
   },
@@ -114,7 +114,7 @@ export default {
     }
 
     try {
-      let result = await spawnAsync('scutil', ['--get', 'LocalHostName']);
+      const result = await spawnAsync('scutil', ['--get', 'LocalHostName']);
       return `${result.stdout.trim()}.local`;
     } catch (e) {
       if (e.code !== 'ENOENT') {
@@ -172,7 +172,7 @@ export default {
         return '';
       }
       return kernelManifestObjectToJson(manifest);
-    } catch (e) {
+    } catch {
       console.error(
         chalk.red(
           `Unable to generate manifest from ${chalk.cyan(

@@ -1,7 +1,8 @@
-import { Task } from './Task';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+
 import { findFiles } from '../utils';
+import { Task } from './Task';
 
 export type AppendSettings = {
   source?: string;
