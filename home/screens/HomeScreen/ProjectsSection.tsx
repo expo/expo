@@ -1,13 +1,13 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { PressableOpacity } from 'components/PressableOpacity';
 import { Divider, Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
-import { CommonAppDataFragment } from 'graphql/types';
-import { HomeStackRoutes } from 'navigation/Navigation.types';
 import React, { Fragment } from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { RedesignedProjectsListItem } from '../../components/RedesignedProjectsListItem';
+import { ProjectsListItem } from '../../components/ProjectsListItem';
+import { CommonAppDataFragment } from '../../graphql/types';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 type Props = {
   apps: CommonAppDataFragment[];
@@ -20,42 +20,42 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onSeeAllProjectsPress() {
-    navigation.push('RedesignedProjectsList', { accountName });
+    navigation.push('ProjectsList', { accountName });
   }
 
   return (
-    <View bg="default" rounded="large" border="hairline" overflow="hidden">
+    <View>
       {apps.map((project, i) => {
         if (!project) return null;
 
         return (
           <Fragment key={project.id}>
-            <RedesignedProjectsListItem
+            <ProjectsListItem
+              id={project.id}
               // iconUrl will be an empty string if the project has no icon
               imageURL={project.iconUrl || undefined}
               name={project.name}
               subtitle={project.packageName || project.fullName}
               sdkVersion={project.sdkVersion}
+              first={i === 0}
+              last={i === apps.length - 1 && !showMore}
             />
-            {i < apps.length - 1 && <Divider />}
+            {i < apps.length - 1 && <Divider style={{ height: 1 }} />}
           </Fragment>
         );
       })}
       {showMore && (
-        <>
-          <Divider />
-          <PressableOpacity onPress={onSeeAllProjectsPress}>
-            <View padding="medium">
-              <Row align="center" justify="between">
-                <Text>See all projects</Text>
-                <ChevronDownIcon
-                  style={{ transform: [{ rotate: '-90deg' }] }}
-                  color={theme.icon.secondary}
-                />
-              </Row>
-            </View>
-          </PressableOpacity>
-        </>
+        <TouchableOpacity onPress={onSeeAllProjectsPress}>
+          <View padding="medium" bg="default" border="default" roundedBottom="large">
+            <Row align="center" justify="between">
+              <Text type="InterRegular">See all projects</Text>
+              <ChevronDownIcon
+                style={{ transform: [{ rotate: '-90deg' }] }}
+                color={theme.icon.secondary}
+              />
+            </Row>
+          </View>
+        </TouchableOpacity>
       )}
     </View>
   );

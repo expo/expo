@@ -11,9 +11,14 @@ public final class SwiftInteropBridge: NSObject {
     appContext.moduleRegistry
   }
 
+  internal init(appContext: AppContext) {
+    self.appContext = appContext
+    super.init()
+  }
+
   @objc
-  public init(modulesProvider: ModulesProviderObjCProtocol, legacyModuleRegistry: EXModuleRegistry) {
-    self.appContext = AppContext(withModulesProvider: modulesProvider as! ModulesProviderProtocol, legacyModuleRegistry: legacyModuleRegistry)
+  public init(modulesProvider: ModulesProvider, legacyModuleRegistry: EXModuleRegistry) {
+    self.appContext = AppContext(withModulesProvider: modulesProvider, legacyModuleRegistry: legacyModuleRegistry)
     super.init()
   }
 

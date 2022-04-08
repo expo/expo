@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
 
 ## 💻 Installation in managed Expo projects
 
-Refer to [the SplashScreen section of the Expo documentation](https://docs.expo.io/versions/latest/sdk/splash-screen/).
+Refer to [the SplashScreen section of the Expo documentation](https://docs.expo.dev/versions/latest/sdk/splash-screen/).
 
 ## 🖥 Installation in bare React Native projects
 

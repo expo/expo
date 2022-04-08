@@ -5,6 +5,7 @@ import { resolvePortAsync } from '../utils/port';
 
 export type Options = {
   forceManifestType: 'classic' | 'expo-updates';
+  privateKeyPath: string | null;
   android: boolean;
   web: boolean;
   ios: boolean;
@@ -17,7 +18,7 @@ export type Options = {
   /** Should instruct the bundler to create minified bundles. */
   minify: boolean;
   devClient: boolean;
-  scheme: string;
+  scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
 };
 
@@ -41,6 +42,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
   return {
     forceManifestType,
+    privateKeyPath: args['private-key-path'] ?? null,
 
     android: !!args['--android'],
     web: !!args['--web'],
@@ -144,7 +146,9 @@ export async function resolvePortsAsync(
     }
     multiBundlerSettings.webpackPort = webpackPort;
   } else {
-    const devClientDefaultPort = parseInt(process.env.RCT_METRO_PORT, 10) || 8081;
+    const devClientDefaultPort = process.env.RCT_METRO_PORT
+      ? parseInt(process.env.RCT_METRO_PORT, 10)
+      : 8081;
     const expoGoDefaultPort = 19000;
     const metroPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,

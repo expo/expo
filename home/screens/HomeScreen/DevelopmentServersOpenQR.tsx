@@ -2,8 +2,8 @@ import { iconSize, QrCodeIcon, spacing } from '@expo/styleguide-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Divider, Row, Text, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import { ModalStackRoutes } from '../../navigation/Navigation.types';
 import {
   alertWithCameraPermissionInstructions,
@@ -25,17 +25,17 @@ export function DevelopmentServersOpenQR() {
 
   return (
     <>
-      <Divider />
-      <PressableOpacity onPress={handleQRPressAsync}>
+      <Divider style={{ height: 1 }} />
+      <TouchableOpacity onPress={handleQRPressAsync}>
         <Row padding="medium" align="center">
           <QrCodeIcon
             size={iconSize.small}
             style={{ marginRight: spacing[2] }}
             color={theme.icon.default}
           />
-          <Text>Scan QR code</Text>
+          <Text type="InterRegular">Scan QR code</Text>
         </Row>
-      </PressableOpacity>
+      </TouchableOpacity>
     </>
   );
 }

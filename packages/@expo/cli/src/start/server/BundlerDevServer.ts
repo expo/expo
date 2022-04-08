@@ -7,6 +7,7 @@ import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
 import {
   BaseOpenInCustomProps,
   BaseResolveDeviceProps,
@@ -15,10 +16,9 @@ import {
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { CommandError } from '../../utils/errors';
 
 export type ServerLike = {
-  close(callback?: (err?: Error) => void);
+  close(callback?: (err?: Error) => void): void;
 };
 
 export type DevServerInstance = {
@@ -48,6 +48,8 @@ export interface BundlerStartOptions {
   resetDevServer?: boolean;
   /** Which manifest type to serve. */
   forceManifestType?: 'expo-updates' | 'classic';
+  /** Code signing private key path (defaults to same directory as certificate) */
+  privateKeyPath?: string;
 
   /** Max amount of workers (threads) to use with Metro bundler, defaults to undefined for max workers. */
   maxWorkers?: number;
@@ -112,7 +114,10 @@ export abstract class BundlerDevServer {
 
   /** Get the manifest middleware function. */
   protected async getManifestMiddlewareAsync(
-    options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'forceManifestType'> = {}
+    options: Pick<
+      BundlerStartOptions,
+      'minify' | 'mode' | 'forceManifestType' | 'privateKeyPath'
+    > = {}
   ) {
     const manifestType = options.forceManifestType || 'classic';
     assert(manifestType in MIDDLEWARES, `Manifest middleware for type '${manifestType}' not found`);
@@ -124,6 +129,7 @@ export abstract class BundlerDevServer {
       mode: options.mode,
       minify: options.minify,
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
+      privateKeyPath: options.privateKeyPath,
     });
     return middleware.getHandler();
   }
@@ -305,10 +311,11 @@ export abstract class BundlerDevServer {
 
   /** Get the URL for the running instance of the dev server. */
   public getDevServerUrl(options: { hostType?: 'localhost' } = {}): string | null {
-    if (!this.getInstance()?.location) {
+    const instance = this.getInstance();
+    if (!instance?.location) {
       return null;
     }
-    const { location } = this.getInstance();
+    const { location } = instance;
     if (options.hostType === 'localhost') {
       return `${location.protocol}://localhost:${location.port}`;
     }
@@ -327,7 +334,7 @@ export abstract class BundlerDevServer {
   ) {
     if (launchTarget === 'desktop') {
       const url = this.getDevServerUrl({ hostType: 'localhost' });
-      await openBrowserAsync(url);
+      await openBrowserAsync(url!);
       return { url };
     }
 
@@ -349,7 +356,7 @@ export abstract class BundlerDevServer {
       );
     }
 
-    const manager = this.getPlatformManager(launchTarget);
+    const manager = await this.getPlatformManagerAsync(launchTarget);
     return manager.openAsync({ runtime: 'custom', props: launchProps }, resolver);
   }
 
@@ -363,30 +370,33 @@ export abstract class BundlerDevServer {
   }
 
   /** Get the URL for opening in Expo Go. */
-  protected getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS) {
+  protected getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS): string | null {
     if (this.shouldUseInterstitialPage()) {
       const loadingUrl =
         platform === 'emulator'
-          ? this.urlCreator.constructLoadingUrl({}, 'android')
-          : this.urlCreator.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
-      return loadingUrl;
+          ? this.urlCreator?.constructLoadingUrl({}, 'android')
+          : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
+      return loadingUrl ?? null;
     }
 
-    return this.urlCreator.constructUrl({ scheme: 'exp' });
+    return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
   }
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
     if (!this.platformManagers[platform]) {
       const Manager = PLATFORM_MANAGERS[platform]();
-      this.platformManagers[platform] = new Manager(
-        this.projectRoot,
-        this.getInstance()?.location.port,
-        {
-          getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
-          getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
-          getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
-        }
-      );
+      const port = this.getInstance()?.location.port;
+      if (!port || !this.urlCreator) {
+        throw new CommandError(
+          'DEV_SERVER',
+          'Cannot interact with native platforms until dev server has started'
+        );
+      }
+      this.platformManagers[platform] = new Manager(this.projectRoot, port, {
+        getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
+        getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
+        getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
+      });
     }
     return this.platformManagers[platform];
   }

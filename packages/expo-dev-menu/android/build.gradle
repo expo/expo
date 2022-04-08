@@ -62,13 +62,15 @@ def getCurrentFlavor() {
 
   if (taskRequestName.contains("assemble")) {
     pattern = Pattern.compile("assemble(\\w+)(Release|Debug)")
+  } else if (taskRequestName.contains("bundle")) {
+    pattern = Pattern.compile("bundle(\\w+)(Release|Debug)")
   } else {
     pattern = Pattern.compile("generate(\\w+)(Release|Debug)")
   }
   Matcher matcher = pattern.matcher(taskRequestName)
 
   if (matcher.find()) {
-    return matcher.group(1).toLowerCase()
+    return matcher.group(1)
   }
   return ""
 }
@@ -96,26 +98,26 @@ rootProject.getSubprojects().forEach({ project ->
       if (!projectProperties.get("reanimated")
           || (projectProperties.get("reanimated") && projectProperties.get("reanimated").get("enablePackagingOptions"))
       ) {
-        def flavorString = getCurrentFlavor()
+        def flavorNameCapitalized = getCurrentFlavor()
         replaceSoTask.appName = project.getProperties().path
         replaceSoTask.buildDir = project.getProperties().buildDir
         def appName = project.getProperties().path
 
         def tasks = project.getTasks()
         replaceSoTaskDebug.dependsOn(
-            tasks.getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
-            tasks.getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
+            tasks.getByPath("${appName}:merge${flavorNameCapitalized}DebugNativeLibs"),
+            tasks.getByPath("${appName}:strip${flavorNameCapitalized}DebugDebugSymbols")
         )
-        tasks.getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
+        tasks.getByPath("${appName}:package${flavorNameCapitalized}Debug").dependsOn(replaceSoTaskDebug)
 
-        if (tasks.findByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs")
-            && tasks.findByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
-            && tasks.findByPath("${appName}:package${flavorString}ReleaseWithDevMenu")) {
+        if (tasks.findByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs")
+            && tasks.findByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
+            && tasks.findByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu")) {
           replaceSoTaskReleaseWithDevMenu.dependsOn(
-              task.getByPath("${appName}:merge${flavorString}ReleaseWithDevMenuNativeLibs"),
-              task.getByPath("${appName}:strip${flavorString}ReleaseWithDevMenuDebugSymbols")
+              task.getByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs"),
+              task.getByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
           )
-          tasks.getByPath("${appName}:package${flavorString}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
+          tasks.getByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
         }
       }
     }
@@ -292,7 +294,7 @@ dependencies {
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.3.1"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
-  testImplementation 'androidx.test:core:1.3.0'
+  testImplementation 'androidx.test:core:1.4.0'
 }
 
 def versionToNumber(major, minor, patch) {

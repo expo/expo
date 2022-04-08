@@ -64,6 +64,7 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 - (NSDictionary *)constantsToExport
 {
+//
   BOOL isDevice = YES;
 #if TARGET_IPHONE_SIMULATOR
   isDevice = NO;
@@ -71,7 +72,8 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   return @{
     @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null],
     @"installationID": [EXDevLauncherController.sharedInstance.installationIDHelper getOrCreateInstallationID] ?: [NSNull null],
-    @"isDevice": @(isDevice)
+    @"isDevice": @(isDevice),
+    @"updatesConfig": [[EXDevLauncherController sharedInstance] getUpdatesConfig],
   };
 }
 

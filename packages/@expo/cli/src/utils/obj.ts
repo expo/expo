@@ -2,7 +2,7 @@
 export function get(obj: any, key: string): any | null {
   const branches = key.split('.');
   let current: any = obj;
-  let branch: string;
+  let branch: string | undefined;
   while ((branch = branches.shift())) {
     if (!(branch in current)) {
       return null;
@@ -16,7 +16,7 @@ export function get(obj: any, key: string): any | null {
 export function set(obj: any, key: string, value: any): any | null {
   const branches = key.split('.');
   let current: any = obj;
-  let branch: string;
+  let branch: string | undefined;
   while ((branch = branches.shift())) {
     if (branches.length === 0) {
       current[branch] = value;

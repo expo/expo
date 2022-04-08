@@ -23,6 +23,7 @@ import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.codesigning.ValidationResult
@@ -305,6 +306,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     asset: AssetEntity,
     destinationDirectory: File?,
     configuration: UpdatesConfiguration,
+    context: Context,
     callback: AssetDownloadCallback
   ) {
     if (asset.url == null) {
@@ -319,7 +321,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     } else {
       try {
         downloadFileToPath(
-          createRequestForAsset(asset, configuration),
+          createRequestForAsset(asset, configuration, context),
           path,
           object : FileDownloadCallback {
             override fun onFailure(e: Exception) {
@@ -473,7 +475,11 @@ open class FileDownloader(private val client: OkHttpClient) {
       throw IOException("No compatible manifest found. SDK Versions supported: " + configuration.sdkVersion + " Provided manifestString: " + manifestString)
     }
 
-    internal fun createRequestForAsset(assetEntity: AssetEntity, configuration: UpdatesConfiguration): Request {
+    internal fun createRequestForAsset(
+      assetEntity: AssetEntity,
+      configuration: UpdatesConfiguration,
+      context: Context,
+    ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
         .apply {
@@ -486,6 +492,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         .header("Expo-Platform", "android")
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
+        .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           for ((key, value) in configuration.requestHeaders) {
             header(key, value)
@@ -517,6 +524,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         .header("Expo-Updates-Environment", "BARE")
         .header("Expo-JSON-Error", "true")
         .header("Expo-Accept-Signature", configuration.expectsSignedManifest.toString())
+        .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           val runtimeVersion = configuration.runtimeVersion
           val sdkVersion = configuration.sdkVersion

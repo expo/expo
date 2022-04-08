@@ -226,7 +226,7 @@ export async function test({
     });
 
     describe('GoogleSignIn.getPhotoAsync()', () => {
-      async function imageSizeAsync(uri: string): Promise<Size> {
+      async function imageSizeAsync(uri) {
         return await new Promise((res, rej) =>
           Image.getSize(uri, (width, height) => res({ width, height }), rej)
         );

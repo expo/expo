@@ -47,11 +47,6 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}$1`,
       },
       {
-        paths: `${versionName}FBReactNativeSpec`,
-        replace: /\b(NSStringToNativeAppearanceColorSchemeName|NativeAppearanceColorSchemeNameToNSString)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
         paths: 'RCTView.m',
         replace: /\b(SwitchAccessibilityTrait)\b/g,
         with: `${versionName}$1`,
@@ -70,6 +65,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: 'ModuleRegistry.cpp',
         replace: /(\(name\.compare\(\d+, \d+, ")([^"]+)(RCT"\))/,
         with: '$1$3',
+      },
+      {
+        paths: ['RCTSRWebSocket.h', 'UIView+Private.h'],
+        replace: /@interface (\w+) \((CertificateAdditions|Private)\)/g,
+        with: `@interface $1 (${versionName}$2)`
       },
 
       // Universal modules
@@ -211,8 +211,8 @@ export function postTransforms(versionName: string): TransformPipeline {
       // react-native-safe-area-context
       {
         paths: [
-          'RCTView+SafeAreaCompat.h',
-          'RCTView+SafeAreaCompat.m',
+          'RNCSafeAreaUtils.h',
+          'RNCSafeAreaUtils.m',
           'RNCSafeAreaProvider.m',
           'RNCSafeAreaView.m',
         ],

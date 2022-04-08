@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 12.1.1 - 2022-02-01

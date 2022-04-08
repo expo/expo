@@ -4,6 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- This config package no longer uses the Babel parser and has dropped several dependencies: `@babel/eslint-parser`, `@babel/eslint-plugin`, and `@babel/core`. It now uses ESLint's default Espree parser, which supports all standard JavaScript syntax up to and including ES2022. Most notably, this means that Flow is not supported by this package. This breaking change is most likely to affect projects that don't use Flow but depend on an npm package that contains Flow instead of JavaScript, such as `react-native`. Such npm packages break ESLint rules that check imported modules and expect them to contain syntactically valid JavaScript. The `react-native` package and other related packages are automatically ignored by this config but you may need to ignore other packages by adding them under `settings { 'import/ignore': ['/node_modules/some-non-javascript-package/'] }` in your ESLint configuration file. ([#16734](https://github.com/expo/expo/pull/16734) by [@ide](https://github.com/ide))
+- Warn for unused `catch` variables: `catch (e) {}` is a linter warning if `e` is unused. ([#16591](https://github.com/expo/expo/pull/16591) by [@ide](https://github.com/ide))
+- TypeScript linter rules now run only on .ts (and .tsx and .d.ts files), not .js files ([#16591](https://github.com/expo/expo/pull/16591) by [@ide](https://github.com/ide))
+- Linter configuration targets ES2022 syntax. This means code that is valid ES2022 code will lint properly. ([#16591](https://github.com/expo/expo/pull/16591) by [@ide](https://github.com/ide))
+- ESLint 8.10.0+ is required as a peer dependency (previously ESLint 7.28.0+ was supported)
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -15,7 +21,7 @@
 ### 🛠 Breaking changes
 
 - Dropped support for Node 10 due to dependency upgrades. Also ESlint 7.28.x or newer is required. ([#15810](https://github.com/expo/expo/pull/15810) by [@ide](https://github.com/ide))
-- Bumped `@typescript-eslint/eslint-plugin` from 4.28.5 to 5.9.0 for ESLint 8.x support. Same with `@typescript-eslint/parser`. 
+- Bumped `@typescript-eslint/eslint-plugin` from 4.28.5 to 5.9.0 for ESLint 8.x support. Same with `@typescript-eslint/parser`.
 - Bumped `"eslint-plugin-prettier` from 3.4.0 to 4.0.0
 
 ### 🎉 New features

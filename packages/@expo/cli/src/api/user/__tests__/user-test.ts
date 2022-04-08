@@ -2,6 +2,10 @@ import { getUserStatePath } from '@expo/config/build/getUserState';
 import { fs, vol } from 'memfs';
 import nock from 'nock';
 
+import {
+  DevelopmentCodeSigningInfoFile,
+  getDevelopmentCodeSigningDirectory,
+} from '../../../utils/codesigning';
 import { getExpoApiBaseUrl } from '../../endpoint';
 import UserSettings from '../UserSettings';
 import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
@@ -94,6 +98,17 @@ describe(logoutAsync, () => {
 
     await logoutAsync();
     expect(UserSettings.getSession()?.sessionSecret).toBeUndefined();
+  });
+
+  it('removes code signing data', async () => {
+    mockLoginRequest();
+    await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
+
+    await DevelopmentCodeSigningInfoFile.setAsync('test', {});
+    expect(fs.existsSync(getDevelopmentCodeSigningDirectory())).toBe(true);
+
+    await logoutAsync();
+    expect(fs.existsSync(getDevelopmentCodeSigningDirectory())).toBe(false);
   });
 });
 

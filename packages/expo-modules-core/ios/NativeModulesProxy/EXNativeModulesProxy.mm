@@ -90,8 +90,9 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 - (NSDictionary *)constantsToExport
 {
-  // Install the TurboModule implementation of the proxy.
-  [self installExpoTurboModules];
+  // Install ExpoModules host object in the runtime. It's probably not the right place,
+  // but it's the earliest moment in bridge's lifecycle when we have access to the runtime.
+  [self installExpoModulesHostObject];
 
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
@@ -210,7 +211,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
 #pragma mark - Statics
 
-+ (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
++ (ModulesProvider *)getExpoModulesProvider
 {
   // Dynamically gets the modules provider class.
   // NOTE: This needs to be versioned in Expo Go.
@@ -402,19 +403,17 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 }
 
 /**
- Installs expo modules in JSI runtime.
+ Installs ExpoModules host object in the runtime that the current bridge operates on.
  */
-- (void)installExpoTurboModules
+- (void)installExpoModulesHostObject
 {
   facebook::jsi::Runtime *jsiRuntime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : nullptr;
 
   if (jsiRuntime) {
-    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
+    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:jsiRuntime callInvoker:_bridge.jsCallInvoker];
 
     [EXJavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
     [_swiftInteropBridge setRuntime:runtime];
-
-    expo::installRuntimeObjects(*jsiRuntime, _bridge.jsCallInvoker, self);
   }
 }
 

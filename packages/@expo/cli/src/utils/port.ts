@@ -68,7 +68,7 @@ export async function choosePortAsync(
       initial: true,
     });
     return change ? port : null;
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ABORTED') {
       throw error;
     } else if (error.code === 'NON_INTERACTIVE') {

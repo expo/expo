@@ -16,7 +16,7 @@ import java.lang.reflect.Method
 
 open class ReactNativeHostWrapperBase(
   application: Application,
-  private val host: ReactNativeHost
+  protected val host: ReactNativeHost
 ) : ReactNativeHost(application) {
   internal val reactNativeHostHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactNativeHostHandlers(application) }

@@ -9,7 +9,7 @@ inline fun <reified T : Throwable> assertThrows(expectedMessage: String? = null,
   } catch (e: Throwable) {
     Truth.assertThat(e).isInstanceOf(T::class.java)
     expectedMessage?.let {
-      Truth.assertThat(e.localizedMessage).isEqualTo(it)
+      Truth.assertThat(e.localizedMessage).contains(it)
     }
     return
   }

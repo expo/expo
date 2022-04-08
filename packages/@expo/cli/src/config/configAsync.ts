@@ -8,7 +8,7 @@ import { profile } from '../utils/profile';
 
 type Options = {
   type?: string;
-  full: boolean;
+  full?: boolean;
   json?: boolean;
 };
 

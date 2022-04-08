@@ -59,7 +59,8 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  // compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion 31 // TODO: migrate to the commented syntax in the whole project
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -84,7 +85,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  api "androidx.biometric:biometric:1.1.0"
+  implementation "androidx.biometric:biometric:1.2.0-alpha04"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

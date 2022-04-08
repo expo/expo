@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
+- Add new `Sound.setOnAudioSampleReceived` API to support streaming audio sample buffers in realtime. ([#14904](https://github.com/expo/expo/pull/14904), [#16075](https://github.com/expo/expo/pull/16075) by [@barthap](https://github.com/barthap))
+
 ### 🐛 Bug fixes
 
 - On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
+
+- Extract `tolerances` param type definition, used across the package methods, to the separate type `AVPlaybackTolerance`. ([#16905](https://github.com/expo/expo/pull/16905) by [@Simek](https://github.com/Simek))
 
 ## 11.1.0 — 2022-03-10
 

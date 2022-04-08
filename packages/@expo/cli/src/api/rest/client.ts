@@ -75,7 +75,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
         if (data?.errors?.length) {
           throw new ApiV2Error(data.errors[0]);
         }
-      } catch (error) {
+      } catch (error: any) {
         // Server returned non-json response.
         if (error.message.includes('in JSON at position')) {
           throw new UnexpectedServerError(body);
@@ -101,13 +101,15 @@ export function createCachedFetch({
   fetch,
   cacheDirectory,
   ttl,
+  skipCache,
 }: {
   fetch?: FetchLike;
   cacheDirectory: string;
   ttl?: number;
+  skipCache?: boolean;
 }): FetchLike {
   // Disable all caching in EXPO_BETA.
-  if (EXPO_BETA || env.EXPO_NO_CACHE) {
+  if (skipCache || EXPO_BETA || env.EXPO_NO_CACHE) {
     return fetch ?? fetchWithCredentials;
   }
 

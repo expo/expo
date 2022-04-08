@@ -10,6 +10,7 @@ import {
   assertStatusValuesInBounds,
   getNativeSourceAndFullInitialStatusForLoadAsync,
   getUnloadedStatus,
+  AVPlaybackTolerance,
 } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
@@ -116,7 +117,7 @@ export class Sound implements Playback {
 
   private _updateAudioSampleReceivedCallback() {
     if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
         throw new Error(
           'Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.'
         );
@@ -316,13 +317,13 @@ export class Sound implements Playback {
   playAsync!: () => Promise<AVPlaybackStatus>;
   playFromPositionAsync!: (
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
   pauseAsync!: () => Promise<AVPlaybackStatus>;
   stopAsync!: () => Promise<AVPlaybackStatus>;
   setPositionAsync!: (
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
   setRateAsync!: (
     rate: number,

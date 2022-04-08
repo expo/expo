@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,6 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -33,6 +32,7 @@ import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
@@ -76,13 +76,15 @@ public class SurfaceMountingManager {
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
       @NonNull RootViewManager rootViewManager,
-      @NonNull MountItemExecutor mountItemExecutor) {
+      @NonNull MountItemExecutor mountItemExecutor,
+      @NonNull ThemedReactContext reactContext) {
     mSurfaceId = surfaceId;
 
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
     mMountItemExecutor = mountItemExecutor;
+    mThemedReactContext = reactContext;
   }
 
   public boolean isStopped() {
@@ -541,16 +543,12 @@ public class SurfaceMountingManager {
     }
     // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
     // changes to Differ or C++ Binding could cause some redundant Create instructions.
-    // This is a NoCrash soft exception because we know there are cases where preallocation happens
-    // and a node is recreated: if a node is preallocated and then committed with revision 2+,
-    // an extra CREATE instruction will be generated.
+    // There are cases where preallocation happens and a node is recreated: if a node is
+    // preallocated and then committed with revision 2+, an extra CREATE instruction will be
+    // generated.
     // This represents a perf issue only, not a correctness issue. In the future we need to
     // refactor View preallocation to correct the currently incorrect assumptions.
     if (getNullableViewState(reactTag) != null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Cannot CREATE view with tag [" + reactTag + "], already exists."));
       return;
     }
 
@@ -759,6 +757,35 @@ public class SurfaceMountingManager {
 
     //noinspection unchecked
     viewManager.setPadding(viewToUpdate, left, top, right, bottom);
+  }
+
+  @UiThread
+  public void updateOverflowInset(
+      int reactTag,
+      int overflowInsetLeft,
+      int overflowInsetTop,
+      int overflowInsetRight,
+      int overflowInsetBottom) {
+    if (isStopped()) {
+      return;
+    }
+
+    ViewState viewState = getViewState(reactTag);
+    // Do not layout Root Views
+    if (viewState.mIsRoot) {
+      return;
+    }
+
+    View viewToUpdate = viewState.mView;
+    if (viewToUpdate == null) {
+      throw new IllegalStateException("Unable to find View for tag: " + reactTag);
+    }
+
+    if (viewToUpdate instanceof ReactOverflowViewWithInset) {
+      ((ReactOverflowViewWithInset) viewToUpdate)
+          .setOverflowInset(
+              overflowInsetLeft, overflowInsetTop, overflowInsetRight, overflowInsetBottom);
+    }
   }
 
   @UiThread

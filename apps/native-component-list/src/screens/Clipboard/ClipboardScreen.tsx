@@ -24,7 +24,7 @@ const HAS_X_ASYNC_CONFIG: FunctionDescription = {
     },
     {
       name: 'hasImageAsync',
-      action: withSupportedPlatforms(['android', 'ios'], Clipboard.hasImageAsync),
+      action: Clipboard.hasImageAsync,
     },
     {
       name: 'hasUrlAsync',
@@ -52,7 +52,6 @@ const SET_STRING_ASYNC_CONFIG: FunctionDescription = {
         {
           name: 'inputFormat',
           type: 'enum',
-          platforms: ['ios', 'android'],
           values: [
             { name: 'StringFormat.PLAIN_TEXT', value: Clipboard.StringFormat.PLAIN_TEXT },
             { name: 'StringFormat.HTML', value: Clipboard.StringFormat.HTML },
@@ -75,7 +74,6 @@ const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
         {
           name: 'preferredFormat',
           type: 'enum',
-          platforms: ['ios', 'android'],
           values: [
             { name: 'StringFormat.PLAIN_TEXT', value: Clipboard.StringFormat.PLAIN_TEXT },
             { name: 'StringFormat.HTML', value: Clipboard.StringFormat.HTML },
@@ -92,7 +90,6 @@ const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
 
 const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
   name: 'setImageAsync',
-  platforms: ['ios', 'android'],
   parameters: [
     {
       name: 'imageBase64Data',
@@ -120,7 +117,6 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
 
 const GET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
   name: 'getImageAsync',
-  platforms: ['ios', 'android'],
   parameters: [
     {
       name: 'options',

@@ -32,6 +32,7 @@ abstract_target 'Expo Go' do
     ],
     # Modules for which to include Tests subspec
     tests: [
+      'expo-eas-client',
       'expo-modules-core',
       'expo-updates',
       'expo-manifests',
@@ -111,6 +112,7 @@ abstract_target 'Expo Go' do
   target 'Tests' do
     inherit! :search_paths
 
+    pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
     pod 'Quick', :podspec => './Quick.podspec'
     pod 'Nimble', :podspec => './Nimble.podspec'
   end

@@ -26,7 +26,7 @@ type NativeComponentListExportsType = null | {
 export function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -48,7 +48,7 @@ const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
 
-let nclLinking: Record<string, any> = {};
+const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
   routes.apis = NativeComponentList.apis.navigator;
   routes.components = NativeComponentList.components.navigator;
@@ -60,7 +60,12 @@ const Tab = createBottomTabNavigator();
 const Switch = createStackNavigator();
 
 const linking = {
-  prefixes: [Platform.select({ web: Linking.createURL('/', { scheme: 'bareexpo' }), default: 'bareexpo://' })],
+  prefixes: [
+    Platform.select({
+      web: Linking.createURL('/', { scheme: 'bareexpo' }),
+      default: 'bareexpo://',
+    }),
+  ],
   config: {
     screens: {
       main: {
@@ -92,7 +97,7 @@ function TabNavigator() {
         },
       }}
       initialRouteName="test-suite">
-      {Object.keys(routes).map(name => (
+      {Object.keys(routes).map((name) => (
         <Tab.Screen
           name={name}
           key={name}

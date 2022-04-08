@@ -33,7 +33,7 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 Every quarter there is a new Expo SDK release that typically updates to the latest stable version of React Native and includes a variety of bugfixes, features and improvements to the Expo SDK.
 
 | Expo SDK Version | React Native Version |
-| ---------------- | :------------------: |
+| ---------------- | -------------------- |
 | 44.0.0           |        0.64.3        |
 | 43.0.0           |        0.64.3        |
 | 42.0.0           |        0.63.3        |

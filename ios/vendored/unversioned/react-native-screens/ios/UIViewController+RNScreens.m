@@ -31,6 +31,12 @@
   return childVC ? childVC.supportedInterfaceOrientations : [self reactNativeScreensSupportedInterfaceOrientations];
 }
 
+- (UIViewController *)reactNativeScreensChildViewControllerForHomeIndicatorAutoHidden
+{
+  UIViewController *childVC = [self findChildRNScreensViewController];
+  return childVC ?: [self reactNativeScreensChildViewControllerForHomeIndicatorAutoHidden];
+}
+
 - (UIViewController *)findChildRNScreensViewController
 {
   UIViewController *lastViewController = [[self childViewControllers] lastObject];
@@ -61,6 +67,10 @@
     method_exchangeImplementations(
         class_getInstanceMethod(uiVCClass, @selector(supportedInterfaceOrientations)),
         class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensSupportedInterfaceOrientations)));
+
+    method_exchangeImplementations(
+        class_getInstanceMethod(uiVCClass, @selector(childViewControllerForHomeIndicatorAutoHidden)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForHomeIndicatorAutoHidden)));
   });
 }
 #endif

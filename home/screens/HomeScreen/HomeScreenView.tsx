@@ -1,13 +1,7 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { HomeScreenHeader } from 'components/HomeScreenHeader';
 import Constants from 'expo-constants';
 import { View, Divider, Spacer } from 'expo-dev-client-components';
-import {
-  HomeScreenDataDocument,
-  HomeScreenDataQuery,
-  HomeScreenDataQueryVariables,
-} from 'graphql/types';
 import * as React from 'react';
 import { Alert, AppState, NativeEventSubscription, Platform, StyleSheet } from 'react-native';
 
@@ -16,9 +10,14 @@ import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
-import { RedesignedSectionHeader } from '../../components/RedesignedSectionHeader';
 import RefreshControl from '../../components/RefreshControl';
+import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
+import {
+  HomeScreenDataDocument,
+  HomeScreenDataQuery,
+  HomeScreenDataQueryVariables,
+} from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import HistoryActions from '../../redux/HistoryActions';
 import { DevSession, HistoryList } from '../../types';
@@ -29,6 +28,7 @@ import { DevelopmentServersHeader } from './DevelopmentServersHeader';
 import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
 import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
+import { HomeScreenHeader } from './HomeScreenHeader';
 import { ProjectsSection } from './ProjectsSection';
 import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
 import { RecentlyOpenedSection } from './RecentlyOpenedSection';
@@ -43,13 +43,16 @@ type Props = NavigationProps & {
   allHistory: HistoryList;
   isAuthenticated: boolean;
   theme: string;
+  accountName?: string;
+  initialData?: HomeScreenDataQuery;
 };
 
 type State = {
   projects: DevSession[];
   isNetworkAvailable: boolean;
   isRefreshing: boolean;
-  currentUser?: Exclude<HomeScreenDataQuery['viewer'], null>;
+  data?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
+  loading: boolean;
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
@@ -62,7 +65,8 @@ export class HomeScreenView extends React.Component<Props, State> {
     projects: [],
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
-    currentUser: undefined,
+    data: this.props.initialData?.account.byName,
+    loading: !this.props.initialData?.account.byName, // if there is initial data, we're not loading
   };
 
   componentDidMount() {
@@ -92,11 +96,11 @@ export class HomeScreenView extends React.Component<Props, State> {
   }
 
   render() {
-    const { projects, isRefreshing, currentUser } = this.state;
+    const { projects, isRefreshing, data } = this.state;
 
     return (
       <View style={styles.container}>
-        <HomeScreenHeader currentUser={currentUser} />
+        <HomeScreenHeader currentUser={data} loading={this.state.loading} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
@@ -106,7 +110,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           contentContainerStyle={[styles.contentContainer]}>
           <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
           {projects?.length ? (
-            <View bg="default" rounded="large" border="hairline" overflow="hidden">
+            <View bg="default" rounded="large" border="default" overflow="hidden">
               {projects.map((project, i) => (
                 <React.Fragment key={project.url}>
                   <DevelopmentServerListItem
@@ -121,7 +125,9 @@ export class HomeScreenView extends React.Component<Props, State> {
                     platform={project.platform}
                     subtitle={project.url}
                   />
-                  {projects.length > 1 && i !== projects.length - 1 ? <Divider /> : null}
+                  {projects.length > 1 && i !== projects.length - 1 ? (
+                    <Divider style={{ height: 1 }} />
+                  ) : null}
                 </React.Fragment>
               ))}
               {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
@@ -132,7 +138,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               ) : null}
             </View>
           ) : (
-            <DevelopmentServersPlaceholder />
+            <DevelopmentServersPlaceholder isAuthenticated={this.props.isAuthenticated} />
           )}
           {this.props.recentHistory.count() ? (
             <>
@@ -141,25 +147,27 @@ export class HomeScreenView extends React.Component<Props, State> {
               <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
             </>
           ) : null}
-          {currentUser?.apps.length ? (
+
+          {data?.apps.length && this.props.accountName ? (
             <>
               <Spacer.Vertical size="medium" />
-              <RedesignedSectionHeader header="Projects" />
+              <SectionHeader header="Projects" />
               <ProjectsSection
-                accountName={currentUser.username}
-                apps={currentUser.apps.slice(0, 3)}
-                showMore={currentUser.apps.length > 3}
+                accountName={this.props.accountName}
+                apps={data.apps.slice(0, 3)}
+                showMore={data.apps.length > 3}
               />
             </>
           ) : null}
-          {currentUser?.snacks.length ? (
+
+          {data?.snacks.length && this.props.accountName ? (
             <>
               <Spacer.Vertical size="medium" />
-              <RedesignedSectionHeader header="Snacks" />
+              <SectionHeader header="Snacks" />
               <SnacksSection
-                accountName={currentUser.username}
-                snacks={currentUser.snacks.slice(0, 3)}
-                showMore={currentUser.snacks.length > 3}
+                accountName={this.props.accountName}
+                snacks={data.snacks.slice(0, 3)}
+                showMore={data.snacks.length > 3}
               />
             </>
           ) : null}
@@ -203,7 +211,8 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _startPollingForProjects = async () => {
-    this._fetchProjectsAsync();
+    await this._fetchProjectsAsync();
+    this.setState({ loading: false });
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 
@@ -215,6 +224,8 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _fetchProjectsAsync = async () => {
+    const { accountName } = this.props;
+
     try {
       const api = new ApiV2HttpClient();
 
@@ -222,18 +233,23 @@ export class HomeScreenView extends React.Component<Props, State> {
         api.getAsync('development-sessions', {
           deviceId: getSnackId(),
         }),
-        ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
-          query: HomeScreenDataDocument,
-        }),
+        accountName
+          ? ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
+              query: HomeScreenDataDocument,
+              variables: {
+                accountName,
+              },
+            })
+          : new Promise<undefined>((resolve) => {
+              resolve(undefined);
+            }),
       ]);
 
-      const currentUser = graphQLResponse.data.viewer ?? undefined;
-
-      this.setState({ projects, currentUser });
+      this.setState({ projects, data: graphQLResponse?.data.account.byName });
     } catch (e) {
       // this doesn't really matter, we will try again later
       if (__DEV__) {
-        console.log(e);
+        console.error(e);
       }
     }
   };
@@ -246,7 +262,7 @@ export class HomeScreenView extends React.Component<Props, State> {
         this._fetchProjectsAsync(),
         new Promise((resolve) => setTimeout(resolve, 1000)),
       ]);
-    } catch (e) {
+    } catch {
       // not sure what to do here, maybe nothing?
     } finally {
       this.setState({ isRefreshing: false });
@@ -278,7 +294,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: spacing[4],
-    paddingBottom: 80,
   },
   projectImageStyle: {
     borderWidth: 1,

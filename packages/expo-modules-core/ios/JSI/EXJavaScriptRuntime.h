@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 
 #ifdef __cplusplus
@@ -12,10 +13,15 @@ namespace react = facebook::react;
 NS_SWIFT_NAME(JavaScriptRuntime)
 @interface EXJavaScriptRuntime : NSObject
 
+/**
+ Creates a new JavaScript runtime.
+ */
+- (nonnull instancetype)init;
+
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments);
 
-- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
+- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 
 /**
@@ -51,5 +57,12 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
  Creates a new object for use in Swift.
  */
 - (nonnull EXJavaScriptObject *)createObject;
+
+#pragma mark - Script evaluation
+
+/**
+ Evaluates given JavaScript source code.
+ */
+- (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource;
 
 @end

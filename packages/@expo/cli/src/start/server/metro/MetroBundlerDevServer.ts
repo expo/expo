@@ -72,9 +72,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
       getLocation: ({ runtime }) => {
         if (runtime === 'custom') {
-          return this.urlCreator.constructDevClientUrl();
+          return this.urlCreator?.constructDevClientUrl();
         } else {
-          return this.urlCreator.constructUrl({
+          return this.urlCreator?.constructUrl({
             scheme: 'exp',
           });
         }

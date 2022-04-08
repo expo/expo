@@ -11,7 +11,12 @@ import { logEvent } from '../../../utils/analytics/rudderstackClient';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
-import { DEVELOPER_TOOL, HostInfo, ManifestMiddleware, ParsedHeaders } from './ManifestMiddleware';
+import {
+  DEVELOPER_TOOL,
+  HostInfo,
+  ManifestMiddleware,
+  ManifestRequestInfo,
+} from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
 
@@ -21,8 +26,10 @@ type SignManifestProps = {
   acceptSignature: boolean;
 };
 
-export class ClassicManifestMiddleware extends ManifestMiddleware {
-  public getParsedHeaders(req: ServerRequest): ParsedHeaders {
+interface ClassicManifestRequestInfo extends ManifestRequestInfo {}
+
+export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifestRequestInfo> {
+  public getParsedHeaders(req: ServerRequest): ClassicManifestRequestInfo {
     const platform = parsePlatformHeader(req) || 'ios';
     assertRuntimePlatform(platform);
     return {
@@ -35,7 +42,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
   public async _getManifestResponseAsync({
     acceptSignature,
     ...requestOptions
-  }: ParsedHeaders): Promise<{
+  }: ClassicManifestRequestInfo): Promise<{
     body: string;
     version: string;
     headers: ServerHeaders;
@@ -54,7 +61,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
     // Gather packager and host info
     const hostInfo = await createHostInfoAsync();
 
-    const headers = this.getDefaultResponseHeaders();
+    const headers = new Map<string, any>();
     headers.set('Exponent-Server', hostInfo);
 
     // Create the final string
@@ -103,7 +110,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware {
   async _fetchComputedManifestStringAsync(props: SignManifestProps): Promise<string> {
     try {
       return await this._getManifestStringAsync(props);
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 'UNAUTHORIZED_ERROR' && props.manifest.owner) {
         // Don't have permissions for siging, warn and enable offline mode.
         this.addSigningDisabledWarning(
@@ -143,7 +150,8 @@ async function createHostInfoAsync(): Promise<HostInfo> {
   return {
     host: await UserSettings.getAnonymousIdentifierAsync(),
     server: 'expo',
-    serverVersion: process.env.__EXPO_VERSION,
+    // Defined in the build step
+    serverVersion: process.env.__EXPO_VERSION!,
     serverDriver: DEVELOPER_TOOL,
     serverOS: os.platform(),
     serverOSVersion: os.release(),

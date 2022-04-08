@@ -13,7 +13,7 @@ export async function openPlatformsAsync(
     options.web
       ? devServerManager
           .ensureWebDevServerRunningAsync()
-          .then(() => devServerManager.getWebDevServer().openPlatformAsync('desktop'))
+          .then(() => devServerManager.getWebDevServer()?.openPlatformAsync('desktop'))
       : null,
   ]);
 

@@ -1,3 +1,4 @@
+
 export const loadApp = jest.fn().mockResolvedValue('');
 export const clientUrlScheme = '123';
 export const installationID = '';
@@ -13,3 +14,10 @@ export const addDeepLinkListener = jest.fn().mockImplementation(() => jest.fn())
 export const copyToClipboardAsync = jest.fn().mockResolvedValue(null);
 export const getRecentlyOpenedApps = jest.fn().mockResolvedValue([]);
 export const getCrashReport = jest.fn().mockResolvedValue(null);
+
+export const updatesConfig = {
+  appId: '123',
+  runtimeVersion: '123',
+  sdkVersion: '1',
+  usesEASUpdates: true,
+};

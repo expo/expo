@@ -1,5 +1,6 @@
 import { createSymbolicateMiddleware } from '@expo/dev-server/build/webpack/symbolicateMiddleware';
 import chalk from 'chalk';
+import type { Application } from 'express';
 import fs from 'fs';
 import http from 'http';
 import * as path from 'path';
@@ -25,7 +26,9 @@ import { ensureEnvironmentSupportsTLSAsync } from './tls';
 type AnyCompiler = webpack.Compiler | webpack.MultiCompiler;
 
 export type WebpackConfiguration = webpack.Configuration & {
-  devServer?: { before?: Function };
+  devServer?: {
+    before?: (app: Application, server: WebpackDevServer, compiler: webpack.Compiler) => void;
+  };
 };
 
 function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer {
@@ -140,7 +143,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       '/symbolicate',
       createSymbolicateMiddleware({
         projectRoot: this.projectRoot,
-        // @ts-expect-error: type mismatch -- Webpack types aren't great.
         compiler,
         logger: nativeMiddleware.logger,
       })
@@ -159,7 +161,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
         throw new CommandError('NO_PORT_FOUND', `Port ${defaultPort} not available.`);
       }
       return port;
-    } catch (error) {
+    } catch (error: any) {
       throw new CommandError('NO_PORT_FOUND', error.message);
     }
   }
@@ -219,7 +221,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       });
       // Inject the native manifest middleware.
       const originalBefore = config.devServer.before.bind(config.devServer.before);
-      config.devServer.before = (app, server, compiler) => {
+      config.devServer.before = (
+        app: Application,
+        server: WebpackDevServer,
+        compiler: webpack.Compiler
+      ) => {
         originalBefore(app, server, compiler);
 
         if (nativeMiddleware?.middleware) {
@@ -279,19 +285,20 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     await this.postStartAsync(options);
 
-    return this.instance;
+    return this.instance!;
   }
 
   /** Load the Webpack config. Exposed for testing. */
   getProjectConfigFilePath(): string | null {
     // Check if the project has a webpack.config.js in the root.
     return (
-      this.getConfigModuleIds().reduce(
+      this.getConfigModuleIds().reduce<string | null | undefined>(
         (prev, moduleId) => prev || resolveFrom.silent(this.projectRoot, moduleId),
         null
       ) ?? null
     );
   }
+
   async loadConfigAsync(
     options: BundlerStartOptions,
     argv?: string[]
@@ -303,12 +310,12 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       pwa: !!options.isImageEditingEnabled,
       // TODO: Use a new loader in Webpack config...
       logger: {
-        info(input, jsonString) {},
+        info() {},
       },
       mode: options.mode,
       https: options.https,
     };
-    setMode(env.mode);
+    setMode(env.mode ?? 'development');
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
     let config: WebpackConfiguration;
@@ -352,7 +359,7 @@ async function clearWebProjectCacheAsync(
   const cacheFolder = path.join(dir, 'web/cache', mode);
   try {
     await fs.promises.rm(cacheFolder, { recursive: true, force: true });
-  } catch (e) {
-    Log.error(`Could not clear ${mode} web cache directory: ${e.message}`);
+  } catch (error: any) {
+    Log.error(`Could not clear ${mode} web cache directory: ${error.message}`);
   }
 }

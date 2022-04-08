@@ -32,7 +32,8 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Download the project tarball from a private AWS S3 bucket and unpack it.
 1. Create `.npmrc` if `NPM_TOKEN` is set. ([Learn more](/build-reference/private-npm-packages).)
 1. Run the `eas-build-pre-install` script from package.json if defined.
-1. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
+1. Run `npm install` in the project root (or `yarn install` if `yarn.lock` exists).
+1. Run `expo doctor` to diagnose potential issues with your project configuration.
 1. Restore the credentials
 
    - Create a new keychain.

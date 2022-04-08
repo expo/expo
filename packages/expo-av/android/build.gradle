@@ -1,9 +1,21 @@
+import java.nio.file.Paths
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
 version = '11.1.0'
+
+def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+def RN_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
+def RN_SO_DIR = RN_BUILD_FROM_SOURCE
+    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
+    : "${buildDir}/react-native-0*/jni"
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -71,7 +83,47 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 24
     versionName "11.1.0"
+
+    externalNativeBuild {
+      cmake {
+        cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
+        abiFilters (*reactNativeArchitectures())
+        arguments "-DANDROID_STL=c++_shared",
+            "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+            "-DRN_SO_DIR=${RN_SO_DIR}"
+      }
+    }
   }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
+  buildFeatures {
+    prefab true
+  }
+
+  packagingOptions {
+    // Gradle will add cmake target dependencies into packaging.
+    // Theses files are intermediated linking files to build reanimated and should not be in final package.
+    excludes = [
+        "**/libc++_shared.so",
+        "**/libreactnativejni.so",
+        "**/libglog.so",
+        "**/libjscexecutor.so",
+        "**/libfbjni.so",
+        "**/libfolly_json.so",
+        "**/libhermes.so",
+        "**/libjsi.so",
+    ]
+  }
+  configurations {
+    extractHeaders
+    extractJNI
+  }
+
   lintOptions {
     abortOnError false
   }
@@ -90,6 +142,27 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+
+  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+  extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
+  extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
+  def rnAARs = fileTree("${REACT_NATIVE_DIR}/android").matching { include "**/*.aar" }
+  if (rnAARs.any()) {
+    // node_modules/react-native has a .aar, extract headers
+    if (rnAARs.size() > 1) {
+      logger.error("More than one React Native AAR file has been found:")
+      rnAARs.each {println(it) }
+      throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
+          "\nRemove the old ones and try again")
+    }
+    def rnAAR = rnAARs.singleFile
+    extractJNI(files(rnAAR))
+  } else {
+    // there is no prebuilt react-native.aar, this is most likely Expo Go
+  }
+
   api 'com.google.android.exoplayer:exoplayer:2.13.3'
   api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
 
@@ -99,5 +172,46 @@ dependencies {
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
 
-  testImplementation 'io.mockk:mockk:1.9'
+  testImplementation 'io.mockk:mockk:1.12.3'
+}
+
+task extractAARHeaders {
+  doLast {
+    configurations.extractHeaders.files.each {
+      def file = it.absoluteFile
+      copy {
+        from zipTree(file)
+        into "$buildDir/$file.name"
+        include "**/*.h"
+      }
+    }
+  }
+}
+
+task extractJNIFiles {
+  doLast {
+    configurations.extractJNI.files.each {
+      def file = it.absoluteFile
+      copy {
+        from zipTree(file)
+        into "$buildDir/$file.name"
+        include "jni/**/*"
+      }
+    }
+  }
+}
+
+tasks.whenTaskAdded { task ->
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+    task.dependsOn(extractAARHeaders)
+    task.dependsOn(extractJNIFiles)
+    if (RN_BUILD_FROM_SOURCE) {
+      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+    }
+  } else if (task.name.startsWith('generateJsonModel') && RN_BUILD_FROM_SOURCE) {
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+  }
+
 }

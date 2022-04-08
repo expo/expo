@@ -107,6 +107,7 @@ dependencies {
   implementation project(':expo-updates-interface')
   implementation project(':expo-manifests')
   implementation project(':expo-json-utils')
+  implementation project(':expo-eas-client')
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
@@ -130,13 +131,13 @@ dependencies {
 
   testImplementation 'junit:junit:4.13.1'
   testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'io.mockk:mockk:1.12.0'
+  testImplementation 'io.mockk:mockk:1.12.3'
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"
 
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'
-  androidTestImplementation 'io.mockk:mockk-android:1.12.0'
+  androidTestImplementation 'io.mockk:mockk-android:1.12.3'
   androidTestImplementation "androidx.room:room-testing:$room_version"
   androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"
 

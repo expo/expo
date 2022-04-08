@@ -206,6 +206,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         } else {
           false
         }
+        val requireConfirmation = options["requireConfirmation"] as? Boolean ?: true
         isAuthenticating = true
         this.promise = promise
         val executor: Executor = Executors.newSingleThreadExecutor()
@@ -224,6 +225,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
               or BiometricManager.Authenticators.DEVICE_CREDENTIAL
           )
         }
+        promptInfoBuilder.setConfirmationRequired(requireConfirmation)
         val promptInfo = promptInfoBuilder.build()
         try {
           biometricPrompt!!.authenticate(promptInfo)

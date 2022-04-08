@@ -4,8 +4,7 @@ import { assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadA
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
-import { VideoFullscreenUpdate, ResizeMode, } from './Video.types';
-export { VideoFullscreenUpdate, ResizeMode, };
+import { ResizeMode, } from './Video.types';
 const _STYLES = StyleSheet.create({
     base: {
         overflow: 'hidden',
@@ -109,7 +108,7 @@ class Video extends React.Component {
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus));
     };
     /**
-     * Equivalent to setting URI to null.
+     * Equivalent to setting URI to `null`.
      * @hidden
      */
     unloadAsync = async () => {

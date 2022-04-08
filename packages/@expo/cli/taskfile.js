@@ -1,3 +1,6 @@
+const { boolish } = require('getenv');
+const process = require('process');
+
 export async function bin(task, opts) {
   await task
     .source(opts.src || 'bin/*')
@@ -18,21 +21,14 @@ export async function build(task, opts) {
   await task.parallel(['cli', 'bin'], opts);
 }
 
-export async function src(task, opts) {
-  await task
-    .source(opts.src || 'src/**/*.+(js|ts|tsx)', {
-      ignore: ['**/__tests__/**', '**/__mocks__/**'],
-    })
-    .swc('sdk', { dev: opts.dev })
-    .target('build');
-}
-
 export default async function (task) {
   const opts = { dev: true };
   await task.clear('build');
   await task.start('build', opts);
-  await task.watch('bin/*', 'bin', opts);
-  await task.watch('src/**/*.+(js|ts)', 'src', opts);
+  if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
+    await task.watch('bin/*', 'bin', opts);
+    await task.watch('src/**/*.+(js|ts)', 'cli', opts);
+  }
 }
 
 export async function release(task) {

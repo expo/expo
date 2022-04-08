@@ -49,7 +49,7 @@ export function create<T, O extends Options>(
     const selectorStyles = stylesForSelectors(props, config.selectors, { theme });
     const selectorPropsStyles = stylesForSelectorProps(props.selectors, { theme });
 
-    const variantFreeProps = { ...props };
+    const variantFreeProps: any = { ...props };
 
     // @ts-ignore
     // there could be a conflict between the primitive prop and the variant name
@@ -102,11 +102,12 @@ function stylesForSelectors(props: any, selectors: any = {}, state: any = {}) {
     if (selectors[state.theme] != null) {
       const variants = selectors[state.theme];
       const variantStyles = stylesForVariants(props, variants);
-      styles.push(variantStyles);
 
       if (variants.base != null) {
         styles.push(variants.base);
       }
+
+      styles.push(variantStyles);
     }
   }
 

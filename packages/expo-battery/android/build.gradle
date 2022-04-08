@@ -84,8 +84,8 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
-  if (project.findProject(':unimodules-test-core')) {
-    testImplementation project(':unimodules-test-core')
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
   }
   testImplementation "org.robolectric:robolectric:4.3.1"
 }

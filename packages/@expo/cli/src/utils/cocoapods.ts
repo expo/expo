@@ -87,15 +87,15 @@ export async function installCocoaPodsAsync(projectRoot: string) {
       });
       step.succeed('Installed CocoaPods CLI.');
       step = logNewSection('Running `pod install` in the `ios` directory.');
-    } catch (e) {
+    } catch (error: any) {
       step.stopAndPersist({
         symbol: '⚠️ ',
         text: chalk.red('Unable to install the CocoaPods CLI.'),
       });
-      if (e instanceof PackageManager.CocoaPodsError) {
-        Log.log(e.message);
+      if (error instanceof PackageManager.CocoaPodsError) {
+        Log.log(error.message);
       } else {
-        Log.log(`Unknown error: ${e.message}`);
+        Log.log(`Unknown error: ${error.message}`);
       }
       return false;
     }
@@ -107,15 +107,15 @@ export async function installCocoaPodsAsync(projectRoot: string) {
     await hasPackageJsonDependencyListChangedAsync(projectRoot).catch(() => null);
     step.succeed('Installed pods and initialized Xcode workspace.');
     return true;
-  } catch (e) {
+  } catch (error: any) {
     step.stopAndPersist({
       symbol: '⚠️ ',
       text: chalk.red('Something went wrong running `pod install` in the `ios` directory.'),
     });
-    if (e instanceof PackageManager.CocoaPodsError) {
-      Log.log(e.message);
+    if (error instanceof PackageManager.CocoaPodsError) {
+      Log.log(error.message);
     } else {
-      Log.log(`Unknown error: ${e.message}`);
+      Log.log(`Unknown error: ${error.message}`);
     }
     return false;
   }

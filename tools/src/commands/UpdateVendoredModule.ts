@@ -18,7 +18,8 @@ import {
 } from '../vendoring';
 import vendoredModulesConfig from '../vendoring/config';
 import { legacyVendorModuleAsync } from '../vendoring/legacy';
-import { VendoringTargetConfig } from '../vendoring/types';
+import { VendoringModuleConfig, VendoringTargetConfig } from '../vendoring/types';
+import { runReactNativeCodegen } from '../Codegen';
 
 type ActionOptions = {
   list: boolean;
@@ -106,6 +107,7 @@ async function action(options: ActionOptions) {
       if (!targetConfig.platforms[platform]) {
         continue;
       }
+      await runCodegenIfNeeded(sourceDirectory, moduleConfig, platform);
 
       // TODO(@tsapeta): Remove this once all vendored modules are migrated to the new system.
       if (!targetConfig.modules[moduleName][platform]) {
@@ -136,7 +138,11 @@ async function action(options: ActionOptions) {
 
     // Update dependency versions only for Expo Go target.
     if (options.updateDependencies !== false && target === EXPO_GO_TARGET) {
-      const packageJson = require(path.join(sourceDirectory, 'package.json')) as PackageJson;
+      const packageJsonPath = path.join(
+        sourceDirectory,
+        moduleConfig.packageJsonPath ?? 'package.json'
+      );
+      const packageJson = require(packageJsonPath) as PackageJson;
       const semverPrefix =
         (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
       const newVersionRange = `${semverPrefix}${packageJson.version}`;
@@ -222,4 +228,41 @@ async function resolveModuleNameAsync(
 function resolvePlatforms(platform: string): string[] {
   const all = getVendoringAvailablePlatforms();
   return all.includes(platform) ? [platform] : all;
+}
+
+async function runCodegenIfNeeded(
+  sourceDirectory: string,
+  moduleConfig: VendoringModuleConfig,
+  platform: string
+) {
+  const packageJsonPath = path.join(
+    sourceDirectory,
+    moduleConfig.packageJsonPath ?? 'package.json'
+  );
+  const packageJson = require(packageJsonPath) as PackageJson;
+  const libs = packageJson?.codegenConfig?.libraries ?? [];
+  const fabricDisabledLibs = libs.filter((lib) => lib.type !== 'components');
+  if (!fabricDisabledLibs.length) {
+    return;
+  }
+  if (platform !== 'android' && platform !== 'ios') {
+    throw new Error(`Unsupported platform - ${platform}`);
+  }
+
+  const reactNativeRoot = path.join(EXPO_DIR, 'react-native-lab', 'react-native');
+  const codegenPkgRoot = path.join(reactNativeRoot, 'packages', 'react-native-codegen');
+
+  await Promise.all(
+    fabricDisabledLibs.map((lib) =>
+      runReactNativeCodegen({
+        reactNativeRoot,
+        codegenPkgRoot,
+        outputDir: path.join(sourceDirectory, platform),
+        name: lib.name,
+        type: lib.type,
+        platform,
+        jsSrcsDir: path.join(sourceDirectory, lib.jsSrcsDir),
+      })
+    )
+  );
 }

@@ -18,7 +18,7 @@ export class DevServerManagerActions {
     // If native dev server is running, print its URL.
     if (this.devServerManager.getNativeDevServerPort()) {
       try {
-        const url = this.devServerManager.getDefaultDevServer().getNativeRuntimeUrl();
+        const url = this.devServerManager.getDefaultDevServer().getNativeRuntimeUrl()!;
 
         printQRCode(url);
         Log.log(printItem(chalk`Metro waiting on {underline ${url}}`));
@@ -90,8 +90,8 @@ export class DevServerManagerActions {
         // { title: 'Toggle Remote Debugging', value: 'toggleRemoteDebugging' },
       ]);
       this.devServerManager.broadcastMessage('sendDevCommand', { name: value });
-    } catch (e) {
-      Log.debug(e);
+    } catch (error: any) {
+      Log.debug(error);
       // do nothing
     } finally {
       printHelp();

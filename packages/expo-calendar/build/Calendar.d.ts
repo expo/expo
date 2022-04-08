@@ -698,7 +698,7 @@ export declare function getSourceAsync(id: string): Promise<Source>;
  */
 export declare function openEventInCalendar(id: string): void;
 /**
- * @deprecated Deprecated. Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
+ * @deprecated Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 /**

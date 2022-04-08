@@ -12,13 +12,18 @@
 - Add CLI. ([#16216](https://github.com/expo/expo/pull/16216) by [@wschurman](https://github.com/wschurman))
 - Add support for dev client auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
 - Fix codesigning header name. ([#16480](https://github.com/expo/expo/pull/16480) by [@wschurman](https://github.com/wschurman))
-- Support certificate chains. ([#16375](https://github.com/expo/expo/pull/16375) by [@wschurman](https://github.com/wschurman))
-- Add support for expo project information certificate extension. ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
+- Support certificate chains (Android). ([#16375](https://github.com/expo/expo/pull/16375) by [@wschurman](https://github.com/wschurman))
+- Support certificate chains (iOS). ([#16634](https://github.com/expo/expo/pull/16634) by [@wschurman](https://github.com/wschurman))
+- Add support for expo project information certificate extension (Android). ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
+- Add support for expo project information certificate extension (iOS). ([#16726](https://github.com/expo/expo/pull/16726) by [@wschurman](https://github.com/wschurman))
+- Pass EAS-Client-ID in header for asset and manifest requests. ([#16729](https://github.com/expo/expo/pull/16729) by [@wschurman](https://github.com/wschurman))
+- Validate expo project information up the certificate chain. ([#16800](https://github.com/expo/expo/pull/16800) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
 - Update `fbemitter` to v3. ([#16245](https://github.com/expo/expo/pull/16245) by [@SimenB](https://github.com/SimenB))
-- Allow non-codesigned manifests for Expo Go. ([#16649](https://github.com/expo/expo/pull/16649) by [@wschurman](https://github.com/wschurman))
+- Allow non-codesigned manifests for Expo Go (Android). ([#16649](https://github.com/expo/expo/pull/16649) by [@wschurman](https://github.com/wschurman))
+- Allow non-codesigned manifests for Expo Go (iOS). ([#16682](https://github.com/expo/expo/pull/16682) by [@wschurman](https://github.com/wschurman))
 - Fix issue where default values for primitive-typed configuration values were not correctly set. ([#16644](https://github.com/expo/expo/pull/16644) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
@@ -467,7 +472,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fixed an issue where the publish workflow was broken on Android. Note that the publish workflow will not be supported in a future version of expo-updates, so we recommend [switching to the no-publish workflow](https://blog.expo.io/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
+- Fixed an issue where the publish workflow was broken on Android. Note that the publish workflow will not be supported in a future version of expo-updates, so we recommend [switching to the no-publish workflow](https://blog.expo.dev/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
 
 ## 0.2.10 — 2020-06-23
 
@@ -537,7 +542,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Added support for the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For more information, along with upgrade instructions if you're upgrading from 0.1.x and would like to use the no-publish workflow, read [this blog post](https://blog.expo.io/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
+- Added support for the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For more information, along with upgrade instructions if you're upgrading from 0.1.x and would like to use the no-publish workflow, read [this blog post](https://blog.expo.dev/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
 - Added `Updates.updateId` and `Updates.releaseChannel` constant exports
 
 ### 🐛 Bug fixes
