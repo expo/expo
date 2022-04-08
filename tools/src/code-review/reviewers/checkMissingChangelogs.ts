@@ -17,24 +17,22 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
     return pkgHasChangelog && diff.every((fileDiff) => fileDiff.path !== pkg.changelogPath);
   });
 
-  if (pkgsWithoutChangelogChanges.length === 0) {
+  if (pkgsWithoutChangelogChanges.length === 0 && !pullRequest.head) {
     return null;
   }
 
   const changelogLinks = pkgsWithoutChangelogChanges
-    .map((pkg) => pullRequest.head && `- ${relativeChangelogPath(pullRequest.head, pkg)}`)
-    .filter(Boolean);
+    .map((pkg) => `- ${relativeChangelogPath(pullRequest.head, pkg)}`)
+    .join('\n');
 
-  if (changelogLinks.length) {
-    return {
-      status: ReviewStatus.WARN,
-      title: 'Missing changelog entries',
-      body: `Your changes should be noted in the changelog. Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) guide and consider (it's optional) adding an appropriate entry to the following changelogs:
-  ${changelogLinks.join('\n')}`,
-    };
-  } else {
-    return null;
-  }
+  return {
+    status: ReviewStatus.WARN,
+    title: 'Missing changelog entries',
+    body:
+      `Your changes should be noted in the changelog. 
+      Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) 
+      guide and consider (it's optional) adding an appropriate entry to the following changelogs: ${changelogLinks}`,
+  };
 }
 
 function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
