@@ -5,8 +5,14 @@ import { EXPO_DIR } from '../../Constants';
 import { getListOfPackagesAsync, Package } from '../../Packages';
 import { filterAsync } from '../../Utils';
 import { ReviewInput, ReviewOutput, ReviewStatus } from '../types';
+import logger from "../../Logger";
 
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput | null> {
+  if (!pullRequest.head) {
+    logger.warn('Detached PR, we cannot asses the needed changelog entries!', pullRequest)
+    return null;
+  }
+
   const allPackages = await getListOfPackagesAsync();
   const modifiedPackages = allPackages.filter((pkg) => {
     return diff.some((fileDiff) => !path.relative(pkg.path, fileDiff.path).startsWith('../'));
@@ -17,7 +23,7 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
     return pkgHasChangelog && diff.every((fileDiff) => fileDiff.path !== pkg.changelogPath);
   });
 
-  if (pkgsWithoutChangelogChanges.length === 0 && !pullRequest.head) {
+  if (pkgsWithoutChangelogChanges.length === 0) {
     return null;
   }
 
