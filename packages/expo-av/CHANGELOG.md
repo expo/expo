@@ -16,6 +16,10 @@
 
 - Extract `tolerances` param type definition, used across the package methods, to the separate type `AVPlaybackTolerance`. ([#16905](https://github.com/expo/expo/pull/16905) by [@Simek](https://github.com/Simek))
 
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
 ## 11.1.0 — 2022-03-10
 
 ### 🐛 Bug fixes

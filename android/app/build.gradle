@@ -17,18 +17,21 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-  // compileSdkVersion safeExtGet("compileSdkVersion", 31)
-  compileSdkVersion 31 // TODO: migrate to the commented syntax in the whole project
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 161

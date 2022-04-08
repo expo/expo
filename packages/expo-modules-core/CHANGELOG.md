@@ -9,6 +9,7 @@
 ### ⚠️ Notices
 
 - Deprecated current behavior of `function` module definition component in favor of `asyncFunction` to emphasize that it's being executed asynchronously in JavaScript. In the future release `function` will become synchronous. ([#16630](https://github.com/expo/expo/pull/16630) by [@tsapeta](https://github.com/tsapeta), [#16656](https://github.com/expo/expo/pull/16656) by [@lukmccall](https://github.com/lukmccall))
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🎉 New features
 

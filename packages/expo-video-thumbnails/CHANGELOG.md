@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
 ## 6.2.1 — 2022-03-29
 
 ### 🐛 Bug fixes
