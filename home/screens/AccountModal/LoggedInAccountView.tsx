@@ -21,6 +21,7 @@ export function LoggedInAccountView({ accounts }: Props) {
   const dispatch = useDispatch();
 
   const onSignOutPress = React.useCallback(() => {
+    setAccountName(undefined);
     dispatch(SessionActions.signOut());
   }, [dispatch]);
 

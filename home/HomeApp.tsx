@@ -32,8 +32,6 @@ import { useAccountName } from './utils/AccountNameContext';
 import { useInitialData } from './utils/InitialDataContext';
 import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
-import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
-import isUserAuthenticated from './utils/isUserAuthenticated';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
@@ -62,42 +60,16 @@ export default function HomeApp() {
   const colorScheme = useColorScheme();
   const preferredAppearance = useSelector((data) => data.settings.preferredAppearance);
   const dispatch = useDispatch();
-  const { accountName, setAccountName } = useAccountName();
+  const { setAccountName } = useAccountName();
   const isShowingSplashScreen = useSplashScreenWhileLoadingResources(async () => {
     await initStateAsync();
   });
 
   const { setCurrentUserData, setHomeScreenData } = useInitialData();
 
-  const { isAuthenticated } = useSelector((data) => {
-    const isAuthenticated = isUserAuthenticated(data.session);
-    return {
-      isAuthenticated,
-    };
-  });
-
   React.useEffect(() => {
     addProjectHistoryListener();
   }, []);
-
-  // when the user logs in, set the current account view to the account they just logged in with
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      setAccountName(undefined);
-    } else {
-      getViewerUsernameAsync().then(
-        (viewerUsername) => {
-          if (viewerUsername && !accountName) {
-            setAccountName(viewerUsername);
-          }
-        },
-        (error) => {
-          setAccountName(undefined);
-          console.warn(`There was an error fetching the viewer's username`, error);
-        }
-      );
-    }
-  }, [isAuthenticated]);
 
   React.useEffect(() => {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
