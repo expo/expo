@@ -10,12 +10,18 @@ object DevMenuDevSettings {
     val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactInstanceManager)
     val devSettings = devDelegate.devSettings as? DevInternalSettings
 
+    val jsBundleURL = reactInstanceManager.devSupportManager.jsBundleURLForRemoteDebugging
+
     if (devSettings != null) {
       return Bundle().apply {
         putBoolean("isDebuggingRemotely", devSettings.isRemoteJSDebugEnabled)
         putBoolean("isElementInspectorShown", devSettings.isElementInspectorEnabled)
         putBoolean("isHotLoadingEnabled", devSettings.isHotModuleReplacementEnabled)
         putBoolean("isPerfMonitorShown", devSettings.isFpsDebugEnabled)
+        putBoolean("isRemoteDebuggingAvailable", jsBundleURL.isNotEmpty())
+        putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
+        putBoolean("isHotLoadingAvailable", devSettings.isJSDevModeEnabled)
+        putBoolean("isPerfMonitorAvailable", devSettings.isJSDevModeEnabled)
       }
     }
 
@@ -24,6 +30,10 @@ object DevMenuDevSettings {
       putBoolean("isElementInspectorShown", false)
       putBoolean("isHotLoadingEnabled", false)
       putBoolean("isPerfMonitorShown", false)
+      putBoolean("isRemoteDebuggingAvailable", false)
+      putBoolean("isElementInspectorAvailable", false)
+      putBoolean("isHotLoadingAvailable", false)
+      putBoolean("isPerfMonitorAvailable", false)
     }
   }
 }
