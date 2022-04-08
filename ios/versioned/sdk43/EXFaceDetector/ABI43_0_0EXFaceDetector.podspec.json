@@ -15,16 +15,16 @@
   "static_framework": true,
   "dependencies": {
     "GoogleMLKit/FaceDetection": [
-      "2.1.0"
+      "2.6.0"
     ],
     "MLKitFaceDetection": [
-      "1.2.0"
+      "1.5.0"
     ],
     "MLKitCommon": [
-      "2.1.0"
+      "5.0.0"
     ],
     "MLKitVision": [
-      "1.2.0"
+      "3.0.0"
     ],
     "ABI43_0_0ExpoModulesCore": []
   },
