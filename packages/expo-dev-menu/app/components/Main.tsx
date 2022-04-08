@@ -365,7 +365,7 @@ function SettingsRowSwitch({
           <Switch
             testID={testID}
             disabled={disabled}
-            value={isEnabled}
+            value={isEnabled && !disabled}
             onValueChange={() => setIsEnabled(!isEnabled)}
           />
         </View>
