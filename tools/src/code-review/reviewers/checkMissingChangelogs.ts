@@ -22,7 +22,8 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   }
 
   const changelogLinks = pkgsWithoutChangelogChanges
-    .map((pkg) => `- ${relativeChangelogPath(pullRequest, pkg)}`)
+    .map((pkg) => pullRequest.head && `- ${relativeChangelogPath(pullRequest.head, pkg)}`)
+    .filter(Boolean)
     .join('\n');
 
   return {
@@ -33,7 +34,7 @@ ${changelogLinks}`,
   };
 }
 
-function relativeChangelogPath(pr: ReviewInput['pullRequest'], pkg: Package): string {
+function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
   const relativePath = path.relative(EXPO_DIR, pkg.changelogPath);
-  return `[\`${relativePath}\`](${pr.head.repo.html_url}/blob/${pr.head.ref}/${relativePath})`;
+  return `[\`${relativePath}\`](${head?.repo?.html_url}/blob/${head.ref}/${relativePath})`;
 }

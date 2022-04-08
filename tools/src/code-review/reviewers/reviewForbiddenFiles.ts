@@ -35,10 +35,10 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
         logs.push(`File size **${prettySize}** exceeds the limit of **${PRETTY_FILE_SIZE_LIMIT}**`);
       }
 
-      if (logs.length === 0) {
+      if (logs.length === 0 || !pullRequest.head) {
         return null;
       }
-      return `- ${linkToFile(pullRequest, file.path)}\n  - ${logs.join('\n  - ')}`;
+      return `- ${linkToFile(pullRequest.head, file.path)}\n  - ${logs.join('\n  - ')}`;
     })
     .filter(Boolean);
 
@@ -53,6 +53,6 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   };
 }
 
-function linkToFile(pr: ReviewInput['pullRequest'], path: string): string {
-  return `[${path}](${pr.head.repo.html_url}/blob/${pr.head.ref}/${encodeURIComponent(path)})`;
+function linkToFile(head: ReviewInput['pullRequest']['head'], path: string): string {
+  return `[${path}](${head?.repo?.html_url}/blob/${head.ref}/${encodeURIComponent(path)})`;
 }
