@@ -4,6 +4,7 @@ import {
   installationID,
   isDevice,
   updatesConfig,
+  loadFontsAsync,
 } from '../native-modules/DevLauncherInternal';
 import { getMenuPreferencesAsync } from '../native-modules/DevMenuPreferences';
 import { AppProvidersProps } from '../providers/AppProviders';
@@ -15,6 +16,8 @@ import { restoreUserAsync } from './restoreUserAsync';
 export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
   const initialUserData = await restoreUserAsync();
   const isAuthenticated = initialUserData != null;
+
+  await loadFontsAsync().catch((error) => console.log({ error }));
 
   const initialDevSessions = await getDevSessionsAsync({
     isAuthenticated,

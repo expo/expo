@@ -19,6 +19,7 @@ import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorRegistry
 import expo.modules.devmenu.DevMenuAppInfo
+import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
@@ -226,5 +227,11 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     appIcon = "" + applicationInfo.icon
 //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
     return appIcon
+  }
+
+  @ReactMethod
+  fun loadFontsAsync(promise: Promise) {
+    DevMenuManager.loadFonts(reactApplicationContext)
+    promise.resolve(null)
   }
 }

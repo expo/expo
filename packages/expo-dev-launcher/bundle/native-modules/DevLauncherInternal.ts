@@ -64,3 +64,7 @@ export type EXUpdatesConfig = {
 };
 
 export const updatesConfig: EXUpdatesConfig = DevLauncher.updatesConfig;
+
+export async function loadFontsAsync() {
+  return await DevLauncher.loadFontsAsync()
+}

@@ -1,4 +1,3 @@
-
 export const loadApp = jest.fn().mockResolvedValue('');
 export const clientUrlScheme = '123';
 export const installationID = '';
@@ -21,3 +20,5 @@ export const updatesConfig = {
   sdkVersion: '1',
   usesEASUpdates: true,
 };
+
+export const loadFontsAsync = jest.fn().mockResolvedValue(null);
