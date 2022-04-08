@@ -23,15 +23,18 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
 
   const changelogLinks = pkgsWithoutChangelogChanges
     .map((pkg) => pullRequest.head && `- ${relativeChangelogPath(pullRequest.head, pkg)}`)
-    .filter(Boolean)
-    .join('\n');
+    .filter(Boolean);
 
-  return {
-    status: ReviewStatus.WARN,
-    title: 'Missing changelog entries',
-    body: `Your changes should be noted in the changelog. Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) guide and consider (it's optional) adding an appropriate entry to the following changelogs:
-${changelogLinks}`,
-  };
+  if (changelogLinks.length) {
+    return {
+      status: ReviewStatus.WARN,
+      title: 'Missing changelog entries',
+      body: `Your changes should be noted in the changelog. Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) guide and consider (it's optional) adding an appropriate entry to the following changelogs:
+  ${changelogLinks.join('\n')}`,
+    };
+  } else {
+    return null;
+  }
 }
 
 function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
