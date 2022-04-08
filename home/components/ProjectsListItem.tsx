@@ -16,7 +16,8 @@ type Props = {
   subtitle?: string;
   sdkVersion?: string;
   id: string;
-  inFlatList?: boolean;
+  first: boolean;
+  last: boolean;
 };
 
 /**
@@ -24,7 +25,7 @@ type Props = {
  * the projects list page for an account.
  */
 
-export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, inFlatList }: Props) {
+export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, first, last }: Props) {
   const theme = useExpoTheme();
   const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
@@ -38,7 +39,14 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, inF
     <TouchableOpacity onPress={onPress}>
       <View
         padding="medium"
-        {...(inFlatList && { bg: 'default', border: 'hairline', rounded: 'large' })}>
+        bg="default"
+        border="default"
+        roundedTop={first ? 'large' : undefined}
+        roundedBottom={last ? 'large' : undefined}
+        style={{
+          borderBottomWidth: last ? 1 : 0,
+          borderTopWidth: first ? 1 : 0,
+        }}>
         <Row align="center" justify="between">
           <Row align="center" flex="1">
             <AppIcon image={imageURL} />

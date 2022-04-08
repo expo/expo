@@ -6,18 +6,12 @@ import { useInfiniteQuery } from 'react-query';
 import { apiClient } from '../apiClient';
 import { Toasts } from '../components/Toasts';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
-import { queryClient } from '../providers/QueryProvider';
+import { queryClient, useQueryOptions } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
-import { primeCacheWithUpdates, Update, updatesPageSize } from './useUpdatesForBranch';
+import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 
 const query = gql`
-  query getBranches(
-    $appId: String!
-    $offset: Int!
-    $limit: Int!
-    $updatesLimit: Int!
-    $runtimeVersion: String!
-  ) {
+  query getBranches($appId: String!, $offset: Int!, $limit: Int!, $runtimeVersion: String!) {
     app {
       byId(appId: $appId) {
         updateBranches(offset: $offset, limit: $limit) {
@@ -32,7 +26,7 @@ const query = gql`
             id
           }
 
-          updates: updates(offset: 0, limit: $updatesLimit) {
+          updates: updates(offset: 0, limit: $limit) {
             id
             message
             runtimeVersion
@@ -50,24 +44,23 @@ export type Branch = {
   updates: Update[];
 };
 
-export const branchPageSize = 10;
-
 function getBranchesAsync({
   appId,
   page = 1,
   runtimeVersion,
+  pageSize,
 }: {
   appId: string;
   page?: number;
   runtimeVersion: string;
+  pageSize: number;
 }) {
-  if (appId != '') {
-    const offset = (page - 1) * branchPageSize;
+  if (appId !== '') {
+    const offset = (page - 1) * pageSize;
     const variables = {
       appId,
       offset,
-      limit: branchPageSize,
-      updatesLimit: updatesPageSize,
+      limit: pageSize,
       runtimeVersion,
     };
 
@@ -123,18 +116,24 @@ function getBranchesAsync({
 export function useBranchesForApp(appId: string) {
   const { runtimeVersion } = useBuildInfo();
   const toastStack = useToastStack();
+  const { queryOptions } = useQueryOptions();
 
   const query = useInfiniteQuery(
-    ['branches', appId],
+    ['branches', appId, queryOptions.pageSize],
     ({ pageParam }) => {
-      return getBranchesAsync({ appId, page: pageParam, runtimeVersion });
+      return getBranchesAsync({
+        appId,
+        page: pageParam,
+        runtimeVersion,
+        pageSize: queryOptions.pageSize,
+      });
     },
     {
       retry: appId !== '',
       refetchOnMount: false,
       enabled: appId !== '',
       getNextPageParam: (lastPage, pages) => {
-        if (lastPage.branches.length < branchPageSize) {
+        if (lastPage.branches.length < queryOptions.pageSize) {
           return undefined;
         }
 
@@ -174,9 +173,9 @@ export function useBranchesForApp(appId: string) {
   };
 }
 
-export function prefetchBranchesForApp(appId: string, runtimeVersion: string) {
-  return queryClient.prefetchInfiniteQuery(['branches', appId], ({ pageParam = 1 }) =>
-    getBranchesAsync({ page: pageParam, appId, runtimeVersion })
+export function prefetchBranchesForApp(appId: string, runtimeVersion: string, pageSize: number) {
+  return queryClient.prefetchInfiniteQuery(['branches', appId, pageSize], ({ pageParam = 1 }) =>
+    getBranchesAsync({ page: pageParam, appId, runtimeVersion, pageSize })
   );
 }
 

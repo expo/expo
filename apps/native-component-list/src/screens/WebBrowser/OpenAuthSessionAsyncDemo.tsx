@@ -16,7 +16,10 @@ const FUNCTION_DESCRIPTION: FunctionDescription = {
     {
       name: 'options',
       type: 'object',
-      properties: [{ name: 'createTask', type: 'boolean', initial: true }],
+      properties: [
+        { name: 'createTask', type: 'boolean', initial: true },
+        { name: 'preferEphemeralSession', type: 'boolean', platforms: ['ios'], initial: false },
+      ],
     },
   ],
   additionalParameters: [{ name: 'shouldPrompt', type: 'boolean', initial: false }],

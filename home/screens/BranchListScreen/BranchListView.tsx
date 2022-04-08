@@ -1,7 +1,8 @@
 import { spacing } from '@expo/styleguide-native';
-import { Spacer, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, View as RNView } from 'react-native';
+import { ActivityIndicator, View as RNView } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import { BranchListItem } from '../../components/BranchListItem';
@@ -85,14 +86,15 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
     }
   };
 
-  const renderItem = React.useCallback(({ item: branch }) => {
+  const renderItem = React.useCallback(({ item: branch, index }) => {
     return (
       <BranchListItem
         key={branch.id}
         appId={appId}
         name={branch.name}
         latestUpdate={branch.latestUpdate}
-        inFlatList
+        first={index === 0}
+        last={index === data.length - 1}
       />
     );
   }, []);
@@ -111,7 +113,7 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
         renderLoadingIndicator={() => <RNView />}
         renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         contentContainerStyle={{ padding: spacing[4] }}
-        ItemSeparatorComponent={() => <Spacer.Vertical size="small" />}
+        ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
         canLoadMore={canLoadMore()}
         onLoadMoreAsync={handleLoadMoreAsync}
       />

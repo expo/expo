@@ -112,17 +112,79 @@ export var UIImagePickerControllerQualityType;
      */
     UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["IFrame960x540"] = 5] = "IFrame960x540";
 })(UIImagePickerControllerQualityType || (UIImagePickerControllerQualityType = {}));
-// @docsMissing
+/**
+ * Picker presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
 export var UIImagePickerPresentationStyle;
 (function (UIImagePickerPresentationStyle) {
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["FullScreen"] = 0] = "FullScreen";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["PageSheet"] = 1] = "PageSheet";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["FormSheet"] = 2] = "FormSheet";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["CurrentContext"] = 3] = "CurrentContext";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["OverFullScreen"] = 5] = "OverFullScreen";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["OverCurrentContext"] = 6] = "OverCurrentContext";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["Popover"] = 7] = "Popover";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["BlurOverFullScreen"] = 8] = "BlurOverFullScreen";
-    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["Automatic"] = -2] = "Automatic";
+    /**
+     * A presentation style in which the presented picker covers the screen.
+     */
+    UIImagePickerPresentationStyle["FULL_SCREEN"] = "fullScreen";
+    /**
+     * A presentation style that partially covers the underlying content.
+     */
+    UIImagePickerPresentationStyle["PAGE_SHEET"] = "pageSheet";
+    /**
+     * A presentation style that displays the picker centered in the screen.
+     */
+    UIImagePickerPresentationStyle["FORM_SHEET"] = "formSheet";
+    /**
+     * A presentation style where the picker is displayed over the app's content.
+     */
+    UIImagePickerPresentationStyle["CURRENT_CONTEXT"] = "currentContext";
+    /**
+     * A presentation style in which the picker view covers the screen.
+     */
+    UIImagePickerPresentationStyle["OVER_FULL_SCREEN"] = "overFullScreen";
+    /**
+     * A presentation style where the picker is displayed over the app's content.
+     */
+    UIImagePickerPresentationStyle["OVER_CURRENT_CONTEXT"] = "overCurrentContext";
+    /**
+     * A presentation style where the picker is displayed in a popover view.
+     */
+    UIImagePickerPresentationStyle["POPOVER"] = "popover";
+    /**
+     * The default presentation style chosen by the system.
+     * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+     *
+     * @platform ios 13+
+     */
+    UIImagePickerPresentationStyle["AUTOMATIC"] = "automatic";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.FULL_SCREEN` instead.
+     */
+    UIImagePickerPresentationStyle["FullScreen"] = "fullScreen";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.PAGE_SHEET` instead.
+     */
+    UIImagePickerPresentationStyle["PageSheet"] = "pageSheet";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.FORM_SHEET` instead.
+     */
+    UIImagePickerPresentationStyle["FormSheet"] = "formSheet";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.CURRENT_CONTEXT` instead.
+     */
+    UIImagePickerPresentationStyle["CurrentContext"] = "currentContext";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.OVER_FULL_SCREEN` instead.
+     */
+    UIImagePickerPresentationStyle["OverFullScreen"] = "overFullScreen";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT` instead.
+     */
+    UIImagePickerPresentationStyle["OverCurrentContext"] = "overCurrentContext";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.POPOVER` instead.
+     */
+    UIImagePickerPresentationStyle["Popover"] = "popover";
+    /**
+     * @deprecated Use `UIImagePickerPresentationStyle.AUTOMATIC` instead.
+     */
+    UIImagePickerPresentationStyle["Automatic"] = "automatic";
 })(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));
 //# sourceMappingURL=ImagePicker.types.js.map

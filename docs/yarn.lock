@@ -580,10 +580,10 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/styleguide@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.0.0.tgz#9f4f558012b7526045f53404c3eca071e1169e3e"
-  integrity sha512-Rus1GsVD5rL9/2dI7xhF8DDq9ca2J45CdO0ZcVHOqPz/NFqOVE6oH545wPuJCNrXcAaGyRpzGUbT9oEBojuq8Q==
+"@expo/styleguide@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.0.1.tgz#10aa2fa3dd997fe39c5498b4e08dfa984b72a0e6"
+  integrity sha512-sd50snb960bPBk+RP9SWLjGl+9yoAZwT9p1WKXii4TcYwlebNH9CjPOihoZ5Imc5Z1a/KTWlwP9vruzc3BsbYA==
 
 "@hapi/accept@5.0.2":
   version "5.0.2"

@@ -1371,6 +1371,15 @@
     resolve-from "^5.0.0"
     sucrase "^3.20.0"
 
+"@expo/multipart-body-parser@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/multipart-body-parser/-/multipart-body-parser-1.0.0.tgz#7227bab9cfe9d4baea925b748a3212e0239ba55d"
+  integrity sha512-ROR8PPuWZ6AcePdlmkzGmbniiScqQbyjFefb7Z8WZZOQkiIR/TdFA0vc0C9gmK1lJJp7IyXbW51XVG7eehyO3Q==
+  dependencies:
+    dicer "^0.3.1"
+    nullthrows "^1.1.1"
+    structured-headers "^0.4.1"
+
 "@expo/mux@^1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@expo/mux/-/mux-1.0.7.tgz#77a29dcf7bd02edf76cfc74631a64ea6b13b9c58"
@@ -3208,17 +3217,17 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/datetimepicker@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-4.0.0.tgz#4629ac3d8d54b4024385f2b2a30bbe13640c6ed3"
-  integrity sha512-q3JfDHX5PI0AxFeMsB6jcHSXODloXAqBVsOfkIvm+YbAe1TUs/xZ3qGazsKVBk9EdFyHO4k+S1Q8tQkEnk2YrQ==
+"@react-native-community/datetimepicker@6.1.2":
+  version "6.1.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-6.1.2.tgz#a897291bc8ff2394f922721f40692c812f9145a0"
+  integrity sha512-4D21x4eywCY2Ex4BI6tQhUEOOKSruz9uPbGK0azGKZap/etoiPtH3nuG56ACtpmUlu5d1R9zzTlumr02dp39hA==
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/netinfo@7.1.3":
-  version "7.1.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-7.1.3.tgz#518d753a9ac08f1e59562c5d4168193584fd7329"
-  integrity sha512-E8q3yuges6NYhrXBDQdzwCnG0bBQXATRjs6fpTjRJ37nURmdpe4HLq1awvooG4ymGTpZhrx4elcs/aUM7PTgrA==
+"@react-native-community/netinfo@8.2.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-8.2.0.tgz#0bcf2b618c3b0ab72bb5529df3e580af9e6ae96b"
+  integrity sha512-mPMg9Uu2XeMX3tainvCWLhD9FZtdox3fcbPXJINuyFNgEQ2AUhGcoUT1dUpcFZrY4eXYiO9cckPhPHq9lWzSAA==
 
 "@react-native-community/slider@4.2.1":
   version "4.2.1"
@@ -3804,13 +3813,6 @@
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@types/dedent/-/dedent-0.7.0.tgz#155f339ca404e6dd90b9ce46a3f78fd69ca9b050"
   integrity sha512-EGlKlgMhnLt/cM4DbUSafFdrkeJoC9Mvnj0PUCU7tFmTjMjNRT957kXCx0wYm3JuEq4o4ZsS5vG+NlkM2DMd2A==
-
-"@types/dicer@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@types/dicer/-/dicer-0.2.2.tgz#61e3a26ea4bf41cd003fd6f7adb9c78649f753de"
-  integrity sha512-UPLqCYey+jn5Mf57KFDwxD/7VZYDsbYUi3iyTehLFVjlbvl/JcUTPaot8uKNYLO0EoZpey+rC/s5AF3VxfeC2Q==
-  dependencies:
-    "@types/node" "*"
 
 "@types/ejs@^3.1.0":
   version "3.1.0"
@@ -16936,10 +16938,10 @@ react-native-redash@^14.1.1:
     normalize-svg-path "^1.0.1"
     parse-svg-path "^0.1.2"
 
-react-native-safe-area-context@3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-3.3.2.tgz#9549a2ce580f2374edb05e49d661258d1b8bcaed"
-  integrity sha512-yOwiiPJ1rk+/nfK13eafbpW6sKW0jOnsRem2C1LPJjM3tfTof6hlvV5eWHATye3XOpu2cJ7N+HdkUvUDGwFD2Q==
+react-native-safe-area-context@4.2.4:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.2.4.tgz#4df42819759c4d3c74252c8678c2772cfa2271a6"
+  integrity sha512-OOX+W2G4YYufvryonn6Kw6YnyT8ZThkxPHZBD04NLHaZmicUaaDVII/PZ3M5fD1o5N62+T+8K4bCS5Un2ggvkA==
 
 react-native-safe-area-view@^0.14.8, react-native-safe-area-view@^0.14.9:
   version "0.14.9"
@@ -20569,10 +20571,8 @@ watchpack@^1.6.1:
   resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.7.5.tgz#1267e6c55e0b9b5be44c2023aed5437a2c26c453"
   integrity sha512-9P3MWk6SrKjHsGkLT2KHXdQ/9SNkyoJbabxnKOoJepsvJjJG8uYTR3yTPxPQvNDI3w4Nz1xnE0TLHK4RIVe/MQ==
   dependencies:
-    chokidar "^3.4.1"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
-    watchpack-chokidar2 "^2.0.1"
   optionalDependencies:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"

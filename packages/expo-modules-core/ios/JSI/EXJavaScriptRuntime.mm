@@ -23,6 +23,11 @@ using namespace facebook;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
 }
 
+/**
+ Initializes a runtime that is independent from React Native and its runtime initialization.
+ This flow is mostly intended for tests. The JS call invoker is unavailable thus calling async functions is not supported.
+ TODO: Implement the call invoker when it becomes necessary.
+ */
 - (nonnull instancetype)init
 {
   if (self = [super init]) {
@@ -91,6 +96,11 @@ using namespace facebook;
                                block:(nonnull JSAsyncFunctionBlock)block
 {
   return [self createHostFunction:name argsCount:argsCount block:^jsi::Value(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray *arguments) {
+    if (!callInvoker) {
+      // In mocked environment the call invoker may be null so it's not supported to call async functions.
+      // Testing async functions is a bit more complicated anyway. See `init` description for more.
+      throw jsi::JSError(runtime, "Calling async functions is not supported when the call invoker is unavailable");
+    }
     // The function that is invoked as a setup of the EXJavaScript `Promise`.
     auto promiseSetup = [callInvoker, block, arguments](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
       expo::callPromiseSetupWithBlock(runtime, callInvoker, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
@@ -105,7 +115,7 @@ using namespace facebook;
 
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
 {
-  std::shared_ptr<jsi::StringBuffer> scriptBuffer = std::make_shared<jsi::StringBuffer>([[NSString stringWithFormat:@"(%@)", scriptSource] UTF8String]);
+  std::shared_ptr<jsi::StringBuffer> scriptBuffer = std::make_shared<jsi::StringBuffer>([scriptSource UTF8String]);
   std::shared_ptr<jsi::Value> result;
 
   try {
@@ -133,12 +143,11 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr
   jsi::PropNameID propNameId = jsi::PropNameID::forAscii(*_runtime, [name UTF8String], [name length]);
   std::weak_ptr<react::CallInvoker> weakCallInvoker = _jsCallInvoker;
   jsi::HostFunctionType function = [weakCallInvoker, block](jsi::Runtime &runtime, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
-    if (auto callInvoker = weakCallInvoker.lock()) {
-      NSArray *arguments = expo::convertJSIValuesToNSArray(runtime, args, count, callInvoker);
-      return block(runtime, callInvoker, arguments);
-    }
-    // TODO: We should throw some kind of error.
-    return jsi::Value::undefined();
+    // Theoretically should check here whether the call invoker isn't null, but in mocked environment
+    // there is no need to care about that for synchronous calls, so it's ensured in `createAsyncFunction` instead.
+    auto callInvoker = weakCallInvoker.lock();
+    NSArray *arguments = expo::convertJSIValuesToNSArray(runtime, args, count, callInvoker);
+    return block(runtime, callInvoker, arguments);
   };
   return jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function);
 }

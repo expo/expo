@@ -12,6 +12,12 @@
 #import "RNDateTimePicker.h"
 #import <React/UIView+React.h>
 
+#ifndef __IPHONE_15_0
+@interface UIColor (Xcode12)
++ (instancetype) tintColor;
+@end
+#endif
+
 @implementation RCTConvert(UIDatePicker)
 
 RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
@@ -139,6 +145,19 @@ RCT_CUSTOM_VIEW_PROPERTY(textColor, UIColor, RNDateTimePicker)
     [view setValue:defaultColor forKey:@"textColor"];
     [view setValue:@(YES) forKey:@"highlightsToday"];
   }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(accentColor, UIColor, RNDateTimePicker)
+{
+    if (json) {
+        [view setTintColor:[RCTConvert UIColor:json]];
+    } else {
+        if (@available(iOS 15.0, *)) {
+            [view setTintColor:[UIColor tintColor]];
+        } else {
+            [view setTintColor:[UIColor systemBlueColor]];
+        }
+    }
 }
 
 // TODO vonovak setting preferredDatePickerStyle invalidates minuteinterval

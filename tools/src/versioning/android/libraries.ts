@@ -38,7 +38,7 @@ export const JniLibNames = [
   'react_nativemodule_core',
   'reactnativeutilsjni',
   'reactperfloggerjni',
-  'better',
+  'butter',
   'jsi',
   'logger',
   'mapbufferjni',
@@ -60,7 +60,7 @@ export const JniLibNames = [
   'react_render_textlayoutmanager',
   'react_render_uimanager',
   'react_utils',
-  'reactconfig',
+  'react_config',
   'rrc_image',
   'rrc_modal',
   'rrc_progressbar',
@@ -72,6 +72,7 @@ export const JniLibNames = [
   'rrc_textinput',
   'rrc_unimplementedview',
   'rrc_view',
+  'runtimeexecutor',
 
   // TODO: considering versioning prebuilt fbjni by patchelf after RN 0.65 which has newer fbjni version.
   // or simply upgrade old SDK to use latest fbjni.

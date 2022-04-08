@@ -47,11 +47,6 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}$1`,
       },
       {
-        paths: `${versionName}FBReactNativeSpec`,
-        replace: /\b(NSStringToNativeAppearanceColorSchemeName|NativeAppearanceColorSchemeNameToNSString)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
         paths: 'RCTView.m',
         replace: /\b(SwitchAccessibilityTrait)\b/g,
         with: `${versionName}$1`,
@@ -216,8 +211,8 @@ export function postTransforms(versionName: string): TransformPipeline {
       // react-native-safe-area-context
       {
         paths: [
-          'RCTView+SafeAreaCompat.h',
-          'RCTView+SafeAreaCompat.m',
+          'RNCSafeAreaUtils.h',
+          'RNCSafeAreaUtils.m',
           'RNCSafeAreaProvider.m',
           'RNCSafeAreaView.m',
         ],

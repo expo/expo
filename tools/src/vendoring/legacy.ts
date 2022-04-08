@@ -19,6 +19,9 @@ interface VendoredModuleUpdateStep {
   recursive?: boolean;
   updatePbxproj?: boolean;
 
+  // should cleanup target path before vendoring
+  cleanupTargetPath?: boolean;
+
   /**
    * Hook that is fired by the end of vendoring an Android file.
    * You should use it to perform some extra operations that are not covered by the main flow.
@@ -490,20 +493,43 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     repoUrl: 'https://github.com/th3rdwave/react-native-safe-area-context',
     steps: [
       {
-        sourceIosPath: 'ios/SafeAreaView',
+        sourceIosPath: 'ios',
         targetIosPath: 'Api/SafeAreaContext',
         sourceAndroidPath: 'android/src/main/java/com/th3rdwave/safeareacontext',
         targetAndroidPath: 'modules/api/safeareacontext',
         sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        onDidVendorAndroidFile: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'SafeAreaContextPackage.kt') {
+            let content = await fs.readFile(file, 'utf8');
+            content = content.replace(
+              /^(package .+)$/gm,
+              '$1\nimport host.exp.expoview.BuildConfig'
+            );
+            await fs.writeFile(file, content, 'utf8');
+          }
+        },
       },
-    ],
-    warnings: [
-      chalk.bold.yellow(
-        `Last time checked, ${chalk.green('react-native-safe-area-context')} used ${chalk.blue(
-          'androidx'
-        )} which wasn't at that time supported by Expo. Please ensure that the project builds on Android after upgrading or remove this warning.`
-      ),
+      {
+        sourceIosPath: 'ios/SafeAreaContextSpec',
+        targetIosPath: 'Api/SafeAreaContext',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/th3rdwave/safeareacontext',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/facebook/react/viewmanagers',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.facebook.react.viewmanagers',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        cleanupTargetPath: false,
+      },
     ],
   },
   '@react-native-community/datetimepicker': {
@@ -778,17 +804,20 @@ export async function legacyVendorModuleAsync(
 
     step.recursive = step.recursive === true;
     step.updatePbxproj = !(step.updatePbxproj === false);
+    const cleanupTargetPath = step.cleanupTargetPath ?? true;
 
     // iOS
     if (executeIOS && step.sourceIosPath && step.targetIosPath) {
       const sourceDir = path.join(tmpDir, step.sourceIosPath);
       const targetDir = path.join(IOS_DIR, 'Exponent', 'Versioned', 'Core', step.targetIosPath);
 
-      console.log(
-        `\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`
-      );
+      if (cleanupTargetPath) {
+        console.log(
+          `\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`
+        );
 
-      await fs.remove(targetDir);
+        await fs.remove(targetDir);
+      }
       await fs.mkdirs(targetDir);
 
       console.log('\nCopying iOS files ...');
@@ -858,11 +887,15 @@ export async function legacyVendorModuleAsync(
         step.targetAndroidPath
       );
 
-      console.log(
-        `\nCleaning up Android files at ${chalk.magenta(path.relative(ANDROID_DIR, targetDir))} ...`
-      );
+      if (cleanupTargetPath) {
+        console.log(
+          `\nCleaning up Android files at ${chalk.magenta(
+            path.relative(ANDROID_DIR, targetDir)
+          )} ...`
+        );
 
-      await fs.remove(targetDir);
+        await fs.remove(targetDir);
+      }
       await fs.mkdirs(targetDir);
 
       console.log('\nCopying Android files ...');

@@ -24,7 +24,7 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
   }
 
   return (
-    <View bg="default" rounded="large" border="hairline" overflow="hidden">
+    <View>
       {apps.map((project, i) => {
         if (!project) return null;
 
@@ -37,26 +37,25 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
               name={project.name}
               subtitle={project.packageName || project.fullName}
               sdkVersion={project.sdkVersion}
+              first={i === 0}
+              last={i === apps.length - 1 && !showMore}
             />
-            {i < apps.length - 1 && <Divider />}
+            {i < apps.length - 1 && <Divider style={{ height: 1 }} />}
           </Fragment>
         );
       })}
       {showMore && (
-        <>
-          <Divider />
-          <TouchableOpacity onPress={onSeeAllProjectsPress}>
-            <View padding="medium">
-              <Row align="center" justify="between">
-                <Text type="InterRegular">See all projects</Text>
-                <ChevronDownIcon
-                  style={{ transform: [{ rotate: '-90deg' }] }}
-                  color={theme.icon.secondary}
-                />
-              </Row>
-            </View>
-          </TouchableOpacity>
-        </>
+        <TouchableOpacity onPress={onSeeAllProjectsPress}>
+          <View padding="medium" bg="default" border="default" roundedBottom="large">
+            <Row align="center" justify="between">
+              <Text type="InterRegular">See all projects</Text>
+              <ChevronDownIcon
+                style={{ transform: [{ rotate: '-90deg' }] }}
+                color={theme.icon.secondary}
+              />
+            </Row>
+          </View>
+        </TouchableOpacity>
       )}
     </View>
   );

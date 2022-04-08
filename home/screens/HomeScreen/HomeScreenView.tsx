@@ -1,10 +1,9 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
-import { View, Divider, Spacer, Text } from 'expo-dev-client-components';
+import { View, Divider, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Alert, AppState, NativeEventSubscription, Platform, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
@@ -111,7 +110,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           contentContainerStyle={[styles.contentContainer]}>
           <DevelopmentServersHeader onHelpPress={this._handlePressHelpProjects} />
           {projects?.length ? (
-            <View bg="default" rounded="large" border="hairline" overflow="hidden">
+            <View bg="default" rounded="large" border="default" overflow="hidden">
               {projects.map((project, i) => (
                 <React.Fragment key={project.url}>
                   <DevelopmentServerListItem
@@ -126,7 +125,9 @@ export class HomeScreenView extends React.Component<Props, State> {
                     platform={project.platform}
                     subtitle={project.url}
                   />
-                  {projects.length > 1 && i !== projects.length - 1 ? <Divider /> : null}
+                  {projects.length > 1 && i !== projects.length - 1 ? (
+                    <Divider style={{ height: 1 }} />
+                  ) : null}
                 </React.Fragment>
               ))}
               {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
@@ -137,7 +138,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               ) : null}
             </View>
           ) : (
-            <DevelopmentServersPlaceholder />
+            <DevelopmentServersPlaceholder isAuthenticated={this.props.isAuthenticated} />
           )}
           {this.props.recentHistory.count() ? (
             <>
@@ -146,33 +147,18 @@ export class HomeScreenView extends React.Component<Props, State> {
               <RecentlyOpenedSection recentHistory={this.props.recentHistory} />
             </>
           ) : null}
-          {this.props.accountName ? (
-            data?.apps.length && this.props.accountName ? (
-              <>
-                <Spacer.Vertical size="medium" />
-                <SectionHeader header="Projects" />
-                <ProjectsSection
-                  accountName={this.props.accountName}
-                  apps={data.apps.slice(0, 3)}
-                  showMore={data.apps.length > 3}
-                />
-              </>
-            ) : null
-          ) : (
+
+          {data?.apps.length && this.props.accountName ? (
             <>
               <Spacer.Vertical size="medium" />
               <SectionHeader header="Projects" />
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Account')}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                <View bg="default" padding="medium" border="hairline" rounded="large">
-                  <Text type="InterRegular" style={{ lineHeight: 20 }}>
-                    Log in or create an Expo account to view your projects.
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              <ProjectsSection
+                accountName={this.props.accountName}
+                apps={data.apps.slice(0, 3)}
+                showMore={data.apps.length > 3}
+              />
             </>
-          )}
+          ) : null}
 
           {data?.snacks.length && this.props.accountName ? (
             <>

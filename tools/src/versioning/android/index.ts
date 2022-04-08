@@ -256,6 +256,9 @@ async function processMkFileAsync(filename: string, abiVersion: string) {
   let file = await fs.readFile(filename);
   let fileString = file.toString();
   await fs.truncate(filename, 0);
+  // Transforms multiline back to one line and makes the line based versioning easier
+  fileString = fileString.replace(/\\\n/g, ' ');
+
   let lines = fileString.split('\n');
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];

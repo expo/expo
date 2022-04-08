@@ -6,9 +6,7 @@ function ErrorToast({ children }) {
     <View mx="large">
       <View bg="error" padding="medium" rounded="medium" border="error">
         <View>
-          <Text color="error">
-            {children}
-          </Text>
+          <Text color="error">{children}</Text>
         </View>
       </View>
     </View>
@@ -32,7 +30,21 @@ function WarningToast({ children }) {
         <Spacer.Vertical size="small" />
 
         <View>
-          <Text size="small" color="warning">{children}</Text>
+          <Text size="small" color="warning">
+            {children}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function InfoToast({ children }) {
+  return (
+    <View mx="large">
+      <View bg="default" padding="medium" rounded="medium" border="default">
+        <View>
+          <Text color="default">{children}</Text>
         </View>
       </View>
     </View>
@@ -42,4 +54,5 @@ function WarningToast({ children }) {
 export const Toasts = {
   Error: ErrorToast,
   Warning: WarningToast,
+  Info: InfoToast,
 };
