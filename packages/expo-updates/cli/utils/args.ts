@@ -40,3 +40,14 @@ export function assertArgs(schema: arg.Spec, argv: string[]): arg.Result<arg.Spe
     throw error;
   }
 }
+
+export function assertArg(args: arg.Result<arg.Spec>, name: any, type: 'string' | 'number'): any {
+  const value = args[name];
+  if (value === undefined || value === null) {
+    Log.exit(`${name} must not be null`);
+  }
+  if (typeof value !== type) {
+    Log.exit(`${name} must be a ${type}`);
+  }
+  return value;
+}

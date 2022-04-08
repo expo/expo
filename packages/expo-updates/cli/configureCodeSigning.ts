@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from './cli';
-import { assertArgs, getProjectRoot } from './utils/args';
+import { assertArg, assertArgs, getProjectRoot } from './utils/args';
 import * as Log from './utils/log';
 
 export const configureCodeSigning: Command = async (argv) => {
@@ -10,10 +10,10 @@ export const configureCodeSigning: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
-      '--input': String,
+      '--certificate-input-directory': String,
+      '--key-input-directory': String,
       // Aliases
       '-h': '--help',
-      '-i': '--input',
     },
     argv ?? []
   );
@@ -28,7 +28,8 @@ export const configureCodeSigning: Command = async (argv) => {
         $ npx expo-updates codesigning:configure
 
         Options
-        -i, --input <string>     Directory containing keys and certificate
+        --certificate-input-directory <string>     Directory containing code signing certificate
+        --key-input-directory <string>             Directory containing private and public keys
         -h, --help               Output usage information
     `,
       0
@@ -36,7 +37,12 @@ export const configureCodeSigning: Command = async (argv) => {
   }
 
   const { configureCodeSigningAsync } = await import('./configureCodeSigningAsync');
+
+  const certificateInput = assertArg(args, '--certificate-input-directory', 'string');
+  const keyInput = assertArg(args, '--key-input-directory', 'string');
+
   return await configureCodeSigningAsync(getProjectRoot(args), {
-    input: args['--input'],
+    certificateInput,
+    keyInput,
   });
 };

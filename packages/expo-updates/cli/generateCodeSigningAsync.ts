@@ -11,26 +11,29 @@ import path from 'path';
 
 import { log } from './utils/log';
 
-type Options = { output?: string; validityDurationYears?: number; commonName?: string };
+type Options = {
+  certificateValidityDurationYears: number;
+  keyOutput: string;
+  certificateOutput: string;
+  certificateCommonName: string;
+};
 
 export async function generateCodeSigningAsync(
   projectRoot: string,
-  { output, validityDurationYears: validityDurationYearsNumber, commonName }: Options
+  { certificateValidityDurationYears, keyOutput, certificateOutput, certificateCommonName }: Options
 ) {
-  assert(typeof output === 'string', '--output must be a string');
-  assert(
-    typeof validityDurationYearsNumber === 'number',
-    '--validity-duration-years must be a number'
-  );
-  assert(typeof commonName === 'string', '--common-name must be a string');
+  const validityDurationYears = Math.floor(certificateValidityDurationYears);
 
-  const validityDurationYears = Math.floor(validityDurationYearsNumber);
+  const certificateOutputDir = path.resolve(projectRoot, certificateOutput);
+  const keyOutputDir = path.resolve(projectRoot, keyOutput);
+  await Promise.all([ensureDir(certificateOutputDir), ensureDir(keyOutputDir)]);
 
-  const outputDir = path.resolve(projectRoot, output);
-  await ensureDir(outputDir);
-
-  const isDirectoryEmpty = (await fs.readdir(outputDir)).length === 0;
-  assert(isDirectoryEmpty, 'Output directory must be empty');
+  const [certificateOutputDirContents, keyOutputDirContents] = await Promise.all([
+    fs.readdir(certificateOutputDir),
+    fs.readdir(keyOutputDir),
+  ]);
+  assert(certificateOutputDirContents.length === 0, 'Certificate output directory must be empty');
+  assert(keyOutputDirContents.length === 0, 'Key output directory must be empty');
 
   const keyPair = generateKeyPair();
   const validityNotBefore = new Date();
@@ -40,17 +43,23 @@ export async function generateCodeSigningAsync(
     keyPair,
     validityNotBefore,
     validityNotAfter,
-    commonName,
+    commonName: certificateCommonName,
   });
 
   const keyPairPEM = convertKeyPairToPEM(keyPair);
   const certificatePEM = convertCertificateToCertificatePEM(certificate);
 
   await Promise.all([
-    fs.writeFile(path.join(outputDir, 'public-key.pem'), keyPairPEM.publicKeyPEM),
-    fs.writeFile(path.join(outputDir, 'private-key.pem'), keyPairPEM.privateKeyPEM),
-    fs.writeFile(path.join(outputDir, 'certificate.pem'), certificatePEM),
+    fs.writeFile(path.join(keyOutputDir, 'public-key.pem'), keyPairPEM.publicKeyPEM),
+    fs.writeFile(path.join(keyOutputDir, 'private-key.pem'), keyPairPEM.privateKeyPEM),
+    fs.writeFile(path.join(certificateOutputDir, 'certificate.pem'), certificatePEM),
   ]);
 
-  log(`Generated keys and certificates output to ${outputDir}`);
+  log(
+    `Generated public and private keys output to ${keyOutputDir}. Remember to add them to .gitignore or to encrypt them. (e.g. with git-crypt)`
+  );
+  log(`Generated code signing certificate output to ${certificateOutputDir}.`);
+  log(
+    `To automatically configure this project for code signing, run \`yarn expo-updates codesigning:configure --certificate-input-directory=${certificateOutput} --key-input-directory=${keyOutput}\`.`
+  );
 }
