@@ -135,10 +135,14 @@ async function main(workflowSlug: string | undefined, options: CommandOptions) {
   if (jobs?.[0]) {
     const url = jobs[0].html_url;
 
-    if (options.open && !process.env.CI) {
-      await open(url);
+    if (url) {
+      if (options.open && !process.env.CI) {
+        await open(url);
+      }
+      logger.log(`🧭 You can open ${chalk.magenta(url)} to track the new workflow run.`);
+    } else {
+      logger.warn(`⚠️  Cannot get URL for job: `, jobs[0]);
     }
-    logger.log(`🧭 You can open ${chalk.magenta(url)} to track the new workflow run.`);
   } else {
     logger.warn(`⚠️  Cannot find any triggered jobs for ${chalk.green(workflow.slug)} workflow`);
   }
