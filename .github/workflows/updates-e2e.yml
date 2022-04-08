@@ -67,17 +67,17 @@ jobs:
         run: expo-cli init updates-e2e --yes
       - name: Add local expo-updates and dependencies
         working-directory: ../updates-e2e
-        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-eas-client file:../expo/packages/expo-modules-core file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface
+        # install expo packages (including transitive packages) locally
+        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-eas-client file:../expo/packages/expo-modules-core file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface file:../expo/packages/expo-constants file:../expo/packages/expo-file-system file:../expo/packages/expo-font file:../expo/packages/expo-keep-awake file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar file:../expo/packages/expo-application file:../expo/packages/expo-error-recovery
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
+      - name: Pack latest bare-minimal template as tarball for expo prebuild
+        working-directory: templates/expo-template-bare-minimum
+        run: npm pack --pack-destination ../../../updates-e2e/
       - name: Prebuild
         working-directory: ../updates-e2e
-        run: expo-cli prebuild
-      # TODO: remove once the local template projects are using SDK 45 packages
-      - name: Manually bump kotlin version (workaround)
-        working-directory: ../updates-e2e
-        run: sed -i -e 's/\(buildToolsVersion = "[0-9.]*"\)/\1\nkotlinVersion = "1.6.10"/' ./android/build.gradle
+        run: expo-cli prebuild --template expo-template-bare-minimum-*.tgz
       - name: Copy App.js from test fixtures
         working-directory: ../updates-e2e
         run: cp ../expo/packages/expo-updates/e2e/__tests__/fixtures/App.js .
