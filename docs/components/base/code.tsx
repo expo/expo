@@ -115,7 +115,7 @@ export class Code extends React.Component<Props> {
         (match, content) => {
           return content
             ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
-            : '<span>';
+            : '<span class="code-annotation">';
         }
       )
       .replace(
@@ -134,7 +134,7 @@ export class Code extends React.Component<Props> {
       .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
         return content
           ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
-          : '<span>';
+          : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
@@ -149,7 +149,7 @@ export class Code extends React.Component<Props> {
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return content
           ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
-          : '<span>';
+          : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
