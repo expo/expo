@@ -1,8 +1,9 @@
 import { css } from '@emotion/react';
-import { theme, typography, useTheme } from '@expo/styleguide';
+import { spacing, theme, typography, useTheme } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 import { Container, Row } from 'react-grid-system';
 
+import { Header } from '~/ui/components/Header';
 import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
 import {
   APICameraIcon,
@@ -16,6 +17,7 @@ import {
   WhyImage,
 } from '~/ui/components/Home/resources';
 import { Layout } from '~/ui/components/Layout';
+import { Spacer } from '~/ui/components/Separator';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, H2, H3, P } from '~/ui/components/Text';
 import {
@@ -28,26 +30,31 @@ import {
 
 export const CellContainer = ({ children, style }: PropsWithChildren<{ style?: object }>) => (
   // https://github.com/sealninja/react-grid-system/issues/175
-  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, ...style }}>
+  <Container
+    fluid
+    style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[8], ...style }}>
     {children}
   </Container>
 );
 
 const Description = ({ children }: PropsWithChildren<object>) => (
-  <P style={{ marginBottom: 12, color: theme.text.secondary }}>{children}</P>
+  <P style={{ marginTop: spacing[1], marginBottom: spacing[2], color: theme.text.secondary }}>
+    {children}
+  </P>
 );
 
 const Home = () => {
   const { themeName } = useTheme();
   const { palette, button, background } = theme;
   return (
-    <Layout header={null}>
+    <Layout header={<Header />}>
       <H1 style={{ marginBottom: 8, fontFamily: typography.fontStacks.black, fontWeight: '900' }}>
         Create amazing apps that run everywhere
       </H1>
       <Description>
         Build one JavaScript/TypeScript project that runs natively on all your users' devices.
       </Description>
+      <Spacer />
       <CellContainer>
         <Row>
           <GridCell
@@ -113,7 +120,6 @@ const Home = () => {
           </GridCell>
         </Row>
       </CellContainer>
-      <br />
       <H3>Learn more</H3>
       <Description>Try out Expo in minutes and learn how to get the most out of Expo.</Description>
       <CellContainer>
@@ -123,9 +129,11 @@ const Home = () => {
             md={6}
             style={{ backgroundColor: palette.blue['000'], borderColor: palette.blue['200'] }}>
             <SnackImage />
-            <H3 style={{ color: palette.blue['900'], marginBottom: 6 }}>Try Snack</H3>
-            <P style={{ color: palette.blue['800'], fontSize: 14 }}>
-              Snack lets you try Expo
+            <H3 style={{ color: palette.blue['900'], marginBottom: spacing[1.5] }}>
+              Try Expo in your browser
+            </H3>
+            <P style={{ color: palette.blue['800'], ...typography.fontSizes[14] }}>
+              Expo’s Snack lets you try Expo
               <br />
               with zero local setup.
             </P>
@@ -161,8 +169,10 @@ const Home = () => {
             md={6}
             style={{ backgroundColor: palette.green['000'], borderColor: palette.green['200'] }}>
             <WhyImage />
-            <H3 style={{ color: palette.green['900'], marginBottom: 6 }}>Why and why not Expo?</H3>
-            <P style={{ color: palette.green['800'], fontSize: 14 }}>
+            <H3 style={{ color: palette.green['900'], marginBottom: spacing[1.5] }}>
+              Why choose Expo?
+            </H3>
+            <P style={{ color: palette.green['800'], ...typography.fontSizes[14] }}>
               Learn the tradeoffs of
               <br />
               using Expo.
@@ -174,7 +184,6 @@ const Home = () => {
           </GridCell>
         </Row>
       </CellContainer>
-      <br />
       <H3>Explore APIs</H3>
       <Description>
         Expo supplies a vast array of SDK modules. You can also create your own.
@@ -203,7 +212,6 @@ const Home = () => {
           />
         </Row>
       </CellContainer>
-      <br />
       <H3>Join the community</H3>
       <Description>See the source code, connect with others, and get connected.</Description>
       <CellContainer>

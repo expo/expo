@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, palette, shadows, theme, typography } from '@expo/styleguide';
+import { borderRadius, palette, shadows, spacing, theme, typography } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
@@ -94,8 +94,8 @@ const cellHoverStyle = css`
 `;
 
 const cellStyle = css({
-  margin: 16,
-  padding: 32,
+  margin: spacing[4],
+  padding: spacing[8],
   minHeight: 200,
   overflow: 'hidden',
   position: 'relative',
@@ -121,24 +121,29 @@ const cellIconWrapperStyle = css({
 });
 
 const cellTitleWrapperStyle = css({
+  ...typography.fontSizes[15],
   display: 'flex',
   justifyContent: 'space-between',
   backgroundColor: theme.background.default,
-  padding: 16,
+  padding: spacing[4],
   textDecoration: 'none',
-  fontSize: 15,
   fontFamily: typography.fontStacks.medium,
   lineHeight: '30px',
   color: theme.text.default,
 });
 
-const cellTitleArrow = css({ float: 'right', fontSize: 18, color: theme.text.secondary });
+const cellTitleArrow = css({
+  ...typography.fontSizes[18],
+  float: 'right',
+  color: theme.icon.secondary,
+  letterSpacing: 0,
+});
 
 const cellCommunityStyle = css({
   display: 'flex',
   minHeight: 'auto',
-  padding: 16,
-  margin: `12px 16px`,
+  padding: spacing[4],
+  margin: `${spacing[3]}px ${spacing[4]}px`,
   flexDirection: 'row',
   textDecoration: 'none',
 });
@@ -151,15 +156,18 @@ const cellCommunityIconWrapperStyle = css({
   justifyContent: 'center',
   alignItems: 'center',
   borderRadius: borderRadius.large,
-  marginRight: 12,
+  marginRight: spacing[3],
 });
 
 const cellCommunityTitleStyle = css({
-  fontSize: 16,
+  ...typography.fontSizes[16],
   fontFamily: typography.fontStacks.medium,
   color: theme.text.default,
   textDecoration: 'none',
-  marginBottom: 8,
+  marginBottom: spacing[2],
 });
 
-const cellCommunityDescriptionStyle = css({ color: theme.text.secondary, marginTop: 4 });
+const cellCommunityDescriptionStyle = css({
+  ...typography.fontSizes[14],
+  color: theme.text.secondary,
+});
