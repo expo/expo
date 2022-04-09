@@ -113,7 +113,9 @@ export class Code extends React.Component<Props> {
       .replace(
         /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
         (match, content) => {
-          return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+          return content
+            ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
+            : '<span>';
         }
       )
       .replace(
@@ -130,7 +132,9 @@ export class Code extends React.Component<Props> {
   private replaceHashCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+        return content
+          ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
+          : '<span>';
       })
       .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
@@ -143,7 +147,9 @@ export class Code extends React.Component<Props> {
   private replaceSlashCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+        return content
+          ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
+          : '<span>';
       })
       .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
