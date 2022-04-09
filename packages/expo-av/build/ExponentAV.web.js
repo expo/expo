@@ -14,8 +14,8 @@ async function getPermissionWithQueryAsync(name) {
                 return PermissionStatus.UNDETERMINED;
         }
     }
-    catch (error) {
-        // FireFox - TypeError: 'microphone' (value of 'name' member of PermissionDescriptor) is not a valid value for enumeration PermissionName.
+    catch {
+        // Firefox - TypeError: 'microphone' (value of 'name' member of PermissionDescriptor) is not a valid value for enumeration PermissionName.
         return PermissionStatus.UNDETERMINED;
     }
 }
@@ -291,7 +291,7 @@ export default {
                 granted: true,
             };
         }
-        catch (e) {
+        catch {
             return {
                 status: PermissionStatus.DENIED,
                 expires: 'never',

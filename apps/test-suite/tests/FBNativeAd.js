@@ -9,7 +9,7 @@ const { NativeAdsManager, AdSettings, withNativeAd, AdMediaView, AdIconView, AdT
 
 try {
   AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-} catch (e) {
+} catch {
   // AdSettings may not be available, shrug
 }
 

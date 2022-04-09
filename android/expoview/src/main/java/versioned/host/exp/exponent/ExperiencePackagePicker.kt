@@ -20,6 +20,7 @@ import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoPackage
 import expo.modules.device.DevicePackage
 import expo.modules.documentpicker.DocumentPickerPackage
+import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facebook.FacebookPackage
 import expo.modules.facedetector.FaceDetectorPackage
@@ -144,6 +145,7 @@ object ExperiencePackagePicker : ModulesProvider {
   override fun getModulesList(): List<Class<out Module>> = listOf(
     CellularModule::class.java,
     ClipboardModule::class.java,
-    LinearGradientModule::class.java
+    EASClientModule::class.java,
+    LinearGradientModule::class.java,
   )
 }

@@ -22,12 +22,11 @@ import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
 import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
 import { UrlDropdown } from '../components/UrlDropdown';
-import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useCrashReport } from '../hooks/useCrashReport';
-import { useDevSessions } from '../hooks/useDevSessions';
-import { useModalStack } from '../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { useCrashReport } from '../providers/CrashReportProvider';
+import { useDevSessions } from '../providers/DevSessionsProvider';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
@@ -46,9 +45,6 @@ export function HomeScreen({
   const modalStack = useModalStack();
   const { data: devSessions, pollAsync, isFetching } = useDevSessions();
 
-  const buildInfo = useBuildInfo();
-  const { appName, appIcon } = buildInfo;
-
   const crashReport = useCrashReport();
 
   const initialDevSessionData = React.useRef(devSessions);
@@ -61,9 +57,7 @@ export function HomeScreen({
 
   const onLoadUrl = (url: string) => {
     loadApp(url).catch((error) => {
-      modalStack.push({
-        element: <LoadAppErrorModal message={error.message} />,
-      });
+      modalStack.push(() => <LoadAppErrorModal message={error.message} />);
     });
   };
 
@@ -79,16 +73,12 @@ export function HomeScreen({
     pollAsync({ pollAmount, pollInterval });
   };
 
-  const onUserProfilePress = () => {
-    navigation.navigate('User Profile');
-  };
-
   const onAppPress = async (url: string) => {
     onLoadUrl(url);
   };
 
   const onDevServerQuestionPress = () => {
-    modalStack.push({ element: <DevServerExplainerModal /> });
+    modalStack.push(() => <DevServerExplainerModal />);
   };
 
   const onCrashReportPress = () => {
@@ -97,14 +87,7 @@ export function HomeScreen({
 
   return (
     <View testID="DevLauncherMainScreen">
-      <View bg="default">
-        <AppHeader
-          title={appName}
-          appImageUri={appIcon}
-          subtitle="Development Build"
-          onUserProfilePress={onUserProfilePress}
-        />
-      </View>
+      <AppHeader navigation={navigation} />
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         {crashReport && (
           <View px="medium" py="small" mt="small">
@@ -204,8 +187,10 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
       bg="default"
       rounded="none">
       <Row align="center" padding="medium" bg="default">
-        <PulseIndicator isActive={isFetching} color={backgroundColor} />
-        <Spacer.Horizontal size="small" />
+        <View width="6">
+          <PulseIndicator isActive={isFetching} color={backgroundColor} />
+        </View>
+
         <Button.Text color="default">
           {isFetching ? 'Searching for development servers...' : 'Fetch development servers'}
         </Button.Text>

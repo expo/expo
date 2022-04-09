@@ -17,7 +17,7 @@
 // and before any code is executed, so we switch back to Objective-C just to do this one thing.
 + (void)load
 {
-  id<ModulesProviderObjCProtocol> modulesProvider = [EXNativeModulesProxy getExpoModulesProvider];
+  ModulesProvider *modulesProvider = [EXNativeModulesProxy getExpoModulesProvider];
   [EXExpoAppDelegate registerSubscriber:[[EXLegacyAppDelegateWrapper alloc] init]];
   [EXExpoAppDelegate registerSubscribersFromModulesProvider:modulesProvider];
   [EXExpoAppDelegate registerReactDelegateHandlersFromModulesProvider:modulesProvider];

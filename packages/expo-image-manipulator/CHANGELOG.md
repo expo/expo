@@ -11,8 +11,13 @@
 ### 🐛 Bug fixes
 
 - Remove `data:image` part in web base64 result. ([#16191](https://github.com/expo/expo/pull/16191) by [@AllanChain](https://github.com/AllanChain))
+- On iOS fix rotation causing extra image borders. ([#16669](https://github.com/expo/expo/pull/16669) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 10.2.1 - 2022-02-01
 

@@ -59,25 +59,26 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
     versionName "0.7.0"
   }
   lintOptions {
     abortOnError false
-  }
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8
   }
 
   testOptions {
@@ -97,9 +98,7 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
   implementation 'androidx.annotation:annotation:1.2.0'
-
-  // used only in `expo.modules.core.errors.ModuleDestroyedException` for API export
-  compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
@@ -108,6 +107,8 @@ dependencies {
   testImplementation 'junit:junit:4.13.1'
   testImplementation 'io.mockk:mockk:1.10.6'
   testImplementation "com.google.truth:truth:1.1.2"
+  testImplementation "org.robolectric:robolectric:4.5.1"
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 }
 
 /**

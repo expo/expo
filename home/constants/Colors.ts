@@ -1,3 +1,4 @@
+import { lightTheme, darkTheme } from '@expo/styleguide-native';
 import { Platform } from 'react-native';
 
 export enum ColorTheme {
@@ -19,7 +20,7 @@ export default {
     navBackgroundColor: '#fff',
     sectionLabelBackgroundColor: '#f8f8f9',
     sectionLabelText: '#a7aab0',
-    bodyBackground: '#f8f8f9',
+    bodyBackground: lightTheme.background.screen,
     cardBackground: '#fff',
     cardSeparator: '#f4f4f5',
     cardTitle: '#242c39',
@@ -46,7 +47,7 @@ export default {
     navBorderBottom: '#000',
     sectionLabelBackgroundColor: '#2a2a2a',
     sectionLabelText: '#fff',
-    bodyBackground: '#000',
+    bodyBackground: darkTheme.background.screen,
     cardBackground: '#1c1c1e',
     cardSeparator: '#343437',
     cardTitle: '#fff',

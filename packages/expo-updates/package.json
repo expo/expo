@@ -44,6 +44,7 @@
     "@expo/config-plugins": "^4.0.14",
     "@expo/metro-config": "~0.3.7",
     "arg": "4.1.0",
+    "expo-eas-client": "~0.1.0",
     "expo-manifests": "~0.2.2",
     "expo-structured-headers": "~2.1.0",
     "expo-updates-interface": "~0.5.0",
@@ -56,6 +57,7 @@
     "@types/node": "^17.0.15",
     "@types/node-forge": "^1.0.0",
     "expo-module-scripts": "^2.0.0",
+    "express": "^4.17.2",
     "fs-extra": "^9.1.0",
     "memfs": "^3.2.0"
   },

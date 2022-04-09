@@ -23,7 +23,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   // MARK: JavaScript API
-
   @objc
   public func constantsToExport() -> [AnyHashable: Any] {
 #if targetEnvironment(simulator)
@@ -31,7 +30,9 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 #else
     let doesDeviceSupportKeyCommands = false
 #endif
-    return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
+    return [
+      "doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands,
+    ]
   }
 
   @objc
@@ -68,28 +69,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 
   @objc
   func setOnboardingFinished(_ finished: Bool) {
-    DevMenuSettings.isOnboardingFinished = finished
-  }
-
-  @objc
-  func getSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(DevMenuSettings.serialize())
-  }
-
-  @objc
-  func setSettingsAsync(_ dict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let motionGestureEnabled = dict["motionGestureEnabled"] as? Bool {
-      DevMenuSettings.motionGestureEnabled = motionGestureEnabled
-    }
-    if let touchGestureEnabled = dict["touchGestureEnabled"] as? Bool {
-      DevMenuSettings.touchGestureEnabled = touchGestureEnabled
-    }
-    if let keyCommandsEnabled = dict["keyCommandsEnabled"] as? Bool {
-      DevMenuSettings.keyCommandsEnabled = keyCommandsEnabled
-    }
-    if let showsAtLaunch = dict["showsAtLaunch"] as? Bool {
-      DevMenuSettings.showsAtLaunch = showsAtLaunch
-    }
+    DevMenuPreferences.isOnboardingFinished = finished
   }
 
   @objc

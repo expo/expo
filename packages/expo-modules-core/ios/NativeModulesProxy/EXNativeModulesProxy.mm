@@ -21,7 +21,7 @@
 #import <ExpoModulesCore/Swift.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
-static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
+static const NSString *viewManagersMetadataKeyPath = @"viewManagersMetadata";
 static const NSString *exportedConstantsKeyPath = @"modulesConstants";
 
 static const NSString *methodInfoKeyKey = @"key";
@@ -90,8 +90,9 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 - (NSDictionary *)constantsToExport
 {
-  // Install the TurboModule implementation of the proxy.
-  [self installExpoTurboModules];
+  // Install ExpoModules host object in the runtime. It's probably not the right place,
+  // but it's the earliest moment in bridge's lifecycle when we have access to the runtime.
+  [self installExpoModulesHostObject];
 
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
@@ -123,17 +124,21 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   // Add entries from Swift modules
   [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_swiftInteropBridge exportedFunctionNames]];
 
-  // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
+  // Also, add `viewManagersMetadata` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
-  NSMutableArray<NSString *> *viewManagersNames = [NSMutableArray arrayWithCapacity:[viewManagers count]];
+  NSMutableDictionary<NSString *, NSDictionary *> *viewManagersMetadata = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
+
   for (EXViewManager *viewManager in viewManagers) {
-    [viewManagersNames addObject:[viewManager viewName]];
+    viewManagersMetadata[viewManager.viewName] = @{
+      @"propsNames": [[viewManager getPropsNames] allKeys]
+    };
   }
 
-  [viewManagersNames addObjectsFromArray:[_swiftInteropBridge exportedViewManagersNames]];
+  // Add entries from Swift view managers
+  [viewManagersMetadata addEntriesFromDictionary:[_swiftInteropBridge viewManagersMetadata]];
 
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
-  constantsAccumulator[viewManagersNamesKeyPath] = viewManagersNames;
+  constantsAccumulator[viewManagersMetadataKeyPath] = viewManagersMetadata;
   constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
 
@@ -206,7 +211,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
 #pragma mark - Statics
 
-+ (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
++ (ModulesProvider *)getExpoModulesProvider
 {
   // Dynamically gets the modules provider class.
   // NOTE: This needs to be versioned in Expo Go.
@@ -398,19 +403,17 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 }
 
 /**
- Installs expo modules in JSI runtime.
+ Installs ExpoModules host object in the runtime that the current bridge operates on.
  */
-- (void)installExpoTurboModules
+- (void)installExpoModulesHostObject
 {
   facebook::jsi::Runtime *jsiRuntime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : nullptr;
 
   if (jsiRuntime) {
-    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:*jsiRuntime callInvoker:_bridge.jsCallInvoker];
+    EXJavaScriptRuntime *runtime = [[EXJavaScriptRuntime alloc] initWithRuntime:jsiRuntime callInvoker:_bridge.jsCallInvoker];
 
     [EXJavaScriptRuntimeManager installExpoModulesToRuntime:runtime withSwiftInterop:_swiftInteropBridge];
     [_swiftInteropBridge setRuntime:runtime];
-
-    expo::installRuntimeObjects(*jsiRuntime, _bridge.jsCallInvoker, self);
   }
 }
 

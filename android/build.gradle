@@ -3,14 +3,14 @@
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 30
-    compileSdkVersion = 30
+    targetSdkVersion = 31
+    compileSdkVersion = 31
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '30.0.2'
+    buildToolsVersion = '31.0.0'
     kotlinVersion = '1.6.10'
-    gradlePluginVersion = '4.2.2'
-    gradleDownloadTaskVersion = '3.4.3'
+    gradlePluginVersion = '7.0.4'
+    gradleDownloadTaskVersion = '4.1.2'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }
   repositories {
@@ -22,6 +22,7 @@ buildscript {
     classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath "com.facebook.react:react-native-gradle-plugin"
   }
 }
 
@@ -46,9 +47,6 @@ allprojects {
       url "$rootDir/versioned-abis/expoview-abi43_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi42_0_0/maven"
-    }
-    maven {
       url "$rootDir/versioned-abis/maven"
     }
     google()
@@ -59,7 +57,6 @@ allprojects {
         excludeGroup "com.facebook.react"
       }
     }
-    jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
       url "$rootDir/../node_modules/jsc-android/dist"
@@ -79,13 +76,6 @@ allprojects {
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()
-  }
-
-  // used to override ndk path/version from env variables on CI
-  ext["ANDROID_NDK_PATH"] = null
-  if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-    setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
-    ext["ANDROID_NDK_PATH"] =  System.getenv("ANDROID_NDK")
   }
 
   configurations.all {
@@ -129,6 +119,9 @@ subprojects {
     }
     kotlin {
       target(ktlintTarget)
+      // TODO: (barthap) Replace this with raw string when dropped shell app macros
+      // The star "*" signs interferes with slash "/" and treated wildcard path as comment ¯\_(ツ)_/¯
+      targetExclude(["**", "versioned/host/exp/exponent/modules/api", "**", "*.kt"].join("/"))
       ktlint("0.41.0").userData([
         "disabled_rules"           : "no-wildcard-imports,import-ordering",
         "charset"                  : "utf-8",

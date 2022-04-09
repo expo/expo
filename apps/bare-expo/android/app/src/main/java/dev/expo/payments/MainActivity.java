@@ -25,7 +25,7 @@ public class MainActivity extends ReactActivity {
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
     Activity activity = this;
-    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this,
+    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
       new ReactActivityDelegate(this, getMainComponentName()) {
       @Override
       protected void onCreate(Bundle savedInstanceState) {

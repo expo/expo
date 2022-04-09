@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the component not rendering correctly when the border radius style is set. ([#16671](https://github.com/expo/expo/pull/16671) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 11.0.0 — 2021-12-03

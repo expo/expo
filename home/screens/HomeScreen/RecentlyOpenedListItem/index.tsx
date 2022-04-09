@@ -1,9 +1,9 @@
-import { borderRadius, ChevronDownIcon, spacing } from '@expo/styleguide-native';
+import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
 import { Text, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-import { View as RNView, StyleSheet, ViewStyle, Share, Platform } from 'react-native';
+import { View as RNView, StyleSheet, ViewStyle, Share } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../../components/PressableOpacity';
 import * as UrlUtils from '../../../utils/UrlUtils';
 import { AppIcon } from '../AppIcon';
 
@@ -29,32 +29,15 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
   };
 
   return (
-    <PressableOpacity
+    <TouchableOpacity
       accessibilityRole="button"
-      android_disableSound
       onPress={onPress}
       onLongPress={handleLongPress}
       style={[styles.container, style, disabled && styles.disabled]}
-      disabled={disabled}
-      borderRadius={borderRadius.large}
-      containerProps={{ bg: 'default' }}>
+      disabled={disabled}>
       <AppIcon image={image} />
       <RNView style={[styles.contentContainer]}>
-        <Text
-          style={{
-            flex: 1,
-            fontSize: 15,
-            ...Platform.select({
-              ios: {
-                fontWeight: '500',
-              },
-              android: {
-                fontWeight: '400',
-              },
-            }),
-          }}
-          ellipsizeMode="tail"
-          numberOfLines={1}>
+        <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
           {title}
         </Text>
         <RNView style={styles.chevronRightContainer}>
@@ -64,7 +47,7 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
           />
         </RNView>
       </RNView>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }
 
@@ -78,19 +61,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     padding: spacing[4],
-    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   disabled: {
     opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.8,
   },
   contentContainer: {
     backgroundColor: 'transparent',
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   textContainer: {
     flex: 1,

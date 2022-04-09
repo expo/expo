@@ -1,9 +1,10 @@
-import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
-import { TextStyle, Platform } from 'react-native';
+import { spacing, lightTheme, darkTheme, borderRadius, typography } from '@expo/styleguide-native';
+import { TextStyle, Platform, StyleSheet } from 'react-native';
 
 type SpacingKey = `${keyof typeof spacing}`;
 type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' | 'xl';
-type Scale = Record<SpacingKey | DescriptiveScale, number>;
+type ScaleKey = SpacingKey | DescriptiveScale;
+type Scale = Record<ScaleKey, number>;
 
 export const scale: Scale = {
   micro: spacing[0.5],
@@ -16,14 +17,14 @@ export const scale: Scale = {
 };
 
 function fullSpacingScaleForAttributes(attributes: string[]) {
-  const obj = {};
+  const obj: { [scaleKey: string]: any } = {};
 
   Object.keys(scale).forEach((key) => {
     key = `${key}`;
-    const value = {};
+    const value: { [attribute: string]: number } = {};
 
     attributes.forEach((attribute) => {
-      value[attribute] = scale[key];
+      value[attribute] = scale[key as ScaleKey];
     });
 
     obj[key] = value;
@@ -95,18 +96,9 @@ export const text = {
   },
 
   size: {
-    small: {
-      fontSize: 12,
-      lineHeight: 14,
-    },
-    medium: {
-      fontSize: 16,
-      lineHeight: 18,
-    },
-    large: {
-      fontSize: 18,
-      lineHeight: 24,
-    },
+    small: typography.fontSizes[12],
+    medium: typography.fontSizes[16],
+    large: typography.fontSizes[18],
   },
 
   leading: {
@@ -117,18 +109,36 @@ export const text = {
     mono: {
       fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     },
+    InterBlack: { fontFamily: 'Inter-Black' },
+    InterBlackItalic: { fontFamily: 'Inter-BlackItalic' },
+    InterBold: { fontFamily: 'Inter-Bold' },
+    InterBoldItalic: { fontFamily: 'Inter-BoldItalic' },
+    InterExtraBold: { fontFamily: 'Inter-ExtraBold' },
+    InterExtraBoldItalic: { fontFamily: 'Inter-ExtraBoldItalic' },
+    InterExtraLight: { fontFamily: 'Inter-ExtraLight' },
+    InterExtraLightItalic: { fontFamily: 'Inter-ExtraLightItalic' },
+    InterRegular: { fontFamily: 'Inter-Regular' },
+    InterItalic: { fontFamily: 'Inter-Italic' },
+    InterLight: { fontFamily: 'Inter-Light' },
+    InterLightItalic: { fontFamily: 'Inter-LightItalic' },
+    InterMedium: { fontFamily: 'Inter-Medium' },
+    InterMediumItalic: { fontFamily: 'Inter-MediumItalic' },
+    InterSemiBold: { fontFamily: 'Inter-SemiBold' },
+    InterSemiBoldItalic: { fontFamily: 'Inter-SemiBoldItalic' },
+    InterThin: { fontFamily: 'Inter-Thin' },
+    InterThinItalic: { fontFamily: 'Inter-ThinItalic' },
   },
 
   weight: {
-    thin: { fontWeight: '100' as TextStyle['fontWeight'] },
-    extralight: { fontWeight: '200' as TextStyle['fontWeight'] },
-    light: { fontWeight: '300' as TextStyle['fontWeight'] },
-    normal: { fontWeight: '400' as TextStyle['fontWeight'] },
-    medium: { fontWeight: '500' as TextStyle['fontWeight'] },
-    semibold: { fontWeight: '600' as TextStyle['fontWeight'] },
-    bold: { fontWeight: '700' as TextStyle['fontWeight'] },
-    extrabold: { fontWeight: '800' as TextStyle['fontWeight'] },
-    black: { fontWeight: '900' as TextStyle['fontWeight'] },
+    thin: { fontFamily: 'Inter-Thin' },
+    extralight: { fontFamily: 'Inter-ExtraLight' },
+    light: { fontFamily: 'Inter-Light' },
+    normal: { fontFamily: 'Inter-Regular' },
+    medium: { fontFamily: 'Inter-Medium' },
+    semibold: { fontFamily: 'Inter-SemiBold' },
+    bold: { fontFamily: 'Inter-Bold' },
+    extrabold: { fontFamily: 'Inter-ExtraBold' },
+    black: { fontFamily: 'Inter-Black' },
   },
 
   color: {
@@ -193,7 +203,7 @@ export const lightNavigationTheme: NavigationTheme = {
   dark: false,
   colors: {
     primary: lightTheme.button.primary.background,
-    background: lightTheme.background.secondary,
+    background: lightTheme.background.screen,
     card: lightTheme.background.default,
     text: lightTheme.text.default,
     border: lightTheme.border.default,
@@ -205,10 +215,23 @@ export const darkNavigationTheme: NavigationTheme = {
   dark: true,
   colors: {
     primary: darkTheme.link.default,
-    background: darkTheme.background.default,
-    card: darkTheme.background.secondary,
+    background: darkTheme.background.screen,
+    card: darkTheme.background.screen,
     text: darkTheme.text.default,
     border: darkTheme.border.default,
     notification: darkTheme.highlight.accent,
   },
+};
+
+export const border = {
+  default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+  warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
+  hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+};
+
+export const borderDark = {
+  default: { borderColor: darkTheme.border.default, borderWidth: 1 },
+  warning: { borderColor: darkTheme.border.warning, borderWidth: 1 },
+  error: { borderColor: darkTheme.border.error, borderWidth: 1 },
+  hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
 };

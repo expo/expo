@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { DevLauncher } from '../native-modules/DevLauncher';
 import * as DevMenu from '../native-modules/DevMenu';
 import { useBottomSheet } from './useBottomSheet';
 
@@ -10,6 +11,10 @@ const defaultDevSettings: DevMenu.DevSettings = {
   isElementInspectorShown: false,
   isHotLoadingEnabled: false,
   isPerfMonitorShown: false,
+  isElementInspectorAvailable: true,
+  isHotLoadingAvailable: true,
+  isPerfMonitorAvailable: true,
+  isRemoteDebuggingAvailable: true,
 };
 
 const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
@@ -68,16 +73,12 @@ export function useDevSettings() {
   }, []);
 
   const navigateToLauncher = React.useCallback(async () => {
-    await DevMenu.navigateToLauncherAsync();
+    await DevLauncher.navigateToLauncherAsync();
     bottomSheet.collapse();
   }, []);
 
   const reload = React.useCallback(async () => {
     await DevMenu.reloadAsync();
-    bottomSheet.collapse();
-  }, []);
-
-  const closeMenu = React.useCallback(async () => {
     bottomSheet.collapse();
   }, []);
 
@@ -90,7 +91,6 @@ export function useDevSettings() {
       toggleFastRefresh,
       reload,
       navigateToLauncher,
-      closeMenu,
     },
   };
 }

@@ -20,7 +20,7 @@ class ModuleHolder(val module: Module) {
     val method = definition.methods[methodName]
       ?: throw MethodNotFoundException()
 
-    method.call(args, promise)
+    method.call(this, args, promise)
   }
 
   fun post(eventName: EventName) {
@@ -38,5 +38,9 @@ class ModuleHolder(val module: Module) {
   fun <Sender, Payload> post(eventName: EventName, sender: Sender, payload: Payload) {
     val listener = definition.eventListeners[eventName] ?: return
     (listener as? EventListenerWithSenderAndPayload<Sender, Payload>)?.call(sender, payload)
+  }
+
+  fun cleanUp() {
+    module.cleanUp()
   }
 }

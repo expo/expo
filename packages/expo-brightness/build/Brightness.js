@@ -1,6 +1,7 @@
-import { createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, UnavailabilityError, EventEmitter, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoBrightness from './ExpoBrightness';
+const BrightnessEventEmitter = new EventEmitter(ExpoBrightness);
 // @needsAudit
 export var BrightnessMode;
 (function (BrightnessMode) {
@@ -179,4 +180,18 @@ export const usePermissions = createPermissionHook({
     getMethod: getPermissionsAsync,
     requestMethod: requestPermissionsAsync,
 });
+// @needsAudit
+/**
+ * Subscribe to brightness (iOS) updates. The event fires whenever
+ * the power mode is toggled.
+ *
+ * On web and android the event never fires.
+ * @param listener A callback that is invoked when brightness (iOS) changes.
+ * The callback is provided a single argument that is an object with a `brightness` key.
+ * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
+ * @platform ios
+ */
+export function addBrightnessListener(listener) {
+    return BrightnessEventEmitter.addListener('Expo.brightnessDidChange', listener);
+}
 //# sourceMappingURL=Brightness.js.map

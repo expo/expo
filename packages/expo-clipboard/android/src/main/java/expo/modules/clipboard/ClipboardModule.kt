@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
+import android.os.Build
+import android.text.Html
+import android.text.Html.FROM_HTML_MODE_LEGACY
+import android.text.Spanned
+import android.text.TextUtils
 import android.util.Log
 import androidx.core.os.bundleOf
 import expo.modules.core.errors.ModuleDestroyedException
@@ -28,17 +33,34 @@ private val TAG = ClipboardModule::class.java.simpleName
 const val CLIPBOARD_DIRECTORY_NAME = ".clipboard"
 const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
 
+private enum class ContentType(val jsName: String) {
+  PLAIN_TEXT("plain-text"),
+  HTML("html"),
+  IMAGE("image")
+}
+
 class ClipboardModule : Module() {
   override fun definition() = ModuleDefinition {
     name(moduleName)
 
     // region Strings
-    function("getStringAsync") {
-      clipboardManager.firstItem?.text ?: ""
+    function("getStringAsync") { options: GetStringOptions ->
+      val item = clipboardManager.firstItem
+      when (options.preferredFormat) {
+        StringFormat.PLAIN -> item?.coerceToPlainText(context)
+        StringFormat.HTML -> item?.coerceToHtmlText(context)
+      } ?: ""
     }
 
-    function("setStringAsync") { content: String ->
-      val clip = ClipData.newPlainText(null, content)
+    function("setStringAsync") { content: String, options: SetStringOptions ->
+      val clip = when (options.inputFormat) {
+        StringFormat.PLAIN -> ClipData.newPlainText(null, content)
+        StringFormat.HTML -> {
+          // HTML clip requires complementary plain text content
+          val plainText = plainTextFromHtml(content)
+          ClipData.newHtmlText(null, plainText, content)
+        }
+      }
       clipboardManager.setPrimaryClip(clip)
       return@function true
     }
@@ -46,7 +68,7 @@ class ClipboardModule : Module() {
     function("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
-        ?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+        ?.hasTextContent
         ?: false
     }
     // endregion
@@ -158,13 +180,16 @@ class ClipboardModule : Module() {
 
     private val listener = ClipboardManager.OnPrimaryClipChangedListener {
       maybeClipboardManager.takeIf { isListening }
-        ?.primaryClip
-        ?.takeIf { it.itemCount >= 1 }
+        ?.primaryClipDescription
         ?.let { clip ->
           this@ClipboardModule.sendEvent(
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
-              "content" to (clip.getItemAt(0).text?.toString() ?: "")
+              "contentTypes" to listOfNotNull(
+                ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
+                ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
+                ContentType.HTML.takeIf { clip.hasMimeType("image/*") }
+              ).map { it.jsName }
             )
           )
         }
@@ -196,3 +221,43 @@ class ClipboardModule : Module() {
 
   // endregion
 }
+
+private fun plainTextFromHtml(htmlContent: String): String {
+  val styledText: Spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    Html.fromHtml(htmlContent, FROM_HTML_MODE_LEGACY)
+  } else {
+    @Suppress("DEPRECATION")
+    Html.fromHtml(htmlContent)
+  }
+  val chars = CharArray(styledText.length)
+  TextUtils.getChars(styledText, 0, styledText.length, chars, 0)
+  return String(chars)
+}
+
+/**
+ * Turn this item into text, regardless of the type of data it
+ * actually contains. It is the same as [ClipData.Item.coerceToText]
+ * but this also supports HTML.
+ *
+ * The algorithm for deciding what text to return is:
+ * - If [ClipData.Item.getHtmlText]  is non-null, strip HTML tags and return that.
+ * See [plainTextFromHtml] for implementation details
+ * - Otherwise, return the result of [ClipData.Item.coerceToText]
+ *
+ * @param context The caller's Context, from which its ContentResolver
+ * and other things can be retrieved.
+ * @return Returns the item's textual representation.
+ */
+private fun ClipData.Item.coerceToPlainText(context: Context): String =
+  if (text == null && htmlText != null) {
+    plainTextFromHtml(htmlText)
+  } else {
+    coerceToText(context).toString()
+  }
+
+/**
+ * True if clipboard contains plain text or HTML content
+ */
+private val ClipDescription.hasTextContent: Boolean
+  get() = hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
+    hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)

@@ -1,5 +1,7 @@
 package expo.modules.updates.codesigning
 
+import org.bouncycastle.asn1.ASN1Primitive
+import org.bouncycastle.asn1.DEROctetString
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
@@ -7,6 +9,11 @@ import kotlin.math.min
 
 // ASN.1 path to the extended key usage info within a CERT
 private const val CODE_SIGNING_OID = "1.3.6.1.5.5.7.3.3"
+
+// OID of expo project info, stored as `<projectId>,<scopeKey>`
+private const val EXPO_PROJECT_INFORMATION_OID = "1.2.840.113556.1.8000.2554.43437.254.128.102.157.7894389.20439.2.1"
+
+data class ExpoProjectInformation(val projectId: String, val scopeKey: String)
 
 /**
  * Full certificate chain for verifying code signing.
@@ -51,6 +58,22 @@ class CertificateChain(private val certificateStrings: List<String>) {
       )
     }
 
+    fun X509Certificate.expoProjectInformation(): ExpoProjectInformation? {
+      return getExtensionValue(EXPO_PROJECT_INFORMATION_OID)?.let {
+        ASN1Primitive.fromByteArray(it)
+      }?.let {
+        if (it is DEROctetString) {
+          it.octets.decodeToString()
+        } else null
+      }?.let {
+        val components = it.split(',').map { component -> component.trim() }
+        if (components.size != 2) {
+          throw CertificateException("Invalid Expo project information extension value")
+        }
+        ExpoProjectInformation(components[0], components[1])
+      }
+    }
+
     private fun X509Certificate.isCACertificate(): Boolean {
       return basicConstraints > -1 && keyUsage != null && keyUsage.isNotEmpty() && keyUsage[5]
     }
@@ -70,20 +93,31 @@ class CertificateChain(private val certificateStrings: List<String>) {
       }
       last().verify(last().publicKey)
 
-      // if this is a chain, validate the CA pathLen constraints
+      // if this is a chain, validate the CA pathLen and expoProjectInformation constraints
       if (size > 1) {
         val rootCert = last()
         if (!rootCert.isCACertificate()) {
           throw CertificateException("Root certificate subject must be a Certificate Authority")
         }
-        var maxPathLengthConstraint = last().basicConstraints
 
+        var lastExpoProjectInformation = rootCert.expoProjectInformation()
+        var maxPathLengthConstraint = rootCert.basicConstraints
         // all certificates between root and leaf (non-inclusive)
         for (i in (size - 2) downTo 1) {
           val cert = get(i)
+
           if (!cert.isCACertificate()) {
             throw CertificateException("Non-leaf certificate subject must be a Certificate Authority")
           }
+
+          val currProjectInformation = cert.expoProjectInformation()
+          if (lastExpoProjectInformation != null) {
+            if (lastExpoProjectInformation != currProjectInformation) {
+              throw CertificateException("Expo project information must be a subset or equal of that of parent certificates")
+            }
+          }
+          lastExpoProjectInformation = currProjectInformation
+
           if (maxPathLengthConstraint <= 0) {
             throw CertificateException("pathLenConstraint violated by intermediate certificate")
           }
@@ -91,6 +125,13 @@ class CertificateChain(private val certificateStrings: List<String>) {
 
           val currPathLengthConstraint = cert.basicConstraints
           maxPathLengthConstraint = min(currPathLengthConstraint, maxPathLengthConstraint)
+        }
+
+        if (lastExpoProjectInformation != null) {
+          val leafCertificate = first()
+          if (lastExpoProjectInformation != leafCertificate.expoProjectInformation()) {
+            throw CertificateException("Expo project information must be a subset of or equal to that of parent certificates")
+          }
         }
       }
     }

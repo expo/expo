@@ -1,8 +1,19 @@
 import { lightTheme, darkTheme, shadows } from '@expo/styleguide-native';
-import { View as RNView } from 'react-native';
+import { View as RNView, StyleSheet } from 'react-native';
 
 import { create } from './create-primitive';
-import { scale, padding, margin, rounded, bg, bgDark, width, height } from './theme';
+import {
+  scale,
+  padding,
+  margin,
+  rounded,
+  bg,
+  bgDark,
+  width,
+  height,
+  borderDark,
+  border,
+} from './theme';
 
 export const View = create(RNView, {
   variants: {
@@ -16,6 +27,9 @@ export const View = create(RNView, {
       centered: {
         justifyContent: 'center',
         alignItems: 'center',
+      },
+      start: {
+        alignItems: 'flex-start',
       },
     },
 
@@ -36,8 +50,42 @@ export const View = create(RNView, {
 
     bg,
 
+    opacity: {
+      '1': { opacity: 1 },
+      '0.5': { opacity: 0.5 },
+      '0.75': { opacity: 0.75 },
+      '0': { opacity: 0 },
+    },
+
+    absolute: {
+      top: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+      },
+
+      bottom: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+      },
+
+      all: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      },
+    },
+
     border: {
       default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+      hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+      warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
+      error: { borderColor: lightTheme.border.error, borderWidth: 1 },
     },
 
     ...rounded,
@@ -51,7 +99,6 @@ export const View = create(RNView, {
     },
 
     width,
-
     height,
 
     ...padding,
@@ -62,9 +109,7 @@ export const View = create(RNView, {
     dark: {
       bg: bgDark,
 
-      border: {
-        default: { borderColor: darkTheme.border.default, borderWidth: 1 },
-      },
+      border: borderDark,
     },
 
     light: {
@@ -80,6 +125,21 @@ export const Row = create(RNView, {
 
   variants: {
     bg,
+
+    flex: {
+      '1': { flex: 1 },
+      '0': { flex: 0 },
+    },
+
+    shrink: {
+      '1': { flexShrink: 1 },
+      '0': { flexShrink: 0 },
+    },
+
+    grow: {
+      '1': { flexGrow: 1 },
+      '0': { flexGrow: 0 },
+    },
 
     align: {
       center: { alignItems: 'center' },
@@ -97,11 +157,16 @@ export const Row = create(RNView, {
 
     ...padding,
     ...margin,
+
+    ...rounded,
+
+    border,
   },
 
   selectors: {
     dark: {
       bg: bgDark,
+      border: borderDark,
     },
   },
 });
@@ -145,16 +210,15 @@ export const Spacer = {
 
 export const Divider = create(RNView, {
   base: {
-    borderWidth: 0.5,
+    height: StyleSheet.hairlineWidth,
     backgroundColor: lightTheme.border.default,
-    borderColor: lightTheme.border.default,
   },
 
   variants: {
     weight: {
-      thin: { borderWidth: 0.5 },
-      normal: { borderWidth: 1 },
-      heavy: { borderWidth: 2 },
+      thin: { height: StyleSheet.hairlineWidth },
+      normal: { height: 1 },
+      heavy: { height: 2 },
     },
 
     ...margin,
@@ -162,8 +226,10 @@ export const Divider = create(RNView, {
 
   selectors: {
     dark: {
-      backgroundColor: darkTheme.border.default,
-      borderColor: darkTheme.border.default,
+      base: {
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: darkTheme.border.default,
+      },
     },
   },
 });

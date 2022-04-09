@@ -59,16 +59,20 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion rootProject.ext.compileSdkVersion
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   defaultConfig {
-    minSdkVersion rootProject.ext.minSdkVersion
-    targetSdkVersion rootProject.ext.targetSdkVersion
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 3
     versionName '2.1.0'
   }
@@ -88,7 +92,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
-  if (project.findProject(':unimodules-test-core')) {
-    testImplementation project(':unimodules-test-core')
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
   }
 }

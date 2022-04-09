@@ -13,12 +13,19 @@ import {
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ScrollView, Switch } from 'react-native';
+import { useQueryClient } from 'react-query';
+import { SafeAreaTop } from '../components/SafeAreaTop';
 
-import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useDevMenuSettings } from '../hooks/useDevMenuSettings';
+import { Toasts } from '../components/Toasts';
 import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useDevMenuPreferences } from '../providers/DevMenuPreferencesProvider';
+import { useQueryOptions } from '../providers/QueryProvider';
+import { useToastStack } from '../providers/ToastStackProvider';
+import { useUser } from '../providers/UserContextProvider';
 
 export function SettingsScreen() {
+  const { userData } = useUser();
   const [clipboardError, setClipboardError] = React.useState('');
   const [clipboardContent, setClipboardContent] = React.useState('');
 
@@ -29,7 +36,7 @@ export function SettingsScreen() {
     setTouchGestureEnabled,
     motionGestureEnabled,
     setMotionGestureEnabled,
-  } = useDevMenuSettings();
+  } = useDevMenuPreferences();
 
   const buildInfo = useBuildInfo();
 
@@ -73,8 +80,11 @@ export function SettingsScreen() {
   const hasCopiedContent = Boolean(clipboardContent);
 
   return (
-    <ScrollView testID="DevLauncherSettingsScreen">
-      <Spacer.Vertical size="large" />
+    <ScrollView testID="DevLauncherSettingsScreen" showsVerticalScrollIndicator={false}>
+      <SafeAreaTop />
+      <View px="medium">
+        <Heading size="large">Settings</Heading>
+      </View>
 
       <View py="large" px="medium">
         <View bg="default" rounded="large">
@@ -188,8 +198,100 @@ export function SettingsScreen() {
               </Text>
             </Row>
           </Button.ScaleOnPressContainer>
+          {userData?.isExpoAdmin && (
+            <>
+              <Spacer.Vertical size="medium" />
+              <DebugSettings />
+            </>
+          )}
         </View>
       </View>
     </ScrollView>
+  );
+}
+
+function DebugSettings() {
+  const queryClient = useQueryClient();
+  const { queryOptions, setQueryOptions } = useQueryOptions();
+  const toastStack = useToastStack();
+
+  function setPageSize(pageSize: number) {
+    setQueryOptions({
+      ...queryOptions,
+      pageSize,
+    });
+  }
+
+  async function onClearQueryPress() {
+    await queryClient.resetQueries();
+    await queryClient.invalidateQueries();
+    toastStack.push(() => <Toasts.Info>Network cache was reset!</Toasts.Info>);
+  }
+
+  const pageSizeOptions = [1, 5, 10];
+
+  return (
+    <View>
+      <View padding="medium">
+        <Heading color="secondary">Debug Settings</Heading>
+      </View>
+
+      <View>
+        <View>
+          <Button.ScaleOnPressContainer
+            bg="default"
+            roundedTop="large"
+            roundedBottom="large"
+            onPress={onClearQueryPress}>
+            <Row px="medium" py="small" align="center" bg="default">
+              <Text size="large" color="default">
+                Clear network cache
+              </Text>
+              <Spacer.Horizontal />
+            </Row>
+          </Button.ScaleOnPressContainer>
+
+          <Spacer.Vertical size="large" />
+
+          <View px="medium">
+            <Heading size="small" color="secondary">
+              Default Page Size
+            </Heading>
+
+            <Text color="secondary" size="small">
+              Sets the number of items fetched for branches and updates
+            </Text>
+          </View>
+          <Spacer.Vertical size="medium" />
+          <View>
+            {pageSizeOptions.map((pageSize, index, arr) => {
+              const isSelected = queryOptions.pageSize === pageSize;
+              const isFirst = index === 0;
+              const isLast = index === arr.length - 1;
+
+              return (
+                <View key={pageSize}>
+                  <Button.ScaleOnPressContainer
+                    bg="default"
+                    roundedTop={isFirst ? 'large' : 'none'}
+                    roundedBottom={isLast ? 'large' : 'none'}
+                    onPress={() => setPageSize(pageSize)}
+                    accessibilityState={{ checked: isSelected }}>
+                    <Row px="medium" py="small" align="center" bg="default">
+                      <Text size="large" color="default">
+                        {pageSize}
+                      </Text>
+                      <Spacer.Horizontal />
+                      {isSelected && <CheckIcon />}
+                    </Row>
+                  </Button.ScaleOnPressContainer>
+                  {!isLast && <Divider />}
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }

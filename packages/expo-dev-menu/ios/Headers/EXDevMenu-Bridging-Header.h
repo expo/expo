@@ -24,4 +24,3 @@
 #import "RCTPerfMonitor+Private.h"
 #import "DevMenuBaseAppInstance.h"
 #import "EXDevMenuAppInfo.h"
-#import "EXDevMenuDevSettings.h"

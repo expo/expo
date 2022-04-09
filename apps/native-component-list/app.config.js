@@ -26,8 +26,8 @@ export default ({ config }) => {
 
     // Android plugins
 
-    // unimodules-test-core requires kotlin, so additional setup must be executed.
-    'unimodules-test-core',
+    // expo-modules-test-core requires kotlin, so additional setup must be executed.
+    'expo-modules-test-core',
     [
       './plugins/withGradleProperties',
       {
@@ -37,11 +37,11 @@ export default ({ config }) => {
       },
     ],
     [
-      // unimodules-test-core must be added manually.
+      // expo-modules-test-core must be added manually.
       './plugins/withSettingsImport',
       {
-        packageName: 'unimodules-test-core',
-        packagePath: '../../../packages/unimodules-test-core/android',
+        packageName: 'expo-modules-test-core',
+        packagePath: '../../../packages/expo-modules-test-core/android',
       },
     ],
   ];

@@ -62,10 +62,13 @@ def GLOG_VERSION = reactProperties.getProperty("GLOG_VERSION")
 def REACT_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
 def REACT_NATIVE_PATH = reactNative.absolutePath
 def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
-def RN_SO_DIR = "$reactNative/ReactAndroid/build/react-ndk/exported"
+def RN_SO_DIR = "$reactNative/ReactAndroid/build/intermediates/library_*/*/jni"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
 def FOR_HERMES = false
-def ABI_FILTERS = System.getenv("NDK_ABI_FILTERS") ?: 'arm64-v8a, armeabi-v7a, x86, x86_64'
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -96,17 +99,21 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  ndkVersion ANDROID_NDK_VERSION
-
-  if (ANDROID_NDK_PATH != null) {
-    ndkPath ANDROID_NDK_PATH
+  // Used to override the NDK path & version on internal CI
+  if (System.getenv("ANDROID_NDK_HOME") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+    ndkPath System.getenv("ANDROID_NDK_HOME")
+    ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
   }
 
   compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   buildFeatures {
@@ -115,7 +122,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
     versionName "1.0"
 
@@ -142,13 +149,13 @@ android {
             "-DRN_SO_DIR=${RN_SO_DIR}",
             "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
             "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
-        abiFilters = []
-        abiFilters.addAll(ABI_FILTERS.split(',').collect { (it as String).trim() })
+        abiFilters (*reactNativeArchitectures())
       }
     }
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false")
     // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
   }
 
@@ -205,15 +212,6 @@ android {
 
   // use `versionedRelease` configuration when publishing to maven
   defaultPublishConfig "versionedRelease"
-
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-  }
-
-  kotlinOptions {
-    jvmTarget = '1.8'
-  }
 }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -257,12 +255,12 @@ dependencies {
   testImplementation 'junit:junit:4.12'
 
 
-  api("com.facebook.fbjni:fbjni-java-only:0.0.3")
+  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 
-  extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-  extractSO("com.facebook.fbjni:fbjni:0.0.2")
+  extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+  extractSO("com.facebook.fbjni:fbjni:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
@@ -300,9 +298,6 @@ dependencies {
   // BEGIN_SDK_43
   versionedApi 'host.exp:reactandroid-abi43_0_0:1.0.0'
   // END_SDK_43
-  // BEGIN_SDK_42
-  versionedApi 'host.exp:reactandroid-abi42_0_0:1.0.0'
-  // END_SDK_42
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -357,7 +352,7 @@ dependencies {
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:20.2.4'
+  api 'com.google.firebase:firebase-messaging:21.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
@@ -386,13 +381,18 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation 'com.stripe:stripe-android:18.1.0'
+  implementation('com.stripe:stripe-android:19.3.1') {
+    exclude group:'com.google.android.gms', module:'play-services-wallet'
+  }
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
   implementation 'com.google.android.material:material:1.3.0'
 
   // react-native-webview
   implementation "androidx.webkit:webkit:1.4.0"
+
+  // expo-updates
+  implementation 'org.bouncycastle:bcutil-jdk15to18:1.70'
 }
 
 
@@ -744,15 +744,17 @@ task prepareThirdPartyNdkHeaders(dependsOn: [downloadNdkBuildDependencies, prepa
 // pre-native build pipeline
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild')) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(prepareThirdPartyNdkHeaders)
     extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
     extractSOFiles.dependsOn(prepareThirdPartyNdkHeaders)
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractSOFiles)
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   } else if (task.name.startsWith('generateJsonModel')) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }
 

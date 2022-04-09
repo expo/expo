@@ -35,10 +35,10 @@ buildscript {
 }
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet('targetSdkVersion', 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 9
     versionName "0.10.1"
   }
@@ -48,12 +48,12 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
   }
 
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   buildTypes {
@@ -120,7 +120,6 @@ repositories {
     url "$rootDir/../node_modules/jsc-android/dist"
   }
   google()
-  jcenter()
 }
 
 dependencies {
@@ -161,8 +160,8 @@ dependencies {
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
   testImplementation "io.insert-koin:koin-test:3.1.2"
   testImplementation "io.insert-koin:koin-test-junit4:3.1.2"
-  testImplementation 'io.mockk:mockk:1.9.3'
-  testImplementation "org.robolectric:robolectric:4.3.1"
+  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation "org.robolectric:robolectric:4.7.3"
 }
 
 // Koin uses a different version of Kotlin under the hood.

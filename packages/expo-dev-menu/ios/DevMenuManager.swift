@@ -1,6 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import EXDevMenuInterface
+import EXManifests
+import CoreGraphics
+import CoreMedia
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -53,7 +56,7 @@ open class DevMenuManager: NSObject {
   var canLaunchDevMenuOnStart = true
 
   public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
-
+  
   /**
    Shared singleton instance.
    */
@@ -81,7 +84,7 @@ open class DevMenuManager: NSObject {
   @objc
   public var currentBridge: RCTBridge? {
     didSet {
-      guard self.canLaunchDevMenuOnStart && DevMenuSettings.showsAtLaunch, let bridge = currentBridge else {
+      guard self.canLaunchDevMenuOnStart && (DevMenuPreferences.showsAtLaunch || self.shouldShowOnboarding()), let bridge = currentBridge else {
         return
       }
       
@@ -93,7 +96,7 @@ open class DevMenuManager: NSObject {
     }
   }
   @objc
-  public var currentManifest: [AnyHashable: Any] = [:]
+  public var currentManifest: EXManifestsManifestBehavior?
   
   @objc
   public var currentManifestURL: URL?
@@ -118,7 +121,7 @@ open class DevMenuManager: NSObject {
     self.window = DevMenuWindow(manager: self)
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
-    DevMenuSettings.setup()
+    DevMenuPreferences.setup()
     self.readAutoLaunchDisabledState()
   }
 
@@ -309,7 +312,7 @@ open class DevMenuManager: NSObject {
    Returns bool value whether the onboarding view should be displayed by the dev menu view.
    */
   func shouldShowOnboarding() -> Bool {
-    return !DevMenuSettings.isOnboardingFinished
+    return !DevMenuPreferences.isOnboardingFinished
   }
 
   func readAutoLaunchDisabledState() {
@@ -396,5 +399,38 @@ open class DevMenuManager: NSObject {
   @objc
   public func getDevSettings() -> [AnyHashable: Any] {
     return EXDevMenuDevSettings.getDevSettings()
+  }
+  
+  private static var fontsWereLoaded = false
+
+  @objc
+  public func loadFonts() {
+    if DevMenuManager.fontsWereLoaded {
+       return
+    }
+
+    let fonts = [
+      "Inter-Black",
+      "Inter-ExtraBold",
+      "Inter-Bold",
+      "Inter-SemiBold",
+      "Inter-Medium",
+      "Inter-Regular",
+      "Inter-Light",
+      "Inter-ExtraLight",
+      "Inter-Thin"
+    ]
+    
+    for font in fonts {
+      let path = DevMenuUtils.resourcesBundle()?.path(forResource: font, ofType: "otf")
+      let data = FileManager.default.contents(atPath: path!)
+      let provider = CGDataProvider(data: data! as CFData)
+      let font = CGFont(provider!)
+      var error: Unmanaged<CFError>?
+      CTFontManagerRegisterGraphicsFont(font!, &error)
+    }
+    
+    DevMenuManager.fontsWereLoaded = true
+    return
   }
 }

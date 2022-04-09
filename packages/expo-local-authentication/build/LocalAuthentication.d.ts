@@ -39,7 +39,8 @@ export declare function getEnrolledLevelAsync(): Promise<SecurityLevel>;
  */
 export declare function authenticateAsync(options?: LocalAuthenticationOptions): Promise<LocalAuthenticationResult>;
 /**
- * **(Android Only)** Cancels authentication flow.
+ * Cancels authentication flow.
+ * @platform android
  */
 export declare function cancelAuthenticate(): Promise<void>;
 //# sourceMappingURL=LocalAuthentication.d.ts.map

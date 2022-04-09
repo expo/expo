@@ -30,6 +30,7 @@ jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
 });
 
 jest.mock('./app/native-modules/DevMenu');
+jest.mock('./app/native-modules/DevLauncher');
 
 const MOCK_INITIAL_METRICS = {
   frame: {

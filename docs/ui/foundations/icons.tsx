@@ -192,3 +192,71 @@ export const SDKIcon = (props: IconProps) => {
     </svg>
   );
 };
+
+// TODO(simek): move to @expo/styleguide
+export const ExpoLogoIcon = (props: IconProps) => {
+  const { size = iconSize.regular, fill = theme.icon.default } = props;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M14.8051 10.3339C15.0606 9.95729 15.3403 9.9094 15.5672 9.9094C15.7941 9.9094 16.1721 9.95729 16.4277 10.3339C18.4417 13.1002 21.7661 18.6108 24.2184 22.6757C25.8176 25.3266 27.0459 27.3626 27.2979 27.6217C28.2439 28.5944 29.5413 27.9882 30.2952 26.8849C31.0374 25.7987 31.2434 25.036 31.2434 24.2223C31.2434 23.6681 20.4907 3.67005 19.4078 2.00546C18.3664 0.404406 18.0272 0 16.2448 0H14.911C13.1339 0 12.8771 0.404406 11.8356 2.00546C10.7528 3.67005 2.46069e-05 23.6681 2.46069e-05 24.2223C2.46069e-05 25.036 0.20607 25.7987 0.948286 26.8849C1.70218 27.9882 2.99957 28.5944 3.94554 27.6217C4.19757 27.3626 5.42587 25.3266 7.02509 22.6757C9.47735 18.6108 12.7911 13.1002 14.8051 10.3339Z"
+        fill={fill}
+      />
+    </svg>
+  );
+};
+
+// TODO(simek): move to @expo/styleguide
+export const MenuIcon = (props: IconProps) => {
+  const { size = iconSize.small, fill = theme.icon.default } = props;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M2 8H14"
+        stroke={fill}
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 4H14"
+        stroke={fill}
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 12H14"
+        stroke={fill}
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const SlashShortcutIcon = (props: IconProps) => {
+  const { size = iconSize.regular, fill = theme.icon.default } = props;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <rect x=".5" y=".5" width="19" height="19" rx="3.5" stroke={fill} />
+      <path d="M6.5 16l7-12" stroke={fill} />
+    </svg>
+  );
+};

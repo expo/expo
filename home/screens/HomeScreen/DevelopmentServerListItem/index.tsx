@@ -3,10 +3,10 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { View as RNView, StyleSheet, ViewStyle, Share, Linking } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import PlatformIcon from '../../../components/PlatformIcon';
-import { PressableOpacity } from '../../../components/PressableOpacity';
-import { ProfileStackRoutes } from '../../../navigation/Navigation.types';
+import { HomeStackRoutes } from '../../../navigation/Navigation.types';
 import * as UrlUtils from '../../../utils/UrlUtils';
 import { AppIcon } from '../AppIcon';
 import { DevelopmentServerSubtitle } from './DevelopmentServerSubtitle';
@@ -52,7 +52,7 @@ export function DevelopmentServerListItem({
   onPressSubtitle,
 }: Props) {
   const theme = useExpoTheme();
-  const navigation = useNavigation<NavigationProp<ProfileStackRoutes>>();
+  const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
 
   const handlePress = () => {
     if (experienceInfo) {
@@ -72,9 +72,8 @@ export function DevelopmentServerListItem({
   };
 
   return (
-    <PressableOpacity
+    <TouchableOpacity
       accessibilityRole="button"
-      android_disableSound
       onPress={handlePress}
       onLongPress={handleLongPress}
       style={[styles.container, style, disabled && styles.disabled]}
@@ -97,17 +96,11 @@ export function DevelopmentServerListItem({
           />
         </RNView>
       </RNView>
-    </PressableOpacity>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  infoText: {
-    marginTop: spacing[2],
-  },
-  releaseChannel: {
-    marginTop: spacing[2],
-  },
   container: {
     flexDirection: 'row',
     padding: spacing[4],

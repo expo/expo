@@ -41,6 +41,7 @@ export type BuildInfo = {
   appIcon?: string;
   sdkVersion?: string;
   runtimeVersion?: string;
+  appId?: string;
 };
 
 export async function getBuildInfoAsync(): Promise<BuildInfo> {
@@ -54,3 +55,16 @@ export async function copyToClipboardAsync(content: string): Promise<null> {
 export const clientUrlScheme = DevLauncher.clientUrlScheme;
 export const installationID = DevLauncher.installationID;
 export const isDevice = !!DevLauncher.isDevice;
+
+export type EXUpdatesConfig = {
+  runtimeVersion: string;
+  sdkVersion: string;
+  appId: string;
+  usesEASUpdates: boolean;
+};
+
+export const updatesConfig: EXUpdatesConfig = DevLauncher.updatesConfig;
+
+export async function loadFontsAsync() {
+  return await DevLauncher.loadFontsAsync()
+}

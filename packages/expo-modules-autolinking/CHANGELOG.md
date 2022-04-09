@@ -3,14 +3,18 @@
 ## Unpublished
 
 - Update require logic to find transitive deps that would not be hoisted at the top of the monorepo ([#16419](https://github.com/expo/expo/pull/16419) by [@Titozzz](https://github.com/Titozzz))
+- Fix `cannot cast object 'ExpoAutolinkingManager@' with class 'ExpoAutolinkingManager' to class 'ExpoAutolinkingManager'` on Android when a project is using `buildSrc`. ([#16545](https://github.com/expo/expo/pull/16545) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 - Add `ios.swiftModuleName` to module config. ([#16260](https://github.com/expo/expo/pull/16260) by [@esamelson](https://github.com/esamelson))
+- Added support for linking multiple podspecs and Gradle projects in a package. ([#16511](https://github.com/expo/expo/pull/16511) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
+
+- Fixed `expo_patch_react_imports!` not work when the app project is in a folder with spaces. ([#16794](https://github.com/expo/expo/pull/16794) by [@Kudo](https://github.com/Kudo))
 
 ### 💡 Others
 

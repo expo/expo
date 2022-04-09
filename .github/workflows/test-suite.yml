@@ -18,9 +18,7 @@ on:
       - packages/**
       - yarn.lock
       # Ignore Expo CLI for now...
-      - '!packages/expo/cli/**'
-      - '!packages/expo/bin/**'
-      - '!packages/expo/e2e/**'
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -49,6 +47,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
+            packages/@expo/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
@@ -99,6 +98,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
+            packages/@expo/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
@@ -156,12 +156,22 @@ jobs:
   android:
     runs-on: macos-11
     env:
-      NDK_ABI_FILTERS: x86_64
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
     steps:
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17'
       - name: 👀 Checkout
         uses: actions/checkout@v2
         with:
           submodules: true
+      - name: 🔨 Use JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
       - name: 🍺 Install required tools
         run: |
           brew install watchman
@@ -177,6 +187,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
+            packages/@expo/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}

@@ -74,7 +74,8 @@ Update: "WebBrowser" is in a separate package so first install `expo-web-browser
 
 ```js
 import React, { Component } from 'react';
-import { Button, Linking, View, StyleSheet } from 'react-native';
+import { Button, View, StyleSheet } from 'react-native';
+import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
 
@@ -247,6 +248,9 @@ Another example of using `WebBrowser` for authentication can be found at [exampl
 
 It is often desirable for regular HTTPS links (without a custom URL scheme) to directly open your app on mobile devices. This allows you to send notification emails with links that work as expected in a web browser on desktop, while opening the content in your app on mobile. iOS refers to this concept as "universal links" while Android calls it "deep links" (but in this section, we are specifically discussing deep links that do not use a custom URL scheme).
 
+> For apps using the Bare Workflow, see the notes on the relevant [configuration keys](/versions/latest/config/app)
+> mentioned below for instructions on implementing universal links in the app. Verification steps remain the same.
+
 ### Universal links on iOS
 
 #### AASA configuration
@@ -331,7 +335,7 @@ At this point, opening a link on your mobile device should now open your app! If
 
 ### Deep links on Android
 
-Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](/workflow/configuration.md#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](/versions/latest/config/app/#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
 ```
 "intentFilters": [
@@ -384,7 +388,7 @@ Additionally, many messaging apps do not autolink URLs with custom schemes -- fo
 
 An example of this is Gmail which strips the href property from links of most apps, a trick to use is to link to a regular https url instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the href property so you can host a file online that redirects the user to your app's custom schemes.
 
-So instead of linking to example://path/into/app, you could link to https://example.com/redirect-to-app.html and redirect-to-app.html would contain the following code:
+So instead of linking to `example://path/into/app`, you could link to `https://example.com/redirect-to-app.html` and `redirect-to-app.html` would contain the following code:
 
 ```javascript
 <script>window.location.replace("example://path/into/app");</script>

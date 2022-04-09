@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
@@ -12,16 +13,14 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.LifecycleEventListener
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.*
+import com.facebook.react.views.text.ReactFontManager
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuSettingsInterface
+import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuCallableProvider
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
@@ -38,7 +37,7 @@ import expo.modules.devmenu.api.DevMenuExpoApiClient
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
-import expo.modules.devmenu.modules.DevMenuSettings
+import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
@@ -51,10 +50,11 @@ import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
+  private var fontsWereLoaded = false
 
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
-  private var settings: DevMenuSettingsInterface? = null
+  private var preferences: DevMenuPreferencesInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
   private var shouldLaunchDevMenuOnStart: Boolean = false
@@ -216,7 +216,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   /**
-   * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuSettings].
+   * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuPreferences].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
    * So we wait until the [reactContext] activity will be ready.
    */
@@ -226,14 +226,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     maybeInitDevMenuHost(reactContext.currentActivity?.application
         ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
-
-    settings = (testInterceptor.overrideSettings()
-        ?: if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
-          reactContext.getNativeModule(DevMenuSettings::class.java)!!
+    preferences = (testInterceptor.overrideSettings()
+        ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
+          reactContext.getNativeModule(DevMenuPreferences::class.java)!!
         } else {
-          DevMenuDefaultSettings()
+          DevMenuDefaultPreferences()
         }).also {
-          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && it.showsAtLaunch
+          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
           if (shouldLaunchDevMenuOnStart) {
             reactContext.addLifecycleEventListener(this)
           }
@@ -255,6 +254,33 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
 
     return Bundle.EMPTY
+  }
+
+  fun loadFonts(applicationContext: ReactApplicationContext) {
+    if (fontsWereLoaded) {
+      return
+    }
+
+    val fonts = arrayOf(
+      "Inter-Black",
+      "Inter-ExtraBold",
+      "Inter-Bold",
+      "Inter-SemiBold",
+      "Inter-Medium",
+      "Inter-Regular",
+      "Inter-Light",
+      "Inter-ExtraLight",
+      "Inter-Thin"
+    )
+
+    val assets = applicationContext.assets
+
+    fonts.map { familyName ->
+      val font = Typeface.createFromAsset(assets, "$familyName.otf")
+      ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
+    }
+
+    fontsWereLoaded = true
   }
 
   //endregion
@@ -280,7 +306,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
    * Handles shake gesture which simply toggles the dev menu.
    */
   private fun onShakeGesture() {
-    if (settings?.motionGestureEnabled == true) {
+    if (preferences?.motionGestureEnabled == true) {
       delegateActivity?.let {
         toggleMenu(it)
       }
@@ -291,7 +317,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
    * Handles three finger long press which simply toggles the dev menu.
    */
   private fun onThreeFingerLongPress() {
-    if (settings?.touchGestureEnabled == true) {
+    if (preferences?.touchGestureEnabled == true) {
       delegateActivity?.let {
         toggleMenu(it)
       }
@@ -374,7 +400,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       return true
     }
 
-    if (settings?.keyCommandsEnabled != true) {
+    if (preferences?.keyCommandsEnabled != true) {
       return false
     }
 
@@ -447,7 +473,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }
 
-  override fun getSettings(): DevMenuSettingsInterface? = settings
+  override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
   override fun getMenuHost(): ReactNativeHost = devMenuHost
 
@@ -466,6 +492,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun setCurrentScreen(screen: String?) {
     currentScreenName = screen
+  }
+
+  fun getMenuPreferences(): Bundle {
+    return Bundle().apply {
+      putBoolean("isOnboardingFinished", getSettings()?.isOnboardingFinished ?: false)
+    }
   }
 
   //endregion

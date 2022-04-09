@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && expo-yarn-workspaces check-workspace-dependencies",
+    "postinstall": "yarn-deduplicate && expo-yarn-workspaces check-workspace-dependencies && (test -d node_modules/react-native-reanimated/android/expo && patch -d node_modules -p2 -f < patches/react-native-reanimated+2.4.1.patch || true) ",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
@@ -16,11 +16,12 @@
       "apps/*",
       "apps/test-suite/puppeteer-test",
       "home",
-      "packages/*"
+      "packages/*",
+      "packages/@expo/*"
     ]
   },
   "resolutions": {
-    "react-native": "0.67.2",
+    "react-native": "0.68.0",
     "**/util": "~0.12.4"
   },
   "dependencies": {

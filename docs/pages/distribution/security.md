@@ -109,4 +109,4 @@ You won't be able to send notifications to users until they open your app again.
 
 ## Need more control?
 
-If the above information doesn't satisfy your security requirements, you may wish to run your standalone app builds on your own computer or CI servers. To do so, you may want to invest in using [Turtle CLI](https://github.com/expo/turtle), which is the open source project that runs our build servers. Note that you will still need to provide your push notification credentials in order to use the push notification service. If that is also not possible, we recommend investigating the bare workflow and handling push notifications on your own.
+If the above information doesn't satisfy your security requirements, you may wish to run your standalone app builds [on your own infrastructure](../build-reference/local-builds/). Note that you will still need to provide your push notification credentials in order to use the push notification service. If that is also not possible, we recommend handling push notifications on your own.

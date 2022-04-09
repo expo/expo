@@ -22,11 +22,10 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
   const theme = useExpoTheme();
   const currentTheme = useCurrentTheme();
 
-  // dark theme has the default / secondary values reversed
   const buttonColorThemeMap = {
     dark: {
-      active: theme.background.default,
-      inactive: theme.background.secondary,
+      active: theme.background.secondary,
+      inactive: theme.background.default,
     },
     light: {
       active: theme.background.secondary,
@@ -85,9 +84,10 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
         roundedBottom={open ? 'none' : 'large'}
         testID="DevLauncherURLToggle">
         <Row align="center" padding="medium" style={{ backgroundColor }}>
-          <ChevronRightIcon style={arrowStyle} />
-          <Spacer.Horizontal size="tiny" />
-          <Text size="large">Enter URL manually</Text>
+          <View width="6">
+            <ChevronRightIcon style={arrowStyle} />
+          </View>
+          <Text color="default">Enter URL manually</Text>
         </Row>
       </Button.Container>
 

@@ -28,11 +28,11 @@ final public class WebBrowserModule: Module {
 
     // MARK: - AuthSession
 
-    function("openAuthSessionAsync") { (authUrl: URL, redirectUrl: URL, promise: Promise) throws in
+    function("openAuthSessionAsync") { (authUrl: URL, redirectUrl: URL, options: AuthSessionOptions, promise: Promise) throws in
       guard self.currentAuthSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }
-      self.currentAuthSession = WebAuthSession(authUrl: authUrl, redirectUrl: redirectUrl)
+      self.currentAuthSession = WebAuthSession(authUrl: authUrl, redirectUrl: redirectUrl, options: options)
       self.currentAuthSession?.open(promise)
     }
     .runOnQueue(.main)

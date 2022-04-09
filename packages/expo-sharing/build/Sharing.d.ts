@@ -1,15 +1,19 @@
 export declare type SharingOptions = {
     /**
-     * Sets `mimeType` for `Intent` *(Android only)*
+     * Sets `mimeType` for `Intent`.
+     * @platform android
      */
     mimeType?: string;
     /**
-     * ([Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html))
-     * the type of the target file *(iOS only)*
+     * [Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)
+     *  - the type of the target file.
+     * @platform ios
      */
     UTI?: string;
     /**
-     * Sets share dialog title *(Android and Web only)*
+     * Sets share dialog title.
+     * @platform android
+     * @platform web
      */
     dialogTitle?: string;
 };

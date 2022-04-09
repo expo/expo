@@ -42,13 +42,13 @@ export default function EnumButton({ value, onChange, values, disabled }: Props)
   }, [valuesAreEnums, onChange, value, values]);
 
   return (
-    <View style={[styles.button, disabled && styles.buttonDisabled]}>
-      <TouchableOpacity disabled={disabled} onPress={handleOnPress}>
+    <TouchableOpacity disabled={disabled} onPress={handleOnPress}>
+      <View style={[styles.button, disabled && styles.buttonDisabled]}>
         <Text style={styles.text}>
           {valuesAreEnums ? values.find((element) => element.value === value)?.name : value}
         </Text>
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -59,6 +59,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     backgroundColor: Colors.tintColor,
     borderRadius: 5,
+    minWidth: 30,
+    alignItems: 'center',
   },
   text: {
     fontSize: 10,

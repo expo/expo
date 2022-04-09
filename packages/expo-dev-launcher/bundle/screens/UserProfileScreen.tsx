@@ -16,8 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
-import { useModalStack } from '../hooks/useModalStack';
-import { useUser, useUserActions } from '../hooks/useUser';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useUser, useUserActions } from '../providers/UserContextProvider';
 
 export function UserProfileScreen({ navigation }) {
   const { userData, selectedAccount } = useUser();
@@ -42,17 +42,15 @@ export function UserProfileScreen({ navigation }) {
   };
 
   const onLogoutPress = () => {
-    modalStack.push({
-      element: (
-        <LogoutConfirmationModal
-          onClosePress={() => modalStack.pop()}
-          onLogoutPress={() => {
-            actions.logout();
-            modalStack.pop();
-          }}
-        />
-      ),
-    });
+    modalStack.push(() => (
+      <LogoutConfirmationModal
+        onClosePress={() => modalStack.pop()}
+        onLogoutPress={async () => {
+          await actions.logout();
+          modalStack.pop();
+        }}
+      />
+    ));
   };
 
   const onClosePress = () => {

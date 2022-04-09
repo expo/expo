@@ -35,4 +35,40 @@ export interface ClipboardImage {
         height: number;
     };
 }
+/**
+ * Type used to define what type of data is stored in the clipboard.
+ */
+export declare enum ContentType {
+    PLAIN_TEXT = "plain-text",
+    HTML = "html",
+    IMAGE = "image",
+    /**
+     * @platform iOS
+     */
+    URL = "url"
+}
+/**
+ * Type used to determine string format stored in the clipboard.
+ */
+export declare enum StringFormat {
+    PLAIN_TEXT = "plainText",
+    HTML = "html"
+}
+export interface GetStringOptions {
+    /**
+     * The target format of the clipboard string to be converted to, if possible.
+     *
+     * @default `StringFormat.PLAIN_TEXT`
+     */
+    preferredFormat?: StringFormat;
+}
+export interface SetStringOptions {
+    /**
+     * The input format of the provided string.
+     * Adjusting this option can help other applications interpret copied string properly.
+     *
+     * @default `StringFormat.PLAIN_TEXT`
+     */
+    inputFormat?: StringFormat;
+}
 //# sourceMappingURL=Clipboard.types.d.ts.map

@@ -11,9 +11,12 @@ import android.view.WindowManager
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.ReactActivity
 import com.google.common.truth.Truth
+import expo.modules.devlauncher.launcher.manifest.DevLauncherNavigationBarStyle
+import expo.modules.devlauncher.launcher.manifest.DevLauncherNavigationBarVisibility
 import expo.modules.manifests.core.Manifest
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.excludeRecords
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -124,5 +127,67 @@ internal class DevLauncherExpoActivityConfiguratorTest {
       verify { mockWindow.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN) }
       verify { mockWindow.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) }
     }
+  }
+
+  @Config(sdk = [26])
+  @Test
+  fun `sets navigation bar style from manifest`() {
+    // valid values
+    verifyNavigationBar(DevLauncherNavigationBarStyle.DARK, Color.parseColor("#cccccc"), DevLauncherNavigationBarVisibility.LEANBACK, "{\"androidNavigationBar\":{\"barStyle\":\"dark-content\",\"backgroundColor\":\"#cccccc\",\"visible\":\"leanback\"},\"name\":\"sdk42updates\",\"slug\":\"sdk42updates\",\"version\":\"1.0.0\",\"platforms\":[\"ios\",\"android\",\"web\"],\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}")
+    verifyNavigationBar(DevLauncherNavigationBarStyle.LIGHT, Color.parseColor("#000000"), DevLauncherNavigationBarVisibility.IMMERSIVE, "{\"androidNavigationBar\":{\"barStyle\":\"light-content\",\"backgroundColor\":\"#000000\",\"visible\":\"immersive\"},\"name\":\"sdk42updates\",\"slug\":\"sdk42updates\",\"version\":\"1.0.0\",\"platforms\":[\"ios\",\"android\",\"web\"],\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}")
+    verifyNavigationBar(DevLauncherNavigationBarStyle.LIGHT, Color.parseColor("#ABCDEF"), DevLauncherNavigationBarVisibility.STICKY_IMMERSIVE, "{\"androidNavigationBar\":{\"barStyle\":\"light-content\",\"backgroundColor\":\"#ABCDEF\",\"visible\":\"sticky-immersive\"},\"name\":\"sdk42updates\",\"slug\":\"sdk42updates\",\"version\":\"1.0.0\",\"platforms\":[\"ios\",\"android\",\"web\"],\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}")
+
+    // invalid values
+    verifyNavigationBar(null, null, "", "{\"androidNavigationBar\":{\"barStyle\":\"bad-value\",\"backgroundColor\":\"bad-color\",\"visible\":false},\"name\":\"sdk42updates\",\"slug\":\"sdk42updates\",\"version\":\"1.0.0\",\"platforms\":[\"ios\",\"android\",\"web\"],\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}")
+
+    // no values
+    verifyNavigationBar(null, null, null, "{\"androidNavigationBar\":{},\"name\":\"sdk42updates\",\"slug\":\"sdk42updates\",\"version\":\"1.0.0\",\"platforms\":[\"ios\",\"android\",\"web\"],\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}")
+
+    // no androidNavigationBar object
+    verifyNavigationBar(null, null, null, "{\"name\":\"sdk42updates\",\"slug\":\"sdk42updates\",\"version\":\"1.0.0\",\"platforms\":[\"ios\",\"android\",\"web\"],\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}")
+  }
+
+  private fun verifyNavigationBar(expectedStyle: String?, expectedColor: Int?, expectedVisibility: String?, manifestString: String) {
+    val mockActivity = mockk<ReactActivity>(relaxed = true)
+    val mockWindow = mockk<Window>(relaxed = true)
+    val mockDecorView = mockk<View>(relaxed = true)
+
+    every { mockWindow.decorView } returns mockDecorView
+    every { mockActivity.window } returns mockWindow
+
+    excludeRecords { mockWindow.decorView }
+    excludeRecords { mockWindow.clearFlags(any()) }
+    excludeRecords { mockWindow.addFlags(any()) }
+    excludeRecords { mockDecorView.systemUiVisibility }
+
+    val manifest = Manifest.fromManifestJson(JSONObject(manifestString))
+    val configurator = DevLauncherExpoActivityConfigurator(manifest, context)
+    configurator.applyNavigationBarConfiguration(mockActivity)
+
+    every { mockDecorView.systemUiVisibility } returns 0
+
+    expectedColor?.let {
+      verify { mockWindow.navigationBarColor = expectedColor }
+    }
+
+    expectedStyle?.let {
+      if (it == DevLauncherNavigationBarStyle.DARK) {
+        verify { mockDecorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR }
+      }
+    }
+
+    expectedVisibility?.let {
+      when(it) {
+        DevLauncherNavigationBarVisibility.LEANBACK ->
+          verify { mockDecorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN) }
+        DevLauncherNavigationBarVisibility.IMMERSIVE ->
+          verify { mockDecorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE) }
+        DevLauncherNavigationBarVisibility.STICKY_IMMERSIVE ->
+          verify { mockDecorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) }
+        else -> verify { mockDecorView.systemUiVisibility = 0 }
+      }
+    }
+
+    confirmVerified(mockWindow, mockDecorView)
   }
 }

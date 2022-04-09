@@ -92,6 +92,7 @@ export type Account = {
   availableBuilds?: Maybe<Scalars['Int']>;
   /** Billing information */
   billing?: Maybe<Billing>;
+  billingPeriod: BillingPeriod;
   /** Build Jobs associated with this account */
   buildJobs: Array<BuildJob>;
   /**
@@ -189,6 +190,15 @@ export type AccountAppsArgs = {
   includeUnpublished?: InputMaybe<Scalars['Boolean']>;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
+};
+
+
+/**
+ * An account is a container owning projects, credentials, billing and other organization
+ * data and settings. Actors may own and be members of accounts.
+ */
+export type AccountBillingPeriodArgs = {
+  date: Scalars['DateTime'];
 };
 
 
@@ -1478,6 +1488,13 @@ export type Billing = {
   subscription?: Maybe<SubscriptionDetails>;
 };
 
+export type BillingPeriod = {
+  __typename?: 'BillingPeriod';
+  anchor: Scalars['DateTime'];
+  end: Scalars['DateTime'];
+  start: Scalars['DateTime'];
+};
+
 /** Represents an EAS Build */
 export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   __typename?: 'Build';
@@ -1495,6 +1512,8 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   expirationDate?: Maybe<Scalars['DateTime']>;
   gitCommitHash?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  /** Queue position is 1-indexed */
+  initialQueuePosition?: Maybe<Scalars['Int']>;
   initiatingActor?: Maybe<Actor>;
   /** @deprecated User type is deprecated */
   initiatingUser?: Maybe<User>;
@@ -1503,6 +1522,7 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   logFiles: Array<Scalars['String']>;
   metrics?: Maybe<BuildMetrics>;
   platform: AppPlatform;
+  priority: BuildPriority;
   project: Project;
   /** Queue position is 1-indexed */
   queuePosition?: Maybe<Scalars['Int']>;
@@ -1713,6 +1733,11 @@ export type BuildMutationDeleteBuildArgs = {
 export type BuildOrBuildJob = {
   id: Scalars['ID'];
 };
+
+export enum BuildPriority {
+  High = 'HIGH',
+  Normal = 'NORMAL'
+}
 
 /** Publicly visible data for a Build. */
 export type BuildPublicData = {
@@ -2174,8 +2199,16 @@ export type InvoiceLineItem = {
   description: Scalars['String'];
   id: Scalars['ID'];
   period: InvoicePeriod;
+  plan: InvoiceLineItemPlan;
   proration: Scalars['Boolean'];
   quantity: Scalars['Int'];
+  title: Scalars['String'];
+};
+
+export type InvoiceLineItemPlan = {
+  __typename?: 'InvoiceLineItemPlan';
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type InvoicePeriod = {
@@ -2984,6 +3017,8 @@ export type Snack = Project & {
   description: Scalars['String'];
   /** Full name of the Snack, e.g. "@john/mysnack", "@snack/245631" */
   fullName: Scalars['String'];
+  /** Has the Snack been run without errors */
+  hasBeenRunSuccessfully?: Maybe<Scalars['Boolean']>;
   hashId: Scalars['String'];
   /** @deprecated No longer supported */
   iconUrl?: Maybe<Scalars['String']>;
@@ -2992,6 +3027,8 @@ export type Snack = Project & {
   isDraft: Scalars['Boolean'];
   /** Name of the Snack, e.g. "My Snack" */
   name: Scalars['String'];
+  /** Preview image of the running snack */
+  previewImage?: Maybe<Scalars['String']>;
   published: Scalars['Boolean'];
   /** Slug name, e.g. "mysnack", "245631" */
   slug: Scalars['String'];
@@ -3661,7 +3698,7 @@ export type CommonAppDataFragment = { __typename?: 'App', id: string, fullName: 
 
 export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean };
 
-export type CurrentUserDataFragment = { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string }> };
+export type CurrentUserDataFragment = { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null | undefined, fullName?: string | null | undefined, lastName?: string | null | undefined } | null | undefined }> };
 
 export type Home_AccountDataQueryVariables = Exact<{
   accountName: Scalars['String'];
@@ -3672,10 +3709,31 @@ export type Home_AccountDataQueryVariables = Exact<{
 
 export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null | undefined, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
+export type BranchDetailsQueryVariables = Exact<{
+  name: Scalars['String'];
+  appId: Scalars['String'];
+  platform: AppPlatform;
+  runtimeVersions: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type BranchDetailsQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, updateBranchByName?: { __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null | undefined, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> } | null | undefined } } };
+
+export type BranchesForProjectQueryVariables = Exact<{
+  appId: Scalars['String'];
+  platform: AppPlatform;
+  runtimeVersions: Array<Scalars['String']> | Scalars['String'];
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+}>;
+
+
+export type BranchesForProjectQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: string | null | undefined, playStoreUrl?: string | null | undefined, appStoreUrl?: string | null | undefined, sdkVersion: string, iconUrl?: string | null | undefined, privacy: string, icon?: { __typename?: 'AppIcon', url: string } | null | undefined, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null | undefined, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
+
 export type Home_CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Home_CurrentUserQuery = { __typename?: 'RootQuery', viewer?: { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string }> } | null | undefined };
+export type Home_CurrentUserQuery = { __typename?: 'RootQuery', viewer?: { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null | undefined, fullName?: string | null | undefined, lastName?: string | null | undefined } | null | undefined }> } | null | undefined };
 
 export type Home_ProfileData2QueryVariables = Exact<{
   appLimit: Scalars['Int'];
@@ -3733,6 +3791,13 @@ export type Home_ViewerUsernameQueryVariables = Exact<{ [key: string]: never; }>
 
 export type Home_ViewerUsernameQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string } | null | undefined };
 
+export type HomeScreenDataQueryVariables = Exact<{
+  accountName: Scalars['String'];
+}>;
+
+
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, owner?: { __typename?: 'User', id: string, username: string, firstName?: string | null | undefined, lastName?: string | null | undefined, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null | undefined, fullName?: string | null | undefined, lastName?: string | null | undefined } | null | undefined }> } | null | undefined, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null | undefined, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+
 export const CommonAppDataFragmentDoc = gql`
     fragment CommonAppData on App {
   id
@@ -3766,6 +3831,14 @@ export const CurrentUserDataFragmentDoc = gql`
   accounts {
     id
     name
+    owner {
+      id
+      username
+      profilePhoto
+      firstName
+      fullName
+      lastName
+    }
   }
 }
     `;
@@ -3819,6 +3892,145 @@ export type Home_AccountDataLazyQueryHookResult = ReturnType<typeof useHome_Acco
 export type Home_AccountDataQueryResult = Apollo.QueryResult<Home_AccountDataQuery, Home_AccountDataQueryVariables>;
 export function refetchHome_AccountDataQuery(variables: Home_AccountDataQueryVariables) {
       return { query: Home_AccountDataDocument, variables: variables }
+    }
+export const BranchDetailsDocument = gql`
+    query BranchDetails($name: String!, $appId: String!, $platform: AppPlatform!, $runtimeVersions: [String!]!) {
+  app {
+    byId(appId: $appId) {
+      id
+      name
+      slug
+      fullName
+      updateBranchByName(name: $name) {
+        id
+        name
+        updates(
+          limit: 100
+          offset: 0
+          filter: {platform: $platform, runtimeVersions: $runtimeVersions}
+        ) {
+          id
+          group
+          message
+          createdAt
+          runtimeVersion
+          platform
+          manifestPermalink
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useBranchDetailsQuery__
+ *
+ * To run a query within a React component, call `useBranchDetailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBranchDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBranchDetailsQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *      appId: // value for 'appId'
+ *      platform: // value for 'platform'
+ *      runtimeVersions: // value for 'runtimeVersions'
+ *   },
+ * });
+ */
+export function useBranchDetailsQuery(baseOptions: Apollo.QueryHookOptions<BranchDetailsQuery, BranchDetailsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BranchDetailsQuery, BranchDetailsQueryVariables>(BranchDetailsDocument, options);
+      }
+export function useBranchDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BranchDetailsQuery, BranchDetailsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BranchDetailsQuery, BranchDetailsQueryVariables>(BranchDetailsDocument, options);
+        }
+export type BranchDetailsQueryHookResult = ReturnType<typeof useBranchDetailsQuery>;
+export type BranchDetailsLazyQueryHookResult = ReturnType<typeof useBranchDetailsLazyQuery>;
+export type BranchDetailsQueryResult = Apollo.QueryResult<BranchDetailsQuery, BranchDetailsQueryVariables>;
+export function refetchBranchDetailsQuery(variables: BranchDetailsQueryVariables) {
+      return { query: BranchDetailsDocument, variables: variables }
+    }
+export const BranchesForProjectDocument = gql`
+    query BranchesForProject($appId: String!, $platform: AppPlatform!, $runtimeVersions: [String!]!, $limit: Int!, $offset: Int!) {
+  app {
+    byId(appId: $appId) {
+      id
+      name
+      slug
+      fullName
+      username
+      published
+      description
+      githubUrl
+      playStoreUrl
+      appStoreUrl
+      sdkVersion
+      iconUrl
+      privacy
+      icon {
+        url
+      }
+      updateBranches(limit: $limit, offset: $offset) {
+        id
+        name
+        updates(
+          limit: 1
+          offset: 0
+          filter: {platform: $platform, runtimeVersions: $runtimeVersions}
+        ) {
+          id
+          group
+          message
+          createdAt
+          runtimeVersion
+          platform
+          manifestPermalink
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useBranchesForProjectQuery__
+ *
+ * To run a query within a React component, call `useBranchesForProjectQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBranchesForProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBranchesForProjectQuery({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      platform: // value for 'platform'
+ *      runtimeVersions: // value for 'runtimeVersions'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useBranchesForProjectQuery(baseOptions: Apollo.QueryHookOptions<BranchesForProjectQuery, BranchesForProjectQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BranchesForProjectQuery, BranchesForProjectQueryVariables>(BranchesForProjectDocument, options);
+      }
+export function useBranchesForProjectLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BranchesForProjectQuery, BranchesForProjectQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BranchesForProjectQuery, BranchesForProjectQueryVariables>(BranchesForProjectDocument, options);
+        }
+export type BranchesForProjectQueryHookResult = ReturnType<typeof useBranchesForProjectQuery>;
+export type BranchesForProjectLazyQueryHookResult = ReturnType<typeof useBranchesForProjectLazyQuery>;
+export type BranchesForProjectQueryResult = Apollo.QueryResult<BranchesForProjectQuery, BranchesForProjectQueryVariables>;
+export function refetchBranchesForProjectQuery(variables: BranchesForProjectQueryVariables) {
+      return { query: BranchesForProjectDocument, variables: variables }
     }
 export const Home_CurrentUserDocument = gql`
     query Home_CurrentUser {
@@ -4204,4 +4416,58 @@ export type Home_ViewerUsernameLazyQueryHookResult = ReturnType<typeof useHome_V
 export type Home_ViewerUsernameQueryResult = Apollo.QueryResult<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>;
 export function refetchHome_ViewerUsernameQuery(variables?: Home_ViewerUsernameQueryVariables) {
       return { query: Home_ViewerUsernameDocument, variables: variables }
+    }
+export const HomeScreenDataDocument = gql`
+    query HomeScreenData($accountName: String!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      isCurrent
+      owner {
+        ...CurrentUserData
+      }
+      apps(limit: 5, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: 5, offset: 0) {
+        ...CommonSnackData
+      }
+      appCount
+    }
+  }
+}
+    ${CurrentUserDataFragmentDoc}
+${CommonAppDataFragmentDoc}
+${CommonSnackDataFragmentDoc}`;
+
+/**
+ * __useHomeScreenDataQuery__
+ *
+ * To run a query within a React component, call `useHomeScreenDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomeScreenDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomeScreenDataQuery({
+ *   variables: {
+ *      accountName: // value for 'accountName'
+ *   },
+ * });
+ */
+export function useHomeScreenDataQuery(baseOptions: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+      }
+export function useHomeScreenDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+        }
+export type HomeScreenDataQueryHookResult = ReturnType<typeof useHomeScreenDataQuery>;
+export type HomeScreenDataLazyQueryHookResult = ReturnType<typeof useHomeScreenDataLazyQuery>;
+export type HomeScreenDataQueryResult = Apollo.QueryResult<HomeScreenDataQuery, HomeScreenDataQueryVariables>;
+export function refetchHomeScreenDataQuery(variables: HomeScreenDataQueryVariables) {
+      return { query: HomeScreenDataDocument, variables: variables }
     }

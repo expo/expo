@@ -9,6 +9,7 @@ export type UserData = {
   username: string;
   profilePhoto: string;
   accounts: UserAccount[];
+  isExpoAdmin: boolean;
 };
 
 export type UserAccount = {
@@ -29,6 +30,7 @@ const query = gql`
       email
       profilePhoto
       username
+      isExpoAdmin
 
       accounts {
         id

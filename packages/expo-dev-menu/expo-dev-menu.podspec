@@ -47,21 +47,22 @@ Pod::Spec.new do |s|
     'ios/assets',
     'assets/*.ios.js',
     'assets/dev-menu-packager-host',
-    'assets/*.ttf'
+    'assets/*.ttf',
+    'assets/*.otf'
   ]}
 
-  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED=1' }
+  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED' }
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
-  
+
   s.subspec 'GestureHandler' do |handler|
     handler.source_files = 'vendored/react-native-gesture-handler/**/*.{h,m}'
     handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
-  
+
     handler.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
   end
-  
+
   s.subspec 'Reanimated' do |reanimated|
     reanimated.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags + ' -w -Xanalyzer -analyzer-disable-all-checks -x objective-c++'
     reanimated.private_header_files = 'vendored/react-native-reanimated/**/*.h'
@@ -109,35 +110,36 @@ Pod::Spec.new do |s|
     else
       reanimated.dependency 'React-callinvoker'
     end
-  
+
     reanimated.dependency "#{folly_prefix}Folly"
   end
-  
-  
+
+
   s.subspec 'SafeAreaView' do |safearea|
     safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m}'
     safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
-  
+
     safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
   end
-  
+
   s.subspec 'Vendored' do |vendored|
     vendored.dependency "expo-dev-menu/GestureHandler"
     vendored.dependency "expo-dev-menu/Reanimated"
     vendored.dependency "expo-dev-menu/SafeAreaView"
   end
-  
+
   s.subspec 'Main' do |main|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
     s.exclude_files  = 'ios/*Tests/**/*', 'vendored/**/*'
-    
+
     main.dependency 'React-Core'
+    main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
     main.dependency "expo-dev-menu/Vendored"
   end
-  
+
   s.test_spec 'Tests' do |test_spec|
     test_spec.requires_app_host = false
     test_spec.source_files = 'ios/Tests/**/*'
@@ -149,7 +151,7 @@ Pod::Spec.new do |s|
     test_spec.dependency 'hermes-engine'
     test_spec.platform = :ios, '12.0'
   end
-  
+
   s.test_spec 'UITests' do |test_spec|
     test_spec.requires_app_host = true
     test_spec.source_files = 'ios/UITests/**/*'
@@ -160,6 +162,6 @@ Pod::Spec.new do |s|
     test_spec.dependency 'hermes-engine'
     test_spec.platform = :ios, '12.0'
   end
-  
+
   s.default_subspec = 'Main'
 end

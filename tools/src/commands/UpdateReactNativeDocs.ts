@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import inquirer from 'inquirer';
+import inquirer, {QuestionCollection} from 'inquirer';
 import path from 'path';
 
 import { GitDirectory } from '../Git';
@@ -68,7 +68,7 @@ async function action(input: Options) {
 }
 
 async function getOptions(input: Options): Promise<Options> {
-  const questions: inquirer.Question[] = [];
+  const questions: QuestionCollection[] = [];
   const existingSdks = (await fs.promises.readdir(SDK_DOCS_DIR, { withFileTypes: true }))
     .filter((entry) => entry.isDirectory() && entry.name !== 'latest')
     .map((entry) => entry.name.replace(/v([0-9]+)/, '$1'));

@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';

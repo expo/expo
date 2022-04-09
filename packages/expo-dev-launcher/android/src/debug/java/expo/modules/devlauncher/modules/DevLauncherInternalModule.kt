@@ -8,11 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
@@ -22,6 +18,8 @@ import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorRegistry
+import expo.modules.devmenu.DevMenuAppInfo
+import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
@@ -58,8 +56,33 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     val isRunningOnStockEmulator = Build.FINGERPRINT.contains("generic")
     return mapOf(
       "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
-      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator)
+      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
+      "updatesConfig" to getUpdatesConfig(),
     )
+  }
+
+  private fun getUpdatesConfig(): WritableMap {
+    val map = Arguments.createMap()
+
+    val runtimeVersion = getMetadataValue("expo.modules.updates.EXPO_RUNTIME_VERSION")
+    val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
+    var updatesUrl = getMetadataValue("expo.modules.updates.EXPO_UPDATE_URL")
+
+    val appId = if (updatesUrl.isNotEmpty()) {
+      Uri.parse(updatesUrl).lastPathSegment ?: ""
+    } else {
+      ""
+    }
+
+    var isModernManifestProtocol = Uri.parse(updatesUrl).host.equals("u.expo.dev")
+    var usesEASUpdates = isModernManifestProtocol && appId.isNotEmpty()
+
+    return map.apply {
+      putString("appId", appId)
+      putString("runtimeVersion", runtimeVersion)
+      putString("sdkVersion", sdkVersion)
+      putBoolean("usesEASUpdates", usesEASUpdates)
+    }
   }
 
   @ReactMethod
@@ -175,8 +198,18 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
     var appIcon = getApplicationIconUri()
 
+    // TODO - the logic related to getting the appId could be moved into the expo-updates package and used inside the dev launcher JS
+    var updatesUrl = getMetadataValue("expo.modules.updates.EXPO_UPDATE_URL")
+    var appId = ""
+
+    if (updatesUrl.isNotEmpty()) {
+      var uri = Uri.parse(updatesUrl)
+      appId = uri.lastPathSegment ?: ""
+    }
+
     map.apply {
       putString("appVersion", packageInfo.versionName)
+      putString("appId", appId)
       putString("appName", appName)
       putString("appIcon", appIcon)
       putString("runtimeVersion", runtimeVersion)
@@ -219,5 +252,11 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     appIcon = "" + applicationInfo.icon
 //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
     return appIcon
+  }
+
+  @ReactMethod
+  fun loadFontsAsync(promise: Promise) {
+    DevMenuManager.loadFonts(reactApplicationContext)
+    promise.resolve(null)
   }
 }

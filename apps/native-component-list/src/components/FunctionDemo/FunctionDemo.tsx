@@ -7,6 +7,7 @@ import ActionButton from './ActionButton';
 import Configurator from './Configurator';
 import Divider from './Divider';
 import FunctionSignature from './FunctionSignature';
+import Platforms from './Platforms';
 import {
   ActionFunction,
   ArgumentName,
@@ -14,9 +15,11 @@ import {
   FunctionArgument,
   FunctionParameter,
   OnArgumentChangeCallback,
+  Platform,
   PrimitiveArgument,
   PrimitiveParameter,
 } from './index.types';
+import { isCurrentPlatformSupported } from './utils';
 
 const STRING_TRIM_THRESHOLD = 300;
 
@@ -29,6 +32,10 @@ type Props = {
    * Function name. Used in signature rendering.
    */
   name: string;
+  /**
+   * Supported platforms. Used in signature rendering and to grey-out unavailable functions.
+   */
+  platforms?: Platform[];
   /**
    * Function-only parameters. Function's arguments are constructed based on these parameters and passed as-is to the actions callbacks.
    * These should reflect the actual function signature (type of arguments, default values, order, etc.).
@@ -91,7 +98,23 @@ export type FunctionDescription = Omit<Props, 'namespace' | 'renderAdditionalRes
  * }
  * ```
  */
-export default function FunctionDemo({
+export default function FunctionDemo({ name, platforms = [], ...contentProps }: Props) {
+  const disabled = !isCurrentPlatformSupported(platforms);
+
+  return (
+    <View style={disabled && styles.demoContainerDisabled}>
+      <Platforms
+        platforms={platforms}
+        style={styles.platformBadge}
+        textStyle={styles.platformText}
+      />
+      <HeadingText style={disabled && styles.headerDisabled}>{name}</HeadingText>
+      {!disabled && <FunctionDemoContent name={name} {...contentProps} />}
+    </View>
+  );
+}
+
+function FunctionDemoContent({
   namespace,
   name,
   parameters = [],
@@ -109,14 +132,18 @@ export default function FunctionDemo({
 
   const handlePress = useCallback(
     async (action: ActionFunction) => {
-      setResult(await action(...args, ...additionalArgs));
+      // force clear the previous result if exists
+      setResult(undefined);
+      const newResult = await action(...args, ...additionalArgs);
+      // undefined is a special value hiding the result box
+      // so we need to replace it with a string
+      setResult(newResult === undefined ? 'undefined' : newResult);
     },
     [args, additionalArgs]
   );
 
   return (
     <>
-      <HeadingText>{name}</HeadingText>
       <Configurator parameters={parameters} onChange={updateArgument} value={args} />
       {additionalParameters.length > 0 && (
         <>
@@ -136,7 +163,7 @@ export default function FunctionDemo({
           ))}
         </View>
       </View>
-      {result && (
+      {result !== undefined && (
         <>
           <MonoTextWithCountdown onCountdownEnded={() => setResult(undefined)}>
             {resultToString(result)}
@@ -243,5 +270,19 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 3,
     flexDirection: 'row',
+  },
+  platformBadge: {
+    position: 'absolute',
+    top: 5,
+  },
+  platformText: {
+    fontSize: 10,
+  },
+  headerDisabled: {
+    textDecorationLine: 'line-through',
+    color: '#999',
+  },
+  demoContainerDisabled: {
+    marginBottom: 10,
   },
 });
