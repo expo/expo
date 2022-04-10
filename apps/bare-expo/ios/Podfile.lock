@@ -769,7 +769,7 @@ PODS:
     - React-Core
   - RNCPicker (2.4.0):
     - React-Core
-  - RNDateTimePicker (4.0.0):
+  - RNDateTimePicker (6.1.2):
     - React-Core
   - RNGestureHandler (2.2.0):
     - React-Core
@@ -1365,7 +1365,7 @@ SPEC CHECKSUMS:
   Expo: 63e338fe5457b9972d10b0ece011bb76fb596744
   expo-dev-client: 5fa2ce8b3e186d1734bc746e505e9e66c39cac1f
   expo-dev-launcher: 05d6b8cbf5748921d8c1d78e9f473b6cf6b30810
-  expo-dev-menu: d01731e85c5693d31407353fc9aaa426c30dd891
+  expo-dev-menu: ac3517757cbb9a9f91e310998bff003947093d7f
   expo-dev-menu-interface: 5f95926b52150b1e5fe7d6815675c7a61245de35
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoClipboard: 49ded0e61313aea57df8c970a488323488dcd3a1
@@ -1407,7 +1407,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
+  glog: 476ee3e89abb49e07f822b48323c51c57124b572
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
@@ -1429,7 +1429,7 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 3724efa50cb2846d7ccebc8691c574e85fd74471
   Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
-  RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
+  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: bab4a7c3d7eb9553b13773ee190f279712efd1fc
   RCTTypeSafety: efbeb6e450ff6cef8e19c2cb5314c6d8bfeeef77
   React: 28e4d45839b7d0fd9512af899e0379a17a5172ec
@@ -1465,7 +1465,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 6bd5a7ba3dde1c3facba418aa273f449bdc5437a
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNCPicker: 6d5d64e7b90c240c779ee0938ec433c11e2dd758
-  RNDateTimePicker: 2224ee77a86b7123377597a015502435e2e49957
+  RNDateTimePicker: 6f1f0b4cf7c71b6e2aea7a3aa62969111084bbd1
   RNGestureHandler: bf572f552ea324acd5b5464b8d30755b2d8c1de6
   RNReanimated: 3d1432ce7b6b7fc31f375dcabe5b4585e0634a43
   RNScreens: 4d83613b50b74ed277026375dc0810893b0c347f
