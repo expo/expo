@@ -13,11 +13,14 @@ import { H1, P } from '~/ui/components/Text';
 const REDIRECT_SUFFIX = '?redirected';
 
 const renderRedirect = () => (
+  // note(simek): "redirect-link" ID is needed for test-links script
   <>
     <Head title="Redirecting" />
     <img src="/static/images/redirect.svg" css={styles.image} alt="Redirect" />
     <H1 css={styles.header}>Redirecting</H1>
-    <P css={styles.description}>Just a moment…</P>
+    <P css={styles.description} id="redirect-link">
+      Just a moment…
+    </P>
   </>
 );
 
