@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { getRedirectPath } from '~/common/error-utilities';
 import Head from '~/components/Head';
 import { Button } from '~/ui/components/Button';
-import { Header } from '~/ui/components/Header';
 import { Layout } from '~/ui/components/Layout';
 import { H1, P } from '~/ui/components/Text';
 
@@ -97,11 +96,7 @@ const Error = () => {
     return undefined;
   };
 
-  return (
-    <Layout header={<Header />} cssContent={styles.container}>
-      {getContent()}
-    </Layout>
-  );
+  return <Layout cssContent={styles.container}>{getContent()}</Layout>;
 };
 
 export default Error;
@@ -115,7 +110,6 @@ const styles = {
   }),
   header: css({
     ...typography.fontSizes[31],
-    fontWeight: 700,
   }),
   description: css({
     textAlign: 'center',
@@ -123,10 +117,6 @@ const styles = {
     marginTop: spacing[6],
     marginBottom: spacing[8],
     color: theme.text.secondary,
-  }),
-  link: css({
-    textAlign: 'center',
-    marginTop: 20,
   }),
   image: css({ maxWidth: 208, marginBottom: spacing[8] }),
 };
