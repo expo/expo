@@ -72,7 +72,7 @@ jobs:
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
-      - name: Pack latest bare-minimal template as tarball for expo prebuild
+      - name: Pack latest bare-minimum template as tarball for expo prebuild
         working-directory: templates/expo-template-bare-minimum
         run: npm pack --pack-destination ../../../updates-e2e/
       - name: Prebuild
