@@ -1,134 +1,129 @@
+import { css } from '@emotion/react';
+import { spacing, theme, typography } from '@expo/styleguide';
 import * as Sentry from '@sentry/browser';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { getRedirectPath } from '~/common/error-utilities';
+import Head from '~/components/Head';
+import { Button } from '~/ui/components/Button';
+import { Header } from '~/ui/components/Header';
+import { Layout } from '~/ui/components/Layout';
+import { H1, P } from '~/ui/components/Text';
 
 const REDIRECT_SUFFIX = '?redirected';
 
-type State = {
-  notFound: boolean;
-  redirectPath?: string;
-  redirectFailed: boolean;
-};
-export default class Error extends React.Component<object, State> {
-  state: State = {
-    notFound: false,
-    redirectPath: undefined,
-    redirectFailed: false,
-  };
+const renderRedirect = () => (
+  <>
+    <Head title="Redirecting" />
+    <img src="/static/images/redirect.svg" css={styles.image} alt="Redirect" />
+    <H1 css={styles.header}>Redirecting</H1>
+    <P css={styles.description}>Just a moment…</P>
+  </>
+);
 
-  componentDidMount() {
-    this._maybeRedirect();
-  }
+const renderNotFoundAfterRedirect = () => (
+  <>
+    <Head title="Not Found" />
+    <img src="/static/images/404.svg" css={styles.image} alt="404" />
+    <H1 css={styles.header}>404: Not Found</H1>
+    <P css={styles.description} id="__redirect_failed">
+      We took an educated guess and tried to direct you to the right page, but it seems that did not
+      work out! Maybe it doesn't exist anymore! 😔
+    </P>
+    <Button href="/">Return Home</Button>
+  </>
+);
 
-  _maybeRedirect = () => {
+const renderNotFound = () => (
+  <>
+    <Head title="Not Found" />
+    <img src="/static/images/404.svg" css={styles.image} alt="404" />
+    <H1 css={styles.header}>404: Not Found</H1>
+    <P css={styles.description} id="__not_found">
+      We couldn't find the page you were looking for. Check the URL to make sure it's correct and
+      try again.
+    </P>
+    <Button href="/">Return Home</Button>
+  </>
+);
+
+const Error = () => {
+  const [notFound, setNotFound] = useState<boolean>(false);
+  const [redirectFailed, setRedirectFailed] = useState<boolean>(false);
+  const [redirectPath, setRedirectPath] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
 
-    const { pathname } = window.location;
+    const { pathname, search } = window.location;
 
-    if (window.location.search === REDIRECT_SUFFIX) {
+    if (search === REDIRECT_SUFFIX) {
       Sentry.captureMessage(`Redirect failed`);
-      this.setState({ redirectFailed: true });
+      setRedirectFailed(true);
       return;
     }
 
-    const redirectPath = getRedirectPath(pathname);
+    const newRedirectPath = getRedirectPath(pathname);
 
-    if (redirectPath !== pathname) {
-      this.setState({ redirectPath });
+    if (newRedirectPath !== pathname) {
+      setRedirectPath(newRedirectPath);
       return;
     }
 
     // We are confident now that we can render a not found error
-    this.setState({ notFound: true });
+    setNotFound(true);
     Sentry.captureMessage(`Page not found (404)`);
+  }, []);
+
+  useEffect(() => {
+    if (redirectPath && typeof window !== 'undefined') {
+      setTimeout(() => (window.location.href = `${redirectPath}${REDIRECT_SUFFIX}`), 1200);
+    }
+  }, [redirectPath]);
+
+  const getContent = () => {
+    if (redirectPath) {
+      return renderRedirect();
+    } else if (redirectFailed) {
+      return renderNotFoundAfterRedirect();
+    } else if (notFound) {
+      return renderNotFound();
+    }
+    return undefined;
   };
 
-  componentDidUpdate(prevProps: object, prevState: State) {
-    if (prevState.redirectPath !== this.state.redirectPath && typeof window !== 'undefined') {
-      // Let people actually read the carefully crafted message and absorb the
-      // cool emoji selection, they can just click through if they want speed
-      setTimeout(() => {
-        window.location.href = `${this.state.redirectPath}?redirected`;
-      }, 1200);
-    }
-  }
+  return (
+    <Layout header={<Header />} cssContent={styles.container}>
+      {getContent()}
+    </Layout>
+  );
+};
 
-  render() {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          flexDirection: 'column',
-        }}>
-        {this._renderContents()}
-      </div>
-    );
-  }
+export default Error;
 
-  _renderContents = () => {
-    const styles = {
-      description: {
-        textAlign: 'center' as const,
-        maxWidth: 450,
-        marginHorizontal: 30,
-        lineHeight: '1.7em',
-      },
-      link: {
-        textAlign: 'center' as const,
-        marginTop: 20,
-      },
-    };
-
-    if (this.state.redirectPath) {
-      return (
-        <>
-          <h1>🕵️‍♀️️</h1>
-          <p style={styles.description}>
-            Hold tight, we are redirecting you to where we think this URL was intended to take you!
-          </p>
-          <p style={styles.link}>
-            <a id="redirect-link" href={this.state.redirectPath}>
-              Click here to possibly go there more quickly!
-            </a>
-          </p>
-        </>
-      );
-    } else if (this.state.redirectFailed) {
-      return (
-        <>
-          <h1>🏳️</h1>
-          <p style={styles.description} id="__redirect_failed">
-            We took an educated guess and tried to direct you to the right page, but it seems that
-            did not work out! Maybe it doesn't exist anymore! 😔
-          </p>
-          <p style={styles.link}>
-            <a href="/">Go to the Expo documentation, you can try searching there</a>
-          </p>
-        </>
-      );
-    } else if (this.state.notFound) {
-      return (
-        <>
-          <h1>🤯</h1>
-          <p style={styles.description} id="__not_found">
-            <strong style={{ fontWeight: 'bold' }}>Uh oh, we couldn't find this page!</strong> We've
-            made note of this and will investigate, but it's possible that the page you're looking
-            for no longer exists!
-          </p>
-          <p style={styles.link}>
-            <a href="/">Go to the Expo documentation, you can try searching there</a>
-          </p>
-        </>
-      );
-    } else {
-      // Render nothing statically
-    }
-  };
-}
+const styles = {
+  container: css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  }),
+  header: css({
+    ...typography.fontSizes[31],
+    fontWeight: 700,
+  }),
+  description: css({
+    textAlign: 'center',
+    maxWidth: 450,
+    marginTop: spacing[6],
+    marginBottom: spacing[8],
+    color: theme.text.secondary,
+  }),
+  link: css({
+    textAlign: 'center',
+    marginTop: 20,
+  }),
+  image: css({ maxWidth: 208, marginBottom: spacing[8] }),
+};

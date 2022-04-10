@@ -1,4 +1,5 @@
 import { css, Global } from '@emotion/react';
+import { SerializedStyles } from '@emotion/serialize';
 import { breakpoints, spacing, theme } from '@expo/styleguide';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
@@ -6,15 +7,31 @@ import { Header } from '~/ui/components/Header';
 import { LayoutScroll } from '~/ui/components/Layout';
 
 type LayoutProps = PropsWithChildren<{
-  // The content within the top bar that spans the columns
+  /**
+   * The content within the top bar that spans the columns.
+   */
   header?: ReactNode;
-  // The content within the left column
+  /**
+   * The content within the left column.
+   */
   navigation?: ReactNode;
-  // The content within the right column
+  /**
+   * The content within the right column.
+   */
   sidebar?: ReactNode;
+  /**
+   * Custom CSS for the main content wrapper.
+   */
+  cssContent?: SerializedStyles;
 }>;
 
-export const Layout = ({ header = <Header />, navigation, sidebar, children }: LayoutProps) => (
+export const Layout = ({
+  header = <Header />,
+  navigation,
+  sidebar,
+  children,
+  cssContent = undefined,
+}: LayoutProps) => (
   <>
     <Global
       styles={css({
@@ -28,7 +45,7 @@ export const Layout = ({ header = <Header />, navigation, sidebar, children }: L
     <main css={layoutStyle}>
       {navigation && <nav css={navigationStyle}>{navigation}</nav>}
       <LayoutScroll>
-        <article css={innerContentStyle}>{children}</article>
+        <article css={[innerContentStyle, cssContent]}>{children}</article>
       </LayoutScroll>
       {sidebar && <aside css={asideStyle}>{sidebar}</aside>}
     </main>
@@ -69,6 +86,7 @@ const navigationStyle = css({
 
 const innerContentStyle = css({
   margin: '0 auto',
+  minHeight: 'calc(100vh - 60px)',
   maxWidth: breakpoints.large,
   padding: `${spacing[8]}px ${spacing[4]}px`,
 });
