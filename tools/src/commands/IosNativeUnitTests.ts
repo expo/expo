@@ -25,6 +25,7 @@ async function runTests(podspecName: string, testSpecName: string, shouldUseBare
         `${podspecName}-Unit-${testSpecName}`,
         '--clean',
         'false',
+        '--skip_build',
       ],
       {
         cwd: BARE_EXPO_IOS_DIR,
