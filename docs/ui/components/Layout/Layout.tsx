@@ -86,7 +86,7 @@ const navigationStyle = css({
 
 const innerContentStyle = css({
   margin: '0 auto',
-  minHeight: 'calc(100vh - 60px)',
+  minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
   maxWidth: breakpoints.large,
   padding: `${spacing[8]}px ${spacing[4]}px`,
 });
