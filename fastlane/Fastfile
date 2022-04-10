@@ -155,7 +155,7 @@ platform :ios do
       clean: false,
       skip_build: true,
       prelaunch_simulator: true,
-      parallel_testing: true,
+      # parallel_testing: true,
       skip_detect_devices: true,
       skip_package_dependencies_resolution: true,
     )
@@ -167,6 +167,22 @@ platform :ios do
       scheme: "Exponent",
       devices: ["iPhone SE", "iPhone X"],
       clean: false,
+    )
+  end
+
+  lane :unit_tests do
+    run_tests(
+      workspace: "ios/Exponent.xcworkspace",
+      scheme: "UnitTests",
+      devices: ["iPhone 13 Pro Max"],
+      configuration: 'Debug',
+      clean: false,
+      skip_build: true,
+      prelaunch_simulator: true,
+      # parallel_testing: true,
+      skip_detect_devices: true,
+      skip_package_dependencies_resolution: true,
+      derived_data_path: "/tmp/ExpoUnitTestsDerivedData",
     )
   end
 

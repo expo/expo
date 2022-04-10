@@ -104,4 +104,7 @@ jobs:
         working-directory: apps/bare-expo/ios
       - name: 🥷 Run native iOS unit tests
         timeout-minutes: 45
+        run: fastlane ios unit_tests
+      - name: 🥷 Run native iOS unit tests (legacy)
+        timeout-minutes: 45
         run: expotools native-unit-tests --platform ios

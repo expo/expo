@@ -50,49 +50,6 @@ abstract_target 'Expo Go' do
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'
 
-  # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
-  # RCT_ENABLE_PACKAGER_CONNECTION disabled
-  post_install do |installer|
-    # Workaround build error for Folly
-    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
-
-    # Disabled as of CocoaPods 1.8.0.beta1 since pods_project seems to be nil
-    # installer.pods_project.main_group.tab_width = '2';
-    # installer.pods_project.main_group.indent_width = '2';
-
-    installer.target_installation_results.pod_target_installation_results
-      .each do |pod_name, target_installation_result|
-
-      # Run postinstalls actions for versioned dependencies.
-      # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
-      run_versioned_postinstalls!(pod_name, target_installation_result)
-
-      target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-
-        # Fix building failures on M1
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-      end
-
-      if pod_name == 'Branch'
-        target_installation_result.native_target.build_configurations.each do |config|
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
-        end
-      end
-
-      # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
-      # RCT_ENABLE_PACKAGER_CONNECTION disabled
-      next unless pod_name.start_with?('React')
-      target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
-      end
-    end
-  end
-
   # Target for development, contains only unversioned code
   target 'Expo Go (unversioned)' do
   end
@@ -108,12 +65,80 @@ abstract_target 'Expo Go' do
   target 'ExponentIntegrationTests' do
     inherit! :search_paths
   end
+end
 
-  target 'Tests' do
-    inherit! :search_paths
+target 'UnitTests' do
+  # Expo modules
+  use_expo_modules!({
+    exclude: [
+      'expo-module-template',
+      'expo-in-app-purchases',
+      'expo-dev-menu',
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+      'expo-dev-client'
+    ],
+    # Modules for which to include Tests subspec
+    tests: [
+      'expo-eas-client',
+      'expo-modules-core',
+      'expo-updates',
+      'expo-manifests',
+      'expo-json-utils',
+      'expo-structured-headers',
+    ],
+    flags: {
+      :inhibit_warnings => false
+    }
+  })
 
-    pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
-    pod 'Quick', :podspec => './Quick.podspec'
-    pod 'Nimble', :podspec => './Nimble.podspec'
+  # Unversioned React Native
+  use_react_native! path: '../react-native-lab/react-native'
+
+  pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
+  pod 'Quick', :podspec => './Quick.podspec'
+  pod 'Nimble', :podspec => './Nimble.podspec'
+end
+
+# Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
+# RCT_ENABLE_PACKAGER_CONNECTION disabled
+post_install do |installer|
+  # Workaround build error for Folly
+  __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+
+  # Disabled as of CocoaPods 1.8.0.beta1 since pods_project seems to be nil
+  # installer.pods_project.main_group.tab_width = '2';
+  # installer.pods_project.main_group.indent_width = '2';
+
+  installer.target_installation_results.pod_target_installation_results
+    .each do |pod_name, target_installation_result|
+
+    # Run postinstalls actions for versioned dependencies.
+    # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
+    run_versioned_postinstalls!(pod_name, target_installation_result)
+
+    target_installation_result.native_target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+
+      # Fix building failures on M1
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+    end
+
+    if pod_name == 'Branch'
+      target_installation_result.native_target.build_configurations.each do |config|
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
+      end
+    end
+
+    # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
+    # RCT_ENABLE_PACKAGER_CONNECTION disabled
+    next unless pod_name.start_with?('React')
+    target_installation_result.native_target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
+    end
   end
 end
