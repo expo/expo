@@ -11,6 +11,9 @@
 using namespace facebook;
 using namespace react;
 
+@class EXJavaScriptValue;
+@class EXJavaScriptRuntime;
+
 namespace expo {
 
 jsi::Value convertNSNumberToJSIBoolean(jsi::Runtime &runtime, NSNumber *value);
@@ -31,7 +34,7 @@ NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &v
 
 NSArray *convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<CallInvoker> jsInvoker);
 
-NSArray *convertJSIValuesToNSArray(jsi::Runtime &runtime, const jsi::Value *values, size_t count, std::shared_ptr<CallInvoker> jsInvoker);
+NSArray<EXJavaScriptValue *> *convertJSIValuesToNSArray(EXJavaScriptRuntime *runtime, const jsi::Value *values, size_t count);
 
 NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker);
 

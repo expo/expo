@@ -10,6 +10,13 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 #endif // __cplusplus
 
+@class EXJavaScriptValue;
+@class EXJavaScriptObject;
+
+#ifdef __cplusplus
+typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray<EXJavaScriptValue *> * _Nonnull arguments);
+#endif // __cplusplus
+
 NS_SWIFT_NAME(JavaScriptRuntime)
 @interface EXJavaScriptRuntime : NSObject
 
@@ -19,8 +26,6 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 - (nonnull instancetype)init;
 
 #ifdef __cplusplus
-typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments);
-
 - (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 

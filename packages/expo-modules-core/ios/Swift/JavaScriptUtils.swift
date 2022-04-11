@@ -36,6 +36,17 @@ internal func createSyncFunctionBlock(holder: ModuleHolder, name functionName: S
   }
 }
 
+/**
+ If given argument is a JavaScriptValue, it's unpacked and converted to corresponding Foundation type.
+ Otherwise, the argument is returned as is.
+ */
+internal func unpackIfJavaScriptValue(_ value: Any) -> Any {
+  if let value = value as? JavaScriptValue {
+    return value.getRaw() as Any
+  }
+  return value
+}
+
 private class ModuleUnavailableException: GenericException<String> {
   override var reason: String {
     "Module '\(param)' is no longer available"
