@@ -4,8 +4,8 @@ import chalk from 'chalk';
 import * as path from 'path';
 
 import { PACKAGES_DIR, EXPO_DIR } from '../Constants';
-import generateModuleAsync from '../generate-module/generateModuleAsync';
 import { spawnAsync } from '../Utils';
+import generateModuleAsync from '../generate-module/generateModuleAsync';
 
 type ActionOptions = {
   name: string;

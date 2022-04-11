@@ -86,13 +86,13 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         // Prefixes Objective-C name of the Swift modules provider.
         paths: ['EXNativeModulesProxy.mm'],
         find: 'NSClassFromString(@"ExpoModulesProvider")',
-        replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`
+        replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`,
       },
       {
         // Prefixes Objective-C name of the Swift modules provider.
         paths: ['EXNativeModulesProxy.mm'],
         find: '[NSString stringWithFormat:@"%@.ExpoModulesProvider"',
-        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`
+        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`,
       },
       {
         // Prefixes imports from other React Native libs
@@ -136,7 +136,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         // Use negative look ahead regexp for `prefix` to prevent duplicated versioning
         find: new RegExp(`\b(!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
         replaceWith: `${prefix}$1`,
-      }
+      },
     ],
   };
 }

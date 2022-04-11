@@ -1,12 +1,12 @@
 import chalk from 'chalk';
-import { pick } from 'lodash';
 import inquirer from 'inquirer';
+import pick from 'lodash/pick';
 
+import { UNPUBLISHED_VERSION_NAME } from '../Changelogs';
 import * as Formatter from '../Formatter';
 import logger from '../Logger';
 import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 import { BackupableOptions, CommandOptions, Parcel } from './types';
-import { UNPUBLISHED_VERSION_NAME } from '../Changelogs';
 
 const { green, cyan, magenta, gray } = chalk;
 

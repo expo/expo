@@ -36,7 +36,7 @@ export async function getPackageViewAsync(
       version ? `${packageName}@${version}` : packageName,
       '--json',
     ]);
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -101,7 +101,7 @@ export async function whoamiAsync(): Promise<string | null> {
   try {
     const { stdout } = await spawnAsync('npm', ['whoami']);
     return stdout.trim();
-  } catch (e) {
+  } catch {
     return null;
   }
 }

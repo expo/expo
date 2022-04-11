@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+
 import { getExpotoolsDir } from '../../Directories';
 
 export const JniLibNames = [

@@ -146,7 +146,7 @@ export class Changelog {
       try {
         const markdown = await fs.readFile(this.filePath, 'utf8');
         this.tokens = Markdown.lexify(markdown);
-      } catch (error) {
+      } catch {
         this.tokens = [];
       }
     }
@@ -545,7 +545,7 @@ export class MemChangelog extends Changelog {
     if (!this.tokens) {
       try {
         this.tokens = Markdown.lexify(this.content);
-      } catch (error) {
+      } catch {
         this.tokens = [];
       }
     }

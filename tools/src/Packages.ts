@@ -383,7 +383,7 @@ function readExpoModuleConfigJson(dir: string) {
   const unimoduleJsonPath = path.join(dir, 'unimodule.json');
   try {
     return require(expoModuleConfigJsonExists ? expoModuleConfigJsonPath : unimoduleJsonPath);
-  } catch (error) {
+  } catch {
     return null;
   }
 }

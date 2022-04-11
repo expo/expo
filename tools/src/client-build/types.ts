@@ -1,4 +1,5 @@
 import aws from 'aws-sdk';
+
 import { Platform } from '../ProjectVersions';
 
 export { Platform };

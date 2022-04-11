@@ -15,7 +15,7 @@ export async function runExpoCliAsync(
   args: string[] = [],
   options: Options = {}
 ): Promise<void> {
-  let configArgs = options.root ? ['--config', path.resolve(options.root, 'app.json')] : [];
+  const configArgs = options.root ? ['--config', path.resolve(options.root, 'app.json')] : [];
 
   // Don't handle SIGINT/SIGTERM in this process...defer to expo-cli
   process.on('SIGINT', () => {});

@@ -3,8 +3,8 @@ import path from 'path';
 import prettyBytes from 'pretty-bytes';
 
 import Git from '../../Git';
+import logger from '../../Logger';
 import { ReviewInput, ReviewOutput, ReviewStatus } from '../types';
-import logger from "../../Logger";
 
 const FILE_SIZE_LIMIT = 5 * 1000 * 1000; // 5MB
 const PRETTY_FILE_SIZE_LIMIT = prettyBytes(FILE_SIZE_LIMIT);

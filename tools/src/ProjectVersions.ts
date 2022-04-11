@@ -1,8 +1,8 @@
-import path from 'path';
+import JsonFile from '@expo/json-file';
 import fs from 'fs-extra';
+import path from 'path';
 import plist from 'plist';
 import semver from 'semver';
-import JsonFile from '@expo/json-file';
 
 import { EXPO_DIR, ANDROID_DIR, PACKAGES_DIR } from './Constants';
 

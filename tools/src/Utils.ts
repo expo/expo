@@ -1,7 +1,7 @@
+import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
+import chalk from 'chalk';
 import { IOptions as GlobOptions } from 'glob';
 import glob from 'glob-promise';
-import chalk from 'chalk';
-import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 
 import { EXPO_DIR } from './Constants';
 

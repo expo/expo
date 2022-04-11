@@ -1,6 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
-import spawnAsync from '@expo/spawn-async';
 
 import { IOS_DIR } from '../../Constants';
 

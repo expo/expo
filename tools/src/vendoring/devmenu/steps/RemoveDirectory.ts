@@ -1,6 +1,7 @@
-import { Task } from './Task';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+
+import { Task } from './Task';
 
 export type RemoveDirectorySettings = {
   target?: string;
@@ -18,16 +19,14 @@ export class RemoveDirectory extends Task {
     this.target = target;
   }
 
-  protected overrideWorkingDirectory(): string | undefined {
-    return this.target;
+  protected overrideWorkingDirectory(): string {
+    return this.target || '<workingDirectory>';
   }
 
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
-    this.logSubStep(
-      `🧹 remove ${chalk.yellow(this.overrideWorkingDirectory() || '<workingDirectory>')}`
-    );
+    this.logSubStep(`🧹 remove ${chalk.yellow(this.overrideWorkingDirectory())}`);
     return await fs.remove(workDirectory);
   }
 }

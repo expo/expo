@@ -1,5 +1,5 @@
-import { Task } from '../../TasksRunner';
 import logger from '../../Logger';
+import { Task } from '../../TasksRunner';
 import { printPackageParcel } from '../helpers';
 import { Parcel, TaskArgs } from '../types';
 import { findUnpublished } from './findUnpublished';

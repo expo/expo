@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 
-import logger from '../../Logger';
 import Git from '../../Git';
+import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { prepareParcels } from './prepareParcels';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { prepareParcels } from './prepareParcels';
 
 const { green, cyan, blue, yellow } = chalk;
 

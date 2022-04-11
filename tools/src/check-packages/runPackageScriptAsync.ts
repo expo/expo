@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
-import { spawnAsync } from '../Utils';
-import { Package } from '../Packages';
 import logger from '../Logger';
+import { Package } from '../Packages';
+import { spawnAsync } from '../Utils';
 
 const { cyan, gray, red, reset } = chalk;
 

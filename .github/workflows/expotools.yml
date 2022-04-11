@@ -37,3 +37,6 @@ jobs:
       - name: 🛠 Compile TypeScript sources
         run: yarn tsc
         working-directory: tools
+      - name: 🚨 Lint TypeScript sources
+        run: yarn lint --max-warnings 0
+        working-directory: tools

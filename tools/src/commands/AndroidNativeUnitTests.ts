@@ -93,11 +93,9 @@ export async function androidNativeUnitTests({
     return [trues, falses];
   };
 
-  const [
-    androidPackagesTestedUsingBareProject,
-    androidPackagesTestedUsingExpoProject,
-  ] = partition(androidPackages, (element) =>
-    packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
+  const [androidPackagesTestedUsingBareProject, androidPackagesTestedUsingExpoProject] = partition(
+    androidPackages,
+    (element) => packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
   );
 
   await runGradlew(androidPackagesTestedUsingExpoProject, testCommand, ANDROID_DIR);

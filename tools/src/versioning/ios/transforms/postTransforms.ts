@@ -69,7 +69,7 @@ export function postTransforms(versionName: string): TransformPipeline {
       {
         paths: ['RCTSRWebSocket.h', 'UIView+Private.h'],
         replace: /@interface (\w+) \((CertificateAdditions|Private)\)/g,
-        with: `@interface $1 (${versionName}$2)`
+        with: `@interface $1 (${versionName}$2)`,
       },
 
       // Universal modules
@@ -147,12 +147,14 @@ export function postTransforms(versionName: string): TransformPipeline {
       },
       {
         paths: 'RNSVGMarkerPosition.m',
-        replace: /\b(PathIsDone|rad2deg|SlopeAngleRadians|CurrentAngle|subtract|ExtractPathElementFeatures|UpdateFromPathElement)\b/g,
+        replace:
+          /\b(PathIsDone|rad2deg|SlopeAngleRadians|CurrentAngle|subtract|ExtractPathElementFeatures|UpdateFromPathElement)\b/g,
         with: `${versionName}$1`,
       },
       {
         paths: 'RNSVGMarkerPosition.m',
-        replace: /\b(positions_|element_index_|origin_|subpath_start_|in_slope_|out_slope_|auto_start_reverse_)\b/g,
+        replace:
+          /\b(positions_|element_index_|origin_|subpath_start_|in_slope_|out_slope_|auto_start_reverse_)\b/g,
         with: `${versionName}$1`,
       },
       {

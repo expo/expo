@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import path from 'path';
 
 import Git from '../../Git';
-import * as Npm from '../../Npm';
 import logger from '../../Logger';
+import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { resolveReleaseTypeAndVersion } from './resolveReleaseTypeAndVersion';

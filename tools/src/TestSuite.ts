@@ -1,6 +1,6 @@
-import path from 'path';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
+import path from 'path';
 
 import * as Directories from './Directories';
 import * as Log from './Log';
@@ -24,8 +24,8 @@ async function _publishTestSuiteNoCacheAsync(id: string): Promise<void> {
   await _installTestSuiteDependenciesAsync();
 
   Log.collapsed('Modifying slug...');
-  let appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
-  let appJson = ((await appJsonFile.readAsync()) as unknown) as AppConfig;
+  const appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
+  const appJson = (await appJsonFile.readAsync()) as unknown as AppConfig;
   appJson.expo.slug = id;
   await appJsonFile.writeAsync(appJson as any);
 
@@ -33,8 +33,8 @@ async function _publishTestSuiteNoCacheAsync(id: string): Promise<void> {
 }
 
 export async function publishVersionedTestSuiteAsync(sdkVersion: string): Promise<void> {
-  let appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
-  const appJson = ((await appJsonFile.readAsync()) as unknown) as AppConfig;
+  const appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
+  const appJson = (await appJsonFile.readAsync()) as unknown as AppConfig;
   appJson.expo.sdkVersion = sdkVersion;
   await appJsonFile.writeAsync(appJson as any);
 

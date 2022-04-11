@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
-import logger from '../../Logger';
-import Git from '../../Git';
 import * as Changelogs from '../../Changelogs';
+import Git from '../../Git';
+import logger from '../../Logger';
 import { Package, getListOfPackagesAsync } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';

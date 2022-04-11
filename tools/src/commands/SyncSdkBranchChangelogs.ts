@@ -1,6 +1,7 @@
+import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import semver from 'semver';
-import { Command } from '@expo/commander';
+
 import { Changelog, MemChangelog, UNPUBLISHED_VERSION_NAME } from '../Changelogs';
 import Git from '../Git';
 import { Package, getListOfPackagesAsync } from '../Packages';
