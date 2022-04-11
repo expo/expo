@@ -1,4 +1,4 @@
-import { unescape } from 'lodash';
+import unescape from 'lodash/unescape';
 import marked from 'marked';
 
 export enum TokenType {

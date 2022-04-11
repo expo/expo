@@ -14,7 +14,7 @@ async function resizeIconWithSharpAsync(
 
   // sharp can't have same input and output filename, so load to buffer then
   // write to disk after resize is complete
-  let buffer = await sharp(filename).resize(iconSizePx, iconSizePx).toBuffer();
+  const buffer = await sharp(filename).resize(iconSizePx, iconSizePx).toBuffer();
 
   fs.writeFileSync(filename, buffer);
 }
@@ -22,9 +22,9 @@ async function resizeIconWithSharpAsync(
 async function getImageDimensionsWithSharpAsync(dirname: string, basename: string) {
   const filename = path.join(dirname, basename);
   try {
-    let { width, height } = await sharp(filename).metadata();
+    const { width, height } = await sharp(filename).metadata();
     return { width, height };
-  } catch (e) {
+  } catch {
     return null;
   }
 }

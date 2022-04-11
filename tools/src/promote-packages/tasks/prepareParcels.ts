@@ -1,8 +1,8 @@
 import logger from '../../Logger';
 import { getListOfPackagesAsync } from '../../Packages';
 import { Task } from '../../TasksRunner';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { createParcelAsync } from '../helpers';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 /**
  * Gets a list of public packages in the monorepo, downloads `npm view` result of them,

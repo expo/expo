@@ -1,12 +1,12 @@
-import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import xcode from 'xcode';
 import glob from 'glob-promise';
 import ncp from 'ncp';
+import path from 'path';
+import xcode from 'xcode';
 
-import * as Directories from '../Directories';
 import { EXPO_DIR } from '../Constants';
+import * as Directories from '../Directories';
 
 interface VendoredModuleUpdateStep {
   iosPrefix?: string;
@@ -118,7 +118,7 @@ const ReanimatedModifier: ModuleModifier = async function (
 
   const copyCPP = async () => {
     const dirs = ['Common', 'cpp'];
-    for (let dir of dirs) {
+    for (const dir of dirs) {
       await fs.remove(path.join(androidMainPathExpoview, dir)); // clean
       // copy
       await new Promise<void>((res, rej) => {
@@ -140,7 +140,7 @@ const ReanimatedModifier: ModuleModifier = async function (
     const commonFiles = await glob(patternCommon);
     const iosOnlyFiles = await glob(patternNative);
     const files = [...commonFiles, ...iosOnlyFiles];
-    for (let file of files) {
+    for (const file of files) {
       console.log(file);
       const fileName = file.split(path.sep).slice(-1)[0];
       await fs.copy(file, path.join(clonedProjectPath, 'ios', fileName));

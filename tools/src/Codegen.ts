@@ -1,6 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
-import spawnAsync from '@expo/spawn-async';
 
 export interface ReactNativeCodegenParameters {
   // path to `react-native` package

@@ -1,10 +1,10 @@
-import path from 'path';
-import fs from 'fs-extra';
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
+import fs from 'fs-extra';
+import path from 'path';
 
-import { runExpoCliAsync } from '../ExpoCLI';
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
+import { runExpoCliAsync } from '../ExpoCLI';
 
 type GenerateBareAppOptions = {
   name?: string;
@@ -130,7 +130,7 @@ function getPackageDependencies(packageName: string) {
     return [];
   }
 
-  let dependencies = new Set<string>();
+  const dependencies = new Set<string>();
   dependencies.add(packageName);
 
   const pkg = require(packagePath);
@@ -254,7 +254,7 @@ async function applyGradleFlipperFixtures({ projectDir }: { projectDir: string }
     `FLIPPER_VERSION=0.54.0`,
     `FLIPPER_VERSION=0.99.0`
   );
-  console.log(`Overriding the gradle.properties to FLIPPER_VERSION=0.99.0`)
+  console.log(`Overriding the gradle.properties to FLIPPER_VERSION=0.99.0`);
   await fs.outputFile(gradlePropertiesPath, updatedGradleProperies);
 }
 

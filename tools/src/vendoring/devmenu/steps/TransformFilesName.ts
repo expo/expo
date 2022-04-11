@@ -1,20 +1,17 @@
-import { TransformFilesContent, FileContentTransformStepSettings } from './TransformFilesContent';
 import chalk from 'chalk';
-import path from 'path';
 import fs from 'fs-extra';
+import path from 'path';
+
 import { findFiles } from '../utils';
+import { TransformFilesContent } from './TransformFilesContent';
 
 export class TransformFilesName extends TransformFilesContent {
-  constructor(settings: FileContentTransformStepSettings) {
-    super(settings);
-  }
-
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
     this.logSubStep(
       `🔄 find ${chalk.yellow(this.find.toString())} in files names in path ${chalk.green(
-        this.overrideWorkingDirectory() || '<workingDirectory>'
+        this.overrideWorkingDirectory()
       )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`
     );
 

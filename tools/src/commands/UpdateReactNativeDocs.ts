@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import inquirer, {QuestionCollection} from 'inquirer';
+import inquirer, { QuestionCollection } from 'inquirer';
 import path from 'path';
 
 import { GitDirectory } from '../Git';
@@ -160,12 +160,12 @@ async function getLocalFilesAsync(options: Options) {
 
   return files
     .filter(
-      entry =>
+      (entry) =>
         !entry.endsWith(SUFFIX_CHANGED) &&
         !entry.startsWith(PREFIX_ADDED) &&
         !entry.startsWith(PREFIX_REMOVED)
     )
-    .map(entry => entry.replace('.md', ''));
+    .map((entry) => entry.replace('.md', ''));
 }
 
 async function getUpstreamFilesAsync(options: Options) {
@@ -195,7 +195,7 @@ async function getUpstreamFilesAsync(options: Options) {
   }
 
   const upstreamDocs: any[] = [];
-  const relevantDocs: any = relevantNestedDocs.map(entry => {
+  const relevantDocs: any = relevantNestedDocs.map((entry) => {
     if (typeof entry === 'object' && Array.isArray(entry.ids)) {
       return entry.ids;
     }
@@ -218,11 +218,11 @@ async function getUpstreamFilesAsync(options: Options) {
 }
 
 function getDocsSummary(localFiles: string[], upstreamFiles: string[]): DocsSummary {
-  const removed = localFiles.filter(entry => !upstreamFiles.includes(entry));
-  const added = upstreamFiles.filter(entry => !localFiles.includes(entry));
+  const removed = localFiles.filter((entry) => !upstreamFiles.includes(entry));
+  const added = upstreamFiles.filter((entry) => !localFiles.includes(entry));
 
   const changed = upstreamFiles.filter(
-    entry => !(removed.includes(entry) || added.includes(entry))
+    (entry) => !(removed.includes(entry) || added.includes(entry))
   );
 
   return { removed, added, changed };
@@ -318,7 +318,7 @@ function logCompleted(options: Options): void {
   logger.info(chalk.dim(`./${path.relative(process.cwd(), versionedDir)}\n`));
 }
 
-export default program => {
+export default (program) => {
   program
     .command('update-react-native-docs')
     .option('--sdk <string>', 'SDK version to merge with (e.g. `unversioned` or `37.0.0`)')

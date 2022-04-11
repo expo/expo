@@ -68,9 +68,9 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
       return;
     }
     // protect contents of EX_UNVERSIONED macro
-    let unversionedCaptures: string[] = [];
+    const unversionedCaptures: string[] = [];
     await _transformFileContentsAsync(filename, (fileString) => {
-      let pattern = /EX_UNVERSIONED\((.*?)\)/g;
+      const pattern = /EX_UNVERSIONED\((.*?)\)/g;
       let match = pattern.exec(fileString);
       while (match != null) {
         unversionedCaptures.push(match[1]);
@@ -141,11 +141,11 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
  *  Transform and rename all code files we care about under `rnPath`
  */
 async function transformReactNativeAsync(rnPath, versionName, versionedPodNames) {
-  let filenameQueries = [`${rnPath}/**/*.[hmSc]`, `${rnPath}/**/*.mm`, `${rnPath}/**/*.cpp`];
+  const filenameQueries = [`${rnPath}/**/*.[hmSc]`, `${rnPath}/**/*.mm`, `${rnPath}/**/*.cpp`];
   let filenames: string[] = [];
   await Promise.all(
     filenameQueries.map(async (query) => {
-      let queryFilenames = (await glob(query)) as string[];
+      const queryFilenames = (await glob(query)) as string[];
       if (queryFilenames) {
         filenames = filenames.concat(queryFilenames);
       }
@@ -164,11 +164,11 @@ async function transformReactNativeAsync(rnPath, versionName, versionedPodNames)
  * @param versionNumber Exponent SDK version, e.g. 42.0.0
  */
 export async function versionReactNativeIOSFilesAsync(globQuery, versionNumber) {
-  let filenames = await glob(globQuery);
+  const filenames = await glob(globQuery);
   if (!filenames || !filenames.length) {
     throw new Error(`No files matched the given pattern: ${globQuery}`);
   }
-  let { versionName, versionedPodNames } = await getConfigsFromArguments(versionNumber);
+  const { versionName, versionedPodNames } = await getConfigsFromArguments(versionNumber);
   console.log(`Versioning ${filenames.length} files with SDK version ${versionNumber}...`);
   return namespaceReactNativeFilesAsync(filenames, versionName, versionedPodNames);
 }
@@ -220,7 +220,11 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   await Promise.all(jsFiles.map((jsFile) => fs.remove(jsFile)));
 
   console.log('Running react-native-codegen');
-  await runReactNativeCodegenAsync(path.join(EXPO_DIR, RELATIVE_RN_PATH), versionedReactNativePath, versionName);
+  await runReactNativeCodegenAsync(
+    path.join(EXPO_DIR, RELATIVE_RN_PATH),
+    versionedReactNativePath,
+    versionName
+  );
 
   console.log(
     `Copying cpp libraries from ${chalk.magenta(path.join(RELATIVE_RN_PATH, 'ReactCommon'))} ...`
@@ -256,7 +260,7 @@ async function modifyKernelFilesAsync(
   let filenames: string[] = [];
   await Promise.all(
     filenameQueries.map(async (query) => {
-      let queryFilenames = (await glob(query)) as string[];
+      const queryFilenames = (await glob(query)) as string[];
       if (queryFilenames) {
         filenames = filenames.concat(queryFilenames);
       }
@@ -286,7 +290,7 @@ async function generateReactNativePodScriptAsync(
 ): Promise<void> {
   await fs.copy(
     path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts'),
-    path.join(versionedReactNativePath, 'scripts'),
+    path.join(versionedReactNativePath, 'scripts')
   );
 
   const targetAutolinkPath = path.join(versionedReactNativePath, 'scripts', 'react_native_pods.rb');
@@ -298,9 +302,10 @@ async function generateReactNativePodScriptAsync(
     .replace(/(:path => "[^"]+")/g, `$1, :project_name => '${versionName}'`)
     // Removes duplicated constants
     .replace("DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'", '')
-    .replace("NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'", '')
-    ;
-
+    .replace(
+      "NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'",
+      ''
+    );
   // Since `React-Codegen.podspec` is generated during `pod install`, versioning should be done in the pod script.
   const reactCodegenDependencies = [
     'FBReactNativeSpec',
@@ -313,14 +318,19 @@ async function generateReactNativePodScriptAsync(
     'React-graphics',
     'React-rncore',
   ];
-  const reactCodegenDependenciesRegExp = new RegExp(`["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`, 'g');
+  const reactCodegenDependenciesRegExp = new RegExp(
+    `["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`,
+    'g'
+  );
   targetSource = targetSource
-    .replace("$CODEGEN_OUTPUT_DIR = 'build/generated/ios'", `$CODEGEN_OUTPUT_DIR = 'build/${versionName}/generated/ios'`)
+    .replace(
+      "$CODEGEN_OUTPUT_DIR = 'build/generated/ios'",
+      `$CODEGEN_OUTPUT_DIR = 'build/${versionName}/generated/ios'`
+    )
     .replace(/\$(CODEGEN_OUTPUT_DIR)\b/g, `$${versionName}$1`)
     .replace(/\b(React-Codegen)\b/g, `${versionName}$1`)
     .replace(/(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, `$1${versionName}React-`)
-    .replace(reactCodegenDependenciesRegExp, `"${versionName}$1":$2`)
-    ;
+    .replace(reactCodegenDependenciesRegExp, `"${versionName}$1":$2`);
 
   await fs.writeFile(targetAutolinkPath, targetSource);
 }
@@ -437,7 +447,7 @@ async function generateExpoKitPodspecAsync(
       (podName) => `ss.dependency         "${podName}"`
     ).join(`
     `);
-    let subspec = `s.subspec "Expo" do |ss|
+    const subspec = `s.subspec "Expo" do |ss|
     ss.source_files     = "Core/**/*.{h,m,mm,cpp}"
 
     ss.dependency         "${versionedReactPodName}-Core"
@@ -611,7 +621,7 @@ use_pods! '{versioned,vendored}/sdk${semver.major(
 
   // Add postinstall.
   // In particular, resolve conflicting globals from React by redefining them.
-  let globals = {
+  const globals = {
     React: [
       // RCTNavigator
       'kNeverRequested',
@@ -639,7 +649,7 @@ use_pods! '{versioned,vendored}/sdk${semver.major(
       'gNodeInstanceCount',
     ],
   };
-  let configValues = getCFlagsToPrefixGlobals(
+  const configValues = getCFlagsToPrefixGlobals(
     versionedPodNames.React,
     globals.React.concat(globals.yoga)
   );
@@ -668,7 +678,7 @@ end
  * @param transformConfig function that takes a config dict and returns a new config dict.
  */
 async function modifyVersionConfigAsync(configPath, transformConfig) {
-  let jsConfigFilename = `${configPath}/sdkVersions.json`;
+  const jsConfigFilename = `${configPath}/sdkVersions.json`;
   await _transformFileContentsAsync(jsConfigFilename, (jsConfigContents) => {
     let jsConfig;
 
@@ -699,7 +709,7 @@ async function modifyVersionConfigAsync(configPath, transformConfig) {
 
 function validateAddVersionDirectories(rootPath, newVersionPath) {
   // Make sure the paths we want to read are available
-  let relativePathsToCheck = [
+  const relativePathsToCheck = [
     RELATIVE_RN_PATH,
     'ios/versioned-react-native',
     'ios/Exponent',
@@ -709,7 +719,7 @@ function validateAddVersionDirectories(rootPath, newVersionPath) {
   relativePathsToCheck.forEach((path) => {
     try {
       fs.accessSync(`${rootPath}/${path}`, fs.constants.F_OK);
-    } catch (e) {
+    } catch {
       console.log(`${rootPath}/${path} does not exist or is otherwise inaccessible`);
       isValid = false;
     }
@@ -720,13 +730,13 @@ function validateAddVersionDirectories(rootPath, newVersionPath) {
     fs.accessSync(newVersionPath, fs.constants.F_OK);
     console.log(`${newVersionPath} already exists, will not overwrite`);
     isValid = false;
-  } catch (e) {}
+  } catch {}
 
   return isValid;
 }
 
 function validateRemoveVersionDirectories(rootPath, newVersionPath) {
-  let pathsToCheck = [
+  const pathsToCheck = [
     `${rootPath}/ios/versioned-react-native`,
     `${rootPath}/ios/Exponent`,
     newVersionPath,
@@ -735,7 +745,7 @@ function validateRemoveVersionDirectories(rootPath, newVersionPath) {
   pathsToCheck.forEach((path) => {
     try {
       fs.accessSync(path, fs.constants.F_OK);
-    } catch (e) {
+    } catch {
       console.log(`${path} does not exist or is otherwise inaccessible`);
       isValid = false;
     }
@@ -746,12 +756,12 @@ function validateRemoveVersionDirectories(rootPath, newVersionPath) {
 async function getConfigsFromArguments(versionNumber) {
   let versionComponents = versionNumber.split('.');
   versionComponents = versionComponents.map((number) => parseInt(number, 10));
-  let versionName = 'ABI' + versionNumber.replace(/\./g, '_');
-  let rootPathComponents = EXPO_DIR.split('/');
-  let versionPathComponents = path.join('ios', 'versioned-react-native', versionName).split('/');
-  let newVersionPath = rootPathComponents.concat(versionPathComponents).join('/');
+  const versionName = 'ABI' + versionNumber.replace(/\./g, '_');
+  const rootPathComponents = EXPO_DIR.split('/');
+  const versionPathComponents = path.join('ios', 'versioned-react-native', versionName).split('/');
+  const newVersionPath = rootPathComponents.concat(versionPathComponents).join('/');
 
-  let versionedPodNames = {
+  const versionedPodNames = {
     React: getVersionedReactPodName(versionName),
     yoga: getVersionedYogaPodName(versionName),
     ExpoKit: getVersionedExpoKitPodName(versionName),
@@ -854,7 +864,7 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
 
   // Validate the directories we need before doing anything
   console.log(`Validating root directory ${chalk.magenta(EXPO_DIR)} ...`);
-  let isFilesystemReady = validateAddVersionDirectories(EXPO_DIR, newVersionPath);
+  const isFilesystemReady = validateAddVersionDirectories(EXPO_DIR, newVersionPath);
   if (!isFilesystemReady) {
     throw new Error('Aborting: At least one directory we need is not available');
   }
@@ -890,7 +900,11 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
   // Namespace the new React clone
   console.log('Namespacing/transforming files...');
   await transformReactNativeAsync(newVersionPath, versionName, versionedPodNames);
-  await transformReactNativeAsync(path.join(IOS_DIR, 'build', versionName, 'generated', 'ios'), versionName, versionedPodNames);
+  await transformReactNativeAsync(
+    path.join(IOS_DIR, 'build', versionName, 'generated', 'ios'),
+    versionName,
+    versionedPodNames
+  );
 
   // Generate Ruby scripts with versioned dependencies and postinstall actions that will be evaluated in the Expo client's Podfile.
   console.log('Adding dependency to root Podfile...');
@@ -923,13 +937,13 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
 
   try {
     const minusMinusFiles = [
-      ...await glob(path.join(newVersionPath, '**', '*--')),
-      ...await glob(path.join(IOS_DIR, 'build', versionName, 'generated', 'ios', '**', '*--')),
+      ...(await glob(path.join(newVersionPath, '**', '*--'))),
+      ...(await glob(path.join(IOS_DIR, 'build', versionName, 'generated', 'ios', '**', '*--'))),
     ];
     for (const minusMinusFile of minusMinusFiles) {
       await fs.remove(minusMinusFile);
     }
-  } catch (error) {
+  } catch {
     console.warn(
       "The script wasn't able to remove any possible `filename--` files created by sed. Please ensure there are no such files manually."
     );
@@ -982,7 +996,7 @@ export async function removeVersionAsync(versionNumber: string) {
 
   // Validate the directories we need before doing anything
   console.log(`Validating root directory ${chalk.magenta(EXPO_DIR)} ...`);
-  let isFilesystemReady = validateRemoveVersionDirectories(EXPO_DIR, newVersionPath);
+  const isFilesystemReady = validateRemoveVersionDirectories(EXPO_DIR, newVersionPath);
   if (!isFilesystemReady) {
     console.log('Aborting: At least one directory we expect is not available');
     return;
@@ -1004,7 +1018,7 @@ export async function removeVersionAsync(versionNumber: string) {
   // remove from sdkVersions.json
   console.log('Unregistering version from sdkVersions config...');
   const removeVersionFromConfig = (config, versionNumber) => {
-    let index = config.sdkVersions.indexOf(versionNumber);
+    const index = config.sdkVersions.indexOf(versionNumber);
     if (index > -1) {
       // modify in place
       config.sdkVersions.splice(index, 1);
@@ -1226,7 +1240,7 @@ function _isDirectory(dir) {
     }
 
     return false;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -1236,8 +1250,8 @@ async function _transformFileContentsAsync(
   filename: string,
   transform: (fileString: string) => Promise<string> | string | null
 ) {
-  let fileString = await fs.readFile(filename, 'utf8');
-  let newFileString = await transform(fileString);
+  const fileString = await fs.readFile(filename, 'utf8');
+  const newFileString = await transform(fileString);
   if (newFileString !== null) {
     await fs.writeFile(filename, newFileString);
   }

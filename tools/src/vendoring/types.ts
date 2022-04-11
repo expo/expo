@@ -1,7 +1,7 @@
 import { Podspec } from '../CocoaPods';
 import { FileTransforms } from '../Transforms.types';
 
-export type VendoringModulePlatformConfig<T = {}> = T & {
+export type VendoringModulePlatformConfig<T = object> = T & {
   transforms?: FileTransforms;
 };
 
@@ -43,7 +43,7 @@ export type VendoringConfig = {
   [key: string]: VendoringTargetConfig;
 };
 
-export type VendoringProvider<T = {}> = {
+export type VendoringProvider<T = object> = {
   vendorAsync: (
     sourceDirectory: string,
     targetDirectory: string,
