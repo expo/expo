@@ -13,6 +13,10 @@
 #import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
 
+#if !defined(EX_DETACHED)
+#import "Expo_Go-Swift.h"
+#endif // !defined(EX_DETACHED)
+
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesConfig.h>
@@ -539,16 +543,19 @@ NS_ASSUME_NONNULL_BEGIN
       mutableManifest[@"isVerified"] = @(YES);
     }
     
-    // when the manifest is not verified at this point, make the scope key and id a random value
+    // when the manifest is not verified at this point, make the scope key a salted and hashed version of the claimed scope key
     if (![mutableManifest[@"isVerified"] boolValue]) {
-      NSString *randomValue = [[NSUUID UUID] UUIDString];
+      NSString *currentScopeKeyAndSaltToHash = [NSString stringWithFormat:@"unverified-%@", manifest.scopeKey];
+      NSString *currentScopeKeyHash = [currentScopeKeyAndSaltToHash hexEncodedSHA256];
+      NSString *newScopeKey = [NSString stringWithFormat:@"%@-%@", currentScopeKeyAndSaltToHash, currentScopeKeyHash];
       if ([manifest isKindOfClass:EXManifestsNewManifest.class]) {
-        NSMutableDictionary *mutableExtra = [mutableManifest[@"extra"] mutableCopy];
-        mutableExtra[@"scopeKey"] = randomValue;
+        NSDictionary *extra = mutableManifest[@"extra"] ?: @{};
+        NSMutableDictionary *mutableExtra = [extra mutableCopy];
+        mutableExtra[@"scopeKey"] = newScopeKey;
         mutableManifest[@"extra"] = mutableExtra;
       } else {
-        mutableManifest[@"scopeKey"] = randomValue;
-        mutableManifest[@"id"] = randomValue;
+        mutableManifest[@"scopeKey"] = newScopeKey;
+        mutableManifest[@"id"] = newScopeKey;
       }
     }
 
