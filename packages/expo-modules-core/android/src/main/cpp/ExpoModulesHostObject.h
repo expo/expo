@@ -24,4 +24,4 @@ public:
 private:
   JSIInteropModuleRegistry *installer;
 };
-}
+} // namespace expo

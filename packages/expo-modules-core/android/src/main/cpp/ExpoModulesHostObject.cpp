@@ -29,4 +29,4 @@ void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &na
 std::vector<jsi::PropNameID> ExpoModulesHostObject::getPropertyNames(jsi::Runtime &rt) {
   return {}; // TODO(@lukmccall): get list of all modules
 }
-}
+} // namespace expo
