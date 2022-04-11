@@ -55,7 +55,8 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       return;
     }
 
-    if ([headers[@"Content-Type"] hasPrefix:@"application/json"]) {
+    NSString *contentType = headers[@"Content-Type"];
+    if (contentType && ![contentType hasPrefix:@"text/html"] && ![contentType containsString:@"/javascript"]) {
       completion(YES);
       return;
     }

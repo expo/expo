@@ -45,7 +45,7 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
         }
         DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
       } else {
-        val configuration = createUpdatesConfigurationWithUrl(url, installationIDHelper.getOrCreateInstallationID(context))
+        val configuration = createUpdatesConfigurationWithUrl(url, url, installationIDHelper.getOrCreateInstallationID(context))
         val update = updatesInterface!!.loadUpdate(configuration, context) {
           manifest = Manifest.fromManifestJson(it) // TODO: might be able to pass actual manifest object in here
           return@loadUpdate !manifest!!.isUsingDeveloperTool()

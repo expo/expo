@@ -58,6 +58,16 @@
     return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"application/json; charset=UTF-8"}];
   }];
   [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/multipart"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"multipart/mixed"}];
+  }];
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/plaintext"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"text/plain; charset=utf-8"}];
+  }];
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
     return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/js1"];
   } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
     return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"application/javascript"}];
@@ -75,6 +85,8 @@
 
   [self _testIsManifestURLString:@"http://ohhttpstubs/json1" expected:YES description:@"should assume a JSON content-type indicates a manifest URL"];
   [self _testIsManifestURLString:@"http://ohhttpstubs/json2" expected:YES description:@"should assume a JSON content-type indicates a manifest URL"];
+  [self _testIsManifestURLString:@"http://ohhttpstubs/multipart" expected:YES description:@"should assume a multipart content-type indicates a manifest URL"];
+  [self _testIsManifestURLString:@"http://ohhttpstubs/plaintext" expected:YES description:@"should assume a plaintext content-type indicates a (multipart) manifest URL"];
   [self _testIsManifestURLString:@"http://ohhttpstubs/js1" expected:NO description:@"should assume a javascript content-type indicates a bundler server"];
   [self _testIsManifestURLString:@"http://ohhttpstubs/js2" expected:NO description:@"should assume a javascript content-type indicates a bundler server"];
 
