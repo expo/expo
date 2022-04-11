@@ -109,7 +109,7 @@ EX_EXPORT_METHOD_AS(deleteAsync,
 
   @synchronized(self) {
     if ([cachedDatabases objectForKey:dbName]) {
-      reject(errorCode, [NSString stringWithFormat:@"Unable to delete opened database '%@'", dbName], nil);
+      reject(errorCode, [NSString stringWithFormat:@"Unable to delete database '%@' that is currently open. Close it prior to deletion.", dbName], nil);
       return;
     }
   }
