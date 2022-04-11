@@ -192,7 +192,7 @@ async function symlinkPackages({
 async function updateRNVersion({ projectDir, rnVersion }: { projectDir: string, rnVersion?: string }) {
   if (!rnVersion) {
     const mainPkg = require(path.resolve(EXPO_DIR, 'package.json'));
-    const rnVersionOnMain = mainPkg.resolutions['react-native'];
+    const rnVersionOnMain = mainPkg.resolutions?.['react-native'];
     rnVersion = rnVersionOnMain
   }
   
