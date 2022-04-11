@@ -28,7 +28,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
 
   companion object {
     init {
-      System.loadLibrary("expomodulescore")
+      System.loadLibrary("expo-modules-core")
     }
   }
 }

@@ -19,7 +19,12 @@ class ModuleHolder(val module: Module) {
   val name get() = definition.name
 
   val jsObject by lazy {
-    JavaScriptModuleObject(this)
+    JavaScriptModuleObject(this).apply {
+      definition
+        .methods
+        .filter { (_, method) -> method.isSync }
+        .forEach { (name, method) -> registerSyncFunction(name, method.argsCount) }
+    }
   }
 
   fun call(methodName: String, args: ReadableArray, promise: Promise) = exceptionDecorator({

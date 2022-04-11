@@ -42,7 +42,9 @@ class AppContext(
   }
 
   fun onPostCreate() {
-    jsiInterop.installJSI(reactContextHolder.get()!!.javaScriptContextHolder.get())
+    reactContextHolder.get()?.javaScriptContextHolder?.get()?.let {
+      jsiInterop.installJSI(it)
+    }
   }
 
   /**
