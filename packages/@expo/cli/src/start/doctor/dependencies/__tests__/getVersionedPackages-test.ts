@@ -1,5 +1,5 @@
-import { getVersionsAsync } from '../../../api/getVersions';
-import { getBundledNativeModulesAsync } from '../../../start/doctor/dependencies/bundledNativeModules';
+import { getReleasedVersionsAsync } from '../../../../api/getVersions';
+import { getBundledNativeModulesAsync } from '../bundledNativeModules';
 import {
   getOperationLog,
   getRemoteVersionsForSdkAsync,
@@ -9,32 +9,31 @@ import {
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('../../../api/getVersions', () => ({
+jest.mock('../../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),
+  getReleasedVersionsAsync: jest.fn(),
 }));
 
-jest.mock('../../../start/doctor/dependencies/bundledNativeModules', () => ({
+jest.mock('../bundledNativeModules', () => ({
   getBundledNativeModulesAsync: jest.fn(),
 }));
 
 describe(getVersionedPackagesAsync, () => {
   it('should return versioned packages', async () => {
     asMock(getBundledNativeModulesAsync).mockResolvedValueOnce({});
-    asMock(getVersionsAsync).mockResolvedValueOnce({
-      sdkVersions: {
-        '1.0.0': {
-          relatedPackages: {
-            '@expo/vector-icons': '3.0.0',
-            'react-native': 'default',
-            react: 'default',
-            'react-dom': 'default',
-            'expo-sms': 'default',
-          },
-          facebookReactVersion: 'facebook-react',
-          facebookReactNativeVersion: 'facebook-rn',
+    asMock(getReleasedVersionsAsync).mockResolvedValueOnce({
+      '1.0.0': {
+        relatedPackages: {
+          '@expo/vector-icons': '3.0.0',
+          'react-native': 'default',
+          react: 'default',
+          'react-dom': 'default',
+          'expo-sms': 'default',
         },
+        facebookReactVersion: 'facebook-react',
+        facebookReactNativeVersion: 'facebook-rn',
       },
-    } as any);
+    });
 
     const { packages, messages } = await getVersionedPackagesAsync('/', {
       sdkVersion: '1.0.0',
@@ -77,28 +76,24 @@ describe(getOperationLog, () => {
 
 describe(getRemoteVersionsForSdkAsync, () => {
   it('returns an empty object when the SDK version is not supported', async () => {
-    asMock(getVersionsAsync).mockResolvedValueOnce({
-      sdkVersions: {},
-    } as any);
+    asMock(getReleasedVersionsAsync).mockResolvedValueOnce({});
 
     expect(await getRemoteVersionsForSdkAsync('1.0.0')).toEqual({});
   });
 
   it('returns versions for SDK with Facebook overrides', async () => {
-    asMock(getVersionsAsync).mockResolvedValueOnce({
-      sdkVersions: {
-        '1.0.0': {
-          relatedPackages: {
-            'react-native': 'default',
-            react: 'default',
-            'react-dom': 'default',
-            'expo-sms': 'default',
-          },
-          facebookReactVersion: 'facebook-react',
-          facebookReactNativeVersion: 'facebook-rn',
+    asMock(getReleasedVersionsAsync).mockResolvedValueOnce({
+      '1.0.0': {
+        relatedPackages: {
+          'react-native': 'default',
+          react: 'default',
+          'react-dom': 'default',
+          'expo-sms': 'default',
         },
+        facebookReactVersion: 'facebook-react',
+        facebookReactNativeVersion: 'facebook-rn',
       },
-    } as any);
+    });
 
     expect(await getRemoteVersionsForSdkAsync('1.0.0')).toEqual({
       'expo-sms': 'default',
