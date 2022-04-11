@@ -7,6 +7,9 @@ class AppLoading extends React.Component<AppLoadingProps> {
   _isMounted: boolean = false;
 
   componentDidMount() {
+    console.warn(
+      `expo-app-loading is deprecated in favor of expo-splash-screen: use SplashScreen.preventAutoHideAsync() and SplashScren.hideAsync() instead. https://docs.expo.dev/versions/latest/sdk/splash-screen/`
+    );
     this._isMounted = true;
 
     this.startLoadingAppResourcesAsync().catch((error) => {

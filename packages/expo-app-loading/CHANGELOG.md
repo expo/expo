@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Deprecate the library in favor of expo-splash-screen. ([#16963](https://github.com/expo/expo/pull/16963) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

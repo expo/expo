@@ -8,6 +8,8 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> **Deprecated.** Use **expo-splash-screen** directly instead: `SplashScreen.preventAutoHideAsync()` and `SplashScren.hideAsync()`. [Learn more](/versions/latest/sdk/splash-screen/).
+
 **`expo-app-loading`** tells `expo-splash-screen` to keep the splash screen visible while the AppLoading component is mounted.
 
 This is useful to download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience.
