@@ -46,10 +46,7 @@ export class ADBServer {
 
   /** Kill the ADB server. */
   async stopAsync(): Promise<boolean> {
-    Log.debug('Stopping ADB server');
-
     if (!this.isRunning) {
-      Log.debug('ADB server is not running');
       return false;
     }
     this.removeExitHook();
@@ -60,7 +57,6 @@ export class ADBServer {
       Log.error('Failed to stop ADB server: ' + error.message);
       return false;
     } finally {
-      Log.debug('Stopped ADB server');
       this.isRunning = false;
     }
   }

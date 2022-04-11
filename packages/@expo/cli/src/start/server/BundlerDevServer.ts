@@ -6,7 +6,6 @@ import resolveFrom from 'resolve-from';
 import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
-import { resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
@@ -218,34 +217,22 @@ export abstract class BundlerDevServer {
       Log.exception(e);
     });
 
-    return resolveWithTimeout(
-      () =>
-        new Promise<void>((resolve, reject) => {
-          // Close the server.
-          Log.debug(`Stopping dev server (bundler: ${this.name})`);
-
-          if (this.instance?.server) {
-            this.instance.server.close((error) => {
-              Log.debug(`Stopped dev server (bundler: ${this.name})`);
-              this.instance = null;
-              if (error) {
-                reject(error);
-              } else {
-                resolve();
-              }
-            });
+    return new Promise<void>((resolve, reject) => {
+      // Close the server.
+      if (this.instance?.server) {
+        this.instance.server.close((error) => {
+          this.instance = null;
+          if (error) {
+            reject(error);
           } else {
-            Log.debug(`Stopped dev server (bundler: ${this.name})`);
-            this.instance = null;
             resolve();
           }
-        }),
-      {
-        // NOTE(Bacon): Metro dev server doesn't seem to be closing in time.
-        timeout: 1000,
-        errorMessage: `Timeout waiting for '${this.name}' dev server to close`,
+        });
+      } else {
+        this.instance = null;
+        resolve();
       }
-    );
+    });
   }
 
   private getUrlCreator() {

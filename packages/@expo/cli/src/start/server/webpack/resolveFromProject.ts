@@ -7,10 +7,7 @@ import { CommandError } from '../../../utils/errors';
 // TODO: Maybe combine with AsyncResolver?
 class WebpackImportError extends CommandError {
   constructor(projectRoot: string, moduleId: string) {
-    super(
-      'WEBPACK_IMPORT',
-      `Missing package "${moduleId}" in the project. Try running the command again. (cwd: ${projectRoot})`
-    );
+    super('WEBPACK_IMPORT', `Missing package "${moduleId}" in the project at: ${projectRoot}`);
   }
 }
 
@@ -28,7 +25,7 @@ function importFromProject(projectRoot: string, moduleId: string) {
 
 /** Import `webpack` from the project. */
 export function importWebpackFromProject(projectRoot: string): typeof import('webpack') {
-  return importFromProject(projectRoot, 'webpack');
+  return importFromProject(projectRoot, 'webpack').default;
 }
 
 /** Import `@expo/webpack-config` from the project. */
@@ -42,5 +39,5 @@ export function importExpoWebpackConfigFromProject(
 export function importWebpackDevServerFromProject(
   projectRoot: string
 ): typeof import('webpack-dev-server') {
-  return importFromProject(projectRoot, 'webpack-dev-server');
+  return importFromProject(projectRoot, 'webpack-dev-server').default;
 }
