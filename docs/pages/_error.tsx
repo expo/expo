@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { getRedirectPath } from '~/common/error-utilities';
 import Head from '~/components/Head';
 import { Button } from '~/ui/components/Button';
+import { NotFoundImage, RedirectImage, ServerErrorImage } from '~/ui/components/ErrorPage';
 import { Layout } from '~/ui/components/Layout';
 import { H1, P } from '~/ui/components/Text';
 
@@ -15,7 +16,7 @@ const renderRedirect = () => (
   // note(simek): "redirect-link" ID is needed for test-links script
   <>
     <Head title="Redirecting" />
-    <img src="/static/images/redirect.svg" css={styles.image} alt="Redirect" />
+    <RedirectImage />
     <H1 css={styles.header}>Redirecting</H1>
     <P css={styles.description} id="redirect-link">
       Just a moment…
@@ -26,26 +27,30 @@ const renderRedirect = () => (
 const renderNotFoundAfterRedirect = () => (
   <>
     <Head title="Not Found" />
-    <img src="/static/images/404.svg" css={styles.image} alt="404" />
+    <ServerErrorImage />
     <H1 css={styles.header}>404: Not Found</H1>
     <P css={styles.description} id="__redirect_failed">
       We took an educated guess and tried to direct you to the right page, but it seems that did not
       work out! Maybe it doesn't exist anymore! 😔
     </P>
-    <Button href="/">Return Home</Button>
+    <Button theme="tertiary" href="/">
+      Return Home
+    </Button>
   </>
 );
 
 const renderNotFound = () => (
   <>
     <Head title="Not Found" />
-    <img src="/static/images/404.svg" css={styles.image} alt="404" />
+    <NotFoundImage />
     <H1 css={styles.header}>404: Not Found</H1>
     <P css={styles.description} id="__not_found">
       We couldn't find the page you were looking for. Check the URL to make sure it's correct and
       try again.
     </P>
-    <Button href="/">Return Home</Button>
+    <Button theme="tertiary" href="/">
+      Return Home
+    </Button>
   </>
 );
 
@@ -107,9 +112,11 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
+    backgroundColor: theme.background.secondary,
   }),
   header: css({
     ...typography.fontSizes[31],
+    marginTop: spacing[8],
   }),
   description: css({
     textAlign: 'center',
@@ -118,5 +125,4 @@ const styles = {
     marginBottom: spacing[8],
     color: theme.text.secondary,
   }),
-  image: css({ maxWidth: 208, marginBottom: spacing[8] }),
 };
