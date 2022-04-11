@@ -68,4 +68,4 @@ private:
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
     : javaPart_(jni::make_global(jThis)) {}
 };
-}
+} // namespace expo

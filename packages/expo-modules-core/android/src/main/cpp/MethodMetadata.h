@@ -18,4 +18,4 @@ struct MethodMetadata {
   MethodMetadata(std::string name, int args, bool isAsync)
     : name(name), args(args), isAsync(isAsync) {};
 };
-}
+} // namespace expo

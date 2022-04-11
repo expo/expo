@@ -38,4 +38,4 @@ private:
   inline jni::local_ref<JavaScriptModuleObject::javaobject>
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
 };
-}
+} // namespace expo

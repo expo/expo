@@ -11,4 +11,4 @@ JavaScriptRuntime::JavaScriptRuntime(jsi::Runtime *runtime) : runtime(runtime) {
 jsi::Runtime* JavaScriptRuntime::get() {
   return runtime;
 }
-}
+} // namespace expo
