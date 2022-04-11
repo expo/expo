@@ -47,7 +47,9 @@ class SQLiteDatabase {
 
   deleteAsync(): Promise<void> {
     if (!this._closed) {
-      throw new Error(`Unable to delete '${this._name}' database that is currently open. Close it prior to deletion.`);
+      throw new Error(
+        `Unable to delete '${this._name}' database that is currently open. Close it prior to deletion.`
+      );
     }
 
     return ExponentSQLite.deleteAsync(this._name);
