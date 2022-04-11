@@ -9,8 +9,8 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer) : installer(
-  installer) {}
+ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer)
+  : installer(installer) {}
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);
@@ -23,7 +23,6 @@ void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &na
                                 const jsi::Value &value) {
   std::string message("RuntimeError: Cannot override the host object for expo module '");
   message += name.utf8(runtime);
-  message += "'.";
   throw jsi::JSError(runtime, message);
 }
 
