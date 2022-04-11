@@ -115,7 +115,6 @@ JavaScriptModuleObject::HostObject::set(jsi::Runtime &runtime, const jsi::PropNa
                                         const jsi::Value &value) {
   std::string message("RuntimeError: Cannot override the host object for expo module '");
   message += name.utf8(runtime);
-  message += "'.";
   throw jsi::JSError(runtime, message);
 }
 

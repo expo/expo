@@ -188,10 +188,8 @@ dependencies {
     }
     def rnAAR = rnAARs.singleFile
     extractJNI(files(rnAAR))
-  } else {
-    println("oooo")
-    // TODO(@lukmccall)
   }
+  // else - there is no prebuilt react-native.aar, this is most likely Expo Go
 }
 
 /**

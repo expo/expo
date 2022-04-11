@@ -24,8 +24,8 @@ void JSIInteropModuleRegistry::registerNatives() {
                  });
 }
 
-JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref<jhybridobject> jThis) : javaPart_(
-  jni::make_global(jThis)) {}
+JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref <jhybridobject> jThis)
+  : javaPart_(jni::make_global(jThis)) {}
 
 void JSIInteropModuleRegistry::installJSI(jlong jsRuntimePointer) {
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);

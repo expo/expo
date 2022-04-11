@@ -48,12 +48,16 @@ class KotlinInteropModuleRegistry(
 
   fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> {
     return registry.associate { holder ->
-      val methodsInfo = holder.definition.methods.filter { (_, method) -> method.isSync }.map { (name, method) ->
-        mapOf(
-          "name" to name,
-          "argumentsCount" to method.argsCount
-        )
-      }
+      val methodsInfo = holder
+        .definition
+        .methods
+        .filter { (_, method) -> method.isSync }
+        .map { (name, method) ->
+          mapOf(
+            "name" to name,
+            "argumentsCount" to method.argsCount
+          )
+        }
       exportKey(holder.name, methodsInfo)
       holder.name to methodsInfo
     }
