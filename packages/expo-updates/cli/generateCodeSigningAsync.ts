@@ -56,9 +56,9 @@ export async function generateCodeSigningAsync(
   ]);
 
   log(
-    `Generated public and private keys output to ${keyOutputDir}. Remember to add them to .gitignore or to encrypt them. (e.g. with git-crypt)`
+    `Generated public and private keys output in ${keyOutputDir}. Remember to add them to .gitignore or to encrypt them. (e.g. with git-crypt)`
   );
-  log(`Generated code signing certificate output to ${certificateOutputDir}.`);
+  log(`Generated code signing certificate output in ${certificateOutputDir}.`);
   log(
     `To automatically configure this project for code signing, run \`yarn expo-updates codesigning:configure --certificate-input-directory=${certificateOutput} --key-input-directory=${keyOutput}\`.`
   );
