@@ -1,9 +1,9 @@
-#import <ABI44_0_0ExpoModulesCore/ABI44_0_0EXEventEmitterService.h>
-#import <ABI44_0_0EXAdsAdMob/ABI44_0_0EXAdsDFPBannerView.h>
+#import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXEventEmitterService.h>
+#import <ABI43_0_0EXAdsAdMob/ABI43_0_0EXAdsGAMBannerView.h>
 
-@implementation ABI44_0_0EXAdsDFPBannerView {
-  DFPBannerView *_bannerView;
-  id<ABI44_0_0EXEventEmitterService> _eventEmitter;
+@implementation ABI43_0_0EXAdsGAMBannerView {
+  GAMBannerView *_bannerView;
+  id<ABI43_0_0EXEventEmitterService> _eventEmitter;
 }
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize {
@@ -29,7 +29,7 @@
 - (void)loadBanner {
   if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError && _additionalRequestParams) {
     GADAdSize size = [self getAdSizeFromString:_bannerSize];
-    _bannerView = [[DFPBannerView alloc] initWithAdSize:size];
+    _bannerView = [[GAMBannerView alloc] initWithAdSize:size];
     [_bannerView setAppEventDelegate:self];
     if (!CGRectEqualToRect(self.bounds, _bannerView.bounds)) {
       if (self.onSizeChange) {
@@ -50,19 +50,19 @@
   }
 }
 
-- (void)setOnSizeChange:(ABI44_0_0EXDirectEventBlock)block
+- (void)setOnSizeChange:(ABI43_0_0EXDirectEventBlock)block
 {
   _onSizeChange = block;
   [self loadBanner];
 }
 
-- (void)setOnDidFailToReceiveAdWithError:(ABI44_0_0EXDirectEventBlock)block
+- (void)setOnDidFailToReceiveAdWithError:(ABI43_0_0EXDirectEventBlock)block
 {
   _onDidFailToReceiveAdWithError = block;
   [self loadBanner];
 }
 
-- (void)adView:(DFPBannerView *)banner didReceiveAppEvent:(NSString *)name withInfo:(NSString *)info {
+- (void)adView:(GAMBannerView *)banner didReceiveAppEvent:(NSString *)name withInfo:(NSString *)info {
   if (self.onAdmobDispatchAppEvent) {
     self.onAdmobDispatchAppEvent(@{name : info});
   }
@@ -84,7 +84,7 @@
     if (_bannerView) {
       [_bannerView removeFromSuperview];
     }
-    
+
     [self loadBanner];
   }
 }
@@ -116,14 +116,14 @@
 }
 
 /// Tells the delegate an ad request loaded an ad.
-- (void)adViewDidReceiveAd:(DFPBannerView *)adView {
+- (void)adViewDidReceiveAd:(GAMBannerView *)adView {
   if (self.onAdViewDidReceiveAd) {
     self.onAdViewDidReceiveAd(@{});
   }
 }
 
 /// Tells the delegate an ad request failed.
-- (void)adView:(DFPBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
+- (void)adView:(GAMBannerView *)adView didFailToReceiveAdWithError:(NSError *)error {
   if (self.onDidFailToReceiveAdWithError) {
     self.onDidFailToReceiveAdWithError(@{ @"error" : [error description] });
   }
@@ -131,21 +131,21 @@
 
 /// Tells the delegate that a full screen view will be presented in response
 /// to the user clicking on an ad.
-- (void)adViewWillPresentScreen:(DFPBannerView *)adView {
+- (void)adViewWillPresentScreen:(GAMBannerView *)adView {
   if (self.onAdViewWillPresentScreen) {
     self.onAdViewWillPresentScreen(@{});
   }
 }
 
 /// Tells the delegate that the full screen view will be dismissed.
-- (void)adViewWillDismissScreen:(DFPBannerView *)adView {
+- (void)adViewWillDismissScreen:(GAMBannerView *)adView {
   if (self.onAdViewWillDismissScreen) {
     self.onAdViewWillDismissScreen(@{});
   }
 }
 
 /// Tells the delegate that the full screen view has been dismissed.
-- (void)adViewDidDismissScreen:(DFPBannerView *)adView {
+- (void)adViewDidDismissScreen:(GAMBannerView *)adView {
   if (self.onAdViewDidDismissScreen) {
     self.onAdViewDidDismissScreen(@{});
   }
@@ -153,7 +153,7 @@
 
 /// Tells the delegate that a user click will open another app (such as
 /// the App Store), backgrounding the current app.
-- (void)adViewWillLeaveApplication:(DFPBannerView *)adView {
+- (void)adViewWillLeaveApplication:(GAMBannerView *)adView {
   if (self.onAdViewWillLeaveApplication) {
     self.onAdViewWillLeaveApplication(@{});
   }
