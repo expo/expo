@@ -17,4 +17,4 @@ public:
 private:
   jsi::Runtime *runtime;
 };
-}
+} // namespace expo

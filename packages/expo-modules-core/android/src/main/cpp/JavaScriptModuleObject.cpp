@@ -133,4 +133,4 @@ JavaScriptModuleObject::HostObject::getPropertyNames(jsi::Runtime &rt) {
 
   return result;
 }
-}
+} // namespace expo
