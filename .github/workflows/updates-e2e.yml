@@ -70,10 +70,34 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init updates-e2e --yes
-      - name: Add local expo-updates and dependencies
+      - name: Add yarn resolutions for local dependencies
         working-directory: ../updates-e2e
-        # install expo packages (including transitive packages) locally
-        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-eas-client file:../expo/packages/expo-modules-core file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface file:../expo/packages/expo-constants file:../expo/packages/expo-file-system file:../expo/packages/expo-font file:../expo/packages/expo-keep-awake file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar file:../expo/packages/expo-application file:../expo/packages/expo-error-recovery
+        run: |
+          # A jq filter to add a "resolutions" field
+          JQ_FILTER=$(cat << EOF
+            . + {
+              resolutions: {
+                "expo-application": "file:../expo/packages/expo-application",
+                "expo-constants": "file:../expo/packages/expo-constants",
+                "expo-eas-client": "file:../expo/packages/expo-eas-client",
+                "expo-error-recovery": "file:../expo/packages/expo-error-recovery",
+                "expo-file-system": "file:../expo/packages/expo-file-system",
+                "expo-font": "file:../expo/packages/expo-font",
+                "expo-json-utils": "file:../expo/packages/expo-json-utils",
+                "expo-keep-awake": "file:../expo/packages/expo-keep-awake",
+                "expo-manifests": "file:../expo/packages/expo-manifests",
+                "expo-modules-core": "file:../expo/packages/expo-modules-core",
+                "expo-structured-headers": "file:../expo/packages/expo-structured-headers",
+                "expo-updates-interface": "file:../expo/packages/expo-updates-interface"
+              }
+            }
+          EOF
+          )
+          jq "$JQ_FILTER" < package.json > new-package.json
+          mv new-package.json package.json
+      - name: Add local expo packages
+        working-directory: ../updates-e2e
+        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
