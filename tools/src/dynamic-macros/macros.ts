@@ -3,9 +3,9 @@ import spawnAsync from '@expo/spawn-async';
 import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
 import ip from 'ip';
+import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
-import request from 'request-promise-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getExpoRepositoryRootDir } from '../Directories';
@@ -91,12 +91,9 @@ export default {
     try {
       const lanAddress = ip.address();
       const localServerUrl = `http://${lanAddress}:3013`;
-      const result = await request.get({
-        url: `${localServerUrl}/expo-test-server-status`,
-        timeout: 500, // ms
-        resolveWithFullResponse: true,
-      });
-      if (result.body === 'running!') {
+      const response = await fetch(`${localServerUrl}/expo-test-server-status`, { timeout: 500 });
+      const data = await response.text();
+      if (data === 'running!') {
         url = localServerUrl;
       }
     } catch {}
