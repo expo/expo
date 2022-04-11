@@ -1,8 +1,12 @@
 import { vol } from 'memfs';
 
+import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { APISettings } from '../../api/settings';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
 import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
 jest.mock('@expo/code-signing-certificates', () => ({
   ...(jest.requireActual(
@@ -71,6 +75,43 @@ describe(getCodeSigningInfoAsync, () => {
           undefined
         );
         expect(result).toBeNull();
+      });
+
+      it('falls back to cached when there is a network error', async () => {
+        const result = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+
+        asMock(getProjectDevelopmentCertificateAsync).mockImplementationOnce(
+          async (): Promise<string> => {
+            throw Error('wat');
+          }
+        );
+
+        const result2 = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+        expect(result2).toEqual(result);
+      });
+
+      it('throws when it tried to falls back to cached when there is a network error but no cached value exists', async () => {
+        asMock(getProjectDevelopmentCertificateAsync).mockImplementationOnce(
+          async (): Promise<string> => {
+            throw Error('wat');
+          }
+        );
+
+        await expect(
+          getCodeSigningInfoAsync(
+            { extra: { eas: { projectId: 'testprojectid' } } } as any,
+            'keyid="expo-root", alg="rsa-v1_5-sha256"',
+            undefined
+          )
+        ).rejects.toThrowError('wat');
       });
 
       it('falls back to cached when offline', async () => {

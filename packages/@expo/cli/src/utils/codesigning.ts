@@ -173,13 +173,6 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
     return null;
   }
 
-  // 1. If online, ensure logged in, generate key pair and CSR, fetch and cache certificate chain for projectId
-  //    (overwriting existing dev cert in case projectId changed or it has expired)
-  if (!APISettings.isOffline) {
-    return await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
-  }
-
-  // 2. check for cached cert/private key matching projectId and scopeKey of project, if found and valid return private key and cert chain including expo-go cert
   const developmentCodeSigningInfoFromFile = await DevelopmentCodeSigningInfoFile.readAsync(
     easProjectId
   );
@@ -187,6 +180,25 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
     developmentCodeSigningInfoFromFile,
     easProjectId
   );
+
+  // 1. If online, ensure logged in, generate key pair and CSR, fetch and cache certificate chain for projectId
+  //    (overwriting existing dev cert in case projectId changed or it has expired)
+  if (!APISettings.isOffline) {
+    try {
+      return await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
+    } catch (e) {
+      if (validatedCodeSigningInfo) {
+        Log.warn(
+          'There was an error fetching the Expo development certificate, falling back to cached certificate'
+        );
+        return validatedCodeSigningInfo;
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  // 2. check for cached cert/private key matching projectId and scopeKey of project, if found and valid return private key and cert chain including expo-go cert
   if (validatedCodeSigningInfo) {
     return validatedCodeSigningInfo;
   }
