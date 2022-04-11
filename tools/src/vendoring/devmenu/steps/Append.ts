@@ -25,17 +25,17 @@ export class Append extends Task {
     this.append = append;
   }
 
-  protected overrideWorkingDirectory(): string | undefined {
-    return this.source;
+  protected overrideWorkingDirectory(): string {
+    return this.source || '<workingDirectory>';
   }
 
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
     this.logSubStep(
-      `➕ append to ${chalk.green(
-        this.overrideWorkingDirectory() || '<workingDirectory>'
-      )}/${chalk.yellow(this.filePattern)}`
+      `➕ append to ${chalk.green(this.overrideWorkingDirectory())}/${chalk.yellow(
+        this.filePattern
+      )}`
     );
 
     const files = await findFiles(workDirectory, this.filePattern);

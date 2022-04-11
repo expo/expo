@@ -11,7 +11,7 @@ export class TransformFilesName extends TransformFilesContent {
 
     this.logSubStep(
       `🔄 find ${chalk.yellow(this.find.toString())} in files names in path ${chalk.green(
-        this.overrideWorkingDirectory() || '<workingDirectory>'
+        this.overrideWorkingDirectory()
       )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`
     );
 

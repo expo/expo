@@ -31,8 +31,8 @@ export class TransformFilesContent extends Task {
     this.replace = replace;
   }
 
-  protected overrideWorkingDirectory(): string | undefined {
-    return this.source;
+  protected overrideWorkingDirectory(): string {
+    return this.source || '<workingDirectory>';
   }
 
   async execute() {
@@ -40,7 +40,7 @@ export class TransformFilesContent extends Task {
 
     this.logSubStep(
       `🔄 find ${chalk.yellow(this.find.toString())} in ${chalk.green(
-        this.overrideWorkingDirectory() || '<workingDirectory>'
+        this.overrideWorkingDirectory()
       )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`
     );
 

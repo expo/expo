@@ -31,11 +31,11 @@ export abstract class Task {
   /**
    * We want to have a way to change working directory using task's settings.
    * For example, we could run pipe in the temp directory but one task from it in the repo.
-   * It's ignored if undefined was returned.
+   * It's ignored if `null` was returned.
    * @returns the override working directory for task.
    */
-  protected overrideWorkingDirectory(): string | undefined {
-    return undefined;
+  protected overrideWorkingDirectory(): string | null {
+    return null;
   }
 
   /**
