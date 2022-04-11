@@ -7,7 +7,7 @@ import { getBundledNativeModulesAsync } from './bundledNativeModules';
 export type DependencyList = Record<string, string>;
 
 export async function getRemoteVersionsForSdkAsync(sdkVersion?: string): Promise<DependencyList> {
-  const { sdkVersions } = await getReleasedVersionsAsync({ skipCache: true });
+  const sdkVersions = await getReleasedVersionsAsync({ skipCache: true });
 
   // We only want versioned dependencies so skip if they cannot be found.
   if (!sdkVersion || !(sdkVersion in sdkVersions)) {
