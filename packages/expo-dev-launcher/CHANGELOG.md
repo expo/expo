@@ -29,6 +29,7 @@
 - Compatibility with expo-dev-menu auto-setup on iOS. ([#16496](https://github.com/expo/expo/pull/16496) by [@esamelson](https://github.com/esamelson))
 - Remove initialization side effects. ([#16522](https://github.com/expo/expo/pull/16522) by [@esamelson](https://github.com/esamelson))
 - Use expo-manifests `logUrl` getter instead of accessing raw JSON. ([#16709](https://github.com/expo/expo/pull/16709) by [@esamelson](https://github.com/esamelson))
+- Add ability for to launch a specific update through expo-updates-interface. ([#16865](https://github.com/expo/expo/pull/16865) by [@esamelson](https://github.com/esamelson))
 
 ## 0.10.4 — 2022-02-07
 
