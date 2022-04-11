@@ -2,9 +2,9 @@ import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 
 import * as Log from '../log';
+import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { Options } from './resolveOptions';
-import { getVersionedPackagesAsync } from './utils/getVersionedPackages';
 
 export async function installAsync(
   packages: string[],

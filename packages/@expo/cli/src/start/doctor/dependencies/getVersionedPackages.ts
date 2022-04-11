@@ -1,13 +1,13 @@
 import npmPackageArg from 'npm-package-arg';
 
-import { getVersionsAsync } from '../../api/getVersions';
-import * as Log from '../../log';
-import { getBundledNativeModulesAsync } from '../../start/doctor/dependencies/bundledNativeModules';
+import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
+import * as Log from '../../../log';
+import { getBundledNativeModulesAsync } from './bundledNativeModules';
 
 export type DependencyList = Record<string, string>;
 
 export async function getRemoteVersionsForSdkAsync(sdkVersion?: string): Promise<DependencyList> {
-  const { sdkVersions } = await getVersionsAsync({ skipCache: true });
+  const sdkVersions = await getReleasedVersionsAsync({ skipCache: true });
 
   // We only want versioned dependencies so skip if they cannot be found.
   if (!sdkVersion || !(sdkVersion in sdkVersions)) {
@@ -19,8 +19,14 @@ export async function getRemoteVersionsForSdkAsync(sdkVersion?: string): Promise
     return {};
   }
 
+  const version = sdkVersions[sdkVersion as keyof typeof sdkVersions] as unknown as SDKVersion;
+
+  if (!version) {
+    return {};
+  }
+
   const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } =
-    sdkVersions[sdkVersion];
+    version as SDKVersion;
 
   const reactVersion = facebookReactVersion
     ? {
