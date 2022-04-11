@@ -101,18 +101,24 @@ const Error = () => {
     return undefined;
   };
 
-  return <Layout cssContent={styles.container}>{getContent()}</Layout>;
+  return (
+    <Layout cssLayout={styles.layout} cssContent={styles.container}>
+      {getContent()}
+    </Layout>
+  );
 };
 
 export default Error;
 
 const styles = {
+  layout: css({
+    backgroundColor: theme.background.secondary,
+  }),
   container: css({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    backgroundColor: theme.background.secondary,
   }),
   header: css({
     ...typography.fontSizes[31],

@@ -20,6 +20,10 @@ type LayoutProps = PropsWithChildren<{
    */
   sidebar?: ReactNode;
   /**
+   * Custom CSS for the whole layout.
+   */
+  cssLayout?: SerializedStyles;
+  /**
    * Custom CSS for the main content wrapper.
    */
   cssContent?: SerializedStyles;
@@ -30,6 +34,7 @@ export const Layout = ({
   navigation,
   sidebar,
   children,
+  cssLayout = undefined,
   cssContent = undefined,
 }: LayoutProps) => (
   <>
@@ -42,7 +47,7 @@ export const Layout = ({
       })}
     />
     <header css={headerStyle}>{header}</header>
-    <main css={layoutStyle}>
+    <main css={[layoutStyle, cssLayout]}>
       {navigation && <nav css={navigationStyle}>{navigation}</nav>}
       <LayoutScroll>
         <article css={[innerContentStyle, cssContent]}>{children}</article>
