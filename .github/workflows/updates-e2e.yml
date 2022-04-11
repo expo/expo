@@ -37,15 +37,15 @@ jobs:
       UPDATES_PORT: 4747
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: false
       - name: 🔨 Use JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -95,7 +95,7 @@ jobs:
       - name: Copy APK to working directory
         run: cp -R ../updates-e2e/android/app/build/outputs/apk artifact
       - name: Upload test APK artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: updates-e2e-android-apk
           path: artifact

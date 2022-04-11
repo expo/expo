@@ -45,7 +45,7 @@ jobs:
     runs-on: macos-11
     steps:
       - name: 👀 Checkout a ref for the event
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
@@ -122,7 +122,7 @@ jobs:
           IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
       - name: 💾 Save test results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: fastlane-logs
           path: ~/Library/Logs/fastlane
