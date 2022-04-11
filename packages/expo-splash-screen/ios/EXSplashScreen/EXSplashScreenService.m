@@ -6,6 +6,7 @@
 
 static NSString * const kRootViewController = @"rootViewController";
 static NSString * const kView = @"view";
+static NSString * const kHideSplashScreenEvent = @"hideEXSplashScreen";
 
 @interface EXSplashScreenService ()
 
@@ -31,8 +32,15 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   if (self = [super init]) {
     _splashScreenControllers = [NSMapTable weakToStrongObjectsMapTable];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleHideSplashScreen) name:kHideSplashScreenEvent object:nil];
   }
+  
   return self;
+}
+
+-(void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
@@ -194,6 +202,22 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
       [self.splashScreenControllers removeObjectForKey:viewController];
       [self showSplashScreenFor:viewController];
     }
+  }
+}
+
+// Manually hides the splashscreen for a given view controller
+// Post notification "hideEXSplashScreen" with notification.userInfo["viewController"]
+// Used by EXDevLauncherErrorManager to display deep link errors as the root VC 
+-(void)handleHideSplashScreen:(NSNotification *)notification
+{
+  UIViewController *viewController = [notification.userInfo objectForKey:@"viewController"];
+  
+  if (viewController != nil) {
+    [self hideSplashScreenFor:viewController successCallback:^(BOOL hasEffect) {} failureCallback:^(NSString * _Nonnull message) {
+      NSLog(@"%@", message);
+    }];
+  } else {
+    NSLog(@"handleHideSplashScreen was called without the required viewController key");
   }
 }
 

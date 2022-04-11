@@ -31,6 +31,9 @@ public class EXDevLauncherErrorManager: NSObject {
     self.error = error
     currentVC = nextViewController
     controller?.currentWindow()?.rootViewController = currentVC
+    controller?.currentWindow()?.makeKeyAndVisible()
+    
+    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "hideEXSplashScreen"), object: nil)
   }
 
   private func getNextErrorViewController() -> EXDevLauncherErrorViewController? {
