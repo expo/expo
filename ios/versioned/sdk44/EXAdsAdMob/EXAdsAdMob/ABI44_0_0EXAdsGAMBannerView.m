@@ -123,7 +123,7 @@
 }
 
 /// Tells the delegate an ad request failed.
-- (void)adView:(GAMBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
+- (void)adView:(GAMBannerView *)adView didFailToReceiveAdWithError:(NSError *)error {
   if (self.onDidFailToReceiveAdWithError) {
     self.onDidFailToReceiveAdWithError(@{ @"error" : [error description] });
   }
