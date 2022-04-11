@@ -51,7 +51,7 @@ class KotlinInteropModuleRegistry(
       val methodsInfo = holder
         .definition
         .methods
-        .filter { (_, method) -> method.isSync }
+        .filter { (_, method) -> !method.isSync }
         .map { (name, method) ->
           mapOf(
             "name" to name,
