@@ -92,6 +92,7 @@ export interface WebSQLDatabase extends Database {
     closeAsync(): void;
     /**
      * Delete the database file.
+     * > The database has to be closed prior to deletion.
      */
     deleteAsync(): Promise<void>;
 }
