@@ -120,12 +120,12 @@ EX_EXPORT_METHOD_AS(deleteAsync,
     return;
   }
   if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-    reject(errorCode, @"Database not found", nil);
+    reject(errorCode, [NSString stringWithFormat:@"Database '%@' not found", dbName], nil);
     return;
   }
   NSError *error;
   if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
-    reject(errorCode, @"Unable to delete the database file", error);
+    reject(errorCode, [NSString stringWithFormat:@"Unable to delete the database file for '%@' database", dbName], error);
     return;
   }
   resolve(nil);
