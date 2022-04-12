@@ -15,37 +15,19 @@
 #import "AIRMapCoordinate.h"
 #import "AIRMap.h"
 #import "RCTConvert+AirMap.h"
-#import "AIRMapUrlTileCachedOverlay.h"
 
-@interface AIRMapUrlTile : MKAnnotationView <MKOverlay> {
-	BOOL _urlTemplateSet;
-	BOOL _tileSizeSet;
-	BOOL _flipYSet;
-	BOOL _tileCachePathSet;
-	BOOL _tileCacheMaxAgeSet;
-	BOOL _maximumNativeZSet;
-	BOOL _cachedOverlayCreated;
-	BOOL _opacitySet;
-}
+@interface AIRMapUrlTile : MKAnnotationView <MKOverlay>
 
 @property (nonatomic, weak) AIRMap *map;
 
-@property (nonatomic, strong) AIRMapUrlTileCachedOverlay *tileOverlay;
+@property (nonatomic, strong) MKTileOverlay *tileOverlay;
 @property (nonatomic, strong) MKTileOverlayRenderer *renderer;
 @property (nonatomic, copy) NSString *urlTemplate;
 @property NSInteger maximumZ;
-@property NSInteger maximumNativeZ;
 @property NSInteger minimumZ;
 @property BOOL flipY;
 @property BOOL shouldReplaceMapContent;
-@property NSInteger tileSize;
-@property (nonatomic, copy) NSString *tileCachePath;
-@property NSInteger tileCacheMaxAge;
-@property BOOL offlineMode;
-@property CGFloat opacity;
-
-- (void)updateProperties;
-- (void)update;
+@property CGFloat tileSize;
 
 #pragma mark MKOverlay protocol
 

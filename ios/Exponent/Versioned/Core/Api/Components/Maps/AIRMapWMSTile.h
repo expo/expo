@@ -16,20 +16,26 @@
 #import "AIRMapCoordinate.h"
 #import "AIRMap.h"
 #import "RCTConvert+AirMap.h"
-#import "AIRMapUrlTile.h"
-#import "AIRMapUrlTileCachedOverlay.h"
 
-@interface AIRMapWMSTile : AIRMapUrlTile <MKOverlay>
+@interface AIRMapWMSTile : MKAnnotationView <MKOverlay>
+
+@property (nonatomic, weak) AIRMap *map;
+
+@property (nonatomic, strong) MKTileOverlay *tileOverlay;
+@property (nonatomic, strong) MKTileOverlayRenderer *renderer;
+@property (nonatomic, copy) NSString *urlTemplate;
+@property NSInteger maximumZ;
+@property NSInteger minimumZ;
+@property NSInteger tileSize;
+@property BOOL shouldReplaceMapContent;
+
+#pragma mark MKOverlay protocol
+
+@property(nonatomic, readonly) CLLocationCoordinate2D coordinate;
+@property(nonatomic, readonly) MKMapRect boundingMapRect;
+- (BOOL)canReplaceMapContent;
 @end
 
-@interface AIRMapWMSTileOverlay : MKTileOverlay
-@end
-
-@interface AIRMapWMSTileCachedOverlay : AIRMapUrlTileCachedOverlay
-@end
-
-@interface AIRMapWMSTileHelper : NSObject
-
-+ (NSURL *)URLForTilePath:(MKTileOverlayPath)path withURLTemplate:(NSString *)URLTemplate withTileSize:(NSInteger)tileSize;
-
+@interface TileOverlay : MKTileOverlay
+@property (nonatomic) double MapX,MapY,FULL;
 @end

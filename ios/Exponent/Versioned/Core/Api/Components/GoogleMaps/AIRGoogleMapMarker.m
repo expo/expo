@@ -391,14 +391,6 @@ CGRect unionRect(CGRect a, CGRect b) {
   return _realMarker.draggable;
 }
 
-- (void)setTappable:(BOOL)tappable {
-  _realMarker.tappable = tappable;
-}
-
-- (BOOL)tappable {
-  return _realMarker.tappable;
-}
-
 - (void)setFlat:(BOOL)flat {
   _realMarker.flat = flat;
 }

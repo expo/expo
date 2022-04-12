@@ -9,108 +9,141 @@
 #import "AIRMapWMSTile.h"
 #import <React/UIView+React.h>
 
-@implementation AIRMapWMSTile
- 
-- (void)createTileOverlayAndRendererIfPossible
+@implementation AIRMapWMSTile {
+    BOOL _urlTemplateSet;
+}
+
+- (void)setShouldReplaceMapContent:(BOOL)shouldReplaceMapContent
+{
+  _shouldReplaceMapContent = shouldReplaceMapContent;
+  if(self.tileOverlay) {
+    self.tileOverlay.canReplaceMapContent = _shouldReplaceMapContent;
+  }
+  [self update];
+}
+
+- (void)setMaximumZ:(NSUInteger)maximumZ
+{
+  _maximumZ = maximumZ;
+  if(self.tileOverlay) {
+    self.tileOverlay.maximumZ = _maximumZ;
+  }
+  [self update];
+}
+
+- (void)setMinimumZ:(NSUInteger)minimumZ
+{
+  _minimumZ = minimumZ;
+  if(self.tileOverlay) {
+    self.tileOverlay.minimumZ = _minimumZ;
+  }
+  [self update];
+}
+
+- (void)setTileSize:(NSInteger)tileSize
+{
+    _tileSize = tileSize;
+    if(self.tileOverlay) {
+        self.tileOverlay.tileSize = CGSizeMake(tileSize, tileSize);
+    }
+    [self update];
+}
+- (void)setUrlTemplate:(NSString *)urlTemplate{
+    _urlTemplate = urlTemplate;
+    _urlTemplateSet = YES;
+    [self createTileOverlayAndRendererIfPossible];
+    [self update];
+}
+
+- (void) createTileOverlayAndRendererIfPossible
 {
     if (!_urlTemplateSet) return;
-    if (_tileCachePathSet || _maximumNativeZSet) {
-        NSLog(@"tileCache new overlay dir %@", self.tileCachePath);
-        NSLog(@"tileCache %d", _tileCachePathSet);
-        NSLog(@"tileCache %d", _maximumNativeZSet);
-        self.tileOverlay = [[AIRMapWMSTileCachedOverlay alloc] initWithURLTemplate:self.urlTemplate];
-        _cachedOverlayCreated = YES;
-        if (_tileCachePathSet) {
-            NSURL *urlPath = [NSURL URLWithString:[self.tileCachePath stringByAppendingString:@"/"]];
-            if (urlPath.fileURL) {
-                self.tileOverlay.tileCachePath = urlPath;
-            } else {
-                NSURL *filePath = [NSURL fileURLWithPath:self.tileCachePath isDirectory:YES];
-                self.tileOverlay.tileCachePath = filePath;
-            }
+    self.tileOverlay  = [[TileOverlay alloc] initWithURLTemplate:self.urlTemplate];
+    self.tileOverlay.canReplaceMapContent = self.shouldReplaceMapContent;
 
-            if (_tileCacheMaxAgeSet) {
-                self.tileOverlay.tileCacheMaxAge = self.tileCacheMaxAge;
-            }
-        }
-    } else {
-        NSLog(@"tileCache normal overlay");
-        self.tileOverlay = [[AIRMapWMSTileOverlay alloc] initWithURLTemplate:self.urlTemplate];
-        _cachedOverlayCreated = NO;
+    if(self.minimumZ) {
+        self.tileOverlay.minimumZ = self.minimumZ;
     }
-
-    [self updateProperties];
-
+    if (self.maximumZ) {
+        self.tileOverlay.maximumZ = self.maximumZ;
+    }
+    if (self.tileSize) {
+        self.tileOverlay.tileSize = CGSizeMake(self.tileSize, self.tileSize);;
+    }
     self.renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:self.tileOverlay];
-    if (_opacitySet) {
-        self.renderer.alpha = self.opacity;
+}
+
+- (void) update
+{
+    if (!_renderer) return;
+    
+    if (_map == nil) return;
+    [_map removeOverlay:self];
+    [_map addOverlay:self level:MKOverlayLevelAboveLabels];
+    for (id<MKOverlay> overlay in _map.overlays) {
+        if ([overlay isKindOfClass:[AIRMapWMSTile class]]) {
+            continue;
+        }
+        [_map removeOverlay:overlay];
+        [_map addOverlay:overlay];
     }
 }
 
+#pragma mark MKOverlay implementation
+
+- (CLLocationCoordinate2D) coordinate
+{
+    return self.tileOverlay.coordinate;
+}
+
+- (MKMapRect) boundingMapRect
+{
+    return self.tileOverlay.boundingMapRect;
+}
+
+- (BOOL)canReplaceMapContent
+{
+    return self.tileOverlay.canReplaceMapContent;
+}
+
 @end
 
+@implementation TileOverlay
+@synthesize MapX;
+@synthesize MapY;
+@synthesize FULL;
 
-@implementation AIRMapWMSTileOverlay
-
-- (id)initWithURLTemplate:(NSString *)URLTemplate 
-{
+-(id) initWithURLTemplate:(NSString *)URLTemplate {
     self = [super initWithURLTemplate:URLTemplate];
-    return self;
+    MapX = -20037508.34789244;
+    MapY = 20037508.34789244;
+    FULL = 20037508.34789244 * 2;
+    return self ;
 }
 
-- (NSURL *)URLForTilePath:(MKTileOverlayPath)path
-{
-   return [AIRMapWMSTileHelper URLForTilePath:path withURLTemplate:self.URLTemplate withTileSize:self.tileSize.width];
-}
-
-@end
-
-
-@implementation AIRMapWMSTileCachedOverlay
-
-- (id)initWithURLTemplate:(NSString *)URLTemplate 
-{
-    self = [super initWithURLTemplate:URLTemplate];
-    return self;
-}
-
-- (NSURL *)URLForTilePath:(MKTileOverlayPath)path
-{
-   return [AIRMapWMSTileHelper URLForTilePath:path withURLTemplate:self.URLTemplate withTileSize:self.tileSize.width];
-}
-
-@end
-
-
-@implementation AIRMapWMSTileHelper 
-+ (NSURL *)URLForTilePath:(MKTileOverlayPath)path withURLTemplate:(NSString *)URLTemplate withTileSize:(NSInteger)tileSize
-{
+-(NSURL *)URLForTilePath:(MKTileOverlayPath)path{
     NSArray *bb = [self getBoundBox:path.x yAxis:path.y zoom:path.z];
-    NSMutableString *url = [URLTemplate mutableCopy];
+    NSMutableString *url = [self.URLTemplate mutableCopy];
     [url replaceOccurrencesOfString: @"{minX}" withString:[NSString stringWithFormat:@"%@", bb[0]] options:0 range:NSMakeRange(0, url.length)];
     [url replaceOccurrencesOfString: @"{minY}" withString:[NSString stringWithFormat:@"%@", bb[1]] options:0 range:NSMakeRange(0, url.length)];
     [url replaceOccurrencesOfString: @"{maxX}" withString:[NSString stringWithFormat:@"%@", bb[2]] options:0 range:NSMakeRange(0, url.length)];
     [url replaceOccurrencesOfString: @"{maxY}" withString:[NSString stringWithFormat:@"%@", bb[3]] options:0 range:NSMakeRange(0, url.length)];
-    [url replaceOccurrencesOfString: @"{width}" withString:[NSString stringWithFormat:@"%d", (int)tileSize] options:0 range:NSMakeRange(0, url.length)];
-    [url replaceOccurrencesOfString: @"{height}" withString:[NSString stringWithFormat:@"%d", (int)tileSize] options:0 range:NSMakeRange(0, url.length)];
+    [url replaceOccurrencesOfString: @"{width}" withString:[NSString stringWithFormat:@"%d", (int)self.tileSize.width] options:0 range:NSMakeRange(0, url.length)];
+    [url replaceOccurrencesOfString: @"{height}" withString:[NSString stringWithFormat:@"%d", (int)self.tileSize.height] options:0 range:NSMakeRange(0, url.length)];
     return [NSURL URLWithString:url];
 }
 
-+ (NSArray *)getBoundBox:(NSInteger)x yAxis:(NSInteger)y zoom:(NSInteger)zoom
-{
-    double MapX = -20037508.34789244;
-    double MapY = 20037508.34789244;
-    double FULL = 20037508.34789244 * 2;
+-(NSArray *)getBoundBox:(NSInteger)x yAxis:(NSInteger)y zoom:(NSInteger)zoom{
     double tile = FULL / pow(2.0, (double)zoom);
     
     NSArray *result  =[[NSArray alloc] initWithObjects:
-                       [NSNumber numberWithDouble:MapX + (double)x * tile],
-                       [NSNumber numberWithDouble:MapY - (double)(y + 1) * tile],
-                       [NSNumber numberWithDouble:MapX + (double)(x + 1) * tile],
-                       [NSNumber numberWithDouble:MapY - (double)y * tile],
+                       [NSNumber numberWithDouble:MapX + (double)x * tile ],
+                       [NSNumber numberWithDouble:MapY - (double)(y+1) * tile ],
+                       [NSNumber numberWithDouble:MapX + (double)(x+1) * tile ],
+                       [NSNumber numberWithDouble:MapY - (double)y * tile ],
                        nil];
     
-    return result;   
+    return result;
+    
 }
-
 @end

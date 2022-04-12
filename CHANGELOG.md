@@ -21,7 +21,6 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-safe-area-context` from `3.3.2` to `4.2.4`. ([#16939](https://github.com/expo/expo/pull/16939) by [@kudo](https://github.com/kudo))
 - Updated `@stripe/stripe-react-native` from `0.2.3` to `0.6.0`. ([#16938](https://github.com/expo/expo/pull/16938) by [@kudo](https://github.com/kudo))
 - Updated `react-native-reanimated` from `2.4.1` to `2.7.0`. ([#16956](https://github.com/expo/expo/pull/16956) by [@tsapeta](https://github.com/tsapeta))
-- Updated `react-native-maps` from `0.29.4` to `0.30.1`. ([#16944](https://github.com/expo/expo/pull/16944) by [@bycedric](https://github.com/bycedric))
 
 ### 🛠 Breaking changes
 
