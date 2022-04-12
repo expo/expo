@@ -148,7 +148,9 @@ async function action(options: ActionOptions): Promise<void> {
     throw new Error('EXPO_HOME_DEV_ACCOUNT_PASSWORD must be set in your environment.');
   }
 
-  const expoHomeHashNode = await hashElement(EXPO_HOME_PATH);
+  const expoHomeHashNode = await hashElement(EXPO_HOME_PATH, {
+    folders: { exclude: ['.expo', 'node_modules'] },
+  });
   const appJsonFilePath = path.join(EXPO_HOME_PATH, 'app.json');
   const slug = `expo-home-dev-${expoHomeHashNode.hash}`;
   const url = `exp://exp.host/@${EXPO_HOME_DEV_ACCOUNT_USERNAME!}/${slug}`;
