@@ -197,23 +197,6 @@ const withDevLauncherPodfile = (config) => {
         },
     ]);
 };
-const withErrorHandling = (config) => {
-    const injectErrorHandlers = async (config) => {
-        await editIndex(config, (index) => {
-            if (!DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX.test(index)) {
-                index = `import 'expo-dev-client';\n\n${index}`;
-            }
-            return index;
-        });
-        return config;
-    };
-    // We need to run the same task twice to ensure it will work on both platforms,
-    // because if someone runs `expo run:ios`, it will trigger only dangerous mode for that specific platform.
-    // Note: after the first execution, the second one won't change anything.
-    config = (0, config_plugins_1.withDangerousMod)(config, ['android', injectErrorHandlers]);
-    config = (0, config_plugins_1.withDangerousMod)(config, ['ios', injectErrorHandlers]);
-    return config;
-};
 const withDevLauncher = (config) => {
     // projects using SDKs before 45 need the old regex-based integration
     // TODO: remove these once we drop support for SDK 44
@@ -223,7 +206,6 @@ const withDevLauncher = (config) => {
         config = withDevLauncherPodfile(config);
         config = (0, withDevLauncherAppDelegate_1.withDevLauncherAppDelegate)(config);
     }
-    config = withErrorHandling(config);
     return config;
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevLauncher, pkg.name, pkg.version);
