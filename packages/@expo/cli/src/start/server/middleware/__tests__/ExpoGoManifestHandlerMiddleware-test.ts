@@ -295,14 +295,67 @@ describe('_getManifestResponseAsync', () => {
 
   it('returns a code signed manifest with developers own key when requested', async () => {
     vol.fromJSON({
-      'certs/cert.pem': mockSelfSigned.certificate,
+      'keys/cert.pem': mockSelfSigned.certificate,
+      'keys/private-key.pem': mockSelfSigned.privateKey,
+    });
+
+    const middleware = createMiddleware({
+      updates: {
+        codeSigningCertificate: 'keys/cert.pem',
+        codeSigningMetadata: {
+          keyid: 'testkeyid',
+          alg: 'rsa-v1_5-sha256',
+        },
+      },
+    });
+
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
+      platform: 'android',
+      acceptSignature: false,
+      expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    const { body, headers } = await getMultipartPartAsync('manifest', results);
+    expect(headers.get('expo-signature')).toContain('keyid="expo-go"');
+
+    expect(JSON.parse(body)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.not.stringMatching(/@anonymous\/.*/),
+      },
+    });
+
+    const certificateChainMultipartPart = await getMultipartPartAsync('certificate_chain', results);
+    expect(certificateChainMultipartPart).toBeNull();
+  });
+
+  it('returns a code signed manifest with developers own key when requested and private-key-path arg is supplied', async () => {
+    vol.fromJSON({
+      'keys/cert.pem': mockSelfSigned.certificate,
       'custom/private/key/path/private-key.pem': mockSelfSigned.privateKey,
     });
 
     const middleware = createMiddleware(
       {
         updates: {
-          codeSigningCertificate: 'certs/cert.pem',
+          codeSigningCertificate: 'keys/cert.pem',
           codeSigningMetadata: {
             keyid: 'testkeyid',
             alg: 'rsa-v1_5-sha256',
