@@ -393,9 +393,6 @@ dependencies {
 
   // expo-updates
   implementation 'org.bouncycastle:bcutil-jdk15to18:1.70'
-
-  // react-native-maps
-  implementation "androidx.work:work-runtime:2.5.0"
 }
 
 

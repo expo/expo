@@ -8,151 +8,66 @@
 
 #import "AIRMapUrlTile.h"
 #import <React/UIView+React.h>
-#import "AIRMapUrlTileCachedOverlay.h"
 
-@implementation AIRMapUrlTile 
+@implementation AIRMapUrlTile {
+    BOOL _urlTemplateSet;
+    BOOL _tileSizeSet;
+}
 
 - (void)setShouldReplaceMapContent:(BOOL)shouldReplaceMapContent
 {
-    _shouldReplaceMapContent = shouldReplaceMapContent;
-    if (self.tileOverlay) {
-        self.tileOverlay.canReplaceMapContent = _shouldReplaceMapContent;
-    }
-    [self update];
+  _shouldReplaceMapContent = shouldReplaceMapContent;
+  if(self.tileOverlay) {
+    self.tileOverlay.canReplaceMapContent = _shouldReplaceMapContent;
+  }
+  [self update];
 }
 
-- (void)setMaximumZ:(NSInteger)maximumZ
+- (void)setMaximumZ:(NSUInteger)maximumZ
 {
-    _maximumZ = maximumZ;
-    if (self.tileOverlay) {
-        self.tileOverlay.maximumZ = _maximumZ;
-    }
-    [self update];
+  _maximumZ = maximumZ;
+  if(self.tileOverlay) {
+    self.tileOverlay.maximumZ = _maximumZ;
+  }
+  [self update];
 }
 
-- (void)setMaximumNativeZ:(NSInteger)maximumNativeZ
+- (void)setMinimumZ:(NSUInteger)minimumZ
 {
-    _maximumNativeZ = maximumNativeZ;
-    _maximumNativeZSet = YES;
-    if (_cachedOverlayCreated) {
-        self.tileOverlay.maximumNativeZ = _maximumNativeZ;
-    } else {
-        [self createTileOverlayAndRendererIfPossible];
-    }
-    [self update];
-}
-
-- (void)setMinimumZ:(NSInteger)minimumZ
-{
-    _minimumZ = minimumZ;
-    if (self.tileOverlay) {
-        self.tileOverlay.minimumZ = _minimumZ;
-    }
-    [self update];
+  _minimumZ = minimumZ;
+  if(self.tileOverlay) {
+    self.tileOverlay.minimumZ = _minimumZ;
+  }
+  [self update];
 }
 
 - (void)setFlipY:(BOOL)flipY
 {
-    _flipY = flipY;
-    _flipYSet = YES;
-    if (self.tileOverlay) {
-        self.tileOverlay.geometryFlipped = _flipY;
-    }
-    [self update];
+  _flipY = flipY;
+  if (self.tileOverlay) {
+    self.tileOverlay.geometryFlipped = _flipY;
+  }
 }
 
-- (void)setUrlTemplate:(NSString *)urlTemplate
-{
+- (void)setUrlTemplate:(NSString *)urlTemplate{
     _urlTemplate = urlTemplate;
     _urlTemplateSet = YES;
     [self createTileOverlayAndRendererIfPossible];
     [self update];
 }
 
-- (void)setTileSize:(NSInteger)tileSize
-{
+- (void)setTileSize:(CGFloat)tileSize{
     _tileSize = tileSize;
     _tileSizeSet = YES;
     [self createTileOverlayAndRendererIfPossible];
     [self update];
 }
 
-- (void)setTileCachePath:(NSString *)tileCachePath{
-    if (!tileCachePath) return;
-    _tileCachePath = tileCachePath;
-    _tileCachePathSet = YES;
-    [self createTileOverlayAndRendererIfPossible];
-    [self update];
-}
-
-- (void)setTileCacheMaxAge:(NSInteger)tileCacheMaxAge{
-    _tileCacheMaxAge = tileCacheMaxAge;
-    _tileCacheMaxAgeSet = YES;
-    if (_cachedOverlayCreated) {
-        self.tileOverlay.tileCacheMaxAge = _tileCacheMaxAge;
-    } else {
-        [self createTileOverlayAndRendererIfPossible];
-    }
-    [self update];
-}
-
-- (void)setOfflineMode:(BOOL)offlineMode
-{
-    _offlineMode = offlineMode;
-    if (_cachedOverlayCreated) {
-        self.tileOverlay.offlineMode = _offlineMode;
-    }
-    if (self.renderer) [self.renderer reloadData];
-}
-
-- (void)setOpacity:(CGFloat)opacity
-{
-    _opacity = opacity;
-    _opacitySet = YES;
-    if (self.renderer) {
-        self.renderer.alpha = opacity;
-    } else {
-        [self createTileOverlayAndRendererIfPossible];
-    }
-    [self update];
-}
-
-- (void)createTileOverlayAndRendererIfPossible
+- (void) createTileOverlayAndRendererIfPossible
 {
     if (!_urlTemplateSet) return;
-    if (_tileCachePathSet || _maximumNativeZSet) {
-        NSLog(@"tileCache dir %@", _tileCachePath);
-        self.tileOverlay = [[AIRMapUrlTileCachedOverlay alloc] initWithURLTemplate:self.urlTemplate];
-        _cachedOverlayCreated = YES;
-        if (_tileCachePathSet) {
-            NSURL *urlPath = [NSURL URLWithString:[self.tileCachePath stringByAppendingString:@"/"]];
-            if (urlPath.fileURL) {
-                self.tileOverlay.tileCachePath = urlPath;
-            } else {
-                NSURL *filePath = [NSURL fileURLWithPath:self.tileCachePath isDirectory:YES];
-                self.tileOverlay.tileCachePath = filePath;
-            }
+    self.tileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:self.urlTemplate];
 
-            if (_tileCacheMaxAgeSet) {
-                self.tileOverlay.tileCacheMaxAge = self.tileCacheMaxAge;
-            }
-        }
-    } else {
-        NSLog(@"tileCache normal overlay");
-        self.tileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:self.urlTemplate];
-        _cachedOverlayCreated = NO;
-    }
-
-    [self updateProperties];
-
-    self.renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:self.tileOverlay];
-    if (_opacitySet) {
-        self.renderer.alpha = self.opacity;
-    }
-}
-
-- (void)updateProperties
-{
     self.tileOverlay.canReplaceMapContent = self.shouldReplaceMapContent;
 
     if(self.minimumZ) {
@@ -161,21 +76,16 @@
     if (self.maximumZ) {
         self.tileOverlay.maximumZ = self.maximumZ;
     }
-    if (_cachedOverlayCreated && self.maximumNativeZ) {
-        self.tileOverlay.maximumNativeZ = self.maximumNativeZ;
-    }
-    if (_flipYSet) {
+    if (self.flipY) {
         self.tileOverlay.geometryFlipped = self.flipY;
     }
     if (_tileSizeSet) {
         self.tileOverlay.tileSize = CGSizeMake(self.tileSize, self.tileSize);
     }
-    if (_cachedOverlayCreated && self.offlineMode) {
-        self.tileOverlay.offlineMode = self.offlineMode;
-    }
+    self.renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:self.tileOverlay];
 }
 
-- (void)update
+- (void) update
 {
     if (!_renderer) return;
     
@@ -193,12 +103,12 @@
 
 #pragma mark MKOverlay implementation
 
-- (CLLocationCoordinate2D)coordinate
+- (CLLocationCoordinate2D) coordinate
 {
     return self.tileOverlay.coordinate;
 }
 
-- (MKMapRect)boundingMapRect
+- (MKMapRect) boundingMapRect
 {
     return self.tileOverlay.boundingMapRect;
 }
