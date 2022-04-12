@@ -109,7 +109,7 @@ public class ConcreteFunction<Args, ReturnType>: AnyFunction {
 
       do {
         // It's safe to unwrap since the arguments count matches.
-        return try expectedType!.cast(unpackIfJavaScriptValue(arg))
+        return try expectedType!.cast(arg)
       } catch {
         throw ArgumentCastException((index: index, type: expectedType!)).causedBy(error)
       }
