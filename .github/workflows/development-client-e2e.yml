@@ -21,7 +21,7 @@ jobs:
     runs-on: macos-11
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: 🍺 Install required tools
         run: |
           brew tap wix/brew
@@ -50,7 +50,7 @@ jobs:
         working-directory: packages/expo-dev-client
       - name: Store artifacts of build failures
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: expo-dev-client-e2e-artifacts
           path: packages/expo-dev-client/artifacts

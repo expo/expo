@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout a ref for the event
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
       - name: Comment on GitHub issues as github-actions bot

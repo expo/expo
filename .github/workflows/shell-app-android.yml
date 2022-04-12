@@ -16,11 +16,11 @@ jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Use JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -73,7 +73,7 @@ jobs:
       - name: Build shell app tarball
         run: ./buildAndroidTarballLocally.sh
       - name: Make an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: android-shell-app
           path: artifacts/android-shell-builder.tar.gz
