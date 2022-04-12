@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crashes on Android after image is picked by adding missing dependency `expo-image-loader`. ([#17019](https://github.com/expo/expo/pull/17019) by [@M1ST4KE](https://github.com/M1ST4KE))
 - Fix failure on Android when `allowsEditing` is `true` and non-jpeg file picked. ([#16615](https://github.com/expo/expo/pull/16615) by [@mnightingale](https://github.com/mnightingale))
 
 ### ⚠ Notices
