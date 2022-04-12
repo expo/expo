@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- `addEventListener` returns `EmitterSubscription` rather than `void`
+
 ### 🐛 Bug fixes
 
 - `addEventListener` and `removeEventListener` only accept `'url'` as `type` param, rather than `string`
+- `useURL` hook now cleans up `addEventListener` via `remove` rather than `removeEventListener`
 
 ### 💡 Others
 
