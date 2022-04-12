@@ -1,27 +1,34 @@
 package expo.modules.facedetector
 
+import android.graphics.PointF
 import android.os.Bundle
 import com.google.android.gms.vision.face.Landmark
-import com.google.firebase.ml.vision.face.FirebaseVisionFace
-import com.google.firebase.ml.vision.common.FirebaseVisionPoint
+import com.google.mlkit.vision.face.Face
 
 object FaceDetectorUtils {
   @JvmStatic
   @JvmOverloads
-  fun serializeFace(face: FirebaseVisionFace, scaleX: Double = 1.0, scaleY: Double = 1.0): Bundle {
+  fun serializeFace(face: Face, scaleX: Double = 1.0, scaleY: Double = 1.0): Bundle {
     val encodedFace = Bundle().apply {
-      putInt("faceID", face.trackingId)
+      face.trackingId?.let { putInt("faceID", it) }
       putDouble("rollAngle", face.headEulerAngleZ.toDouble())
       putDouble("yawAngle", face.headEulerAngleY.toDouble())
 
-      if (face.smilingProbability >= 0) {
-        putDouble("smilingProbability", face.smilingProbability.toDouble())
+      face.smilingProbability?.let {
+        if (it >= 0) {
+          putDouble("smilingProbability", it.toDouble())
+        }
       }
-      if (face.leftEyeOpenProbability >= 0) {
-        putDouble("leftEyeOpenProbability", face.leftEyeOpenProbability.toDouble())
+      face.smilingProbability?.let {
+        if (it >= 0) {
+          putDouble("leftEyeOpenProbability", it.toDouble())
+        }
       }
-      if (face.rightEyeOpenProbability >= 0) {
-        putDouble("rightEyeOpenProbability", face.rightEyeOpenProbability.toDouble())
+
+      face.rightEyeOpenProbability?.let {
+        if (it >= 0) {
+          putDouble("rightEyeOpenProbability", it.toDouble())
+        }
       }
 
       LandmarkId.values()
@@ -81,7 +88,7 @@ object FaceDetectorUtils {
     putDouble("yawAngle", (-face.getDouble("yawAngle") + 360) % 360)
   }
 
-  private fun mapFromPoint(point: FirebaseVisionPoint, scaleX: Double, scaleY: Double) = Bundle().apply {
+  private fun mapFromPoint(point: PointF, scaleX: Double, scaleY: Double) = Bundle().apply {
     putDouble("x", point.x * scaleX)
     putDouble("y", point.y * scaleY)
   }
