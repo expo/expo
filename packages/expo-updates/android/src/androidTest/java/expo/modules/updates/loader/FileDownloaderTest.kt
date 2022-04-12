@@ -6,8 +6,13 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.ManifestMetadata
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONException
@@ -117,6 +122,38 @@ class FileDownloaderTest {
     val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
+  }
+
+  @Test
+  fun testGetExtraHeaders() {
+    mockkObject(ManifestMetadata)
+    every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
+
+    val launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
+    val launchedUpdate = UpdateEntity(UUID.fromString(launchedUpdateUUIDString), Date(), "1.0", "test")
+    val embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
+    val embeddedUpdate = UpdateEntity(UUID.fromString(embeddedUpdateUUIDString), Date(), "1.0", "test")
+
+    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), launchedUpdate, embeddedUpdate)
+
+    Assert.assertEquals(launchedUpdateUUIDString, extraHeaders.get("Expo-Current-Update-ID"))
+    Assert.assertEquals(embeddedUpdateUUIDString, extraHeaders.get("Expo-Embedded-Update-ID"))
+
+    // cleanup
+    unmockkObject(ManifestMetadata)
+  }
+
+  @Test
+  fun testGetExtraHeaders_NoLaunchedOrEmbeddedUpdate() {
+    mockkObject(ManifestMetadata)
+    every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
+
+    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), null, null)
+    Assert.assertFalse(extraHeaders.has("Expo-Current-Update-ID"))
+    Assert.assertFalse(extraHeaders.has("Expo-Embedded-Update-ID"))
+
+    // cleanup
+    unmockkObject(ManifestMetadata)
   }
 
   @Test

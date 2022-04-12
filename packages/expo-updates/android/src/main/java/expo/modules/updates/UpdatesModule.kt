@@ -21,6 +21,8 @@ import expo.modules.updates.manifest.UpdateManifest
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.loader.FileDownloader
+
 /* ktlint-enable no-unused-imports */
 
 class UpdatesModule(
@@ -127,8 +129,11 @@ class UpdatesModule(
         return
       }
       val databaseHolder = updatesServiceLocal.databaseHolder
-      val extraHeaders = ManifestMetadata.getServerDefinedHeaders(
-        databaseHolder.database, updatesServiceLocal.configuration
+      val extraHeaders = FileDownloader.getExtraHeaders(
+        databaseHolder.database,
+        updatesServiceLocal.configuration,
+        updatesServiceLocal.launchedUpdate,
+        updatesServiceLocal.embeddedUpdate
       )
       databaseHolder.releaseDatabase()
       updatesServiceLocal.fileDownloader.downloadManifest(
@@ -194,7 +199,8 @@ class UpdatesModule(
           updatesServiceLocal.configuration,
           databaseHolder.database,
           updatesServiceLocal.fileDownloader,
-          updatesServiceLocal.directory
+          updatesServiceLocal.directory,
+          updatesServiceLocal.launchedUpdate
         )
           .start(
             object : Loader.LoaderCallback {
