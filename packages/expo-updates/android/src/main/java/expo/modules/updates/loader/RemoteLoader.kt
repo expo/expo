@@ -7,7 +7,6 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
-import expo.modules.updates.manifest.ManifestMetadata
 import java.io.File
 
 /**

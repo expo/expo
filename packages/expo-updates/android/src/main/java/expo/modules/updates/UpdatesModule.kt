@@ -12,17 +12,15 @@ import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
+import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
-import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.loader.FileDownloader
-
 /* ktlint-enable no-unused-imports */
 
 class UpdatesModule(
