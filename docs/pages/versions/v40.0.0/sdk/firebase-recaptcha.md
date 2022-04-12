@@ -485,7 +485,7 @@ The reCAPTCHA v3 widget displayed inside a web-view.
 - **onLoad (function)** -- A callback that is invoked when the widget has been loaded.
 - **onError (function)** -- A callback that is invoked when the widget failed to load.
 - **onVerify (function)** -- A callback that is invoked when reCAPTCHA has verified that the user is not a bot. The callback is provided with the reCAPTCHA token string. Example `onVerify={(recaptchaToken: string) => this.setState({recaptchaToken})}`.
-- **onFullChallenge (function)** -- A callback that is invoked when reCAPTCHA shows the full challange experience.
+- **onFullChallenge (function)** -- A callback that is invoked when reCAPTCHA shows the full challenge experience.
 - **invisible (boolean)** -- When `true` renders an `invisible` reCAPTCHA widget. The widget can then be triggered to verify invisibly by setting the `verify` prop to `true`.
 - **verify (boolean)** -- Use this in combination with `invisible=true` so start the verification process.
 

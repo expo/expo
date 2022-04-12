@@ -29,7 +29,7 @@ Generating your iOS credentials (distribution certificate, provisioning profile,
 
 #### iOS
 
-If you haven't set up your Push Notifictions key yet, EAS CLI will ask you to set it up during the next `eas build` run.
+If you haven't set up your Push Notifications key yet, EAS CLI will ask you to set it up during the next `eas build` run.
 
 If you're building an app that was previously built with classic builds (`expo build:ios`), then you already have iOS push notification credentials configured on Expo's servers, so there's nothing you need to do.
 
