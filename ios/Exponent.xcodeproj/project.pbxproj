@@ -598,6 +598,7 @@
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FE8D4A1FC2BDC25C8D4684F8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */; };
+		142BF7101AA740B69473EA27 /* AIRMapUrlTileCachedOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1282,6 +1283,8 @@
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FCF6D37125B34BC200808BF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9F659FB2CBFC44A68F23FE80 /* AIRMapUrlTileCachedOverlay.h */ = {isa = PBXFileReference; name = "AIRMapUrlTileCachedOverlay.h"; path = "AIRMapUrlTileCachedOverlay.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */ = {isa = PBXFileReference; name = "AIRMapUrlTileCachedOverlay.m"; path = "AIRMapUrlTileCachedOverlay.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2359,6 +2362,8 @@
 				31AD9A232285B53000F19090 /* Callout */,
 				31AD9A042285B52D00F19090 /* RCTConvert+AirMap.h */,
 				31AD9A2E2285B53100F19090 /* RCTConvert+AirMap.m */,
+				9F659FB2CBFC44A68F23FE80 /* AIRMapUrlTileCachedOverlay.h */,
+				3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */,
 			);
 			path = Maps;
 			sourceTree = "<group>";
@@ -3304,6 +3309,7 @@
 				7C04FEADEBFD4F26A0ED0918 /* RNCSafeAreaContext.mm in Sources */,
 				3998ABE10A3041A68A6344F0 /* RNCSafeAreaUtils.m in Sources */,
 				DB3F49E49342470CA04D34C0 /* SafeAreaContextSpec-generated.mm in Sources */,
+				142BF7101AA740B69473EA27 /* AIRMapUrlTileCachedOverlay.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

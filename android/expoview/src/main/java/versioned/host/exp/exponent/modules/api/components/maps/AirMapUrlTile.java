@@ -1,71 +1,39 @@
 package versioned.host.exp.exponent.modules.api.components.maps;
 
+import android.util.Log;
+
 import android.content.Context;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.UrlTileProvider;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 public class AirMapUrlTile extends AirMapFeature {
+  protected TileOverlayOptions tileOverlayOptions;
+  protected TileOverlay tileOverlay;
+  protected AirMapTileProvider tileProvider;
 
-  class AIRMapUrlTileProvider extends UrlTileProvider {
-    private String urlTemplate;
-
-    public AIRMapUrlTileProvider(int width, int height, String urlTemplate) {
-      super(width, height);
-      this.urlTemplate = urlTemplate;
-    }
-
-    @Override
-    public synchronized URL getTileUrl(int x, int y, int zoom) {
-
-      if (AirMapUrlTile.this.flipY == true) {
-        y = (1 << zoom) - y - 1;
-      }
-
-      String s = this.urlTemplate
-          .replace("{x}", Integer.toString(x))
-          .replace("{y}", Integer.toString(y))
-          .replace("{z}", Integer.toString(zoom));
-      URL url = null;
-
-      if(AirMapUrlTile.this.maximumZ > 0 && zoom > maximumZ) {
-        return url;
-      }
-
-      if(AirMapUrlTile.this.minimumZ > 0 && zoom < minimumZ) {
-        return url;
-      }
-
-      try {
-        url = new URL(s);
-      } catch (MalformedURLException e) {
-        throw new AssertionError(e);
-      }
-      return url;
-    }
-
-    public void setUrlTemplate(String urlTemplate) {
-      this.urlTemplate = urlTemplate;
-    }
-  }
-
-  private TileOverlayOptions tileOverlayOptions;
-  private TileOverlay tileOverlay;
-  private AIRMapUrlTileProvider tileProvider;
-
-  private String urlTemplate;
-  private float zIndex;
-  private float maximumZ;
-  private float minimumZ;
-  private boolean flipY;
+  protected String urlTemplate;
+  protected float zIndex;
+  protected float maximumZ;
+  protected float maximumNativeZ = 100;
+  protected float minimumZ;
+  protected boolean flipY = false;
+  protected float tileSize = 256;
+  protected boolean doubleTileSize = false;
+  protected String tileCachePath;
+  protected float tileCacheMaxAge;
+  protected boolean offlineMode = false;
+  protected float opacity = 1;
+  protected Context context;
+  protected boolean customTileProviderNeeded = false;
 
   public AirMapUrlTile(Context context) {
     super(context);
+    this.context = context;
   }
 
   public void setUrlTemplate(String urlTemplate) {
@@ -87,6 +55,20 @@ public class AirMapUrlTile extends AirMapFeature {
 
   public void setMaximumZ(float maximumZ) {
     this.maximumZ = maximumZ;
+    if (tileProvider != null) {
+      tileProvider.setMaximumZ((int)maximumZ);
+    }
+    if (tileOverlay != null) {
+      tileOverlay.clearTileCache();
+    }
+  }
+
+  public void setMaximumNativeZ(float maximumNativeZ) {
+    this.maximumNativeZ = maximumNativeZ;
+    if (tileProvider != null) {
+      tileProvider.setMaximumNativeZ((int)maximumNativeZ);
+    }
+    setCustomTileProviderMode();
     if (tileOverlay != null) {
       tileOverlay.clearTileCache();
     }
@@ -94,6 +76,9 @@ public class AirMapUrlTile extends AirMapFeature {
 
   public void setMinimumZ(float minimumZ) {
     this.minimumZ = minimumZ;
+    if (tileProvider != null) {
+      tileProvider.setMinimumZ((int)minimumZ);
+    }
     if (tileOverlay != null) {
       tileOverlay.clearTileCache();
     }
@@ -101,8 +86,80 @@ public class AirMapUrlTile extends AirMapFeature {
 
   public void setFlipY(boolean flipY) {
     this.flipY = flipY;
+    if (tileProvider != null) {
+      tileProvider.setFlipY((boolean)flipY);
+    }
     if (tileOverlay != null) {
       tileOverlay.clearTileCache();
+    }
+  }
+
+  public void setDoubleTileSize(boolean doubleTileSize) {
+    this.doubleTileSize = doubleTileSize;
+    if (tileProvider != null) {
+      tileProvider.setDoubleTileSize((boolean)doubleTileSize);
+    }
+    setCustomTileProviderMode();
+    if (tileOverlay != null) {
+      tileOverlay.clearTileCache();
+    }
+  }
+
+  public void setTileSize(float tileSize) {
+    this.tileSize = tileSize;
+    if (tileProvider != null) {
+      tileProvider.setTileSize((int)tileSize);
+    }
+    if (tileOverlay != null) {
+      tileOverlay.clearTileCache();
+    }
+  }
+
+  public void setTileCachePath(String tileCachePath) {
+    if (tileCachePath == null || tileCachePath.isEmpty()) return;
+    
+    try {
+      URL url = new URL(tileCachePath);
+      this.tileCachePath = url.getPath();
+    } catch (MalformedURLException e) {
+      this.tileCachePath = tileCachePath;
+    } catch (Exception e) {
+      return;
+    }
+
+    if (tileProvider != null) {
+      tileProvider.setTileCachePath(tileCachePath);
+    }
+    setCustomTileProviderMode();
+    if (tileOverlay != null) {
+      tileOverlay.clearTileCache();
+    }
+  }
+
+  public void setTileCacheMaxAge(float tileCacheMaxAge) {
+    this.tileCacheMaxAge = tileCacheMaxAge;
+    if (tileProvider != null) {
+      tileProvider.setTileCacheMaxAge((int)tileCacheMaxAge);
+    }
+    if (tileOverlay != null) {
+      tileOverlay.clearTileCache();
+    }
+  }
+
+  public void setOfflineMode(boolean offlineMode) {
+    this.offlineMode = offlineMode;
+    if (tileProvider != null) {
+      tileProvider.setOfflineMode((boolean)offlineMode);
+    }
+    if (tileOverlay != null) {
+      tileOverlay.clearTileCache();
+    }
+  }
+
+  public void setOpacity(float opacity) {
+    this.opacity = opacity;
+    if (tileOverlay != null) {
+        tileOverlay.setTransparency(1 - opacity);
     }
   }
 
@@ -113,10 +170,22 @@ public class AirMapUrlTile extends AirMapFeature {
     return tileOverlayOptions;
   }
 
-  private TileOverlayOptions createTileOverlayOptions() {
+  protected void setCustomTileProviderMode() {
+    Log.d("urlTile ", "creating new mode TileProvider");
+    this.customTileProviderNeeded = true;
+    if (tileProvider != null) {
+      tileProvider.setCustomMode();
+    }
+  } 
+
+  protected TileOverlayOptions createTileOverlayOptions() {
+    Log.d("urlTile ", "creating TileProvider");
     TileOverlayOptions options = new TileOverlayOptions();
     options.zIndex(zIndex);
-    this.tileProvider = new AIRMapUrlTileProvider(256, 256, this.urlTemplate);
+    options.transparency(1 - this.opacity);
+    this.tileProvider = new AirMapTileProvider((int)this.tileSize, this.doubleTileSize, this.urlTemplate, 
+      (int)this.maximumZ, (int)this.maximumNativeZ, (int)this.minimumZ, this.flipY, this.tileCachePath, 
+      (int)this.tileCacheMaxAge, this.offlineMode, this.context, this.customTileProviderNeeded);
     options.tileProvider(this.tileProvider);
     return options;
   }
