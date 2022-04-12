@@ -42,11 +42,11 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Use JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -136,13 +136,13 @@ jobs:
             bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR aab:$IS_APP_BUNDLE
           fi
       - name: 💾 Upload APK artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: android-apk
           path: android/app/build/outputs/apk
       - name: 💾 Store daemon logs for debugging crashes
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-daemon-logs
           path: ~/.gradle/daemon
