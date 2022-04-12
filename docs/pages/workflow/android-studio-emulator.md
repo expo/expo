@@ -47,6 +47,10 @@ source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 
 <ImageSpotlight alt="Android Studio configure" src="/static/images/android-studio-configure.png" containerStyle={{ paddingBottom: 0 }} />
 
+If you already have a project, then the menu will show up under the three dots menu in the top right corner of the window.
+
+<ImageSpotlight alt="Android Studio configure alternate" src="/static/images/android-studio-configure-2.png" containerStyle={{ paddingBottom: 0 }} />
+
 - Press the "Create device" button.
 
 <ImageSpotlight alt="Android Studio create virtual device" src="/static/images/android-studio-avd-manager.png" containerStyle={{ paddingBottom: 0 }} />
