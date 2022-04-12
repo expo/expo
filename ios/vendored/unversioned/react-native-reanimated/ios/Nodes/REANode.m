@@ -1,5 +1,5 @@
-#import "REANode.h"
-#import "REANodesManager.h"
+#import <RNReanimated/REANode.h>
+#import <RNReanimated/REANodesManager.h>
 
 #import <React/RCTDefines.h>
 

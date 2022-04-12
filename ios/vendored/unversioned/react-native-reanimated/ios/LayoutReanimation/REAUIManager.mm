@@ -1,9 +1,8 @@
-#import "REAUIManager.h"
 #import <Foundation/Foundation.h>
-#include "FeaturesConfig.h"
-#import "REAIOSScheduler.h"
-#include "Scheduler.h"
-
+#import <RNReanimated/FeaturesConfig.h>
+#import <RNReanimated/REAIOSScheduler.h>
+#import <RNReanimated/REAUIManager.h>
+#import <RNReanimated/Scheduler.h>
 #import <React/RCTComponentData.h>
 #import <React/RCTLayoutAnimation.h>
 #import <React/RCTLayoutAnimationGroup.h>

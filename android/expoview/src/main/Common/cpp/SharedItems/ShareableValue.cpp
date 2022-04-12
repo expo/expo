@@ -64,7 +64,7 @@ void ShareableValue::adapt(
       jsi::Object hiddenProperty = hiddenValue.asObject(rt);
       if (hiddenProperty.isHostObject<FrozenObject>(rt)) {
         type = ValueType::FrozenObjectType;
-        if (object.hasProperty(rt, "__worklet") && object.isFunction(rt)) {
+        if (object.hasProperty(rt, "__workletHash") && object.isFunction(rt)) {
           type = ValueType::WorkletFunctionType;
         }
         valueContainer = std::make_unique<FrozenObjectWrapper>(
@@ -99,7 +99,7 @@ void ShareableValue::adapt(
   } else if (value.isObject()) {
     auto object = value.asObject(rt);
     if (object.isFunction(rt)) {
-      if (object.getProperty(rt, "__worklet").isUndefined()) {
+      if (object.getProperty(rt, "__workletHash").isUndefined()) {
         // not a worklet, we treat this as a host function
         type = ValueType::HostFunctionType;
         containsHostFunction = true;

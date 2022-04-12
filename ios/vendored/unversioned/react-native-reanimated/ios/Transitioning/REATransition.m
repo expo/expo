@@ -1,11 +1,10 @@
 #import <QuartzCore/QuartzCore.h>
+#import <RNReanimated/RCTConvert+REATransition.h>
+#import <RNReanimated/REATransition.h>
+#import <RNReanimated/REATransitionValues.h>
 #import <React/RCTConvert.h>
 #import <React/RCTViewManager.h>
 #import <UIKit/UIKit.h>
-
-#import "RCTConvert+REATransition.h"
-#import "REATransition.h"
-#import "REATransitionValues.h"
 
 #define DEFAULT_PROPAGATION_SPEED 3
 

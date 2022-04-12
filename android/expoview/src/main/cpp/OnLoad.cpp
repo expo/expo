@@ -12,5 +12,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     reanimated::EventHandler::registerNatives();
     reanimated::AndroidScheduler::registerNatives();
     reanimated::LayoutAnimations::registerNatives();
+    reanimated::SensorSetter::registerNatives();
   });
 }

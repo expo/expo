@@ -12,8 +12,11 @@
 namespace reanimated {
 
 class HostFunctionWrapper;
+class AnimatedSensorModule;
 
 class ValueWrapper {
+  friend AnimatedSensorModule;
+
  public:
   ValueWrapper() {}
   explicit ValueWrapper(ValueType _type) : type(_type) {}

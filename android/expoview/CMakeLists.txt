@@ -50,6 +50,7 @@ add_library(
         "./src/main/Common/cpp/Tools/WorkletEventHandler.cpp"
         "./src/main/Common/cpp/Tools/FeaturesConfig.cpp"
         "./src/main/Common/cpp/LayoutAnimations/LayoutAnimationsProxy.cpp"
+        "./src/main/Common/cpp/AnimatedSensor/AnimatedSensorModule.cpp"
 )
 
 # includes
@@ -79,6 +80,7 @@ target_include_directories(
         "./src/main/Common/cpp/headers/NativeModules"
         "./src/main/Common/cpp/headers/SharedItems"
         "./src/main/Common/cpp/headers/Registries"
+        "./src/main/Common/cpp/headers/AnimatedSensor"
         "./src/main/Common/cpp/headers/LayoutAnimations"
         "./src/main/Common/cpp/hidden_headers"
         "./src/main/cpp/headers"

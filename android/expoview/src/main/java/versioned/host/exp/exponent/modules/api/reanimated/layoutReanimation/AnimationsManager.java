@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.reanimated.layoutReanimation;
 
+import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -61,10 +62,10 @@ public class AnimationsManager implements ViewHierarchyObserver {
   }
 
   public enum ViewState {
+    Inactive,
     Appearing,
     Disappearing,
     Layout,
-    Inactive,
     ToRemove;
   }
 
@@ -107,11 +108,11 @@ public class AnimationsManager implements ViewHierarchyObserver {
     HashMap<String, Object> currentValues = before.toCurrentMap();
     ViewState state = mStates.get(view.getId());
 
-    if (state == null || state == ViewState.Disappearing || state == ViewState.ToRemove) {
+    if (state == ViewState.Disappearing || state == ViewState.ToRemove) {
       return;
     }
     mCallbacks.put(tag, callback);
-    if (state == ViewState.Inactive) {
+    if (state == ViewState.Inactive || state == null) {
       if (currentValues != null) {
         mStates.put(view.getId(), ViewState.ToRemove);
         mToRemove.add(view.getId());
@@ -232,6 +233,14 @@ public class AnimationsManager implements ViewHierarchyObserver {
     // go through ready to remove from bottom to top
     for (int tag : mToRemove) {
       View view = mViewForTag.get(tag);
+      if (view == null) {
+        try {
+          view = mUIManager.resolveView(tag);
+          mViewForTag.put(tag, view);
+        } catch (IllegalViewOperationException ignored) {
+          continue;
+        }
+      }
       findRoot(view, roots);
     }
     for (int tag : roots) {
@@ -360,12 +369,18 @@ public class AnimationsManager implements ViewHierarchyObserver {
       preparedValues.put(key, PixelUtil.toDIPFromPixel((int) values.get(key)));
     }
 
-    DisplayMetrics displaymetrics = new DisplayMetrics();
-    mContext.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-    int height = displaymetrics.heightPixels;
-    int width = displaymetrics.widthPixels;
-    preparedValues.put("windowWidth", PixelUtil.toDIPFromPixel(width));
-    preparedValues.put("windowHeight", PixelUtil.toDIPFromPixel(height));
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    Activity currentActivity = mContext.getCurrentActivity();
+    if (currentActivity != null) {
+      currentActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+      int height = displayMetrics.heightPixels;
+      int width = displayMetrics.widthPixels;
+      preparedValues.put("windowWidth", PixelUtil.toDIPFromPixel(width));
+      preparedValues.put("windowHeight", PixelUtil.toDIPFromPixel(height));
+    } else {
+      preparedValues.put("windowWidth", PixelUtil.toDIPFromPixel(0));
+      preparedValues.put("windowHeight", PixelUtil.toDIPFromPixel(0));
+    }
     return preparedValues;
   }
 
@@ -504,6 +519,6 @@ public class AnimationsManager implements ViewHierarchyObserver {
   }
 
   public boolean isLayoutAnimationEnabled() {
-    return mNativeMethodsHolder.isLayoutAnimationEnabled();
+    return mNativeMethodsHolder != null && mNativeMethodsHolder.isLayoutAnimationEnabled();
   }
 }
