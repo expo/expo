@@ -1,6 +1,7 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
+import { hashElement } from 'folder-hash';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -10,7 +11,7 @@ import semver from 'semver';
 import * as ExpoCLI from '../ExpoCLI';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
 import { deepCloneObject } from '../Utils';
-import { Directories, HashDirectory, XDL } from '../expotools';
+import { Directories, XDL } from '../expotools';
 import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
@@ -147,9 +148,11 @@ async function action(options: ActionOptions): Promise<void> {
     throw new Error('EXPO_HOME_DEV_ACCOUNT_PASSWORD must be set in your environment.');
   }
 
-  const expoHomeHash = await HashDirectory.hashDirectoryWithVersionsAsync(EXPO_HOME_PATH);
+  const expoHomeHashNode = await hashElement(EXPO_HOME_PATH, {
+    folders: { exclude: ['.expo', 'node_modules'] },
+  });
   const appJsonFilePath = path.join(EXPO_HOME_PATH, 'app.json');
-  const slug = `expo-home-dev-${expoHomeHash}`;
+  const slug = `expo-home-dev-${expoHomeHashNode.hash}`;
   const url = `exp://exp.host/@${EXPO_HOME_DEV_ACCOUNT_USERNAME!}/${slug}`;
   const appJsonFile = new JsonFile<AppConfig>(appJsonFilePath);
   const appJson = await appJsonFile.readAsync();
