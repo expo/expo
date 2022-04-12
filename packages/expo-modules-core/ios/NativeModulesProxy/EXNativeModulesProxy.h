@@ -12,7 +12,7 @@
 // Swift compatibility headers (e.g. `ExpoModulesCore-Swift.h`) are not available in headers,
 // so we use class forward declaration here. Swift header must be imported in the `.m` file.
 @class SwiftInteropBridge;
-@protocol ModulesProviderObjCProtocol;
+@class ModulesProvider;
 
 NS_SWIFT_NAME(NativeModulesProxy)
 @interface EXNativeModulesProxy : NSObject <RCTBridgeModule>
@@ -25,6 +25,6 @@ NS_SWIFT_NAME(NativeModulesProxy)
 - (void)callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
 - (id)callMethodSync:(NSString *)moduleName methodName:(NSString *)methodName arguments:(NSArray *)arguments;
 
-+ (id<ModulesProviderObjCProtocol>)getExpoModulesProvider;
++ (ModulesProvider *)getExpoModulesProvider;
 
 @end

@@ -17,6 +17,12 @@ const PACKAGES_DIR = Directories.getPackagesDir();
  */
 let cachedPackages: Package[] | null = null;
 
+export interface CodegenConfigLibrary {
+  name: string;
+  type: 'modules' | 'components';
+  jsSrcsDir: string;
+}
+
 /**
  * An object representing `package.json` structure.
  */
@@ -25,6 +31,9 @@ export type PackageJson = {
   version: string;
   scripts: Record<string, string>;
   gitHead?: string;
+  codegenConfig?: {
+    libraries: CodegenConfigLibrary[];
+  };
   [key: string]: unknown;
 };
 
@@ -161,7 +170,8 @@ export class Package {
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (this.expoModuleConfig) {
+    if (this.expoModuleConfig && !fs.existsSync(path.join(this.path, 'react-native.config.js'))) {
+      // check platform support from expo autolinking but not rn-cli linking which is not platform aware
       return this.expoModuleConfig.platforms?.includes(platform) ?? false;
     } else if (platform === 'android') {
       return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
@@ -373,7 +383,7 @@ function readExpoModuleConfigJson(dir: string) {
   const unimoduleJsonPath = path.join(dir, 'unimodule.json');
   try {
     return require(expoModuleConfigJsonExists ? expoModuleConfigJsonPath : unimoduleJsonPath);
-  } catch (error) {
+  } catch {
     return null;
   }
 }

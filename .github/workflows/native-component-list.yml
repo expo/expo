@@ -8,6 +8,7 @@ on:
       - apps/native-component-list/**
       - packages/**
       - yarn.lock
+      - '!packages/@expo/cli/**'
   push:
     branches: [main]
     paths:
@@ -15,6 +16,7 @@ on:
       - apps/native-component-list/**
       - packages/**
       - yarn.lock
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -24,10 +26,10 @@ jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: Get yarn cache directory path

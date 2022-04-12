@@ -1,15 +1,15 @@
-#import <UIKit/UIKit.h>
-#import <React/RCTView.h>
 #import <React/RCTBridge.h>
+#import <React/RCTView.h>
+#import <UIKit/UIKit.h>
 
-#import "RNCSafeAreaViewMode.h"
 #import "RNCSafeAreaViewEdges.h"
+#import "RNCSafeAreaViewMode.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class RNCSafeAreaView;
 
-@interface RNCSafeAreaView: RCTView
+@interface RNCSafeAreaView : RCTView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

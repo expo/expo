@@ -6,13 +6,27 @@
 
 ### 🎉 New features
 
+- Add the ability to set confirmation requirement on Android. ([#16793](https://github.com/expo/expo/pull/16793) by [@fguitton](https://github.com/fguitton))
+
 ### 🐛 Bug fixes
 
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- On Android fixed `BiometricPrompt.ERROR_CANCELED` returned when fallbacking to PIN/Pattern/Password authentication method. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
 
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated `androix.biometric.biometric` from `1.1.0` to `1.2.0-alphas04`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+- Bumped `compileSdkVersion` from `30` to `31`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 12.1.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 12.1.0 — 2021-12-03
 

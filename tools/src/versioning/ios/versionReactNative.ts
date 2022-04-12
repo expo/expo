@@ -1,25 +1,51 @@
 import spawnAsync from '@expo/spawn-async';
+import fs from 'fs-extra';
 import path from 'path';
+
+import { IOS_DIR } from '../../Constants';
 
 export async function runReactNativeCodegenAsync(
   reactNativeRoot: string,
-  versionedReactNativeRoot: string
+  versionedReactNativeRoot: string,
+  versionedName: string
 ): Promise<void> {
-  const codegenCommand = path.join(reactNativeRoot, 'scripts', 'generate-specs.sh');
-  const jsSourceDir = path.join(reactNativeRoot, 'Libraries');
-  const outputDir = path.join(
-    versionedReactNativeRoot,
-    'React',
-    'FBReactNativeSpec',
-    'FBReactNativeSpec'
+  // generate schema.json from js & flow types
+  const genSchemaScript = path.join(
+    reactNativeRoot,
+    'packages',
+    'react-native-codegen',
+    'lib',
+    'cli',
+    'combine',
+    'combine-js-to-schema-cli.js'
   );
-  await spawnAsync(codegenCommand, [], {
-    cwd: reactNativeRoot,
-    env: {
-      ...process.env,
-      SRCS_DIR: jsSourceDir,
-      CODEGEN_MODULES_OUTPUT_DIR: outputDir,
-      CODEGEN_MODULES_LIBRARY_NAME: 'FBReactNativeSpec',
-    },
-  });
+  const schemaOutputPath = path.join(versionedReactNativeRoot, 'codegen', 'schema.json');
+  const codegenOutputDir = path.join(
+    IOS_DIR,
+    'build',
+    versionedName,
+    'generated',
+    'ios',
+    `${versionedName}FBReactNativeSpec`
+  );
+  const jsSourceRoot = path.join(reactNativeRoot, 'Libraries');
+  await fs.ensureDir(path.dirname(schemaOutputPath));
+  await spawnAsync('yarn', ['node', genSchemaScript, schemaOutputPath, jsSourceRoot]);
+
+  // generate code from schema.json
+  const genCodeScript = path.join(reactNativeRoot, 'scripts', 'generate-specs-cli.js');
+  await spawnAsync('yarn', [
+    'node',
+    genCodeScript,
+    '--platform',
+    'ios',
+    '--schemaPath',
+    schemaOutputPath,
+    '--outputDir',
+    codegenOutputDir,
+    '--libraryName',
+    'FBReactNativeSpec',
+    '--libraryType',
+    'modules',
+  ]);
 }

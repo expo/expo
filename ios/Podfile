@@ -32,6 +32,7 @@ abstract_target 'Expo Go' do
     ],
     # Modules for which to include Tests subspec
     tests: [
+      'expo-eas-client',
       'expo-modules-core',
       'expo-updates',
       'expo-manifests',
@@ -52,6 +53,9 @@ abstract_target 'Expo Go' do
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
   post_install do |installer|
+    # Workaround build error for Folly
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+
     # Disabled as of CocoaPods 1.8.0.beta1 since pods_project seems to be nil
     # installer.pods_project.main_group.tab_width = '2';
     # installer.pods_project.main_group.indent_width = '2';
@@ -108,6 +112,7 @@ abstract_target 'Expo Go' do
   target 'Tests' do
     inherit! :search_paths
 
+    pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
     pod 'Quick', :podspec => './Quick.podspec'
     pod 'Nimble', :podspec => './Nimble.podspec'
   end

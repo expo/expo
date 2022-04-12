@@ -105,10 +105,10 @@ When selecting an image for the build you can use the full name provided below o
 
 ## iOS build server configurations
 
-- iOS worker VMs run on Macs Pro 6.1 in an isolated environment
+- iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment
   - Every build gets its own fresh macOS VM
-  - Hardware: Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads), 64 GB RAM
-  - Build resource limits: 6 cores, 12 GB RAM
+  - Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
+  - Build resource limits: 3 cores, 12 GB RAM
 - npm cache. [Learn more](caching/#javascript-dependencies)
 - `~/.npmrc`
 
@@ -125,7 +125,7 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
-#### Image `macos-monterey-12.1-xcode-13.2`
+#### Image `macos-monterey-12.1-xcode-13.2` (alias `latest`)
 
 <details><summary>Details</summary>
 
@@ -140,7 +140,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </details>
 
-#### Image `macos-big-sur-11.4-xcode-13.0` (alias `latest`, `default`)
+#### Image `macos-big-sur-11.4-xcode-13.0` (alias `default`)
 
 <details><summary>Details</summary>
 

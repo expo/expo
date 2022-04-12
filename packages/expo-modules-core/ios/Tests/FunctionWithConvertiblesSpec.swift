@@ -1,12 +1,11 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import CoreGraphics
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class FunctionWithConvertiblesSpec: QuickSpec {
+class FunctionWithConvertiblesSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext()
     let functionName = "function"

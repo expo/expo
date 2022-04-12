@@ -7,6 +7,21 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Removed `react-native-appearance` that is deprecated since SDK 43. Migrate to [`Appearance` API](https://reactnative.dev/docs/appearance). ([#16436](https://github.com/expo/expo/pull/16436) by [@kudo](https://github.com/kudo))
+- Updated `react-native-shared-element` from `0.8.3` to `0.8.4`. ([#16866](https://github.com/expo/expo/pull/16866) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-pager-view` from `5.4.9` to `5.4.15`. ([#16890](https://github.com/expo/expo/pull/16890) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-webview` from `11.15.0` to `11.18.1`. ([#16826](https://github.com/expo/expo/pull/16826) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-picker/picker` from `2.2.1` to `2.4.0`. ([#16876](https://github.com/expo/expo/pull/16876) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/slider` from `4.1.12` to `4.2.1`. ([#16901](https://github.com/expo/expo/pull/16901) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-svg` from `12.1.1` to `12.3.0`. ([#16874](https://github.com/expo/expo/pull/16874) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-screens` from `3.10.1` to `3.11.1`. ([#16913](https://github.com/expo/expo/pull/16913) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-gesture-handler` from `2.1.0` to `2.2.0`. ([#16922](https://github.com/expo/expo/pull/16922) by [@bbarthec](https://github.com/bbarthec))
+- Updated `@react-native-community/netinfo` from `7.1.3` to `8.2.0`. ([#16883](https://github.com/expo/expo/pull/16883) by [@bycedric](https://github.com/bycedric))
+- Updated `@react-native-community/react-native-datetimepicker` from `4.0.0` to `6.1.2` ([#16951](https://github.com/expo/expo/pull/16951) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-safe-area-context` from `3.3.2` to `4.2.4`. ([#16939](https://github.com/expo/expo/pull/16939) by [@kudo](https://github.com/kudo))
+- Updated `@stripe/stripe-react-native` from `0.2.3` to `0.6.0`. ([#16938](https://github.com/expo/expo/pull/16938) by [@kudo](https://github.com/kudo))
+- Updated `react-native-reanimated` from `2.4.1` to `2.7.0`. ([#16956](https://github.com/expo/expo/pull/16956) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

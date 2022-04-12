@@ -7,18 +7,28 @@
 ### 🎉 New features
 
 - Add unit tests for react app. ([#16005](https://github.com/expo/expo/pull/16005) by [@ajsmth](https://github.com/ajsmth))
+- Add expo-modules automatic setup on Android. ([#16441](https://github.com/expo/expo/pull/16441) by [@esamelson](https://github.com/esamelson))
+- Remove regex-based config plugin mods in SDK 45+ projects. ([#16495](https://github.com/expo/expo/pull/16495) by [@esamelson](https://github.com/esamelson))
+- Add expo-modules automatic setup on iOS. ([#16496](https://github.com/expo/expo/pull/16496) by [@esamelson](https://github.com/esamelson))
+- Restore ability of host apps to disable dev client. ([#16521](https://github.com/expo/expo/pull/16521) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
 - Fix compatibility with react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
 - Fix Android crash when using Hermes on react-native 0.67. ([#16099](https://github.com/expo/expo/pull/16099) by [@kudo](https://github.com/kudo))
+- Fix backwards compatibility with AppDelegate in existing projects. ([#16497](https://github.com/expo/expo/pull/16497) by [@esamelson](https://github.com/esamelson))
+- Fix gradle buildscript compatibility with flavors ([#16686](https://github.com/expo/expo/issues/16686)). ([#16799](https://github.com/expo/expo/pull/16799) by [@esamelson](https://github.com/esamelson))
+- Fix gradle buildscript compatibility for flavors using bundle keyword ([#16686](https://github.com/expo/expo/issues/16686#issuecomment-1088282480)). ([#16936](https://github.com/expo/expo/pull/16936) by [@dogfootruler-kr](https://github.com/dogfootruler-kr))
 
 ### 💡 Others
 
-
 - Move unrelated dev-menu functions into dev-launcher. ([#16124](https://github.com/expo/expo/pull/16124) by [@ajsmth](https://github.com/ajsmth))
 - Simplify dev-launcher / dev-menu relationship on iOS. ([#16067](https://github.com/expo/expo/pull/16067) by [@ajsmth](https://github.com/ajsmth))
+- Simplify dev-launcher / dev-menu relationship on Android. ([#16228](https://github.com/expo/expo/pull/16228) by [@ajsmth](https://github.com/ajsmth))
 
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 0.9.3 — 2022-02-01
 
@@ -29,6 +39,7 @@
 ## 0.9.2 — 2022-01-18
 
 _This version does not introduce any user-facing changes._
+
 ## 0.9.1 — 2022-01-17
 
 ### 🐛 Bug fixes

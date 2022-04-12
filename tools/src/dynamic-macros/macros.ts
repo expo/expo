@@ -3,9 +3,9 @@ import spawnAsync from '@expo/spawn-async';
 import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
 import ip from 'ip';
+import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
-import request from 'request-promise-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getExpoRepositoryRootDir } from '../Directories';
@@ -19,7 +19,7 @@ interface Manifest {
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
-const dogfoodingHomeUrl = 'exp://expo.io/@expo-dogfooding/home';
+const dogfoodingHomeUrl = 'exp://exp.host/@expo-dogfooding/home';
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 
@@ -64,14 +64,14 @@ export default {
       return process.env.TEST_SUITE_URI;
     } else {
       try {
-        let testSuitePath = path.join(__dirname, '..', '..', '..', 'apps', 'test-suite');
-        let status = await Project.currentStatus(testSuitePath);
+        const testSuitePath = path.join(__dirname, '..', '..', '..', 'apps', 'test-suite');
+        const status = await Project.currentStatus(testSuitePath);
         if (status === 'running') {
           return await UrlUtils.constructManifestUrlAsync(testSuitePath);
         } else {
           return '';
         }
-      } catch (e) {
+      } catch {
         return '';
       }
     }
@@ -89,17 +89,14 @@ export default {
     let url = 'TODO';
 
     try {
-      let lanAddress = ip.address();
-      let localServerUrl = `http://${lanAddress}:3013`;
-      let result = await request.get({
-        url: `${localServerUrl}/expo-test-server-status`,
-        timeout: 500, // ms
-        resolveWithFullResponse: true,
-      });
-      if (result.body === 'running!') {
+      const lanAddress = ip.address();
+      const localServerUrl = `http://${lanAddress}:3013`;
+      const response = await fetch(`${localServerUrl}/expo-test-server-status`, { timeout: 500 });
+      const data = await response.text();
+      if (data === 'running!') {
         url = localServerUrl;
       }
-    } catch (e) {}
+    } catch {}
 
     return url;
   },
@@ -114,7 +111,7 @@ export default {
     }
 
     try {
-      let result = await spawnAsync('scutil', ['--get', 'LocalHostName']);
+      const result = await spawnAsync('scutil', ['--get', 'LocalHostName']);
       return `${result.stdout.trim()}.local`;
     } catch (e) {
       if (e.code !== 'ENOENT') {
@@ -172,7 +169,7 @@ export default {
         return '';
       }
       return kernelManifestObjectToJson(manifest);
-    } catch (e) {
+    } catch {
       console.error(
         chalk.red(
           `Unable to generate manifest from ${chalk.cyan(

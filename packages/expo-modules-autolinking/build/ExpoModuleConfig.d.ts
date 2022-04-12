@@ -22,13 +22,21 @@ export declare class ExpoModuleConfig {
      */
     iosReactDelegateHandlers(): string[];
     /**
-     * Returns a podspec path defined by the module author.
+     * Returns podspec paths defined by the module author.
      */
-    iosPodspecPath(): string | undefined;
+    iosPodspecPaths(): string[];
+    /**
+     * Returns the product module names, if defined by the module author.
+     */
+    iosSwiftModuleNames(): string[];
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
     androidModules(): string[];
+    /**
+     * Returns build.gradle file paths defined by the module author.
+     */
+    androidGradlePaths(): string[];
     /**
      * Returns serializable raw config.
      */

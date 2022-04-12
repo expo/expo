@@ -4,7 +4,6 @@ import expo.modules.ads.admob.AdMobPackage
 import expo.modules.ads.facebook.AdsFacebookPackage
 import expo.modules.analytics.amplitude.AmplitudePackage
 import expo.modules.analytics.segment.SegmentPackage
-import expo.modules.appauth.AppAuthPackage
 import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
 import expo.modules.backgroundfetch.BackgroundFetchPackage
@@ -14,13 +13,14 @@ import expo.modules.brightness.BrightnessPackage
 import expo.modules.calendar.CalendarPackage
 import expo.modules.camera.CameraPackage
 import expo.modules.cellular.CellularModule
-import expo.modules.clipboard.ClipboardPackage
+import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoPackage
 import expo.modules.device.DevicePackage
 import expo.modules.documentpicker.DocumentPickerPackage
+import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facebook.FacebookPackage
 import expo.modules.facedetector.FaceDetectorPackage
@@ -71,7 +71,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AVPackage(),
     AdMobPackage(),
     AdsFacebookPackage(),
-    AppAuthPackage(),
     ApplicationPackage(),
     AmplitudePackage(),
     BatteryPackage(),
@@ -80,7 +79,6 @@ object ExperiencePackagePicker : ModulesProvider {
     BrightnessPackage(),
     CalendarPackage(),
     CameraPackage(),
-    ClipboardPackage(),
     ConstantsPackage(),
     ContactsPackage(),
     CryptoPackage(),
@@ -146,6 +144,8 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
     CellularModule::class.java,
-    LinearGradientModule::class.java
+    ClipboardModule::class.java,
+    EASClientModule::class.java,
+    LinearGradientModule::class.java,
   )
 }

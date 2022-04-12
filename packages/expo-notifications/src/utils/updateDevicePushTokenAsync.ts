@@ -138,7 +138,7 @@ async function shouldUseDevelopmentNotificationService() {
       if (notificationServiceEnvironment === 'development') {
         return true;
       }
-    } catch (e) {
+    } catch {
       // We can't do anything here, we'll fallback to false then.
     }
   }

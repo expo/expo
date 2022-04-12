@@ -73,12 +73,15 @@ class DevMenuViewController: UIViewController {
   // MARK: private
 
   private func initialProps() -> [String: Any] {
+    let isSimulator = TARGET_IPHONE_SIMULATOR > 0
+    
     return [
-      "enableDevelopmentTools": true,
       "showOnboardingView": manager.shouldShowOnboarding(),
-      "devMenuItems": manager.serializedDevMenuItems(),
-      "devMenuScreens": manager.serializedDevMenuScreens(),
+      "appInfo": manager.getAppInfo(),
+      "devSettings": manager.getDevSettings(),
+      "menuPreferences": DevMenuPreferences.serialize(),
       "uuid": UUID.init().uuidString,
+      "isDevice": !isSimulator,
     ]
   }
 

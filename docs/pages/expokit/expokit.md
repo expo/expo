@@ -2,7 +2,7 @@
 title: Developing With ExpoKit
 ---
 
-> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.**
+> 🚫 ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.

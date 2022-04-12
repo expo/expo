@@ -185,7 +185,12 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     view.backgroundColor = [UIColor whiteColor];
   }
   
+  if (window.rootViewController == nil) {
+      UIViewController *rootViewController = [UIViewController new];
+      window.rootViewController = rootViewController;
+  }
   window.rootViewController.view = view;
+  [window makeKeyAndVisible];
 
   [self start];
 }

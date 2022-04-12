@@ -16,8 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
-import { useModalStack } from '../hooks/useModalStack';
-import { useUser, useUserActions } from '../hooks/useUser';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useUser, useUserActions } from '../providers/UserContextProvider';
 
 export function UserProfileScreen({ navigation }) {
   const { userData, selectedAccount } = useUser();
@@ -42,18 +42,15 @@ export function UserProfileScreen({ navigation }) {
   };
 
   const onLogoutPress = () => {
-    modalStack.push({
-      title: 'Confirm logout?',
-      element: (
-        <LogoutConfirmationModal
-          onClosePress={() => modalStack.pop()}
-          onLogoutPress={() => {
-            actions.logout();
-            modalStack.pop();
-          }}
-        />
-      ),
-    });
+    modalStack.push(() => (
+      <LogoutConfirmationModal
+        onClosePress={() => modalStack.pop()}
+        onLogoutPress={async () => {
+          await actions.logout();
+          modalStack.pop();
+        }}
+      />
+    ));
   };
 
   const onClosePress = () => {
@@ -98,10 +95,10 @@ function AccountScreenHeader({ onClosePress }) {
       <Spacer.Vertical size="small" />
       <Row align="center">
         <View px="medium">
-          <Heading size="medium">Account</Heading>
+          <Heading size="large">Account</Heading>
         </View>
 
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
 
         <Button.ScaleOnPressContainer
           onPress={onClosePress}
@@ -147,10 +144,10 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
         rounded="medium"
         onPress={onSignupPress}
         disabled={isLoading}
-        accessibilityLabel="Sign up">
+        accessibilityLabel="Sign Up">
         <View py="small">
           <Button.Text color="secondary" weight="semibold" align="center">
-            Sign up
+            Sign Up
           </Button.Text>
         </View>
       </Button.ScaleOnPressContainer>
@@ -203,15 +200,15 @@ function UserAccountSelector({
                 bg="default"
                 roundedBottom={isLast ? 'large' : 'none'}
                 roundedTop={isFirst ? 'large' : 'none'}>
-                <Row align="center" py="small" px="medium">
+                <Row align="center" py="small" px="medium" bg="default">
                   <Image size="large" rounded="full" source={{ uri: account.owner.profilePhoto }} />
                   <Spacer.Horizontal size="small" />
 
                   <View>
-                    <Heading size="small">{account.owner.username}</Heading>
+                    <Heading>{account.owner.username}</Heading>
                   </View>
 
-                  <Spacer.Vertical size="flex" />
+                  <Spacer.Vertical />
                   {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
                 </Row>
                 {!isLast && <Divider />}

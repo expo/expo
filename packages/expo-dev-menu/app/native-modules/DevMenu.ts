@@ -14,6 +14,14 @@ export type DevSettings = {
   isElementInspectorShown?: boolean;
   isHotLoadingEnabled?: boolean;
   isPerfMonitorShown?: boolean;
+  isRemoteDebuggingAvailable?: boolean;
+  isElementInspectorAvailable?: boolean;
+  isHotLoadingAvailable?: boolean;
+  isPerfMonitorAvailable?: boolean;
+};
+
+export type MenuPreferences = {
+  isOnboardingFinished?: boolean;
 };
 
 const DevMenu = NativeModules.ExpoDevMenuInternal;
@@ -41,10 +49,6 @@ export function openDevMenuFromReactNative() {
   DevMenu.openDevMenuFromReactNative();
 }
 
-export async function navigateToLauncherAsync(): Promise<void> {
-  return await dispatchCallableAsync('backToLauncher');
-}
-
 export async function togglePerformanceMonitorAsync() {
   return await dispatchCallableAsync('performance-monitor');
 }
@@ -65,14 +69,10 @@ export async function toggleFastRefreshAsync() {
   return await dispatchCallableAsync('fast-refresh');
 }
 
-export async function getDevSettingsAsync(): Promise<DevSettings> {
-  return await DevMenu.getDevSettingsAsync();
-}
-
-export async function getAppInfoAsync(): Promise<AppInfo> {
-  return await DevMenu.getAppInfoAsync();
-}
-
 export async function copyToClipboardAsync(content: string) {
   return await DevMenu.copyToClipboardAsync(content);
+}
+
+export async function setOnboardingFinishedAsync(isFinished: boolean) {
+  return await DevMenu.setOnboardingFinished(isFinished);
 }

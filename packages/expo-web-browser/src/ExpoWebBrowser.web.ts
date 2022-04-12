@@ -133,7 +133,7 @@ export default {
       if (popupWindow) {
         try {
           popupWindow.focus();
-        } catch (e) {}
+        } catch {}
       } else {
         throw new CodedError(
           'ERR_WEB_BROWSER_BLOCKED',

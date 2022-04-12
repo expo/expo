@@ -6,9 +6,24 @@ group = 'host.exp.exponent'
 version = '13.2.0'
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.6.10")
+    }
   }
 
   repositories {
@@ -16,7 +31,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
@@ -44,20 +59,20 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
   }
 
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 30
     versionName "13.2.0"
   }
@@ -75,29 +90,10 @@ dependencies {
 
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:1.4'
-  api 'com.squareup.okhttp3:okhttp:3.10.0'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-  api 'com.squareup.okio:okio:1.17.5'
+  api 'com.squareup.okhttp3:okhttp:4.9.2'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
+  api 'com.squareup.okio:okio:2.9.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }
-
-// [BEGIN] Workaround okhttp/okio compatibility issue
-// Remove when we drop support for SDK 44
-def okhttpPinnedArtifacts = []
-configurations.api.getDependencies().removeIf { it ->
-  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
-    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
-    return true
-  }
-  return false
-}
-okhttpPinnedArtifacts.each { artifact ->
-  dependencies.add('compileOnly', artifact)
-  dependencies.add('testApi', artifact)
-  configurations.all {
-    resolutionStrategy.force(artifact)
-  }
-}
-// [END] Workaround okhttp/okio compatibility issue

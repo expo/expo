@@ -79,6 +79,16 @@ export const manifest: Partial<Manifest> =
   (ExpoUpdates.manifestString ? JSON.parse(ExpoUpdates.manifestString) : ExpoUpdates.manifest) ??
   {};
 
+/**
+ * If `expo-updates` is enabled, this is a `Date` object representing the creation time of the update that's currently running (whether it was embedded or downloaded at runtime).
+ *
+ * In development mode, or any other environment in which `expo-updates` is disabled, this value is
+ * null.
+ */
+export const createdAt: Date | null = ExpoUpdates.commitTime
+  ? new Date(ExpoUpdates.commitTime)
+  : null;
+
 const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
 const manualUpdatesInstructions = isUsingExpoDevelopmentClient
@@ -128,6 +138,11 @@ export async function reloadAsync(): Promise<void> {
  * Checks the server to see if a newly deployed update to your project is available. Does not
  * actually download the update. This method cannot be used in development mode, and the returned
  * promise will be rejected if you try to do so.
+ *
+ * Checking for an update uses a device's bandwidth and battery life like any network call.
+ * Additionally, updates served by Expo may be rate limited. A good rule of thumb to check for
+ * updates judiciously is to check when the user launches or foregrounds the app. Avoid polling for
+ * updates in a frequent loop.
  *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *

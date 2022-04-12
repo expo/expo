@@ -24,7 +24,7 @@
   "dependencies": {
     "@emotion/react": "^11.4.0",
     "@expo/spawn-async": "^1.5.0",
-    "@expo/styleguide": "^4.0.0",
+    "@expo/styleguide": "^4.0.1",
     "@mdx-js/loader": "^1.6.22",
     "@mdx-js/mdx": "^1.6.22",
     "@mdx-js/react": "^1.6.22",
@@ -88,6 +88,7 @@
     "prettier": "^2.3.1",
     "puppeteer": "^10.2.0",
     "react-test-renderer": "^17.0.2",
+    "rehype-slug": "^4.0.1",
     "remark-cli": "^9.0.0",
     "remark-frontmatter": "^2.0.0",
     "remark-validate-links": "^10.0.4",

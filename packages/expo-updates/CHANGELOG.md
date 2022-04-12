@@ -4,19 +4,58 @@
 
 ### 🛠 Breaking changes
 
+- Remove okhttp and okio backward compatible workaround and drop react-native 0.64 support. ([#16446](https://github.com/expo/expo/pull/16446) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 - Add iOS support for code signing. ([#15682](https://github.com/expo/expo/pull/15682) by [@wschurman](https://github.com/wschurman))
+- Add CLI. ([#16216](https://github.com/expo/expo/pull/16216) by [@wschurman](https://github.com/wschurman))
+- Add support for dev client auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
+- Fix codesigning header name. ([#16480](https://github.com/expo/expo/pull/16480) by [@wschurman](https://github.com/wschurman))
+- Support certificate chains (Android). ([#16375](https://github.com/expo/expo/pull/16375) by [@wschurman](https://github.com/wschurman))
+- Support certificate chains (iOS). ([#16634](https://github.com/expo/expo/pull/16634) by [@wschurman](https://github.com/wschurman))
+- Add support for expo project information certificate extension (Android). ([#16607](https://github.com/expo/expo/pull/16607) by [@wschurman](https://github.com/wschurman))
+- Add support for expo project information certificate extension (iOS). ([#16726](https://github.com/expo/expo/pull/16726) by [@wschurman](https://github.com/wschurman))
+- Pass EAS-Client-ID in header for asset and manifest requests. ([#16729](https://github.com/expo/expo/pull/16729) by [@wschurman](https://github.com/wschurman))
+- Validate expo project information up the certificate chain. ([#16800](https://github.com/expo/expo/pull/16800) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
-- Fix iOS launch crash when app.json `expo.updates.enabled` is false. ([#15997](https://github.com/expo/expo/pull/15997) by [@kudo](https://github.com/kudo))
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Update `fbemitter` to v3. ([#16245](https://github.com/expo/expo/pull/16245) by [@SimenB](https://github.com/SimenB))
+- Allow non-codesigned manifests for Expo Go (Android). ([#16649](https://github.com/expo/expo/pull/16649) by [@wschurman](https://github.com/wschurman))
+- Allow non-codesigned manifests for Expo Go (iOS). ([#16682](https://github.com/expo/expo/pull/16682) by [@wschurman](https://github.com/wschurman))
+- Fix issue where default values for primitive-typed configuration values were not correctly set. ([#16644](https://github.com/expo/expo/pull/16644) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14`, `@expo/config` from `^6.0.6` to `^6.0.14` and `@expo/metro-config` from `~0.2.6` to `~0.3.7` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 - Swap out Cloudfront CDN for `classic-assets.eascdn.net`. ([#15781](https://github.com/expo/expo/pull/15781)) by [@quinlanj](https://github.com/quinlanj)
+- Add ability for expo-dev-launcher to launch a specific update through UpdatesDevLauncherController. ([#16865](https://github.com/expo/expo/pull/16865) by [@esamelson](https://github.com/esamelson))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+### 📚 3rd party library updates
+
+- Upgrade Android `Room` library version to 2.4.2. ([#16970](https://github.com/expo/expo/pull/16970) by [@kudo](https://github.com/kudo))
+
+## 0.11.7 — 2022-03-07
+
+### 🐛 Bug fixes
+
+- Fix iOS issue where splash screen wouldn't show when using expo-updates and expo-splash-screen ([#16163](https://github.com/expo/expo/pull/16163)) by [@hannojg](https://github.com/hannojg)
+
+### 💡 Others
+
+- Added `Updates.createdAt` constant export. ([#16344](https://github.com/expo/expo/pull/16344)) by [@hannojg](https://github.com/hannojg)
+
+## 0.11.6 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix iOS launch crash when app.json `expo.updates.enabled` is false. ([#15997](https://github.com/expo/expo/pull/15997) by [@kudo](https://github.com/kudo))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 0.11.5 — 2022-01-20
 
@@ -442,7 +481,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fixed an issue where the publish workflow was broken on Android. Note that the publish workflow will not be supported in a future version of expo-updates, so we recommend [switching to the no-publish workflow](https://blog.expo.io/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
+- Fixed an issue where the publish workflow was broken on Android. Note that the publish workflow will not be supported in a future version of expo-updates, so we recommend [switching to the no-publish workflow](https://blog.expo.dev/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
 
 ## 0.2.10 — 2020-06-23
 
@@ -512,7 +551,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Added support for the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For more information, along with upgrade instructions if you're upgrading from 0.1.x and would like to use the no-publish workflow, read [this blog post](https://blog.expo.io/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
+- Added support for the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For more information, along with upgrade instructions if you're upgrading from 0.1.x and would like to use the no-publish workflow, read [this blog post](https://blog.expo.dev/over-the-air-updates-from-expo-are-now-even-easier-to-use-376e2213fabf).
 - Added `Updates.updateId` and `Updates.releaseChannel` constant exports
 
 ### 🐛 Bug fixes

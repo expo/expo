@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: Get yarn cache directory path
@@ -57,14 +57,14 @@ jobs:
         uses: actions/cache@v2
         id: cache-android-ndk
         with:
-          path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
-          key: ${{ runner.os }}-ndk-19.2.5345600
+          path: /usr/local/lib/android/sdk/ndk/21.4.7075529/
+          key: ${{ runner.os }}-ndk-21.4.7075529
           restore-keys: |
             ${{ runner.os }}-ndk-
       - name: 🛠 Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;21.4.7075529"
       - name: 🦴 Publish dogfood home and generate bundled manifest
         run: bin/expotools publish-dogfood-home
         env:
@@ -75,7 +75,7 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ExponentKey
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
           USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST: true
         run: |
           BUILD_TYPE="Release"
@@ -90,13 +90,13 @@ jobs:
             bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR
           fi
       - name: 💾 Upload APK artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: android-apk
           path: android/app/build/outputs/apk
       - name: 💾 Store daemon logs for debugging crashes
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-daemon-logs
           path: ~/.gradle/daemon

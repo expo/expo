@@ -8,6 +8,7 @@ import semver from 'semver';
 
 import * as Directories from '../../Directories';
 import { getListOfPackagesAsync } from '../../Packages';
+import { transformFileAsync as transformFileMultiReplacerAsync } from '../../Transforms';
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
 import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
 
@@ -239,8 +240,8 @@ function processLine(line: string, abiVersion: string) {
     line.startsWith('LOCAL_STATIC_LIBRARIES') ||
     line.startsWith('LOCAL_SRC_FILES')
   ) {
-    let splitLine = line.split('=');
-    let libs = splitLine[1].split(' ');
+    const splitLine = line.split('=');
+    const libs = splitLine[1].split(' ');
     for (let i = 0; i < libs.length; i++) {
       libs[i] = renameLib(libs[i], abiVersion);
     }
@@ -252,10 +253,13 @@ function processLine(line: string, abiVersion: string) {
 }
 
 async function processMkFileAsync(filename: string, abiVersion: string) {
-  let file = await fs.readFile(filename);
+  const file = await fs.readFile(filename);
   let fileString = file.toString();
   await fs.truncate(filename, 0);
-  let lines = fileString.split('\n');
+  // Transforms multiline back to one line and makes the line based versioning easier
+  fileString = fileString.replace(/\\\n/g, ' ');
+
+  const lines = fileString.split('\n');
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     line = processLine(line, abiVersion);
@@ -276,16 +280,26 @@ async function processCMake(filePath: string, abiVersion: string) {
 
   libNameToReplace.delete('fb');
   libNameToReplace.delete('fbjni'); // we use the prebuilt binary which is part of the `com.facebook.fbjni:fbjni`
+  libNameToReplace.delete('jsi'); // jsi is a special case which only replace libName but not header include name
 
-  for (const libName of libNameToReplace) {
-    await spawnAsync(
-      `sed -ri '' 's/${libName}([^\/]*$)/${libName}_abi${abiVersion}\\1/g' ${filePath}`,
-      [],
-      {
-        shell: true,
-      }
-    );
-  }
+  const transforms = Array.from(libNameToReplace).map((libName) => ({
+    find: new RegExp(`${libName}([^/]*$)`, 'mg'),
+    replaceWith: `${libName}_abi${abiVersion}$1`,
+  }));
+
+  // to only replace jsi libName
+  transforms.push({
+    find: new RegExp(
+      `(\
+\\s+find_library\\(
+\\s+JSI_LIB
+\\s+)jsi$`,
+      'mg'
+    ),
+    replaceWith: `$1jsi_abi${abiVersion}`,
+  });
+
+  await transformFileMultiReplacerAsync(filePath, transforms);
 }
 
 async function processJavaCodeAsync(libName: string, abiVersion: string) {
@@ -303,7 +317,7 @@ async function processJavaCodeAsync(libName: string, abiVersion: string) {
 async function ensureToolsInstalledAsync() {
   try {
     await spawnAsync('patchelf', ['-h'], { ignoreStdio: true });
-  } catch (e) {
+  } catch {
     throw new Error('patchelf not found.');
   }
 }
@@ -344,7 +358,7 @@ async function renameJniLibsAsync(version: string) {
   }
 
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
-  let [
+  const [
     reactCommonMkFiles,
     reactAndroidMkFiles,
     versionedAbiMKFiles,
@@ -357,7 +371,7 @@ async function renameJniLibsAsync(version: string) {
     path.join(versionedReactAndroidPath, 'Android-prebuilt.mk'),
     glob(path.join(codegenOutputRoot, '**/*.mk')),
   ]);
-  let filenames = [
+  const filenames = [
     ...reactCommonMkFiles,
     ...reactAndroidMkFiles,
     ...versionedAbiMKFiles,
@@ -372,7 +386,7 @@ async function renameJniLibsAsync(version: string) {
 
   // Rename references to JNI libs in Java code
   for (let i = 0; i < JniLibNames.length; i++) {
-    let libName = JniLibNames[i];
+    const libName = JniLibNames[i];
     await processJavaCodeAsync(libName, abiVersion);
   }
 
@@ -417,7 +431,7 @@ async function copyExpoModulesAsync(version: string) {
     ) {
       await spawnAsync(
         './android-copy-expo-module.sh',
-        [version, path.join(pkg.path, pkg.androidSubdirectory)],
+        [pkg.packageName, version, path.join(pkg.path, pkg.androidSubdirectory)],
         {
           shell: true,
           cwd: SCRIPT_DIR,
@@ -444,7 +458,7 @@ async function addVersionedActivitesToManifests(version: string) {
 }
 
 async function registerNewVersionUnderSdkVersions(version: string) {
-  let fileString = await fs.readFile(sdkVersionsPath, 'utf8');
+  const fileString = await fs.readFile(sdkVersionsPath, 'utf8');
   let jsConfig;
   // read the existing json config and add the new version to the sdkVersions array
   try {
@@ -471,7 +485,7 @@ async function cleanUpAsync(version: string) {
     abiName
   );
 
-  let filesToDelete: string[] = [];
+  const filesToDelete: string[] = [];
 
   // delete PrintDocumentAdapter*Callback.kt
   // their package is `android.print` and therefore they are not changed by the versioning script
@@ -561,7 +575,7 @@ async function prepareReanimatedAsync(version: string): Promise<void> {
   const removeLeftoverDirectories = async () => {
     const mainPath = path.join(versionedExpoviewPath, 'src', 'main');
     const toRemove = ['Common', 'JNI', 'cpp'];
-    for (let dir of toRemove) {
+    for (const dir of toRemove) {
       await fs.remove(path.join(mainPath, dir));
     }
   };

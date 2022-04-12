@@ -8,16 +8,30 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 6.2.1 — 2022-03-29
+
+### 🐛 Bug fixes
+
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Fix memory leak on iOS (imgRef was never released) ([#16132](https://github.com/expo/expo/pull/16132) by [@Hirbod](https://github.com/Hirbod) and [@bulgr0z](https://github.com/bulgr0z))
-
-### 💡 Others
 
 ## 6.2.0 — 2021-12-18
 
 ### 🎉 New features
 
 - Thumbnails can now be generated with `content://` paths on Android. ([#15553](https://github.com/expo/expo/pull/15553) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+
+## 6.1.1 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 6.1.0 — 2021-12-03
 

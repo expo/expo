@@ -11,9 +11,14 @@ public final class SwiftInteropBridge: NSObject {
     appContext.moduleRegistry
   }
 
+  internal init(appContext: AppContext) {
+    self.appContext = appContext
+    super.init()
+  }
+
   @objc
-  public init(modulesProvider: ModulesProviderObjCProtocol, legacyModuleRegistry: EXModuleRegistry) {
-    self.appContext = AppContext(withModulesProvider: modulesProvider as! ModulesProviderProtocol, legacyModuleRegistry: legacyModuleRegistry)
+  public init(modulesProvider: ModulesProvider, legacyModuleRegistry: EXModuleRegistry) {
+    self.appContext = AppContext(withModulesProvider: modulesProvider, legacyModuleRegistry: legacyModuleRegistry)
     super.init()
   }
 
@@ -83,9 +88,13 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func exportedViewManagersNames() -> [String] {
-    return registry.compactMap { holder in
-      return holder.definition.viewManager != nil ? holder.name : nil
+  public func viewManagersMetadata() -> [String: Any] {
+    return registry.reduce(into: [String: Any]()) { acc, holder in
+      if let viewManager = holder.definition.viewManager {
+        acc[holder.name] = [
+          "propsNames": viewManager.props.map { $0.name }
+        ]
+      }
     }
   }
 

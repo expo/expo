@@ -50,6 +50,7 @@ add_library(
         "./src/main/Common/cpp/Tools/WorkletEventHandler.cpp"
         "./src/main/Common/cpp/Tools/FeaturesConfig.cpp"
         "./src/main/Common/cpp/LayoutAnimations/LayoutAnimationsProxy.cpp"
+        "./src/main/Common/cpp/AnimatedSensor/AnimatedSensorModule.cpp"
 )
 
 # includes
@@ -60,10 +61,10 @@ target_include_directories(
         ${PACKAGE_NAME}
         PRIVATE
         "${LIBFBJNI_INCLUDE_DIR}"
-        "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
-        "${BUILD_DIR}/third-party-ndk/double-conversion"
-        "${BUILD_DIR}/third-party-ndk/folly"
-        "${BUILD_DIR}/third-party-ndk/glog/exported"
+        "${REACT_NATIVE_PATH}/ReactAndroid/build/third-party-ndk/boost/boost_${BOOST_VERSION}"
+        "${REACT_NATIVE_PATH}/ReactAndroid/build/third-party-ndk/double-conversion"
+        "${REACT_NATIVE_PATH}/ReactAndroid/build/third-party-ndk/folly"
+        "${REACT_NATIVE_PATH}/ReactAndroid/build/third-party-ndk/glog/exported"
         "${REACT_NATIVE_PATH}/React"
         "${REACT_NATIVE_PATH}/React/Base"
         "${REACT_NATIVE_PATH}/ReactAndroid/src/main/jni"
@@ -79,6 +80,7 @@ target_include_directories(
         "./src/main/Common/cpp/headers/NativeModules"
         "./src/main/Common/cpp/headers/SharedItems"
         "./src/main/Common/cpp/headers/Registries"
+        "./src/main/Common/cpp/headers/AnimatedSensor"
         "./src/main/Common/cpp/headers/LayoutAnimations"
         "./src/main/Common/cpp/hidden_headers"
         "./src/main/cpp/headers"

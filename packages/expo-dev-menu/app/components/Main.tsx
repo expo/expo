@@ -16,17 +16,20 @@ import {
   RunIcon,
   StatusIndicator,
   Image,
+  scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform } from 'react-native';
-import { TouchableWithoutFeedback, Switch } from 'react-native-gesture-handler';
+import { Switch } from 'react-native-gesture-handler';
 
 import { useAppInfo } from '../hooks/useAppInfo';
+import { useBottomSheet } from '../hooks/useBottomSheet';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
+import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 export function Main() {
   const appInfo = useAppInfo();
+  const bottomSheet = useBottomSheet();
   const { devSettings, actions } = useDevSettings();
 
   const urlClipboard = useClipboard();
@@ -43,6 +46,20 @@ export function Main() {
   }
 
   const hasCopiedAppInfoContent = Boolean(appInfoClipboard.clipboardContent);
+
+  const {
+    isElementInspectorAvailable,
+    isHotLoadingAvailable,
+    isPerfMonitorAvailable,
+    isRemoteDebuggingAvailable,
+  } = devSettings;
+  const hasDisabledDevSettingOption =
+    [
+      isElementInspectorAvailable,
+      isHotLoadingAvailable,
+      isPerfMonitorAvailable,
+      isRemoteDebuggingAvailable,
+    ].filter((value) => value === false).length > 0;
 
   return (
     <View flex="1" bg="secondary">
@@ -63,9 +80,7 @@ export function Main() {
             <Spacer.Horizontal size="small" />
 
             <View>
-              <Heading size="small" weight="bold">
-                {appInfo.appName}
-              </Heading>
+              <Heading weight="bold">{appInfo.appName}</Heading>
               <Spacer.Vertical size="tiny" />
               {Boolean(appInfo.runtimeVersion) && (
                 <>
@@ -85,10 +100,13 @@ export function Main() {
             </View>
           </Row>
 
-          <Spacer.Horizontal size="flex" />
-
-          <GestureHandlerTouchableWrapper onPress={actions.closeMenu}>
-            <Button.ScaleOnPressContainer bg="ghost" rounded="full" minScale={0.8}>
+          <Spacer.Horizontal />
+          <GestureHandlerTouchableWrapper onPress={bottomSheet.collapse}>
+            <Button.ScaleOnPressContainer
+              onPress={bottomSheet.collapse}
+              bg="ghost"
+              rounded="full"
+              minScale={0.8}>
               <View padding="micro">
                 <XIcon />
               </View>
@@ -147,6 +165,7 @@ export function Main() {
       <View mx="small">
         <View roundedTop="large">
           <SettingsRowButton
+            disabled={!devSettings.isPerfMonitorAvailable}
             label="Toggle performance monitor"
             icon={<PerformanceIcon />}
             onPress={actions.togglePerformanceMonitor}
@@ -154,6 +173,7 @@ export function Main() {
         </View>
         <Divider />
         <SettingsRowButton
+          disabled={!devSettings.isElementInspectorAvailable}
           label="Toggle element inspector"
           icon={<InspectElementIcon />}
           onPress={actions.toggleElementInspector}
@@ -161,6 +181,7 @@ export function Main() {
         <Divider />
         <View bg="default">
           <SettingsRowSwitch
+            disabled={!devSettings.isRemoteDebuggingAvailable}
             testID="local-dev-tools"
             label="Local dev tools"
             icon={<DebugIcon />}
@@ -171,6 +192,7 @@ export function Main() {
         <Divider />
         <View bg="default" roundedBottom="large">
           <SettingsRowSwitch
+            disabled={!devSettings.isHotLoadingAvailable}
             testID="fast-refresh"
             label="Fast refresh"
             icon={<RunIcon />}
@@ -179,6 +201,15 @@ export function Main() {
           />
         </View>
       </View>
+
+      {!hasDisabledDevSettingOption && (
+        <>
+          <Spacer.Vertical size="large" />
+          <Text size="small" color="secondary" align="center">
+            Some settings are unavailable for this development build.
+          </Text>
+        </>
+      )}
 
       <Spacer.Vertical size="large" />
 
@@ -205,8 +236,8 @@ export function Main() {
             roundedTop="none"
             roundedBottom="large"
             disabled={hasCopiedAppInfoContent}>
-            <Row px="medium" py="small" align="center">
-              <Text color="primary" size="large">
+            <Row px="medium" py="small" align="center" bg="default">
+              <Text color="link" size="medium">
                 {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
             </Row>
@@ -227,7 +258,7 @@ function ActionButton({ icon, label, onPress }: ActionButtonProps) {
   return (
     <GestureHandlerTouchableWrapper onPress={onPress}>
       <Button.ScaleOnPressContainer minScale={0.9} bg="default" onPress={onPress}>
-        <View padding="small" rounded="large">
+        <View padding="small" rounded="large" bg="default">
           <View align="centered">{icon}</View>
 
           <Spacer.Vertical size="tiny" />
@@ -246,13 +277,20 @@ type SettingsRowButtonProps = {
   label: string;
   description?: string;
   onPress: () => void;
+  disabled?: boolean;
 };
 
-function SettingsRowButton({ label, icon, description = '', onPress }: SettingsRowButtonProps) {
+function SettingsRowButton({
+  label,
+  icon,
+  description = '',
+  onPress,
+  disabled,
+}: SettingsRowButtonProps) {
   return (
-    <GestureHandlerTouchableWrapper onPress={onPress}>
-      <Button.ScaleOnPressContainer onPress={onPress} bg="default">
-        <Row padding="small" align="center">
+    <GestureHandlerTouchableWrapper onPress={onPress} disabled={disabled}>
+      <Button.ScaleOnPressContainer onPress={onPress} bg="default" disabled={disabled}>
+        <Row padding="small" align="center" bg="default" style={{ opacity: disabled ? 0.75 : 1 }}>
           <View width="large" height="large">
             {icon}
           </View>
@@ -263,13 +301,13 @@ function SettingsRowButton({ label, icon, description = '', onPress }: SettingsR
             <Text>{label}</Text>
           </View>
 
-          <Spacer.Horizontal size="flex" />
+          <Spacer.Horizontal />
 
-          <View style={{ width: 64, alignItems: 'flex-end' }} />
+          <View width="16" style={{ alignItems: 'flex-end' }} />
         </Row>
 
         {Boolean(description) && (
-          <View style={{ transform: [{ translateY: -8 }] }}>
+          <View style={{ transform: [{ translateY: -scale['3'] }] }}>
             <Row px="small" align="center">
               <Spacer.Horizontal size="large" />
 
@@ -279,7 +317,7 @@ function SettingsRowButton({ label, icon, description = '', onPress }: SettingsR
                 </Text>
               </View>
 
-              <View style={{ width: 64 }} />
+              <View width="16" />
             </Row>
             <Spacer.Vertical size="tiny" />
           </View>
@@ -296,6 +334,7 @@ type SettingsRowSwitchProps = {
   isEnabled?: boolean;
   setIsEnabled: (isEnabled: boolean) => void;
   testID: string;
+  disabled?: boolean;
 };
 
 function SettingsRowSwitch({
@@ -304,10 +343,11 @@ function SettingsRowSwitch({
   icon,
   isEnabled,
   setIsEnabled,
+  disabled,
   testID,
 }: SettingsRowSwitchProps) {
   return (
-    <View>
+    <View style={{ opacity: disabled ? 0.75 : 1 }} pointerEvents={disabled ? 'none' : 'auto'}>
       <Row padding="small" align="center">
         <View width="large" height="large">
           {icon}
@@ -319,12 +359,13 @@ function SettingsRowSwitch({
           <Text>{label}</Text>
         </View>
 
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
 
-        <View style={{ width: 64, alignItems: 'flex-end' }}>
+        <View width="16" style={{ alignItems: 'flex-end' }}>
           <Switch
             testID={testID}
-            value={isEnabled}
+            disabled={disabled}
+            value={isEnabled && !disabled}
             onValueChange={() => setIsEnabled(!isEnabled)}
           />
         </View>
@@ -341,7 +382,7 @@ function SettingsRowSwitch({
               </Text>
             </View>
 
-            <View style={{ width: 64 }} />
+            <View style={{ width: scale[16] }} />
           </Row>
           <Spacer.Vertical size="tiny" />
         </View>
@@ -359,17 +400,8 @@ function AppInfoRow({ title, value }: AppInfoRowProps) {
   return (
     <Row px="medium" py="small" align="center" bg="default">
       <Text size="medium">{title}</Text>
-      <Spacer.Horizontal size="flex" />
+      <Spacer.Horizontal />
       <Text>{value}</Text>
     </Row>
   );
-}
-
-// TODO - move this to `expo-dev-client-components`
-function GestureHandlerTouchableWrapper({ onPress, children }) {
-  if (Platform.OS === 'android') {
-    return <TouchableWithoutFeedback onPress={onPress}>{children}</TouchableWithoutFeedback>;
-  }
-
-  return children;
 }

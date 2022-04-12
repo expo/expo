@@ -43,11 +43,11 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerTouchEvent>(TOUCH_EVENTS_POOL_SIZE)
 
     fun <T : GestureHandler<T>> obtain(handler: T): RNGestureHandlerTouchEvent =
-      (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
-        init(handler)
-      }
+        (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
+          init(handler)
+        }
 
-    fun <T : GestureHandler<T>> createEventData(handler: T,): WritableMap = Arguments.createMap().apply {
+    fun <T: GestureHandler<T>> createEventData(handler: T,): WritableMap = Arguments.createMap().apply {
       putInt("handlerTag", handler.tag)
       putInt("state", handler.state)
       putInt("numberOfTouches", handler.trackedPointersCount)

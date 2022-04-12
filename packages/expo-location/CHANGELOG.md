@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
 ## 14.1.0 — 2022-01-26
 
 ### 🐛 Bug fixes
@@ -24,6 +28,12 @@
 
 - Add an option to whether kill or keep the foreground service when app is killed on Android. ([#15633](https://github.com/expo/expo/pull/15633) by [@islamouzou](https://github.com/islamouzou))
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 14.0.2 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 14.0.1 — 2021-12-15
 

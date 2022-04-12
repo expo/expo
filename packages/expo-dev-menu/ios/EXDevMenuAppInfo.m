@@ -1,45 +1,29 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import "EXDevMenuAppInfo.h"
+#import <EXDevMenu-Swift.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 @implementation EXDevMenuAppInfo
 
-// TODO -- EXManifest - use actual interface
-//- (nullable NSString *)sdkVersion;
-//- (NSString *)bundleUrl;
-//- (nullable NSString *)revisionId;
-//- (nullable NSString *)slug;
-//- (nullable NSString *)appKey;
-//- (nullable NSString *)name;
-//- (nullable NSString *)version;
-//- (nullable NSDictionary *)notificationPreferences;
-//- (nullable NSDictionary *)updatesInfo;
-//- (nullable NSDictionary *)iosConfig;
-//- (nullable NSString *)hostUri;
-//- (nullable NSString *)orientation;
-//- (nullable NSDictionary *)experiments;
-//- (nullable NSDictionary *)developer;
-//- (nullable NSString *)facebookAppId;
-//- (nullable NSString *)facebookApplicationName;
-//- (BOOL)facebookAutoInitEnabled;
-
-+(NSDictionary *)getAppInfoForBridge:(RCTBridge *)bridge andManifest:(NSDictionary *)manifest
++(NSDictionary *)getAppInfo
 {
   NSMutableDictionary *appInfo = [NSMutableDictionary new];
-
+  
   NSString *appIcon = [EXDevMenuAppInfo getAppIcon];
   NSString *runtimeVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
   NSString *sdkVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [EXDevMenuAppInfo getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
-  NSString *hostUrl = [bridge.bundleURL host] ?: @"";
-
-  if (manifest[@"name"] != nil) {
-    appName = manifest[@"name"];
+  
+  DevMenuManager *manager = [DevMenuManager shared];
+  
+  if (manager.currentManifest != nil) {
+    appName = [manager.currentManifest name];
+    appVersion = [manager.currentManifest version];
   }
   
-  if (manifest[@"version"] != nil) {
-    appVersion = manifest[@"version"];
-  }
+  
+  NSString *hostUrl = [manager.currentManifestURL absoluteString] ?: @"";
 
   appInfo[@"appName"] = appName;
   appInfo[@"appIcon"] = appIcon;

@@ -152,9 +152,12 @@
     nextVC = nav.topViewController;
   }
 
+  // we want updates sent to the VC below modal too since it is also visible
+  BOOL isPresentingVC = vc.presentedViewController == nextVC;
+
   BOOL isInFullScreenModal = nav == nil && _screenView.stackPresentation == RNSScreenStackPresentationFullScreenModal;
   // if nav is nil, it means we can be in a fullScreen modal, so there is no nextVC, but we still want to update
-  if (vc != nil && (nextVC == vc || isInFullScreenModal)) {
+  if (vc != nil && (nextVC == vc || isInFullScreenModal || isPresentingVC)) {
     [RNSScreenStackHeaderConfig updateViewController:self.screenView.controller withConfig:self animated:YES];
   }
 }

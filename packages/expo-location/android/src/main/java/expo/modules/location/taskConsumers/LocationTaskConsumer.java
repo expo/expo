@@ -26,11 +26,6 @@ import expo.modules.core.arguments.MapArguments;
 import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.core.interfaces.Arguments;
 import expo.modules.core.interfaces.LifecycleEventListener;
-import org.unimodules.interfaces.taskManager.TaskConsumer;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +35,11 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import expo.modules.location.LocationHelpers;
 import expo.modules.location.services.LocationTaskService;
+import expo.modules.interfaces.taskManager.TaskConsumer;
+import expo.modules.interfaces.taskManager.TaskConsumerInterface;
+import expo.modules.interfaces.taskManager.TaskExecutionCallback;
+import expo.modules.interfaces.taskManager.TaskInterface;
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = "LocationTaskConsumer";

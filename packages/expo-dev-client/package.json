@@ -12,7 +12,8 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "e2e": "expo-test-runner run-test -t e2e"
+    "e2e": "expo-test-runner run-test -t e2e",
+    "latest-e2e": "expo-test-runner run-test -t latest-e2e"
   },
   "keywords": [
     "react-native",
@@ -40,7 +41,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0",
-    "expo-test-runner": "0.0.7"
+    "expo-test-runner": "0.0.10"
   },
   "peerDependencies": {
     "expo": "*"

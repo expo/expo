@@ -34,15 +34,13 @@ END UNCOMMENT WHEN DISTRIBUTING */
 
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-include ':packages:react-native-codegen:android'
-project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
-includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
+includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plugin/')
 
 include ':expoview'
 include ':tools'
 include ':ReactAndroid'
-include ':unimodules-test-core'
-project(':unimodules-test-core').projectDir = new File(rootDir, '../packages/unimodules-test-core/android')
+include ':expo-modules-test-core'
+project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
 
 // Include Expo modules that are not unimodules
 include(":expo-random")
@@ -52,7 +50,6 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
     // ADD_NEW_SUPPORTED_ABIS_HERE
     "abi44_0_0",
     "abi43_0_0",
-    "abi42_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")

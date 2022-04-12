@@ -10,6 +10,8 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
+@import EXDevMenu;
+
 NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 @implementation EXDevLauncherInternal
@@ -64,6 +66,7 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 - (NSDictionary *)constantsToExport
 {
+//
   BOOL isDevice = YES;
 #if TARGET_IPHONE_SIMULATOR
   isDevice = NO;
@@ -71,7 +74,8 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   return @{
     @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null],
     @"installationID": [EXDevLauncherController.sharedInstance.installationIDHelper getOrCreateInstallationID] ?: [NSNull null],
-    @"isDevice": @(isDevice)
+    @"isDevice": @(isDevice),
+    @"updatesConfig": [[EXDevLauncherController sharedInstance] getUpdatesConfig],
   };
 }
 
@@ -84,6 +88,12 @@ RCT_EXPORT_METHOD(getPendingDeepLink:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
   resolve([EXDevLauncherController sharedInstance].pendingDeepLinkRegistry.pendingDeepLink.absoluteString);
+}
+
+RCT_EXPORT_METHOD(getCrashReport:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve([[[EXDevLauncherErrorRegistry new] consumeException] toDict]);
 }
 
 RCT_EXPORT_METHOD(loadApp:(NSString *)urlString
@@ -132,4 +142,10 @@ RCT_EXPORT_METHOD(copyToClipboard:(NSString *)content
   resolve(nil);
 }
 
+RCT_EXPORT_METHOD(loadFontsAsync:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[DevMenuManager shared] loadFonts];
+  resolve(nil);
+}
 @end

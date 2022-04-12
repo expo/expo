@@ -14,11 +14,28 @@
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Fixed crashes on Android after image is picked by adding missing dependency `expo-image-loader`. ([#17019](https://github.com/expo/expo/pull/17019) by [@M1ST4KE](https://github.com/M1ST4KE))
+- Fix failure on Android when `allowsEditing` is `true` and non-jpeg file picked. ([#16615](https://github.com/expo/expo/pull/16615) by [@mnightingale](https://github.com/mnightingale))
+
+### ⚠ Notices
+
+- Deleted the `UIImagePickerPresentationStyle.BlurOverFullScreen` option as it does not work on iOS. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Deprecated all `PascalCase` values of the `UIImagePickerPresentationStyle` enum. Use their `SNAKE_UPPERCASE` counterparts instead. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Underlying values of the `UIImagePickerPresentationStyle` are now strings. They were integers before. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 - Export missing `PermissionResponse` type. ([#15744](https://github.com/expo/expo/pull/15744) by [@Simek](https://github.com/Simek))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 12.0.2 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 12.0.1 — 2021-12-15
 

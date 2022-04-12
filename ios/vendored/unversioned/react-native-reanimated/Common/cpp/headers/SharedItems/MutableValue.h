@@ -20,13 +20,16 @@ class MutableValue : public jsi::HostObject,
                      public StoreUser {
  private:
   friend MutableValueSetterProxy;
-  RuntimeManager *runtimeManager;
   friend LayoutAnimationsProxy;
+
+ private:
+  RuntimeManager *runtimeManager;
   std::mutex readWriteMutex;
   std::shared_ptr<ShareableValue> value;
   std::weak_ptr<jsi::Value> animation;
   std::map<unsigned long, std::function<void()>> listeners;
 
+ public:
   void setValue(jsi::Runtime &rt, const jsi::Value &newValue);
   jsi::Value getValue(jsi::Runtime &rt);
 

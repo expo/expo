@@ -10,8 +10,13 @@
 
 - Extract `react-native-web` internals into package to minimize bundler setup. ([#16098](https://github.com/expo/expo/pull/16098) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Fixed the component not rendering correctly when the border radius style is set. ([#16671](https://github.com/expo/expo/pull/16671) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 11.2.0 — 2022-01-26
 
@@ -24,6 +29,24 @@
 ### 🐛 Bug fixes
 
 - Prevent crashes by adding unimplemented `CALayer` initializer `init(layer:)`. ([#15843](https://github.com/expo/expo/pull/15843) by [@dillonhafer](https://github.com/dillonhafer))
+
+## 11.0.3 — 2022-02-06
+
+### 🐛 Bug fixes
+
+- Prevent crashes by adding unimplemented `CALayer` initializer `init(layer:)`. ([#15843](https://github.com/expo/expo/pull/15843) by [@dillonhafer](https://github.com/dillonhafer))
+
+## 11.0.2 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 11.0.1 — 2022-01-27
+
+### 🐛 Bug fixes
+
+- Fix display issue on iOS when more than 2 colors are used without explicit locations. ([#15955](https://github.com/expo/expo/pull/15955) by [@kbrandwijk](https://github.com/kbrandwijk))
 
 ## 11.0.0 — 2021-12-03
 

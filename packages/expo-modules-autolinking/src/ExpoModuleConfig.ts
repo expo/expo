@@ -1,5 +1,12 @@
 import { RawExpoModuleConfig, SupportedPlatform } from './types';
 
+function arrayize<T>(value: T[] | T | undefined): T[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  return value != null ? [value] : [];
+}
+
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -38,10 +45,17 @@ export class ExpoModuleConfig {
   }
 
   /**
-   * Returns a podspec path defined by the module author.
+   * Returns podspec paths defined by the module author.
    */
-  iosPodspecPath(): string | undefined {
-    return this.rawConfig.ios?.podspecPath;
+  iosPodspecPaths(): string[] {
+    return arrayize(this.rawConfig.ios?.podspecPath);
+  }
+
+  /**
+   * Returns the product module names, if defined by the module author.
+   */
+  iosSwiftModuleNames(): string[] {
+    return arrayize(this.rawConfig.ios?.swiftModuleName);
   }
 
   /**
@@ -52,6 +66,13 @@ export class ExpoModuleConfig {
 
     // `modulesClassNames` is a legacy name for the same config.
     return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
+  }
+
+  /**
+   * Returns build.gradle file paths defined by the module author.
+   */
+  androidGradlePaths(): string[] {
+    return arrayize(this.rawConfig.android?.gradlePath ?? []);
   }
 
   /**

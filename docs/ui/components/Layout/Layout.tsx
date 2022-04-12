@@ -1,63 +1,80 @@
-import { css } from '@emotion/react';
-import { breakpoints } from '@expo/styleguide';
+import { css, Global } from '@emotion/react';
+import { breakpoints, spacing, theme } from '@expo/styleguide';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
-import { LayoutScroll } from './LayoutScroll';
+import { Header } from '~/ui/components/Header';
+import { LayoutScroll } from '~/ui/components/Layout';
 
 type LayoutProps = PropsWithChildren<{
-  /** The content within the top bar that spans the columns */
-  header: ReactNode;
-  /** The content within the left column */
+  // The content within the top bar that spans the columns
+  header?: ReactNode;
+  // The content within the left column
   navigation?: ReactNode;
-  /** The content within the right column */
+  // The content within the right column
   sidebar?: ReactNode;
 }>;
 
-export function Layout({ header, navigation, sidebar, children }: LayoutProps) {
-  return (
-    <div css={layoutStyle}>
-      <div css={headerStyle}>{header}</div>
-      <div css={navigationStyle}>{navigation}</div>
-      <div css={contentStyle}>
-        <LayoutScroll>
-          <div css={innerContentStyle}>{children}</div>
-        </LayoutScroll>
-      </div>
-      <div css={sidebarStyle}>{sidebar}</div>
-    </div>
-  );
-}
+export const Layout = ({ header = <Header />, navigation, sidebar, children }: LayoutProps) => (
+  <>
+    <Global
+      styles={css({
+        // Ensure correct background for Overscroll
+        '[data-expo-theme="dark"] body': {
+          backgroundColor: theme.background.screen,
+        },
+      })}
+    />
+    <header css={headerStyle}>{header}</header>
+    <main css={layoutStyle}>
+      {navigation && <nav css={navigationStyle}>{navigation}</nav>}
+      <LayoutScroll>
+        <article css={innerContentStyle}>{children}</article>
+      </LayoutScroll>
+      {sidebar && <aside css={asideStyle}>{sidebar}</aside>}
+    </main>
+  </>
+);
+
+const HEADER_HEIGHT = 60;
 
 const layoutStyle = css({
-  display: 'grid',
-  height: '100vh',
-  gridTemplateRows: '60px calc(100vh - 60px)',
-  gridTemplateColumns: 'min-content auto min-content',
-  gridTemplateAreas: `
-    "header header header"
-    "navigation content sidebar"
-  `,
+  display: 'flex',
+  alignItems: 'stretch',
+  maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
+  marginTop: HEADER_HEIGHT,
+  backgroundColor: theme.background.default,
+  '[data-expo-theme="dark"] &': {
+    backgroundColor: theme.background.screen,
+  },
+  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
+    // Ditch inner scroll on mobile, which results in weird bugs
+    maxHeight: 'none',
+  },
 });
 
-const headerStyle = css({ gridArea: 'header' });
+const headerStyle = css({
+  position: 'fixed',
+  top: 0,
+  width: '100%',
+  height: HEADER_HEIGHT,
+  zIndex: 100,
+});
 
 const navigationStyle = css({
-  gridArea: 'navigation',
-  [`@media screen and (max-width: 768px)`]: {
+  flexBasis: 256,
+  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     display: 'none',
   },
 });
 
-const contentStyle = css({ gridArea: 'content' });
 const innerContentStyle = css({
   margin: '0 auto',
   maxWidth: breakpoints.large,
-  height: '100%',
-  overflowY: 'visible',
+  padding: `${spacing[8]}px ${spacing[4]}px`,
 });
 
-const sidebarStyle = css({
-  gridArea: 'sidebar',
+const asideStyle = css({
+  flexBasis: 288,
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     display: 'none',
   },

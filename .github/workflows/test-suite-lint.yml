@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: ♻️ Restore workspace node modules
@@ -37,6 +37,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
+            packages/@expo/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}

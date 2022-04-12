@@ -36,7 +36,7 @@ export default function App() {
   const [selectedImage, setSelectedImage] = React.useState(null);
 
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert('Permission to access camera roll is required!');
@@ -59,14 +59,14 @@ export default function App() {
   };
 
   let openShareDialogAsync = async () => {
-    if (Platform.OS === 'web') {
+    if (!(await Sharing.isAvailableAsync())) {
       /* @info Give the user a link to the website that the file is uploaded to */
       alert(`The image is available for sharing at: ${selectedImage.remoteUri}`);/* @end */
 
       return;
     }
 
-    Sharing.shareAsync(selectedImage.localUri);
+    Sharing.shareAsync(/* @info Use the remoteUri if set, otherwise the localUri */selectedImage.remoteUri || selectedImage.localUri/* @end */);
   };
 
   /* the rest of the app is unchanged */

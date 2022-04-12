@@ -62,11 +62,13 @@ def GLOG_VERSION = reactProperties.getProperty("GLOG_VERSION")
 def REACT_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
 def REACT_NATIVE_PATH = reactNative.absolutePath
 def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
-def RN_SO_DIR = "$reactNative/ReactAndroid/build/react-ndk/exported"
+def RN_SO_DIR = "$reactNative/ReactAndroid/build/intermediates/library_*/*/jni"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
 def FOR_HERMES = false
-def CMAKE_TOOLCHAIN_FILE = "-DCMAKE_TOOLCHAIN_FILE=${getNdkBuildFullPath()}/../build/cmake/android.toolchain.cmake"
-def ABI_FILTERS = System.getenv("NDK_ABI_FILTERS") ?: 'arm64-v8a, armeabi-v7a, x86, x86_64'
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -85,7 +87,6 @@ buildscript {
     maven { url "https://www.jitpack.io" }
     mavenCentral()
     google()
-    jcenter()
   }
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
@@ -98,13 +99,21 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  ndkVersion "21.1.6352462"
+  // Used to override the NDK path & version on internal CI
+  if (System.getenv("ANDROID_NDK_HOME") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+    ndkPath System.getenv("ANDROID_NDK_HOME")
+    ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
+  }
 
   compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   buildFeatures {
@@ -113,7 +122,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
     versionName "1.0"
 
@@ -133,20 +142,20 @@ android {
         arguments "-DANDROID_STL=c++_shared",
             "-DREACT_NATIVE_TARGET_VERSION=${REACT_VERSION}",
             "-DANDROID_TOOLCHAIN=clang",
-            "${CMAKE_TOOLCHAIN_FILE}",
+            "${getCmakeToolchainFile()}",
             "-DBOOST_VERSION=${BOOST_VERSION}",
             "-DFOR_HERMES=${FOR_HERMES}",
             "-DREACT_NATIVE_PATH=${REACT_NATIVE_PATH}",
             "-DRN_SO_DIR=${RN_SO_DIR}",
             "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
             "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
-        abiFilters = []
-        abiFilters.addAll(ABI_FILTERS.split(',').collect { (it as String).trim() })
+        abiFilters (*reactNativeArchitectures())
       }
     }
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false")
     // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
   }
 
@@ -171,6 +180,7 @@ android {
       "**/libfbjni.so",
       "**/libfolly_json.so",
       "**/libhermes.so",
+      "**/libjsi.so",
     ]
   }
 
@@ -202,15 +212,6 @@ android {
 
   // use `versionedRelease` configuration when publishing to maven
   defaultPublishConfig "versionedRelease"
-
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-  }
-
-  kotlinOptions {
-    jvmTarget = '1.8'
-  }
 }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -254,12 +255,12 @@ dependencies {
   testImplementation 'junit:junit:4.12'
 
 
-  api("com.facebook.fbjni:fbjni-java-only:0.0.3")
+  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 
-  extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-  extractSO("com.facebook.fbjni:fbjni:0.0.2")
+  extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+  extractSO("com.facebook.fbjni:fbjni:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
@@ -297,9 +298,6 @@ dependencies {
   // BEGIN_SDK_43
   versionedApi 'host.exp:reactandroid-abi43_0_0:1.0.0'
   // END_SDK_43
-  // BEGIN_SDK_42
-  versionedApi 'host.exp:reactandroid-abi42_0_0:1.0.0'
-  // END_SDK_42
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -354,7 +352,7 @@ dependencies {
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:20.2.4'
+  api 'com.google.firebase:firebase-messaging:21.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
@@ -367,7 +365,7 @@ dependencies {
 
   // expo-av
   // See explanation in expo-av/build.gradle
-  api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
+  api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
 
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'
@@ -383,13 +381,18 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation 'com.stripe:stripe-android:18.1.0'
+  implementation('com.stripe:stripe-android:19.3.1') {
+    exclude group:'com.google.android.gms', module:'play-services-wallet'
+  }
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
   implementation 'com.google.android.material:material:1.3.0'
 
   // react-native-webview
   implementation "androidx.webkit:webkit:1.4.0"
+
+  // expo-updates
+  implementation 'org.bouncycastle:bcutil-jdk15to18:1.70'
 }
 
 
@@ -494,6 +497,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
+  duplicatesStrategy("warn")
   from(dependenciesPath ?: tarTree(downloadGlog.dest))
   from("$reactNativeThirdParty/glog/")
   include("glog-${GLOG_VERSION}/src/**/*", "Android.mk", "config.h")
@@ -582,37 +586,32 @@ def getNdkBuildName() {
 }
 
 def findNdkBuildFullPath() {
+  // android.ndkDirectory should return project.android.ndkVersion ndkDirectory
+  def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+  if (ndkDir) {
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
+
   // we allow to provide full path to ndk-build tool
   if (hasProperty("ndk.command")) {
     return property("ndk.command")
   }
   // or just a path to the containing directory
   if (hasProperty("ndk.path")) {
-    def ndkDir = property("ndk.path")
+    ndkDir = property("ndk.path")
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
+  // @TODO ANDROID_NDK && ndk.dir is deprecated and will be removed in the future.
   if (System.getenv("ANDROID_NDK_HOME") != null) {
-    def ndkDir = System.getenv("ANDROID_NDK_HOME")
+    ndkDir = System.getenv("ANDROID_NDK_HOME")
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
   // Left for the legacy reasons, use the previous one.
   if (System.getenv("ANDROID_NDK") != null) {
-    def ndkDir = System.getenv("ANDROID_NDK")
+    ndkDir = System.getenv("ANDROID_NDK")
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-  }
-
-  try {
-    def ndkDir = android.ndkDirectory.absolutePath
-    if (ndkDir) {
-      return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-  } catch (InvalidUserDataException e) {
-    throw new GradleScriptException(
-        "Default side-by-side NDK installation is not found.\n" +
-            "Set \$ANDROID_NDK_HOME environment variable correctly or setup ndk.dir in local.properties.", e
-    )
   }
 
   return null
@@ -635,6 +634,10 @@ def getNdkBuildFullPath() {
         null)
   }
   return ndkBuildFullPath
+}
+
+def getCmakeToolchainFile() {
+  return "-DCMAKE_TOOLCHAIN_FILE=${getNdkBuildFullPath()}/../build/cmake/android.toolchain.cmake"
 }
 
 task prepareHermes() {
@@ -741,15 +744,17 @@ task prepareThirdPartyNdkHeaders(dependsOn: [downloadNdkBuildDependencies, prepa
 // pre-native build pipeline
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild')) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(prepareThirdPartyNdkHeaders)
     extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
     extractSOFiles.dependsOn(prepareThirdPartyNdkHeaders)
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractSOFiles)
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   } else if (task.name.startsWith('generateJsonModel')) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }
 

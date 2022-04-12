@@ -1,19 +1,40 @@
 import * as React from 'react';
 
+import { DevLauncher } from '../native-modules/DevLauncher';
 import * as DevMenu from '../native-modules/DevMenu';
 import { useBottomSheet } from './useBottomSheet';
 
 // TODO - this would be better suited as an event emitter subscriber
 
+const defaultDevSettings: DevMenu.DevSettings = {
+  isDebuggingRemotely: false,
+  isElementInspectorShown: false,
+  isHotLoadingEnabled: false,
+  isPerfMonitorShown: false,
+  isElementInspectorAvailable: true,
+  isHotLoadingAvailable: true,
+  isPerfMonitorAvailable: true,
+  isRemoteDebuggingAvailable: true,
+};
+
+const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
+
+export type DevSettingsProviderProps = {
+  children: React.ReactNode;
+  devSettings?: DevMenu.DevSettings;
+};
+
+export function DevSettingsProvider({ children, devSettings }: DevSettingsProviderProps) {
+  return <DevSettingsContext.Provider value={devSettings}>{children}</DevSettingsContext.Provider>;
+}
+
 export function useDevSettings() {
   const bottomSheet = useBottomSheet();
+  const initialDevSettings = React.useContext(DevSettingsContext);
 
-  const [devSettings, setDevSettings] = React.useState<DevMenu.DevSettings>({
-    isDebuggingRemotely: false,
-    isElementInspectorShown: false,
-    isHotLoadingEnabled: false,
-    isPerfMonitorShown: false,
-  });
+  const [devSettings, setDevSettings] = React.useState<DevMenu.DevSettings>(
+    initialDevSettings || defaultDevSettings
+  );
 
   // toggle value so that there is no lag in response to user input
   // these values will update to the correct value after the native fn is executed via updateSettings()
@@ -27,56 +48,37 @@ export function useDevSettings() {
     });
   }
 
-  React.useEffect(() => {
-    DevMenu.getDevSettingsAsync().then(setDevSettings);
-  }, []);
-
-  const updateSettings = React.useCallback(async () => {
-    const updates = await DevMenu.getDevSettingsAsync();
-    setDevSettings(updates);
-  }, []);
-
   const toggleElementInspector = React.useCallback(async () => {
     eagerToggleValue('isElementInspectorShown');
     await DevMenu.toggleElementInspectorAsync();
     bottomSheet.collapse();
-    updateSettings();
   }, []);
 
   const toggleFastRefresh = React.useCallback(async () => {
     eagerToggleValue('isHotLoadingEnabled');
     await DevMenu.toggleFastRefreshAsync();
     bottomSheet.collapse();
-    updateSettings();
   }, []);
 
   const toggleDebugRemoteJS = React.useCallback(async () => {
     eagerToggleValue('isDebuggingRemotely');
     await DevMenu.toggleDebugRemoteJSAsync();
     bottomSheet.collapse();
-    updateSettings();
   }, []);
 
   const togglePerformanceMonitor = React.useCallback(async () => {
     eagerToggleValue('isPerfMonitorShown');
     await DevMenu.togglePerformanceMonitorAsync();
     bottomSheet.collapse();
-    updateSettings();
   }, []);
 
   const navigateToLauncher = React.useCallback(async () => {
-    await DevMenu.navigateToLauncherAsync();
-    updateSettings();
+    await DevLauncher.navigateToLauncherAsync();
     bottomSheet.collapse();
   }, []);
 
   const reload = React.useCallback(async () => {
     await DevMenu.reloadAsync();
-    bottomSheet.collapse();
-    updateSettings();
-  }, []);
-
-  const closeMenu = React.useCallback(async () => {
     bottomSheet.collapse();
   }, []);
 
@@ -89,7 +91,6 @@ export function useDevSettings() {
       toggleFastRefresh,
       reload,
       navigateToLauncher,
-      closeMenu,
     },
   };
 }

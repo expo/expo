@@ -14,8 +14,13 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       // Files starting with `Expo` needs to be prefixed though,
       // for umbrella headers (e.g. `ExpoModulesCore.h`).
       {
-        find: /\b(Expo|EX|UM)([^/]*\.)(h|m|mm|cpp)\b/,
+        find: /\b(Expo|EX|UM|EAS)([^/]*\.)(h|m|mm|cpp)\b/,
         replaceWith: `${prefix}$1$2$3`,
+      },
+      {
+        // versioning category files, e.g. RCTComponentData+Privates.h
+        find: /\b(RCT)([^/]*)\+([^/]*\.)(h|m|mm|cpp)\b/,
+        replaceWith: `${prefix}$1$2+$3$4`,
       },
     ],
     content: [
@@ -33,13 +38,18 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
 
       {
         paths: swiftFilesPattern,
-        find: /\bimport (Expo|EX)(\w+)/g,
+        find: /\bimport (Expo|EX|EAS)(\w+)/g,
         replaceWith: `import ${prefix}$1$2`,
       },
       {
         paths: swiftFilesPattern,
-        find: /@objc\((Expo|EX)\)/g,
+        find: /@objc\((Expo|EX|EAS)\)/g,
         replaceWith: `@objc(${prefix}$1)`,
+      },
+      {
+        paths: swiftFilesPattern,
+        find: /r(eactTag)/gi,
+        replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
       },
 
       // Only Objective-C
@@ -47,19 +57,19 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         // Prefix `Expo*` frameworks in imports.
         paths: objcFilesPattern,
-        find: /#import <(Expo.*?)\//g,
-        replaceWith: `#import <${prefix}$1/`,
+        find: /#import <(Expo|EAS)(.*?)\//g,
+        replaceWith: `#import <${prefix}$1$2/`,
       },
       {
         paths: objcFilesPattern,
-        find: /#import <(.*?)\/(Expo.*?)\.h>/g,
-        replaceWith: `#import <$1/${prefix}$2.h>`,
+        find: /#import <(.*?)\/(Expo|EAS)(.*?)\.h>/g,
+        replaceWith: `#import <$1/${prefix}$2$3.h>`,
       },
       {
         // Rename Swift compatibility headers from frameworks starting with `Expo`.
         paths: objcFilesPattern,
-        find: /#import "(Expo.+?)-Swift\.h"/g,
-        replaceWith: `#import "${prefix}$1-Swift.h"`,
+        find: /#import "(Expo|EAS)(.+?)-Swift\.h"/g,
+        replaceWith: `#import "${prefix}$1$2-Swift.h"`,
       },
       {
         // Unprefix imports to unversionable (e.g. expo-gl-cpp) modules.
@@ -68,16 +78,21 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         replaceWith: '#import <$1',
       },
       {
+        paths: objcFilesPattern,
+        find: /@import (Expo|EX|EAS)(\w+)/g,
+        replaceWith: `@import ${prefix}$1$2`,
+      },
+      {
         // Prefixes Objective-C name of the Swift modules provider.
         paths: ['EXNativeModulesProxy.mm'],
         find: 'NSClassFromString(@"ExpoModulesProvider")',
-        replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`
+        replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`,
       },
       {
         // Prefixes Objective-C name of the Swift modules provider.
         paths: ['EXNativeModulesProxy.mm'],
         find: '[NSString stringWithFormat:@"%@.ExpoModulesProvider"',
-        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`
+        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`,
       },
       {
         // Prefixes imports from other React Native libs
@@ -101,21 +116,27 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       // Prefixes versionable namespaces (react namespace is already prefixed with uppercased "R")
       {
         paths: objcFilesPattern,
-        find: /::react::/g,
-        replaceWith: `::${prefix}React::`,
+        find: /\busing namespace react;/g,
+        replaceWith: `using namespace ${prefix}React;`,
       },
       {
         paths: objcFilesPattern,
-        find: /\bnamespace react\b/g,
-        replaceWith: `namespace ${prefix}React`,
+        find: /::react(::|;)/g,
+        replaceWith: `::${prefix}React$1`,
+      },
+      {
+        paths: objcFilesPattern,
+        find: /\bnamespace react(\s+[^=])/g,
+        replaceWith: `namespace ${prefix}React$1`,
       },
 
       // Prefix umbrella header imports
       {
         paths: '*.h',
-        find: /\b(\w+-umbrella\.h)\b/g,
+        // Use negative look ahead regexp for `prefix` to prevent duplicated versioning
+        find: new RegExp(`\b(!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
         replaceWith: `${prefix}$1`,
-      }
+      },
     ],
   };
 }
