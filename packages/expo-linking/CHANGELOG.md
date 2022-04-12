@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - `addEventListener` and `removeEventListener` only accept `'url'` as `type` param, rather than `string`
-- `useURL` hook now cleans up `addEventListener` via `remove` rather than `removeEventListener`
+- `useURL` hook now cleans up `addEventListener` via `remove` rather than `removeEventListener` ([#17014](https://github.com/expo/expo/pull/17014) by [@frankcalise](https://github.com/frankcalise))
 
 ### 💡 Others
 
