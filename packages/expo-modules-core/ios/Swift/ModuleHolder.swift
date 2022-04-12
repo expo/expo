@@ -124,7 +124,7 @@ public final class ModuleHolder {
 
     // Fill in with constants
     for (key, value) in getConstants() {
-      object[key] = value
+      object.setProperty(key, value: value)
     }
 
     // Fill in with functions
