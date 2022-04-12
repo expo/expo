@@ -111,14 +111,10 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
-  def room_version = "2.3.0"
+  def room_version = "2.4.2"
 
   implementation "androidx.room:room-runtime:$room_version"
   kapt "androidx.room:room-compiler:$room_version"
-
-  // force upgrade sqlite-jdbc to support building on aarch64 jdk of macos m1.
-  // https://issuetracker.google.com/issues/174695268
-  kapt "org.xerial:sqlite-jdbc:3.36.0"
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
