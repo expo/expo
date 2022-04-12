@@ -10,13 +10,13 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
-import expo.modules.kotlin.types.JSTypeConverter
 
 abstract class AnyFunction(
   protected val name: String,
-  private val desiredArgsTypes: Array<AnyType>
+  private val desiredArgsTypes: Array<AnyType>,
+  isSync: Boolean = false
 ) {
-  internal var isSync = false
+  internal var isSync = isSync
     private set
 
   fun runSynchronously() = apply {

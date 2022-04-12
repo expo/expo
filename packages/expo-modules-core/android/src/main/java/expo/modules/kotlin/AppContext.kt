@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
@@ -42,8 +43,13 @@ class AppContext(
   }
 
   fun onPostCreate() {
-    reactContextHolder.get()?.javaScriptContextHolder?.get()?.let {
-      jsiInterop.installJSI(it)
+    val reactContext = reactContextHolder.get() ?: return
+    reactContext.javaScriptContextHolder?.get()?.let {
+      jsiInterop.installJSI(
+        it,
+        reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
+        reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+      )
     }
   }
 

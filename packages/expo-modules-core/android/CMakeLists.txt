@@ -6,6 +6,12 @@ set(CMAKE_CXX_FLAGS "-DFOLLY_NO_CONFIG=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HA
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
+if(${NATIVE_DEBUG})
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+endif()
+
+
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 
@@ -35,8 +41,10 @@ target_include_directories(
         "${REACT_NATIVE_DIR}/React"
         "${REACT_NATIVE_DIR}/React/Base"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
         "${REACT_NATIVE_DIR}/ReactCommon"
+        "${REACT_NATIVE_DIR}/ReactCommon/react/nativemodule/core"
         "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
         "${REACT_NATIVE_DIR}/ReactCommon/jsi"
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
@@ -77,6 +85,13 @@ find_library(
         NO_CMAKE_FIND_ROOT_PATH
 )
 
+find_library(
+        REACT_NATIVE_MODULES_CORE
+        react_nativemodule_core
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
+
 #reactnativejni
 
 # linking
@@ -88,5 +103,6 @@ target_link_libraries(
         ${JSI_LIB}
         ${REACT_NATIVE_JNI_LIB}
         ${FOLLY_JSON_LIB}
+        ${REACT_NATIVE_MODULES_CORE}
         android
 )
