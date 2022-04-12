@@ -1,29 +1,27 @@
-#import "REANodesManager.h"
-
+#import <RNReanimated/REAAlwaysNode.h>
+#import <RNReanimated/REABezierNode.h>
+#import <RNReanimated/REABlockNode.h>
+#import <RNReanimated/REACallFuncNode.h>
+#import <RNReanimated/REAClockNodes.h>
+#import <RNReanimated/REAConcatNode.h>
+#import <RNReanimated/REACondNode.h>
+#import <RNReanimated/READebugNode.h>
+#import <RNReanimated/REAEventNode.h>
+#import <RNReanimated/REAFunctionNode.h>
+#import <RNReanimated/REAJSCallNode.h>
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REANode.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAOperatorNode.h>
+#import <RNReanimated/REAParamNode.h>
+#import <RNReanimated/REAPropsNode.h>
+#import <RNReanimated/REASetNode.h>
+#import <RNReanimated/REAStyleNode.h>
+#import <RNReanimated/REATransformNode.h>
+#import <RNReanimated/REAValueNode.h>
 #import <React/RCTConvert.h>
-
 #import <React/RCTShadowView.h>
 #import <stdatomic.h>
-#import "Nodes/REAAlwaysNode.h"
-#import "Nodes/REABezierNode.h"
-#import "Nodes/REABlockNode.h"
-#import "Nodes/REACallFuncNode.h"
-#import "Nodes/REAClockNodes.h"
-#import "Nodes/REAConcatNode.h"
-#import "Nodes/REACondNode.h"
-#import "Nodes/READebugNode.h"
-#import "Nodes/REAEventNode.h"
-#import "Nodes/REAFunctionNode.h"
-#import "Nodes/REAJSCallNode.h"
-#import "Nodes/REANode.h"
-#import "Nodes/REAOperatorNode.h"
-#import "Nodes/REAParamNode.h"
-#import "Nodes/REAPropsNode.h"
-#import "Nodes/REASetNode.h"
-#import "Nodes/REAStyleNode.h"
-#import "Nodes/REATransformNode.h"
-#import "Nodes/REAValueNode.h"
-#import "REAModule.h"
 
 // Interface below has been added in order to use private methods of RCTUIManager,
 // RCTUIManager#UpdateView is a React Method which is exported to JS but in

@@ -1,22 +1,21 @@
-#if TARGET_IPHONE_SIMULATOR
-#import <dlfcn.h>
-#endif
-
+#import <RNReanimated/LayoutAnimationsProxy.h>
+#import <RNReanimated/NativeMethods.h>
+#import <RNReanimated/NativeProxy.h>
+#import <RNReanimated/REAAnimationsManager.h>
+#import <RNReanimated/REAIOSErrorHandler.h>
+#import <RNReanimated/REAIOSScheduler.h>
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAUIManager.h>
+#import <RNReanimated/RNGestureHandlerStateManager.h>
+#import <RNReanimated/ReanimatedSensorContainer.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTUIManager.h>
 #import <folly/json.h>
 
-#import <RNGestureHandlerStateManager.h>
-#import "LayoutAnimationsProxy.h"
-#import "NativeMethods.h"
-#import "NativeProxy.h"
-#import "REAAnimationsManager.h"
-#import "REAIOSErrorHandler.h"
-#import "REAIOSScheduler.h"
-#import "REAModule.h"
-#import "REANodesManager.h"
-#import "REAUIManager.h"
-#import "ReanimatedSensorContainer.h"
+#if TARGET_IPHONE_SIMULATOR
+#import <dlfcn.h>
+#endif
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>

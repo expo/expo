@@ -1,4 +1,4 @@
-#import "NativeMethods.h"
+#import <RNReanimated/NativeMethods.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTScrollView.h>
 

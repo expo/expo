@@ -1,9 +1,9 @@
-#import "REAAnimationsManager.h"
+#import <RNReanimated/REAAnimationsManager.h>
+#import <RNReanimated/REAUIManager.h>
 #import <React/RCTComponentData.h>
 #import <React/RCTTextView.h>
 #import <React/UIView+Private.h>
 #import <React/UIView+React.h>
-#import "REAUIManager.h"
 
 @interface REAAnimationsManager ()
 

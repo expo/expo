@@ -1,8 +1,7 @@
-#import "REAModule.h"
-
-#import "REANodesManager.h"
-#import "Transitioning/REATransitionManager.h"
-#import "native/NativeProxy.h"
+#import <RNReanimated/NativeProxy.h>
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REATransitionManager.h>
 
 typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
 

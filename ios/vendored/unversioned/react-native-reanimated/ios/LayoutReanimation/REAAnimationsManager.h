@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
+#import <RNReanimated/REASnapshot.h>
 #import <React/RCTUIManager.h>
-#import "REASnapshot.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

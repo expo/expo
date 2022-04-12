@@ -147,14 +147,17 @@ public class NativeProxy {
   }
 
   private void addDevMenuOption() {
-    final DevSupportManager devSupportManager =
-        ((ReactApplication) mContext.get().getApplicationContext())
-            .getReactNativeHost()
-            .getReactInstanceManager()
-            .getDevSupportManager();
+    // In Expo, `ApplicationContext` is not an instance of `ReactApplication`
+    if (mContext.get().getApplicationContext() instanceof ReactApplication) {
+      final DevSupportManager devSupportManager =
+          ((ReactApplication) mContext.get().getApplicationContext())
+              .getReactNativeHost()
+              .getReactInstanceManager()
+              .getDevSupportManager();
 
-    devSupportManager.addCustomDevOption(
-        "Toggle slow animations (Reanimated)", this::toggleSlowAnimations);
+      devSupportManager.addCustomDevOption(
+          "Toggle slow animations (Reanimated)", this::toggleSlowAnimations);
+    }
   }
 
   @DoNotStrip

@@ -1884,7 +1884,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.68.0)
   - RNGestureHandler (2.2.0):
     - React-Core
-  - RNReanimated (2.6.0):
+  - RNReanimated (2.7.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -3363,7 +3363,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 9b1304f48e344c55bb3c36e13bf11461cb4da5d8
   ReactCommon: fab89a13b52f1ac42b59a0e4b4f76f21aea9eebe
   RNGestureHandler: bf572f552ea324acd5b5464b8d30755b2d8c1de6
-  RNReanimated: 89a32ebf01d2dac2eb35b3b1628952f626db93d7
+  RNReanimated: e42de406edd11350af29016cf6802ef16ee364d0
   RNScreens: 4d83613b50b74ed277026375dc0810893b0c347f
   Stripe: ee32e594fa4dee4bdf2a8a3039f7fb07a21075dc
   stripe-react-native: bd992665f71c5233d62719c4031351f3f3b769fe

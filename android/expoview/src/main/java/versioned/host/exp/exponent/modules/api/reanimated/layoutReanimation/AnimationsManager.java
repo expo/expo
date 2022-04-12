@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.reanimated.layoutReanimation;
 
+import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -368,12 +369,18 @@ public class AnimationsManager implements ViewHierarchyObserver {
       preparedValues.put(key, PixelUtil.toDIPFromPixel((int) values.get(key)));
     }
 
-    DisplayMetrics displaymetrics = new DisplayMetrics();
-    mContext.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-    int height = displaymetrics.heightPixels;
-    int width = displaymetrics.widthPixels;
-    preparedValues.put("windowWidth", PixelUtil.toDIPFromPixel(width));
-    preparedValues.put("windowHeight", PixelUtil.toDIPFromPixel(height));
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    Activity currentActivity = mContext.getCurrentActivity();
+    if (currentActivity != null) {
+      currentActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+      int height = displayMetrics.heightPixels;
+      int width = displayMetrics.widthPixels;
+      preparedValues.put("windowWidth", PixelUtil.toDIPFromPixel(width));
+      preparedValues.put("windowHeight", PixelUtil.toDIPFromPixel(height));
+    } else {
+      preparedValues.put("windowWidth", PixelUtil.toDIPFromPixel(0));
+      preparedValues.put("windowHeight", PixelUtil.toDIPFromPixel(0));
+    }
     return preparedValues;
   }
 
