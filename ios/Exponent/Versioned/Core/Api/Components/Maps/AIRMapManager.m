@@ -734,7 +734,11 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
                 if (CGPathContainsPoint(mpr, NULL, mapPointAsCGP, FALSE)) {
                     id event = @{
                                 @"action": @"polygon-press",
-                                };
+                                @"coordinate": @{
+                                    @"latitude": @(tapCoordinate.latitude),
+                                    @"longitude": @(tapCoordinate.longitude),
+                                },
+                            };
                     polygon.onPress(event);
                 }
 
@@ -1018,6 +1022,7 @@ static int kDragCenterContext;
                          @"accuracy": @(location.location.horizontalAccuracy),
                          @"altitudeAccuracy": @(location.location.verticalAccuracy),
                          @"speed": @(location.location.speed),
+                         @"heading": @(location.location.course),
                          }
                  };
     
