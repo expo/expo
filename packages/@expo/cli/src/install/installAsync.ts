@@ -39,32 +39,31 @@ export async function installAsync(
   if (options.check || options.fix) {
     const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
 
-    logIncorrectDependencies(dependencies);
-
-    const value =
-      // If `--fix` then always fix.
-      options.fix ||
-      // Otherwise prompt to fix when not running in CI.
-      (!CI && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
-
-    if (value) {
-      // Just pass in the names, the install function will resolve the versions again.
-      const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
-      Log.debug('Installing fixed dependencies:', fixedDependencies);
-      // Install the corrected dependencies.
-      return installPackagesAsync(projectRoot, {
-        packageManager,
-        packages: fixedDependencies,
-        packageManagerArguments,
-        sdkVersion: exp.sdkVersion!,
-      });
-    }
-
-    // Exit with non-zero exit code if any of the dependencies are out of date.
-    if (dependencies.length) {
-      Log.exit(chalk.red('Found outdated dependencies'), 1);
-    } else {
+    if (!dependencies.length) {
       Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
+    } else {
+      logIncorrectDependencies(dependencies);
+
+      const value =
+        // If `--fix` then always fix.
+        options.fix ||
+        // Otherwise prompt to fix when not running in CI.
+        (!CI && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
+
+      if (value) {
+        // Just pass in the names, the install function will resolve the versions again.
+        const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
+        Log.debug('Installing fixed dependencies:', fixedDependencies);
+        // Install the corrected dependencies.
+        return installPackagesAsync(projectRoot, {
+          packageManager,
+          packages: fixedDependencies,
+          packageManagerArguments,
+          sdkVersion: exp.sdkVersion!,
+        });
+      }
+      // Exit with non-zero exit code if any of the dependencies are out of date.
+      Log.exit(chalk.red('Found outdated dependencies'), 1);
     }
   }
 
