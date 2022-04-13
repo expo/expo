@@ -131,7 +131,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     }
   };
   // Remove EXAVPlayerData on main thread to prevent race conditions
-  // while KVO messages are dispatched on main thread while the player data is
+  // while KVO messages are dispatched on main thread and the player data is
   // de-allocating  
   [EXUtilities performSynchronouslyOnMainThread:block];
 }
