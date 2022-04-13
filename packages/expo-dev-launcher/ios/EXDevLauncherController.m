@@ -283,6 +283,12 @@
   }
   
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
+
+  // cold boot -- need to initialize the dev launcher app RN app to handle the link
+  if (![_launcherBridge isValid]) {
+    [self navigateToLauncher];
+  }
+  
   return true;
 }
 

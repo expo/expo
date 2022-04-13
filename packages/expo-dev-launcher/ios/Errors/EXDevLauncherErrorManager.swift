@@ -33,7 +33,8 @@ public class EXDevLauncherErrorManager: NSObject {
     controller?.currentWindow()?.rootViewController = currentVC
     controller?.currentWindow()?.makeKeyAndVisible()
     
-    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "hideEXSplashScreen"), object: nil)
+    // remove splash screen
+    currentVC?.view.subviews.last?.removeFromSuperview()
   }
 
   private func getNextErrorViewController() -> EXDevLauncherErrorViewController? {
