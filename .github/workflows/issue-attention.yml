@@ -6,7 +6,7 @@ on:
 
 jobs:
   issue:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: 8398a7/action-slack@v3.8.0
         if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}

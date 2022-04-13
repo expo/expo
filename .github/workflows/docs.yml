@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   docs:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Install Node 14
         uses: actions/setup-node@v3

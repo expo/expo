@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   android:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
