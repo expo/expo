@@ -118,14 +118,19 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   }
 }
 
-- (void)_removeData
-{
-  if (_data) {
-    [_data pauseImmediately];
-    [_data setStatusUpdateCallback:nil];
-    [_exAV demoteAudioSessionIfPossible];
-    _data = nil;
-  }
+- (void)_removeData {
+  EX_WEAKIFY(self);
+  void (^block)(void) = ^{
+    EX_ENSURE_STRONGIFY(self);
+    if (self->_data) {
+      [self->_data cleanup];
+      [self->_data pauseImmediately];
+      [self->_data setStatusUpdateCallback:nil];
+      [self->_exAV demoteAudioSessionIfPossible];
+      self->_data = nil;
+    }
+  };
+  [EXUtilities performSynchronouslyOnMainThread:block];
 }
 
 - (void)_removePlayer
