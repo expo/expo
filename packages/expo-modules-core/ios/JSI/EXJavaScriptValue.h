@@ -19,6 +19,11 @@ NS_SWIFT_NAME(JavaScriptValue)
 #ifdef __cplusplus
 - (nonnull instancetype)initWithRuntime:(nonnull EXJavaScriptRuntime *)runtime
                                   value:(std::shared_ptr<jsi::Value>)value;
+
+/**
+ \return the underlying `jsi::Value`.
+ */
+- (nonnull jsi::Value *)get;
 #endif // __cplusplus
 
 #pragma mark - Type checking

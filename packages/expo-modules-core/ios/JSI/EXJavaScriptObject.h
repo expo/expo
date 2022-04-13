@@ -14,6 +14,25 @@ typedef void (^JSAsyncFunctionBlock)(NSArray * _Nonnull, RCTPromiseResolveBlock 
 typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
 
 @class EXJavaScriptRuntime;
+@class EXJavaScriptValue;
+
+/**
+ The property descriptor options for the property being defined or modified.
+ */
+typedef NS_OPTIONS(NSInteger, EXJavaScriptObjectPropertyDescriptor) {
+  /**
+   If set, the type of this property descriptor may be changed and if the property may be deleted from the corresponding object.
+   */
+  EXJavaScriptObjectPropertyDescriptorConfigurable = 1 << 0,
+  /**
+   If set, the property shows up during enumeration of the properties on the corresponding object.
+   */
+  EXJavaScriptObjectPropertyDescriptorEnumerable = 1 << 1,
+  /**
+   If set, the value associated with the property may be changed with an assignment operator.
+   */
+  EXJavaScriptObjectPropertyDescriptorWritable = 1 << 2,
+} NS_SWIFT_NAME(JavaScriptObjectPropertyDescriptor);
 
 NS_SWIFT_NAME(JavaScriptObject)
 @interface EXJavaScriptObject : NSObject
@@ -29,18 +48,35 @@ NS_SWIFT_NAME(JavaScriptObject)
 - (nonnull jsi::Object *)get;
 #endif // __cplusplus
 
-#pragma mark - Subscripting
+#pragma mark - Accessing object properties
 
 /**
- Subscript getter. Supports only values convertible to Foundation types, otherwise `nil` is returned.
+ \return a bool whether the object has a property with the given name.
  */
-- (nullable id)objectForKeyedSubscript:(nonnull NSString *)key;
+- (BOOL)hasProperty:(nonnull NSString *)name;
 
 /**
- Subscript setter. Only `EXJavaScriptObject` and Foundation object convertible to JSI values can be used as a value,
- otherwise the property is set to `undefined`.
+ \return the property of the object with the given name.
+ If the name isn't a property on the object, returns the `undefined` value.
  */
-- (void)setObject:(nullable id)obj forKeyedSubscript:(nonnull NSString *)key;
+- (nonnull EXJavaScriptValue *)getProperty:(nonnull NSString *)name;
+
+/**
+ \return an array consisting of all enumerable property names in the object and its prototype chain.
+ */
+- (nonnull NSArray<NSString *> *)getPropertyNames;
+
+#pragma mark - Modifying object properties
+
+/**
+ Sets the value for the property with the given name.
+ */
+- (void)setProperty:(nonnull NSString *)name value:(nullable id)value;
+
+/**
+ Defines a new property or modifies an existing property on the object. Calls `Object.defineProperty` under the hood.
+ */
+- (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options;
 
 #pragma mark - Functions
 

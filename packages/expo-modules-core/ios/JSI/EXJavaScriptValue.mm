@@ -19,6 +19,11 @@
   return self;
 }
 
+- (nonnull jsi::Value *)get
+{
+  return _value.get();
+}
+
 #pragma mark - Type checking
 
 - (BOOL)isUndefined
