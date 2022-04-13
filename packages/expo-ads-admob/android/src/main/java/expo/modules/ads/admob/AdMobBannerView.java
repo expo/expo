@@ -72,6 +72,7 @@ public class AdMobBannerView extends FrameLayout {
       @Override
       public void onAdClosed() {
         sendEvent(AdMobBannerViewManager.Events.EVENT_WILL_DISMISS);
+        sendEvent(AdMobBannerViewManager.Events.EVENT_DID_DISMISS);
       }
     });
   }

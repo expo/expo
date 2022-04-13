@@ -7,21 +7,21 @@
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize {
   if ([bannerSize isEqualToString:@"banner"]) {
-    return kGADAdSizeBanner;
+    return GADAdSizeBanner;
   } else if ([bannerSize isEqualToString:@"largeBanner"]) {
-    return kGADAdSizeLargeBanner;
+    return GADAdSizeLargeBanner;
   } else if ([bannerSize isEqualToString:@"mediumRectangle"]) {
-    return kGADAdSizeMediumRectangle;
+    return GADAdSizeMediumRectangle;
   } else if ([bannerSize isEqualToString:@"fullBanner"]) {
-    return kGADAdSizeFullBanner;
+    return GADAdSizeFullBanner;
   } else if ([bannerSize isEqualToString:@"leaderboard"]) {
-    return kGADAdSizeLeaderboard;
+    return GADAdSizeLeaderboard;
   } else if ([bannerSize isEqualToString:@"smartBannerPortrait"]) {
     return kGADAdSizeSmartBannerPortrait;
   } else if ([bannerSize isEqualToString:@"smartBannerLandscape"]) {
     return kGADAdSizeSmartBannerLandscape;
   } else {
-    return kGADAdSizeBanner;
+    return GADAdSizeBanner;
   }
 }
 
@@ -102,49 +102,61 @@
   [self addSubview:_bannerView];
 }
 
-/// Tells the delegate an ad request loaded an ad.
-- (void)adViewDidReceiveAd:(GADBannerView *)adView {
+#pragma mark - GADBannerViewDelegate: Ad Request Lifecycle Notifications
+
+/// Tells the delegate that an ad request successfully received an ad. The delegate may want to add
+/// the banner view to the view hierarchy if it hasn't been added yet.
+- (void)bannerViewDidReceiveAd:(nonnull GADBannerView *)bannerView
+{
   if (self.onAdViewDidReceiveAd) {
     self.onAdViewDidReceiveAd(@{});
   }
 }
 
-/// Tells the delegate an ad request failed.
-- (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(NSError *)error {
+/// Tells the delegate that an ad request failed. The failure is normally due to network
+/// connectivity or ad availablility (i.e., no fill).
+- (void)bannerView:(nonnull GADBannerView *)bannerView
+    didFailToReceiveAdWithError:(nonnull NSError *)error
+{
   if (self.onDidFailToReceiveAdWithError) {
     self.onDidFailToReceiveAdWithError(@{ @"error" : [error description] });
   }
 }
 
-/// Tells the delegate that a full screen view will be presented in response
-/// to the user clicking on an ad.
-- (void)adViewWillPresentScreen:(GADBannerView *)adView {
+///// Tells the delegate that an impression has been recorded for an ad.
+//- (void)bannerViewDidRecordImpression:(nonnull GADBannerView *)bannerView;
+//
+///// Tells the delegate that a click has been recorded for the ad.
+//- (void)bannerViewDidRecordClick:(nonnull GADBannerView *)bannerView;
+
+#pragma mark - GADBannerViewDelegate: Click-Time Lifecycle Notifications
+
+/// Tells the delegate that a full screen view will be presented in response to the user clicking on
+/// an ad. The delegate may want to pause animations and time sensitive interactions.
+- (void)bannerViewWillPresentScreen:(nonnull GADBannerView *)bannerView
+{
   if (self.onAdViewWillPresentScreen) {
     self.onAdViewWillPresentScreen(@{});
   }
 }
 
 /// Tells the delegate that the full screen view will be dismissed.
-- (void)adViewWillDismissScreen:(GADBannerView *)adView {
+- (void)bannerViewWillDismissScreen:(nonnull GADBannerView *)bannerView
+{
   if (self.onAdViewWillDismissScreen) {
     self.onAdViewWillDismissScreen(@{});
   }
 }
 
-/// Tells the delegate that the full screen view has been dismissed.
-- (void)adViewDidDismissScreen:(GADBannerView *)adView {
+/// Tells the delegate that the full screen view has been dismissed. The delegate should restart
+/// anything paused while handling bannerViewWillPresentScreen:.
+- (void)bannerViewDidDismissScreen:(nonnull GADBannerView *)bannerView
+{
   if (self.onAdViewDidDismissScreen) {
     self.onAdViewDidDismissScreen(@{});
   }
 }
 
-/// Tells the delegate that a user click will open another app (such as
-/// the App Store), backgrounding the current app.
-- (void)adViewWillLeaveApplication:(GADBannerView *)adView {
-  if (self.onAdViewWillLeaveApplication) {
-    self.onAdViewWillLeaveApplication(@{});
-  }
-}
 
 @end
 

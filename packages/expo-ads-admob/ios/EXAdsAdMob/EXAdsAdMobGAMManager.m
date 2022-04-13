@@ -14,15 +14,14 @@ EX_EXPORT_MODULE(ExpoPublisherBannerView);
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[
-           @"onAdmobDispatchAppEvent",
-           @"onAdViewDidDismissScreen",
-           @"onAdViewDidReceiveAd",
-           @"onAdViewWillDismissScreen",
-           @"onAdViewWillLeaveApplication",
-           @"onAdViewWillPresentScreen",
-           @"onDidFailToReceiveAdWithError",
-           @"onSizeChange",
-           ];
+    @"onSizeChange",
+    @"onAdmobDispatchAppEvent",
+    @"onAdViewDidReceiveAd",
+    @"onDidFailToReceiveAdWithError",
+    @"onAdViewWillPresentScreen",
+    @"onAdViewWillDismissScreen",
+    @"onAdViewDidDismissScreen",
+  ];
 }
 
 - (UIView *)view

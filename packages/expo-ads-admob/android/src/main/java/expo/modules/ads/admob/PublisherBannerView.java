@@ -84,6 +84,7 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
       @Override
       public void onAdClosed() {
         sendEvent(PublisherBannerViewManager.Events.EVENT_WILL_DISMISS);
+        sendEvent(PublisherBannerViewManager.Events.EVENT_DID_DISMISS);
       }
     });
   }
