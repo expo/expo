@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
@@ -43,7 +44,9 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   @Override
   public PendingIntent createTaskIntent(Context context, TaskInterface task) {
-    return createTaskIntent(context, task, PendingIntent.FLAG_UPDATE_CURRENT);
+    // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+    int mutableFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : 0;
+    return createTaskIntent(context, task, PendingIntent.FLAG_UPDATE_CURRENT | mutableFlag);
   }
 
   @Override
