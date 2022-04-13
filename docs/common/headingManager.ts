@@ -32,7 +32,7 @@ const DEFAULT_NESTING_LIMIT = 1;
 
 /**
  * Those properties can be customized
- * from markdown pages usign heading components
+ * from markdown pages using heading components
  * from `plugins/Headings.tsx`
  */
 export type AdditionalProps = {

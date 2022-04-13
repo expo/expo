@@ -92,4 +92,4 @@ Sets the content of the user's clipboard.
 
 #### Returns
 
-On web, this retuns a boolean value indicating whether or not the string was saved to the user's clipboard. On iOS and Android, nothing is returned.
+On web, this returns a boolean value indicating whether or not the string was saved to the user's clipboard. On iOS and Android, nothing is returned.
