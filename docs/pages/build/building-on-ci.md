@@ -56,11 +56,11 @@ In the event your iOS credentials need to be repaired, we will need an ASC API k
 You will need to create an [API Key](https://expo.fyi/creating-asc-api-key). Next, you will need to gather information about your [Apple Team](https://expo.fyi/apple-team). 
 
 Using the information you've gathered, pass it into the build command through environment variables. You will need to pass in the following:
-- `EXPO_ASC_API_KEY_PATH`: the path to your ASC API Key .p8 file (e.g.) /path/to/key/AuthKey_SFB993FB5F.p8
-- `EXPO_ASC_KEY_ID`: the key ID of your ASC API Key (e.g.) SFB993FB5F.
-- `EXPO_ASC_ISSUER_ID`: the issuer ID of your ASC API Key (e.g.) f9675cff-f45d-4116-bd2c-2372142cee09.
-- `EXPO_APPLE_TEAM_ID`: your Apple Team ID (e.g.) 77KQ969CHE.
-- `EXPO_APPLE_TEAM_TYPE`: your Apple Team Type. Valid types are `IN_HOUSE`, `COMPANY_OR_ORGANIZATION` or `INDIVIDUAL`. 
+- `EXPO_ASC_API_KEY_PATH`: the path to your ASC API Key .p8 file, e.g. /path/to/key/AuthKey_SFB993FB5F.p8
+- `EXPO_ASC_KEY_ID`: the key ID of your ASC API Key, e.g. SFB993FB5F.
+- `EXPO_ASC_ISSUER_ID`: the issuer ID of your ASC API Key, e.g. f9675cff-f45d-4116-bd2c-2372142cee09.
+- `EXPO_APPLE_TEAM_ID`: your Apple Team ID, e.g. 77KQ969CHE.
+- `EXPO_APPLE_TEAM_TYPE`: your Apple Team Type. Valid types are `IN_HOUSE`, `COMPANY_OR_ORGANIZATION`, or `INDIVIDUAL`. 
 
 ### Trigger new builds
 
