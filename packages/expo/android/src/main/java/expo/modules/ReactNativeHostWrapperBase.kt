@@ -44,7 +44,9 @@ open class ReactNativeHostWrapperBase(
   }
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
-    return invokeDelegateMethod("getJavaScriptExecutorFactory")
+    return reactNativeHostHandlers.asSequence()
+      .mapNotNull { it.javaScriptExecutorFactory }
+      .firstOrNull() ?: invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
   @Suppress("DEPRECATION")
