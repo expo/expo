@@ -35,17 +35,23 @@ export async function getPublishExpConfigAsync(
   const {
     exp: { hooks, runtimeVersion },
   } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+
+  // Read the config in public mode which strips the `hooks`.
   const { exp, pkg } = getConfig(projectRoot, {
     isPublicConfig: true,
     // enforce sdk validation if user is not using runtimeVersion
     skipSDKVersionRequirement: !!runtimeVersion,
   });
+
   const { sdkVersion } = exp;
+
   // Only allow projects to be published with UNVERSIONED if a correct token is set in env
   if (sdkVersion === 'UNVERSIONED' && !env.EXPO_SKIP_MANIFEST_VALIDATION_TOKEN) {
     throw new CommandError('INVALID_OPTIONS', 'Cannot publish with sdkVersion UNVERSIONED.');
   }
+
   exp.locales = await getResolvedLocalesAsync(projectRoot, exp);
+
   return {
     exp: {
       ...exp,

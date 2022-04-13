@@ -6,7 +6,6 @@ import semver from 'semver';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
-import { writeArtifactSafelyAsync } from './writeArtifact';
 
 type SelfHostedIndex = ExpoAppManifest & {
   dependencies: string[];
@@ -14,6 +13,24 @@ type SelfHostedIndex = ExpoAppManifest & {
 
 function isSelfHostedIndex(obj: any): obj is SelfHostedIndex {
   return !!obj.sdkVersion;
+}
+
+// put index.jsons into memory
+async function putJsonInMemory(indexPath: string, accumulator: SelfHostedIndex[]) {
+  const index = await JsonFile.readAsync(indexPath);
+
+  if (!isSelfHostedIndex(index)) {
+    throw new CommandError(
+      'INVALID_MANIFEST',
+      `Invalid index.json, must specify an sdkVersion at ${indexPath}`
+    );
+  }
+  if (Array.isArray(index)) {
+    // index.json could also be an array
+    accumulator.push(...index);
+  } else {
+    accumulator.push(index);
+  }
 }
 
 // Takes multiple exported apps in sourceDirs and coalesces them to one app in outputDir
@@ -51,24 +68,6 @@ export async function mergeAppDistributions(
       await Promise.all(promises);
     }
 
-    // put index.jsons into memory
-    const putJsonInMemory = async (indexPath: string, accumulator: SelfHostedIndex[]) => {
-      const index = await JsonFile.readAsync(indexPath);
-
-      if (!isSelfHostedIndex(index)) {
-        throw new CommandError(
-          'INVALID_MANIFEST',
-          `Invalid index.json, must specify an sdkVersion at ${indexPath}`
-        );
-      }
-      if (Array.isArray(index)) {
-        // index.json could also be an array
-        accumulator.push(...index);
-      } else {
-        accumulator.push(index);
-      }
-    };
-
     const androidIndexPath = path.resolve(projectRoot, sourceDir, 'android-index.json');
     await putJsonInMemory(androidIndexPath, androidIndexes);
 
@@ -105,4 +104,21 @@ export async function mergeAppDistributions(
     path.join(outputDir, 'ios-index.json'),
     JSON.stringify(sortedIosIndexes)
   );
+}
+
+export async function writeArtifactSafelyAsync(
+  projectRoot: string,
+  keyName: string | null,
+  artifactPath: string,
+  artifact: string | Uint8Array
+) {
+  const pathToWrite = path.resolve(projectRoot, artifactPath);
+  if (!fs.existsSync(path.dirname(pathToWrite))) {
+    const errorMsg = keyName
+      ? `app.json specifies: ${pathToWrite}, but that directory does not exist.`
+      : `app.json specifies ${keyName}: ${pathToWrite}, but that directory does not exist.`;
+    Log.warn(errorMsg);
+  } else {
+    await fs.promises.writeFile(pathToWrite, artifact);
+  }
 }

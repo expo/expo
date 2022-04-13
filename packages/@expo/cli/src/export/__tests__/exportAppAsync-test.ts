@@ -2,9 +2,6 @@ import { vol } from 'memfs';
 
 import { exportAppAsync } from '../exportAppAsync';
 
-jest.mock('fs');
-jest.mock('resolve-from');
-
 jest.mock('xdl', () => ({
   Project: {
     getPublishExpConfigAsync: () =>

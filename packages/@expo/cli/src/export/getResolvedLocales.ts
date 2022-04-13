@@ -6,6 +6,7 @@ import { CommandError } from '../utils/errors';
 
 type LocaleMap = { [lang: string]: any };
 
+// Similar to how we resolve locales in `@expo/config-plugins`
 export async function getResolvedLocalesAsync(
   projectRoot: string,
   exp: ExpoConfig

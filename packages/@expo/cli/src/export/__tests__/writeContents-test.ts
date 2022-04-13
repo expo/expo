@@ -8,13 +8,11 @@ import {
   writeSourceMapsAsync,
 } from '../writeContents';
 
-jest.mock('fs');
-jest.mock('resolve-from');
-
 describe(writeDebugHtmlAsync, () => {
   afterAll(() => {
     vol.reset();
   });
+
   it(`creates a debug html file`, async () => {
     const projectRoot = '/test/';
     await writeDebugHtmlAsync({
