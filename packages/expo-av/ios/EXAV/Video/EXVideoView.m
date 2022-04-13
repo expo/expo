@@ -480,6 +480,11 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 {
   if (![source isEqualToDictionary:_lastSetSource]) {
     EX_WEAKIFY(self);
+    // ? Why dispatch to _exAV.methodQueue rather than remain on the main thread?
+    // ? Can lead to race conditions with Imperative API being sent on the main thread.
+    // ? I've made Imperative API dispatch to _exAV.methodQueue since I do not know
+    // ? the reason for it, but ultimately I believe Prop setters should run on the main thread
+    // ? rather than move Imperative API methods to _exAV.methodQueue.
     dispatch_async(_exAV.methodQueue, ^{
       EX_ENSURE_STRONGIFY(self);
       self.lastSetSource = source;
@@ -563,6 +568,11 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 - (void)setStatus:(NSDictionary *)status
 {
   EX_WEAKIFY(self);
+  // ? Why dispatch to _exAV.methodQueue rather than remain on the main thread?
+  // ? Can lead to race conditions with Imperative API being sent on the main thread.
+  // ? I've made Imperative API dispatch to _exAV.methodQueue since I do not know
+  // ? the reason for it, but ultimately I believe Prop setters should run on the main thread
+  // ? rather than move Imperative API methods to _exAV.methodQueue.
   dispatch_async(_exAV.methodQueue, ^{
     EX_ENSURE_STRONGIFY(self);
     [self setStatus:status resolver:nil rejecter:nil];
