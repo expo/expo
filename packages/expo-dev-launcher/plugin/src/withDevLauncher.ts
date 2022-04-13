@@ -42,9 +42,6 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
   'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX =
-  /import ['"](?:expo-dev-client|expo-dev-launcher)['"]/;
-
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
 }
@@ -124,20 +121,6 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
       'expo-dev-launcher',
       `Couldn't modify AppDelegate.m - ${e}.
 See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${InstallationPage}`
-    );
-  }
-}
-
-async function editIndex(config: ExportedConfigWithProps, action: (index: string) => string) {
-  const indexPath = path.join(config.modRequest.projectRoot, 'index.js');
-  try {
-    const index = action(await readFileAsync(indexPath));
-    return await saveFileAsync(indexPath, index);
-  } catch (e) {
-    WarningAggregator.addWarningIOS(
-      'expo-dev-launcher',
-      `Couldn't modify index.js - ${e}.
-See the expo-dev-client installation instructions to modify your index.js manually: ${InstallationPage}`
     );
   }
 }
