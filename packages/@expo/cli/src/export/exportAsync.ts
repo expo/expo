@@ -4,35 +4,11 @@ import path from 'path';
 import temporary from 'tempy';
 
 import * as Log from '../log';
-import { resolvePlatformOption } from '../prebuild/resolveOptions';
 import { downloadAndDecompressAsync } from '../utils/tar';
 import { assertFolderEmptyAsync } from './assertFolderEmpty';
 import { exportAppAsync } from './exportAppAsync';
 import { mergeAppDistributions } from './mergeAppDistributions';
 import { Options } from './resolveOptions';
-
-// TODO: We shouldn't need to wrap a method that is only used for one purpose.
-async function exportFilesAsync(
-  projectRoot: string,
-  options: Pick<
-    Options,
-    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platform'
-  >
-) {
-  const platforms = resolvePlatformOption(options.platform, { loose: true });
-
-  // Make outputDir an absolute path if it isnt already
-  const exportOptions = {
-    dumpAssetmap: options.dumpAssetmap,
-    dumpSourcemap: options.dumpSourcemap,
-    isDev: options.dev,
-    platforms,
-    publishOptions: {
-      resetCache: !!options.clear,
-    },
-  };
-  return await exportAppAsync(projectRoot, options.outputDir, exportOptions);
-}
 
 async function mergeSourceDirectoriesAsync(
   projectRoot: string,
@@ -48,7 +24,8 @@ async function mergeSourceDirectoriesAsync(
   // Merge app distributions
   await mergeAppDistributions(
     projectRoot,
-    [...mergeSrcDirs, options.outputDir], // merge stuff in srcDirs and outputDir together
+    // Merge content in srcDirs and outputDir together
+    [...mergeSrcDirs, options.outputDir],
     options.outputDir
   );
   Log.log(`Project merge was successful. Your merged files can be found in ${options.outputDir}`);
@@ -94,8 +71,7 @@ export async function exportAsync(projectRoot: string, options: Options) {
     overwrite: true,
   });
 
-  // Wrap the XDL method for exporting assets
-  await exportFilesAsync(projectRoot, options);
+  await exportAppAsync(projectRoot, options);
 
   // Extra merge work
   await mergeSourceDirectoriesAsync(

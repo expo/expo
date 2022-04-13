@@ -2,11 +2,12 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
+import { resolvePlatformOption } from '../prebuild/resolveOptions';
 import { createBundlesAsync } from './createBundles';
-import { BundlePlatform } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
-import { getPublishExpConfigAsync, PublishOptions } from './getPublishExpConfig';
+import { getPublishExpConfigAsync } from './getPublishExpConfig';
 import { printBundleSizes } from './printBundleSizes';
+import { Options } from './resolveOptions';
 import {
   writeAssetMapAsync,
   writeBundlesAsync,
@@ -31,18 +32,16 @@ export const ANONYMOUS_USERNAME = 'anonymous';
  */
 export async function exportAppAsync(
   projectRoot: string,
-  outputDir: string,
-  options: {
-    platforms: BundlePlatform[];
-    isDev?: boolean;
-    dumpAssetmap?: boolean;
-    dumpSourcemap?: boolean;
-    publishOptions?: PublishOptions;
-  }
+  options: Pick<
+    Options,
+    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platform'
+  >
 ): Promise<void> {
-  const { exp } = await getPublishExpConfigAsync(projectRoot, options.publishOptions);
+  const platforms = resolvePlatformOption(options.platform, { loose: true });
 
-  const absoluteOutputDir = path.resolve(projectRoot, outputDir);
+  const { exp } = await getPublishExpConfigAsync(projectRoot, {});
+
+  const absoluteOutputDir = path.resolve(projectRoot, options.outputDir);
 
   const assetPathToWrite = path.resolve(absoluteOutputDir, 'assets');
   const bundlesPathToWrite = path.resolve(absoluteOutputDir, 'bundles');
@@ -53,12 +52,16 @@ export async function exportAppAsync(
   ]);
 
   // Run metro bundler and create the JS bundles/source maps.
-  const bundles = await createBundlesAsync(projectRoot, options.publishOptions, {
-    platforms: options.platforms,
-    dev: options.isDev,
-    useDevServer: true,
-    // TODO: Disable source map generation if we aren't outputting them.
-  });
+  const bundles = await createBundlesAsync(
+    projectRoot,
+    { resetCache: !!options.clear },
+    {
+      platforms,
+      dev: options.dev,
+      useDevServer: true,
+      // TODO: Disable source map generation if we aren't outputting them.
+    }
+  );
 
   // Log bundle size info to the user
   printBundleSizes(bundles);
@@ -99,5 +102,5 @@ export async function exportAppAsync(
   // Skip the hooks and manifest creation if building for EAS.
 
   // Generate a metadata.json and bail.
-  await writeMetadataJsonAsync({ outputDir, bundles, fileNames });
+  await writeMetadataJsonAsync({ outputDir: options.outputDir, bundles, fileNames });
 }
