@@ -24,7 +24,7 @@ import * as Segment from 'expo-analytics-segment';
 
 ### `Segment.initialize({ androidWriteKey, iosWriteKey })`
 
-Segment requires separate write keys for iOS and Android. You will need to log in to Segment to recieve these <https://segment.com/docs/guides/setup/how-do-i-find-my-write-key/>
+Segment requires separate write keys for iOS and Android. You will need to log in to Segment to receive these <https://segment.com/docs/guides/setup/how-do-i-find-my-write-key/>
 
 #### Arguments
 

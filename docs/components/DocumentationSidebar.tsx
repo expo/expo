@@ -108,7 +108,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
     ((info.children[0] || {}).sidebarTitle || (info.children[0] || {}).name) === info.name
   ) {
     // If the first child post in the group has the same name as the group, then hide the
-    // group title, lest we be very repetititve
+    // group title, lest we be very repetitive
     return true;
   }
 

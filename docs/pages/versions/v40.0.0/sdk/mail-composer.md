@@ -32,9 +32,9 @@ Opens a mail modal for iOS and a mail app intent for Android and fills the field
 #### Arguments
 
 - **saveOptions (_object_)** -- A map defining the data to fill the mail:
-  - **recipients (_array_)** -- An array of e-mail addressess of the recipients.
-  - **ccRecipients (_array_)** -- An array of e-mail addressess of the CC recipients.
-  - **bccRecipients (_array_)** -- An array of e-mail addressess of the BCC recipients.
+  - **recipients (_array_)** -- An array of e-mail addresses of the recipients.
+  - **ccRecipients (_array_)** -- An array of e-mail addresses of the CC recipients.
+  - **bccRecipients (_array_)** -- An array of e-mail addresses of the BCC recipients.
   - **subject (_string_)** -- Subject of the mail.
   - **body (_string_)** -- Body of the mail.
   - **isHtml (_boolean_)** -- Whether the body contains HTML tags so it could be formatted properly. Not working perfectly on Android.

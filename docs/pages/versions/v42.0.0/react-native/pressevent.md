@@ -89,7 +89,7 @@ The node id of the element receiving the PressEvent.
 
 ### `timestamp`
 
-Timestamp value when a PressEvent occured. Value is represented in miliseconds.
+Timestamp value when a PressEvent occurred. Value is represented in milliseconds.
 
 | Type   | Optional |
 | ------ | -------- |

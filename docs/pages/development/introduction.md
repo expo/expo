@@ -8,7 +8,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 > 👀 Want to get notified of new releases to `expo-dev-client` with a changelog and upgrade instructions? Sign up for the [mailing list](https://expo.dev/mailing-list/dev-client).
 
-Building your project with Expo allows you to iterate quickly and safely by allowing you to make most changes in JavaScript. [Your team can acheive web-like iteration speeds](https://blog.expo.dev/javascript-driven-development-with-custom-runtimes-eda87d574c9d) by decomposing your application into:
+Building your project with Expo allows you to iterate quickly and safely by allowing you to make most changes in JavaScript. [Your team can achieve web-like iteration speeds](https://blog.expo.dev/javascript-driven-development-with-custom-runtimes-eda87d574c9d) by decomposing your application into:
 
 - **A Client**: A native binary that can interact with platform API which is built and distributed the same as in traditional native development. Expo Go is an example of a client that is used to develop many Expo apps.
 - **An Update**: An atomic collection of assets like JavaScript, data files, or media that instruct the client how to behave. These updates may be served from your local computer by `expo-cli`, embedded in the binary by EAS Build, or hosted on a publicly available server.

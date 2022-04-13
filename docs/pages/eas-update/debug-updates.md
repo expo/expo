@@ -100,7 +100,7 @@ eas channel:view [channel-name]
 eas channel:view production
 ```
 
-We'd exepect the output of these commands to display the same channel name that our build has. If it's not there, we can create the channel on EAS' servers with:
+We'd expect the output of these commands to display the same channel name that our build has. If it's not there, we can create the channel on EAS' servers with:
 
 ```bash
 eas channel:create [channel-name]
