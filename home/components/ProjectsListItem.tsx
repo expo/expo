@@ -36,64 +36,69 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, fir
   }
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View
-        padding="medium"
-        bg="default"
-        border="default"
-        roundedTop={first ? 'large' : undefined}
-        roundedBottom={last ? 'large' : undefined}
-        style={{
-          borderBottomWidth: last ? 1 : 0,
-          borderTopWidth: first ? 1 : 0,
-        }}>
-        <Row align="center" justify="between">
-          <Row align="center" flex="1">
-            <AppIcon image={imageURL} />
-            <View flex="1">
-              <Text
-                type="InterSemiBold"
-                style={styles.titleText}
-                ellipsizeMode="tail"
-                numberOfLines={1}>
-                {name}
-              </Text>
-              {subtitle ? (
-                <>
-                  <Spacer.Vertical size="tiny" />
-                  <Text
-                    type="InterRegular"
-                    size="small"
-                    color="secondary"
-                    ellipsizeMode="tail"
-                    numberOfLines={1}>
-                    {subtitle}
-                  </Text>
-                </>
-              ) : null}
-              {sdkVersionNumber ? (
-                <>
-                  <Spacer.Vertical size="tiny" />
-                  <Text
-                    type="InterRegular"
-                    size="small"
-                    color="secondary"
-                    ellipsizeMode="tail"
-                    numberOfLines={1}>
-                    SDK {sdkVersionNumber}
-                    {isExpired ? ': Not supported' : ''}
-                  </Text>
-                </>
-              ) : null}
-            </View>
+    <View
+      border="default"
+      roundedTop={first ? 'large' : undefined}
+      roundedBottom={last ? 'large' : undefined}
+      overflow="hidden"
+      style={{
+        borderBottomWidth: last ? 1 : 0,
+        borderTopWidth: first ? 1 : 0,
+      }}>
+      <TouchableOpacity onPress={onPress}>
+        <View
+          padding="medium"
+          bg="default"
+          roundedTop={first ? 'large' : undefined}
+          roundedBottom={last ? 'large' : undefined}>
+          <Row align="center" justify="between">
+            <Row align="center" flex="1">
+              <AppIcon image={imageURL} />
+              <View flex="1">
+                <Text
+                  type="InterSemiBold"
+                  style={styles.titleText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}>
+                  {name}
+                </Text>
+                {subtitle ? (
+                  <>
+                    <Spacer.Vertical size="tiny" />
+                    <Text
+                      type="InterRegular"
+                      size="small"
+                      color="secondary"
+                      ellipsizeMode="tail"
+                      numberOfLines={1}>
+                      {subtitle}
+                    </Text>
+                  </>
+                ) : null}
+                {sdkVersionNumber ? (
+                  <>
+                    <Spacer.Vertical size="tiny" />
+                    <Text
+                      type="InterRegular"
+                      size="small"
+                      color="secondary"
+                      ellipsizeMode="tail"
+                      numberOfLines={1}>
+                      SDK {sdkVersionNumber}
+                      {isExpired ? ': Not supported' : ''}
+                    </Text>
+                  </>
+                ) : null}
+              </View>
+            </Row>
+            <ChevronDownIcon
+              style={{ transform: [{ rotate: '-90deg' }] }}
+              color={theme.icon.secondary}
+            />
           </Row>
-          <ChevronDownIcon
-            style={{ transform: [{ rotate: '-90deg' }] }}
-            color={theme.icon.secondary}
-          />
-        </Row>
-      </View>
-    </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 }
 
