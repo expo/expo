@@ -2,8 +2,8 @@ package expo.modules.facedetector
 
 import android.graphics.PointF
 import android.os.Bundle
-import com.google.android.gms.vision.face.Landmark
 import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceLandmark
 
 object FaceDetectorUtils {
   @JvmStatic
@@ -107,19 +107,17 @@ object FaceDetectorUtils {
     -elementX + containerWidth * scaleX
 
   // All the landmarks reported by Google Mobile Vision in constants' order.
-  // https://developers.google.com/android/reference/com/google/android/gms/vision/face/Landmark
+  // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceLandmark
   private enum class LandmarkId(val id: Int, val landmarkName: String) {
-    BOTTOM_MOUTH(Landmark.BOTTOM_MOUTH, "bottomMouthPosition"),
-    LEFT_CHEEK(Landmark.LEFT_CHEEK, "leftCheekPosition"),
-    LEFT_EAR(Landmark.LEFT_EAR, "leftEarPosition"),
-    LEFT_EAR_TIP(Landmark.LEFT_EAR_TIP, "leftEarTipPosition"),
-    LEFT_EYE(Landmark.LEFT_EYE, "leftEyePosition"),
-    LEFT_MOUTH(Landmark.LEFT_MOUTH, "leftMouthPosition"),
-    NOSE_BASE(Landmark.NOSE_BASE, "noseBasePosition"),
-    RIGHT_CHEEK(Landmark.RIGHT_CHEEK, "rightCheekPosition"),
-    RIGHT_EAR(Landmark.RIGHT_EAR, "rightEarPosition"),
-    RIGHT_EAR_TIP(Landmark.RIGHT_EAR_TIP, "rightEarTipPosition"),
-    RIGHT_EYE(Landmark.RIGHT_EYE, "rightEyePosition"),
-    RIGHT_MOUTH(Landmark.RIGHT_MOUTH, "rightMouthPosition");
+    BOTTOM_MOUTH(FaceLandmark.MOUTH_BOTTOM, "bottomMouthPosition"),
+    RIGHT_MOUTH(FaceLandmark.MOUTH_RIGHT, "rightMouthPosition"),
+    LEFT_MOUTH(FaceLandmark.MOUTH_LEFT, "leftMouthPosition"),
+    LEFT_CHEEK(FaceLandmark.LEFT_CHEEK, "leftCheekPosition"),
+    RIGHT_EYE(FaceLandmark.RIGHT_EYE, "rightEyePosition"),
+    LEFT_EYE(FaceLandmark.LEFT_EYE, "leftEyePosition"),
+    LEFT_EAR(FaceLandmark.LEFT_EAR, "leftEarPosition"),
+    RIGHT_CHEEK(FaceLandmark.RIGHT_CHEEK, "rightCheekPosition"),
+    RIGHT_EAR(FaceLandmark.RIGHT_EAR, "rightEarPosition"),
+    NOSE_BASE(FaceLandmark.NOSE_BASE, "noseBasePosition");
   }
 }
