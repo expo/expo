@@ -18,7 +18,6 @@ ABI43_0_0EX_EXPORT_MODULE(ExpoPublisherBannerView);
            @"onAdViewDidDismissScreen",
            @"onAdViewDidReceiveAd",
            @"onAdViewWillDismissScreen",
-           @"onAdViewWillLeaveApplication",
            @"onAdViewWillPresentScreen",
            @"onDidFailToReceiveAdWithError",
            @"onSizeChange",
