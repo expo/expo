@@ -63,7 +63,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
           <Fragment key={branch.id}>
             <BranchListItem
               first={i === 0}
-              last={i === 2 && branchesToRender.length <= 3}
+              last={i === branchesToRender.length - 1}
               appId={app.id}
               name={branch.name}
               latestUpdate={branch.latestUpdate}
