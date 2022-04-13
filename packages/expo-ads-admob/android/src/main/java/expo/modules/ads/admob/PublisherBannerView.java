@@ -1,5 +1,6 @@
 package expo.modules.ads.admob;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -8,17 +9,20 @@ import android.widget.FrameLayout;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.doubleclick.AppEventListener;
-import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
-import com.google.android.gms.ads.doubleclick.PublisherAdView;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.admanager.AppEventListener;
+import com.google.android.gms.ads.admanager.AdManagerAdRequest;
+import com.google.android.gms.ads.admanager.AdManagerAdView;
 
 import expo.modules.core.interfaces.services.EventEmitter;
 
+@SuppressLint("ViewConstructor")
 public class PublisherBannerView extends FrameLayout implements AppEventListener {
   private Bundle mAdditionalRequestParams;
 
-  private EventEmitter mEventEmitter;
+  private final EventEmitter mEventEmitter;
 
   public PublisherBannerView(@NonNull Context context, EventEmitter eventEmitter) {
     super(context);
@@ -27,7 +31,7 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
   }
 
   @Override
-  public void onAppEvent(String name, String info) {
+  public void onAppEvent(@NonNull String name, @NonNull String info) {
     String message = String.format("Received app event (%s, %s)", name, info);
     Log.d("PublisherAdBanner", message);
     Bundle event = new Bundle();
@@ -36,10 +40,10 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
   }
 
   protected void attachNewAdView() {
-    final PublisherAdView adView = new PublisherAdView(getContext());
+    final AdManagerAdView adView = new AdManagerAdView(getContext());
     adView.setAppEventListener(this);
     // destroy old AdView if present
-    PublisherAdView oldAdView = (PublisherAdView) getChildAt(0);
+    AdManagerAdView oldAdView = (AdManagerAdView) getChildAt(0);
     removeAllViews();
     if (oldAdView != null) {
       oldAdView.destroy();
@@ -49,7 +53,7 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
   }
 
   protected void attachEvents() {
-    final PublisherAdView adView = (PublisherAdView) getChildAt(0);
+    final AdManagerAdView adView = (AdManagerAdView) getChildAt(0);
     adView.setAdListener(new AdListener() {
       @Override
       public void onAdLoaded() {
@@ -66,7 +70,7 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
       }
 
       @Override
-      public void onAdFailedToLoad(int errorCode) {
+      public void onAdFailedToLoad(@NonNull LoadAdError errorCode) {
         sendEvent(
             PublisherBannerViewManager.Events.EVENT_ERROR,
             AdMobUtils.createEventForAdFailedToLoad(errorCode));
@@ -81,11 +85,6 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
       public void onAdClosed() {
         sendEvent(PublisherBannerViewManager.Events.EVENT_WILL_DISMISS);
       }
-
-      @Override
-      public void onAdLeftApplication() {
-        sendEvent(PublisherBannerViewManager.Events.EVENT_WILL_LEAVE_APP);
-      }
     });
   }
 
@@ -95,11 +94,11 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
     adSizes[0] = adSize;
 
     // store old ad unit ID (even if not yet present and thus null)
-    PublisherAdView oldAdView = (PublisherAdView) getChildAt(0);
+    AdManagerAdView oldAdView = (AdManagerAdView) getChildAt(0);
     String adUnitId = oldAdView.getAdUnitId();
 
     attachNewAdView();
-    PublisherAdView newAdView = (PublisherAdView) getChildAt(0);
+    AdManagerAdView newAdView = (AdManagerAdView) getChildAt(0);
     newAdView.setAdSizes(adSizes);
     newAdView.setAdUnitId(adUnitId);
 
@@ -113,11 +112,11 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
 
   public void setAdUnitID(final String adUnitID) {
     // store old banner size (even if not yet present and thus null)
-    PublisherAdView oldAdView = (PublisherAdView) getChildAt(0);
+    AdManagerAdView oldAdView = (AdManagerAdView) getChildAt(0);
     AdSize[] adSizes = oldAdView.getAdSizes();
 
     attachNewAdView();
-    PublisherAdView newAdView = (PublisherAdView) getChildAt(0);
+    AdManagerAdView newAdView = (AdManagerAdView) getChildAt(0);
     newAdView.setAdUnitId(adUnitID);
     newAdView.setAdSizes(adSizes);
     loadAd(newAdView);
@@ -126,20 +125,15 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
   public void setAdditionalRequestParams(Bundle additionalRequestParams) {
     if (!additionalRequestParams.equals(mAdditionalRequestParams)) {
       mAdditionalRequestParams = additionalRequestParams;
-      loadAd((PublisherAdView) getChildAt(0));
+      loadAd((AdManagerAdView) getChildAt(0));
     }
   }
 
-  private void loadAd(final PublisherAdView adView) {
+  private void loadAd(final AdManagerAdView adView) {
     if (adView.getAdSizes() != null && adView.getAdUnitId() != null && mAdditionalRequestParams != null) {
-      PublisherAdRequest.Builder adRequestBuilder =
-          new PublisherAdRequest.Builder()
-              .addNetworkExtrasBundle(AdMobAdapter.class, mAdditionalRequestParams);
-      String testDeviceID = AdMobModule.getTestDeviceID();
-      if (testDeviceID != null) {
-        adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
-      }
-      PublisherAdRequest adRequest = adRequestBuilder.build();
+      AdRequest adRequest = new AdManagerAdRequest.Builder()
+          .addNetworkExtrasBundle(AdMobAdapter.class, mAdditionalRequestParams)
+          .build();
       adView.loadAd(adRequest);
     }
   }
