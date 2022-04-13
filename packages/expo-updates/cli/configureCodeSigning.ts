@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from './cli';
-import { assertArg, assertArgs, getProjectRoot } from './utils/args';
+import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import * as Log from './utils/log';
 
 export const configureCodeSigning: Command = async (argv) => {
@@ -38,8 +38,8 @@ export const configureCodeSigning: Command = async (argv) => {
 
   const { configureCodeSigningAsync } = await import('./configureCodeSigningAsync');
 
-  const certificateInput = assertArg(args, '--certificate-input-directory', 'string');
-  const keyInput = assertArg(args, '--key-input-directory', 'string');
+  const certificateInput = requireArg(args, '--certificate-input-directory');
+  const keyInput = requireArg(args, '--key-input-directory');
 
   return await configureCodeSigningAsync(getProjectRoot(args), {
     certificateInput,

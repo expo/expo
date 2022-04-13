@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from './cli';
-import { assertArg, assertArgs, getProjectRoot } from './utils/args';
+import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import * as Log from './utils/log';
 
 export const generateCodeSigning: Command = async (argv) => {
@@ -42,14 +42,13 @@ export const generateCodeSigning: Command = async (argv) => {
 
   const { generateCodeSigningAsync } = await import('./generateCodeSigningAsync');
 
-  const keyOutput = assertArg(args, '--key-output-directory', 'string');
-  const certificateOutput = assertArg(args, '--certificate-output-directory', 'string');
-  const certificateValidityDurationYears = assertArg(
+  const keyOutput = requireArg(args, '--key-output-directory');
+  const certificateOutput = requireArg(args, '--certificate-output-directory');
+  const certificateValidityDurationYears = requireArg(
     args,
-    '--certificate-validity-duration-years',
-    'number'
+    '--certificate-validity-duration-years'
   );
-  const certificateCommonName = assertArg(args, '--certificate-common-name', 'string');
+  const certificateCommonName = requireArg(args, '--certificate-common-name');
 
   return await generateCodeSigningAsync(getProjectRoot(args), {
     certificateValidityDurationYears,

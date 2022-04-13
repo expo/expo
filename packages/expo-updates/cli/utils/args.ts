@@ -41,13 +41,10 @@ export function assertArgs(schema: arg.Spec, argv: string[]): arg.Result<arg.Spe
   }
 }
 
-export function assertArg(args: arg.Result<arg.Spec>, name: any, type: 'string' | 'number'): any {
+export function requireArg(args: arg.Result<arg.Spec>, name: any): any {
   const value = args[name];
   if (value === undefined || value === null) {
     Log.exit(`${name} must be provided`, 1);
-  }
-  if (typeof value !== type) {
-    Log.exit(`${name} must be a ${type}`, 1);
   }
   return value;
 }
