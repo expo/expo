@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import React
+
 @objc
 class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"

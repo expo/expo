@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+
 import SafariServices
+import React
 
 @objc(DevMenuInternalModule)
 public class DevMenuInternalModule: NSObject, RCTBridgeModule {

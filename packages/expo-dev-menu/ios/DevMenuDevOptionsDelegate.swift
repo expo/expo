@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import Foundation
+import React
 
 class DevMenuDevOptionsDelegate {
   internal private(set) weak var bridge: RCTBridge?
