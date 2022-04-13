@@ -218,10 +218,11 @@ export function parse(url) {
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export function addEventListener(type, handler) {
-    NativeLinking.addEventListener(type, handler);
+    return NativeLinking.addEventListener(type, handler);
 }
 /**
  * Remove a handler by passing the `url` event type and the handler.
@@ -328,8 +329,8 @@ export function useURL() {
     }
     useEffect(() => {
         getInitialURL().then((url) => setLink(url));
-        addEventListener('url', onChange);
-        return () => removeEventListener('url', onChange);
+        const subscription = addEventListener('url', onChange);
+        return () => subscription.remove();
     }, []);
     return url;
 }
