@@ -72,7 +72,7 @@
 
   descriptor.setProperty(*runtime, "value", expo::convertObjCObjectToJSIValue(*runtime, value));
 
-  // Object.defineProperty(object, name, descriptor)
+  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
   definePropertyFunction.callWithThis(*runtime, objectClass, {
     jsi::Value(*runtime, *_jsObjectPtr.get()),
     jsi::String::createFromUtf8(*runtime, [name UTF8String]),
