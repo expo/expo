@@ -373,6 +373,17 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
   [self _tryUpdateDataStatus:resolve rejecter:reject];
 }
 
+- (void)setStatusFromPlaybackAPI:(NSDictionary *)status
+                        resolver:(EXPromiseResolveBlock)resolve
+                        rejecter:(EXPromiseRejectBlock)reject;
+{
+  EX_WEAKIFY(self);
+  dispatch_async(_exAV.methodQueue, ^{
+    EX_ENSURE_STRONGIFY(self);
+    [self setStatus:status resolver:resolve rejecter:reject];
+  });
+}
+
 - (void)replayWithStatus:(NSDictionary *)status
                 resolver:(EXPromiseResolveBlock)resolve
                 rejecter:(EXPromiseRejectBlock)reject

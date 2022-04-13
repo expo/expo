@@ -823,7 +823,7 @@ EX_EXPORT_METHOD_AS(setStatusForVideo,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
-    [view setStatus:status resolver:resolve rejecter:reject];
+    [view setStatusFromPlaybackAPI:status resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 
