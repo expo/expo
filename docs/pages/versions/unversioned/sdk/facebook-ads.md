@@ -10,6 +10,8 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> **Deprecated.** This module will be removed in SDK 46. There will be no replacement that works with the classic build service (`expo build`) because [the classic build service has been superseded by **EAS Build**](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60). With **EAS Build**, you should use [react-native-fbads](https://github.com/callstack/react-native-fbads) instead.
+
 **`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
 
 <PlatformsSection android ios />
