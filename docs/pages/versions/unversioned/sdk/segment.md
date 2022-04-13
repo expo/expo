@@ -8,7 +8,7 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> We recommend using the official [@segment/analytics-react-native](https://github.com/segmentio/analytics-react-native) instead of **`expo-analytics-segment`**.
+> **Deprecated.** This module will be removed in SDK 46. We recommend using the official [@segment/analytics-react-native](https://github.com/segmentio/analytics-react-native) instead.
 
 **`expo-analytics-segment`** provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
 
