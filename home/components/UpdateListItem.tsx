@@ -29,13 +29,16 @@ export function UpdateListItem({ id, message, createdAt, manifestPermalink, firs
       border="default"
       roundedTop={first ? 'large' : undefined}
       roundedBottom={last ? 'large' : undefined}
-      overflow="hidden"
       style={{
         borderBottomWidth: last ? 1 : 0,
         borderTopWidth: first ? 1 : 0,
       }}>
       <TouchableOpacity onPress={handlePress}>
-        <View padding="medium" bg="default" roundedTop={first ? 'large' : undefined}>
+        <View
+          padding="medium"
+          bg="default"
+          roundedTop={first ? 'large' : undefined}
+          roundedBottom={last ? 'large' : undefined}>
           <Row align="center" justify="between">
             <View align="start" flex="1">
               <Row flex="1">
