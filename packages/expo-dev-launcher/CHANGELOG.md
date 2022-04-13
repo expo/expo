@@ -31,7 +31,7 @@
 - Remove initialization side effects. ([#16522](https://github.com/expo/expo/pull/16522) by [@esamelson](https://github.com/esamelson))
 - Use expo-manifests `logUrl` getter instead of accessing raw JSON. ([#16709](https://github.com/expo/expo/pull/16709) by [@esamelson](https://github.com/esamelson))
 - Add ability for to launch a specific update through expo-updates-interface. ([#16865](https://github.com/expo/expo/pull/16865) by [@esamelson](https://github.com/esamelson))
-- Remove the automatical better error handling injection.
+- Remove config plugin for better error handling in index.js
 
 ### ⚠️ Notices
 
