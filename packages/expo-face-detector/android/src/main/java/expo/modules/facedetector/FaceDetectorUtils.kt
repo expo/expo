@@ -19,7 +19,7 @@ object FaceDetectorUtils {
           putDouble("smilingProbability", it.toDouble())
         }
       }
-      face.smilingProbability?.let {
+      face.leftEyeOpenProbability?.let {
         if (it >= 0) {
           putDouble("leftEyeOpenProbability", it.toDouble())
         }
