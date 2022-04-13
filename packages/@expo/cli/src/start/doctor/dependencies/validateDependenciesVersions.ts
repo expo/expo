@@ -7,29 +7,29 @@ import semver from 'semver';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import { BundledNativeModules, getBundledNativeModulesAsync } from './bundledNativeModules';
+import { BundledNativeModules } from './bundledNativeModules';
+import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 
+/**
+ * Print a list of incorrect dependency versions.
+ *
+ * @param projectRoot Expo project root.
+ * @param exp Expo project config.
+ * @param pkg Project's `package.json`.
+ * @param packagesToCheck A list of packages to check, if undefined or empty, all will be checked.
+ * @returns `true` if there are no incorrect dependencies.
+ */
 export async function validateDependenciesVersionsAsync(
   projectRoot: string,
   exp: Pick<ExpoConfig, 'sdkVersion'>,
-  pkg: PackageJSONConfig
+  pkg: PackageJSONConfig,
+  packagesToCheck?: string[]
 ): Promise<boolean> {
-  let bundledNativeModules: BundledNativeModules | null = null;
+  const incorrectDeps = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packagesToCheck);
+  return logIncorrectDependencies(incorrectDeps);
+}
 
-  assert(exp.sdkVersion);
-  bundledNativeModules = await getBundledNativeModulesAsync(
-    projectRoot,
-    // sdkVersion is defined here because we ran the >= 33.0.0 check before
-    exp.sdkVersion
-  );
-
-  // intersection of packages from package.json and bundled native modules
-  const packagesToCheck = getPackagesToCheck(pkg.dependencies, bundledNativeModules);
-  // read package versions from the file system (node_modules)
-  const packageVersions = await resolvePackageVersionsAsync(projectRoot, packagesToCheck);
-  // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
-  const incorrectDeps = findIncorrectDependencies(packageVersions, bundledNativeModules);
-
+export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
   if (incorrectDeps.length > 0) {
     Log.warn('Some dependencies are incompatible with the installed expo package version:');
     incorrectDeps.forEach(({ packageName, expectedVersionOrRange, actualVersion }) => {
@@ -40,23 +40,72 @@ export async function validateDependenciesVersionsAsync(
       );
     });
 
+    const requiredVersions = incorrectDeps.map(
+      ({ packageName, expectedVersionOrRange }) => `${packageName}@${expectedVersionOrRange}`
+    );
+
     Log.warn(
       'Your project may not work correctly until you install the correct versions of the packages.\n' +
-        chalk`Install individual packages by running {inverse expo install [package-name ...]}`
+        chalk`Install individual packages by running {inverse npx expo install ${requiredVersions.join(
+          ' '
+        )}}`
     );
-    // Log.warn(
-    //   'Your project may not work correctly until you install the correct versions of the packages.\n' +
-    //     `To install the correct versions of these packages, please run: ${chalk.inverse(
-    //       'expo doctor --fix-dependencies'
-    //     )},\n` +
-    //     `or install individual packages by running ${chalk.inverse(
-    //       'expo install [package-name ...]'
-    //     )}`
-    // );
-
     return false;
   }
   return true;
+}
+
+/**
+ * Return a list of versioned dependencies for the project SDK version.
+ *
+ * @param projectRoot Expo project root.
+ * @param exp Expo project config.
+ * @param pkg Project's `package.json`.
+ * @param packagesToCheck A list of packages to check, if undefined or empty, all will be checked.
+ * @returns A list of incorrect dependencies.
+ */
+export async function getVersionedDependenciesAsync(
+  projectRoot: string,
+  exp: Pick<ExpoConfig, 'sdkVersion'>,
+  pkg: PackageJSONConfig,
+  packagesToCheck?: string[]
+): Promise<IncorrectDependency[]> {
+  // This should never happen under normal circumstances since
+  // the CLI is versioned in the `expo` package.
+  assert(exp.sdkVersion, 'SDK Version is missing');
+
+  // Get from both endpoints and combine the known package versions.
+  const combinedKnownPackages = await getCombinedKnownVersionsAsync({
+    projectRoot,
+    sdkVersion: exp.sdkVersion,
+  });
+  Log.debug(`Known dependencies: %O`, combinedKnownPackages);
+
+  const resolvedDependencies = packagesToCheck?.length
+    ? // Diff the provided packages to ensure we only check against installed packages.
+      getFilteredObject(packagesToCheck, { ...pkg.dependencies, ...pkg.devDependencies })
+    : // If no packages are provided, check against the `package.json` `dependencies` object.
+      pkg.dependencies;
+  Log.debug(`Checking dependencies for ${exp.sdkVersion}: %O`, resolvedDependencies);
+
+  // intersection of packages from package.json and bundled native modules
+  const resolvedPackagesToCheck = getPackagesToCheck(resolvedDependencies, combinedKnownPackages);
+  Log.debug(`Comparing known versions: %O`, resolvedPackagesToCheck);
+  // read package versions from the file system (node_modules)
+  const packageVersions = await resolvePackageVersionsAsync(projectRoot, resolvedPackagesToCheck);
+  Log.debug(`Package versions: %O`, packageVersions);
+  // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
+  const incorrectDeps = findIncorrectDependencies(packageVersions, combinedKnownPackages);
+  Log.debug(`Incorrect dependencies: %O`, incorrectDeps);
+
+  return incorrectDeps;
+}
+
+function getFilteredObject(keys: string[], object: Record<string, string>) {
+  return keys.reduce<Record<string, string>>((acc, key) => {
+    acc[key] = object[key];
+    return acc;
+  }, {});
 }
 
 function getPackagesToCheck(

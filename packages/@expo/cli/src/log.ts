@@ -42,10 +42,12 @@ export function exit(message: string | Error, code: number = 1): never {
     process.exit(code);
   }
 
-  if (code === 0) {
-    log(message);
-  } else {
-    error(message);
+  if (message) {
+    if (code === 0) {
+      log(message);
+    } else {
+      error(message);
+    }
   }
 
   process.exit(code);
