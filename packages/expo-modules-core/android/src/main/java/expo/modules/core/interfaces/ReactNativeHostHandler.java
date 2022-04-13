@@ -2,8 +2,8 @@ package expo.modules.core.interfaces;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.devsupport.DevSupportManagerFactory;
 
 import androidx.annotation.Nullable;
 
@@ -54,6 +54,12 @@ public interface ReactNativeHostHandler {
    */
   @Nullable
   default Object getDevSupportManagerFactory() { return null; }
+
+  /**
+   * Given chance for modules to override the javascript executor factory.
+   */
+  @Nullable
+  default JavaScriptExecutorFactory getJavaScriptExecutorFactory() { return null; }
 
   //region event listeners
 
