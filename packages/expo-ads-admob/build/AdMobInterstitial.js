@@ -6,7 +6,6 @@ const eventNames = [
     'interstitialDidFailToLoad',
     'interstitialDidOpen',
     'interstitialDidClose',
-    'interstitialWillLeaveApplication',
 ];
 const eventEmitter = new EventEmitter(AdMobNativeModule);
 const eventHandlers = {};

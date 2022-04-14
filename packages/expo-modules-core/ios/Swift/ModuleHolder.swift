@@ -70,8 +70,16 @@ public final class ModuleHolder {
       }
       let queue = function.queue ?? DispatchQueue.global(qos: .default)
 
+      // Given arguments can be:
+      // - Swift primitives when invoked through the bridge and in unit tests
+      // - `JavaScriptValue`s when the function is called through the JSI
+      // The latter need to be unpacked to Swift primitives on the JS thread,
+      // so before the function call is scheduled on the queue.
+      // TODO: Move arguments conversion mechanism to JS thread and allow JS types as function arguments.
+      let unpackedArgs = args.map { arg in unpackIfJavaScriptValue(arg) }
+
       queue.async {
-        function.call(args: args, promise: promise)
+        function.call(args: unpackedArgs, promise: promise)
       }
     } catch let error as CodedError {
       promise.reject(error)
@@ -92,7 +100,10 @@ public final class ModuleHolder {
   @discardableResult
   func callSync(function functionName: String, args: [Any]) -> Any? {
     if let function = definition.functions[functionName] {
-      return function.callSync(args: args)
+      // The comment in `call(function:args:promise)` is partially applicable here as well.
+      // TODO: Move unpacking JS values to `callSync` in function's instance
+      let unpackedArgs = args.map { arg in unpackIfJavaScriptValue(arg) }
+      return function.callSync(args: unpackedArgs)
     }
     return nil
   }
@@ -113,7 +124,7 @@ public final class ModuleHolder {
 
     // Fill in with constants
     for (key, value) in getConstants() {
-      object[key] = value
+      object.setProperty(key, value: value)
     }
 
     // Fill in with functions

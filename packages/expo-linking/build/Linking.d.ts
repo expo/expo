@@ -1,3 +1,4 @@
+import { EmitterSubscription } from 'react-native';
 import { CreateURLOptions, ParsedURL, QueryParams, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Create a URL that works for the environment the app is currently running in.
@@ -54,9 +55,10 @@ export declare function parse(url: string): ParsedURL;
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
-export declare function addEventListener(type: 'url', handler: URLListener): void;
+export declare function addEventListener(type: 'url', handler: URLListener): EmitterSubscription;
 /**
  * Remove a handler by passing the `url` event type and the handler.
  * @param type The only valid type is `'url'`.

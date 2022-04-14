@@ -4,9 +4,6 @@
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/Swift.h>
 
-using namespace facebook;
-using namespace react;
-
 @implementation EXJavaScriptRuntimeManager
 
 + (void)installExpoModulesToRuntime:(nonnull EXJavaScriptRuntime *)runtime withSwiftInterop:(nonnull SwiftInteropBridge *)swiftInterop
@@ -14,7 +11,7 @@ using namespace react;
   std::shared_ptr<expo::ExpoModulesHostObject> hostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(swiftInterop);
   EXJavaScriptObject *global = [runtime global];
 
-  global[@"ExpoModules"] = [runtime createHostObject:hostObjectPtr];
+  [global setProperty:@"ExpoModules" value:[runtime createHostObject:hostObjectPtr]];
 }
 
 @end

@@ -91,7 +91,7 @@ If you have a new version that you dont want v1 users getting, release v2 of you
 </p>
 </details>
 
-You can continue updating v1 of your app with `expo publish --release-channel prod-v1`, and users who havent updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
+You can continue updating v1 of your app with `expo publish --release-channel prod-v1`, and users who haven't updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
 
 ## Using Release Channels in the bare workflow
 

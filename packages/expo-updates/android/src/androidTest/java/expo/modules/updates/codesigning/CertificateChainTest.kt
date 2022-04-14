@@ -118,7 +118,7 @@ class CertificateChainTest {
 
   @Test
   fun test_ThrowsWhenRootSignatureInvalid() {
-    val cert = getTestCertificate(TestCertificateType.SINGATURE_INVALID)
+    val cert = getTestCertificate(TestCertificateType.SIGNATURE_INVALID)
     assertFailsWith(
       exceptionClass = SignatureException::class,
       block = {

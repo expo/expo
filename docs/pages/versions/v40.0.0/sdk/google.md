@@ -49,7 +49,7 @@ logInAsync(config: LogInConfig): Promise<LogInResult>
 ```
 
 Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
-The difference between this method and native authentication are very sparce. Google has done a very good job at making the secure web authentication flow work consistently across devices.
+The difference between this method and native authentication are very sparse. Google has done a very good job at making the secure web authentication flow work consistently across devices.
 
 **Parameters**
 

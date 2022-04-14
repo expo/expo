@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-import Foundation
+import React
 
 /**
  The handler for `ExpoReactDelegate`. A module can implement a handler to process react instance creation.
