@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Fix LocationObject type ([#17070](https://github.com/expo/expo/pull/17070) by [@rakeshpetit](https://github.com/rakeshpetit))
 
 ### 💡 Others
 
