@@ -18,6 +18,7 @@
 - Add support for expo project information certificate extension (iOS). ([#16726](https://github.com/expo/expo/pull/16726) by [@wschurman](https://github.com/wschurman))
 - Pass EAS-Client-ID in header for asset and manifest requests. ([#16729](https://github.com/expo/expo/pull/16729) by [@wschurman](https://github.com/wschurman))
 - Validate expo project information up the certificate chain. ([#16800](https://github.com/expo/expo/pull/16800) by [@wschurman](https://github.com/wschurman))
+- Update CLI to separate private keys from code signing certificate. ([#16979](https://github.com/expo/expo/pull/16979) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

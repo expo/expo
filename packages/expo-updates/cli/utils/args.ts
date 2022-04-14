@@ -40,3 +40,11 @@ export function assertArgs(schema: arg.Spec, argv: string[]): arg.Result<arg.Spe
     throw error;
   }
 }
+
+export function requireArg(args: arg.Result<arg.Spec>, name: any): any {
+  const value = args[name];
+  if (value === undefined || value === null) {
+    Log.exit(`${name} must be provided`, 1);
+  }
+  return value;
+}
