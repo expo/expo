@@ -1,11 +1,11 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
-import spawnAsync from '@expo/spawn-async';
 
 import { ANDROID_DIR, PACKAGES_DIR, EXPOTOOLS_DIR } from '../../../Constants';
 import { getListOfPackagesAsync, Package } from '../../../Packages';
-import { transformFileAsync } from '../../../Transforms';
+import { transformFileAsync, transformString } from '../../../Transforms';
 
 const CXX_EXPO_MODULE_PATCHES_DIR = path.join(
   EXPOTOOLS_DIR,
@@ -35,22 +35,16 @@ export async function versionCxxExpoModulesAsync(version: string) {
       const abiName = `abi${version.replace(/\./g, '_')}`;
       const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
 
+      const patchContent = await getTransformPatchContentAsync(packageName, abiName);
+      const patchStripingArgs = '-p3'; // -pN passing to the `patch` command for striping slashed prefixes
+
       // Applies versioning patches
-      const patchFile = path.join(CXX_EXPO_MODULE_PATCHES_DIR, `${pkg.packageName}.patch`);
-      const patchArgs = [
-        patchFile,
-        '|',
-        'sed',
-        '-e',
-        `s/abi[0-9]*_[0-9]*_[0-9]*/${abiName}/g`,
-        '|',
-        'patch',
-        '-p3',
-      ];
-      await spawnAsync('cat', patchArgs, {
+      let procPromise = spawnAsync('patch', [patchStripingArgs], {
         cwd: path.join(PACKAGES_DIR, packageName),
-        shell: true,
       });
+      procPromise.child.stdin?.write(patchContent);
+      procPromise.child.stdin?.end();
+      await procPromise;
 
       // Builds shared libraries
       await spawnAsync('./gradlew', [`:${packageName}:copyReleaseJniLibsProjectOnly`], {
@@ -58,10 +52,12 @@ export async function versionCxxExpoModulesAsync(version: string) {
       });
 
       // Reverts versioning patches
-      await spawnAsync('cat', [...patchArgs, '-R'], {
+      procPromise = spawnAsync('patch', [patchStripingArgs, '-R'], {
         cwd: path.join(PACKAGES_DIR, packageName),
-        shell: true,
       });
+      procPromise.child.stdin?.write(patchContent);
+      procPromise.child.stdin?.end();
+      await procPromise;
 
       await copySoPrebuiltLibs(packageName, versionedAbiRoot);
       await versionJavaLoadersAsync(packageName, versionedAbiRoot, abiName);
@@ -126,4 +122,19 @@ async function versionJavaLoadersAsync(
       ])
     )
   );
+}
+
+/**
+ * Read the patch content and do `abiName` transformation
+ */
+async function getTransformPatchContentAsync(packageName: string, abiName: string) {
+  const patchFile = path.join(CXX_EXPO_MODULE_PATCHES_DIR, `${packageName}.patch`);
+  let content = await fs.readFile(patchFile, 'utf8');
+  content = await transformString(content, [
+    {
+      find: /\{VERSIONED_ABI_NAME\}/g,
+      replaceWith: abiName,
+    },
+  ]);
+  return content;
 }

@@ -7,7 +7,7 @@ index fe625b6347..af6218de4c 100644
  set (CMAKE_CXX_STANDARD 14)
  
 -set (PACKAGE_NAME "expo-av")
-+set (PACKAGE_NAME "expo-av_abi43_0_0")
++set (PACKAGE_NAME "expo-av_{VERSIONED_ABI_NAME}")
  set (BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
  
  # shared
@@ -16,7 +16,7 @@ index fe625b6347..af6218de4c 100644
  find_library(
          JSI_LIB
 -        jsi
-+        jsi_abi43_0_0
++        jsi_{VERSIONED_ABI_NAME}
          PATHS ${LIBRN_DIR}
          NO_CMAKE_FIND_ROOT_PATH
  )
@@ -24,7 +24,7 @@ index fe625b6347..af6218de4c 100644
  find_library(
          REACT_NATIVE_JNI_LIB
 -        reactnativejni
-+        reactnativejni_abi43_0_0
++        reactnativejni_{VERSIONED_ABI_NAME}
          PATHS ${LIBRN_DIR}
          NO_CMAKE_FIND_ROOT_PATH
  )
@@ -38,8 +38,8 @@ index c987524d4e..3ce6a15103 100644
  def RN_AAR_DIR = "${REACT_NATIVE_DIR}/android"
 +REACT_NATIVE_DIR = "${rootDir}/versioned-react-native"
 +RN_BUILD_FROM_SOURCE = false
-+RN_SO_DIR = "${buildDir}/reactandroid-abi43_0_0-*/jni"
-+RN_AAR_DIR = "${rootDir}/versioned-abis/expoview-abi43_0_0/maven"
++RN_SO_DIR = "${buildDir}/reactandroid-{VERSIONED_ABI_NAME}-*/jni"
++RN_AAR_DIR = "${rootDir}/versioned-abis/expoview-{VERSIONED_ABI_NAME}/maven"
  def reactNativeArchitectures() {
      def value = project.getProperties().get("reactNativeArchitectures")
      return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -52,7 +52,7 @@ index 6107c0ab93..1f0765c0e5 100644
      class JAVManager : public jni::HybridClass<JAVManager> {
      public:
 -      static auto constexpr kJavaDescriptor = "Lexpo/modules/av/AVManager;";
-+      static auto constexpr kJavaDescriptor = "Labi43_0_0/expo/modules/av/AVManager;";
++      static auto constexpr kJavaDescriptor = "L{VERSIONED_ABI_NAME}/expo/modules/av/AVManager;";
        static auto constexpr TAG = "JAVManager";
  
        static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
@@ -65,7 +65,7 @@ index e51a5bed4f..8a248bd6ea 100644
      class JPlayerData : public jni::HybridClass<JPlayerData> {
      public:
 -      static auto constexpr kJavaDescriptor = "Lexpo/modules/av/player/PlayerData;";
-+      static auto constexpr kJavaDescriptor = "Labi43_0_0/expo/modules/av/player/PlayerData;";
++      static auto constexpr kJavaDescriptor = "L{VERSIONED_ABI_NAME}/expo/modules/av/player/PlayerData;";
        static auto constexpr TAG = "JPlayerData";
  
        static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
