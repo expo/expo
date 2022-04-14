@@ -221,14 +221,14 @@ When [handling the URL that is used to open/foreground your app](#handling-urls-
 ```javascript
 _handleUrl = ({ url }) => {
   this.setState({ url });
-  let { path, queryParams } = Linking.parse(url);
-  alert(`Linked to app with path: ${path} and data: ${JSON.stringify(queryParams)}`);
+  let { hostname, path, queryParams } = Linking.parse(url);
+  alert(`Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(queryParams)}`);
 };
 ```
 
 If you opened a URL like
-`myapp://path/into/app?hello=world`, this would alert
-`Linked to app with path: path/into/app and data: {hello: 'world'}`.
+`myapp://somepath/into/app?hello=world`, this would alert
+`Linked to app with hostname: somepath, path: into/app and data: {"hello":"world"}`.
 
 ### Example: linking back to your app from WebBrowser
 
