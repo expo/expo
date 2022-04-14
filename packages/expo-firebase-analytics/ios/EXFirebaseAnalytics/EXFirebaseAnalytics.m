@@ -90,23 +90,6 @@ EX_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
   }
 }
 
-EX_EXPORT_METHOD_AS(setCurrentScreen,
-                    setCurrentScreen:(NSString *)screenName
-                    screenClass:(NSString *)screenClassOverview
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
-  if ([self getAppOrReject:reject] == nil) return;
-  [EXUtilities performSynchronouslyOnMainThread:^{
-    @try {
-      [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
-      resolve([NSNull null]);
-    } @catch (NSException *exception) {
-      [self reject:reject withException:exception];
-      return;
-    }
-  }];
-}
-
 EX_EXPORT_METHOD_AS(setSessionTimeoutDuration,
                     setSessionTimeoutDuration:(NSNumber *)milliseconds
                     resolver:(EXPromiseResolveBlock)resolve

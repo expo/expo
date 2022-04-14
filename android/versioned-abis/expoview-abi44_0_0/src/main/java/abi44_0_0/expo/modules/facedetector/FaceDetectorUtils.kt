@@ -1,27 +1,34 @@
 package abi44_0_0.expo.modules.facedetector
 
+import android.graphics.PointF
 import android.os.Bundle
-import com.google.android.gms.vision.face.Landmark
-import com.google.firebase.ml.vision.face.FirebaseVisionFace
-import com.google.firebase.ml.vision.common.FirebaseVisionPoint
+import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceLandmark
 
 object FaceDetectorUtils {
   @JvmStatic
   @JvmOverloads
-  fun serializeFace(face: FirebaseVisionFace, scaleX: Double = 1.0, scaleY: Double = 1.0): Bundle {
+  fun serializeFace(face: Face, scaleX: Double = 1.0, scaleY: Double = 1.0): Bundle {
     val encodedFace = Bundle().apply {
-      putInt("faceID", face.trackingId)
+      face.trackingId?.let { putInt("faceID", it) }
       putDouble("rollAngle", face.headEulerAngleZ.toDouble())
       putDouble("yawAngle", face.headEulerAngleY.toDouble())
 
-      if (face.smilingProbability >= 0) {
-        putDouble("smilingProbability", face.smilingProbability.toDouble())
+      face.smilingProbability?.let {
+        if (it >= 0) {
+          putDouble("smilingProbability", it.toDouble())
+        }
       }
-      if (face.leftEyeOpenProbability >= 0) {
-        putDouble("leftEyeOpenProbability", face.leftEyeOpenProbability.toDouble())
+      face.leftEyeOpenProbability?.let {
+        if (it >= 0) {
+          putDouble("leftEyeOpenProbability", it.toDouble())
+        }
       }
-      if (face.rightEyeOpenProbability >= 0) {
-        putDouble("rightEyeOpenProbability", face.rightEyeOpenProbability.toDouble())
+
+      face.rightEyeOpenProbability?.let {
+        if (it >= 0) {
+          putDouble("rightEyeOpenProbability", it.toDouble())
+        }
       }
 
       LandmarkId.values()
@@ -81,7 +88,7 @@ object FaceDetectorUtils {
     putDouble("yawAngle", (-face.getDouble("yawAngle") + 360) % 360)
   }
 
-  private fun mapFromPoint(point: FirebaseVisionPoint, scaleX: Double, scaleY: Double) = Bundle().apply {
+  private fun mapFromPoint(point: PointF, scaleX: Double, scaleY: Double) = Bundle().apply {
     putDouble("x", point.x * scaleX)
     putDouble("y", point.y * scaleY)
   }
@@ -100,19 +107,21 @@ object FaceDetectorUtils {
     -elementX + containerWidth * scaleX
 
   // All the landmarks reported by Google Mobile Vision in constants' order.
-  // https://developers.google.com/android/reference/com/google/android/gms/vision/face/Landmark
+  // https://developers.google.com/android/reference/com/google/mlkit/vision/face/FaceLandmark
   private enum class LandmarkId(val id: Int, val landmarkName: String) {
-    BOTTOM_MOUTH(Landmark.BOTTOM_MOUTH, "bottomMouthPosition"),
-    LEFT_CHEEK(Landmark.LEFT_CHEEK, "leftCheekPosition"),
-    LEFT_EAR(Landmark.LEFT_EAR, "leftEarPosition"),
-    LEFT_EAR_TIP(Landmark.LEFT_EAR_TIP, "leftEarTipPosition"),
-    LEFT_EYE(Landmark.LEFT_EYE, "leftEyePosition"),
-    LEFT_MOUTH(Landmark.LEFT_MOUTH, "leftMouthPosition"),
-    NOSE_BASE(Landmark.NOSE_BASE, "noseBasePosition"),
-    RIGHT_CHEEK(Landmark.RIGHT_CHEEK, "rightCheekPosition"),
-    RIGHT_EAR(Landmark.RIGHT_EAR, "rightEarPosition"),
-    RIGHT_EAR_TIP(Landmark.RIGHT_EAR_TIP, "rightEarTipPosition"),
-    RIGHT_EYE(Landmark.RIGHT_EYE, "rightEyePosition"),
-    RIGHT_MOUTH(Landmark.RIGHT_MOUTH, "rightMouthPosition");
+    BOTTOM_MOUTH(FaceLandmark.MOUTH_BOTTOM, "bottomMouthPosition"),
+    RIGHT_MOUTH(FaceLandmark.MOUTH_RIGHT, "rightMouthPosition"),
+    LEFT_MOUTH(FaceLandmark.MOUTH_LEFT, "leftMouthPosition"),
+    LEFT_CHEEK(FaceLandmark.LEFT_CHEEK, "leftCheekPosition"),
+    RIGHT_EYE(FaceLandmark.RIGHT_EYE, "rightEyePosition"),
+    LEFT_EYE(FaceLandmark.LEFT_EYE, "leftEyePosition"),
+    LEFT_EAR(FaceLandmark.LEFT_EAR, "leftEarPosition"),
+    RIGHT_CHEEK(FaceLandmark.RIGHT_CHEEK, "rightCheekPosition"),
+    RIGHT_EAR(FaceLandmark.RIGHT_EAR, "rightEarPosition"),
+    NOSE_BASE(FaceLandmark.NOSE_BASE, "noseBasePosition"),
+
+    // Backward compatibility - these no longer exists, but we don;t want to break the previous SDKs
+    LEFT_EAR_TIP(FaceLandmark.LEFT_EAR, "leftEarTipPosition"), // LEFT_EAR is a middle point between the tip and the left lobe
+    RIGHT_EAR_TIP(FaceLandmark.RIGHT_EAR, "rightEarTipPosition"); // same as LEFT_EAR
   }
 }

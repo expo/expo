@@ -39,7 +39,6 @@ declare type PropsType = ViewProps & {
     onAdViewWillPresentScreen?: () => void;
     onAdViewWillDismissScreen?: () => void;
     onAdViewDidDismissScreen?: () => void;
-    onAdViewWillLeaveApplication?: () => void;
 };
 declare type StateType = {
     style: {

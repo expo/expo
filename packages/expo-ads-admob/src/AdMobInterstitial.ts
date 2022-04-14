@@ -9,15 +9,13 @@ const eventNames = [
   'interstitialDidFailToLoad',
   'interstitialDidOpen',
   'interstitialDidClose',
-  'interstitialWillLeaveApplication',
 ];
 
 type EventNameType =
   | 'interstitialDidLoad'
   | 'interstitialDidFailToLoad'
   | 'interstitialDidOpen'
-  | 'interstitialDidClose'
-  | 'interstitialWillLeaveApplication';
+  | 'interstitialDidClose';
 
 type EventListener = (...args: any[]) => void;
 

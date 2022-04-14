@@ -15,7 +15,7 @@
   "static_framework": true,
   "dependencies": {
     "Google-Mobile-Ads-SDK": [
-      "7.69.0"
+      "8.13.0"
     ],
     "ABI44_0_0ExpoModulesCore": []
   },

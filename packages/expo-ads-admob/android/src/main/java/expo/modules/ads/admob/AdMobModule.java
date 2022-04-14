@@ -3,6 +3,11 @@ package expo.modules.ads.admob;
 import android.content.Context;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import expo.modules.core.ExportedModule;
 import expo.modules.core.Promise;
@@ -21,10 +26,6 @@ public class AdMobModule extends ExportedModule {
     super(context);
   }
 
-  public static String getTestDeviceID() {
-    return sTestDeviceID;
-  }
-
   @ExpoMethod
   public void setTestDeviceIDAsync(String testDeviceID, Promise promise) {
     // TODO: use RequestConfiguration.Builder.setTestDeviceIds() and
@@ -37,6 +38,13 @@ public class AdMobModule extends ExportedModule {
     } else {
       sTestDeviceID = testDeviceID;
     }
+
+    RequestConfiguration configuration =
+        new RequestConfiguration.Builder()
+            .setTestDeviceIds(Collections.singletonList(sTestDeviceID))
+            .build();
+    MobileAds.setRequestConfiguration(configuration);
+
     promise.resolve(null);
   }
 }

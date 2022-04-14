@@ -2,7 +2,7 @@
 #import <ABI44_0_0ExpoModulesCore/ABI44_0_0EXModuleRegistry.h>
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
-@interface ABI44_0_0EXAdsDFPBannerView : UIView <GADBannerViewDelegate, GADAppEventDelegate>
+@interface ABI44_0_0EXAdsGAMBannerView : UIView <GADBannerViewDelegate, GADAppEventDelegate>
 
 @property (nonatomic, copy) NSString *bannerSize;
 @property (nonatomic, copy) NSString *adUnitID;
@@ -15,7 +15,6 @@
 @property (nonatomic, copy) ABI44_0_0EXDirectEventBlock onAdViewWillPresentScreen;
 @property (nonatomic, copy) ABI44_0_0EXDirectEventBlock onAdViewWillDismissScreen;
 @property (nonatomic, copy) ABI44_0_0EXDirectEventBlock onAdViewDidDismissScreen;
-@property (nonatomic, copy) ABI44_0_0EXDirectEventBlock onAdViewWillLeaveApplication;
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize;
 - (void)loadBanner;

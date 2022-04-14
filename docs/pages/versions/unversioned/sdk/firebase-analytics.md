@@ -143,7 +143,7 @@ export default () => (
       const prevScreen = getActiveRouteName(prevState);
       if (prevScreen !== currentScreen) {
         // Update Firebase with the name of your screen
-        Analytics.setCurrentScreen(currentScreen);
+        Analytics.logEvent('screen view', { currentScreen });
       }
     }}
   />
