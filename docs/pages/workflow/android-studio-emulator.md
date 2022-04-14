@@ -66,18 +66,18 @@ This is because the adb version on your system is different from the adb version
 - Open the terminal and check the `adb` version on the system:
 
 ```bash
-$adb version
+adb version
 ```
 
 - And from the Android SDK platform-tool directory:
 
 ```bash
-$ cd ~/Library/Android/sdk/platform-tools
-$ ./adb version
+cd ~/Library/Android/sdk/platform-tools
+./adb version
 ```
 
 - Copy `adb` from Android SDK directory to `usr/bin` directory:
 
 ```bash
-$ sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin
+sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin
 ```
