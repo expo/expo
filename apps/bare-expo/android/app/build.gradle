@@ -1,6 +1,8 @@
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
+
 import com.android.build.OutputFile
+import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -133,8 +135,9 @@ def reactNativeArchitectures() {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    ndkVersion rootProject.ext.ndkVersion
 
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -177,6 +180,17 @@ android {
                     // Make sure this target name is the same you specify inside the
                     // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
                     targets "bareexpo_appmodules"
+
+                    // Fix for windows limit on number of character in file paths and in command lines
+                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                        arguments "NDK_OUT=${rootProject.projectDir.getParent()}\\.cxx",
+                            "NDK_APP_SHORT_COMMANDS=true"
+                    }
+                }
+            }
+            if (!enableSeparateBuildPerCPUArchitecture) {
+                ndk {
+                    abiFilters (*reactNativeArchitectures())
                 }
             }
         }
