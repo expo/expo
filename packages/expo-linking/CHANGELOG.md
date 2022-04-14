@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- Export public `Schemes` methods in main file.
+- Export public `Schemes` methods in main file. ([#17058](https://github.com/expo/expo/pull/17058) by [@Simek](https://github.com/Simek))
 
 ## 3.0.0 — 2021-12-03
 
