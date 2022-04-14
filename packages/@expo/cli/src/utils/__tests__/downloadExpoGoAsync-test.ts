@@ -62,8 +62,6 @@ describe(downloadExpoGoAsync, () => {
   it('downloads the Expo Go app on Android', async () => {
     vol.fromJSON({}, '');
 
-    asMock(extractAsync).mockClear();
-
     const scope = nock(getExpoApiBaseUrl())
       .get('/v2/versions/latest')
       .reply(200, require('../../api/__tests__/fixtures/versions-latest.json'));
