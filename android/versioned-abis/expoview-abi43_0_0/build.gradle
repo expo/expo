@@ -130,7 +130,7 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
-  
+
   // exopo-face-detector
   implementation 'com.google.mlkit:face-detection:16.1.5'
 

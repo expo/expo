@@ -92,7 +92,8 @@ class ExpoFaceDetector(private val context: Context) : FaceDetectorInterface {
     if (faceDetector == null) {
       createFaceDetector()
     }
-    val image = InputImage.fromByteArray(imageData, width, height, rotation,
+    val image = InputImage.fromByteArray(
+      imageData, width, height, rotation,
       InputImage.IMAGE_FORMAT_NV21
     )
     if (minDetectionInterval <= 0 || minIntervalPassed()) {
