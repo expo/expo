@@ -85,6 +85,7 @@ dependencies {
   implementation project(':expo-modules-core')
 
   api 'com.google.android.gms:play-services-auth:17.0.0'
+  implementation 'com.google.android.gms:play-services-fitness:21.0.1'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

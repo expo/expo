@@ -19,7 +19,6 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
     EVENT_WILL_PRESENT("onAdViewWillPresentScreen"),
     EVENT_WILL_DISMISS("onAdViewWillDismissScreen"),
     EVENT_DID_DISMISS("onAdViewDidDismissScreen"),
-    EVENT_WILL_LEAVE_APP("onAdViewWillLeaveApplication"),
     EVENT_ADMOB_EVENT_RECEIVED("onAdmobDispatchAppEvent");
 
     private final String mName;

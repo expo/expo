@@ -14,7 +14,7 @@ static NSString *const EXAdsAdMobRewardedDidDismiss = @"rewardedVideoDidDismiss"
 
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
-@property (nonatomic, strong) GADRewardedAd *rewardedAd;
+@property (nonatomic, strong) GADRewardedAd *ad;
 
 @end
 
@@ -24,6 +24,7 @@ static NSString *const EXAdsAdMobRewardedDidDismiss = @"rewardedVideoDidDismiss"
   EXPromiseResolveBlock _requestAdResolver;
   EXPromiseRejectBlock _requestAdRejecter;
   EXPromiseResolveBlock _showAdResolver;
+  EXPromiseRejectBlock _showAdRejecter;
 }
 
 EX_EXPORT_MODULE(ExpoAdsAdMobRewardedVideoAdManager);
@@ -78,29 +79,33 @@ EX_EXPORT_METHOD_AS(requestAd,
     _requestAdResolver = resolve;
     _requestAdRejecter = reject;
     
-    self.rewardedAd = [[GADRewardedAd alloc] initWithAdUnitID:_adUnitID];
     GADRequest *request = [GADRequest request];
     if (additionalRequestParams) {
       GADExtras *extras = [[GADExtras alloc] init];
       extras.additionalParameters = additionalRequestParams;
       [request registerAdNetworkExtras:extras];
     }
+    
     EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       EX_ENSURE_STRONGIFY(self);
-      [self.rewardedAd loadRequest:request
-                 completionHandler:^(GADRequestError * _Nullable error) {
+      [GADRewardedAd loadWithAdUnitID:self->_adUnitID
+                              request:request
+                    completionHandler:^(GADRewardedAd *ad, NSError *error) {
         EX_ENSURE_STRONGIFY(self);
         if (error) {
           [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToLoad
                                    body:@{ @"name": [error description] }];
           self->_requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
-          [self _cleanupRequestAdPromise];
-        } else {
-          [self _maybeSendEventWithName:EXAdsAdMobRewardedDidLoad body:nil];
-          self->_requestAdResolver(nil);
-          [self _cleanupRequestAdPromise];
+          [self cleanupRequestAdPromise];
+          return;
         }
+        self.ad = ad;
+        self.ad.fullScreenContentDelegate = self;
+      
+        [self _maybeSendEventWithName:EXAdsAdMobRewardedDidLoad body:nil];
+        self->_requestAdResolver(nil);
+        [self cleanupRequestAdPromise];
       }];
     });
   } else {
@@ -112,14 +117,20 @@ EX_EXPORT_METHOD_AS(showAd,
                     showAd:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (_showAdResolver == nil && self.rewardedAd.isReady) {
+  if (_showAdResolver == nil && self.ad) {
     _showAdResolver = resolve;
     EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       EX_ENSURE_STRONGIFY(self);
-      [self.rewardedAd presentFromRootViewController:self.utilities.currentViewController delegate:self];
+      [self.ad presentFromRootViewController:self.utilities.currentViewController
+                    userDidEarnRewardHandler:^{
+        EX_ENSURE_STRONGIFY(self);
+        GADAdReward *reward = self.ad.adReward;
+        [self _maybeSendEventWithName:EXAdsAdMobRewardedUserDidEarnReward
+                                 body:@{ @"type": reward.type, @"amount": reward.amount }];
+      }];
     });
-  } else if (self.rewardedAd.isReady) {
+  } else if (self.ad) {
     reject(@"E_AD_BEING_SHOWN", @"Ad is already being shown, await the previous promise.", nil);
   } else {
     reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
@@ -148,38 +159,39 @@ EX_EXPORT_METHOD_AS(getIsReady,
                     getIsReady:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  resolve([NSNumber numberWithBool:self.rewardedAd.isReady]);
+  resolve([NSNumber numberWithBool:self.ad != nil]);
 }
 
 
-- (void)_cleanupRequestAdPromise
+- (void)cleanupRequestAdPromise
 {
   _requestAdResolver = nil;
   _requestAdRejecter = nil;
 }
 
-- (void)rewardedAd:(GADRewardedAd *)rewardedAd userDidEarnReward:(GADAdReward *)reward {
-  [self _maybeSendEventWithName:EXAdsAdMobRewardedUserDidEarnReward
-                           body:@{ @"type": reward.type, @"amount": reward.amount }];
-}
+#pragma mark - GADFullscreenContentDelegate
 
-- (void)rewardedAdDidPresent:(GADRewardedAd *)rewardedAd {
+- (void)adDidPresentFullScreenContent:(id)ad
+{
   [self _maybeSendEventWithName:EXAdsAdMobRewardedDidPresent body:nil];
   _showAdResolver(nil);
   _showAdResolver = nil;
 }
 
-- (void)rewardedAd:(GADRewardedAd *)rewardedAd didFailToPresentWithError:(NSError *)error
+- (void)ad:(id)ad
+    didFailToPresentFullScreenContentWithError:(NSError *)error
 {
   [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToPresent
                            body:@{ @"name": [error description] }];
   _requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
-  [self _cleanupRequestAdPromise];
+  [self cleanupRequestAdPromise];
 }
 
-- (void)rewardedAdDidDismiss:(GADRewardedAd *)rewardedAd {
+- (void)adDidDismissFullScreenContent:(id)ad
+{
   [self _maybeSendEventWithName:EXAdsAdMobRewardedDidDismiss body:nil];
 }
+
 
 @end
 
