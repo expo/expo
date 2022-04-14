@@ -21,6 +21,7 @@
 
 - Fix `androidNavigationBar` app.json config settings having no effect at runtime ([#15030](https://github.com/expo/expo/issues/15030)). ([#16711](https://github.com/expo/expo/pull/16711) by [@esamelson](https://github.com/esamelson))
 - Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+- Fix `RCTStatusBarManager module requires that the UIViewControllerBasedStatusBarAppearance to be false.` on iOS. ([#17022](https://github.com/expo/expo/pull/17022) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -30,6 +31,12 @@
 - Compatibility with expo-dev-menu auto-setup on iOS. ([#16496](https://github.com/expo/expo/pull/16496) by [@esamelson](https://github.com/esamelson))
 - Remove initialization side effects. ([#16522](https://github.com/expo/expo/pull/16522) by [@esamelson](https://github.com/esamelson))
 - Use expo-manifests `logUrl` getter instead of accessing raw JSON. ([#16709](https://github.com/expo/expo/pull/16709) by [@esamelson](https://github.com/esamelson))
+- Add ability for to launch a specific update through expo-updates-interface. ([#16865](https://github.com/expo/expo/pull/16865) by [@esamelson](https://github.com/esamelson))
+- Remove config plugin for better error handling in index.js ([#17025](https://github.com/expo/expo/pull/17025) by [@lukmccall](https://github.com/lukmccall))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 0.10.4 — 2022-02-07
 

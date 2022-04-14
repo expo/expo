@@ -2,6 +2,8 @@
 
 #import <ReactCommon/TurboModuleUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/EXJavaScriptValue.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
 
 namespace expo {
 
@@ -52,6 +54,12 @@ std::vector<jsi::Value> convertNSArrayToStdVector(jsi::Runtime &runtime, NSArray
 
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 {
+  if ([value isKindOfClass:[EXJavaScriptValue class]]) {
+    return jsi::Value(runtime, *[(EXJavaScriptValue *)value get]);
+  }
+  if ([value isKindOfClass:[EXJavaScriptObject class]]) {
+    return jsi::Value(runtime, *[(EXJavaScriptObject *)value get]);
+  }
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);
   } else if ([value isKindOfClass:[NSNumber class]]) {
@@ -86,13 +94,16 @@ NSArray *convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value
   return [result copy];
 }
 
-NSArray *convertJSIValuesToNSArray(jsi::Runtime &runtime, const jsi::Value *values, size_t count, std::shared_ptr<CallInvoker> jsInvoker)
+NSArray<EXJavaScriptValue *> *convertJSIValuesToNSArray(EXJavaScriptRuntime *runtime, const jsi::Value *values, size_t count)
 {
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity:count];
+  NSMutableArray<EXJavaScriptValue *> *array = [NSMutableArray arrayWithCapacity:count];
+  jsi::Runtime *jsiRuntime = [runtime get];
+
   for (int i = 0; i < count; i++) {
-    result[i] = convertJSIValueToObjCObject(runtime, values[i], jsInvoker);
+    std::shared_ptr<jsi::Value> value = std::make_shared<jsi::Value>(*jsiRuntime, values[i]);
+    array[i] = [[EXJavaScriptValue alloc] initWithRuntime:runtime value:value];
   }
-  return result;
+  return array;
 }
 
 NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker)

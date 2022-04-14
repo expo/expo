@@ -30,9 +30,7 @@ it('returns null when no files can be found', () => {
 });
 
 it('observes the first existing file', () => {
-  asMock(Log.log).mockClear();
   asMock(fs.watchFile)
-    .mockClear()
     // @ts-expect-error
     .mockImplementationOnce((_, callback) => {
       // @ts-expect-error: polymorphism

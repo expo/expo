@@ -1,8 +1,8 @@
-#import "READebugNode.h"
+#import <RNReanimated/READebugNode.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAUtils.h>
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
-#import "REANodesManager.h"
-#import "REAUtils.h"
 
 @implementation READebugNode {
   NSNumber *_valueNodeID;

@@ -32,14 +32,23 @@ concurrency:
 
 jobs:
   android:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     env:
       UPDATES_PORT: 4747
     steps:
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.17'
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: false
+      - name: 🔨 Use JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -61,19 +70,43 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init updates-e2e --yes
-      - name: Add local expo-updates and dependencies
+      - name: Add yarn resolutions for local dependencies
         working-directory: ../updates-e2e
-        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-eas-client file:../expo/packages/expo-modules-core file:../expo/packages/expo-json-utils file:../expo/packages/expo-manifests file:../expo/packages/expo-structured-headers file:../expo/packages/expo-updates-interface
+        run: |
+          # A jq filter to add a "resolutions" field
+          JQ_FILTER=$(cat << EOF
+            . + {
+              resolutions: {
+                "expo-application": "file:../expo/packages/expo-application",
+                "expo-constants": "file:../expo/packages/expo-constants",
+                "expo-eas-client": "file:../expo/packages/expo-eas-client",
+                "expo-error-recovery": "file:../expo/packages/expo-error-recovery",
+                "expo-file-system": "file:../expo/packages/expo-file-system",
+                "expo-font": "file:../expo/packages/expo-font",
+                "expo-json-utils": "file:../expo/packages/expo-json-utils",
+                "expo-keep-awake": "file:../expo/packages/expo-keep-awake",
+                "expo-manifests": "file:../expo/packages/expo-manifests",
+                "expo-modules-core": "file:../expo/packages/expo-modules-core",
+                "expo-structured-headers": "file:../expo/packages/expo-structured-headers",
+                "expo-updates-interface": "file:../expo/packages/expo-updates-interface"
+              }
+            }
+          EOF
+          )
+          jq "$JQ_FILTER" < package.json > new-package.json
+          mv new-package.json package.json
+      - name: Add local expo packages
+        working-directory: ../updates-e2e
+        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
+      - name: Pack latest bare-minimum template as tarball for expo prebuild
+        working-directory: templates/expo-template-bare-minimum
+        run: npm pack --pack-destination ../../../updates-e2e/
       - name: Prebuild
         working-directory: ../updates-e2e
-        run: expo-cli prebuild
-      # TODO: remove once the local template projects are using SDK 45 packages
-      - name: Manually bump kotlin version (workaround)
-        working-directory: ../updates-e2e
-        run: sed -i -e 's/\(buildToolsVersion = "[0-9.]*"\)/\1\nkotlinVersion = "1.6.10"/' ./android/build.gradle
+        run: expo-cli prebuild --template expo-template-bare-minimum-*.tgz
       - name: Copy App.js from test fixtures
         working-directory: ../updates-e2e
         run: cp ../expo/packages/expo-updates/e2e/__tests__/fixtures/App.js .
@@ -86,7 +119,7 @@ jobs:
       - name: Copy APK to working directory
         run: cp -R ../updates-e2e/android/app/build/outputs/apk artifact
       - name: Upload test APK artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: updates-e2e-android-apk
           path: artifact
@@ -97,10 +130,10 @@ jobs:
       - name: Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
-        timeout-minutes: 10
+        timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          arch: x86_64
+          api-level: 29
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
           script: yarn test --config e2e/jest.config.js
           working-directory: packages/expo-updates

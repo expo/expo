@@ -577,7 +577,7 @@ Set text break strategy on Android API Level 23+, possible values are `simple`, 
 
 ### TextLayoutEvent
 
-`TextLayoutEvent` object is returned in the callback as a result of component layout change. It contains a key called `lines` with a value which is an array containing [`TextLayout`](#textlayout) object corresponeded to every rendered text line.
+`TextLayoutEvent` object is returned in the callback as a result of component layout change. It contains a key called `lines` with a value which is an array containing [`TextLayout`](#textlayout) object corresponded to every rendered text line.
 
 #### Example
 

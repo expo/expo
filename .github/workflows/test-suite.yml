@@ -29,11 +29,11 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: ♻️ Restore workspace node modules
@@ -72,7 +72,7 @@ jobs:
     runs-on: macos-11
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
@@ -137,7 +137,7 @@ jobs:
         working-directory: apps/bare-expo
       - name: Store images of build failures
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts
@@ -157,18 +157,18 @@ jobs:
     runs-on: macos-11
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
-      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Use JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -221,7 +221,7 @@ jobs:
           working-directory: ./apps/bare-expo
       - name: Store images of build failures
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts

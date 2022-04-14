@@ -2,11 +2,17 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { EXPO_DIR } from '../../Constants';
+import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
 import { filterAsync } from '../../Utils';
 import { ReviewInput, ReviewOutput, ReviewStatus } from '../types';
 
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput | null> {
+  if (!pullRequest.head) {
+    logger.warn('Detached PR, we cannot asses the needed changelog entries!', pullRequest);
+    return null;
+  }
+
   const allPackages = await getListOfPackagesAsync();
   const modifiedPackages = allPackages.filter((pkg) => {
     return diff.some((fileDiff) => !path.relative(pkg.path, fileDiff.path).startsWith('../'));
@@ -22,18 +28,19 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   }
 
   const changelogLinks = pkgsWithoutChangelogChanges
-    .map((pkg) => `- ${relativeChangelogPath(pullRequest, pkg)}`)
+    .map((pkg) => `- ${relativeChangelogPath(pullRequest.head, pkg)}`)
     .join('\n');
 
   return {
     status: ReviewStatus.WARN,
     title: 'Missing changelog entries',
-    body: `Your changes should be noted in the changelog. Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) guide and consider (it's optional) adding an appropriate entry to the following changelogs:
-${changelogLinks}`,
+    body: `Your changes should be noted in the changelog. 
+      Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) 
+      guide and consider (it's optional) adding an appropriate entry to the following changelogs: ${changelogLinks}`,
   };
 }
 
-function relativeChangelogPath(pr: ReviewInput['pullRequest'], pkg: Package): string {
+function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
   const relativePath = path.relative(EXPO_DIR, pkg.changelogPath);
-  return `[\`${relativePath}\`](${pr.head.repo.html_url}/blob/${pr.head.ref}/${relativePath})`;
+  return `[\`${relativePath}\`](${head.repo?.html_url}/blob/${head.ref}/${relativePath})`;
 }

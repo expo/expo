@@ -4,37 +4,53 @@ import React, { forwardRef, HTMLAttributes, PropsWithChildren } from 'react';
 
 type LayoutScrollProps = PropsWithChildren<
   HTMLAttributes<HTMLDivElement> & {
-    /** If the scroll container should smoothly scroll when scrolled programatically */
+    /**
+     * If the scroll container should smoothly scroll when scrolled programmatically.
+     */
     smoothScroll?: boolean;
+    /**
+     * If the overscoll effect should be disabled.
+     */
+    disableOverscroll?: boolean;
   }
 >;
 
 export const LayoutScroll = forwardRef<HTMLDivElement, LayoutScrollProps>(
-  ({ smoothScroll, children, ...rest }, ref) => (
-    <div css={[scrollStyle, smoothScroll && smoothScrollBehavior]} {...rest} ref={ref}>
+  ({ smoothScroll = true, disableOverscroll = true, children, ...rest }, ref) => (
+    <div
+      css={[
+        scrollStyle,
+        smoothScroll && smoothScrollBehavior,
+        disableOverscroll && disableOverscrollBehavior,
+      ]}
+      {...rest}
+      ref={ref}>
       {children}
     </div>
   )
 );
 
 const scrollStyle = css({
-  height: '100%',
+  flex: 1,
   overflowY: 'auto',
-  /* width */
+  overflowX: 'hidden',
+  /**
+   * Scrollbar
+   */
   '::-webkit-scrollbar': {
     width: '6px',
   },
-  /* Track */
+  // Track
   '::-webkit-scrollbar-track': {
     backgroundColor: 'transparent',
     cursor: 'pointer',
   },
-  /* Handle */
+  // Handle
   '::-webkit-scrollbar-thumb': {
     backgroundColor: theme.background.tertiary,
     borderRadius: '10px',
   },
-  /* Handle on hover */
+  // Handle on hover
   '::-webkit-scrollbar-thumb:hover': {
     backgroundColor: theme.background.quaternary,
   },
@@ -42,4 +58,8 @@ const scrollStyle = css({
 
 const smoothScrollBehavior = css({
   scrollBehavior: 'smooth',
+});
+
+const disableOverscrollBehavior = css({
+  overscrollBehavior: 'contain',
 });

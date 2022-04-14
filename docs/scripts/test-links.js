@@ -43,7 +43,7 @@ const externalLinks = [
         );
         if (await page.$('#redirect-link')) {
           await Promise.all([page.waitForNavigation(), page.click('#redirect-link')]);
-          console.info(`Redirected from ${link} to ${await page.url()}`);
+          console.info(`Redirected from ${link} to ${page.url()}`);
           try {
             await page.waitForFunction(
               () =>

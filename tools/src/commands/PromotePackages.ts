@@ -1,10 +1,9 @@
 import { Command } from '@expo/commander';
 
 import { TaskRunner, Task } from '../TasksRunner';
-import { CommandOptions, TaskArgs } from '../promote-packages/types';
-
-import { promotePackages } from '../promote-packages/tasks/promotePackages';
 import { listPackagesToPromote } from '../promote-packages/tasks/listPackagesToPromote';
+import { promotePackages } from '../promote-packages/tasks/promotePackages';
+import { CommandOptions, TaskArgs } from '../promote-packages/types';
 
 export default (program: Command) => {
   program

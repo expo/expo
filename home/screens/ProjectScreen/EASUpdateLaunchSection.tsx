@@ -63,7 +63,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
           <Fragment key={branch.id}>
             <BranchListItem
               first={i === 0}
-              last={i === 2 && branchesToRender.length <= 3}
+              last={i === branchesToRender.length - 1}
               appId={app.id}
               name={branch.name}
               latestUpdate={branch.latestUpdate}
@@ -73,15 +73,9 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
         );
       })}
       {branchesToRender.length > 3 && (
-        <>
-          <Divider style={{ height: 1 }} />
+        <View border="default" roundedBottom="large">
           <TouchableOpacity onPress={onSeeAllBranchesPress}>
-            <View
-              padding="medium"
-              border="default"
-              bg="default"
-              style={{ borderTopWidth: 0 }}
-              roundedBottom="large">
+            <View padding="medium" bg="default" roundedBottom="large">
               <Row align="center" justify="between">
                 <Text type="InterRegular">See all branches</Text>
                 <ChevronDownIcon
@@ -91,7 +85,7 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
               </Row>
             </View>
           </TouchableOpacity>
-        </>
+        </View>
       )}
     </View>
   );

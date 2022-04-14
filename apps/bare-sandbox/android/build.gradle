@@ -7,7 +7,7 @@ buildscript {
         minSdkVersion = 21
         compileSdkVersion = 31
         targetSdkVersion = 31
-        ndkVersion = "21.4.7075529"
+
         kotlinVersion = '1.6.10'
         // for expo-dev-client
         // TODO: remove once bare-expo has been upgraded to SDK 45 on main

@@ -1,15 +1,15 @@
-import path from 'path';
-import chalk from 'chalk';
-import fs from 'fs-extra';
-import semver from 'semver';
 import { Command } from '@expo/commander';
+import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import { UserManager, UserSettings } from '@expo/xdl';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import inquirer from 'inquirer';
+import path from 'path';
+import semver from 'semver';
 
 import { getAppsDir } from '../Directories';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
-import inquirer from 'inquirer';
-import JsonFile from '@expo/json-file';
 
 type ActionOptions = {
   app: string;
@@ -113,9 +113,7 @@ async function action(options: ActionOptions) {
 
   if (!allowedApps.includes(options.app)) {
     throw new Error(
-      `App not found at ${chalk.cyan(
-        options.app
-      )} directory. Allowed app names: ${allowedApps
+      `App not found at ${chalk.cyan(options.app)} directory. Allowed app names: ${allowedApps
         .map((appDirname) => chalk.green(appDirname))
         .join(', ')}`
     );

@@ -106,7 +106,7 @@ export function EASEmptyBranchRow({ branch }: EASBranchRowProps) {
 
       <Row>
         <View flex="1" shrink="1">
-          <Heading size="small" numberOfLines={1}>
+          <Heading size="small" numberOfLines={1} color="secondary">
             No updates available.
           </Heading>
           <Spacer.Horizontal size="large" />

@@ -6,13 +6,17 @@
 
 ### 🎉 New features
 
--  On iOS 15.4+ added support for `Codabar` barcode type. ([#16703](https://github.com/expo/expo/pull/16703) by [@7nohe](https://github.com/7nohe))
+- On iOS 15.4+ added support for `Codabar` barcode type. ([#16703](https://github.com/expo/expo/pull/16703) by [@7nohe](https://github.com/7nohe))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 11.2.1 - 2022-02-01
 

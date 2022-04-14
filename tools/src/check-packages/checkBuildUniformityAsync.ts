@@ -1,9 +1,9 @@
 import path from 'path';
 
+import { EXPO_DIR } from '../Constants';
+import logger from '../Logger';
 import { Package } from '../Packages';
 import { spawnAsync } from '../Utils';
-import logger from '../Logger';
-import { EXPO_DIR } from '../Constants';
 
 /**
  * Checks whether the state of build files is the same after running build script.

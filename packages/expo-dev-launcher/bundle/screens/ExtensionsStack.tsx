@@ -16,11 +16,11 @@ const Extensions = createStackNavigator<ExtensionsStackParamList>();
 
 export function ExtensionsStack() {
   return (
-    <Extensions.Navigator>
+    <Extensions.Navigator headerMode="float">
       <Extensions.Screen
         name="Extensions"
         component={ExtensionsScreen}
-        options={{ header: () => null }}
+        options={{ headerShown: false }}
       />
       <Extensions.Screen
         name="Branches"

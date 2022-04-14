@@ -1,6 +1,7 @@
 import { spacing } from '@expo/styleguide-native';
-import { Button, Heading, Row, Text } from 'expo-dev-client-components';
+import { Heading, Row, Text } from 'expo-dev-client-components';
 import * as React from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   onClearPress: () => void;
@@ -16,7 +17,7 @@ export function RecentlyOpenedHeader({ onClearPress }: Props) {
         type="InterSemiBold">
         Recently opened
       </Heading>
-      <Button.Container onPress={onClearPress}>
+      <TouchableOpacity onPress={onClearPress}>
         <Text
           type="InterSemiBold"
           color="secondary"
@@ -26,7 +27,7 @@ export function RecentlyOpenedHeader({ onClearPress }: Props) {
           }}>
           CLEAR
         </Text>
-      </Button.Container>
+      </TouchableOpacity>
     </Row>
   );
 }

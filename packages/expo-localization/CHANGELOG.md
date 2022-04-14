@@ -8,11 +8,17 @@
 
 ### 🎉 New features
 
+- Use JSI host object instead of the bridge module for communication between JavaScript and native code. ([#16972](https://github.com/expo/expo/pull/16972) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - Exception in HostObject::get for prop 'NativeUnimoduleProxy': java.lang.NullPointerException ([#16316](https://github.com/expo/expo/pull/16316) by [@nomi9995](https://github.com/nomi9995))
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 12.0.1 - 2022-02-01
 

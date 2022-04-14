@@ -1,4 +1,4 @@
-import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
+import { spacing, lightTheme, darkTheme, borderRadius, typography } from '@expo/styleguide-native';
 import { TextStyle, Platform, StyleSheet } from 'react-native';
 
 type SpacingKey = `${keyof typeof spacing}`;
@@ -96,18 +96,9 @@ export const text = {
   },
 
   size: {
-    small: {
-      fontSize: 12,
-      lineHeight: 14,
-    },
-    medium: {
-      fontSize: 16,
-      lineHeight: 18,
-    },
-    large: {
-      fontSize: 18,
-      lineHeight: 24,
-    },
+    small: typography.fontSizes[12],
+    medium: typography.fontSizes[16],
+    large: typography.fontSizes[18],
   },
 
   leading: {
@@ -139,15 +130,15 @@ export const text = {
   },
 
   weight: {
-    thin: { fontWeight: '100' as TextStyle['fontWeight'] },
-    extralight: { fontWeight: '200' as TextStyle['fontWeight'] },
-    light: { fontWeight: '300' as TextStyle['fontWeight'] },
-    normal: { fontWeight: '400' as TextStyle['fontWeight'] },
-    medium: { fontWeight: '500' as TextStyle['fontWeight'] },
-    semibold: { fontWeight: '600' as TextStyle['fontWeight'] },
-    bold: { fontWeight: '700' as TextStyle['fontWeight'] },
-    extrabold: { fontWeight: '800' as TextStyle['fontWeight'] },
-    black: { fontWeight: '900' as TextStyle['fontWeight'] },
+    thin: { fontFamily: 'Inter-Thin' },
+    extralight: { fontFamily: 'Inter-ExtraLight' },
+    light: { fontFamily: 'Inter-Light' },
+    normal: { fontFamily: 'Inter-Regular' },
+    medium: { fontFamily: 'Inter-Medium' },
+    semibold: { fontFamily: 'Inter-SemiBold' },
+    bold: { fontFamily: 'Inter-Bold' },
+    extrabold: { fontFamily: 'Inter-ExtraBold' },
+    black: { fontFamily: 'Inter-Black' },
   },
 
   color: {

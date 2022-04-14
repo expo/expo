@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+
 import { Podspec } from '../../CocoaPods';
 import { VendoringTargetConfig } from '../types';
 

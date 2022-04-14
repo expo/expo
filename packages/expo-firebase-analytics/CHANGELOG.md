@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- Removed `setCurrentScreen` method that was previously deprecated. Use `logEvent` instead. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- On iOS bumped `Firebase/Core@7.7.0 ➡️ 8.14.0`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bumped `com.google.firebase:firebase-core:17.2.1 ➡️ 20.1.2`, `com.google.firebase:firebase-common:19.0.0 ➡️ 20.1.0` and `com.google.firebase:firebase-analytics:17.2.1 ➡️ 20.1.2`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 6.0.1 - 2022-02-01
 

@@ -12,6 +12,13 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- On iOS bumped `GoogleMLKit/FaceDetection@2.1.0 ➡️ 2.6.0`, `MLKitFaceDetection@1.2.0 ➡️ 1.5.0`, `MLKitCommon@2.1.0 ➡️ 5.0.0` and `MLKitVision@1.2.0 ➡️ 3.0.0`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bumped `androidx.exifinterface:exifinterface:1.0.0 ➡️ 1.3.3`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android migrated from `com.google.firebase:firebase-ml-vision:24.0.1` and `com.google.firebase:firebase-ml-vision-face-model:19.0.0` to `com.google.mlkit:face-detection:16.1.5`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
 ## 11.1.3 - 2022-02-04
 
 _This version does not introduce any user-facing changes._

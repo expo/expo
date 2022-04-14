@@ -12,6 +12,11 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- On Android added `com.google.android.gms:play-services-fitness` dependency. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
 ## 10.1.1 - 2022-02-01
 
 ### 🐛 Bug fixes
