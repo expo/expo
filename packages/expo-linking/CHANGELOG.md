@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Export public `Schemes` methods in main file.
+
 ## 3.0.0 — 2021-12-03
 
 ### 🛠 Breaking changes

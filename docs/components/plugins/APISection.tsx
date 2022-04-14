@@ -43,13 +43,21 @@ const isListener = ({ name }: GeneratedData) =>
 
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
 
-const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
-  (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) ||
-  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false) ||
-  (signatures && signatures[0]
-    ? signatures[0].type.name === 'Element' ||
+const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
+  if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
+    return true;
+  } else if (extendedTypes && extendedTypes.length) {
+    return extendedTypes[0].name === 'Component';
+  } else if (signatures && signatures.length) {
+    if (
+      signatures[0].type.name === 'Element' ||
       (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
-    : false);
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter'].includes(name) &&

@@ -386,3 +386,4 @@ export function useURL(): string | null {
 }
 
 export * from './Linking.types';
+export * from './Schemes';
