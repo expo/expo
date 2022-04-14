@@ -4,6 +4,7 @@ import { NgrokInstance } from '../../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
 
+jest.mock('../../../log');
 jest.mock('../../../utils/delay', () => ({
   delayAsync: jest.fn(async () => {}),
   resolveWithTimeout: jest.fn(async (fn) => fn()),

@@ -10,11 +10,9 @@ jest.mock('../../log');
 
 describe(guessEditor, () => {
   it(`defaults to vscode if the default editor cannot be guessed`, () => {
-    asMock(editors.defaultEditor)
-      .mockClear()
-      .mockImplementationOnce(() => {
-        throw new Error('Could not guess default editor');
-      });
+    asMock(editors.defaultEditor).mockImplementationOnce(() => {
+      throw new Error('Could not guess default editor');
+    });
     guessEditor();
     expect(editors.getEditor).toBeCalledWith('vscode');
   });
@@ -22,18 +20,14 @@ describe(guessEditor, () => {
 
 describe(openInEditorAsync, () => {
   it(`fails to open in a given editor that does not exist`, async () => {
-    asMock(editors.defaultEditor)
-      .mockClear()
-      .mockReturnValueOnce({
-        name: 'my-editor',
-        binary: 'my-editor-binary',
-        id: 'my-editor-id',
-      } as any);
-    asMock(spawnAsync)
-      .mockClear()
-      .mockImplementationOnce(() => {
-        throw new Error('failed');
-      });
+    asMock(editors.defaultEditor).mockReturnValueOnce({
+      name: 'my-editor',
+      binary: 'my-editor-binary',
+      id: 'my-editor-id',
+    } as any);
+    asMock(spawnAsync).mockImplementationOnce(() => {
+      throw new Error('failed');
+    });
 
     await expect(openInEditorAsync('/foo/bar')).resolves.toBe(false);
 

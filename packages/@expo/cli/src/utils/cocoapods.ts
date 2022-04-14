@@ -11,19 +11,24 @@ import { ensureDirectoryAsync } from './dir';
 import { EXPO_DEBUG } from './env';
 import { logNewSection } from './ora';
 
-const PROJECT_PREBUILD_SETTINGS = '.expo/prebuild';
-const CACHED_PACKAGE_JSON = 'cached-packages.json';
-
-function getTempPrebuildFolder(projectRoot: string) {
-  return path.join(projectRoot, PROJECT_PREBUILD_SETTINGS);
-}
-
 type PackageChecksums = {
+  /** checksum for the `package.json` dependency object. */
   dependencies: string;
+  /** checksum for the `package.json` devDependency object. */
   devDependencies: string;
 };
 
-function hasNewDependenciesSinceLastBuild(projectRoot: string, packageChecksums: PackageChecksums) {
+const PROJECT_PREBUILD_SETTINGS = '.expo/prebuild';
+const CACHED_PACKAGE_JSON = 'cached-packages.json';
+
+function getTempPrebuildFolder(projectRoot: string): string {
+  return path.join(projectRoot, PROJECT_PREBUILD_SETTINGS);
+}
+
+function hasNewDependenciesSinceLastBuild(
+  projectRoot: string,
+  packageChecksums: PackageChecksums
+): boolean {
   // TODO: Maybe comparing lock files would be better...
   const templateDirectory = getTempPrebuildFolder(projectRoot);
   const tempPkgJsonPath = path.join(templateDirectory, CACHED_PACKAGE_JSON);
@@ -45,7 +50,10 @@ function createPackageChecksums(pkg: PackageJSONConfig): PackageChecksums {
   };
 }
 
-export async function hasPackageJsonDependencyListChangedAsync(projectRoot: string) {
+/** @returns `true` if the package.json dependency hash does not match the cached hash from the last run. */
+export async function hasPackageJsonDependencyListChangedAsync(
+  projectRoot: string
+): Promise<boolean> {
   const pkg = getPackageJson(projectRoot);
 
   const packages = createPackageChecksums(pkg);
@@ -59,7 +67,7 @@ export async function hasPackageJsonDependencyListChangedAsync(projectRoot: stri
   return hasNewDependencies;
 }
 
-export async function installCocoaPodsAsync(projectRoot: string) {
+export async function installCocoaPodsAsync(projectRoot: string): Promise<boolean> {
   let step = logNewSection('Installing CocoaPods...');
   if (process.platform !== 'darwin') {
     step.succeed('Skipped installing CocoaPods because operating system is not on macOS.');

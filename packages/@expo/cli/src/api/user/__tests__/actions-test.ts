@@ -4,6 +4,7 @@ import { showLoginPromptAsync } from '../actions';
 import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } from '../otp';
 import { loginAsync } from '../user';
 
+jest.mock('../../../log');
 jest.mock('../../../utils/prompts');
 jest.mock('../../rest/client', () => {
   const { ApiV2Error } = jest.requireActual('../../rest/client');

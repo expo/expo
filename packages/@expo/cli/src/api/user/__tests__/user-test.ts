@@ -10,6 +10,7 @@ import { getExpoApiBaseUrl } from '../../endpoint';
 import UserSettings from '../UserSettings';
 import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
 
+jest.mock('../../../log');
 jest.unmock('../UserSettings');
 jest.mock('../../graphql/client', () => ({
   graphqlClient: {

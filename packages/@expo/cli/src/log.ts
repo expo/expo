@@ -50,3 +50,16 @@ export function exit(message: string | Error, code: number = 1): never {
 
   process.exit(code);
 }
+
+// The re-export makes auto importing easier.
+export const Log = {
+  time,
+  timeEnd,
+  error,
+  exception,
+  warn,
+  log,
+  debug,
+  clear,
+  exit,
+};

@@ -63,7 +63,6 @@ describe('assertAsync', () => {
   });
   it('skips setup due to environment variable', async () => {
     process.env.EXPO_NO_WEB_SETUP = '1';
-    asMock(Log.warn).mockClear();
     const prerequisite = new WebSupportProjectPrerequisite('/');
     await prerequisite.assertAsync();
     expect(Log.warn).toHaveBeenCalledWith(
