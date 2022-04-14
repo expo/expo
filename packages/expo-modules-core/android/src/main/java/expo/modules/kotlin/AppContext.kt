@@ -1,3 +1,5 @@
+@file:OptIn(DelicateCoroutinesApi::class)
+
 package expo.modules.kotlin
 
 import android.app.Activity
@@ -5,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
+import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
@@ -16,9 +19,19 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
-import expo.modules.kotlin.events.*
+import expo.modules.kotlin.events.EventEmitter
+import expo.modules.kotlin.events.EventName
+import expo.modules.kotlin.events.KEventEmitterWrapper
+import expo.modules.kotlin.events.KModuleEventEmitterWrapper
+import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.newSingleThreadContext
 import java.lang.ref.WeakReference
 
 class AppContext(
@@ -32,6 +45,11 @@ class AppContext(
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
   private val jsiInterop = JSIInteropModuleRegistry(this)
+  internal val moduleQueue = CoroutineScope(
+    newSingleThreadContext("ExpoModulesCoreQueue") +
+      SupervisorJob() +
+      CoroutineName("ExpoModuleCoreCoroutineQueue")
+  )
 
   init {
     requireNotNull(reactContextHolder.get()) {
@@ -159,6 +177,7 @@ class AppContext(
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
     registry.cleanUp()
+    moduleQueue.cancel(ContextDestroyedException())
   }
 
   fun onHostResume() {
