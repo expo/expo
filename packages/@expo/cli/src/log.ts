@@ -14,8 +14,8 @@ export function error(...message: string[]): void {
 
 /** Print an error and provide additional info (the stack trace) in debug mode. */
 export function exception(e: Error): void {
-  const { EXPO_DEBUG } = require('./utils/env');
-  error(chalk.red(e.toString()) + (EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+  const { env } = require('./utils/env');
+  error(chalk.red(e.toString()) + (env.EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
 }
 
 export function warn(...message: string[]): void {
@@ -27,7 +27,7 @@ export function log(...message: string[]): void {
 }
 
 export function debug(...message: any[]): void {
-  if (require('./utils/env').EXPO_DEBUG) console.log(...message);
+  if (require('./utils/env').env.EXPO_DEBUG) console.log(...message);
 }
 
 /** Clear the terminal of all text. */

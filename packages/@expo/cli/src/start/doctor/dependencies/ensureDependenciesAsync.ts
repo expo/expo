@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../../log';
-import { CI, EXPO_DEBUG } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
@@ -18,7 +18,7 @@ export async function ensureDependenciesAsync(
     warningMessage,
     installMessage,
     // Don't prompt in CI
-    skipPrompt = CI,
+    skipPrompt = env.CI,
   }: {
     exp?: ExpoConfig;
     installMessage: string;
@@ -128,7 +128,7 @@ async function installPackagesAsync(
   const packageManager = PackageManager.createForProject(projectRoot, {
     yarn: isYarn,
     log: Log.log,
-    silent: !EXPO_DEBUG,
+    silent: !env.EXPO_DEBUG,
   });
 
   const packagesStr = chalk.bold(packages.join(', '));
