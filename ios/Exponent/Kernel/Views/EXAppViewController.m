@@ -611,7 +611,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
   NSString *appearancePreference = nil;
-  if (!userInterfaceStyle || [userInterfaceStyle isEqualToString:@"light"]) {
+  if ([userInterfaceStyle isEqualToString:@"light"]) {
     appearancePreference = @"light";
   } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
     appearancePreference = @"dark";
@@ -650,7 +650,11 @@ NS_ASSUME_NONNULL_BEGIN
   if ([userInterfaceStyleString isEqualToString:@"automatic"]) {
     return UIUserInterfaceStyleUnspecified;
   }
-  return UIUserInterfaceStyleLight;
+  if ([userInterfaceStyleString isEqualToString:@"light"]) {
+    return UIUserInterfaceStyleLight;
+  }
+
+  return UIUserInterfaceStyleUnspecified;
 }
 
 #pragma mark - root view and window background color
