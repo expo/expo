@@ -8,7 +8,6 @@ import execa from 'execa';
 import {
   execute,
   projectRoot,
-  getRoot,
   getLoadedModulesAsync,
   bin,
   setupTestProjectAsync,
@@ -117,18 +116,16 @@ it(
     // Added expected package
     expect(pkg.dependencies['expo-sms']).toBe('1.0.0');
 
-    await expect(execa('node', [bin, 'install', '--check'], { cwd: projectRoot })).rejects
-      .toThrowErrorMatchingInlineSnapshot(`
-            "Command failed: node /Users/evanbacon/Documents/GitHub/expo/packages/@expo/cli/build/bin/cli install --check
-            Some dependencies are incompatible with the installed expo version:
-              expo-auth-session@1.0.0 - expected version: ~3.5.0
-              expo-sms@1.0.0 - expected version: ~10.1.0
-            Your project may not work correctly until you install the correct versions of the packages.
-            Install individual packages by running npx expo install expo-auth-session@~3.5.0 expo-sms@~10.1.0
-            Found outdated dependencies
-
-            "
-          `);
+    try {
+      await execa('node', [bin, 'install', '--check'], { cwd: projectRoot });
+      throw new Error('SHOULD NOT HAPPEN');
+    } catch (error) {
+      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.5\.0/);
+      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~10\.1\.0/);
+      expect(error.stderr).toMatch(
+        /npx expo install expo-auth-session@~3\.5\.0 expo-sms@~10\.1\.0/
+      );
+    }
 
     await expect(
       execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
