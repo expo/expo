@@ -133,9 +133,10 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
     { name: 'Open', action: WebBrowser.openBrowserAsync },
     {
       name: 'Open and dismiss',
-      action: async (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
-        await WebBrowser.openBrowserAsync(url, openOptions);
-        return WebBrowser.dismissBrowser();
+      action: (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
+        const openBrowserPromise = WebBrowser.openBrowserAsync(url, openOptions);
+        WebBrowser.dismissBrowser();
+        return openBrowserPromise;
       },
     },
     {
