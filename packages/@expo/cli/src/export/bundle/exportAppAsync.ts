@@ -1,13 +1,13 @@
-import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../log';
-import { resolvePlatformOption } from '../prebuild/resolveOptions';
+import * as Log from '../../log';
+import { resolvePlatformOption } from '../../prebuild/resolveOptions';
+import { ensureDirectoryAsync } from '../../utils/dir';
+import { Options } from '../resolveOptions';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
-import { getPublishExpConfigAsync } from './getPublishExpConfig';
+import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
-import { Options } from './resolveOptions';
 import {
   writeAssetMapAsync,
   writeBundlesAsync,
@@ -39,16 +39,15 @@ export async function exportAppAsync(
 ): Promise<void> {
   const platforms = resolvePlatformOption(options.platform, { loose: true });
 
-  const { exp } = await getPublishExpConfigAsync(projectRoot, {});
+  const exp = await getPublicExpoManifestAsync(projectRoot);
 
   const absoluteOutputDir = path.resolve(projectRoot, options.outputDir);
-
   const assetPathToWrite = path.resolve(absoluteOutputDir, 'assets');
   const bundlesPathToWrite = path.resolve(absoluteOutputDir, 'bundles');
 
   await Promise.all([
-    fs.promises.mkdir(assetPathToWrite, { recursive: true }),
-    fs.promises.mkdir(bundlesPathToWrite, { recursive: true }),
+    ensureDirectoryAsync(assetPathToWrite),
+    ensureDirectoryAsync(bundlesPathToWrite),
   ]);
 
   // Run metro bundler and create the JS bundles/source maps.
@@ -99,8 +98,6 @@ export async function exportAppAsync(
     });
   }
 
-  // Skip the hooks and manifest creation if building for EAS.
-
-  // Generate a metadata.json and bail.
+  // Generate a `metadata.json` and the export is complete.
   await writeMetadataJsonAsync({ outputDir: options.outputDir, bundles, fileNames });
 }

@@ -5,6 +5,7 @@ import path from 'path';
 import semver from 'semver';
 
 import * as Log from '../log';
+import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 
 type SelfHostedIndex = ExpoAppManifest & {
@@ -16,7 +17,7 @@ function isSelfHostedIndex(obj: any): obj is SelfHostedIndex {
 }
 
 // put index.jsons into memory
-async function putJsonInMemory(indexPath: string, accumulator: SelfHostedIndex[]) {
+async function putJsonInMemory(indexPath: string) {
   const index = await JsonFile.readAsync(indexPath);
 
   if (!isSelfHostedIndex(index)) {
@@ -27,9 +28,9 @@ async function putJsonInMemory(indexPath: string, accumulator: SelfHostedIndex[]
   }
   if (Array.isArray(index)) {
     // index.json could also be an array
-    accumulator.push(...index);
+    return index;
   } else {
-    accumulator.push(index);
+    return [index];
   }
 }
 
@@ -39,86 +40,83 @@ export async function mergeAppDistributions(
   sourceDirs: string[],
   outputDir: string
 ): Promise<void> {
-  const assetPathToWrite = path.resolve(projectRoot, outputDir, 'assets');
-  await fs.promises.mkdir(assetPathToWrite, { recursive: true });
-  const bundlesPathToWrite = path.resolve(projectRoot, outputDir, 'bundles');
-  await fs.promises.mkdir(bundlesPathToWrite, { recursive: true });
-
-  // merge files from bundles and assets
-  const androidIndexes: SelfHostedIndex[] = [];
-  const iosIndexes: SelfHostedIndex[] = [];
-
-  for (const sourceDir of sourceDirs) {
-    const promises = [];
-
-    // copy over assets/bundles from other src dirs to the output dir
-    if (sourceDir !== outputDir) {
-      // copy file over to assetPath
-      const sourceAssetDir = path.resolve(projectRoot, sourceDir, 'assets');
-      const outputAssetDir = path.resolve(projectRoot, outputDir, 'assets');
-      const assetPromise = fs.copy(sourceAssetDir, outputAssetDir);
-      promises.push(assetPromise);
-
-      // copy files over to bundlePath
-      const sourceBundleDir = path.resolve(projectRoot, sourceDir, 'bundles');
-      const outputBundleDir = path.resolve(projectRoot, outputDir, 'bundles');
-      const bundlePromise = fs.copy(sourceBundleDir, outputBundleDir);
-      promises.push(bundlePromise);
-
-      await Promise.all(promises);
-    }
-
-    const androidIndexPath = path.resolve(projectRoot, sourceDir, 'android-index.json');
-    await putJsonInMemory(androidIndexPath, androidIndexes);
-
-    const iosIndexPath = path.resolve(projectRoot, sourceDir, 'ios-index.json');
-    await putJsonInMemory(iosIndexPath, iosIndexes);
-  }
-
-  // sort indexes by descending sdk value
-  const getSortedIndex = (indexes: SelfHostedIndex[]) => {
-    return indexes.sort((index1: SelfHostedIndex, index2: SelfHostedIndex) => {
-      if (semver.eq(index1.sdkVersion, index2.sdkVersion)) {
-        Log.error(
-          `Encountered multiple index.json with the same SDK version ${index1.sdkVersion}. This could result in undefined behavior.`
-        );
-      }
-      return semver.gte(index1.sdkVersion, index2.sdkVersion) ? -1 : 1;
-    });
-  };
-
-  const sortedAndroidIndexes = getSortedIndex(androidIndexes);
-  const sortedIosIndexes = getSortedIndex(iosIndexes);
-
-  // Save the json arrays to disk
-  await writeArtifactSafelyAsync(
-    projectRoot,
-    null,
-    path.join(outputDir, 'android-index.json'),
-    JSON.stringify(sortedAndroidIndexes)
+  const targetFolders = ['assets', 'bundles'];
+  const platforms = ['ios', 'android'];
+  // Ensure target folders exist
+  await Promise.all(
+    targetFolders.map((name) => ensureDirectoryAsync(path.resolve(projectRoot, outputDir, name)))
   );
 
-  await writeArtifactSafelyAsync(
-    projectRoot,
-    null,
-    path.join(outputDir, 'ios-index.json'),
-    JSON.stringify(sortedIosIndexes)
+  // Copy over platform agnostic `bundles` and `assets` folders.
+  await Promise.all(
+    sourceDirs.map(async (sourceDir) => {
+      // copy over assets/bundles from other src dirs to the output dir
+      if (sourceDir !== outputDir) {
+        await copyFoldersAsync(
+          path.resolve(projectRoot, sourceDir),
+          path.resolve(projectRoot, outputDir),
+          targetFolders
+        );
+      }
+    })
+  );
+
+  // Copy over all platform specific json files, sorted by version.
+  await Promise.all(
+    platforms.map((platform) =>
+      mergePlatformIndexFilesAsync(projectRoot, {
+        fileName: `${platform}-index.json`,
+        sourceDirs,
+        outputDir,
+      })
+    )
   );
 }
 
-export async function writeArtifactSafelyAsync(
+async function copyFoldersAsync(source: string, output: string, names: string[]) {
+  return Promise.all(
+    names.map((name) => copyAsync(path.resolve(source, name), path.resolve(output, name)))
+  );
+}
+
+async function mergePlatformIndexFilesAsync(
   projectRoot: string,
-  keyName: string | null,
+  { fileName, sourceDirs, outputDir }: { fileName: string; sourceDirs: string[]; outputDir: string }
+) {
+  // merge files from bundles and assets
+  const indexes = (
+    await Promise.all(
+      sourceDirs.map((sourceDir) => putJsonInMemory(path.resolve(projectRoot, sourceDir, fileName)))
+    )
+  ).flat();
+
+  // Save the json arrays to disk
+  await writeArtifactSafelyAsync(
+    path.join(projectRoot, outputDir, fileName),
+    JSON.stringify(getSortedIndex(indexes))
+  );
+}
+
+// sort indexes by descending sdk value
+function getSortedIndex(indexes: SelfHostedIndex[]): SelfHostedIndex[] {
+  return indexes.sort((index1: SelfHostedIndex, index2: SelfHostedIndex) => {
+    if (semver.eq(index1.sdkVersion, index2.sdkVersion)) {
+      Log.error(
+        `Encountered multiple index.json with the same SDK version ${index1.sdkVersion}. This could result in undefined behavior.`
+      );
+    }
+    return semver.gte(index1.sdkVersion, index2.sdkVersion) ? -1 : 1;
+  });
+}
+
+// TODO: Remove this unrelated stuff..
+export async function writeArtifactSafelyAsync(
   artifactPath: string,
   artifact: string | Uint8Array
 ) {
-  const pathToWrite = path.resolve(projectRoot, artifactPath);
-  if (!fs.existsSync(path.dirname(pathToWrite))) {
-    const errorMsg = keyName
-      ? `app.json specifies: ${pathToWrite}, but that directory does not exist.`
-      : `app.json specifies ${keyName}: ${pathToWrite}, but that directory does not exist.`;
-    Log.warn(errorMsg);
+  if (fs.existsSync(path.dirname(artifactPath))) {
+    await fs.promises.writeFile(artifactPath, artifact);
   } else {
-    await fs.promises.writeFile(pathToWrite, artifact);
+    Log.warn(`Could not write artifact ${artifactPath} because the directory does not exist.`);
   }
 }

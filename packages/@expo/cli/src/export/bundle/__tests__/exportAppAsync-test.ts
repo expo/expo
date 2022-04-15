@@ -87,7 +87,8 @@ describe(exportAppAsync, () => {
     const { Project } = require('xdl');
 
     Project.prepareHooks = jest.fn();
-    await exportAppAsync('/', outputDir, {
+    await exportAppAsync('/', {
+      outputDir,
       platforms: ['ios'],
       isDev: false,
       dumpAssetmap: true,

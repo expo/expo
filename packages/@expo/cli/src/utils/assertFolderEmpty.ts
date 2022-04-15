@@ -1,8 +1,9 @@
 import chalk from 'chalk';
-import fs from 'fs-extra';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 
 import * as Log from '../log';
+import { removeAsync } from './dir';
 
 // Any of these files are allowed to exist in the projectRoot
 const TOLERABLE_FILES = [
@@ -55,7 +56,7 @@ export async function assertFolderEmptyAsync({
     if (overwrite) {
       Log.log();
       Log.log(`Removing existing files from ${chalk.green(folderName)}`);
-      await Promise.all(conflicts.map((conflict) => fs.remove(path.join(projectRoot, conflict))));
+      await Promise.all(conflicts.map((conflict) => removeAsync(path.join(projectRoot, conflict))));
       return true;
     }
 

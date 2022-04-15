@@ -3,9 +3,9 @@ import { BundleOutput } from '@expo/dev-server';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import * as Log from '../log';
-import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
-import { uniqBy } from '../utils/array';
+import * as Log from '../../log';
+import { resolveGoogleServicesFile } from '../../start/server/middleware/resolveAssets';
+import { uniqBy } from '../../utils/array';
 import { Asset, saveAssetsAsync } from './saveAssets';
 
 type BundlesByPlatform = { android?: BundleOutput; ios?: BundleOutput };
@@ -21,7 +21,6 @@ type ExportAssetsOptions = {
  * Configures exp, preparing it for asset export
  *
  * @modifies {exp}
- *
  */
 async function updateManifestWithAssets(
   projectRoot: string,
@@ -80,9 +79,8 @@ export async function exportAssetsAsync({
     (asset) => asset.hash
   );
 
-  Log.log('Saving assets');
-
   if (assets.length > 0 && assets[0].fileHashes) {
+    Log.log('Saving assets');
     await saveAssetsAsync(projectRoot, assets, outputDir);
   } else {
     Log.log('No assets to upload, skipped.');

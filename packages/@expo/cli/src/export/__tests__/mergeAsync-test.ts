@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { collectMergeSourceUrlsAsync } from '../exportAsync';
+import { downloadSourcesAsync } from '../mergeAsync';
 
 jest.mock('../../utils/tar', () => ({
   async downloadAndDecompressAsync(url: string, destination: string): Promise<string> {
@@ -8,7 +8,7 @@ jest.mock('../../utils/tar', () => ({
   },
 }));
 
-describe(collectMergeSourceUrlsAsync, () => {
+describe(downloadSourcesAsync, () => {
   afterAll(() => {
     vol.reset();
   });
@@ -16,7 +16,7 @@ describe(collectMergeSourceUrlsAsync, () => {
   it(`downloads tar files`, async () => {
     vol.fromJSON({});
 
-    const directories = await collectMergeSourceUrlsAsync(['expo.dev/app.tar.gz']);
+    const directories = await downloadSourcesAsync(['expo.dev/app.tar.gz']);
     expect(directories.length).toBe(1);
     // Ensure the file was downloaded with the expected name
     expect(directories[0]).toMatch(/\/alpha\/\.tmp\/app_/);

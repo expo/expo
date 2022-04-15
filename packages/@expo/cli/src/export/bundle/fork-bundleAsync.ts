@@ -15,7 +15,7 @@ import chalk from 'chalk';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
+import { MetroTerminalReporter } from '../../start/server/metro/MetroTerminalReporter';
 
 export type MetroDevServerOptions = LoadOptions & {
   logger: Log;

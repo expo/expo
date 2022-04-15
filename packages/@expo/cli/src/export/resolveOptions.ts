@@ -3,15 +3,14 @@ import assert from 'assert';
 export type Options = {
   outputDir: string;
   platform: 'all' | 'ios' | 'android';
-
   mergeSrcUrl: string[];
   mergeSrcDir: string[];
+  maxWorkers?: number;
   dev: boolean;
   clear: boolean;
   quiet: boolean;
   dumpAssetmap: boolean;
   dumpSourcemap: boolean;
-  maxWorkers?: number;
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {

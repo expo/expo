@@ -36,7 +36,10 @@ export async function extractAsync(input: string, output: string): Promise<void>
  * @param url remote URL to download.
  * @param destination destination folder to extract the tar to.
  */
-export async function downloadAndDecompressAsync(url: string, destination: string) {
+export async function downloadAndDecompressAsync(
+  url: string,
+  destination: string
+): Promise<string> {
   const bar = new ProgressBar('[:bar] :percent :etas', {
     width: 64,
     total: 100,

@@ -3,12 +3,13 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../log';
+import * as Log from '../../log';
+import { ensureDirectoryAsync } from '../../utils/dir';
 import { createMetadataJson } from './createMetadataJson';
 import { Asset } from './saveAssets';
 
 async function writeAsync(folder: string, fileName: string, contents: any) {
-  await fs.promises.mkdir(folder, { recursive: true });
+  await ensureDirectoryAsync(folder);
   await fs.promises.writeFile(path.join(folder, fileName), contents);
 }
 

@@ -1,9 +1,9 @@
 import { BundleAssetWithFileHashes } from '@expo/dev-server';
-import fs from 'fs-extra';
 import path from 'path';
 
-import * as Log from '../log';
-import { chunk } from '../utils/array';
+import * as Log from '../../log';
+import { chunk } from '../../utils/array';
+import { copyAsync } from '../../utils/dir';
 
 export type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 
@@ -43,7 +43,7 @@ export async function saveAssetsAsync(projectRoot: string, assets: Asset[], outp
       const assetPath = path.resolve(outputDir, 'assets', key);
 
       // copy file over to assetPath
-      promises.push(fs.copy(pathName, assetPath));
+      promises.push(copyAsync(pathName, assetPath));
     }
     await Promise.all(promises);
   }

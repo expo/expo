@@ -4,9 +4,9 @@ import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
 import table from 'text-table';
 
-import * as Log from '../log';
-import { stripAnsi } from '../utils/ansi';
-import { learnMore } from '../utils/link';
+import * as Log from '../../log';
+import { stripAnsi } from '../../utils/ansi';
+import { learnMore } from '../../utils/link';
 
 export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>>) {
   const files: [string, string | Uint8Array][] = [];

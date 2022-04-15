@@ -2,7 +2,7 @@ import { ExpoConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import path from 'path';
 
-import { CommandError } from '../utils/errors';
+import { CommandError } from '../../utils/errors';
 
 type LocaleMap = { [lang: string]: any };
 
