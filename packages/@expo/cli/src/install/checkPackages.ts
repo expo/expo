@@ -7,7 +7,7 @@ import {
   getVersionedDependenciesAsync,
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
-import { CI } from '../utils/env';
+import { env } from '../utils/env';
 import { confirmAsync } from '../utils/prompts';
 import { installPackagesAsync } from './installAsync';
 import { Options } from './resolveOptions';
@@ -59,7 +59,7 @@ export async function checkPackagesAsync(
     // If `--fix` then always fix.
     fix ||
     // Otherwise prompt to fix when not running in CI.
-    (!CI && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
+    (!env.CI && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
 
   if (value) {
     // Just pass in the names, the install function will resolve the versions again.
