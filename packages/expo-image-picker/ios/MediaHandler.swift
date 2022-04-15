@@ -104,7 +104,9 @@ internal struct MediaHandler {
     guard let fileSystem = self.fileSystem else {
       throw FileSystemModuleNotFoundException()
     }
-    let directory = fileSystem.cachesDirectory.appending("ImagePicker")
+    let directory =  fileSystem.cachesDirectory.appending(
+      fileSystem.cachesDirectory.hasSuffix("/") ? "" : "/" + "ImagePicker"
+    );
     let path = fileSystem.generatePath(inDirectory: directory, withExtension: withFileExtension)
     let url = URL(fileURLWithPath: path)
     return url
