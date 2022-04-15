@@ -1,4 +1,5 @@
-import { withGradleProperties, AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
+
 import type { BuildPropertiesPluginConfig } from './BuildPropertiesConfig.types';
 
 const { withBuildGradleProps } = AndroidConfig.BuildProperties;
@@ -12,19 +13,19 @@ export const withAndroidBuildProperties: ConfigPlugin<BuildPropertiesPluginConfi
     configToPropertyRules: [
       {
         propName: 'expo.android.compileSdkVersion',
-        configFields: ['android.compileSdkVersion'],
+        propValueGetter: (config) => config.android?.compileSdkVersion,
       },
       {
         propName: 'expo.android.targetSdkVersion',
-        configFields: ['android.targetSdkVersion'],
+        propValueGetter: (config) => config.android?.targetSdkVersion,
       },
       {
         propName: 'expo.android.buildToolsVersion',
-        configFields: ['android.buildToolsVersion'],
+        propValueGetter: (config) => config.android?.buildToolsVersion,
       },
       {
         propName: 'expo.android.kotlinVersion',
-        configFields: ['android.kotlinVersion'],
+        propValueGetter: (config) => config.android?.kotlinVersion,
       },
     ],
   });
