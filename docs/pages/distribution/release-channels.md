@@ -103,7 +103,23 @@ Environment variables don't exist explicitly, but you can utilize release channe
 
 Say you have a workflow of releasing builds like this:
 
-<TerminalBlock cmd={['# Publish to release channel prod-v1', 'expo publish --release-channel prod-v1', '', '# Publish to release channel prod-v2', 'expo publish --release-channel prod-v2', '', '# Publish to release channel prod-v3', 'expo publish --release-channel prod-v3', '', '', '# Publish to release channel staging-v1', 'expo publish --release-channel staging-v1', '', '# Publish to release channel staging-v2', 'expo publish --release-channel staging-v2']} />  
+<TerminalBlock cmd={[
+  '# Publish to release channel prod-v1',
+  'expo publish --release-channel prod-v1',
+  '',
+  '# Publish to release channel prod-v2',
+  'expo publish --release-channel prod-v2',
+  '',
+  '# Publish to release channel prod-v3',
+  'expo publish --release-channel prod-v3', 
+  '', 
+  '',
+  '# Publish to release channel staging-v1', 
+  'expo publish --release-channel staging-v1',
+  '', 
+  '# Publish to release channel staging-v2',
+  'expo publish --release-channel staging-v2'
+]} />  
 
 You can create a function that looks for the specific release and adjust your app's behaviour accordingly:
 
