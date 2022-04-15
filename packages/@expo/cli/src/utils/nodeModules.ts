@@ -6,7 +6,7 @@ import path from 'path';
 import semver from 'semver';
 
 import * as Log from '../log';
-import { EXPO_DEBUG } from './env';
+import { env } from './env';
 import { SilentError } from './errors';
 import { logNewSection } from './ora';
 
@@ -40,7 +40,7 @@ export async function installNodeDependenciesAsync(
   flags: { silent?: boolean; clean?: boolean } = {}
 ) {
   // Default to silent unless debugging.
-  const isSilent = flags.silent ?? !EXPO_DEBUG;
+  const isSilent = flags.silent ?? !env.EXPO_DEBUG;
   if (flags.clean && packageManager !== 'yarn') {
     // This step can take a couple seconds, if the installation logs are enabled (with EXPO_DEBUG) then it
     // ends up looking odd to see "Installing JavaScript dependencies" for ~5 seconds before the logs start showing up.

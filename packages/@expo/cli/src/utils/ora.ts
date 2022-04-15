@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import oraReal, { Ora } from 'ora';
 
 // import * as Log from '../log';
-import { CI, EXPO_DEBUG } from './env';
+import { env } from './env';
 
 // eslint-disable-next-line no-console
 const logReal = console.log;
@@ -27,7 +27,7 @@ export function getAllSpinners() {
  */
 export function ora(options?: oraReal.Options | string): oraReal.Ora {
   const inputOptions = typeof options === 'string' ? { text: options } : options || {};
-  const disabled = CI || EXPO_DEBUG;
+  const disabled = env.CI || env.EXPO_DEBUG;
   const spinner = oraReal({
     // Ensure our non-interactive mode emulates CI mode.
     isEnabled: !disabled,

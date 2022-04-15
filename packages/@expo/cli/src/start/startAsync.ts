@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEvent } from '../utils/analytics/rudderstackClient';
-import { CI } from '../utils/env';
+import { env } from '../utils/env';
 import { installExitHooks } from '../utils/exit';
 import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
@@ -109,7 +109,7 @@ export async function startAsync(
   await profile(openPlatformsAsync)(devServerManager, options);
 
   // Present the Terminal UI.
-  if (!CI) {
+  if (!env.CI) {
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
     });
@@ -125,7 +125,7 @@ export async function startAsync(
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';
   Log.log(
     chalk`Logs for your project will appear ${logLocation}.${
-      CI ? '' : chalk.dim(` Press Ctrl+C to exit.`)
+      env.CI ? '' : chalk.dim(` Press Ctrl+C to exit.`)
     }`
   );
 }

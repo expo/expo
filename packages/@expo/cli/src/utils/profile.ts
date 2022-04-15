@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import * as Log from '../log';
-import { EXPO_PROFILE } from './env';
+import { env } from './env';
 
 /**
  * Wrap a method and profile the time it takes to execute the method using `EXPO_PROFILE`.
@@ -14,7 +14,7 @@ export function profile<IArgs extends any[], T extends (...args: IArgs) => any>(
   fn: T,
   functionName: string = fn.name
 ): T {
-  if (!EXPO_PROFILE) {
+  if (!env.EXPO_PROFILE) {
     return fn;
   }
 
