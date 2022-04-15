@@ -6,6 +6,10 @@ export interface PluginConfigType {
     targetSdkVersion?: number;
     buildToolsVersion?: string;
     kotlinVersion?: string;
+
+    enableProguardInReleaseBuilds?: boolean;
+    extraProguardRules?: string;
+
     packagingOptions?: {
       pickFirst?: string[];
       exclude?: string[];
@@ -25,6 +29,10 @@ const schema: JSONSchemaType<PluginConfigType> = {
         targetSdkVersion: { type: 'integer', nullable: true },
         buildToolsVersion: { type: 'string', nullable: true },
         kotlinVersion: { type: 'string', nullable: true },
+
+        enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+        extraProguardRules: { type: 'string', nullable: true },
+
         packagingOptions: {
           type: 'object',
           properties: {

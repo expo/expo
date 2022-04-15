@@ -1,4 +1,6 @@
-import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
+import fs from 'fs';
+import path from 'path';
 
 import type { PluginConfigType } from './pluginConfig';
 
@@ -42,4 +44,29 @@ export const withAndroidBuildProperties: ConfigPlugin<PluginConfigType> = (confi
       },
     ],
   });
+};
+
+/**
+ * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
+ */
+export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withDangerousMod(config, [
+    'android',
+    async (config) => {
+      const extraProguardRules = props.android?.extraProguardRules;
+      if (!extraProguardRules) {
+        return config;
+      }
+
+      const proguardRulesFile = path.join(
+        config.modRequest.platformProjectRoot,
+        'app',
+        'proguard-rules.pro'
+      );
+      let contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
+      contents += `\n${extraProguardRules}`;
+      await fs.promises.writeFile(proguardRulesFile, contents);
+      return config;
+    },
+  ]);
 };
