@@ -27,8 +27,7 @@ export function AppJSBanner() {
       <div>
         <HEADLINE css={headlineStyle}>App.js Conf 2022</HEADLINE>
         <CALLOUT css={descriptionStyle}>
-          The first Expo &amp; React Native conference in Europe is back, June 8 - 10 in Kraków,
-          Poland!
+          An Expo &amp; React Native conference in Europe is back, June 8 - 10 in Kraków, Poland!
         </CALLOUT>
       </div>
       <Button size="mini" href="https://appjs.co" openInNewTab css={learnMoreButtonStyle}>
