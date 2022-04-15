@@ -5,6 +5,8 @@ import { updateDevelopmentSessionAsync } from '../../api/updateDevelopmentSessio
 import { getUserAsync } from '../../api/user/user';
 import * as ProjectDevices from '../project/devices';
 
+const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
+
 const UPDATE_FREQUENCY = 20 * 1000; // 20 seconds
 
 async function isAuthenticatedAsync(): Promise<boolean> {
@@ -40,6 +42,7 @@ export class DevelopmentSession {
     runtime: 'native' | 'web';
   }): Promise<void> {
     if (APISettings.isOffline) {
+      debug('Development session will not ping because the server is offline.');
       this.stop();
       return;
     }
@@ -47,11 +50,15 @@ export class DevelopmentSession {
     const deviceIds = await this.getDeviceInstallationIdsAsync();
 
     if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+      debug(
+        'Development session will not ping because the user is not authenticated and there are no devices.'
+      );
       this.stop();
       return;
     }
 
     if (this.url) {
+      debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
       await updateDevelopmentSessionAsync({
         url: this.url,
         runtime,

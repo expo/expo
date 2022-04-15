@@ -14,6 +14,8 @@ import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 
+const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
+
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;
 };
@@ -152,7 +154,7 @@ export abstract class BundlerDevServer {
   public async _startTunnelAsync(): Promise<AsyncNgrok | null> {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
-    Log.debug('[ngrok] connect to port: ' + port);
+    debug('[ngrok] connect to port: ' + port);
     this.ngrok = new AsyncNgrok(this.projectRoot, port);
     await this.ngrok.startAsync();
     return this.ngrok;
@@ -222,11 +224,11 @@ export abstract class BundlerDevServer {
       () =>
         new Promise<void>((resolve, reject) => {
           // Close the server.
-          Log.debug(`Stopping dev server (bundler: ${this.name})`);
+          debug(`Stopping dev server (bundler: ${this.name})`);
 
           if (this.instance?.server) {
             this.instance.server.close((error) => {
-              Log.debug(`Stopped dev server (bundler: ${this.name})`);
+              debug(`Stopped dev server (bundler: ${this.name})`);
               this.instance = null;
               if (error) {
                 reject(error);
@@ -235,7 +237,7 @@ export abstract class BundlerDevServer {
               }
             });
           } else {
-            Log.debug(`Stopped dev server (bundler: ${this.name})`);
+            debug(`Stopped dev server (bundler: ${this.name})`);
             this.instance = null;
             resolve();
           }
@@ -325,6 +327,7 @@ export abstract class BundlerDevServer {
           'Cannot interact with native platforms until dev server has started'
         );
       }
+      debug(`Creating platform manager (platform: ${platform}, port: ${port})`);
       this.platformManagers[platform] = new Manager(this.projectRoot, port, {
         getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
         getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),

@@ -9,6 +9,8 @@ import { EXPO_DEBUG } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
 
+const debug = require('debug')('expo:doctor:externalModule') as typeof console.log;
+
 /** An error that is thrown when a package is installed but doesn't meet the version criteria. */
 export class ExternalModuleVersionError extends CommandError {
   constructor(message: string, public readonly shouldGloballyInstall: boolean) {
@@ -191,7 +193,7 @@ export class ExternalModule<TModule> {
       if (error instanceof CommandError) {
         throw error;
       } else if (error.code !== 'MODULE_NOT_FOUND') {
-        Log.debug('[External Module] Failed to resolve module', error.message);
+        debug('Failed to resolve module', error.message);
       }
     }
     return null;

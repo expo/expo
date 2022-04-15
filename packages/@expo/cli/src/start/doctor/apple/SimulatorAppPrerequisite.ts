@@ -4,6 +4,8 @@ import spawnAsync from '@expo/spawn-async';
 import * as Log from '../../../log';
 import { Prerequisite, PrerequisiteCommandError } from '../Prerequisite';
 
+const debug = require('debug')('expo:doctor:apple:simulatorApp') as typeof console.log;
+
 async function getSimulatorAppIdAsync(): Promise<string | null> {
   try {
     return (await execAsync('id of app "Simulator"')).trim();
@@ -34,6 +36,7 @@ export class SimulatorAppPrerequisite extends Prerequisite {
         "Simulator is installed but is identified as '" + result + "'; don't know what that is."
       );
     }
+    debug(`Simulator app id: ${result}`);
 
     try {
       // make sure we can run simctl

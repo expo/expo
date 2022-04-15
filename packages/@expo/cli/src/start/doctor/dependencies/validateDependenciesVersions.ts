@@ -10,6 +10,8 @@ import { CommandError } from '../../../utils/errors';
 import { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 
+const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
+
 interface IncorrectDependency {
   packageName: string;
   expectedVersionOrRange: string;
@@ -91,24 +93,24 @@ export async function getVersionedDependenciesAsync(
     projectRoot,
     sdkVersion: exp.sdkVersion,
   });
-  Log.debug(`Known dependencies: %O`, combinedKnownPackages);
+  // debug(`Known dependencies: %O`, combinedKnownPackages);
 
   const resolvedDependencies = packagesToCheck?.length
     ? // Diff the provided packages to ensure we only check against installed packages.
       getFilteredObject(packagesToCheck, { ...pkg.dependencies, ...pkg.devDependencies })
     : // If no packages are provided, check against the `package.json` `dependencies` object.
       pkg.dependencies;
-  Log.debug(`Checking dependencies for ${exp.sdkVersion}: %O`, resolvedDependencies);
+  debug(`Checking dependencies for ${exp.sdkVersion}: %O`, resolvedDependencies);
 
   // intersection of packages from package.json and bundled native modules
   const resolvedPackagesToCheck = getPackagesToCheck(resolvedDependencies, combinedKnownPackages);
-  Log.debug(`Comparing known versions: %O`, resolvedPackagesToCheck);
+  debug(`Comparing known versions: %O`, resolvedPackagesToCheck);
   // read package versions from the file system (node_modules)
   const packageVersions = await resolvePackageVersionsAsync(projectRoot, resolvedPackagesToCheck);
-  Log.debug(`Package versions: %O`, packageVersions);
+  debug(`Package versions: %O`, packageVersions);
   // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
   const incorrectDeps = findIncorrectDependencies(packageVersions, combinedKnownPackages);
-  Log.debug(`Incorrect dependencies: %O`, incorrectDeps);
+  debug(`Incorrect dependencies: %O`, incorrectDeps);
 
   return incorrectDeps;
 }

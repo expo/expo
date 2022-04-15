@@ -7,6 +7,8 @@ import { learnMore } from '../../utils/link';
 import { AppIdResolver } from './AppIdResolver';
 import { DeviceManager } from './DeviceManager';
 
+const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
+
 export interface BaseOpenInCustomProps {
   scheme?: string;
   applicationId?: string | null;
@@ -77,6 +79,7 @@ export class PlatformManager<
     props: Partial<IOpenInCustomProps> = {}
   ): Promise<{ url: string }> {
     let url = this.props.getCustomRuntimeUrl({ scheme: props.scheme });
+    debug(`Opening project in custom runtime: ${url} -- %O`, props);
     // TODO: It's unclear why we do application id validation when opening with a URL
     const applicationId = props.applicationId ?? (await this._getAppIdResolver().getAppIdAsync());
 
@@ -122,6 +125,7 @@ export class PlatformManager<
         },
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
+    debug(`Opening project in ${options.runtime}`);
     if (options.runtime === 'expo') {
       return this.openProjectInExpoGoAsync(resolveSettings);
     } else if (options.runtime === 'web') {

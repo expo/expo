@@ -23,6 +23,8 @@ import {
 } from './resolveFromProject';
 import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
+const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
+
 type AnyCompiler = webpack.Compiler | webpack.MultiCompiler;
 
 export type WebpackConfiguration = webpack.Configuration & {
@@ -190,14 +192,14 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       }
     );
 
-    Log.debug('Starting webpack on port: ' + port);
+    debug('Starting webpack on port: ' + port);
 
     if (resetDevServer) {
       await clearWebProjectCacheAsync(this.projectRoot, mode);
     }
 
     if (https) {
-      Log.debug('Configuring TLS to enable HTTPS support');
+      debug('Configuring TLS to enable HTTPS support');
       await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
         Log.error(`Error creating TLS certificates: ${error}`);
       });

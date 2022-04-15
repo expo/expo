@@ -12,6 +12,8 @@ import { logNewSection } from './ora';
 
 export type PackageManagerName = 'npm' | 'yarn';
 
+const debug = require('debug')('expo:utils:nodeModules') as typeof console.log;
+
 export function resolvePackageManager(options: {
   yarn?: boolean;
   npm?: boolean;
@@ -29,6 +31,8 @@ export function resolvePackageManager(options: {
         ? `🧶 Using Yarn to install packages. ${chalk.dim('Pass --npm to use npm instead.')}`
         : '📦 Using npm to install packages.'
     );
+  } else {
+    debug(`Using ${packageManager} to install packages.`);
   }
 
   return packageManager;

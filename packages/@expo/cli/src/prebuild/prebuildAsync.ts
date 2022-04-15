@@ -1,7 +1,6 @@
 import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 
-import * as Log from '../log';
 import { installNodeDependenciesAsync, resolvePackageManager } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -10,6 +9,8 @@ import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
+
+const debug = require('debug')('expo:prebuild') as typeof console.log;
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -120,7 +121,7 @@ export async function prebuildAsync(
 
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {
-    Log.debug('Skipped pod install');
+    debug('Skipped pod install');
   }
 
   return {

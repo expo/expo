@@ -12,6 +12,8 @@ import { KeyPressHandler } from './KeyPressHandler';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 
+const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
+
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const CTRL_L = '\u000C';
@@ -148,14 +150,14 @@ export async function startInterfaceAsync(
 
         const isDisabled = !platforms.includes('web');
         if (isDisabled) {
-          Log.debug('Web is disabled');
+          debug('Web is disabled');
           // Use warnings from the web support setup.
           break;
         }
 
         // Ensure the Webpack dev server is running first
         if (!devServerManager.getWebDevServer()) {
-          Log.debug('Starting up webpack dev server');
+          debug('Starting up webpack dev server');
           await devServerManager.ensureWebDevServerRunningAsync();
           // When this is the first time webpack is started, reprint the connection info.
           actions.printDevServerInfo(usageOptions);

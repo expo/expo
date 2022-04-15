@@ -12,6 +12,8 @@ import { confirmAsync } from '../utils/prompts';
 import { installPackagesAsync } from './installAsync';
 import { Options } from './resolveOptions';
 
+const debug = require('debug')('expo:install:check') as typeof console.log;
+
 // Exposed for testing.
 export async function checkPackagesAsync(
   projectRoot: string,
@@ -62,7 +64,7 @@ export async function checkPackagesAsync(
   if (value) {
     // Just pass in the names, the install function will resolve the versions again.
     const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
-    Log.debug('Installing fixed dependencies:', fixedDependencies);
+    debug('Installing fixed dependencies:', fixedDependencies);
     // Install the corrected dependencies.
     return installPackagesAsync(projectRoot, {
       packageManager,

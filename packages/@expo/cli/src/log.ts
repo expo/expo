@@ -26,6 +26,7 @@ export function log(...message: string[]): void {
   console.log(...message);
 }
 
+/** @deprecated use `debug` package with the `expo:` prefix instead.  */
 export function debug(...message: any[]): void {
   if (require('./utils/env').EXPO_DEBUG) console.log(...message);
 }

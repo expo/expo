@@ -3,10 +3,11 @@ import path from 'path';
 import ProgressBar from 'progress';
 
 import { getVersionsAsync } from '../api/getVersions';
-import * as Log from '../log';
 import { downloadAppAsync } from './downloadAppAsync';
 import { profile } from './profile';
 import { setProgressBar } from './progress';
+
+const debug = require('debug')('expo:utils:downloadExpoGo') as typeof console.log;
 
 const platformSettings: Record<
   string,
@@ -60,8 +61,8 @@ export async function downloadExpoGoAsync(
 
   try {
     const outputPath = getFilePath(filename);
-    Log.debug(`Downloading Expo Go from "${url}" to "${outputPath}".`);
-    Log.debug(
+    debug(`Downloading Expo Go from "${url}" to "${outputPath}".`);
+    debug(
       `The requested copy of Expo Go might already be cached in: "${getExpoHomeDirectory()}". You can disable the cache with EXPO_NO_CACHE=1`
     );
     await profile(downloadAppAsync)({
