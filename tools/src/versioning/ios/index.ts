@@ -49,6 +49,10 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'RCT-Folly',
 ];
 
+const EXCLUDED_POD_DEPENDENCIES = [
+  'ExpoModulesTestCore'
+];
+
 /**
  *  Transform and rename the given react native source code files.
  *  @param filenames list of files to transform
@@ -437,7 +441,11 @@ async function generateExpoKitPodspecAsync(
     // `universalModulesPodNames` contains only versioned unimodules,
     // so we fall back to the original name if the module is not there
     const universalModulesDependencies = (await getListOfPackagesAsync())
-      .filter((pkg) => pkg.isIncludedInExpoClientOnPlatform('ios') && pkg.podspecName)
+      .filter((pkg) =>
+        pkg.isIncludedInExpoClientOnPlatform('ios') &&
+        pkg.podspecName &&
+        !EXCLUDED_POD_DEPENDENCIES.includes(pkg.podspecName)
+      )
       .map(
         ({ podspecName }) =>
           `ss.dependency         "${universalModulesPodNames[podspecName!] || podspecName}"`
