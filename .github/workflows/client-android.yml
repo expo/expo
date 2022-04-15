@@ -152,6 +152,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
       - name: 📤 Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
