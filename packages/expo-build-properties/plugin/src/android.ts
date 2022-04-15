@@ -9,19 +9,19 @@ export const withAndroidBuildProperties: ConfigPlugin<PluginConfigType> = (confi
     sourceConfig: props,
     configToPropertyRules: [
       {
-        propName: 'expo.android.compileSdkVersion',
+        propName: 'android.compileSdkVersion',
         propValueGetter: (config) => config.android?.compileSdkVersion?.toString(),
       },
       {
-        propName: 'expo.android.targetSdkVersion',
+        propName: 'android.targetSdkVersion',
         propValueGetter: (config) => config.android?.targetSdkVersion?.toString(),
       },
       {
-        propName: 'expo.android.buildToolsVersion',
+        propName: 'android.buildToolsVersion',
         propValueGetter: (config) => config.android?.buildToolsVersion,
       },
       {
-        propName: 'expo.android.kotlinVersion',
+        propName: 'android.kotlinVersion',
         propValueGetter: (config) => config.android?.kotlinVersion,
       },
       {
