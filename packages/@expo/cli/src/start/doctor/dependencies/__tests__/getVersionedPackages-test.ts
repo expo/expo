@@ -1,5 +1,5 @@
 import { getReleasedVersionsAsync } from '../../../../api/getVersions';
-import { getBundledNativeModulesAsync } from '../bundledNativeModules';
+import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
 import {
   getOperationLog,
   getRemoteVersionsForSdkAsync,
@@ -15,12 +15,12 @@ jest.mock('../../../../api/getVersions', () => ({
 }));
 
 jest.mock('../bundledNativeModules', () => ({
-  getBundledNativeModulesAsync: jest.fn(),
+  getVersionedNativeModulesAsync: jest.fn(),
 }));
 
 describe(getVersionedPackagesAsync, () => {
   it('should return versioned packages', async () => {
-    asMock(getBundledNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
     asMock(getReleasedVersionsAsync).mockResolvedValueOnce({
       '1.0.0': {
         relatedPackages: {

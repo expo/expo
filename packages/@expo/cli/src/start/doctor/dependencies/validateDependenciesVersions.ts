@@ -10,6 +10,12 @@ import { CommandError } from '../../../utils/errors';
 import { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 
+interface IncorrectDependency {
+  packageName: string;
+  expectedVersionOrRange: string;
+  actualVersion: string;
+}
+
 /**
  * Print a list of incorrect dependency versions.
  *
@@ -29,30 +35,36 @@ export async function validateDependenciesVersionsAsync(
   return logIncorrectDependencies(incorrectDeps);
 }
 
+function logInvalidDependency({
+  packageName,
+  expectedVersionOrRange,
+  actualVersion,
+}: IncorrectDependency) {
+  Log.warn(
+    // chalk` - {underline ${packageName}} - expected version: {underline ${expectedVersionOrRange}} - actual version installed: {underline ${actualVersion}}`
+    chalk`  {bold ${packageName}}{cyan @}{red ${actualVersion}} - expected version: {green ${expectedVersionOrRange}}`
+  );
+}
+
 export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
-  if (incorrectDeps.length > 0) {
-    Log.warn('Some dependencies are incompatible with the installed expo package version:');
-    incorrectDeps.forEach(({ packageName, expectedVersionOrRange, actualVersion }) => {
-      Log.warn(
-        ` - ${chalk.underline(packageName)} - expected version: ${chalk.underline(
-          expectedVersionOrRange
-        )} - actual version installed: ${chalk.underline(actualVersion)}`
-      );
-    });
-
-    const requiredVersions = incorrectDeps.map(
-      ({ packageName, expectedVersionOrRange }) => `${packageName}@${expectedVersionOrRange}`
-    );
-
-    Log.warn(
-      'Your project may not work correctly until you install the correct versions of the packages.\n' +
-        chalk`Install individual packages by running {inverse npx expo install ${requiredVersions.join(
-          ' '
-        )}}`
-    );
-    return false;
+  if (!incorrectDeps.length) {
+    return true;
   }
-  return true;
+
+  Log.warn(chalk`Some dependencies are incompatible with the installed {bold expo} version:`);
+  incorrectDeps.forEach((dep) => logInvalidDependency(dep));
+
+  const requiredVersions = incorrectDeps.map(
+    ({ packageName, expectedVersionOrRange }) => `${packageName}@${expectedVersionOrRange}`
+  );
+
+  Log.warn(
+    'Your project may not work correctly until you install the correct versions of the packages.\n' +
+      chalk`Install individual packages by running {inverse npx expo install ${requiredVersions.join(
+        ' '
+      )}}`
+  );
+  return false;
 }
 
 /**
@@ -153,12 +165,6 @@ async function getPackageVersionAsync(projectRoot: string, packageName: string):
   }
   const packageJson = await JsonFile.readAsync<BundledNativeModules>(packageJsonPath);
   return packageJson.version;
-}
-
-interface IncorrectDependency {
-  packageName: string;
-  expectedVersionOrRange: string;
-  actualVersion: string;
 }
 
 function findIncorrectDependencies(

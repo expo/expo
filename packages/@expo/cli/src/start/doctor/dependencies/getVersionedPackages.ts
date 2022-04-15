@@ -27,6 +27,7 @@ function normalizeSdkVersionObject(version?: SDKVersion): Record<string, string>
   };
 }
 
+/** Get the known versions for a given SDK, combines all sources. */
 export async function getCombinedKnownVersionsAsync({
   projectRoot,
   sdkVersion,
