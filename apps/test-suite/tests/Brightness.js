@@ -80,12 +80,12 @@ export async function test(t) {
     });
 
     if (Platform.OS === 'ios') {
-      describe(`Event listeners`, () => {
-        it(`addBrightnessListener() registers`, () => {
+      t.describe(`Event listeners`, () => {
+        t.it(`addBrightnessListener() registers`, () => {
           const listener = Brightness.addBrightnessListener(({ brightness }) => {
             console.log('brightness changed!', brightness);
           });
-          expect(listener).toBeDefined();
+          t.expect(listener).toBeDefined();
           listener.remove();
         });
       });
