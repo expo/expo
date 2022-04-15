@@ -9,7 +9,7 @@ import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 
 import * as Log from '../../../log';
-import { WEB_HOST } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getIpAddress } from '../../../utils/ip';
 import { choosePortAsync } from '../../../utils/port';
@@ -157,7 +157,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       const defaultPort = options?.defaultPort ?? 19006;
       const port = await choosePortAsync(this.projectRoot, {
         defaultPort,
-        host: WEB_HOST,
+        host: env.WEB_HOST,
       });
       if (!port) {
         throw new CommandError('NO_PORT_FOUND', `Port ${defaultPort} not available.`);
@@ -243,7 +243,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       config.devServer
     );
     // Launch WebpackDevServer.
-    server.listen(port, WEB_HOST, function (this: http.Server, error) {
+    server.listen(port, env.WEB_HOST, function (this: http.Server, error) {
       if (nativeMiddleware) {
         attachNativeDevServerMiddlewareToDevServer({
           server: this,

@@ -5,7 +5,7 @@ import semver from 'semver';
 
 import * as Log from '../../../log';
 import { delayAsync } from '../../../utils/delay';
-import { EXPO_DEBUG } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
 
@@ -108,10 +108,10 @@ export class ExternalModule<TModule> {
         ? new PackageManager.NpmPackageManager({
             cwd: this.projectRoot,
             log: Log.log,
-            silent: !EXPO_DEBUG,
+            silent: !env.EXPO_DEBUG,
           })
         : PackageManager.createForProject(this.projectRoot, {
-            silent: !EXPO_DEBUG,
+            silent: !env.EXPO_DEBUG,
           });
 
       try {
