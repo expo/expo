@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { readFileSync } from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
@@ -124,7 +124,7 @@ async function mountDeveloperDiskImage(clientManager: ClientManager) {
     const developerDiskImagePath = await XcodeDeveloperDiskImagePrerequisite.instance.assertAsync({
       version,
     });
-    const developerDiskImageSig = readFileSync(`${developerDiskImagePath}.signature`);
+    const developerDiskImageSig = fs.readFileSync(`${developerDiskImagePath}.signature`);
     await imageMounter.uploadImage(developerDiskImagePath, developerDiskImageSig);
     await imageMounter.mountImage(developerDiskImagePath, developerDiskImageSig);
   }

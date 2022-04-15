@@ -35,6 +35,10 @@ export const WEB_HOST = string('WEB_HOST', '0.0.0.0');
 // TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
 
 class Env {
+  /** Is running in non-interactive CI mode */
+  get CI() {
+    return boolish('CI', false);
+  }
   /** Disable auto web setup */
   get EXPO_NO_WEB_SETUP() {
     return boolish('EXPO_NO_WEB_SETUP', false);

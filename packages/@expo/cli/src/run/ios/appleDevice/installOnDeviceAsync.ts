@@ -4,7 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import { ensureDirectory } from '../../../utils/dir';
-import { CI } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { ora } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
@@ -59,15 +59,15 @@ export async function installOnDeviceAsync(props: {
         }
       },
     });
-  } catch (err: any) {
+  } catch (error: any) {
     if (indicator) {
       indicator.fail();
     }
-    if (err.code === 'APPLE_DEVICE_LOCKED') {
+    if (error.code === 'APPLE_DEVICE_LOCKED') {
       // Get the app name from the binary path.
       const appName = path.basename(bundle).split('.')[0] ?? 'app';
       if (
-        !CI &&
+        !env.CI &&
         (await confirmAsync({
           message: `Cannot launch ${appName} because the device is locked. Unlock ${deviceName} to continue...`,
           initial: true,
@@ -79,6 +79,6 @@ export async function installOnDeviceAsync(props: {
         `Cannot launch ${appName} on ${deviceName} because the device is locked.`
       );
     }
-    throw err;
+    throw error;
   }
 }
