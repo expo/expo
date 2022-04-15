@@ -129,14 +129,14 @@ public class GoogleSignInModule extends ExportedModule {
         scopes.put("DRIVE_APPFOLDER", Scopes.DRIVE_APPFOLDER);
         scopes.put("DRIVE_FULL", Scopes.DRIVE_FULL);
         scopes.put("DRIVE_APPS", Scopes.DRIVE_APPS);
-        scopes.put("FITNESS_ACTIVITY_READ", Fitness.SCOPE_ACTIVITY_READ);
-        scopes.put("FITNESS_ACTIVITY_READ_WRITE", Fitness.SCOPE_ACTIVITY_READ_WRITE);
-        scopes.put("FITNESS_LOCATION_READ", Fitness.SCOPE_LOCATION_READ);
-        scopes.put("FITNESS_LOCATION_READ_WRITE", Fitness.SCOPE_LOCATION_READ_WRITE);
-        scopes.put("FITNESS_BODY_READ", Fitness.SCOPE_BODY_READ);
-        scopes.put("FITNESS_BODY_READ_WRITE", Fitness.SCOPE_BODY_READ_WRITE);
-        scopes.put("FITNESS_NUTRITION_READ", Fitness.SCOPE_NUTRITION_READ);
-        scopes.put("FITNESS_NUTRITION_READ_WRITE", Fitness.SCOPE_NUTRITION_READ_WRITE);
+        scopes.put("FITNESS_ACTIVITY_READ", Fitness.SCOPE_ACTIVITY_READ.getScopeUri());
+        scopes.put("FITNESS_ACTIVITY_READ_WRITE", Fitness.SCOPE_ACTIVITY_READ_WRITE.getScopeUri());
+        scopes.put("FITNESS_LOCATION_READ", Fitness.SCOPE_LOCATION_READ.getScopeUri());
+        scopes.put("FITNESS_LOCATION_READ_WRITE", Fitness.SCOPE_LOCATION_READ_WRITE.getScopeUri());
+        scopes.put("FITNESS_BODY_READ", Fitness.SCOPE_BODY_READ.getScopeUri());
+        scopes.put("FITNESS_BODY_READ_WRITE", Fitness.SCOPE_BODY_READ_WRITE.getScopeUri());
+        scopes.put("FITNESS_NUTRITION_READ", Fitness.SCOPE_NUTRITION_READ.getScopeUri());
+        scopes.put("FITNESS_NUTRITION_READ_WRITE", Fitness.SCOPE_NUTRITION_READ_WRITE.getScopeUri());
 
         // Below constants are no longer available in any google play services library
         // For every available scope see https://developers.google.com/identity/protocols/oauth2/scopes#fitness
