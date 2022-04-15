@@ -119,7 +119,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           {projects?.length ? (
             <View bg="default" rounded="large" border="default" overflow="hidden">
               {projects.map((project, i) => (
-                <React.Fragment key={project.description + project.url}>
+                <React.Fragment key={`${project.description}${project.url}`}>
                   <DevelopmentServerListItem
                     url={project.url}
                     image={
