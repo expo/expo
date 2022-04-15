@@ -5,8 +5,8 @@ import dedent from 'dedent';
 import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 
+import { FlatList } from '../../components/FlatList';
 import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
 import { BranchDetailsQuery } from '../../graphql/types';

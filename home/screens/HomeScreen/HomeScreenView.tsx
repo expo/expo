@@ -3,14 +3,20 @@ import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import { View, Divider, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Alert, AppState, NativeEventSubscription, Platform, StyleSheet } from 'react-native';
+import {
+  Alert,
+  AppState,
+  NativeEventSubscription,
+  Platform,
+  StyleSheet,
+  RefreshControl,
+} from 'react-native';
 
 import FeatureFlags from '../../FeatureFlags';
 import ApiV2HttpClient from '../../api/ApiV2HttpClient';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
-import RefreshControl from '../../components/RefreshControl';
 import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import {
@@ -105,6 +111,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
           }
+          bounces
           key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
           style={styles.container}
           contentContainerStyle={[styles.contentContainer]}>
@@ -244,6 +251,8 @@ export class HomeScreenView extends React.Component<Props, State> {
               resolve(undefined);
             }),
       ]);
+
+      console.log({ projects });
 
       this.setState({ projects, data: graphQLResponse?.data.account.byName });
     } catch (e) {
