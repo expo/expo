@@ -1,7 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
-import { CreateURLOptions } from 'expo-linking';
-import { resolveScheme } from 'expo-linking/build/Schemes';
 import { Platform } from 'expo-modules-core';
 import qs, { ParsedQs } from 'qs';
 
@@ -9,7 +7,10 @@ export class SessionUrlProvider {
   private static readonly BASE_URL = `https://auth.expo.io`;
   private static readonly SESSION_PATH = 'expo-auth-session';
 
-  getDefaultReturnUrl(urlPath?: string, options?: Omit<CreateURLOptions, 'queryParams'>): string {
+  getDefaultReturnUrl(
+    urlPath?: string,
+    options?: Omit<Linking.CreateURLOptions, 'queryParams'>
+  ): string {
     const queryParams = SessionUrlProvider.getHostAddressQueryParams();
     let path = SessionUrlProvider.SESSION_PATH;
     if (urlPath) {
@@ -18,7 +19,7 @@ export class SessionUrlProvider {
 
     return Linking.createURL(path, {
       // The redirect URL doesn't matter for the proxy as long as it's valid, so silence warnings if needed.
-      scheme: options?.scheme ?? resolveScheme({ isSilent: true }),
+      scheme: options?.scheme ?? Linking.resolveScheme({ isSilent: true }),
       queryParams,
       isTripleSlashed: options?.isTripleSlashed,
     });
@@ -81,7 +82,8 @@ export class SessionUrlProvider {
       Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
     if (
       !hostUri &&
-      (ExecutionEnvironment.StoreClient === Constants.executionEnvironment || resolveScheme({}))
+      (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||
+        Linking.resolveScheme({}))
     ) {
       if (!Constants.linkingUri) {
         hostUri = '';

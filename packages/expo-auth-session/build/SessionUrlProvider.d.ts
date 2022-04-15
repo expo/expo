@@ -1,8 +1,8 @@
-import { CreateURLOptions } from 'expo-linking';
+import * as Linking from 'expo-linking';
 export declare class SessionUrlProvider {
     private static readonly BASE_URL;
     private static readonly SESSION_PATH;
-    getDefaultReturnUrl(urlPath?: string, options?: Omit<CreateURLOptions, 'queryParams'>): string;
+    getDefaultReturnUrl(urlPath?: string, options?: Omit<Linking.CreateURLOptions, 'queryParams'>): string;
     getStartUrl(authUrl: string, returnUrl: string): string;
     getRedirectUrl(urlPath?: string): string;
     private static getHostAddressQueryParams;

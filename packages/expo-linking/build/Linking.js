@@ -335,4 +335,5 @@ export function useURL() {
     return url;
 }
 export * from './Linking.types';
+export * from './Schemes';
 //# sourceMappingURL=Linking.js.map
