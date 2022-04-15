@@ -29,43 +29,22 @@ export async function installAsync(
     log: Log.log,
   });
 
+  if (options.check || options.fix) {
+    return await checkOrFixAsync(
+      projectRoot,
+      packages,
+      options,
+      packageManager,
+      packageManagerArguments
+    );
+  }
+
   // Read the project Expo config without plugins.
-  const { exp, pkg } = getConfig(projectRoot, {
+  const { exp } = getConfig(projectRoot, {
     // Sometimes users will add a plugin to the config before installing the library,
     // this wouldn't work unless we dangerously disable plugin serialization.
     skipPlugins: true,
   });
-
-  if (options.check || options.fix) {
-    const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
-
-    if (!dependencies.length) {
-      Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
-    } else {
-      logIncorrectDependencies(dependencies);
-
-      const value =
-        // If `--fix` then always fix.
-        options.fix ||
-        // Otherwise prompt to fix when not running in CI.
-        (!CI && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
-
-      if (value) {
-        // Just pass in the names, the install function will resolve the versions again.
-        const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
-        Log.debug('Installing fixed dependencies:', fixedDependencies);
-        // Install the corrected dependencies.
-        return installPackagesAsync(projectRoot, {
-          packageManager,
-          packages: fixedDependencies,
-          packageManagerArguments,
-          sdkVersion: exp.sdkVersion!,
-        });
-      }
-      // Exit with non-zero exit code if any of the dependencies are out of date.
-      Log.exit(chalk.red('Found outdated dependencies'), 1);
-    }
-  }
 
   // Resolve the versioned packages, then install them.
   return installPackagesAsync(projectRoot, {
@@ -74,6 +53,51 @@ export async function installAsync(
     packageManagerArguments,
     sdkVersion: exp.sdkVersion!,
   });
+}
+
+// Exposed for testing.
+export async function checkOrFixAsync(
+  projectRoot: string,
+  packages: string[],
+  { fix }: Pick<Options, 'fix'>,
+  packageManager: PackageManager.NpmPackageManager | PackageManager.YarnPackageManager,
+  packageManagerArguments: string[]
+) {
+  // Read the project Expo config without plugins.
+  const { exp, pkg } = getConfig(projectRoot, {
+    // Sometimes users will add a plugin to the config before installing the library,
+    // this wouldn't work unless we dangerously disable plugin serialization.
+    skipPlugins: true,
+  });
+
+  const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
+
+  if (!dependencies.length) {
+    Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
+  }
+
+  logIncorrectDependencies(dependencies);
+
+  const value =
+    // If `--fix` then always fix.
+    fix ||
+    // Otherwise prompt to fix when not running in CI.
+    (!CI && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
+
+  if (value) {
+    // Just pass in the names, the install function will resolve the versions again.
+    const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
+    Log.debug('Installing fixed dependencies:', fixedDependencies);
+    // Install the corrected dependencies.
+    return installPackagesAsync(projectRoot, {
+      packageManager,
+      packages: fixedDependencies,
+      packageManagerArguments,
+      sdkVersion: exp.sdkVersion!,
+    });
+  }
+  // Exit with non-zero exit code if any of the dependencies are out of date.
+  Log.exit(chalk.red('Found outdated dependencies'), 1);
 }
 
 /** Version packages and install in a project. */
