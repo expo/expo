@@ -7,7 +7,12 @@ const { withBuildPodfileProps } = IOSConfig.BuildProperties;
 export const withIosBuildProperties: ConfigPlugin<PluginConfigType> = (config, props) => {
   return withBuildPodfileProps(config, {
     sourceConfig: props,
-    configToPropertyRules: [],
+    configToPropertyRules: [
+      {
+        propName: 'ios.useFrameworks',
+        propValueGetter: (config) => config.ios?.useFrameworks,
+      },
+    ],
   });
 };
 

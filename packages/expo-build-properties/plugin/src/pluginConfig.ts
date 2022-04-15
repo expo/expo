@@ -19,6 +19,7 @@ export interface PluginConfigType {
   };
   ios?: {
     deploymentTarget?: string;
+    useFrameworks?: 'static' | 'dynamic';
   };
 }
 
@@ -53,6 +54,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
       type: 'object',
       properties: {
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
+        useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
       },
       nullable: true,
     },
