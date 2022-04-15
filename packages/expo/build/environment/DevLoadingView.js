@@ -45,11 +45,11 @@ export default function DevLoadingView() {
                 }
             });
         }
-        emitter.addListener('devLoadingView:showMessage', handleShowMessage);
-        emitter.addListener('devLoadingView:hide', handleHide);
+        const showMessageSubscription = emitter.addListener('devLoadingView:showMessage', handleShowMessage);
+        const hideSubscription = emitter.addListener('devLoadingView:hide', handleHide);
         return function cleanup() {
-            emitter.removeListener('devLoadingView:showMessage', handleShowMessage);
-            emitter.removeListener('devLoadingView:hide', handleHide);
+            showMessageSubscription.remove();
+            hideSubscription.remove();
         };
     }, [translateY, emitter]);
     if (isDevLoading || isAnimating) {
