@@ -119,6 +119,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
       - name: 💾 Save test results
         if: always()
@@ -132,6 +133,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
