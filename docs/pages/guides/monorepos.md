@@ -117,7 +117,7 @@ registerRootComponent(App);
 
 Monorepos can help us group code in a single repository. That includes apps but also separate packages. They also don't need to be published. The [Expo repository](https://github.com/expo/expo) uses this as well. All the Expo SDK packages live inside the [**packages/**](https://github.com/expo/expo/tree/main/packages) folder in our repo. It helps us test the code inside one of our [**apps/**](https://github.com/expo/expo/tree/main/apps/native-component-list) before we publish them.
 
-Let's go back to the root and create the **package/** folder. This folder can contain all the separate packages that you want to make. Once you are inside this folder, we need to add a new subfolder. The subfolder is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
+Let's go back to the root and create the **packages/** folder. This folder can contain all the separate packages that you want to make. Once you are inside this folder, we need to add a new subfolder. The subfolder is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
 
 <TerminalBlock cmd={[
