@@ -61,12 +61,6 @@ const backgroundStyle = css({
   left: -4,
 });
 
-const buttonContainerStyle = css({
-  display: 'flex',
-  alignItems: 'center',
-  gap: spacing[3],
-});
-
 const headlineStyle = css({
   position: 'relative',
   color: theme.palette.white,
@@ -81,14 +75,4 @@ const descriptionStyle = css({
 const learnMoreButtonStyle = css({
   backgroundColor: theme.palette.white,
   color: '#0019C1',
-});
-
-const hideButtonStyle = css({
-  backgroundColor: '#0019C1',
-  color: theme.palette.white,
-
-  ':hover': {
-    boxShadow: 'none',
-    backgroundColor: '#2945FF',
-  },
 });
