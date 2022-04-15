@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   web:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3

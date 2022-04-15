@@ -32,7 +32,7 @@ concurrency:
 
 jobs:
   android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       UPDATES_PORT: 4747
     steps:

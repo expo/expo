@@ -9,7 +9,7 @@ on:
 
 jobs:
   comment:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout a ref for the event
         uses: actions/checkout@v3
