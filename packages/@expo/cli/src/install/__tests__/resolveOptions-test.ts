@@ -52,17 +52,21 @@ describe(resolveArgsAsync, () => {
       options: {
         npm: false,
         yarn: true,
+        check: false,
+        fix: false,
       },
       extras: ['--npm', '-g', 'not-a-plugin'],
     });
   });
   it(`allows known values without correct chaining`, async () => {
-    const result = await resolveArgsAsync(['expo', '--npm', '--']);
+    const result = await resolveArgsAsync(['expo', '--npm', '--check', '--']);
     expect(result).toEqual({
       variadic: ['expo'],
       options: {
         npm: true,
         yarn: false,
+        check: true,
+        fix: false,
       },
       extras: [],
     });

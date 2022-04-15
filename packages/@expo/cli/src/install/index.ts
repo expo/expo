@@ -30,6 +30,8 @@ export const expoInstall: Command = async (argv) => {
     $ npx expo install {dim [packages...] [options]}
 
   {bold Options}
+    --check     Check which installed packages need to be updated.
+    --fix       Automatically update any invalid package versions.
     --npm       Use npm to install dependencies. {dim Default when package-lock.json exists}
     --yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}
     -h, --help  Output usage information

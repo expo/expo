@@ -2,31 +2,16 @@ import npmPackageArg from 'npm-package-arg';
 
 import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import * as Log from '../../../log';
-import { getBundledNativeModulesAsync } from './bundledNativeModules';
+import { getVersionedNativeModulesAsync } from './bundledNativeModules';
 
 export type DependencyList = Record<string, string>;
 
-export async function getRemoteVersionsForSdkAsync(sdkVersion?: string): Promise<DependencyList> {
-  const sdkVersions = await getReleasedVersionsAsync({ skipCache: true });
-
-  // We only want versioned dependencies so skip if they cannot be found.
-  if (!sdkVersion || !(sdkVersion in sdkVersions)) {
-    Log.debug(
-      `Skipping versioned dependencies because the SDK version is not found. (sdkVersion: ${sdkVersion}, available: ${Object.keys(
-        sdkVersions
-      ).join(', ')})`
-    );
-    return {};
-  }
-
-  const version = sdkVersions[sdkVersion as keyof typeof sdkVersions] as unknown as SDKVersion;
-
+/** Adds `react-dom`, `react`, and `react-native` to the list of known package versions (`relatedPackages`) */
+function normalizeSdkVersionObject(version?: SDKVersion): Record<string, string> {
   if (!version) {
     return {};
   }
-
-  const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } =
-    version as SDKVersion;
+  const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } = version;
 
   const reactVersion = facebookReactVersion
     ? {
@@ -40,6 +25,48 @@ export async function getRemoteVersionsForSdkAsync(sdkVersion?: string): Promise
     ...reactVersion,
     'react-native': facebookReactNativeVersion,
   };
+}
+
+/** Get the known versions for a given SDK, combines all sources. */
+export async function getCombinedKnownVersionsAsync({
+  projectRoot,
+  sdkVersion,
+  skipCache,
+}: {
+  projectRoot: string;
+  sdkVersion?: string;
+  skipCache?: boolean;
+}) {
+  const bundledNativeModules = sdkVersion
+    ? await getVersionedNativeModulesAsync(projectRoot, sdkVersion)
+    : {};
+  const versionsForSdk = await getRemoteVersionsForSdkAsync({ sdkVersion, skipCache });
+  return {
+    ...versionsForSdk,
+    ...bundledNativeModules,
+  };
+}
+
+/** @returns a key/value list of known dependencies and their version (including range). */
+export async function getRemoteVersionsForSdkAsync({
+  sdkVersion,
+  skipCache,
+}: { sdkVersion?: string; skipCache?: boolean } = {}): Promise<DependencyList> {
+  const sdkVersions = await getReleasedVersionsAsync({ skipCache });
+
+  // We only want versioned dependencies so skip if they cannot be found.
+  if (!sdkVersion || !(sdkVersion in sdkVersions)) {
+    Log.debug(
+      `Skipping versioned dependencies because the SDK version is not found. (sdkVersion: ${sdkVersion}, available: ${Object.keys(
+        sdkVersions
+      ).join(', ')})`
+    );
+    return {};
+  }
+
+  const version = sdkVersions[sdkVersion as keyof typeof sdkVersions] as unknown as SDKVersion;
+
+  return normalizeSdkVersionObject(version);
 }
 
 /**
@@ -61,8 +88,11 @@ export async function getVersionedPackagesAsync(
     sdkVersion: string;
   }
 ): Promise<{ packages: string[]; messages: string[] }> {
-  const bundledNativeModules = await getBundledNativeModulesAsync(projectRoot, sdkVersion);
-  const versionsForSdk = await getRemoteVersionsForSdkAsync(sdkVersion);
+  const versionsForSdk = await getCombinedKnownVersionsAsync({
+    projectRoot,
+    sdkVersion,
+    skipCache: true,
+  });
 
   let nativeModulesCount = 0;
   let othersCount = 0;
@@ -70,11 +100,8 @@ export async function getVersionedPackagesAsync(
   const versionedPackages = packages.map((arg) => {
     const { name, type, raw } = npmPackageArg(arg);
 
-    if (['tag', 'version', 'range'].includes(type) && name && bundledNativeModules[name]) {
+    if (['tag', 'version', 'range'].includes(type) && name && versionsForSdk[name]) {
       // Unimodule packages from npm registry are modified to use the bundled version.
-      nativeModulesCount++;
-      return `${name}@${bundledNativeModules[name]}`;
-    } else if (name && versionsForSdk[name]) {
       // Some packages have the recommended version listed in https://exp.host/--/api/v2/versions.
       nativeModulesCount++;
       return `${name}@${versionsForSdk[name]}`;

@@ -4,6 +4,7 @@ import * as PackageManager from '@expo/package-manager';
 import * as Log from '../log';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
+import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
 
 export async function installAsync(
@@ -21,6 +22,15 @@ export async function installAsync(
     yarn: options.yarn,
     log: Log.log,
   });
+
+  if (options.check || options.fix) {
+    return await checkPackagesAsync(projectRoot, {
+      packages,
+      options,
+      packageManager,
+      packageManagerArguments,
+    });
+  }
 
   // Read the project Expo config without plugins.
   const { exp } = getConfig(projectRoot, {

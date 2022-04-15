@@ -2,11 +2,11 @@ import { vol } from 'memfs';
 import nock from 'nock';
 
 import { getExpoApiBaseUrl } from '../../../../api/endpoint';
-import { getBundledNativeModulesAsync } from '../bundledNativeModules';
+import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
 
 jest.mock('../../../../log');
 
-describe(getBundledNativeModulesAsync, () => {
+describe(getVersionedNativeModulesAsync, () => {
   const projectRoot = '/test-project';
 
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe(getBundledNativeModulesAsync, () => {
       projectRoot
     );
 
-    const bundledNativeModules = await getBundledNativeModulesAsync(projectRoot, '66.0.0');
+    const bundledNativeModules = await getVersionedNativeModulesAsync(projectRoot, '66.0.0');
     expect(bundledNativeModules).toEqual({
       'expo-abc': '~1.3.3',
       'expo-def': '~0.2.2',
@@ -53,7 +53,7 @@ describe(getBundledNativeModulesAsync, () => {
     );
     nock(getExpoApiBaseUrl()).get('/v2/sdks/66.0.0/native-modules').reply(504, 'api is down');
 
-    const bundledNativeModules = await getBundledNativeModulesAsync(projectRoot, '66.0.0');
+    const bundledNativeModules = await getVersionedNativeModulesAsync(projectRoot, '66.0.0');
     expect(bundledNativeModules).toEqual({
       'expo-abc': '~1.2.3',
       'expo-def': '~0.1.2',
@@ -63,6 +63,6 @@ describe(getBundledNativeModulesAsync, () => {
   it('throws an error if api is down and expo is not installed', async () => {
     nock(getExpoApiBaseUrl()).get('/v2/sdks/66.0.0/native-modules').reply(504, 'api is down');
 
-    await expect(getBundledNativeModulesAsync(projectRoot, '66.0.0')).rejects.toThrowError();
+    await expect(getVersionedNativeModulesAsync(projectRoot, '66.0.0')).rejects.toThrowError();
   });
 });
