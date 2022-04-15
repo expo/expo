@@ -119,7 +119,7 @@ export class HomeScreenView extends React.Component<Props, State> {
           {projects?.length ? (
             <View bg="default" rounded="large" border="default" overflow="hidden">
               {projects.map((project, i) => (
-                <React.Fragment key={project.url}>
+                <React.Fragment key={project.description + project.url}>
                   <DevelopmentServerListItem
                     url={project.url}
                     image={
@@ -251,8 +251,6 @@ export class HomeScreenView extends React.Component<Props, State> {
               resolve(undefined);
             }),
       ]);
-
-      console.log({ projects });
 
       this.setState({ projects, data: graphQLResponse?.data.account.byName });
     } catch (e) {
