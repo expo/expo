@@ -31,5 +31,6 @@ Pod::Spec.new do |s|
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
     s.source_files = '**/*.{h,m,c,cpp,mm}'
+    s.exclude_files  = '**/EXGLJniApi.cpp'
   end
 end
