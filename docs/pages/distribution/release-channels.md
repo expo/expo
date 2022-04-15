@@ -80,7 +80,7 @@ On the production stack, release v1 of your app by running `expo publish --relea
 
 You can push updates to your app by publishing to the `prod-v1` channel. The standalone app will update with the most recent compatible version of your app on the `prod-v1` channel.
 
-If you have a new version that you dont want v1 users getting, release v2 of your app by running `expo publish --release-channel prod-v2`, setting the `releaseChannel` in your `prod` build profile to `prod-v2`, and building again with `eas build --platform ios --profile prod`. Users with the `prod-v2` ipa will only be pulling releases from that channel.
+If you have a new version that you don't want v1 users getting, release v2 of your app by running `expo publish --release-channel prod-v2`, setting the `releaseChannel` in your `prod` build profile to `prod-v2`, and building again with `eas build --platform ios --profile prod`. Only users with the `prod-v2` ipa will pull releases from that channel.
 
 <details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
 
@@ -103,7 +103,23 @@ Environment variables don't exist explicitly, but you can utilize release channe
 
 Say you have a workflow of releasing builds like this:
 
-<TerminalBlock cmd={['# Publish to release channel prod-v1', 'expo publish --release-channel prod-v2', '', '# Publish to release channel prod-v2', 'expo publish --release-channel prod-v1', '', '# Publish to release channel prod-v3', 'expo publish --release-channel prod-v3', '', '', '# Publish to release channel staging-v1', 'expo publish --release-channel staging-v1', '', '# Publish to release channel staging-v2', 'expo publish --release-channel staging-v2']} />  
+<TerminalBlock cmd={[
+  '# Publish to release channel prod-v1',
+  'expo publish --release-channel prod-v1',
+  '',
+  '# Publish to release channel prod-v2',
+  'expo publish --release-channel prod-v2',
+  '',
+  '# Publish to release channel prod-v3',
+  'expo publish --release-channel prod-v3', 
+  '', 
+  '',
+  '# Publish to release channel staging-v1', 
+  'expo publish --release-channel staging-v1',
+  '', 
+  '# Publish to release channel staging-v2',
+  'expo publish --release-channel staging-v2'
+]} />  
 
 You can create a function that looks for the specific release and adjust your app's behaviour accordingly:
 
