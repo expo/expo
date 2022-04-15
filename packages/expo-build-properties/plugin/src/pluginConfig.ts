@@ -17,6 +17,9 @@ export interface PluginConfigType {
       doNotStrip?: string[];
     };
   };
+  ios?: {
+    deploymentTarget?: string;
+  };
 }
 
 const schema: JSONSchemaType<PluginConfigType> = {
@@ -43,6 +46,13 @@ const schema: JSONSchemaType<PluginConfigType> = {
           },
           nullable: true,
         },
+      },
+      nullable: true,
+    },
+    ios: {
+      type: 'object',
+      properties: {
+        deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
       },
       nullable: true,
     },
