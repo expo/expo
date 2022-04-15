@@ -3,13 +3,11 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 // @ts-expect-error
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 
 import Colors from '../constants/Colors';
-
-const shouldUseHaptics = Platform.OS === 'ios';
 
 const size = 64;
 const slop = 40;
@@ -31,12 +29,12 @@ export default function QRFooterButton({
   const iconColor = isActive ? Colors.light.tintColor : '#ffffff';
 
   const onPressIn = React.useCallback(() => {
-    if (shouldUseHaptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, []);
 
   const onPressButton = React.useCallback(() => {
     onPress();
-    if (shouldUseHaptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, [onPress]);
 
   return (
