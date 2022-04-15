@@ -16,6 +16,7 @@ const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 const EXPOTOOLS_DIR = Directories.getExpotoolsDir();
 const SCRIPT_DIR = path.join(EXPOTOOLS_DIR, 'src/versioning/android');
+const SED_PREFIX = process.platform === 'darwin' ? "sed -i ''" : 'sed -i';
 
 const appPath = path.join(ANDROID_DIR, 'app');
 const expoviewPath = path.join(ANDROID_DIR, 'expoview');
@@ -308,7 +309,7 @@ async function processJavaCodeAsync(libName: string, abiVersion: string) {
     `find ${versionedReactAndroidJavaPath} ${versionedExpoviewAbiPath(
       abiName
     )} -iname '*.java' -type f -print0 | ` +
-      `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
+      `xargs -0 ${SED_PREFIX} 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
     [],
     { shell: true }
   );
@@ -339,7 +340,7 @@ async function renameJniLibsAsync(version: string) {
     await spawnAsync(
       `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} ${codegenOutputRoot} -type f ` +
         `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
-        `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
+        `xargs -0 ${SED_PREFIX} 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
       [],
       { shell: true }
     );
@@ -351,7 +352,7 @@ async function renameJniLibsAsync(version: string) {
     await spawnAsync(
       `find ${versionedAbiPath} -type f ` +
         `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
-        `xargs -0 sed -i '' 's/${oldJNIReanimatedPackage}/abi${abiVersion}\\/${newJNIReanimatedPackage}/g'`,
+        `xargs -0 ${SED_PREFIX} 's/${oldJNIReanimatedPackage}/abi${abiVersion}\\/${newJNIReanimatedPackage}/g'`,
       [],
       { shell: true }
     );
@@ -537,13 +538,13 @@ async function cleanUpAsync(version: string) {
   // replace abixx_x_x...R with abixx_x_x.host.exp.expoview.R
   await spawnAsync(
     `find ${versionedAbiSrcPath} -iname '*.java' -type f -print0 | ` +
-      `xargs -0 sed -i '' 's/import ${abiName}\.[^;]*\.R;/import ${abiName}.host.exp.expoview.R;/g'`,
+      `xargs -0 ${SED_PREFIX} 's/import ${abiName}\.[^;]*\.R;/import ${abiName}.host.exp.expoview.R;/g'`,
     [],
     { shell: true }
   );
   await spawnAsync(
     `find ${versionedAbiSrcPath} -iname '*.kt' -type f -print0 | ` +
-      `xargs -0 sed -i '' 's/import ${abiName}\\..*\\.R$/import ${abiName}.host.exp.expoview.R/g'`,
+      `xargs -0 ${SED_PREFIX} 's/import ${abiName}\\..*\\.R$/import ${abiName}.host.exp.expoview.R/g'`,
     [],
     { shell: true }
   );
