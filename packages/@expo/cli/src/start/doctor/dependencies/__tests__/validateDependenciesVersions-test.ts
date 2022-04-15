@@ -4,8 +4,8 @@ import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../../log';
 import {
-  validateDependenciesVersionsAsync,
   logIncorrectDependencies,
+  validateDependenciesVersionsAsync,
 } from '../validateDependenciesVersions';
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
@@ -14,6 +14,13 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
 jest.mock(`../../../../log`);
 jest.mock('../bundledNativeModules', () => ({
   getVersionedNativeModulesAsync: () => ({
+    'expo-splash-screen': '~1.2.3',
+    'expo-updates': '~2.3.4',
+    firebase: '9.1.0',
+  }),
+}));
+jest.mock('../getVersionedPackages', () => ({
+  getCombinedKnownVersionsAsync: () => ({
     'expo-splash-screen': '~1.2.3',
     'expo-updates': '~2.3.4',
     firebase: '9.1.0',
