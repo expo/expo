@@ -2,9 +2,9 @@ import { spacing } from '@expo/styleguide-native';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, View as RNView } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
+import { FlatList } from '../../components/FlatList';
 import { SnacksListItem } from '../../components/SnacksListItem';
 import { CommonSnackDataFragment } from '../../graphql/types';
 
