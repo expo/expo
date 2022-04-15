@@ -210,7 +210,6 @@ _Corresponding to [Ad lifecycle event callbacks](https://developers.google.com/a
 | `onAdViewWillPresentScreen()`                             |
 | `onAdViewWillDismissScreen()`                             |
 | `onAdViewDidDismissScreen()`                              |
-| `onAdViewWillLeaveApplication()`                          |
 
 #### Test ID
 
@@ -246,7 +245,6 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
 | `interstitialDidFailToPresentScreen`       |                                    |                       |
 | `interstitialWillDismissScreen`            |                                    |                       |
 | `interstitialDidDismissScreen`             | `interstitialDidClose`             | `onAdClosed`          |
-| `interstitialWillLeaveApplication`         | `interstitialWillLeaveApplication` | `onAdLeftApplication` |
 
 _Note that `interstitialWillLeaveApplication` and `onAdLeftApplication` are not exactly the same but share one event in this library._
 

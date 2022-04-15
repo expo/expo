@@ -58,10 +58,11 @@ export function test(t) {
             t.expect(url).toEqual(testUrl);
             handlerCalled = true;
           };
-          Linking.addEventListener('url', handler);
+          const subscription = Linking.addEventListener('url', handler);
           await WebBrowser.openBrowserAsync(testUrl);
           await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
+          t.expect(subscription).toBeTruthy();
           Linking.removeEventListener('url', handler);
         });
 

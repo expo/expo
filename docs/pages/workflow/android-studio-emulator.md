@@ -69,14 +69,19 @@ This is because the adb version on your system is different from the adb version
 
 - Open the terminal and check the `adb` version on the system:
 
-`$adb version`
+```bash
+adb version
+```
 
 - And from the Android SDK platform-tool directory:
 
-`$cd ~/Library/Android/sdk/platform-tools`
-
-`$./adb version`
+```bash
+cd ~/Library/Android/sdk/platform-tools
+./adb version
+```
 
 - Copy `adb` from Android SDK directory to `usr/bin` directory:
 
-`$sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin`
+```bash
+sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin
+```

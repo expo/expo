@@ -13,7 +13,6 @@ jest.mock('../../../log');
 const asMock = (fn: any): jest.Mock => fn;
 
 beforeEach(() => {
-  asMock(promptAsync).mockClear();
   asMock(promptAsync).mockImplementation(() => {
     throw new Error('Should not be called');
   });
@@ -22,9 +21,6 @@ beforeEach(() => {
   asMock(selectAsync).mockImplementation(() => {
     throw new Error('Should not be called');
   });
-
-  asMock(loginAsync).mockClear();
-  asMock(Log.log).mockClear();
 });
 
 describe(retryUsernamePasswordAuthWithOTPAsync, () => {

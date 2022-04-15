@@ -101,10 +101,13 @@ repositories {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  // Used to override the NDK path & version on internal CI
-  if (System.getenv("ANDROID_NDK_HOME") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-    ndkPath System.getenv("ANDROID_NDK_HOME")
-    ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
+  // Used to override the NDK path/version on internal CI or by allowing
+  // users to customize the NDK path/version from their root project (e.g. for M1 support)
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
   }
 
   compileOptions {
@@ -346,6 +349,22 @@ dependencies {
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
 
+  // expo-face-detector
+  implementation 'com.google.mlkit:face-detection:16.1.5'
+
+  // expo-ads-admob
+  implementation 'com.google.android.gms:play-services-ads:20.5.0'
+  // For apps targeting Android 12, add WorkManager dependency.
+  // See more at https://developers.google.com/admob/android/rel-notes
+  constraints {
+    implementation('androidx.work:work-runtime:2.7.0') {
+      because '''androidx.work:work-runtime:2.1.0 pulled from
+      play-services-ads has a bug using PendingIntent without
+      FLAG_IMMUTABLE or FLAG_MUTABLE and will fail in Apps
+      targeting S+.'''
+    }
+  }
+
   // react-native-screens
   api 'androidx.fragment:fragment:1.2.2'
   api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
@@ -395,7 +414,7 @@ dependencies {
   implementation 'org.bouncycastle:bcutil-jdk15to18:1.70'
 
   // react-native-maps
-  implementation "androidx.work:work-runtime:2.5.0"
+  implementation "androidx.work:work-runtime:2.7.1"
 }
 
 
