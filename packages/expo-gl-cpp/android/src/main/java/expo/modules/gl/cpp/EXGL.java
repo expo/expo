@@ -1,11 +1,9 @@
 package expo.modules.gl.cpp;
 
-import com.facebook.soloader.SoLoader;
-
 // Java bindings for UEXGL.h interface
 public class EXGL {
   static {
-    SoLoader.loadLibrary("expo-gl");
+    System.loadLibrary("expo-gl");
   }
   public static native int EXGLContextCreate();
   public static native void EXGLContextPrepare(long jsCtxPtr, int exglCtxId, Object glContext);

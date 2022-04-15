@@ -130,10 +130,16 @@ async function versionJavaLoadersAsync(
 async function getTransformPatchContentAsync(packageName: string, abiName: string) {
   const patchFile = path.join(CXX_EXPO_MODULE_PATCHES_DIR, `${packageName}.patch`);
   let content = await fs.readFile(patchFile, 'utf8');
-  content = await transformString(content, [
+  content = transformString(content, [
     {
       find: /\{VERSIONED_ABI_NAME\}/g,
       replaceWith: abiName,
+    },
+  ]);
+  content = transformString(content, [
+    {
+      find: /\{VERSIONED_JNI_METHOD_ABI_NAME\}/g,
+      replaceWith: abiName.replace(/_0/g, '_10'),
     },
   ]);
   return content;
