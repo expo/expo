@@ -27,13 +27,15 @@ If you don't have an Android device available to test with, we recommend using t
 echo "export ANDROID_SDK=$ANDROID_SDK" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
 
-- On macOS, you will also need to add `platform-tools` to your `PATH` in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export PATH=/your/path/here:$PATH`. Copy and paste this line to do this automatically for Bash and Zsh:
+- On macOS and Linux, you will also need to add `platform-tools` to your `PATH` in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export PATH=/your/path/here:$PATH`. Copy and paste one of the following lines depending on your operating system to do this automatically for Bash and Zsh:
+
+macOS:
 
 ```bash
 echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
 
-- On Linux, you will also need to add `platform-tools` to your `PATH` in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export PATH=/your/path/here:$PATH`. Copy and paste this line to do this automatically for Bash and Zsh:
+Linux:
 
 ```bash
 echo "export PATH=\${ANDROID_SDK}/platform-tools:\${PATH}" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
