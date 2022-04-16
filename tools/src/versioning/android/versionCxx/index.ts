@@ -36,30 +36,12 @@ export async function versionCxxExpoModulesAsync(version: string) {
       const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
 
       const patchContent = await getTransformPatchContentAsync(packageName, abiName);
-      const patchStripingArgs = '-p3'; // -pN passing to the `patch` command for striping slashed prefixes
 
-      // Applies versioning patches
-      let procPromise = spawnAsync('patch', [patchStripingArgs], {
-        cwd: path.join(PACKAGES_DIR, packageName),
-      });
-      procPromise.child.stdin?.write(patchContent);
-      procPromise.child.stdin?.end();
-      await procPromise;
+      await applyPatchForPackageAsync(packageName, patchContent);
+      await buildSoLibsAsync(packageName);
+      await revertPatchForPackageAsync(packageName, patchContent);
 
-      // Builds shared libraries
-      await spawnAsync('./gradlew', [`:${packageName}:copyReleaseJniLibsProjectOnly`], {
-        cwd: ANDROID_DIR,
-      });
-
-      // Reverts versioning patches
-      procPromise = spawnAsync('patch', [patchStripingArgs, '-R'], {
-        cwd: path.join(PACKAGES_DIR, packageName),
-      });
-      procPromise.child.stdin?.write(patchContent);
-      procPromise.child.stdin?.end();
-      await procPromise;
-
-      await copySoPrebuiltLibs(packageName, versionedAbiRoot);
+      await copyPrebuiltSoLibsAsync(packageName, versionedAbiRoot);
       await versionJavaLoadersAsync(packageName, versionedAbiRoot, abiName);
     })
   );
@@ -78,9 +60,61 @@ function isVersionableCxxExpoModule(pkg: Package) {
 }
 
 /**
+ * Shared implementation for `applyPatchForPackageAsync` and `revertPatchForPackageAsync`
+ */
+async function runPatchAsync(options: {
+  packageName: string;
+  patchContent: string;
+  reverse: boolean;
+}) {
+  const args = ['-p3']; // -pN passing to the `patch` command for striping slashed prefixes
+  if (options.reverse) {
+    args.push('-R');
+  }
+
+  const procPromise = spawnAsync('patch', args, {
+    cwd: path.join(PACKAGES_DIR, options.packageName),
+  });
+  procPromise.child.stdin?.write(options.patchContent);
+  procPromise.child.stdin?.end();
+  await procPromise;
+}
+
+/**
+ * Applies versioning patch for building shared libraries
+ */
+function applyPatchForPackageAsync(packageName: string, patchContent: string) {
+  return runPatchAsync({
+    packageName,
+    patchContent,
+    reverse: false,
+  });
+}
+
+/**
+ * Reverts versioning patch for building shared libraries
+ */
+function revertPatchForPackageAsync(packageName: string, patchContent: string) {
+  return runPatchAsync({
+    packageName,
+    patchContent,
+    reverse: true,
+  });
+}
+
+/**
+ * Builds shared libraries
+ */
+async function buildSoLibsAsync(packageName: string) {
+  await spawnAsync('./gradlew', [`:${packageName}:copyReleaseJniLibsProjectOnly`], {
+    cwd: ANDROID_DIR,
+  });
+}
+
+/**
  * Copies the generated shared libraries from build output to `android/versioned-abis/expoview-abiXX_0_0/src/main/jniLibs`
  */
-async function copySoPrebuiltLibs(packageName: string, versionedAbiRoot: string) {
+async function copyPrebuiltSoLibsAsync(packageName: string, versionedAbiRoot: string) {
   const libRoot = path.join(
     PACKAGES_DIR,
     packageName,
