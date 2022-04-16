@@ -127,7 +127,7 @@ async function copyPrebuiltSoLibsAsync(packageName: string, versionedAbiRoot: st
   );
 
   const jniLibsRoot = path.join(versionedAbiRoot, 'src', 'main', 'jniLibs');
-  const libs = await glob('**/*.so', { cwd: libRoot });
+  const libs = await glob('**/libexpo*.so', { cwd: libRoot });
   await Promise.all(
     libs.map((lib) => fs.copyFile(path.join(libRoot, lib), path.join(jniLibsRoot, lib)))
   );
