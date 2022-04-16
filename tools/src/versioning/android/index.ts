@@ -10,8 +10,8 @@ import * as Directories from '../../Directories';
 import { getListOfPackagesAsync } from '../../Packages';
 import { transformFileAsync as transformFileMultiReplacerAsync } from '../../Transforms';
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
-import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
 import { versionCxxExpoModulesAsync } from './versionCxx';
+import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
