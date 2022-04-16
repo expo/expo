@@ -199,7 +199,7 @@ GEM
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     jmespath (1.4.0)
-    json (2.5.1)
+    json (2.6.1)
     jwt (2.3.0)
     memoist (0.16.2)
     mini_magick (4.11.0)
