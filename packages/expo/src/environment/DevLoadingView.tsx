@@ -101,11 +101,9 @@ export default function DevLoadingView() {
 /**
  * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
  * The following code is lifted from: https://git.io/Jzk4k
- *
- * TODO: This will need to be updated for Fabric/TurboModules.
  **/
-const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig('RNCSafeAreaProvider') as any;
-const initialWindowMetrics = RNCSafeAreaProviderConfig?.Constants?.initialWindowMetrics as
+const RNCSafeAreaContext = NativeModules.RNCSafeAreaContext;
+const initialWindowMetrics = RNCSafeAreaContext?.initialWindowMetrics as
   | { insets: { bottom: number } }
   | undefined;
 
