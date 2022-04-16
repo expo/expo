@@ -189,7 +189,7 @@ async function getTransformPatchContentAsync(packageName: string, abiName: strin
 function escapeJniSymbol(symbol) {
   const mappings = {
     '/': '_',
-    '_': '_1',
+    _: '_1',
     ';': '_2',
     '[': '_3',
   };
