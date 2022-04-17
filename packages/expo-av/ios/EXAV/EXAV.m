@@ -207,7 +207,7 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   return @"ExponentAV";
 }
-
+// ! This might need main thread setup
 // Both RCTBridgeModule and EXExportedModule define `constantsToExport`. We implement
 // that method for the latter, but React Bridge displays a yellow LogBox warning:
 // "Module EXAV requires main queue setup since it overrides `constantsToExport` but doesn't implement `requiresMainQueueSetup`."
@@ -1049,6 +1049,11 @@ EX_EXPORT_METHOD_AS(setInput,
   } else {
     reject(@"E_AUDIO_SETINPUT_FAIL", [NSString stringWithFormat:@"Preferred input '%@' not found!", input], nil);
   }
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
 }
 
 #pragma mark - Lifecycle
