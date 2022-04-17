@@ -207,7 +207,7 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   return @"ExponentAV";
 }
-// ! This might need main thread setup
+
 // Both RCTBridgeModule and EXExportedModule define `constantsToExport`. We implement
 // that method for the latter, but React Bridge displays a yellow LogBox warning:
 // "Module EXAV requires main queue setup since it overrides `constantsToExport` but doesn't implement `requiresMainQueueSetup`."
@@ -215,7 +215,9 @@ EX_EXPORT_MODULE(ExponentAV);
 // we just need this to dismiss that warning.
 + (BOOL)requiresMainQueueSetup
 {
-  return NO;
+  // We are now using main thread to avoid thread safety issues with `EXAVPlayerData` and `EXVideoView`
+  // return `YES` to avoid deadlock warnings.
+  return YES;
 }
 
 #pragma mark - RCTEventEmitter
