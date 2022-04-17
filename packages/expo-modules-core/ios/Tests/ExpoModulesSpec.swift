@@ -20,12 +20,11 @@ class ExpoModulesSpec: ExpoSpec {
       try! appContext.installExpoModulesHostObject(interopBridge)
 
       appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
-        $0.name(testModuleName)
+        Name(testModuleName)
 
-        constants(constantsDict)
+        Constants(constantsDict)
 
-        function(testFunctionName) { Double.pi }
-          .runSynchronously()
+        Function(testFunctionName) { Double.pi }
       })
     }
 

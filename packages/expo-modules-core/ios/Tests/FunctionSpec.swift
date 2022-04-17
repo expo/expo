@@ -10,7 +10,7 @@ class FunctionSpec: ExpoSpec {
     func testFunctionReturning<T: Equatable>(value returnValue: T) {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) {
+          AsyncFunction(functionName) {
             return returnValue
           }
         }
@@ -26,7 +26,7 @@ class FunctionSpec: ExpoSpec {
     it("is called") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) {
+          AsyncFunction(functionName) {
             done()
           }
         }
@@ -59,7 +59,7 @@ class FunctionSpec: ExpoSpec {
       let str: String? = nil
 
       mockModuleHolder(appContext) {
-        function(functionName) { (a: String?) in
+        AsyncFunction(functionName) { (a: String?) in
           expect(a == nil) == true
         }
       }
@@ -70,7 +70,7 @@ class FunctionSpec: ExpoSpec {
       let array: [[String]] = [["expo"]]
 
       mockModuleHolder(appContext) {
-        function(functionName) { (a: [[String]]) in
+        AsyncFunction(functionName) { (a: [[String]]) in
           expect(a.first!.first) == array.first!.first
         }
       }
@@ -91,7 +91,7 @@ class FunctionSpec: ExpoSpec {
       it("converts to simple record when passed as an argument") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            function(functionName) { (a: TestRecord) in
+            AsyncFunction(functionName) { (a: TestRecord) in
               return a.property
             }
           }
@@ -107,7 +107,7 @@ class FunctionSpec: ExpoSpec {
       it("converts to record with custom key") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            function(functionName) { (a: TestRecord) in
+            AsyncFunction(functionName) { (a: TestRecord) in
               return a.customKeyProperty
             }
           }
@@ -123,7 +123,7 @@ class FunctionSpec: ExpoSpec {
       it("returns the record back") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            function(functionName) { (a: TestRecord) in
+            AsyncFunction(functionName) { (a: TestRecord) in
               return a.toDictionary()
             }
           }
@@ -144,7 +144,7 @@ class FunctionSpec: ExpoSpec {
     it("throws when called with more arguments than expected") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) { (_: Int) in
+          AsyncFunction(functionName) { (_: Int) in
             return "something"
           }
         }
@@ -160,7 +160,7 @@ class FunctionSpec: ExpoSpec {
     it("throws when called with arguments of incompatible types") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) { (_: String) in
+          AsyncFunction(functionName) { (_: String) in
             return "something"
           }
         }
