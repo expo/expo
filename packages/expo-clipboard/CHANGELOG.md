@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
 - The `content` property of the clipboard event listener is now deprecated and always returns empty string and logs a warning message to the console. Use `getStringAsync()` instead.
 
 ### 🎉 New features
@@ -15,13 +25,9 @@
 - Added support for HTML content in `getStringAsync` and `setStringAsync`. ([#16551](https://github.com/expo/expo/pull/16551), [#16687](https://github.com/expo/expo/pull/16687) by [@barthap](https://github.com/barthap))
 - Added new property `contentTypes` to the clipboard event listener describing contents of the clipboard. ([#16787](https://github.com/expo/expo/pull/16787) by [@barthap](https://github.com/barthap))
 
-### 🐛 Bug fixes
-
 ### ⚠ Notices
 
 - Deprecated `setString`. Use `setStringAsync` instead. ([#16320](https://github.com/expo/expo/pull/16320) by [@barthap](https://github.com/barthap))
-
-### 💡 Others
 
 ### ⚠️ Notices
 

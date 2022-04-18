@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Change package name. ([#16884](https://github.com/expo/expo/pull/16884) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fixed import error on Web. ([#16810](https://github.com/expo/expo/pull/16810) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.2.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Change package name. ([#16884](https://github.com/expo/expo/pull/16884) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- Fixed import error on Web. ([#16810](https://github.com/expo/expo/pull/16810) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix inverted values of `FaceDetectorLandmarks` and `FaceDetectorClassifications` enums. ([#16114](https://github.com/expo/expo/pull/16114) by [@Simek](https://github.com/Simek))
-
 ### 💡 Others
+
+## 11.2.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Fix inverted values of `FaceDetectorLandmarks` and `FaceDetectorClassifications` enums. ([#16114](https://github.com/expo/expo/pull/16114) by [@Simek](https://github.com/Simek))
 
 ### ⚠️ Notices
 

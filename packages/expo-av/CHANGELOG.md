@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.2.0 — 2022-04-18
+
+### 🎉 New features
+
 - Add new `Sound.setOnAudioSampleReceived` API to support streaming audio sample buffers in realtime. ([#14904](https://github.com/expo/expo/pull/14904), [#16075](https://github.com/expo/expo/pull/16075) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
