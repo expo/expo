@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ReactNativeHostHandler.getUseDeveloperSupport()` to allow `expo-dev-launcher` to override this value at runtime. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
