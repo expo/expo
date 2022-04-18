@@ -1344,8 +1344,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.7.0):
     - ExpoModulesCore
-    - Nimble
-    - Quick
+    - Nimble (~> 9.2.0)
+    - Quick (~> 5.0.0)
   - ExpoRandom (12.1.0):
     - ExpoModulesCore
   - ExpoSystemUI (1.1.0):
@@ -1591,13 +1591,13 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - Nimble (9.2.0)
+  - Nimble (9.2.1)
   - OCHamcrest (8.0.0)
   - OCMockito (6.0.0):
     - OCHamcrest (~> 8.0)
   - PromisesObjC (2.1.0)
   - Protobuf (3.20.0)
-  - Quick (4.0.0)
+  - Quick (5.0.0)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
     - DoubleConversion
@@ -2279,7 +2279,6 @@ DEPENDENCIES:
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - Nimble (from `./Nimble.podspec`)
-  - Quick (from `./Quick.podspec`)
   - RCT-Folly (from `../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../react-native-lab/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../react-native-lab/react-native/Libraries/TypeSafety`)
@@ -2359,6 +2358,7 @@ SPEC REPOS:
     - OCMockito
     - PromisesObjC
     - Protobuf
+    - Quick
     - Stripe
     - StripeApplePay
     - StripeConnections
@@ -2953,8 +2953,6 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/lottie-react-native"
   Nimble:
     :podspec: "./Nimble.podspec"
-  Quick:
-    :podspec: "./Quick.podspec"
   RCT-Folly:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -3298,7 +3296,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 116026324a999c99801265d6160496e2da87c7a1
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
   ExpoModulesCore: e2234a290dcd0b32b5365063b44b1b18cf0a53db
-  ExpoModulesTestCore: 220933e1d2e707d266cb3eddb7e5a71f271e5dff
+  ExpoModulesTestCore: 22f7c493871833b7e188d3954d641e148c2b6f27
   ExpoRandom: e1e102c8ab2bd0fe08532c0dfef012ce4b603553
   ExpoSystemUI: f34afad3de669780144508e4a5860fb1a5939832
   ExpoWebBrowser: 860eff8b9f413111bba517fedaa642b745af99d4
@@ -3354,12 +3352,12 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
   MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  Nimble: 9ca39ec3cb156bbb8c27f4943fd4643d28729616
+  Nimble: 0ca9f4135b66394fb341da760f891e2a56cba787
   OCHamcrest: a613690381f1dac7637c18962c10dbe8feca4bb5
   OCMockito: 780f04370226f81a9d972c97d1203864ef609f5b
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Protobuf: 66e2f3b26a35e4cc379831f4ced538274ee4b923
-  Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
+  Quick: f58aae30d750b27918005b93d870c187353a7bf0
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: 00581111c53531e39e3c6346ef0d2c0cf52a5a37
   RCTTypeSafety: 07e03ee7800e7dd65cba8e52ad0c2edb06c96604
@@ -3402,6 +3400,6 @@ SPEC CHECKSUMS:
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: a4efbaf97c12f56ac2ed4fd2200adf6040c3675c
+PODFILE CHECKSUM: 57afe4997fe29696cc7ef7637083c7323007ea22
 
 COCOAPODS: 1.11.2

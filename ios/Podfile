@@ -113,7 +113,6 @@ abstract_target 'Expo Go' do
     inherit! :search_paths
 
     pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
-    pod 'Quick', :podspec => './Quick.podspec'
     pod 'Nimble', :podspec => './Nimble.podspec'
   end
 end

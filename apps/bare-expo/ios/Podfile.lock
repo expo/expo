@@ -435,7 +435,7 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - Nimble (9.2.0)
+  - Nimble (9.2.1)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
   - OHHTTPStubs/Core (9.1.0)
@@ -451,7 +451,7 @@ PODS:
   - OHHTTPStubs/OHPathHelpers (9.1.0)
   - PromisesObjC (2.1.0)
   - Protobuf (3.20.0)
-  - Quick (4.0.0)
+  - Quick (5.0.0)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
     - DoubleConversion
@@ -936,7 +936,6 @@ DEPENDENCIES:
   - hermes-engine (~> 0.11.0)
   - libevent (~> 2.1.12)
   - Nimble (from `./../../../ios/Nimble.podspec`)
-  - Quick (from `./../../../ios/Quick.podspec`)
   - RCT-Folly (from `../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../../../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../../../node_modules/react-native/Libraries/TypeSafety`)
@@ -1018,6 +1017,7 @@ SPEC REPOS:
     - OHHTTPStubs
     - PromisesObjC
     - Protobuf
+    - Quick
     - SDWebImage
     - SDWebImageSVGKitPlugin
     - SDWebImageWebPCoder
@@ -1251,8 +1251,6 @@ EXTERNAL SOURCES:
     :podspec: "../../../node_modules/react-native/third-party-podspecs/glog.podspec"
   Nimble:
     :podspec: "./../../../ios/Nimble.podspec"
-  Quick:
-    :podspec: "./../../../ios/Quick.podspec"
   RCT-Folly:
     :podspec: "../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1450,11 +1448,11 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
   MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  Nimble: 9ca39ec3cb156bbb8c27f4943fd4643d28729616
+  Nimble: d954d0accfd082f2225e62d71008440493e318f4
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Protobuf: 66e2f3b26a35e4cc379831f4ced538274ee4b923
-  Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
+  Quick: f58aae30d750b27918005b93d870c187353a7bf0
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: 00581111c53531e39e3c6346ef0d2c0cf52a5a37
   RCTTypeSafety: 07e03ee7800e7dd65cba8e52ad0c2edb06c96604
@@ -1505,6 +1503,6 @@ SPEC CHECKSUMS:
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 9d92de3fef127b3a9fd6fe239cd988d6983eb640
+PODFILE CHECKSUM: 782fd0b27798335634fd156648f6873dc6f1ca4b
 
 COCOAPODS: 1.11.2
