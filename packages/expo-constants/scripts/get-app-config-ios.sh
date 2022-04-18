@@ -13,7 +13,6 @@ export NVM_DIR=$HOME/.nvm;
 NVM_SH_FILE=$NVM_DIR/nvm.sh
 # first attempt to source via nvm and fallback to sourcing via nvm
 if test -f "$NVM_SH_FILE"; then
-  
   source $NVM_SH_FILE
 else
   # Suppress environment errors from sourcing the login scripts
