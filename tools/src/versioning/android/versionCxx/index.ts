@@ -29,22 +29,22 @@ export async function versionCxxExpoModulesAsync(version: string) {
   const packages = await getListOfPackagesAsync();
   const versionablePackages = packages.filter((pkg) => isVersionableCxxExpoModule(pkg));
 
-  await Promise.all(
-    versionablePackages.map(async (pkg) => {
-      const { packageName } = pkg;
-      const abiName = `abi${version.replace(/\./g, '_')}`;
-      const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
+  for (const pkg of versionablePackages) {
+    const { packageName } = pkg;
+    const abiName = `abi${version.replace(/\./g, '_')}`;
+    const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
 
-      const patchContent = await getTransformPatchContentAsync(packageName, abiName);
+    const patchContent = await getTransformPatchContentAsync(packageName, abiName);
 
-      await applyPatchForPackageAsync(packageName, patchContent);
-      await buildSoLibsAsync(packageName);
-      await revertPatchForPackageAsync(packageName, patchContent);
+    await applyPatchForPackageAsync(packageName, patchContent);
+    await buildSoLibsAsync(packageName);
+    await revertPatchForPackageAsync(packageName, patchContent);
 
-      await copyPrebuiltSoLibsAsync(packageName, versionedAbiRoot);
-      await versionJavaLoadersAsync(packageName, versionedAbiRoot, abiName);
-    })
-  );
+    await copyPrebuiltSoLibsAsync(packageName, versionedAbiRoot);
+    await versionJavaLoadersAsync(packageName, versionedAbiRoot, abiName);
+
+    console.log(`   ✅  Created versioned c++ libraries for ${packageName}`);
+  }
 }
 
 /**
@@ -150,8 +150,8 @@ async function versionJavaLoadersAsync(
     versionedJavaFiles.map((file) =>
       transformFileAsync(file, [
         {
-          find: new RegExp(`\\b(System\\.loadLibrary\\("expo.*)("\\);?)`, 'g'),
-          replaceWith: `$1_${abiName}$2`,
+          find: /\b((System|SoLoader)\.loadLibrary\("expo[^"]*)("\);?)/g,
+          replaceWith: `$1_${abiName}$3`,
         },
       ])
     )
@@ -169,6 +169,25 @@ async function getTransformPatchContentAsync(packageName: string, abiName: strin
       find: /\{VERSIONED_ABI_NAME\}/g,
       replaceWith: abiName,
     },
+    {
+      find: /\{VERSIONED_ABI_NAME_JNI_ESCAPED\}/g,
+      replaceWith: escapeJniSymbol(abiName),
+    },
   ]);
   return content;
+}
+
+/**
+ * Escapes special characters for java symbol -> cpp symbol mapping
+ * Reference: https://docs.oracle.com/en/java/javase/17/docs/specs/jni/design.html#resolving-native-method-names
+ * UTF-16 codes are not supported
+ */
+function escapeJniSymbol(symbol) {
+  const mappings = {
+    '/': '_',
+    _: '_1',
+    ';': '_2',
+    '[': '_3',
+  };
+  return symbol.replace(/[/_;\[]/g, (match) => mappings[match]);
 }
