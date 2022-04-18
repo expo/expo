@@ -12,7 +12,7 @@
 
 - On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
 
-- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and
+- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
   the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
 
 ### 💡 Others
