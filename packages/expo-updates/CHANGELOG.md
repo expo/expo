@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add current and embedded update headers to manifest requests. ([#17033](https://github.com/expo/expo/pull/17033) by [@esamelson](https://github.com/esamelson))
+
 ## 0.12.0 — 2022-04-18
 
 ### 🛠 Breaking changes

@@ -47,7 +47,7 @@ class RemoteLoaderTest {
     configuration = UpdatesConfiguration(null, configMap)
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
-    mockLoaderFiles = mockk()
+    mockLoaderFiles = mockk(relaxed = true)
     mockFileDownloader = mockk()
     loader = RemoteLoader(
       context,
@@ -55,6 +55,7 @@ class RemoteLoaderTest {
       db,
       mockFileDownloader,
       File("testDirectory"),
+      null,
       mockLoaderFiles
     )
     manifest = LegacyUpdateManifest.fromLegacyManifest(

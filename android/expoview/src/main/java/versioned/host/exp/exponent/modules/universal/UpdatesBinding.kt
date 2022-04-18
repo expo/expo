@@ -56,6 +56,8 @@ class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) 
     return true
   }
 
+  override val embeddedUpdate: UpdateEntity? = null
+
   override val launchedUpdate: UpdateEntity?
     get() = appLoader!!.launcher.launchedUpdate
 

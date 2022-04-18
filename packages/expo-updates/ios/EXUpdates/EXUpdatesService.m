@@ -1,6 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
@@ -33,6 +34,11 @@ EX_REGISTER_MODULE();
 - (NSURL *)directory
 {
   return EXUpdatesAppController.sharedInstance.updatesDirectory;
+}
+
+- (nullable EXUpdatesUpdate *)embeddedUpdate
+{
+  return [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
 }
 
 - (nullable EXUpdatesUpdate *)launchedUpdate

@@ -189,7 +189,7 @@ public class UpdatesModule extends ExportedModule {
 
       AsyncTask.execute(() -> {
         final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
-        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getFileDownloader(), updatesService.getDirectory())
+        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getFileDownloader(), updatesService.getDirectory(), updatesService.getLaunchedUpdate())
           .start(
             new RemoteLoader.LoaderCallback() {
               @Override

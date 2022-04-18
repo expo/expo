@@ -46,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
   return _databaseKernelService.updatesDirectory;
 }
 
+- (nullable EXUpdatesUpdate *)embeddedUpdate
+{
+  return nil;
+}
+
 - (nullable EXUpdatesUpdate *)launchedUpdate
 {
   return [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];

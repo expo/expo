@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
+#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
@@ -22,9 +23,10 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
+                launchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
                completionQueue:(dispatch_queue_t)completionQueue
 {
-  if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
+  if (self = [super initWithConfig:config database:database directory:directory launchedUpdate:launchedUpdate completionQueue:completionQueue]) {
     _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
     _completionQueue = completionQueue;
   }
@@ -65,11 +67,11 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
   };
 
   dispatch_async(self.database.databaseQueue, ^{
-    NSError *headersError;
-    NSDictionary *extraHeaders = [self.database serverDefinedHeadersWithScopeKey:self.config.scopeKey error:&headersError];
-    if (headersError) {
-      NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
-    }
+    EXUpdatesUpdate *embeddedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
+    NSDictionary *extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:self.database
+                                                                            config:self.config
+                                                                    launchedUpdate:self.launchedUpdate
+                                                                    embeddedUpdate:embeddedUpdate];
     [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(EXUpdatesUpdate *update) {
       self->_remoteUpdate = update;
       [self startLoadingFromManifest:update];

@@ -7,9 +7,6 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.updates.manifest.ManifestHeaderData
-import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
 import org.json.JSONArray
@@ -27,6 +24,9 @@ import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.codesigning.ValidationResult
+import expo.modules.updates.db.UpdatesDatabase
+import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
 
 open class FileDownloader(private val client: OkHttpClient) {
@@ -567,6 +567,25 @@ open class FileDownloader(private val client: OkHttpClient) {
 
     private fun getCacheDirectory(context: Context): File {
       return File(context.cacheDir, "okhttp")
+    }
+
+    fun getExtraHeaders(
+      database: UpdatesDatabase,
+      configuration: UpdatesConfiguration,
+      launchedUpdate: UpdateEntity?,
+      embeddedUpdate: UpdateEntity?
+    ): JSONObject {
+      val extraHeaders =
+        ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
+
+      launchedUpdate?.let {
+        extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())
+      }
+      embeddedUpdate?.let {
+        extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+      }
+
+      return extraHeaders
     }
   }
 }

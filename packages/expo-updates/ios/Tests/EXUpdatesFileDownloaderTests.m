@@ -4,6 +4,7 @@
 
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesUpdate.h>
 
 @interface EXUpdatesFileDownloaderTests : XCTestCase
 
@@ -78,6 +79,52 @@
   XCTAssertEqualObjects(@"ios", [actual valueForHTTPHeaderField:@"expo-platform"]);
   XCTAssertEqualObjects(@"custom", [actual valueForHTTPHeaderField:@"expo-updates-environment"]);
 }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+- (void)testGetExtraHeaders
+{
+  NSString *launchedUpdateUUIDString = @"7c1d2bd0-f88b-454d-998c-7fa92a924dbf";
+  EXUpdatesUpdate *launchedUpdate = [EXUpdatesUpdate updateWithId:[[NSUUID alloc] initWithUUIDString:launchedUpdateUUIDString]
+                                                         scopeKey:@"test"
+                                                       commitTime:[NSDate date]
+                                                   runtimeVersion:@"1.0"
+                                                         manifest:nil
+                                                           status:0
+                                                             keep:YES
+                                                           config:nil
+                                                         database:nil];
+  NSString *embeddedUpdateUUIDString = @"9433b1ed-4006-46b8-8aa7-fdc7eeb203fd";
+  EXUpdatesUpdate *embeddedUpdate = [EXUpdatesUpdate updateWithId:[[NSUUID alloc] initWithUUIDString:embeddedUpdateUUIDString]
+                                                         scopeKey:@"test"
+                                                       commitTime:[NSDate date]
+                                                   runtimeVersion:@"1.0"
+                                                         manifest:nil
+                                                           status:0
+                                                             keep:YES
+                                                           config:nil
+                                                         database:nil];
+  NSDictionary *extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:nil
+                                                                          config:nil
+                                                                  launchedUpdate:launchedUpdate
+                                                                  embeddedUpdate:embeddedUpdate];
+  XCTAssertEqualObjects(launchedUpdateUUIDString, extraHeaders[@"Expo-Current-Update-ID"]);
+  XCTAssertEqualObjects(embeddedUpdateUUIDString, extraHeaders[@"Expo-Embedded-Update-ID"]);
+}
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+- (void)testGetExtraHeaders_NoLaunchedOrEmbeddedUpdate
+{
+  NSDictionary *extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:nil
+                                                                          config:nil
+                                                                  launchedUpdate:nil
+                                                                  embeddedUpdate:nil];
+  XCTAssertNil(extraHeaders[@"Expo-Current-Update-ID"]);
+  XCTAssertNil(extraHeaders[@"Expo-Embedded-Update-ID"]);
+}
+#pragma clang diagnostic pop
 
 - (void)testAssetExtraHeaders_OverrideOrder
 {
