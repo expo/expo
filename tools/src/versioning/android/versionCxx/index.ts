@@ -150,12 +150,8 @@ async function versionJavaLoadersAsync(
     versionedJavaFiles.map((file) =>
       transformFileAsync(file, [
         {
-          find: new RegExp(`\\b(System\\.loadLibrary\\("expo.*)("\\);?)`, 'g'),
-          replaceWith: `$1_${abiName}$2`,
-        },
-        {
-          find: new RegExp(`\\b(SoLoader\\.loadLibrary\\("expo.*)("\\);?)`, 'g'),
-          replaceWith: `$1_${abiName}$2`,
+          find: /\b((System|SoLoader)\.loadLibrary\("expo[^"]*)("\);?)/g,
+          replaceWith: `$1_${abiName}$3`,
         },
       ])
     )
