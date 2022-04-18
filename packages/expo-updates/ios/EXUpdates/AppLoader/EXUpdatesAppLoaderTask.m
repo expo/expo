@@ -210,6 +210,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
             [self->_selectionPolicy shouldLoadNewUpdate:[EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
                                      withLaunchedUpdate:launchableUpdate
                                                 filters:manifestFilters]) {
+          // launchedUpdate is nil because we don't yet have one, and it doesn't matter as we won't
+          // be sending an HTTP request from EXUpdatesEmbeddedAppLoader
           self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory launchedUpdate:nil completionQueue:self->_loaderTaskQueue];
           [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
             // we already checked using selection policy, so we don't need to check again
