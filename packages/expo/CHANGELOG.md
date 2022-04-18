@@ -12,6 +12,10 @@
 
 ## 45.0.0-beta.1 — 2022-04-18
 
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.1 — 2022-04-18
+
 ### 🎉 New features
 
 - Add `EXPO_USE_BETA_CLI` to utilize the new `@expo/cli` versioned package. ([#17007](https://github.com/expo/expo/pull/17007) by [@EvanBacon](https://github.com/EvanBacon))
