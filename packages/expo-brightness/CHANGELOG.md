@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Added `addBrightnessListener` to subscribe to brightness updates. Currently iOS only. ([#16851](https://github.com/expo/expo/pull/16851) by [@luoxuhai](https://github.com/luoxuhai))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Added `addBrightnessListener` to subscribe to brightness updates. Currently iOS only. ([#16851](https://github.com/expo/expo/pull/16851) by [@luoxuhai](https://github.com/luoxuhai))
 
 ### 💡 Others
 

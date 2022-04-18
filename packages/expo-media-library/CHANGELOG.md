@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 14.1.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
 - Don't ask for `ACCESS_MEDIA_LOCATION` permission if it's not present in `AndroidManifest.xml`. ([#16034](https://github.com/expo/expo/pull/16034) by [@barthap](https://github.com/barthap))
 - [plugin] Fix prebuild is failing when the `withMediaLibrary` plugin is enabled on Android. ([#15169](https://github.com/expo/expo/pull/15169) by [@MorganV](https://github.com/MorganV))
 

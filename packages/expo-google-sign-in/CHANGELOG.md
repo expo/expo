@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Added `@expo/config-plugins` dependency ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 10.2.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Added `@expo/config-plugins` dependency ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### ⚠️ Notices
 

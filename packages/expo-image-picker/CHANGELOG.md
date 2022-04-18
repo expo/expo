@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
 - On Android migrated cropping library from `com.theartofdev.edmodo:android-image-cropper@2.8.0` (available from `jcenter()`) to `com.github.CanHub:Android-Image-Cropper@1.1.1` (available from `jitpack.io`). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🎉 New features

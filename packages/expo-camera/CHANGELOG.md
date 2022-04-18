@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.2.0 — 2022-04-18
+
+### 🎉 New features
+
 - Update `useWebQRScanner` to allow scanning QR codes with inverted colors (light foreground and dark background). ([#16106](https://github.com/expo/expo/pull/16106) by [@rissois](https://github.com/rissois))
 
 ### 🐛 Bug fixes

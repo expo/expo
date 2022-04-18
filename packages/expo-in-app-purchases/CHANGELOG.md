@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Added `obfuscatedAccountId`, `obfuscatedProfileId` and `isVrPurchaseFlow` as options to `purchaseItemAsync` for Android in-app purchases. The second arguemnt of `purchaseItemAsync` is no longer `oldPurchaseToken` and must be a `IAPPurchaseItemOptions` object instead. You can still pass `oldPurchaseToken` via the `IAPPurchaseItemOptions` object. ([#16670](https://github.com/expo/expo/pull/16670) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Added `obfuscatedAccountId`, `obfuscatedProfileId` and `isVrPurchaseFlow` as options to `purchaseItemAsync` for Android in-app purchases. The second arguemnt of `purchaseItemAsync` is no longer `oldPurchaseToken` and must be a `IAPPurchaseItemOptions` object instead. You can still pass `oldPurchaseToken` via the `IAPPurchaseItemOptions` object. ([#16670](https://github.com/expo/expo/pull/16670) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+
+### 🐛 Bug fixes
+
+- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

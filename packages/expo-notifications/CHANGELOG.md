@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.15.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
 - Upgrade firebase messaging dependency to v21. This means `expo-notifications` no longer relies on `FirebaseInstanceId`. If you added `com.google.firebase:firebase-iid` to your `android/app/build.gradle` file for this library, it is no longer required and you can safely remove that dependency. ([#15010](https://github.com/expo/expo/pull/15010) by [@cruzach](https://github.com/cruzach))
 
 ### 💡 Others

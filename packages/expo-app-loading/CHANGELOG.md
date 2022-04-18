@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Deprecate the library in favor of expo-splash-screen. ([#16963](https://github.com/expo/expo/pull/16963) by [@brentvatne](https://github.com/brentvatne))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 2.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Deprecate the library in favor of expo-splash-screen. ([#16963](https://github.com/expo/expo/pull/16963) by [@brentvatne](https://github.com/brentvatne))
 
 ## 1.3.0 — 2021-12-03
 

@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Removed `setCurrentScreen` method that was previously deprecated. Use `logEvent` instead. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 7.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Removed `setCurrentScreen` method that was previously deprecated. Use `logEvent` instead. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
 
 ### ⚠️ Notices
 

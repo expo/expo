@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 9.1.0 — 2022-04-18
+
 ### 📚 3rd party library updates
 
 - Upgrade to react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))

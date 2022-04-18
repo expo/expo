@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Native module on iOS is now written in Swift using the new API. ([#15705](https://github.com/expo/expo/pull/15705) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 10.1.0 — 2022-04-18
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the new API. ([#15705](https://github.com/expo/expo/pull/15705) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 

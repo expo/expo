@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix support for React Native 0.68 by building `expo-gl-cpp` from source. ([#17060](https://github.com/expo/expo/pull/17060) by [@wkozyra95](https://github.com/wkozyra95))
-
 ### 💡 Others
+
+## 11.2.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Fix support for React Native 0.68 by building `expo-gl-cpp` from source. ([#17060](https://github.com/expo/expo/pull/17060) by [@wkozyra95](https://github.com/wkozyra95))
 
 ### ⚠️ Notices
 
