@@ -9,9 +9,9 @@ VERSIONED_ABI_PATH=versioned-abis/expoview-$ABI_VERSION
 TOOLS_DIR=`pwd`
 EXPOMODULE_MANIFEST_PATH=$VERSIONED_ABI_PATH/src/main/ExpoModuleAndroidManifest.xml
 
-SED_PREFIX="sed -i ''"
+SED_INPLACE_OPT=(-i '')
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  SED_PREFIX="sed -i"
+  SED_INPLACE_OPT=(-i)
 fi
 
 pushd $EXPO_ROOT_DIR/android
@@ -33,25 +33,25 @@ done < $TOOLS_DIR/android-packages-to-keep.txt
 
 while read PACKAGE
 do
-  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 $SED_PREFIX "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
-  $SED_PREFIX "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g" $EXPOMODULE_MANIFEST_PATH
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed "${SED_INPLACE_OPT[@]}" "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
+  sed "${SED_INPLACE_OPT[@]}" "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g" $EXPOMODULE_MANIFEST_PATH
 done < $TOOLS_DIR/android-packages-to-keep.txt
 
 while read PACKAGE
 do
-  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 $SED_PREFIX "s/\([, ^\(<]\)$PACKAGE/\1$ABI_VERSION.$PACKAGE/g"
-  $SED_PREFIX "s/\([, ^\(<]\)$PACKAGE/\1$ABI_VERSION.$PACKAGE/g" $EXPOMODULE_MANIFEST_PATH
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed "${SED_INPLACE_OPT[@]}" "s/\([, ^\(<]\)$PACKAGE/\1$ABI_VERSION.$PACKAGE/g"
+  sed "${SED_INPLACE_OPT[@]}" "s/\([, ^\(<]\)$PACKAGE/\1$ABI_VERSION.$PACKAGE/g" $EXPOMODULE_MANIFEST_PATH
 done < $TOOLS_DIR/android-packages-to-rename.txt
 
 while read PACKAGE
 do
-  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 $SED_PREFIX "s/\([, ^\(<]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g"
-  $SED_PREFIX "s/\([, ^\(<]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g" $EXPOMODULE_MANIFEST_PATH
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed "${SED_INPLACE_OPT[@]}" "s/\([, ^\(<]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g"
+  sed "${SED_INPLACE_OPT[@]}" "s/\([, ^\(<]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g" $EXPOMODULE_MANIFEST_PATH
 done < $TOOLS_DIR/android-packages-to-keep.txt
 
 # Transform `// EXPO_VERSIONING_NEEDS_EXPOVIEW_R` comment as `import abiN_N_N.host.exp.expoview.R`
-find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 $SED_PREFIX "s/^\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/import $ABI_VERSION.host.exp.expoview.R;/g"
-find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.kt' -type f -print0 | xargs -0 $SED_PREFIX "s/^\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/import $ABI_VERSION.host.exp.expoview.R/g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed "${SED_INPLACE_OPT[@]}" "s/^\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/import $ABI_VERSION.host.exp.expoview.R;/g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.kt' -type f -print0 | xargs -0 sed "${SED_INPLACE_OPT[@]}" "s/^\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/import $ABI_VERSION.host.exp.expoview.R/g"
 
 # Special modules transform
 PACKAGE_JAVA_BASE_DIR="$VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION"
