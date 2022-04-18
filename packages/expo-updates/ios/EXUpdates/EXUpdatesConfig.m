@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
 @property (nonatomic, readwrite, assign) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
-@property (nonatomic, readwrite, strong, nullable) EXUpdatesCodeSigningConfiguration *codeSigningConfiguration;
+@property (nonatomic, readwrite, strong, nullable) CodeSigningConfiguration *codeSigningConfiguration;
 
 @property (nullable, nonatomic, readwrite, strong) NSString *sdkVersion;
 @property (nullable, nonatomic, readwrite, strong) NSString *runtimeVersion;
@@ -227,18 +227,18 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
   return (!_runtimeVersion || !_runtimeVersion.length) && (!_sdkVersion || !_sdkVersion.length);
 }
 
-+ (nullable EXUpdatesCodeSigningConfiguration *)codeSigningConfigurationForCodeSigningCertificate:(NSString *)codeSigningCertificate
-                                                                              codeSigningMetadata:(nullable NSDictionary *)codeSigningMetadata
-                                               codeSigningIncludeManifestResponseCertificateChain:(BOOL)codeSigningIncludeManifestResponseCertificateChain
-                                                                codeSigningAllowUnsignedManifests:(BOOL)codeSigningAllowUnsignedManifests {
++ (nullable CodeSigningConfiguration *)codeSigningConfigurationForCodeSigningCertificate:(NSString *)codeSigningCertificate
+                                                                     codeSigningMetadata:(nullable NSDictionary *)codeSigningMetadata
+                                      codeSigningIncludeManifestResponseCertificateChain:(BOOL)codeSigningIncludeManifestResponseCertificateChain
+                                                       codeSigningAllowUnsignedManifests:(BOOL)codeSigningAllowUnsignedManifests {
   NSError *error;
-  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = [[EXUpdatesCodeSigningConfiguration alloc] initWithEmbeddedCertificateString:codeSigningCertificate
-                                                                                                                                    metadata:codeSigningMetadata
-                                                                                                     includeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
-                                                                                                                      allowUnsignedManifests:codeSigningAllowUnsignedManifests
-                                                                                                                                       error:&error];
+  CodeSigningConfiguration *codeSigningConfiguration = [[CodeSigningConfiguration alloc] initWithEmbeddedCertificateString:codeSigningCertificate
+                                                                                                                  metadata:codeSigningMetadata
+                                                                                   includeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
+                                                                                                    allowUnsignedManifests:codeSigningAllowUnsignedManifests
+                                                                                                                     error:&error];
   if (error) {
-    NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
+    NSString *message = [CodeSigningErrorUtils messageForError:error.code];
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
   }
   

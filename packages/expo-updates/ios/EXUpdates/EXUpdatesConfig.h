@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class EXUpdatesCodeSigningConfiguration;
+@class CodeSigningConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,7 +48,7 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueNever;
 @property (nonatomic, readonly) NSString *releaseChannel;
 @property (nonatomic, readonly) NSNumber *launchWaitMs;
 @property (nonatomic, readonly) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
-@property (nonatomic, readonly, strong, nullable) EXUpdatesCodeSigningConfiguration *codeSigningConfiguration;
+@property (nonatomic, readonly, strong, nullable) CodeSigningConfiguration *codeSigningConfiguration;
 
 @property (nullable, nonatomic, readonly) NSString *sdkVersion;
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;

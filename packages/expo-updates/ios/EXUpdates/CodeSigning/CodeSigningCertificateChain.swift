@@ -6,7 +6,7 @@ import ASN1Decoder
 typealias Certificate = (SecCertificate, X509Certificate)
 
 @objc
-public class EXUpdatesExpoProjectInformation : NSObject {
+public class CodeSigningProjectInformation : NSObject {
   @objc private(set) public var projectId: String
   @objc private(set) public var scopeKey: String
   
@@ -15,7 +15,7 @@ public class EXUpdatesExpoProjectInformation : NSObject {
     self.scopeKey = scopeKey
   }
   
-  public static func ==(lhs: EXUpdatesExpoProjectInformation, rhs: EXUpdatesExpoProjectInformation) -> Bool {
+  public static func ==(lhs: CodeSigningProjectInformation, rhs: CodeSigningProjectInformation) -> Bool {
     return lhs.projectId == rhs.projectId && lhs.scopeKey == rhs.scopeKey
   }
 }
@@ -32,11 +32,11 @@ public class EXUpdatesExpoProjectInformation : NSObject {
  * - certificate chain is valid and each certificate is valid
  * - 0th certificate is a valid code signing certificate
  */
-class EXUpdatesCertificateChain {
+class CodeSigningCertificateChain {
   // ASN.1 path to the extended key usage info within a CERT
-  static let EXUpdatesCodeSigningCertificateExtendedUsageCodeSigningOID = "1.3.6.1.5.5.7.3.3"
+  static let CodeSigningCertificateExtendedUsageCodeSigningOID = "1.3.6.1.5.5.7.3.3"
   // OID of expo project info, stored as `<projectId>,<scopeKey>`
-  static let EXUpdatesCodeSigningCertificateExpoProjectInformationOID = "1.2.840.113556.1.8000.2554.43437.254.128.102.157.7894389.20439.2.1"
+  static let CodeSigningCertificateExpoProjectInformationOID = "1.2.840.113556.1.8000.2554.43437.254.128.102.157.7894389.20439.2.1"
   
   private var certificateStrings: [String]
   
@@ -46,18 +46,18 @@ class EXUpdatesCertificateChain {
   
   public func codeSigningCertificate() throws -> Certificate {
     if (certificateStrings.isEmpty) {
-      throw EXUpdatesCodeSigningError.CertificateEmptyError
+      throw CodeSigningError.CertificateEmptyError
     }
     
     let certificateChain = try certificateStrings.map { certificateString throws in
-      try EXUpdatesCertificateChain.constructCertificate(certificateString: certificateString)
+      try CodeSigningCertificateChain.constructCertificate(certificateString: certificateString)
     }
     try certificateChain.validateChain()
     
     let leafCertificate = certificateChain.first!
     let (_, x509LeafCertificate) = leafCertificate
     if (!x509LeafCertificate.isCodeSigningCertificate()) {
-      throw EXUpdatesCodeSigningError.CertificateMissingCodeSigningError
+      throw CodeSigningError.CertificateMissingCodeSigningError
     }
     
     return leafCertificate
@@ -65,21 +65,21 @@ class EXUpdatesCertificateChain {
   
   private static func constructCertificate(certificateString: String) throws -> Certificate {
     guard let certificateData = certificateString.data(using: .utf8) else {
-      throw EXUpdatesCodeSigningError.CertificateEncodingError
+      throw CodeSigningError.CertificateEncodingError
     }
     
     guard let certificateDataDer = decodeToDER(pem: certificateData) else {
-      throw EXUpdatesCodeSigningError.CertificateDERDecodeError
+      throw CodeSigningError.CertificateDERDecodeError
     }
     
     let x509Certificate = try X509Certificate(der: certificateDataDer)
     
     guard x509Certificate.checkValidity() else {
-      throw EXUpdatesCodeSigningError.CertificateValidityError
+      throw CodeSigningError.CertificateValidityError
     }
     
     guard let secCertificate = SecCertificateCreateWithData(nil, certificateDataDer as CFData) else {
-      throw EXUpdatesCodeSigningError.CertificateDERDecodeError
+      throw CodeSigningError.CertificateDERDecodeError
     }
     
     return (secCertificate, x509Certificate)
@@ -147,15 +147,15 @@ extension X509Certificate {
     }
     
     let extendedKeyUsage = self.extendedKeyUsage
-    if (!extendedKeyUsage.contains(EXUpdatesCertificateChain.EXUpdatesCodeSigningCertificateExtendedUsageCodeSigningOID)) {
+    if (!extendedKeyUsage.contains(CodeSigningCertificateChain.CodeSigningCertificateExtendedUsageCodeSigningOID)) {
       return false
     }
     
     return true
   }
   
-  func expoProjectInformation() throws -> EXUpdatesExpoProjectInformation? {
-    guard let projectInformationExtensionValue = extensionObject(oid: EXUpdatesCertificateChain.EXUpdatesCodeSigningCertificateExpoProjectInformationOID)?.value else {
+  func expoProjectInformation() throws -> CodeSigningProjectInformation? {
+    guard let projectInformationExtensionValue = extensionObject(oid: CodeSigningCertificateChain.CodeSigningCertificateExpoProjectInformationOID)?.value else {
       return nil
     }
     
@@ -165,9 +165,9 @@ extension X509Certificate {
         it.trimmingCharacters(in: CharacterSet.whitespaces)
       }
     if (components.count != 2) {
-      throw EXUpdatesCodeSigningError.InvalidExpoProjectInformationExtensionValue
+      throw CodeSigningError.InvalidExpoProjectInformationExtensionValue
     }
-    return EXUpdatesExpoProjectInformation(projectId: components[0], scopeKey: components[1])
+    return CodeSigningProjectInformation(projectId: components[0], scopeKey: components[1])
   }
 }
 
@@ -177,7 +177,7 @@ extension Array where Element == Certificate {
     
     // only trust anchor if self-signed
     if (anchorX509Cert.subjectDistinguishedName != anchorX509Cert.issuerDistinguishedName) {
-      throw EXUpdatesCodeSigningError.CertificateRootNotSelfSigned
+      throw CodeSigningError.CertificateRootNotSelfSigned
     }
     
     let secCertificates = self.map { (secCertificate, _) in
@@ -191,7 +191,7 @@ extension Array where Element == Certificate {
     if (count > 1) {
       let (_, rootX509Cert) = self.last!
       if (!rootX509Cert.isCACertificate()) {
-        throw EXUpdatesCodeSigningError.CertificateRootNotCA
+        throw CodeSigningError.CertificateRootNotCA
       }
       
       var lastExpoProjectInformation = try rootX509Cert.expoProjectInformation()
@@ -200,7 +200,7 @@ extension Array where Element == Certificate {
         let (_, x509Cert) = self[i]
         let currProjectInformation = try x509Cert.expoProjectInformation()
         if lastExpoProjectInformation != nil && lastExpoProjectInformation != currProjectInformation {
-          throw EXUpdatesCodeSigningError.CertificateProjectInformationChainError
+          throw CodeSigningError.CertificateProjectInformationChainError
         }
         lastExpoProjectInformation = currProjectInformation
       }
@@ -214,7 +214,7 @@ extension SecTrust {
     let status = SecTrustCreateWithCertificates(certificates as AnyObject, policy, &optionalTrust)
     guard let trust = optionalTrust, status.isSuccess else {
       NSLog("Could not create sec trust with certificates (OSStatus: %@)", status)
-      throw EXUpdatesCodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError
     }
     return trust
   }
@@ -223,13 +223,13 @@ extension SecTrust {
     let status = SecTrustSetAnchorCertificates(self, anchorCertificates as CFArray)
     guard status.isSuccess else {
       NSLog("Could not set anchor certificates on sec trust (OSStatus: %@)", status)
-      throw EXUpdatesCodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError
     }
 
     let status2 = SecTrustSetAnchorCertificatesOnly(self, true)
     guard status2.isSuccess else {
       NSLog("Could not set anchor certificates only setting on sec trust (OSStatus: %@)", status)
-      throw EXUpdatesCodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError
     }
   }
   
@@ -237,7 +237,7 @@ extension SecTrust {
     let status = SecTrustSetNetworkFetchAllowed(self, false)
     guard status.isSuccess else {
       NSLog("Could not disable network fetch on sec trust (OSStatus: %@)", status)
-      throw EXUpdatesCodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError
     }
   }
   
@@ -248,7 +248,7 @@ extension SecTrust {
       if let error = error {
         NSLog("Sec trust evaluation error: %@", error.localizedDescription)
       }
-      throw EXUpdatesCodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError
     }
   }
 }
