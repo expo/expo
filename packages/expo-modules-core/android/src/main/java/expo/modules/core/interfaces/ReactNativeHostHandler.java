@@ -44,6 +44,17 @@ public interface ReactNativeHostHandler {
   }
 
   /**
+   * Give modules a chance to override the value for useDeveloperSupport,
+   * e.g. for expo-dev-launcher
+   *
+   * @return value for useDeveloperSupport, or null if not to override
+   */
+  @Nullable
+  default Boolean getUseDeveloperSupport() {
+    return null;
+  }
+
+  /**
    * Given chance for modules to override react dev support manager factory.
    * e.g. for expo-dev-client
    *

@@ -76,7 +76,9 @@ open class ReactNativeHostWrapperBase(
   }
 
   override fun getUseDeveloperSupport(): Boolean {
-    return host.useDeveloperSupport
+    return reactNativeHostHandlers.asSequence()
+      .mapNotNull { it.useDeveloperSupport }
+      .firstOrNull() ?: host.useDeveloperSupport
   }
 
   override fun getPackages(): MutableList<ReactPackage> {
