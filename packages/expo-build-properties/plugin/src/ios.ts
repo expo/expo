@@ -2,19 +2,17 @@ import { IOSConfig, ConfigPlugin, withXcodeProject, XcodeProject } from '@expo/c
 
 import type { PluginConfigType } from './pluginConfig';
 
-const { withBuildPodfileProps } = IOSConfig.BuildProperties;
+const { createBuildPodfilePropsConfigPlugin } = IOSConfig.BuildProperties;
 
-export const withIosBuildProperties: ConfigPlugin<PluginConfigType> = (config, props) => {
-  return withBuildPodfileProps(config, {
-    sourceConfig: props,
-    configToPropertyRules: [
-      {
-        propName: 'ios.useFrameworks',
-        propValueGetter: (config) => config.ios?.useFrameworks,
-      },
-    ],
-  });
-};
+export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<PluginConfigType>(
+  [
+    {
+      propName: 'ios.useFrameworks',
+      propValueGetter: (config) => config.ios?.useFrameworks,
+    },
+  ],
+  'withIosBuildProperties'
+);
 
 export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, props) => {
   const deploymentTarget = props.ios?.deploymentTarget;
@@ -26,15 +24,7 @@ export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, 
   config = withIosDeploymentTargetXcodeProject(config, { deploymentTarget });
 
   // Updates deployement target in Podfile (Pods project)
-  config = withBuildPodfileProps(config, {
-    sourceConfig: props,
-    configToPropertyRules: [
-      {
-        propName: 'ios.deploymentTarget',
-        propValueGetter: (config) => config.ios?.deploymentTarget,
-      },
-    ],
-  });
+  config = withIosDeploymentTargetPodfile(config, props);
 
   return config;
 };
@@ -64,3 +54,13 @@ function updateDeploymentTargetXcodeProject(
   }
   return project;
 }
+
+const withIosDeploymentTargetPodfile = createBuildPodfilePropsConfigPlugin<PluginConfigType>(
+  [
+    {
+      propName: 'ios.deploymentTarget',
+      propValueGetter: (config) => config.ios?.deploymentTarget,
+    },
+  ],
+  'withIosDeploymentTargetPodfile'
+);

@@ -1,5 +1,8 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 
+/**
+ * Configuration for `expo-build-properties`
+ */
 export interface PluginConfigType {
   android?: {
     compileSdkVersion?: number;
