@@ -24,8 +24,11 @@ class PaymentLauncherFragment(
   var clientSecret: String? = null
   var promise: Promise? = null
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     paymentLauncher = createPaymentLauncher()
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
@@ -56,50 +59,53 @@ class PaymentLauncherFragment(
 
   private fun retrievePaymentIntent(clientSecret: String, stripeAccountId: String?) {
     val promise = promise ?: throw Exception("No promise is set to handle payment results.")
-    stripe.retrievePaymentIntent(clientSecret, stripeAccountId, object : ApiResultCallback<PaymentIntent> {
-      override fun onError(e: Exception) {
-        promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), e))
-      }
+    stripe.retrievePaymentIntent(
+      clientSecret, stripeAccountId,
+      object : ApiResultCallback<PaymentIntent> {
+        override fun onError(e: Exception) {
+          promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), e))
+        }
 
-      override fun onSuccess(result: PaymentIntent) {
-        when (result.status) {
-          StripeIntent.Status.Succeeded,
-          StripeIntent.Status.Processing,
-          StripeIntent.Status.RequiresCapture -> {
-            val paymentIntent = createResult("paymentIntent", mapFromPaymentIntentResult(result))
-            promise.resolve(paymentIntent)
-          }
-          StripeIntent.Status.RequiresAction -> {
-            if (isNextActionSuccessState(result.nextActionType)) {
+        override fun onSuccess(result: PaymentIntent) {
+          when (result.status) {
+            StripeIntent.Status.Succeeded,
+            StripeIntent.Status.Processing,
+            StripeIntent.Status.RequiresCapture -> {
               val paymentIntent = createResult("paymentIntent", mapFromPaymentIntentResult(result))
               promise.resolve(paymentIntent)
-            } else {
-              (result.lastPaymentError)?.let {
-                promise.resolve(createError(ConfirmPaymentErrorType.Canceled.toString(), it))
-              } ?: run {
-                promise.resolve(createError(ConfirmPaymentErrorType.Canceled.toString(), "The payment has been canceled"))
+            }
+            StripeIntent.Status.RequiresAction -> {
+              if (isNextActionSuccessState(result.nextActionType)) {
+                val paymentIntent = createResult("paymentIntent", mapFromPaymentIntentResult(result))
+                promise.resolve(paymentIntent)
+              } else {
+                (result.lastPaymentError)?.let {
+                  promise.resolve(createError(ConfirmPaymentErrorType.Canceled.toString(), it))
+                } ?: run {
+                  promise.resolve(createError(ConfirmPaymentErrorType.Canceled.toString(), "The payment has been canceled"))
+                }
               }
             }
-          }
-          StripeIntent.Status.RequiresPaymentMethod -> {
-            val error = result.lastPaymentError
-            promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), error))
-          }
-          StripeIntent.Status.RequiresConfirmation -> {
-            val paymentIntent = createResult("paymentIntent", mapFromPaymentIntentResult(result))
-            promise.resolve(paymentIntent)
-          }
-          StripeIntent.Status.Canceled -> {
-            val error = result.lastPaymentError
-            promise.resolve(createError(ConfirmPaymentErrorType.Canceled.toString(), error))
-          }
-          else -> {
-            val errorMessage = "unhandled error: ${result.status}"
-            promise.resolve(createError(ConfirmPaymentErrorType.Unknown.toString(), errorMessage))
+            StripeIntent.Status.RequiresPaymentMethod -> {
+              val error = result.lastPaymentError
+              promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), error))
+            }
+            StripeIntent.Status.RequiresConfirmation -> {
+              val paymentIntent = createResult("paymentIntent", mapFromPaymentIntentResult(result))
+              promise.resolve(paymentIntent)
+            }
+            StripeIntent.Status.Canceled -> {
+              val error = result.lastPaymentError
+              promise.resolve(createError(ConfirmPaymentErrorType.Canceled.toString(), error))
+            }
+            else -> {
+              val errorMessage = "unhandled error: ${result.status}"
+              promise.resolve(createError(ConfirmPaymentErrorType.Unknown.toString(), errorMessage))
+            }
           }
         }
       }
-    })
+    )
   }
 
   /**
@@ -119,4 +125,3 @@ class PaymentLauncherFragment(
     }
   }
 }
-

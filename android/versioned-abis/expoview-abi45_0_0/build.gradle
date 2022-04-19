@@ -210,5 +210,3 @@ dependencies {
   // react-native-maps
   implementation "androidx.work:work-runtime:2.7.1"
 }
-
-

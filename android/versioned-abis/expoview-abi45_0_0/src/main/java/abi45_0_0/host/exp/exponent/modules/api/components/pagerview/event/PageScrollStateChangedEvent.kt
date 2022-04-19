@@ -5,7 +5,6 @@ import abi45_0_0.com.facebook.react.bridge.WritableMap
 import abi45_0_0.com.facebook.react.uimanager.events.Event
 import abi45_0_0.com.facebook.react.uimanager.events.RCTEventEmitter
 
-
 /**
  * Event emitted by [ReactViewPager] when user scrolling state changed.
  *
@@ -30,5 +29,4 @@ class PageScrollStateChangedEvent(viewTag: Int, private val mPageScrollState: St
   companion object {
     const val EVENT_NAME = "topPageScrollStateChanged"
   }
-
 }

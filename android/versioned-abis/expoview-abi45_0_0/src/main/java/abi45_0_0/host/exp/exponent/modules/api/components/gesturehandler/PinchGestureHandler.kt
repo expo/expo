@@ -27,8 +27,9 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }
-      if (abs(startingSpan - detector.currentSpan) >= spanSlop
-        && state == STATE_BEGAN) {
+      if (abs(startingSpan - detector.currentSpan) >= spanSlop &&
+        state == STATE_BEGAN
+      ) {
         activate()
       }
       return true

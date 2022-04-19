@@ -5,7 +5,7 @@ import abi45_0_0.com.facebook.react.modules.core.DeviceEventManagerModule
 import abi45_0_0.com.facebook.react.uimanager.UIManagerModule
 
 val ReactContext.deviceEventEmitter: DeviceEventManagerModule.RCTDeviceEventEmitter
-    get() = this.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+  get() = this.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
 
 val ReactContext.UIManager: UIManagerModule
-    get() = this.getNativeModule(UIManagerModule::class.java)!!
+  get() = this.getNativeModule(UIManagerModule::class.java)!!

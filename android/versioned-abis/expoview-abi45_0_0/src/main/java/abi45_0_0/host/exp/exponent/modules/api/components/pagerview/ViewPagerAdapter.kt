@@ -6,7 +6,6 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import java.util.*
 
-
 class ViewPagerAdapter() : Adapter<ViewPagerViewHolder>() {
   private val childrenViews: ArrayList<View> = ArrayList()
 

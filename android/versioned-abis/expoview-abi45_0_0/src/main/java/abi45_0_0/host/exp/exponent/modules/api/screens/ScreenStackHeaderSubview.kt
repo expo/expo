@@ -7,36 +7,36 @@ import abi45_0_0.com.facebook.react.views.view.ReactViewGroup
 
 @SuppressLint("ViewConstructor")
 class ScreenStackHeaderSubview(context: ReactContext?) : ReactViewGroup(context) {
-    private var mReactWidth = 0
-    private var mReactHeight = 0
-    var type = Type.RIGHT
+  private var mReactWidth = 0
+  private var mReactHeight = 0
+  var type = Type.RIGHT
 
-    val config: ScreenStackHeaderConfig?
-        get() {
-            return (parent as? CustomToolbar)?.config
-        }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY &&
-            MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY
-        ) {
-            // dimensions provided by react
-            mReactWidth = MeasureSpec.getSize(widthMeasureSpec)
-            mReactHeight = MeasureSpec.getSize(heightMeasureSpec)
-            val parent = parent
-            if (parent != null) {
-                forceLayout()
-                (parent as View).requestLayout()
-            }
-        }
-        setMeasuredDimension(mReactWidth, mReactHeight)
+  val config: ScreenStackHeaderConfig?
+    get() {
+      return (parent as? CustomToolbar)?.config
     }
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        // no-op
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY &&
+      MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY
+    ) {
+      // dimensions provided by react
+      mReactWidth = MeasureSpec.getSize(widthMeasureSpec)
+      mReactHeight = MeasureSpec.getSize(heightMeasureSpec)
+      val parent = parent
+      if (parent != null) {
+        forceLayout()
+        (parent as View).requestLayout()
+      }
     }
+    setMeasuredDimension(mReactWidth, mReactHeight)
+  }
 
-    enum class Type {
-        LEFT, CENTER, RIGHT, BACK, SEARCH_BAR
-    }
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    // no-op
+  }
+
+  enum class Type {
+    LEFT, CENTER, RIGHT, BACK, SEARCH_BAR
+  }
 }

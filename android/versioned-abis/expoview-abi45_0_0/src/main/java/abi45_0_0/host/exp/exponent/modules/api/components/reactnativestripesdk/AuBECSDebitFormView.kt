@@ -92,7 +92,6 @@ class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout
     }
   }
 
-
   fun onFormChanged(params: PaymentMethodCreateParams) {
     val billingDetails = params.toParamMap()["billing_details"] as HashMap<*, *>
     val auBecsDebit = params.toParamMap()["au_becs_debit"] as HashMap<*, *>
@@ -105,7 +104,8 @@ class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout
     )
 
     mEventDispatcher?.dispatchEvent(
-      FormCompleteEvent(id, formDetails))
+      FormCompleteEvent(id, formDetails)
+    )
   }
 
   private fun setListeners() {

@@ -71,7 +71,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     view.updateBackground()
   }
 
-  class ButtonViewGroup(context: Context?) : ViewGroup(context),
+  class ButtonViewGroup(context: Context?) :
+    ViewGroup(context),
     NativeViewGestureHandler.StateChangeHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
@@ -207,8 +208,9 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
           // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
           // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(borderRadius)
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-            && selectable is RippleDrawable) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+            selectable is RippleDrawable
+          ) {
             val mask = PaintDrawable(Color.WHITE)
             mask.setCornerRadius(borderRadius)
             selectable.setDrawableByLayerId(android.R.id.mask, mask)

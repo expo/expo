@@ -13,59 +13,59 @@ class CustomSearchView(context: Context, fragment: Fragment) : SearchView(contex
         setOnSearchClickListener - https://developer.android.com/reference/android/widget/SearchView#setOnSearchClickListener(android.view.View.OnClickListener)
         setOnCloseListener - https://developer.android.com/reference/android/widget/SearchView#setOnCloseListener(android.widget.SearchView.OnCloseListener)
     */
-    private var mCustomOnCloseListener: OnCloseListener? = null
-    private var mCustomOnSearchClickedListener: OnClickListener? = null
+  private var mCustomOnCloseListener: OnCloseListener? = null
+  private var mCustomOnSearchClickedListener: OnClickListener? = null
 
-    private var mOnBackPressedCallback: OnBackPressedCallback =
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                isIconified = true
-            }
-        }
-    private val backPressOverrider = FragmentBackPressOverrider(fragment, mOnBackPressedCallback)
-    var overrideBackAction: Boolean
-        set(value) {
-            backPressOverrider.overrideBackAction = value
-        }
-        get() = backPressOverrider.overrideBackAction
+  private var mOnBackPressedCallback: OnBackPressedCallback =
+    object : OnBackPressedCallback(true) {
+      override fun handleOnBackPressed() {
+        isIconified = true
+      }
+    }
+  private val backPressOverrider = FragmentBackPressOverrider(fragment, mOnBackPressedCallback)
+  var overrideBackAction: Boolean
+    set(value) {
+      backPressOverrider.overrideBackAction = value
+    }
+    get() = backPressOverrider.overrideBackAction
 
-    fun focus() {
-        isIconified = false
-        requestFocusFromTouch()
+  fun focus() {
+    isIconified = false
+    requestFocusFromTouch()
+  }
+
+  override fun setOnCloseListener(listener: OnCloseListener?) {
+    mCustomOnCloseListener = listener
+  }
+
+  override fun setOnSearchClickListener(listener: OnClickListener?) {
+    mCustomOnSearchClickedListener = listener
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    if (!isIconified) {
+      backPressOverrider.maybeAddBackCallback()
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    backPressOverrider.removeBackCallbackIfAdded()
+  }
+
+  init {
+    super.setOnSearchClickListener { v ->
+      mCustomOnSearchClickedListener?.onClick(v)
+      backPressOverrider.maybeAddBackCallback()
     }
 
-    override fun setOnCloseListener(listener: OnCloseListener?) {
-        mCustomOnCloseListener = listener
+    super.setOnCloseListener {
+      val result = mCustomOnCloseListener?.onClose() ?: false
+      backPressOverrider.removeBackCallbackIfAdded()
+      result
     }
 
-    override fun setOnSearchClickListener(listener: OnClickListener?) {
-        mCustomOnSearchClickedListener = listener
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (!isIconified) {
-            backPressOverrider.maybeAddBackCallback()
-        }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        backPressOverrider.removeBackCallbackIfAdded()
-    }
-
-    init {
-        super.setOnSearchClickListener { v ->
-            mCustomOnSearchClickedListener?.onClick(v)
-            backPressOverrider.maybeAddBackCallback()
-        }
-
-        super.setOnCloseListener {
-            val result = mCustomOnCloseListener?.onClose() ?: false
-            backPressOverrider.removeBackCallbackIfAdded()
-            result
-        }
-
-        maxWidth = Integer.MAX_VALUE
-    }
+    maxWidth = Integer.MAX_VALUE
+  }
 }

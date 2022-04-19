@@ -4,7 +4,6 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import abi45_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerButtonViewManager
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
@@ -112,7 +111,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   override fun onCancel() {
     val time = SystemClock.uptimeMillis()
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
-      action =  MotionEvent.ACTION_CANCEL
+      action = MotionEvent.ACTION_CANCEL
     }
     view!!.onTouchEvent(event)
   }

@@ -53,30 +53,33 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   private val mActivityEventListener = object : BaseActivityEventListener() {
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
       if (::stripe.isInitialized) {
-        stripe.onSetupResult(requestCode, data, object : ApiResultCallback<SetupIntentResult> {
-          override fun onSuccess(result: SetupIntentResult) {
-            val setupIntent = result.intent
-            when (setupIntent.status) {
-              StripeIntent.Status.Succeeded -> {
-                confirmSetupIntentPromise?.resolve(createResult("setupIntent", mapFromSetupIntentResult(setupIntent)))
-              }
-              StripeIntent.Status.Canceled -> {
-                confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Canceled.toString(), setupIntent.lastSetupError))
-              }
-              StripeIntent.Status.RequiresAction -> {
-                confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Canceled.toString(), setupIntent.lastSetupError))
-              }
-              else -> {
-                val errorMessage = "unhandled error: ${setupIntent.status}"
-                confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Failed.toString(), errorMessage))
+        stripe.onSetupResult(
+          requestCode, data,
+          object : ApiResultCallback<SetupIntentResult> {
+            override fun onSuccess(result: SetupIntentResult) {
+              val setupIntent = result.intent
+              when (setupIntent.status) {
+                StripeIntent.Status.Succeeded -> {
+                  confirmSetupIntentPromise?.resolve(createResult("setupIntent", mapFromSetupIntentResult(setupIntent)))
+                }
+                StripeIntent.Status.Canceled -> {
+                  confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Canceled.toString(), setupIntent.lastSetupError))
+                }
+                StripeIntent.Status.RequiresAction -> {
+                  confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Canceled.toString(), setupIntent.lastSetupError))
+                }
+                else -> {
+                  val errorMessage = "unhandled error: ${setupIntent.status}"
+                  confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Failed.toString(), errorMessage))
+                }
               }
             }
-          }
 
-          override fun onError(e: Exception) {
-            confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Failed.toString(), e))
+            override fun onError(e: Exception) {
+              confirmSetupIntentPromise?.resolve(createError(ConfirmSetupIntentErrorType.Failed.toString(), e))
+            }
           }
-        })
+        )
 
         paymentSheetFragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
         googlePayFragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
@@ -195,8 +198,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
           presentPaymentSheetPromise?.resolve(WritableNativeMap())
         }
         presentPaymentSheetPromise = null
-      }
-      else if (intent.action == ON_INIT_PAYMENT_SHEET) {
+      } else if (intent.action == ON_INIT_PAYMENT_SHEET) {
         initPaymentSheetPromise?.resolve(WritableNativeMap())
       } else if (intent.action == ON_CONFIGURE_FLOW_CONTROLLER) {
         val label = intent.extras?.getString("label")
@@ -346,7 +348,8 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
           val paymentMethodMap: WritableMap = mapFromPaymentMethod(result)
           promise.resolve(createResult("paymentMethod", paymentMethodMap))
         }
-      })
+      }
+    )
   }
 
   @ReactMethod
@@ -395,7 +398,6 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
         promise.resolve(createError(CreateTokenErrorType.Failed.toString(), it.message))
       }
     }
-
   }
 
   private fun createTokenFromCard(params: ReadableMap, promise: Promise) {

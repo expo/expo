@@ -51,16 +51,16 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
         init(handler, newState, oldState, dataExtractor)
       }
 
-    fun <T: GestureHandler<T>> createEventData(
+    fun <T : GestureHandler<T>> createEventData(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
       newState: Int,
       oldState: Int,
     ): WritableMap = Arguments.createMap().apply {
-        dataExtractor?.extractEventData(handler, this)
-        putInt("handlerTag", handler.tag)
-        putInt("state", newState)
-        putInt("oldState", oldState)
-      }
+      dataExtractor?.extractEventData(handler, this)
+      putInt("handlerTag", handler.tag)
+      putInt("state", newState)
+      putInt("oldState", oldState)
+    }
   }
 }

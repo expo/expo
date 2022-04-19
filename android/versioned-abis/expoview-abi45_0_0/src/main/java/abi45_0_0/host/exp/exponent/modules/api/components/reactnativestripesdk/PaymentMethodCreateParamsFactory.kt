@@ -154,8 +154,8 @@ class PaymentMethodCreateParamsFactory(
       val sepaParams = PaymentMethodCreateParams.SepaDebit(iban)
       val createParams =
         PaymentMethodCreateParams.create(
-                     sepaDebit = sepaParams,
-                     billingDetails = it
+          sepaDebit = sepaParams,
+          billingDetails = it
         )
 
       return ConfirmSetupIntentParams.create(
@@ -425,8 +425,8 @@ class PaymentMethodCreateParamsFactory(
   @Throws(PaymentMethodCreateParamsException::class)
   private fun createKlarnaPaymentConfirmParams(): ConfirmPaymentIntentParams {
     if (billingDetailsParams == null ||
-        billingDetailsParams.address?.country.isNullOrBlank() ||
-        billingDetailsParams.email.isNullOrBlank()
+      billingDetailsParams.address?.country.isNullOrBlank() ||
+      billingDetailsParams.email.isNullOrBlank()
     ) {
       throw PaymentMethodCreateParamsException("Klarna requires that you provide the following billing details: email, country")
     }

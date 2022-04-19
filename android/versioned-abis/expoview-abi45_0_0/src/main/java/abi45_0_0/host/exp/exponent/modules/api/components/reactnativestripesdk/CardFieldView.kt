@@ -203,7 +203,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
 
   private fun sendCardDetailsEvent() {
     mEventDispatcher?.dispatchEvent(
-      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, cardParams != null, dangerouslyGetFullCardDetails))
+      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, cardParams != null, dangerouslyGetFullCardDetails)
+    )
   }
 
   private fun setListeners() {
@@ -228,7 +229,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
       override fun onFocusChange(focusField: CardInputListener.FocusField) {
         if (mEventDispatcher != null) {
           mEventDispatcher?.dispatchEvent(
-            CardFocusEvent(id, focusField.name))
+            CardFocusEvent(id, focusField.name)
+          )
         }
       }
     })
@@ -285,7 +287,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY))
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
     layout(left, top, right, bottom)
   }
 }

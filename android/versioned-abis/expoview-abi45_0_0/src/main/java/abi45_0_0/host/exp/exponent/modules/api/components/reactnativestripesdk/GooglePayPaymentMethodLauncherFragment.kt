@@ -16,9 +16,12 @@ class GooglePayPaymentMethodLauncherFragment(
   private val isTestEnv: Boolean,
   private val paymentMethodRequired: Boolean,
   private val promise: Promise
-  ) : Fragment() {
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+) : Fragment() {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
     }
@@ -32,7 +35,7 @@ class GooglePayPaymentMethodLauncherFragment(
         environment = if (isTestEnv) GooglePayEnvironment.Test else GooglePayEnvironment.Production,
         existingPaymentMethodRequired = paymentMethodRequired,
         merchantCountryCode = "", // Unnecessary since all we are checking for is Google Pay availability
-        merchantName = "",        // Same as above
+        merchantName = "", // Same as above
       ),
       readyCallback = {
         promise.resolve(it)

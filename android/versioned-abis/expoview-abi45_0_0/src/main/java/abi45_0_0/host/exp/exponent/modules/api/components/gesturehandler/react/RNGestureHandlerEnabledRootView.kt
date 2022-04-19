@@ -36,7 +36,8 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   fun initialize() {
     check(gestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
     gestureRootHelper = RNGestureHandlerRootHelper(
-      _reactInstanceManager.currentReactContext!!, this)
+      _reactInstanceManager.currentReactContext!!, this
+    )
   }
 
   fun tearDown() {

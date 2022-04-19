@@ -9,7 +9,6 @@ import abi45_0_0.com.facebook.react.bridge.ReactContext
 import abi45_0_0.com.facebook.react.bridge.UiThreadUtil
 import abi45_0_0.com.facebook.react.common.ReactConstants
 import abi45_0_0.com.facebook.react.uimanager.RootView
-import abi45_0_0.com.facebook.react.views.modal.ReactModalHostView
 import abi45_0_0.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler
 import abi45_0_0.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerOrchestrator
 
@@ -29,9 +28,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     rootView = findRootViewTag(wrappedView)
     Log.i(
       ReactConstants.TAG,
-      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
+      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView"
+    )
     orchestrator = GestureHandlerOrchestrator(
-      wrappedView, registry, RNViewConfigurationHelper()).apply {
+      wrappedView, registry, RNViewConfigurationHelper()
+    ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
@@ -45,7 +46,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   fun tearDown() {
     Log.i(
       ReactConstants.TAG,
-      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
+      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView"
+    )
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
     with(module) {
       registry.dropHandler(jsGestureHandler!!.tag)
