@@ -13,13 +13,6 @@ jest.mock('../../../../utils/delay', () => ({
   delayAsync: jest.fn(async () => {}),
 }));
 
-beforeEach(() => {
-  asMock(confirmAsync).mockClear();
-  asMock(delayAsync).mockClear();
-  asMock(PackageManager.createForProject).mockClear();
-  asMock(PackageManager.NpmPackageManager as any).mockClear();
-});
-
 function createExternalModuleResolver() {
   const projectRoot = '/';
   const onMessage = jest.fn((pkgName) => pkgName + ' is required');

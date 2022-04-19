@@ -20,7 +20,7 @@ jobs:
     runs-on: macos-11
     steps:
       - name: 👀 Checkout a ref for the event
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
@@ -84,6 +84,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
       - name: 🗑 Removing SDK version
         run: expotools remove-sdk-version --platform ios --sdkVersion latest
       - name: 🐙 Git working dir is clean

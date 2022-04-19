@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-branch'
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referalls and attribution with deep links. **This module only works in standalone apps &mdash; you will need to [build a standalone app](/distribution/building-standalone-apps/) in order to test it, rather than using Expo Go.**
+**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referrals and attribution with deep links. **This module only works in standalone apps &mdash; you will need to [build a standalone app](/distribution/building-standalone-apps/) in order to test it, rather than using Expo Go.**
 
 <PlatformsSection android emulator ios simulator />
 

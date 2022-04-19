@@ -241,6 +241,7 @@ object VersionedUtils {
           instanceManagerBuilderProperties.manifest
         )
       )
+      .setMinNumShakes(100) // disable the RN dev menu
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
       .setCustomPackagerCommandHandlers(createPackagerCommandHelpers())
       .setJavaScriptExecutorFactory(createJSExecutorFactory(instanceManagerBuilderProperties))

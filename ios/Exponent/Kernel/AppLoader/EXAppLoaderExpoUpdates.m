@@ -13,6 +13,10 @@
 #import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
 
+#if !defined(EX_DETACHED)
+#import "Expo_Go-Swift.h"
+#endif // !defined(EX_DETACHED)
+
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesConfig.h>
@@ -27,6 +31,7 @@
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <EXManifests/EXManifestsManifestFactory.h>
 #import <EXManifests/EXManifestsLegacyManifest.h>
+#import <EXManifests/EXManifestsNewManifest.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
 
@@ -536,6 +541,22 @@ NS_ASSUME_NONNULL_BEGIN
     // scope key, automatically verify it
     if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest])) {
       mutableManifest[@"isVerified"] = @(YES);
+    }
+    
+    // when the manifest is not verified at this point, make the scope key a salted and hashed version of the claimed scope key
+    if (![mutableManifest[@"isVerified"] boolValue]) {
+      NSString *currentScopeKeyAndSaltToHash = [NSString stringWithFormat:@"unverified-%@", manifest.scopeKey];
+      NSString *currentScopeKeyHash = [currentScopeKeyAndSaltToHash hexEncodedSHA256];
+      NSString *newScopeKey = [NSString stringWithFormat:@"%@-%@", currentScopeKeyAndSaltToHash, currentScopeKeyHash];
+      if ([manifest isKindOfClass:EXManifestsNewManifest.class]) {
+        NSDictionary *extra = mutableManifest[@"extra"] ?: @{};
+        NSMutableDictionary *mutableExtra = [extra mutableCopy];
+        mutableExtra[@"scopeKey"] = newScopeKey;
+        mutableManifest[@"extra"] = mutableExtra;
+      } else {
+        mutableManifest[@"scopeKey"] = newScopeKey;
+        mutableManifest[@"id"] = newScopeKey;
+      }
     }
 
     return [EXManifestsManifestFactory manifestForManifestJSON:[mutableManifest copy]];

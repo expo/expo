@@ -26,7 +26,7 @@ A build profile is a named grouping of configuration that describes the necessar
 
 The JSON object under the `build` key can contain multiple build profiles, and you can name these build profiles whatever you like; in the above example, there are three build profiles: `development`, `preview`, and `production`, but these could have been named `foo`, `bar`, and `baz` if that was your preference.
 
-To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the channel with the name **production**, if it exists.
+To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the profile with the name **production**, if it exists.
 
 ### Platform-specific and common options
 

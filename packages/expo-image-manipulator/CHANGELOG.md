@@ -6,14 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fix `base64` result of `manipulateAsync` being always `null` on iOS. ([#17122](https://github.com/expo/expo/pull/17122) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+## 10.3.0 — 2022-04-18
+
+### 🎉 New features
+
 - Native module on iOS is now written in Swift using the new API. ([#15277](https://github.com/expo/expo/pull/15277) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Remove `data:image` part in web base64 result. ([#16191](https://github.com/expo/expo/pull/16191) by [@AllanChain](https://github.com/AllanChain))
 - On iOS fix rotation causing extra image borders. ([#16669](https://github.com/expo/expo/pull/16669) by [@mnightingale](https://github.com/mnightingale))
-
-### 💡 Others
 
 ### ⚠️ Notices
 

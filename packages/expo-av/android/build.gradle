@@ -5,13 +5,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '11.1.0'
+version = '11.2.0'
 
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def RN_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def RN_SO_DIR = RN_BUILD_FROM_SOURCE
     ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
     : "${buildDir}/react-native-0*/jni"
+def RN_AAR_DIR = "${REACT_NATIVE_DIR}/android"
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -86,7 +87,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 24
-    versionName "11.1.0"
+    versionName "11.2.0"
 
     externalNativeBuild {
       cmake {
@@ -152,7 +153,7 @@ dependencies {
   compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
   extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
-  def rnAARs = fileTree("${REACT_NATIVE_DIR}/android").matching { include "**/*.aar" }
+  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/*.aar" }
   if (rnAARs.any()) {
     // node_modules/react-native has a .aar, extract headers
     if (rnAARs.size() > 1) {

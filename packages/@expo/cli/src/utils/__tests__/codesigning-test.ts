@@ -8,6 +8,7 @@ import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
+jest.mock('../../log');
 jest.mock('@expo/code-signing-certificates', () => ({
   ...(jest.requireActual(
     '@expo/code-signing-certificates'
@@ -30,6 +31,13 @@ jest.mock('../../api/getExpoGoIntermediateCertificate', () => ({
   getExpoGoIntermediateCertificateAsync: jest.fn(
     () => mockExpoRootChain.expoGoIntermediateCertificate
   ),
+}));
+
+// Mock the CLI global to prevent side-effects in other tests.
+jest.mock('../../api/settings', () => ({
+  APISettings: {
+    isOffline: true,
+  },
 }));
 
 beforeEach(() => {

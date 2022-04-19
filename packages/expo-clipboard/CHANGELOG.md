@@ -4,6 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed `setStringAsync` crashing when setting HTML content on web. ([#17115](https://github.com/expo/expo/pull/17115) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+## 3.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
 - The `content` property of the clipboard event listener is now deprecated and always returns empty string and logs a warning message to the console. Use `getStringAsync()` instead.
 
 ### 🎉 New features
@@ -15,16 +27,9 @@
 - Added support for HTML content in `getStringAsync` and `setStringAsync`. ([#16551](https://github.com/expo/expo/pull/16551), [#16687](https://github.com/expo/expo/pull/16687) by [@barthap](https://github.com/barthap))
 - Added new property `contentTypes` to the clipboard event listener describing contents of the clipboard. ([#16787](https://github.com/expo/expo/pull/16787) by [@barthap](https://github.com/barthap))
 
-### 🐛 Bug fixes
-
 ### ⚠ Notices
 
 - Deprecated `setString`. Use `setStringAsync` instead. ([#16320](https://github.com/expo/expo/pull/16320) by [@barthap](https://github.com/barthap))
-
-### 💡 Others
-
-### ⚠️ Notices
-
 - On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 2.1.1 - 2022-02-01

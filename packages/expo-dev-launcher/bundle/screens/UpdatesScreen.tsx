@@ -18,9 +18,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { BasicButton } from '../components/BasicButton';
 import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
-import { LoadMoreButton } from '../components/LoadMoreButton';
 import { Toasts } from '../components/Toasts';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { loadUpdate } from '../native-modules/DevLauncherInternal';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useChannelsForApp } from '../queries/useChannelsForApp';
@@ -33,7 +32,7 @@ type UpdatesScreenProps = {
 };
 
 export function UpdatesScreen({ route }: UpdatesScreenProps) {
-  const { runtimeVersion } = useBuildInfo();
+  const { runtimeVersion, updatesUrl } = useUpdatesConfig();
   const { branchName } = route.params;
   const toastStack = useToastStack();
 
@@ -46,6 +45,8 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
     isRefreshing,
     isFetchingNextPage,
   } = useUpdatesForBranch(branchName);
+
+  const [loadingUpdateId, setLoadingUpdateId] = React.useState('');
 
   const onUpdatePress = React.useCallback(
     (update: Update) => {
@@ -65,9 +66,21 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
           ),
           { durationMs: 10000 }
         );
+      } else {
+        setLoadingUpdateId(update.id);
+
+        loadUpdate(update.manifestPermalink, updatesUrl)
+          .catch((error) => {
+            setLoadingUpdateId('');
+
+            toastStack.push(() => <Toasts.Error>{error.message}</Toasts.Error>, {
+              durationMs: 10000,
+            });
+          })
+          .then(() => setLoadingUpdateId(''));
       }
     },
-    [runtimeVersion, branchName]
+    [runtimeVersion, branchName, updatesUrl]
   );
 
   function Header() {
@@ -86,7 +99,14 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
 
   function Footer() {
     if (hasNextPage) {
-      return <LoadMoreButton isLoading={isFetchingNextPage} onPress={fetchNextPage} />;
+      return (
+        <BasicButton
+          label="Load More"
+          isLoading={isFetchingNextPage}
+          onPress={() => fetchNextPage()}
+          size="small"
+        />
+      );
     }
 
     return null;
@@ -125,23 +145,17 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
     const isLast = index === updates.length - 1;
 
     const isCompatibleUpdate = update.runtimeVersion === runtimeVersion;
+    const isLoading = update.id === loadingUpdateId;
 
     return (
       <View px="medium" opacity={isCompatibleUpdate ? '1' : '0.5'}>
-        <Button.ScaleOnPressContainer
-          bg="default"
+        <EASUpdateRow
+          update={update}
+          isFirst={isFirst}
+          isLast={isLast}
+          isLoading={isLoading}
           onPress={() => onUpdatePress(update)}
-          roundedBottom={isLast ? 'large' : 'none'}
-          roundedTop={isFirst ? 'large' : 'none'}>
-          <View
-            bg="default"
-            roundedTop={isFirst ? 'large' : 'none'}
-            roundedBottom={isLast ? 'large' : 'none'}
-            py="small"
-            px="small">
-            <EASUpdateRow update={update} />
-          </View>
-        </Button.ScaleOnPressContainer>
+        />
         {!isLast && <Divider />}
       </View>
     );
@@ -160,7 +174,7 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
         onRefresh={() => refetch()}
         ListHeaderComponent={Header}
         data={updates}
-        extraData={{ length: updates.length }}
+        extraData={{ length: updates.length, loadingUpdateId }}
         renderItem={renderUpdate}
         keyExtractor={(item) => item.id}
         ListFooterComponent={Footer}
@@ -177,7 +191,7 @@ type BranchDetailsHeaderProps = {
 };
 
 function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetailsHeaderProps) {
-  const { appId } = useUpdatesConfig();
+  const { appId, runtimeVersion } = useUpdatesConfig();
   const { data: channels } = useChannelsForApp(appId);
 
   const availableChannels: string[] = [];
@@ -189,6 +203,8 @@ function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetails
   });
 
   const hasUpdates = updates.length > 0;
+  const latestUpdate = updates[0];
+  const isLatestUpdateCompatible = latestUpdate?.runtimeVersion === runtimeVersion;
 
   return (
     <View bg="default" px="medium" py="medium">
@@ -202,7 +218,16 @@ function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetails
         </View>
 
         <Spacer.Horizontal />
-        {hasUpdates && <BasicButton label="Open Latest" onPress={onOpenPress} py="1.5" px="2" />}
+        {hasUpdates && (
+          <View opacity={isLatestUpdateCompatible ? '1' : '0.75'}>
+            <BasicButton
+              disabled={!isLatestUpdateCompatible}
+              label="Open Latest"
+              onPress={onOpenPress}
+              size="small"
+            />
+          </View>
+        )}
       </Row>
       {availableChannels.length > 0 && (
         <>

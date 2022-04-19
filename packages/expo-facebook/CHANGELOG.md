@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 12.2.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
 - Fix an issue on Android that appName cannot be set with Facebook.initializeAsync(). ([#16809](https://github.com/expo/expo/pull/16809) by [@dacer](https://github.com/dacer))
 
 ### 💡 Others

@@ -4,11 +4,11 @@ import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../../log';
-import { CI, EXPO_DEBUG } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
-import { getMissingPackagesAsync } from './getMissingPackages';
+import { getMissingPackagesAsync, ResolvedPackage } from './getMissingPackages';
 
 export async function ensureDependenciesAsync(
   projectRoot: string,
@@ -18,22 +18,27 @@ export async function ensureDependenciesAsync(
     warningMessage,
     installMessage,
     // Don't prompt in CI
-    skipPrompt = CI,
+    skipPrompt = env.CI,
   }: {
     exp?: ExpoConfig;
     installMessage: string;
     warningMessage: string;
-    requiredPackages: { file: string; pkg: string }[];
+    requiredPackages: ResolvedPackage[];
     skipPrompt?: boolean;
   }
 ): Promise<boolean> {
-  const { missing } = await getMissingPackagesAsync(projectRoot, { exp, requiredPackages });
+  const { missing } = await getMissingPackagesAsync(projectRoot, {
+    sdkVersion: exp.sdkVersion,
+    requiredPackages,
+  });
   if (!missing.length) {
     return true;
   }
 
   // Prompt to install or bail out...
-  const readableMissingPackages = missing.map((p) => p.pkg).join(', ');
+  const readableMissingPackages = missing
+    .map(({ pkg, version }) => (version ? [pkg, version].join('@') : pkg))
+    .join(', ');
 
   const isYarn = PackageManager.isUsingYarn(projectRoot);
 
@@ -123,7 +128,7 @@ async function installPackagesAsync(
   const packageManager = PackageManager.createForProject(projectRoot, {
     yarn: isYarn,
     log: Log.log,
-    silent: !EXPO_DEBUG,
+    silent: !env.EXPO_DEBUG,
   });
 
   const packagesStr = chalk.bold(packages.join(', '));

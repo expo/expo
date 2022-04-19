@@ -47,7 +47,7 @@ Returns a `Database` object, described below.
   #### Parameters
 
   - **callback (_function_)** -- A function representing the transaction to perform. Takes a `Transaction` (see below) as its only parameter, on which it can add SQL statements to execute.
-  - **error (_function_)** -- Called if an error occured processing this transaction. Takes a single parameter describing the error.
+  - **error (_function_)** -- Called if an error occurred processing this transaction. Takes a single parameter describing the error.
   - **success (_function_)** -- Called when the transaction has completed executing on the database.
 
 ### `Transaction` objects
@@ -63,7 +63,7 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
   - **sqlStatement (_string_)** -- A string containing a database query to execute expressed as SQL. The string may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
   - **arguments (_array_)** -- An array of values (numbers or strings) to substitute for `?` placeholders in the SQL statement.
   - **success (_function_)** -- Called when the query is successfully completed during the transaction. Takes two parameters: the transaction itself, and a `ResultSet` object (see below) with the results of the query.
-  - **error (_function_)** -- Called if an error occured executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
+  - **error (_function_)** -- Called if an error occurred executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
 
 ### `ResultSet` objects
 

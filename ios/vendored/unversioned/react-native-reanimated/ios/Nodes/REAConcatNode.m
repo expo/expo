@@ -1,6 +1,6 @@
-#import "REAConcatNode.h"
-#import "REANodesManager.h"
-#import "REAValueNode.h"
+#import <RNReanimated/REAConcatNode.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAValueNode.h>
 
 @implementation REAConcatNode {
   NSArray<NSNumber *> *_input;

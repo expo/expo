@@ -1,6 +1,6 @@
 {
   "name": "jest-expo-puppeteer",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Run end-to-end tests on your Expo web projects with Jest, Puppeteer, and the Expo CLI.",
   "license": "MIT",
   "main": "build",

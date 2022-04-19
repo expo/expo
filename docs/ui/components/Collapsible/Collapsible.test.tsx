@@ -43,7 +43,7 @@ describe(DETAILS, () => {
   it('renders with hidden and separated content', () => {
     const { getByTestId } = render(
       <DETAILS testID="parent">
-        {/* @ts-ignore - We have to fake MDX v1's original type prop here, thats what we use to find it */}
+        {/* @ts-ignore - We have to fake MDX v1's original type prop here, that's what we use to find it */}
         <SUMMARY testID="summary" originalType="summary">
           Summary
         </SUMMARY>

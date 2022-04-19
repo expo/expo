@@ -1,9 +1,9 @@
-#import "REASetNode.h"
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REASetNode.h>
+#import <RNReanimated/REAUtils.h>
+#import <RNReanimated/REAValueNode.h>
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
-#import "REANodesManager.h"
-#import "REAUtils.h"
-#import "REAValueNode.h"
 
 @implementation REASetNode {
   NSNumber *_whatNodeID;

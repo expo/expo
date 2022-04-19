@@ -43,11 +43,15 @@ source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 
 ## Step 2: Set up a virtual device
 
-- On the Android Studio main screen, click "Configure", then "AVD Manager" in the dropdown.
+- On the Android Studio main screen, click "More Actions", then "Virtual Device Manager" in the dropdown.
 
 <ImageSpotlight alt="Android Studio configure" src="/static/images/android-studio-configure.png" containerStyle={{ paddingBottom: 0 }} />
 
-- Press the "+ Create Virtual Device" button.
+If you already have a project, then the menu will show up under the three dots menu in the top right corner of the window.
+
+<ImageSpotlight alt="Android Studio configure alternate" src="/static/images/android-studio-configure-2.png" containerStyle={{ paddingBottom: 0 }} />
+
+- Press the "Create device" button.
 
 <ImageSpotlight alt="Android Studio create virtual device" src="/static/images/android-studio-avd-manager.png" containerStyle={{ paddingBottom: 0 }} />
 
@@ -65,14 +69,19 @@ This is because the adb version on your system is different from the adb version
 
 - Open the terminal and check the `adb` version on the system:
 
-`$adb version`
+```bash
+adb version
+```
 
 - And from the Android SDK platform-tool directory:
 
-`$cd ~/Library/Android/sdk/platform-tools`
-
-`$./adb version`
+```bash
+cd ~/Library/Android/sdk/platform-tools
+./adb version
+```
 
 - Copy `adb` from Android SDK directory to `usr/bin` directory:
 
-`$sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin`
+```bash
+sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin
+```

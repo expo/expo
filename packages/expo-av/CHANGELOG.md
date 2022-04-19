@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.2.0 — 2022-04-18
+
+### 🎉 New features
+
 - Add new `Sound.setOnAudioSampleReceived` API to support streaming audio sample buffers in realtime. ([#14904](https://github.com/expo/expo/pull/14904), [#16075](https://github.com/expo/expo/pull/16075) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
 - On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
+
+- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and  the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
 
 ### 💡 Others
 
@@ -24,7 +34,7 @@
 
 ### 🐛 Bug fixes
 
-- On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/16544) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
+- On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/15873) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
 
 ## 11.0.1 — 2022-03-07
 

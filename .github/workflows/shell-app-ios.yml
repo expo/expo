@@ -22,7 +22,7 @@ jobs:
   build:
     runs-on: macos-11
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
@@ -85,6 +85,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
         run: |
           aws s3 cp --acl public-read ${{ steps.tarball.outputs.filename }} s3://exp-artifacts
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"

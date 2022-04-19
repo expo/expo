@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Removed `AdMobBanner#onAdViewWillLeaveApplication`, `AdMobInterstitial#interstitialWillLeaveApplication` and `PublisherBanner#onAdViewWillLeaveApplication` callbacks as they are no longer exposed by the native libraries. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
 - Fix a crash on startup by setting `GADIsAdManagerApp` in `Info.plist` to `true`. ([#16438](https://github.com/expo/expo/pull/16438) by [@giautm](https://github.com/giautm))
 
 ### 💡 Others
@@ -16,6 +26,8 @@
 
 ### ⚠️ Notices
 
+- On iOS bumped `Google-Mobile-Ads-SDK@7.69.0 ➡️ 8.13.0`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bumped `com.google.android.gms:play-services-ads:19.4.0 ➡️ 20.5.0`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
 - On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 12.0.1 - 2022-02-01

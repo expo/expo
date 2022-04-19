@@ -3,6 +3,7 @@ import { Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
+import { EmitterSubscription } from 'react-native';
 import URL from 'url-parse';
 
 import NativeLinking from './ExpoLinking';
@@ -255,10 +256,11 @@ export function parse(url: string): ParsedURL {
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
-export function addEventListener(type: 'url', handler: URLListener): void {
-  NativeLinking.addEventListener(type, handler);
+export function addEventListener(type: 'url', handler: URLListener): EmitterSubscription {
+  return NativeLinking.addEventListener(type, handler);
 }
 
 /**
@@ -376,11 +378,12 @@ export function useURL(): string | null {
 
   useEffect(() => {
     getInitialURL().then((url) => setLink(url));
-    addEventListener('url', onChange);
-    return () => removeEventListener('url', onChange);
+    const subscription = addEventListener('url', onChange);
+    return () => subscription.remove();
   }, []);
 
   return url;
 }
 
 export * from './Linking.types';
+export * from './Schemes';

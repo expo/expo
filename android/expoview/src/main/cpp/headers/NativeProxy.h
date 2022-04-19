@@ -60,7 +60,15 @@ class EventHandler : public HybridClass<EventHandler> {
       jni::alias_ref<react::WritableMap> event) {
     std::string eventAsString = "{NativeMap:null}";
     if (event != nullptr) {
-      eventAsString = event->toString();
+      try {
+        eventAsString = event->toString();
+      } catch (std::exception &) {
+        // Events from other libraries may contain NaN or INF values which
+        // cannot be represented in JSON. See
+        // https://github.com/software-mansion/react-native-reanimated/issues/1776
+        // for details.
+        return;
+      }
     }
     handler_(eventKey->toString(), eventAsString);
   }
@@ -78,6 +86,36 @@ class EventHandler : public HybridClass<EventHandler> {
       : handler_(std::move(handler)) {}
 
   std::function<void(std::string, std::string)> handler_;
+};
+
+class SensorSetter : public HybridClass<SensorSetter> {
+ public:
+  static auto constexpr kJavaDescriptor =
+      "Lversioned/host/exp/exponent/modules/api/reanimated/NativeProxy$SensorSetter;";
+
+  void sensorSetter(jni::alias_ref<JArrayFloat> value) {
+    size_t size = value->size();
+    auto elements = value->getRegion(0, size);
+    double array[7];
+    for (int i = 0; i < size; i++) {
+      array[i] = elements[i];
+    }
+    callback_(array);
+  }
+
+  static void registerNatives() {
+    javaClassStatic()->registerNatives({
+        makeNativeMethod("sensorSetter", SensorSetter::sensorSetter),
+    });
+  }
+
+ private:
+  friend HybridBase;
+
+  explicit SensorSetter(std::function<void(double[])> callback)
+      : callback_(std::move(callback)) {}
+
+  std::function<void(double[])> callback_;
 };
 
 class NativeProxy : public jni::HybridClass<NativeProxy> {
@@ -111,6 +149,15 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   void scrollTo(int viewTag, double x, double y, bool animated);
   void setGestureState(int handlerTag, int newState);
   std::vector<std::pair<std::string, double>> measure(int viewTag);
+  int registerSensor(
+      int sensorType,
+      int interval,
+      std::function<void(double[])> setter);
+  void unregisterSensor(int sensorId);
+  void configureProps(
+      jsi::Runtime &rt,
+      const jsi::Value &uiProps,
+      const jsi::Value &nativeProps);
 
   explicit NativeProxy(
       jni::alias_ref<NativeProxy::jhybridobject> jThis,

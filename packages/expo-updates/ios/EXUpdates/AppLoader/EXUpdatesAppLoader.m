@@ -28,6 +28,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
+                launchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
                completionQueue:(dispatch_queue_t)completionQueue
 {
   if (self = [super init]) {
@@ -39,6 +40,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     _config = config;
     _database = database;
     _directory = directory;
+    _launchedUpdate = launchedUpdate;
     _completionQueue = completionQueue;
   }
   return self;

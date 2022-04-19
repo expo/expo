@@ -118,7 +118,7 @@ If you plan on shipping your app to different countries, regions, or just want i
   }
 ```
 
-The keys provided to `locales` should be the [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, and the value should point to a JSON file that looks something like this:
+The keys provided to `locales` should be the [language identifier](https://developer.apple.com/documentation/xcode/choosing-localization-regions-and-scripts), made up of a [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, with an optional region code (e.g. `en-US` or `en-GB`), and the value should point to a JSON file that looks something like this:
 
 ```json
 // japanese.json

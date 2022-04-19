@@ -124,6 +124,7 @@ const mobileButtonStyle = css`
 
   &:hover {
     background-color: ${theme.background.tertiary};
+    box-shadow: none;
   }
 `;
 

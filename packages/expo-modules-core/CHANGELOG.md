@@ -4,6 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Add `ReactNativeHostHandler.getUseDeveloperSupport()` to allow `expo-dev-launcher` to override this value at runtime. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.8.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
 - Remove backward compatible workaround and drop react-native 0.64 support. ([#16446](https://github.com/expo/expo/pull/16446) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
@@ -16,6 +28,7 @@
 - Add `getDevSupportManagerFactory` support to `ReactNativeHostHandler`. ([#16434](https://github.com/expo/expo/pull/16434) by [@lukmccall](https://github.com/lukmccall))
 - Add support for automatic setup of `expo-dev-client` on Android. ([#16441](https://github.com/expo/expo/pull/16441) by [@esamelson](https://github.com/esamelson))
 - Stopped relying on deprecated `ViewPropTypes` from React Native. ([#16207](https://github.com/expo/expo/pull/16207) by [@tsapeta](https://github.com/tsapeta))
+- Added Android `ReactNativeHostHandler.getJavaScriptExecutorFactory()` for a module to override the `JavaScriptExecutorFactory`. ([#17005](https://github.com/expo/expo/pull/17005) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
