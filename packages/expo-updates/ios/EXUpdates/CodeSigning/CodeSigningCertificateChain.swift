@@ -5,7 +5,7 @@ import ASN1Decoder
 
 typealias Certificate = (SecCertificate, X509Certificate)
 
-@objc
+@objc(EXUpdatesCodeSigningProjectInformation)
 public class CodeSigningProjectInformation : NSObject {
   @objc private(set) public var projectId: String
   @objc private(set) public var scopeKey: String

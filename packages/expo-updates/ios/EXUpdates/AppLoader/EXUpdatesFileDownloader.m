@@ -441,30 +441,30 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
   //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
   //    project, it is assumed to be valid for all projects
   // 3. mark the manifest as verified if both of these pass
-  CodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
   if (codeSigningConfiguration) {
     NSError *error;
-    CodeSigningSignatureValidationResult *signatureValidationResult = [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
+    EXUpdatesCodeSigningSignatureValidationResult *signatureValidationResult = [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
                                                   signedData:manifestBodyData
                             manifestResponseCertificateChain:certificateChainFromManifestResponse
                                                        error:&error];
     if (error) {
-      NSString *message = [CodeSigningErrorUtils messageForError:error.code];
+      NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
                                  userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message]}]);
       return;
     }
 
-    if (signatureValidationResult.validationResult == CodeSigningValidationResultInvalid) {
+    if (signatureValidationResult.validationResult == EXUpdatesCodeSigningValidationResultInvalid) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
                                  userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
       return;
     }
 
-    if (signatureValidationResult.validationResult != CodeSigningValidationResultSkipped) {
-      CodeSigningProjectInformation *expoProjectInformation = signatureValidationResult.expoProjectInformation;
+    if (signatureValidationResult.validationResult != EXUpdatesCodeSigningValidationResultSkipped) {
+      EXUpdatesCodeSigningProjectInformation *expoProjectInformation = signatureValidationResult.expoProjectInformation;
       if (expoProjectInformation != nil) {
         NSError *error;
         EXUpdatesUpdate *update;
@@ -664,7 +664,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
     [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
   }
 
-  CodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
+  EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
   if (codeSigningConfiguration) {
     [request setValue:[codeSigningConfiguration createAcceptSignatureHeader] forHTTPHeaderField:@"expo-expect-signature"];
   }

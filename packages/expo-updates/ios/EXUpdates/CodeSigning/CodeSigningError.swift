@@ -2,7 +2,8 @@
 
 import Foundation
 
-@objc public enum CodeSigningError : Int, Error {
+@objc(EXUpdatesCodeSigningError)
+public enum CodeSigningError : Int, Error {
   case CertificateEncodingError
   case CertificateDERDecodeError
   case CertificateValidityError
@@ -25,7 +26,8 @@ import Foundation
   case InvalidExpoProjectInformationExtensionValue
 }
 
-@objc public class CodeSigningErrorUtils : NSObject {
+@objc(EXUpdatesCodeSigningErrorUtils)
+public class CodeSigningErrorUtils : NSObject {
   @objc public static func message(forError: CodeSigningError) -> String {
     switch forError {
     case .CertificateEncodingError:

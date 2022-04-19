@@ -9,13 +9,14 @@ struct CodeSigningMetadataFields {
   static let AlgorithmFieldKey = "alg"
 }
 
-@objc public enum CodeSigningValidationResult : Int {
+@objc(EXUpdatesCodeSigningValidationResult)
+public enum CodeSigningValidationResult : Int {
   case Valid
   case Invalid
   case Skipped
 }
 
-@objc
+@objc(EXUpdatesCodeSigningSignatureValidationResult)
 public class CodeSigningSignatureValidationResult : NSObject {
   @objc private(set) public var validationResult: CodeSigningValidationResult
   @objc private(set) public var expoProjectInformation: CodeSigningProjectInformation?
@@ -26,7 +27,7 @@ public class CodeSigningSignatureValidationResult : NSObject {
   }
 }
 
-@objc
+@objc(EXUpdatesCodeSigningConfiguration)
 public class CodeSigningConfiguration : NSObject {
   private var embeddedCertificateString: String
   private var keyIdFromMetadata: String
