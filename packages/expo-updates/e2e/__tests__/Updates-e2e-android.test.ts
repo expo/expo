@@ -54,9 +54,26 @@ test('starts app, stops, and starts again', async () => {
   expect(response).toBe('test');
   await stopApplication(PACKAGE_NAME);
 
-  await expect(Server.waitForResponse(5000 * TIMEOUT_BIAS)).rejects.toThrow('Timed out waiting for response');
+  await expect(Server.waitForResponse(5000 * TIMEOUT_BIAS)).rejects.toThrow(
+    'Timed out waiting for response'
+  );
 
   await startActivity(ACTIVITY_NAME);
   const response2 = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
   expect(response2).toBe('test');
+});
+
+test('initial request includes correct update ID headers', async () => {
+  jest.setTimeout(300000 * TIMEOUT_BIAS);
+  Server.start(SERVER_PORT);
+  await installAndroidApk(APK_PATH);
+  await startActivity(ACTIVITY_NAME);
+  const request = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+  expect(request.headers['expo-embedded-update-id']).toBeDefined();
+  expect(request.headers['expo-current-update-id']).toBeDefined();
+  // before any updates, the current update ID and embedded update ID should be the same
+  expect(request.headers['expo-current-update-id']).toEqual(
+    request.headers['expo-embedded-update-id']
+  );
+  await stopApplication(PACKAGE_NAME);
 });
