@@ -32,4 +32,6 @@
                 resolver:(EXPromiseResolveBlock)resolve
                 rejecter:(EXPromiseRejectBlock)reject;
 
+- (void)cleanup;
+
 @end
