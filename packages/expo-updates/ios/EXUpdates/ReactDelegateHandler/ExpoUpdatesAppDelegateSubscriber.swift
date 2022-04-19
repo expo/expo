@@ -8,6 +8,6 @@ public class ExpoUpdatesAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     if EXAppDefines.APP_DEBUG {
       EXUpdatesControllerRegistry.sharedInstance().controller = EXUpdatesDevLauncherController.sharedInstance()
     }
-    return false
+    return true
   }
 }
