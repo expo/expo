@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `base64` result of `manipulateAsync` being always `null` on iOS.
+
 ### 💡 Others
 
 ## 10.3.0 — 2022-04-18
