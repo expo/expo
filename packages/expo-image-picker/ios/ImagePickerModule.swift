@@ -140,21 +140,17 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   func didPickMedia(mediaInfo: MediaInfo) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
-      self.appContext?.logger?.warn("Picking operation context has been lost.")
+      NSLog("Picking operation context has been lost.")
       return
     }
     guard let fileSystem = self.appContext?.fileSystem else {
       return promise.reject(FileSystemModuleNotFoundException())
-    }
-    guard let logger = self.appContext?.logger else {
-      return promise.reject(LoggerModuleNotFoundException())
     }
 
     // Cleanup the currently stored picking context
     self.currentPickingContext = nil
 
     let mediaHandler = MediaHandler(fileSystem: fileSystem,
-                                    logger: logger,
                                     options: options)
     mediaHandler.handleMedia(mediaInfo) { result -> Void in
       switch result {
