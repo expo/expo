@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `setStringAsync` crashing when setting HTML content on web.
+
 ### 💡 Others
 
 ## 3.0.0 — 2022-04-18
