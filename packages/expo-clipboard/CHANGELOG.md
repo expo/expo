@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `setStringAsync` crashing when setting HTML content on web.
+- Fixed `setStringAsync` crashing when setting HTML content on web. ([#17115](https://github.com/expo/expo/pull/17115) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
