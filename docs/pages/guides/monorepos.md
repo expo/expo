@@ -2,7 +2,7 @@
 title: Working with Monorepos
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. It can help speed up development for larger projects, makes it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. We currently have first-class support for yarn workspaces. If you want to use another tool, make sure you know how to configure it.
 
@@ -57,7 +57,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 
 Now that we have the basic monorepo structure set up, let's add our first app. Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the actual Expo app. 
 
-<TerminalBlock cmd={["expo init apps/cool-app"]} />
+<Terminal cmd={["$ expo init apps/cool-app"]} cmdCopy="expo init apps/cool-app" />
 
 > If you have an existing app, you can copy all those files inside a subfolder.
 
@@ -120,14 +120,14 @@ Monorepos can help us group code in a single repository. That includes apps but 
 Let's go back to the root and create the **packages/** folder. This folder can contain all the separate packages that you want to make. Once you are inside this folder, we need to add a new subfolder. The subfolder is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
 
-<TerminalBlock cmd={[
+<Terminal cmd={[
   "# Create our new package folder",
   "mkdir -p packages/cool-package",
   "cd packages/cool-package",
   "",
   "# And create the new package",
   "yarn init"
-]} />
+]} cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && yarn init" />
 
 We won't go into too much detail in creating a package. If you are not familiar with this, please consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
 
