@@ -43,6 +43,9 @@ export function HomeScreen({
   navigation,
 }: HomeScreenProps) {
   const modalStack = useModalStack();
+  const [inputValue, setInputValue] = React.useState('');
+  const [loadingUrl, setLoadingUrl] = React.useState('');
+
   const { data: devSessions, pollAsync, isFetching } = useDevSessions();
 
   const crashReport = useCrashReport();
@@ -55,10 +58,15 @@ export function HomeScreen({
     }
   }, [fetchOnMount, pollInterval, pollAmount, pollAsync]);
 
-  const onLoadUrl = (url: string) => {
-    loadApp(url).catch((error) => {
+  const onLoadUrl = async (url: string) => {
+    setLoadingUrl(url);
+
+    await loadApp(url).catch((error) => {
+      setLoadingUrl('');
       modalStack.push(() => <LoadAppErrorModal message={error.message} />);
     });
+
+    setLoadingUrl('');
   };
 
   const onDevSessionPress = async (devSession: DevSession) => {
@@ -158,7 +166,12 @@ export function HomeScreen({
               <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
               <Divider />
 
-              <UrlDropdown onSubmit={onUrlSubmit} />
+              <UrlDropdown
+                onSubmit={onUrlSubmit}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                isLoading={inputValue !== '' && inputValue === loadingUrl}
+              />
             </View>
           </View>
 
@@ -255,7 +268,7 @@ function RecentlyOpenedApps({ onAppPress }) {
       </View>
 
       <View>
-        {apps.map((app, index, arr) => {
+        {apps.slice(0, 5).map((app, index, arr) => {
           const isFirst = index === 0;
           const isLast = index === arr.length - 1;
           const label = app.name ?? app.url;

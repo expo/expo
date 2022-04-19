@@ -10,15 +10,19 @@ import {
   useCurrentTheme,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { TextInput as NativeTextInput, Platform } from 'react-native';
+import { TextInput as NativeTextInput, Platform, StyleSheet } from 'react-native';
 
 import { validateUrl } from '../functions/validateUrl';
+import { ActivityIndicator } from './ActivityIndicator';
 
 type UrlDropdownProps = {
+  isLoading?: boolean;
+  inputValue: string;
+  setInputValue: (inputValue: string) => void;
   onSubmit: (url: string) => void;
 };
 
-export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
+export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: UrlDropdownProps) {
   const theme = useExpoTheme();
   const currentTheme = useCurrentTheme();
 
@@ -36,7 +40,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
   const ref = React.useRef<NativeTextInput>();
   const [open, setOpen] = React.useState(false);
   const [isValidUrl, setIsValidUrl] = React.useState(true);
-  const [inputValue, setInputValue] = React.useState('');
+
   const [isPressing, setIsPressing] = React.useState(false);
 
   const rotate = open ? '90deg' : '0deg';
@@ -129,14 +133,24 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
             bg={isValidUrl ? 'tertiary' : 'disabled'}
             shadow="button"
             rounded="medium"
-            disabled={!isValidUrl}
+            disabled={!isValidUrl || isLoading}
             onPress={onConnectPress}
             testID="DevLauncherLoadAppButton">
-            <View py="small">
+            <View py="small" opacity={isLoading ? '0.5' : '1'}>
               <Button.Text align="center" weight="semibold" color="tertiary">
                 Connect
               </Button.Text>
             </View>
+            {isLoading && (
+              <View
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <ActivityIndicator size="small" />
+              </View>
+            )}
           </Button.ScaleOnPressContainer>
         </View>
       )}

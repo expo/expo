@@ -13,6 +13,10 @@ export async function loadApp(url: string): Promise<void> {
   return await DevLauncher.loadApp(url);
 }
 
+export async function loadUpdate(updateUrl: string, projectUrl: string) {
+  return await DevLauncher.loadUpdate(updateUrl, projectUrl);
+}
+
 export async function getPendingDeepLink(): Promise<string | null> {
   return await DevLauncher.getPendingDeepLink();
 }
@@ -61,10 +65,11 @@ export type EXUpdatesConfig = {
   sdkVersion: string;
   appId: string;
   usesEASUpdates: boolean;
+  updatesUrl: string;
 };
 
 export const updatesConfig: EXUpdatesConfig = DevLauncher.updatesConfig;
 
 export async function loadFontsAsync() {
-  return await DevLauncher.loadFontsAsync()
+  return await DevLauncher.loadFontsAsync();
 }

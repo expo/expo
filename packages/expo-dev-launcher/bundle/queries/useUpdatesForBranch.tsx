@@ -14,6 +14,7 @@ export type Update = {
   message: string;
   runtimeVersion: string;
   createdAt: string;
+  manifestPermalink: string;
 };
 
 const query = gql`
@@ -26,6 +27,7 @@ const query = gql`
             message
             runtimeVersion
             createdAt
+            manifestPermalink
           }
         }
       }

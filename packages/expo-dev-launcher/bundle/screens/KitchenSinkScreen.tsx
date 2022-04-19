@@ -1,10 +1,10 @@
-import { Heading, Row, Spacer, View } from 'expo-dev-client-components';
+import { Divider, Heading, Row, Spacer, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ScrollView } from 'react-native';
 
 import { BasicButton } from '../components/BasicButton';
+import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatListLoader } from '../components/FlatList';
-import { LoadMoreButton } from '../components/LoadMoreButton';
 import { SafeAreaTop } from '../components/SafeAreaTop';
 import { Toasts } from '../components/Toasts';
 import { useToastStack } from '../providers/ToastStackProvider';
@@ -39,7 +39,7 @@ export function KitchenSinkScreen() {
         <Spacer.Vertical size="medium" />
 
         <Heading>Load More Button</Heading>
-        <LoadMoreButton isLoading={isLoading} onPress={onLoadMorePress} />
+        <BasicButton label="Load More" isLoading={isLoading} onPress={onLoadMorePress} />
 
         <Spacer.Vertical size="medium" />
 
@@ -81,6 +81,50 @@ export function KitchenSinkScreen() {
           <Spacer.Vertical size="small" />
           <BasicButton label="Error" onPress={onErrorToastPress} />
         </Row>
+
+        <Spacer.Vertical size="large" />
+
+        <Heading>Update Rows</Heading>
+
+        <Spacer.Vertical size="medium" />
+
+        <EASUpdateRow
+          isFirst
+          isLoading={isLoading}
+          onPress={onLoadMorePress}
+          update={{
+            id: '1',
+            message: '123',
+            runtimeVersion: '1',
+            createdAt: '123',
+            manifestPermalink: '123',
+          }}
+        />
+        <Divider />
+        <EASUpdateRow
+          isLoading={isLoading}
+          onPress={onLoadMorePress}
+          update={{
+            id: '1',
+            message: '123',
+            runtimeVersion: '1',
+            createdAt: '123',
+            manifestPermalink: '123',
+          }}
+        />
+        <Divider />
+        <EASUpdateRow
+          isLast
+          isLoading={isLoading}
+          onPress={onLoadMorePress}
+          update={{
+            id: '1',
+            message: '123',
+            runtimeVersion: '1',
+            createdAt: '123',
+            manifestPermalink: '123',
+          }}
+        />
       </View>
     </ScrollView>
   );

@@ -18,8 +18,9 @@ import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
-import { useUser, useUserActions } from '../providers/UserContextProvider';
+import { ListButton } from '../components/ListButton';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
+import { useUser, useUserActions } from '../providers/UserContextProvider';
 import { useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
 
@@ -134,14 +135,13 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 
           {compatibleExtensions.length > 0 && (
             <>
-              <Spacer.Vertical size="medium" />
               <View px="xl">
                 <Text size="small" color="secondary">
                   Extensions allow you to customize your development build with additional
                   capabilities.{' '}
-                  <Text size="small" color="secondary">
+                  {/* <Text size="small" color="secondary">
                     Learn more.
-                  </Text>
+                  </Text> */}
                 </Text>
               </View>
             </>
@@ -163,10 +163,6 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
 
   function onSeeAllBranchesPress() {
     navigation.navigate('Branches');
-  }
-
-  function onBranchPress(branchName: string) {
-    navigation.navigate('Updates', { branchName });
   }
 
   if (isLoading) {
@@ -192,20 +188,12 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
 
           return (
             <View key={branch.id}>
-              <Button.ScaleOnPressContainer
-                bg="default"
-                onPress={() => onBranchPress(branch.name)}
-                roundedBottom="none"
-                roundedTop={isFirst ? 'large' : 'none'}>
-                <View
-                  bg="default"
-                  roundedTop={isFirst ? 'large' : 'none'}
-                  roundedBottom={isLast ? 'large' : 'none'}
-                  py="small"
-                  px="small">
-                  <EASEmptyBranchRow branch={branch} />
-                </View>
-              </Button.ScaleOnPressContainer>
+              <EASEmptyBranchRow
+                branch={branch}
+                isFirst={isFirst}
+                isLast={isLast}
+                navigation={navigation}
+              />
               <Divider />
             </View>
           );
@@ -254,39 +242,20 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
 
           return (
             <View key={branch.name}>
-              <Button.ScaleOnPressContainer
-                bg="default"
-                onPress={() => onBranchPress(branch.name)}
-                roundedBottom="none"
-                roundedTop={isFirst ? 'large' : 'none'}>
-                <View
-                  bg="default"
-                  roundedTop={isFirst ? 'large' : 'none'}
-                  roundedBottom="none"
-                  py="small"
-                  px="small">
-                  <EASBranchRow branch={branch} />
-                </View>
-              </Button.ScaleOnPressContainer>
+              <EASBranchRow branch={branch} isFirst={isFirst} navigation={navigation} />
               <Divider />
             </View>
           );
         })}
 
         {branches?.length > 0 && (
-          <Button.ScaleOnPressContainer
-            onPress={onSeeAllBranchesPress}
-            bg="default"
-            roundedTop="none"
-            roundedBottom="large">
-            <View bg="default" py="small" px="small" roundedTop="none" roundedBottom="large">
-              <Row>
-                <Text size="medium">See all branches</Text>
-                <Spacer.Horizontal />
-                <ChevronRightIcon />
-              </Row>
-            </View>
-          </Button.ScaleOnPressContainer>
+          <ListButton onPress={onSeeAllBranchesPress} isLast>
+            <Row>
+              <Text size="medium">See all branches</Text>
+              <Spacer.Horizontal />
+              <ChevronRightIcon />
+            </Row>
+          </ListButton>
         )}
       </View>
     </View>
