@@ -32,7 +32,7 @@ To use version `11.2.0` or newer of `expo-gl` you will need to use at least vers
 | expo-gl            | react-native         |
 | ------------------ | -------------------- |
 | <=8.x.x            | \*                   |
-| >=9.0.0 && <12.0.0 | >=0.63.1 &&  <0.65.0 |
+| >=9.0.0 && <11.2.0 | >=0.63.1 &&  <0.65.0 |
 | >=11.2.0           | >=0.68.0             |
 
 ### Configure for iOS
