@@ -7,6 +7,7 @@ import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
 
+import { runReactNativeCodegenAsync } from '../../Codegen';
 import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
@@ -22,7 +23,6 @@ import {
   MODULES_PROVIDER_POD_NAME,
   versionExpoModulesProviderAsync,
 } from './versionExpoModulesProvider';
-import { runReactNativeCodegenAsync } from '../../Codegen';
 import {
   versionVendoredModulesAsync,
   removeVersionedVendoredModulesAsync,
