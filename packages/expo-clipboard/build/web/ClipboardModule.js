@@ -169,9 +169,9 @@ async function clipboardHasTypesAsync(types) {
 function createHtmlClipboardItem(htmlString) {
     return new ClipboardItem({
         // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ
-        'text/html': new Blob([text], { type: 'text/html' }),
+        'text/html': new Blob([htmlString], { type: 'text/html' }),
         // @ts-ignore `Blob` from `lib.dom.d.ts` and the one from `@types/react-native` differ
-        'text/plain': new Blob([htmlToPlainText(text)], { type: 'text/plain' }),
+        'text/plain': new Blob([htmlToPlainText(htmlString)], { type: 'text/plain' }),
     });
 }
 //# sourceMappingURL=ClipboardModule.js.map
