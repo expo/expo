@@ -213,7 +213,7 @@ Schedule a local notification to fire at some specific time in the future or at 
 
   An object that describes when the notification should fire.
 
-  - **time** (_date_ or _number_) -- A Date object representing when to fire the notification or a number in Unix epoch time. Example: `(new Date()).getTime() + 1000` is one second from now.
+  - **time** (_date_ or _number_) -- A Date object representing when to fire the notification or a number in UNIX epoch time. Example: `(new Date()).getTime() + 1000` is one second from now.
   - **repeat** (_optional_) (_string_) -- `'minute'`, `'hour'`, `'day'`, `'week'`, `'month'`, or `'year'`.
   - (_Android only_) **intervalMs** (_optional_) (_number_) -- Repeat interval in number of milliseconds
 

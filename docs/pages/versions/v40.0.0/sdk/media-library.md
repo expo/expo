@@ -94,7 +94,7 @@ Fetches a page of assets matching the provided criteria.
     Earlier items have higher priority when sorting out the results.
     If empty, this method will use the default sorting that is provided by the platform.
   - **mediaType (_array_)** -- An array of [MediaType](#medialibrarymediatype) types. By default `MediaType.photo` is set.
-  - **createdAfter (_Date_ | _number_)** -- Date object or Unix timestamp in milliseconds limiting returned assets only to those that were created after this date.
+  - **createdAfter (_Date_ | _number_)** -- Date object or UNIX timestamp in milliseconds limiting returned assets only to those that were created after this date.
   - **createdBefore (_Date_ | _number_)** -- Similarly as `createdAfter`, but limits assets only to those that were created before specified date.
 
 #### Returns

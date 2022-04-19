@@ -69,7 +69,7 @@ If you are comfortable setting up Xcode, Android Studio, and related dependencie
 
 The `expo run` commands will create a new build, install it on to your emulator or device, and start it running.
 
-<Tabs tabs={["For Android", "For iOS (MacOS Only)"]}>
+<Tabs tabs={["For Android", "For iOS (macOS Only)"]}>
 
 <Tab >
 

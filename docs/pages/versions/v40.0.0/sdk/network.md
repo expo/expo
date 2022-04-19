@@ -119,7 +119,7 @@ An enum of the different types of devices supported by Expo, with these values:
 - **`NONE`** -- no active network connection detected.
 - **`UNKNOWN`** -- the connection type could not be determined.
 - **`CELLULAR`** -- active network connection over mobile data or [`DUN-specific`](https://developer.android.com/reference/android/net/ConnectivityManager#TYPE_MOBILE_DUN) mobile connection when setting an upstream connection for tethering.
-- **`WIFI`** -- active network connection over Wifi.
+- **`WIFI`** -- active network connection over Wi-Fi.
 - **`BLUETOOTH`** -- active network connection over Bluetooth.
 - **`ETHERNET`** -- active network connection over Ethernet.
 - **`WIMAX`** -- active network connection over Wimax.
@@ -130,7 +130,7 @@ An enum of the different types of devices supported by Expo, with these values:
 
 | Code                                    | Description                                                                                                                                                                                |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ERR_NETWORK_IP_ADDRESS                  | On Android, there may be an unknown Wifi host when trying to access `WifiManager` in `getIpAddressAsync`. On iOS, no network interfaces could be retrieved.                                |
+| ERR_NETWORK_IP_ADDRESS                  | On Android, there may be an unknown Wi-Fi host when trying to access `WifiManager` in `getIpAddressAsync`. On iOS, no network interfaces could be retrieved.                                |
 | ERR_NETWORK_UNDEFINED_INTERFACE         | An undefined `interfaceName` was passed as an argument in `getMacAddressAsync`.                                                                                                            |
 | ERR_NETWORK_SOCKET_EXCEPTION            | An error was encountered in creating or accessing the socket in `getMacAddressAsync`.                                                                                                      |
 | ERR_NETWORK_INVALID_PERMISSION_INTERNET | There are invalid permissions for [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) in `getMacAddressAsync`. |
