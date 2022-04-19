@@ -30,7 +30,7 @@ public class ImageManipulatorModule: Module {
             "uri": saveResult.url.absoluteString,
             "width": newImage.cgImage?.width ?? 0,
             "height": newImage.cgImage?.height ?? 0,
-            "base64": options.base64 ? saveResult.data.base64EncodedData() : nil
+            "base64": options.base64 ? saveResult.data.base64EncodedString() : nil
           ])
         } catch {
           promise.reject(error)
