@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `base64` result of `manipulateAsync` being always `null` on iOS.
+- Fix `base64` result of `manipulateAsync` being always `null` on iOS. ([#17122](https://github.com/expo/expo/pull/17122) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
