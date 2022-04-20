@@ -64,6 +64,7 @@ export default function ScrollViewScreen() {
           }}
           scrollEventThrottle={200}
           scrollEnabled={isEnabled}
+          nestedScrollEnabled
           horizontal={isHorizontal}
           ref={scrollView}
           style={styles.scrollView}>
