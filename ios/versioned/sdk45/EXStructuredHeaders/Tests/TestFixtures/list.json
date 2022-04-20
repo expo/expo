@@ -1,0 +1,68 @@
+[
+    {
+        "name": "basic list",
+        "raw": ["1, 42"],
+        "header_type": "list",
+        "expected": [[1, []], [42, []]]
+    },
+    {
+        "name": "empty list",
+        "raw": [""],
+        "header_type": "list",
+        "expected": [],
+        "canonical": []
+    },
+    {
+        "name": "leading SP list",
+        "raw": ["  42, 43"],
+        "canonical": ["42, 43"],
+        "header_type": "list",
+        "expected": [[42, []], [43, []]]
+    },
+    {
+        "name": "single item list",
+        "raw": ["42"],
+        "header_type": "list",
+        "expected": [[42, []]]
+    },
+    {
+        "name": "no whitespace list",
+        "raw": ["1,42"],
+        "header_type": "list",
+        "expected": [[1, []], [42, []]],
+        "canonical": ["1, 42"]
+    },
+    {
+        "name": "extra whitespace list",
+        "raw": ["1 , 42"],
+        "header_type": "list",
+        "expected": [[1, []], [42, []]],
+        "canonical": ["1, 42"]
+    },
+    {
+        "name": "tab separated list",
+        "raw": ["1\t,\t42"],
+        "header_type": "list",
+        "expected": [[1, []], [42, []]],
+        "canonical": ["1, 42"]
+    },
+    {
+        "name": "two line list",
+        "raw": ["1", "42"],
+        "header_type": "list",
+        "expected": [[1, []], [42, []]],
+        "canonical": ["1, 42"]
+    },
+    {
+        "name": "trailing comma list",
+        "raw": ["1, 42,"],
+        "header_type": "list",
+        "must_fail": true
+    },
+    {
+        "name": "empty item list",
+        "raw": ["1,,42"],
+        "header_type": "list",
+        "must_fail": true
+    }
+]
