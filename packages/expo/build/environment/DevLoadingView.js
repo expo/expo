@@ -70,7 +70,7 @@ export default function DevLoadingView() {
  **/
 const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
 // @ts-ignore: we're not using the spec so the return type of getConstants() is {}
-const initialWindowMetrics = RNCSafeAreaContext?.getConstants?.().initialWindowMetrics;
+const initialWindowMetrics = RNCSafeAreaContext?.getConstants().initialWindowMetrics;
 const styles = StyleSheet.create({
     animatedContainer: {
         position: 'absolute',
