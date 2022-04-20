@@ -444,7 +444,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
   EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = _config.codeSigningConfiguration;
   if (codeSigningConfiguration) {
     NSError *error;
-    EXUpdatesSignatureValidationResult *signatureValidationResult = [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
+    EXUpdatesCodeSigningSignatureValidationResult *signatureValidationResult = [codeSigningConfiguration validateSignatureWithSignature:manifestHeaders.signature
                                                   signedData:manifestBodyData
                             manifestResponseCertificateChain:certificateChainFromManifestResponse
                                                        error:&error];
@@ -456,15 +456,15 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
       return;
     }
 
-    if (signatureValidationResult.validationResult == EXUpdatesValidationResultInvalid) {
+    if (signatureValidationResult.validationResult == EXUpdatesCodeSigningValidationResultInvalid) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
                                  userInfo:@{NSLocalizedDescriptionKey: @"Manifest download was successful, but signature was incorrect"}]);
       return;
     }
 
-    if (signatureValidationResult.validationResult != EXUpdatesValidationResultSkipped) {
-      EXUpdatesExpoProjectInformation *expoProjectInformation = signatureValidationResult.expoProjectInformation;
+    if (signatureValidationResult.validationResult != EXUpdatesCodeSigningValidationResultSkipped) {
+      EXUpdatesCodeSigningProjectInformation *expoProjectInformation = signatureValidationResult.expoProjectInformation;
       if (expoProjectInformation != nil) {
         NSError *error;
         EXUpdatesUpdate *update;
