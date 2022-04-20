@@ -4,6 +4,7 @@
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesCrypto.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesFileDownloader.h>
+#import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesUtils.h>
 #import <ABI44_0_0ExpoModulesCore/ABI44_0_0EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -104,7 +105,15 @@ static NSString * const ABI44_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI44_0
                                 extraHeaders:asset.extraRequestHeaders ?: @{}
                                 successBlock:^(NSData *data, NSURLResponse *response) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          [self handleAssetDownloadWithData:data response:response asset:asset];
+          NSString *hashBase64String = [ABI44_0_0EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
+          if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
+            NSError* error = [NSError errorWithDomain:ABI44_0_0EXUpdatesRemoteAppLoaderErrorDomain
+                                                 code:1016
+                                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}];
+            [self handleAssetDownloadWithError:error asset:asset];
+          } else {
+            [self handleAssetDownloadWithData:data response:response asset:asset];
+          }
         });
       }
                                   errorBlock:^(NSError *error) {
