@@ -5,7 +5,7 @@ import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
-import { runReactNativeCodegen } from '../Codegen';
+import { runReactNativeCodegenAsync } from '../Codegen';
 import { EXPO_DIR } from '../Constants';
 import { GitDirectory } from '../Git';
 import logger from '../Logger';
@@ -254,7 +254,7 @@ async function runCodegenIfNeeded(
 
   await Promise.all(
     fabricDisabledLibs.map((lib) =>
-      runReactNativeCodegen({
+      runReactNativeCodegenAsync({
         reactNativeRoot,
         codegenPkgRoot,
         outputDir: path.join(sourceDirectory, platform),
