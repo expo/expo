@@ -4,34 +4,34 @@ import Foundation
 import CommonCrypto
 import ASN1Decoder
 
-struct CodeSigningMetadataFields {
+struct EXUpdatesCodeSigningMetadataFields {
   static let KeyIdFieldKey = "keyid"
   static let AlgorithmFieldKey = "alg"
 }
 
-@objc(EXUpdatesCodeSigningValidationResult)
-public enum CodeSigningValidationResult : Int {
+@objc public enum EXUpdatesValidationResult : Int {
   case Valid
   case Invalid
   case Skipped
 }
 
-@objc(EXUpdatesCodeSigningSignatureValidationResult)
-public class CodeSigningSignatureValidationResult : NSObject {
-  @objc private(set) public var validationResult: CodeSigningValidationResult
-  @objc private(set) public var expoProjectInformation: CodeSigningProjectInformation?
+
+@objc
+public class EXUpdatesSignatureValidationResult : NSObject {
+  @objc private(set) public var validationResult: EXUpdatesValidationResult
+  @objc private(set) public var expoProjectInformation: EXUpdatesExpoProjectInformation?
   
-  required init(validationResult: CodeSigningValidationResult, expoProjectInformation: CodeSigningProjectInformation?) {
+  required init(validationResult: EXUpdatesValidationResult, expoProjectInformation: EXUpdatesExpoProjectInformation?) {
     self.validationResult = validationResult
     self.expoProjectInformation = expoProjectInformation
   }
 }
 
-@objc(EXUpdatesCodeSigningConfiguration)
-public class CodeSigningConfiguration : NSObject {
+@objc
+public class EXUpdatesCodeSigningConfiguration : NSObject {
   private var embeddedCertificateString: String
   private var keyIdFromMetadata: String
-  private var algorithmFromMetadata: CodeSigningAlgorithm
+  private var algorithmFromMetadata: EXUpdatesCodeSigningAlgorithm
   private var includeManifestResponseCertificateChain: Bool
   private var allowUnsignedManifests: Bool
   
@@ -41,8 +41,8 @@ public class CodeSigningConfiguration : NSObject {
                        includeManifestResponseCertificateChain: Bool,
                        allowUnsignedManifests: Bool) throws {
     self.embeddedCertificateString = embeddedCertificateString
-    self.keyIdFromMetadata = metadata[CodeSigningMetadataFields.KeyIdFieldKey] ?? CodeSigningSignatureHeaderInfo.DefaultKeyId
-    self.algorithmFromMetadata = try CodeSigningAlgorithm.parseFromString(metadata[CodeSigningMetadataFields.AlgorithmFieldKey])
+    self.keyIdFromMetadata = metadata[EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey] ?? EXUpdatesSignatureHeaderInfo.DefaultKeyId
+    self.algorithmFromMetadata = try EXUpdatesCodeSigningAlgorithm.parseFromString(metadata[EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey])
     self.includeManifestResponseCertificateChain = includeManifestResponseCertificateChain
     self.allowUnsignedManifests = allowUnsignedManifests
   }
@@ -56,41 +56,41 @@ public class CodeSigningConfiguration : NSObject {
   
   @objc
   public func createAcceptSignatureHeader() -> String {
-    return "sig, keyid=\"\(CodeSigningConfiguration.escapeStructuredHeaderStringItem(keyIdFromMetadata))\", alg=\"\(CodeSigningConfiguration.escapeStructuredHeaderStringItem(algorithmFromMetadata.rawValue))\""
+    return "sig, keyid=\"\(EXUpdatesCodeSigningConfiguration.escapeStructuredHeaderStringItem(keyIdFromMetadata))\", alg=\"\(EXUpdatesCodeSigningConfiguration.escapeStructuredHeaderStringItem(algorithmFromMetadata.rawValue))\""
   }
   
   @objc
   public func validateSignature(signature: String?,
                                 signedData: Data,
-                                manifestResponseCertificateChain: String?) throws -> CodeSigningSignatureValidationResult {
+                                manifestResponseCertificateChain: String?) throws -> EXUpdatesSignatureValidationResult {
     guard let signature = signature else {
       if !self.allowUnsignedManifests {
-        throw CodeSigningError.SignatureHeaderMissing
+        throw EXUpdatesCodeSigningError.SignatureHeaderMissing
       } else {
         // no-op
-        return CodeSigningSignatureValidationResult(validationResult: CodeSigningValidationResult.Skipped, expoProjectInformation: nil)
+        return EXUpdatesSignatureValidationResult(validationResult: EXUpdatesValidationResult.Skipped, expoProjectInformation: nil)
       }
     }
     
     return try validateSignatureInternal(
-      signatureHeaderInfo: try CodeSigningSignatureHeaderInfo.parseSignatureHeader(signatureHeader: signature),
+      signatureHeaderInfo: try EXUpdatesSignatureHeaderInfo.parseSignatureHeader(signatureHeader: signature),
       signedData: signedData,
       manifestResponseCertificateChain: manifestResponseCertificateChain
     )
   }
   
-  private func validateSignatureInternal(signatureHeaderInfo: CodeSigningSignatureHeaderInfo,
+  private func validateSignatureInternal(signatureHeaderInfo: EXUpdatesSignatureHeaderInfo,
                                          signedData: Data,
-                                         manifestResponseCertificateChain: String?) throws -> CodeSigningSignatureValidationResult {
-    let certificateChain: CodeSigningCertificateChain
+                                         manifestResponseCertificateChain: String?) throws -> EXUpdatesSignatureValidationResult {
+    let certificateChain: EXUpdatesCertificateChain
     if (self.includeManifestResponseCertificateChain) {
-      certificateChain = try CodeSigningCertificateChain(
-        certificateStrings: CodeSigningConfiguration.separateCertificateChain(certificateChainInManifestResponse: manifestResponseCertificateChain ?? "") + [self.embeddedCertificateString]
+      certificateChain = try EXUpdatesCertificateChain(
+        certificateStrings: EXUpdatesCodeSigningConfiguration.separateCertificateChain(certificateChainInManifestResponse: manifestResponseCertificateChain ?? "") + [self.embeddedCertificateString]
       )
     } else {
       // check that the key used to sign the response is the same as the key in the code signing certificate
       if (signatureHeaderInfo.keyId != self.keyIdFromMetadata) {
-        throw CodeSigningError.KeyIdMismatchError
+        throw EXUpdatesCodeSigningError.KeyIdMismatchError
       }
 
       // note that a mismatched algorithm doesn't fail early. it still tries to verify the signature with the
@@ -99,7 +99,7 @@ public class CodeSigningConfiguration : NSObject {
         NSLog("Key with alg=\(signatureHeaderInfo.algorithm) from signature does not match client configuration algorithm, continuing")
       }
 
-      certificateChain = try CodeSigningCertificateChain(certificateStrings: [embeddedCertificateString])
+      certificateChain = try EXUpdatesCertificateChain(certificateStrings: [embeddedCertificateString])
     }
     
     // For now only SHA256withRSA is supported. This technically should be `metadata.algorithm` but
@@ -112,15 +112,15 @@ public class CodeSigningConfiguration : NSObject {
     let (secCertificate, _) = try certificateChain.codeSigningCertificate()
     
     guard let publicKey = secCertificate.publicKey else {
-      throw CodeSigningError.CertificateMissingPublicKeyError
+      throw EXUpdatesCodeSigningError.CertificateMissingPublicKeyError
     }
     
     guard let signatureData = Data(base64Encoded: signatureHeaderInfo.signature) else {
-      throw CodeSigningError.SignatureEncodingError
+      throw EXUpdatesCodeSigningError.SignatureEncodingError
     }
     
     let isValid = try self.verifyRSASHA256SignedData(signedData: signedData, signatureData: signatureData, publicKey: publicKey)
-    return CodeSigningSignatureValidationResult(validationResult: isValid ? CodeSigningValidationResult.Valid : CodeSigningValidationResult.Invalid,
+    return EXUpdatesSignatureValidationResult(validationResult: isValid ? EXUpdatesValidationResult.Valid : EXUpdatesValidationResult.Invalid,
                                               expoProjectInformation: try certificateChain.codeSigningCertificate().1.expoProjectInformation())
   }
   
@@ -132,7 +132,7 @@ public class CodeSigningConfiguration : NSObject {
     } else {
       if let error = error, (error.takeRetainedValue() as Error as NSError).code != errSecVerifyFailed {
         NSLog("Sec key signature verification error: %@", error.takeRetainedValue().localizedDescription)
-        throw CodeSigningError.SecurityFrameworkError
+        throw EXUpdatesCodeSigningError.SecurityFrameworkError
       }
       return false
     }

@@ -228,15 +228,15 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
 }
 
 + (nullable EXUpdatesCodeSigningConfiguration *)codeSigningConfigurationForCodeSigningCertificate:(NSString *)codeSigningCertificate
-                                                                     codeSigningMetadata:(nullable NSDictionary *)codeSigningMetadata
-                                      codeSigningIncludeManifestResponseCertificateChain:(BOOL)codeSigningIncludeManifestResponseCertificateChain
-                                                       codeSigningAllowUnsignedManifests:(BOOL)codeSigningAllowUnsignedManifests {
+                                                                              codeSigningMetadata:(nullable NSDictionary *)codeSigningMetadata
+                                               codeSigningIncludeManifestResponseCertificateChain:(BOOL)codeSigningIncludeManifestResponseCertificateChain
+                                                                codeSigningAllowUnsignedManifests:(BOOL)codeSigningAllowUnsignedManifests {
   NSError *error;
   EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = [[EXUpdatesCodeSigningConfiguration alloc] initWithEmbeddedCertificateString:codeSigningCertificate
-                                                                                                                  metadata:codeSigningMetadata
-                                                                                   includeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
-                                                                                                    allowUnsignedManifests:codeSigningAllowUnsignedManifests
-                                                                                                                     error:&error];
+                                                                                                                                    metadata:codeSigningMetadata
+                                                                                                     includeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
+                                                                                                                      allowUnsignedManifests:codeSigningAllowUnsignedManifests
+                                                                                                                                       error:&error];
   if (error) {
     NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];

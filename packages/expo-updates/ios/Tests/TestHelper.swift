@@ -32,7 +32,7 @@ enum TestCertificate : String {
 
 class ForBundle {}
 
-@objc(EXUpdatesTestHelper)
+@objc
 public class TestHelper : NSObject {
   @objc public static func getTestCertificateObjc(_ name: String) -> String {
     let bundle = Bundle(for: ForBundle.self)
