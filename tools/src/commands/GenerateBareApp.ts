@@ -11,6 +11,7 @@ type GenerateBareAppOptions = {
   template?: string;
   clean?: boolean;
   outDir?: string;
+  rnVersion?: string;
 };
 
 async function action(
@@ -20,6 +21,7 @@ async function action(
     outDir = 'bare-apps',
     template = 'expo-template-bare-minimum',
     clean = false,
+    rnVersion,
   }: GenerateBareAppOptions
 ) {
   // TODO:
@@ -35,7 +37,7 @@ async function action(
   await yarnInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
   await runExpoPrebuild({ projectDir });
-  await updateRNVersion({ projectDir });
+  await updateRNVersion({ projectDir, rnVersion });
   await createMetroConfig({ workspaceRoot: EXPO_DIR, projectRoot: projectDir });
   await applyGradleFlipperFixtures({ projectDir });
   // reestablish symlinks - some might be wiped out from prebuild
@@ -187,16 +189,26 @@ async function symlinkPackages({
   }
 }
 
-async function updateRNVersion({ projectDir }: { projectDir: string }) {
+async function updateRNVersion({
+  projectDir,
+  rnVersion,
+}: {
+  projectDir: string;
+  rnVersion?: string;
+}) {
+  const reactNativeVersion = rnVersion || getLocalReactNativeVersion();
+
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
-
-  const mainPkg = require(path.resolve(EXPO_DIR, 'package.json'));
-  const currentRNVersion = mainPkg.resolutions['react-native'];
-  pkg.dependencies['react-native'] = currentRNVersion;
+  pkg.dependencies['react-native'] = reactNativeVersion;
 
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
   await spawnAsync('yarn', [], { cwd: projectDir });
+}
+
+function getLocalReactNativeVersion() {
+  const mainPkg = require(path.resolve(EXPO_DIR, 'package.json'));
+  return mainPkg.resolutions?.['react-native'];
 }
 
 async function runExpoPrebuild({ projectDir }: { projectDir: string }) {
@@ -264,6 +276,7 @@ export default (program: Command) => {
     .alias('gba')
     .option('-n, --name <string>', 'Specifies the name of the project')
     .option('-c, --clean', 'Rebuilds the project from scratch')
+    .option('--rnVersion <string>', 'Version of react-native to include')
     .option('-o, --outDir <string>', 'Specifies the directory to build the project in')
     .option('-t, --template <string>', 'Specify the expo template to use as the project starter')
     .description(`Generates a bare app with the specified packages symlinked`)
