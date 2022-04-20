@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.2.1 — 2022-04-20
+
+_This version does not introduce any user-facing changes._
+
 ## 11.2.0 — 2022-04-18
 
 ### 🐛 Bug fixes

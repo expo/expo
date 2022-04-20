@@ -101,7 +101,7 @@
     "@react-native-segmented-control/segmented-control": "2.4.0",
     "expo": "~45.0.0-beta.1",
     "expo-camera": "~12.2.0",
-    "expo-dev-client": "~0.8.0",
+    "expo-dev-client": "~0.9.0",
     "expo-error-recovery": "~3.1.0",
     "expo-face-detector": "~11.2.0",
     "expo-image": "~0.2.0",

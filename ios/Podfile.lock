@@ -1836,9 +1836,9 @@ PODS:
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
   - DoubleConversion (1.1.6)
-  - EASClient (0.2.0):
+  - EASClient (0.2.1):
     - ExpoModulesCore
-  - EASClient/Tests (0.2.0):
+  - EASClient/Tests (0.2.1):
     - ExpoModulesCore
   - EXAdsAdMob (13.0.0):
     - ExpoModulesCore
@@ -1853,7 +1853,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (4.1.0):
     - ExpoModulesCore
-  - EXAV (11.2.0):
+  - EXAV (11.2.1):
     - ExpoModulesCore
     - React-runtimeexecutor
     - ReactCommon
@@ -1909,10 +1909,10 @@ PODS:
     - Firebase/Core (= 8.14.0)
   - EXFont (10.1.0):
     - ExpoModulesCore
-  - EXGL (11.2.0):
+  - EXGL (11.2.1):
     - EXGL_CPP
     - ExpoModulesCore
-  - EXGL_CPP (11.2.0):
+  - EXGL_CPP (11.2.1):
     - React-jsi
   - EXGoogleSignIn (10.2.0):
     - ExpoModulesCore
@@ -1924,7 +1924,7 @@ PODS:
   - EXJSONUtils/Tests (0.3.0)
   - EXLocalAuthentication (12.2.0):
     - ExpoModulesCore
-  - EXLocation (14.2.0):
+  - EXLocation (14.2.1):
     - ExpoModulesCore
   - EXMailComposer (11.2.0):
     - ExpoModulesCore
@@ -1941,20 +1941,20 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.0-beta.1):
+  - Expo (45.0.0-beta.2):
     - ExpoModulesCore
   - ExpoCellular (4.2.0):
     - ExpoModulesCore
-  - ExpoClipboard (3.0.0):
+  - ExpoClipboard (3.0.1):
     - ExpoModulesCore
   - ExpoCrypto (10.2.0):
     - ExpoModulesCore
   - ExpoHaptics (11.2.0):
     - ExpoModulesCore
-  - ExpoImageManipulator (10.3.0):
+  - ExpoImageManipulator (10.3.1):
     - EXImageLoader
     - ExpoModulesCore
-  - ExpoImagePicker (13.0.0):
+  - ExpoImagePicker (13.0.1):
     - ExpoModulesCore
   - ExpoKeepAwake (10.1.0):
     - ExpoModulesCore
@@ -4308,13 +4308,13 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
-  EASClient: b9de8eb0efdf757262f74a1f74cdfb75a3a87e7a
+  EASClient: 93565f4d024559b75eac62bc7d50acaa354614f6
   EXAdsAdMob: 05a1a4ac070911e300d12114c4121706f8146d2d
   EXAdsFacebook: 1c5084ce46173ccbef5c3918436234ade2513bfa
   EXAmplitude: 96d6a3f9c2cff499261fc28c952c03b55f7584f9
   EXAppleAuthentication: 4751aee44f2e9e1863fa3d147d7f54a91d6a8cc9
   EXApplication: d6562af1204162e0ac46d341a7d4e5dc720b33de
-  EXAV: a22e5631be458669746ef66b77a8c7305d15e926
+  EXAV: 4722e688623979b9dd9eb9e5bcccbe7042be736f
   EXBackgroundFetch: f60cb23007beca0892997682d8ca40aca1e0c92e
   EXBarCodeScanner: eea8f38bedf1eae15d8f8bea89887a71762fd275
   EXBattery: 282a943ee063a035c3dcbb8c4081193a6f02be44
@@ -4334,26 +4334,26 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: aeefc63f92277313c3ee86da6a7ecf892f345ed1
   EXFirebaseCore: bdfa87df74fa1b74a6b38957561456aabad28a4f
   EXFont: 04235cc22e6fef86028feb67db452978dc6f240f
-  EXGL: 9bec57ef11c8af987ef034e855fe6420f2a45b41
-  EXGL_CPP: 7a44fff73b1fbcb4aface722ec6332f2c95a663f
+  EXGL: 4a080e7b64cb182f4c045ab8259e39a1e4ca8f48
+  EXGL_CPP: 9c41650d987c2aa6e999740bf8803e445cb9e195
   EXGoogleSignIn: d4ec785c6d98732a47824257c04a3415cfbd8986
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
   EXLocalAuthentication: 7f37b242eae73f9acf111d39bdee3f1379e68902
-  EXLocation: ceef73974dabacfa4327f53d368694dfb7366a64
+  EXLocation: f40d82e745a66deac2e649b496098064008e0973
   EXMailComposer: 2e5fdf265f3a1d5d5ef03724ce361cdedb0f546f
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   EXMediaLibrary: 5d0e1b78268c90f7dd8a83ee3be26e01c4fd6c1f
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: e0031e6cf1d018b8a09a1f7790faef25ccbf107e
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 8f261dc26afc77de77cbffa109fcac54ea2fd2a1
+  Expo: 023cb99a32bec1ebe321bd2e6d750cd68c4c5828
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
-  ExpoClipboard: 2d12a9f0f73ab6ae9daa9673d3601c582cef2c8f
+  ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
   ExpoHaptics: ad58ec96a25e57579c14a47c7d71f0de0de8656a
-  ExpoImageManipulator: bbd38f07eae00c36969e7291bf793f4c7c8d8013
-  ExpoImagePicker: a4eff7d5ddb32bb3a659e4f59ffb25181e7f9c91
+  ExpoImageManipulator: b55580bbc7b10099c7707949903e7176a8542ee8
+  ExpoImagePicker: d7a3329544ca45a43aa8ac81b66ba22352e65eab
   ExpoKeepAwake: 6f23558b054e4d0c04535f7d70c3fe6a2025d8f7
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and  the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
-
 ### 💡 Others
+
+## 11.2.1 — 2022-04-20
+
+### 🐛 Bug fixes
+
+- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and  the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
 
 ## 11.2.0 — 2022-04-18
 
